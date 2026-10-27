@@ -4,40 +4,53 @@
 
 `patch_vxk_int64fix.py` widens the 6 bare `states_id * conv_states_stride_0`
 int32 multiplies in the GDN conv-state kernels to int64, then
-`build_vxk_wheel_arc2.sh` (+ in-container `vxk_arc2_inner.sh`) rebuilds the
-wheel INSIDE the arc runtime image with the staged DPC++ 7.2.0 toolchain,
-version `0.1.14.1+arc2`.
+`build_vxk_wheel_arc3.sh` (+ in-container `vxk_arc3_inner.sh`) rebuilds the
+wheel in `intel/omix:0.2.0-devel-ubuntu24.04` (oneAPI **2026.0.0**) against
+a venv pinned to the target stack torch 2.13.0+xpu, version
+`0.1.14.1+arc3`.
 
-## arc1 postmortem (why arc2 exists — ABI lesson, banked)
+## Wheel ABI lessons (arc1/arc2 postmortems — banked)
 
-arc1 was built in the omix devel image (oneAPI 2025.3): the wheel links
-`libsycl.so.8`, while the arc image venv runs `intel_sycl_rt 2026.0.0`
-(`libsycl.so.9`) → `ImportError: libsycl.so.8: cannot open shared object
-file` at wheel load inside the gate container. **Never reuse a wheel across
-SYCL runtime majors — build against the target runtime image.** (A so.8→so.9
-symlink or dual-runtime mount was rejected as unevidenced customization.)
+The arc image venv runtime is `intel_sycl_rt 2026.0.0` + `intel-cmplr-lib-rt
+2026.0.0` (PyPI release train 2026-04-24; `libsycl.so.9`). Two failed
+builders bracket the requirement:
 
-arc2 recipe (validated fixes over arc1's flow):
+- **arc1** (omix 0.1.0-devel = oneAPI 2025.3): wheel linked `libsycl.so.8` →
+  `ImportError` at load. **A wheel never crosses SYCL runtime sonames.**
+- **arc2** (DPC++ 7.2.0 = oneAPI 2026.2, staged from esimd-w11): linked
+  so.9 ✓ but emitted calls to `sycl::detail::reportAdjustedRange`, which the
+  2026.0 runtime does not export → `undefined symbol` at import. **The
+  COMPILER GENERATION must equal the RUNTIME GENERATION** — a newer compiler
+  references helper symbols the older runtime never had. (Older compiler +
+  newer runtime would be the compatible direction but is unreachable here:
+  2025.3 emits so.8 references — arc1.)
 
-- builder `FROM vllm-arc:v0.30.0-b70-p12` (target runtime, torch 2.13.0+xpu
-  and all pip build deps preinstalled — cmake 4.4.4, ninja, setuptools-scm).
-- toolchain `/root/build/dpcpp72/dpcpp` (DPC++ 7.2.0 = clang 23.1.1,
-  intel/llvm 5680988, docker-cp'd from esimd-w11 — the W14-recipe toolchain
-  whose output is proven to run on the so.9 venv family). Symlinks
-  `icpx→clang++`, `icx→clang` inside our private copy (setup.py probes
-  `$SYCL_HOME/bin/icpx -v` and resolves `which icx/icpx` for CMake).
-- `CMPLR_ROOT=/src/dpcpp` — vxk `cmake/toolchain.cmake` derives the CMake
-  compilers as `${CMPLR_ROOT}/bin/{icx,icpx}`; unset, it produces `/bin/icpx`
-  and dies.
-- `XPU_SYCL_COMPILER=dpclang` + `PKG_CONFIG_PATH=/src/dpcpp/lib/pkgconfig` —
-  torch's `FindSYCLToolkit.cmake` default icx parser expects an Intel(R)
-  banner and CMake `math()`-dies on the raw clang banner; the dpclang parser
-  matches this toolchain's "DPC++ compiler 7.2.0" banner (mapped 2019+7 =
-  oneAPI 2026.2) and consumes the shipped `sycl-dpcpp-7.pc`.
-- venv-first `LD_LIBRARY_PATH` (venv torch libs, then `/src/dpcpp/lib`);
-  `TORCH_XPU_ARCH_LIST=bmg`, `MAX_JOBS=52 KERNELS_MAX_JOBS=52`,
-  `SETUPTOOLS_SCM_PRETEND_VERSION=0.1.14.1+arc2`, clean `build/`,
-  `pip wheel --no-build-isolation --no-deps`.
+arc3 = the D-lineage v78/v88 recipe shape (rig `build_vxk_v78.sh`: oneAPI
+setvars + venv + `pip wheel --no-build-isolation --no-deps`) with two pin
+changes: oneAPI 2025.3 → **2026.0** (omix 0.2.0 = "Intel(R) oneAPI DPC++/C++
+Compiler 2026.0.0 (2026.0.0.20260331)", per Intel's OMIX support matrix:
+0.1.0→2025.3, 0.2.0→2026.0, 0.3.0→2026.1) and torch 2.11.0+xpu →
+2.13.0+xpu. The PyPI 0.1.14.1 wheel imports cleanly in the arc venv — Intel
+CI built it with this same generation — so generation-matched linking is
+proven sound by that precedent.
+
+arc3 builder environment notes (all diagnosed live, 2026-10-27):
+
+- `set -u` kills the SHELL inside `source setvars.sh` (compiler
+  `env/vars.sh:258` references unset `OCL_ICD_FILENAMES`; an expansion error
+  aborts before `|| true` can run) — guard with `set +u` around the source.
+  This is why the v78 recipe used plain `set -eo pipefail`.
+- omix ships a hollow `/opt/venv` (python symlinks, no pip) — use our own
+  `/opt/arcvenv`.
+- Ubuntu's ensurepip needs the `python3.12-venv` deb (not installed) —
+  create with `python3 -m venv --without-pip` + `get-pip.py` bootstrap.
+- astral.com (uv) is unreachable from the rig; pypi/pytorch indexes are not.
+- torch `FindSYCLToolkit.cmake` default `icx` parser works with the real
+  Intel banner (no `XPU_SYCL_COMPILER=dpclang` workaround — that was only
+  needed for arc2's raw-clang toolchain).
+- `rm -rf build .deps` between attempts: incremental reuse across compiler
+  generations is an ABI hazard.
+
 
 
 ## Why (audit evidence — results/2026-10-27-p1-vxk-wedge-audit/)
