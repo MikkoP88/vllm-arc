@@ -30,15 +30,46 @@ under ``vllm.platforms.arc`` so rig legs can prove which process patched and
 which branch ran — the p2r2 leg died with this defect while all three install
 hooks passed silently.
 
+ZOMBIE ANSWER (2026-10-27 p2-graph leg + device probes,
+results/2026-10-27-p2-graph-defectb-answer/): the discrimination canary ran at
+serve time on the p13 image — ``capturing(cur)=True capturing(fresh)=False``
+on BOTH TP workers, ``canary[executed=False]`` (fill never executed; read-back
+showed uninitialized memory). The recording flag is per-stream, only the
+worker's serving stream is poisoned, and kernels enqueued there genuinely
+never run: a TRUE ZOMBIE, not a stale boolean. Full-boot sequence proves the
+poison enters during graph capture (27/27 sizes, "finished in 7 secs", no
+errors) and is already present at the first serve-time ``sample_tokens``
+(before any replay). Bare-process probes could NOT reproduce the leak with
+trivial captures (clean single + pool-shared + side-stream captures all end
+``capturing=False`` with working execution and correct replay), but DID
+reproduce the sibling poison: any event recorded inside a capture is
+permanently graph-associated (``ev.synchronize()`` outside raises the exact
+defect-b text). The leak therefore needs the real captured runnable (CCL /
+GDN / sampler content) on this torch 2.13.0+xpu + oneAPI 2026.0 stack.
+
+Fix law (this module, p12b): clear the zombie at every boundary where a swap
+cannot be undone — after each capture context teardown
+(``torch.xpu.graph.__exit__``; capture accounting via
+``XPUGraph.capture_begin``/``capture_end``: a recording flag with none open
+= leaked recorder), before and after each ``replay``, and as a last-resort
+alarm at serve time. A stuck recorder is swapped for a fresh stream
+(probe-validated recovery: fresh-stream kernels execute; the swap is
+serve-transparent). The serve-time
+alarm also FAILS the in-flight request loudly — its forward was enqueued on
+the dead queue, so its outputs are garbage, and the integrity law forbids
+returning unverifiable tokens. capture-time events that later carry a
+command-graph association remain covered by the ``get_output`` self-heal.
+
 Provenance: error family + fix direction = plan Appendix C defect (b);
 capture-probe fail-safe law = D-line waveD patch_gdn_metadata_026.py
-(``_iexp_is_capturing``, results/2026-10-18-waveD-anchor-analysis.log).
+(``_iexp_is_capturing``, results/2026-10-18-waveD-anchor-analysis.log);
+zombie discrimination + fresh-stream recovery law = rig probes
+2026-10-27/28 (probe_zombie{,2}.py, results/2026-10-27-p2-graph-defectb-answer/).
 """
 
 from __future__ import annotations
 
 import os
-import traceback
 
 import torch
 
@@ -56,6 +87,13 @@ _applied_logs = 0
 _deferred_logs = 0
 _probe_err_logs = 0
 _healed_logs = 0
+
+# --- capture accounting + zombie hygiene (p12b, see module docstring) ---
+# Number of XPUGraph captures currently open in this process (captures are
+# strictly sequential — torch documents one at a time). A recording flag on
+# the current stream with none open = leaked recorder = zombie.
+_captures_open = 0
+_dezombie_logs = 0
 
 
 class _ArcNoOpEvent:
@@ -94,6 +132,125 @@ def _is_capturing() -> bool:
     return _capture_state()[0]
 
 
+def _zombie_evidence() -> str:
+    """Recovery proof for the hygiene log: fill on the (post-swap) current
+    stream, give queued work a second, read back via a clean stream."""
+    try:
+        import time as _time
+
+        c = torch.full((4,), 123.456, device=torch.xpu.current_device())
+        _time.sleep(1.0)
+        with torch.xpu.stream(torch.xpu.Stream()):
+            v = c.to("cpu")
+        return (f"post-swap canary[executed={bool((v == 123.456).all())} "
+                f"vals={v.tolist()}]")
+    except Exception as e:  # noqa: BLE001 — evidence only, never fatal
+        return f"post-swap canary[ERR {e!r}]"
+
+
+def _dezombie(tag: str) -> bool:
+    """Clear a leaked command-graph recorder: swap the poisoned current
+    stream for a fresh one. Only acts when the zombie conditions hold
+    (flag says recording, probe healthy, no capture open by accounting).
+    Probe-validated 2026-10-27: fresh streams are clean, their kernels
+    execute, and the swap is serve-transparent. Returns True when swapped.
+    """
+    global _dezombie_logs
+    capturing, probe_err = _capture_state()
+    if not capturing or probe_err is not None or _captures_open > 0:
+        return False
+    try:
+        dead = torch.xpu.current_stream()
+        torch.xpu.set_stream(torch.xpu.Stream())
+        if _dezombie_logs < _LOG_BUDGET:
+            _dezombie_logs += 1
+            logger.warning(
+                "ArcXpuPlatform: graph stream hygiene (%s): current stream "
+                "%s was left recording with no capture open — swapped to a "
+                "fresh stream (post-swap capturing=%s, %s).",
+                tag, dead, _capture_state()[0], _zombie_evidence())
+        else:
+            logger.warning(
+                "ArcXpuPlatform: graph stream hygiene (%s): zombie stream "
+                "swapped (post-swap capturing=%s).",
+                tag, _capture_state()[0])
+        return True
+    except Exception as e:  # noqa: BLE001 — never mask the caller's path
+        logger.error(
+            "ArcXpuPlatform: graph stream hygiene (%s) FAILED: %r", tag, e)
+        return False
+
+
+def _hygiene(tag: str) -> None:
+    """Post-boundary zombie check (call after each capture_end / replay)."""
+    _dezombie(tag)
+
+
+def _wrap_xpu_graph() -> None:
+    """Instrument XPU graph boundaries (p12b zombie law, module docstring):
+    keep the capture-open account on ``XPUGraph.capture_begin/capture_end``
+    and run stream hygiene where a swap cannot be undone — after the graph
+    context fully tears down (``torch.xpu.graph.__exit__`` restores the
+    pre-capture current stream AFTER ``capture_end``, so a swap made inside
+    ``capture_end`` would be silently reverted) and before/after each
+    ``replay``. Applies to every graph use in the process — vllm's
+    CUDAGraphWrapper (``torch.cuda.graph`` aliased to ``torch.xpu.graph``)
+    and the speculator graph manager share these classes.
+    """
+    global _captures_open
+    cls = torch.xpu.XPUGraph
+    gcls = torch.xpu.graph
+    if getattr(cls, "_arc_hygiene", False):
+        return
+    orig_begin = cls.capture_begin
+    orig_end = cls.capture_end
+    orig_replay = cls.replay
+    orig_gexit = gcls.__exit__
+
+    def _arc_capture_begin(self, *args, **kwargs):
+        global _captures_open
+        _captures_open += 1
+        return orig_begin(self, *args, **kwargs)
+
+    def _arc_capture_end(self, *args, **kwargs):
+        global _captures_open
+        try:
+            return orig_end(self, *args, **kwargs)
+        finally:
+            # Accounting only (decrement even on a failed close — that
+            # capture is over): the hygiene swap itself runs at graph_exit /
+            # replay / serve boundaries, never here (see docstring above).
+            _captures_open = max(0, _captures_open - 1)
+
+    def _arc_replay(self, *args, **kwargs):
+        # Pre-check: a replay enqueued on a zombie stream is lost together
+        # with this decode step's outputs — clear the recorder FIRST.
+        _hygiene("replay-entry")
+        out = orig_replay(self, *args, **kwargs)
+        _hygiene("replay")
+        return out
+
+    def _arc_graph_exit(self, *args):
+        try:
+            return orig_gexit(self, *args)
+        finally:
+            # Capture context fully torn down (capture_end returned or
+            # raised, pre-capture stream restored): a still-recording flag
+            # with no open capture is the leaked recorder — swap now;
+            # nothing after this point overrides the current stream.
+            _hygiene("graph_exit")
+
+    cls.capture_begin = _arc_capture_begin
+    cls.capture_end = _arc_capture_end
+    cls.replay = _arc_replay
+    cls._arc_hygiene = True
+    gcls.__exit__ = _arc_graph_exit
+    logger.info(
+        "ArcXpuPlatform: XPU graph boundary hygiene installed (pid %d, "
+        "XPUGraph capture_begin/capture_end/replay + graph context __exit__ "
+        "wrapped).", os.getpid())
+
+
 def _install() -> None:
     """Patch the async output classes in-place (idempotent, per-process).
 
@@ -118,13 +275,29 @@ def _install() -> None:
     def _graph_safe_init(orig_init):
         def __init__(self, *args, **kwargs):
             global _applied_logs, _deferred_logs, _probe_err_logs
-            orig_init(self, *args, **kwargs)
+            # Probe BEFORE the copy is enqueued: a zombie current stream must
+            # be cleared before upstream records the copy event on it.
             capturing, probe_err = _capture_state()
+            if capturing and probe_err is None and _captures_open == 0:
+                # Zombie alarm (p12b): no capture is open by accounting, yet
+                # the current stream reports recording. The RPC sample_tokens
+                # path never sits inside a genuine capture, so this is the
+                # leaked recorder. The in-flight request's forward was
+                # enqueued on the dead queue and its outputs are garbage —
+                # clear the zombie, then fail loudly (integrity law: never
+                # return unverifiable tokens). Unreachable when the boundary
+                # hygiene above did its job; this is the last-resort alarm.
+                _dezombie("serve-time output alarm")
+                raise RuntimeError(
+                    "ArcXpuPlatform: zombie graph stream (recorder left open, "
+                    "no capture active) cleared at serve time; the in-flight "
+                    "request's outputs are unreliable — retry the request")
+            orig_init(self, *args, **kwargs)
             if capturing:
-                # Inside a capture window a device sync is illegal; upstream
-                # behavior is correct there. If the capture-time event ever
-                # turns out poisoned at wait time, the get_output wrapper
-                # below self-heals instead of killing the engine.
+                # Genuine capture window (or probe-doubt fail-safe): a device
+                # sync is illegal inside capture; upstream behavior stands.
+                # Capture-created events that later carry a command-graph
+                # association are handled by the get_output self-heal below.
                 if probe_err is not None:
                     if _probe_err_logs < _LOG_BUDGET:
                         _probe_err_logs += 1
@@ -134,44 +307,10 @@ def _install() -> None:
                             "law).", probe_err)
                 elif _deferred_logs < _LOG_BUDGET:
                     _deferred_logs += 1
-                    # Discriminate per-stream vs device-global recording flag:
-                    # probe on a brand-new stream and report both answers plus
-                    # the current stream. Decides the fix shape (fresh-stream
-                    # copies are viable only if recording is per-stream).
-                    fresh_cap = "n/a"
-                    try:
-                        _fresh = torch.xpu.Stream()
-                        with torch.xpu.stream(_fresh):
-                            fresh_cap = _capture_state()[0]
-                    except Exception as fresh_err:  # noqa: BLE001
-                        fresh_cap = f"ERR {fresh_err!r}"
-                    # Canary: does a kernel enqueued on the (flagged) current
-                    # stream actually EXECUTE? fill a distinctive value on the
-                    # current stream, give it a second, then read it back via
-                    # a blocking copy on a clean stream. Executed -> the zombie
-                    # state only breaks waits, and fresh-stream output copies
-                    # are a complete fix; never-executed -> forward outputs are
-                    # garbage and the zombie itself must be cleared instead.
-                    canary = "n/a"
-                    try:
-                        import time as _time
-
-                        _c = torch.full((4,), 123.456,
-                                        device=torch.xpu.current_device())
-                        _time.sleep(1.0)
-                        with torch.xpu.stream(torch.xpu.Stream()):
-                            _v = _c.to("cpu")
-                        canary = (f"executed={bool((_v == 123.456).all())} "
-                                  f"vals={_v.tolist()}")
-                    except Exception as canary_err:  # noqa: BLE001
-                        canary = f"ERR {canary_err!r}"
                     logger.warning(
                         "ArcXpuPlatform: graph-safe output deferred to "
-                        "upstream (capture window active). current_stream=%s "
-                        "capturing(cur)=%s capturing(fresh stream)=%s "
-                        "canary[%s]. Stack at this moment:\n%s",
-                        torch.xpu.current_stream(), capturing, fresh_cap,
-                        canary, "".join(traceback.format_stack()[-18:]))
+                        "upstream (genuine capture window active, "
+                        "captures_open=%d).", _captures_open)
                 return
             torch.xpu.synchronize()
             # Host buffers are complete; the recorded event may carry a
@@ -210,7 +349,10 @@ def _install() -> None:
                     # The barrier itself is illegal while a capture window is
                     # STILL open (p2r3b: "wait cannot be called for a queue
                     # which is recording to a command graph") — nothing can
-                    # wait here. Surface the original error.
+                    # wait here. Clear any leaked recorder so whatever
+                    # survives us gets a live stream, then surface the
+                    # original error.
+                    _dezombie("get_output barrier illegal")
                     logger.error(
                         "ArcXpuPlatform: graph-safe output self-heal barrier "
                         "illegal (capture still open): %r", sync_err)
@@ -225,6 +367,9 @@ def _install() -> None:
     au.AsyncOutput.get_output = _graph_safe_get_output(_orig_async_output_get)
     au.AsyncPoolingOutput.get_output = _graph_safe_get_output(
         _orig_pooling_get)
+    # Boundary hygiene must be in place before any capture runs (worker init
+    # captures follow the install hooks); idempotent per-process.
+    _wrap_xpu_graph()
     _INSTALLED = True
     logger.info(
         "ArcXpuPlatform: graph-safe output patch installed (pid %d, "
