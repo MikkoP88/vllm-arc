@@ -1,0 +1,12 @@
+# requirements-arc.txt — arc-lane pins on top of the base image stack.
+#
+# Ground truth = the validated venv freeze
+# (results/2026-10-27-p0-venv-groundtruth/freeze.txt). The heavy pins
+# (vllm 0.30.0+xpu wheel md5 1f14d00b…, triton 3.7.2+xpu shim wheel md5
+# 708e93ed…) are local md5-guarded wheels installed by the Dockerfile
+# (wheel_guard law, external_patches/wheels.pins.md5); PyPI/index-resolved
+# pins are listed here for documentation and pip-check parity.
+vllm-xpu-kernels==0.1.14.1
+xgrammar==0.2.8
+# lmcache enters at P3 as the patched internal wheel lmcache-arc-0.5.5+arc<N>
+# (external_patches/lmcache build law) — pinned there when it lands.

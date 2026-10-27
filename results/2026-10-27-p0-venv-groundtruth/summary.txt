@@ -1,0 +1,41 @@
+P0 leg — venv ground-truth capture (2026-10-27)
+
+Source: docker exec radiance-test /opt/venv/bin/pip freeze
+(validated vllm-gaudi-radiance:v0.30.0 image venv = the 0.30+B70 boot proof).
+
+Key pins (freeze.txt carries all 217):
+  vllm            0.30.0+xpu   local wheel, sha256 b5c09abc… (file md5 1f14d00b…)
+  torch           2.13.0+xpu   pytorch XPU index
+  torchvision     0.28.0+xpu   pytorch XPU index
+  torchaudio      2.11.0+xpu   from base (untouched by the swap)
+  triton          3.7.2+xpu    local shim wheel (file md5 708e93ed…) + triton-xpu 3.7.2
+  vllm-xpu-kernels 0.1.14.1    PyPI (vllm's pin)
+  xgrammar        0.2.8
+  transformers    5.16.1
+  lmcache         0.4.7 (base image; replaced by 0.5.5+arc at P3)
+  intel-sycl-rt / cmplr-rt / openmp / opencl-rt  2026.0.0
+  oneccl / oneccl-devel  2022.0.0
+  numpy 2.2.6, pydantic 2.13.5, intel-pti 0.17.0
+
+Build interface (rig /root/build/radiance_build/Dockerfile read 2026-10-27):
+  FROM vllm-iexperimental:base-v0.26.0 (Ubuntu 24.04, py3.12 /opt/venv,
+  Intel compute runtime + level-zero + oneCCL) ->
+  clear PIP_CONSTRAINT + VLLM_QUANTIZE_Q40_LIB ->
+  pip uninstall vllm triton-xpu vllm-xpu-kernels ->
+  pip install <local vllm+xpu wheel> <local triton+xpu wheel>
+    torch==2.13.0 torchvision==0.28.0+xpu (PIP_EXTRA_INDEX_URL
+    =download.pytorch.org/whl/xpu; local-version precedence picks +xpu) ->
+  pip install <fork source> -> pip freeze snapshot -> in-build import gates.
+
+Disposition decisions (plan §7 verify-or-drop, recorded):
+  VLLM_QUANTIZE_Q40_LIB        DROPPED (0.26 arc-fork knob, 4-bit-loading
+                               origin; fp8 load path uses vllm-xpu-kernels
+                               as shipped — radiance-leg-B-proven without it)
+  VLLM_OFFLOAD_WEIGHTS_BEFORE_QUANT  DROPPED (same origin; not needed by the
+                               fp8 checkpoint load on 0.30)
+  lmcache 0.4.7                REPLACED at P3 by lmcache-arc-0.5.5+arc<N>
+                               (C lineage 0.5.5 base + D deltas e01–e04)
+
+VERDICT: PASS — ground truth captured, pins md5-recorded
+(external_patches/wheels.pins.md5), image interface reproduced in this
+repo's Dockerfile.
