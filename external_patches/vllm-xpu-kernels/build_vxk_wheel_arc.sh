@@ -25,16 +25,25 @@ docker run --rm \
   bash -c '
     set -exo pipefail
     source /opt/intel/oneapi/setvars.sh --force
-    apt-get update -y && apt-get install -y --no-install-recommends \
-        git curl ca-certificates python3-dev ninja-build cmake pkg-config numactl
+    # No apt: the omix devel image ships git/curl/cmake 3.28/pkg-config, and
+    # the rig route to archive.ubuntu.com stalled the first build attempt
+    # (rig-proven today). ninja comes from PyPI via requirements.txt;
+    # numactl is a runtime serving tool, not a build dep.
     curl -LsSf https://astral.sh/uv/install.sh | sh
     export PATH=/root/.local/bin:$PATH
-    uv venv /opt/venv
+    # Managed python (headers + libpython bundled) — system python3 has no
+    # Python.h in this image and python3-dev would need the wedged apt.
+    uv venv /opt/venv --python 3.12 --python-preference only-managed
     export VIRTUAL_ENV=/opt/venv
     export PATH=/opt/venv/bin:$PATH
     uv pip install pip wheel setuptools
     # torch-matched to the arc image stack (Dockerfile pin, P0 ground truth)
     uv pip install torch==2.13.0+xpu --index-url https://download.pytorch.org/whl/xpu
+    # torch 2.13 imports its bundled sycl/UR (LIBUR_LOADER_0.12, urDeviceWaitExp
+    # via the pip intel-cmplr set in /opt/venv/lib); omix oneAPI setvars put an
+    # older loader first and the setup.py `import torch` died on the symbol.
+    # Venv libs FIRST (same ordering law as serve_arc_b70.sh LD_LIBRARY_PATH).
+    export LD_LIBRARY_PATH="/opt/venv/lib:/opt/venv/lib/python3.12/site-packages/torch/lib:${LD_LIBRARY_PATH:-}"
     cd /src/vllm-xpu-kernels
     rm -rf build vllm_xpu_kernels.egg-info dist
     # PyPI stays primary (cmake>=3.26 lives there), xpu index allowed for
