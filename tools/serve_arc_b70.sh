@@ -38,8 +38,13 @@ ARC_MAXSEQS=${ARC_MAXSEQS:-64}
 ARC_PORT=${ARC_PORT:-8000}
 RIG=/root/build
 
-[ "$ARC_SPEC" = 0 ] || { echo "REFUSE: ARC_SPEC=1 before p30..p32 land (P2) — spec posture not yet validated on this image"; exit 3; }
-[ "$ARC_LMC" = 0 ] || { echo "REFUSE: ARC_LMC=1 before p40..p43 land (P3) — cache posture not yet validated on this image"; exit 3; }
+# Refusals guard certified postures; ARC_ALLOW_UNVALIDATED=1 unlocks a leg
+# for defect REPRODUCTION ONLY (pre-fix evidence capture — never a certified
+# posture; repro legs record the death traceback as their artifact).
+if [ "${ARC_ALLOW_UNVALIDATED:-0}" != 1 ]; then
+  [ "$ARC_SPEC" = 0 ] || { echo "REFUSE: ARC_SPEC=1 before p30..p32 land (P2) — spec posture not yet validated on this image (ARC_ALLOW_UNVALIDATED=1 to repro)"; exit 3; }
+  [ "$ARC_LMC" = 0 ] || { echo "REFUSE: ARC_LMC=1 before p40..p43 land (P3) — cache posture not yet validated on this image (ARC_ALLOW_UNVALIDATED=1 to repro)"; exit 3; }
+fi
 
 # --- container: create if absent (W14 pattern: persistent container, serve
 # via exec — fast re-boots between legs; same device/ipc/net posture as the

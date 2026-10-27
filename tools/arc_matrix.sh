@@ -26,16 +26,23 @@ for f in /root/build/arc_matrix.sh /root/build/arc_pybench.py /root/build/bench_
   [ -f "$f" ] || fail "harness missing ($f)"
 done
 
-# ---------- 1. boot (P1 posture: eager, MTP off, no LMCache) ----------
-say "boot: eager serve qwen3.8-27b-fp8 TP2 (P1 gate posture)"
-ARC_GRAPH=0 ARC_SPEC=0 ARC_LMC=0 bash /root/build/serve_arc_b70.sh 2>&1 | tee "$PLEG/boot.txt"
+# ---------- 1. boot (default P1 posture: eager, MTP off, no LMCache) ----------
+# ARC_LEG_GRAPH/ARC_LEG_SPEC/ARC_LEG_LMC override the posture for later-phase
+# legs; a nonzero SPEC/LMC auto-sets ARC_ALLOW_UNVALIDATED=1 (repro law: the
+# serve script refuses unvalidated postures unless repro is explicit).
+say "boot: serve qwen3.8-27b-fp8 TP2 (graph=${ARC_LEG_GRAPH:-0} spec=${ARC_LEG_SPEC:-0} lmc=${ARC_LEG_LMC:-0})"
+if [ "${ARC_LEG_SPEC:-0}" != 0 ] || [ "${ARC_LEG_LMC:-0}" != 0 ]; then
+  export ARC_ALLOW_UNVALIDATED=1
+fi
+ARC_GRAPH=${ARC_LEG_GRAPH:-0} ARC_SPEC=${ARC_LEG_SPEC:-0} ARC_LMC=${ARC_LEG_LMC:-0} bash /root/build/serve_arc_b70.sh 2>&1 | tee "$PLEG/boot.txt"
 
 say "waiting for engine health (max 30 min)"
 ok=0
 for i in $(seq 1 180); do
   if curl -sf "http://127.0.0.1:8000/health" >/dev/null 2>&1; then ok=1; break; fi
   if docker exec "$ARC_NAME" sh -c 'grep -aqE "EngineCore (failed|died)|Traceback|Engine core initialization failed" /root/serve_full.log' 2>/dev/null; then
-    fail "boot death — engine log:"
+    docker exec "$ARC_NAME" cat /root/serve_full.log > "$PLEG/serve_death.log" 2>/dev/null || true
+    fail "boot death — engine log (full copy: $PLEG/serve_death.log):"
     docker exec "$ARC_NAME" tail -50 /root/serve_full.log || true
   fi
   sleep 10
@@ -96,7 +103,7 @@ docker exec "$ARC_NAME" sh -c "ps aux | grep '[v]llm serve'" > "$PLEG/ps.txt" 2>
 docker exec "$ARC_NAME" sh -c "grep -aE 'ArcXpuPlatform|memory|XPU Graph|cudagraph|speculative|model=' /root/serve_full.log" > "$PLEG/posture.log" 2>/dev/null || true
 
 {
-  echo "leg=$ARC_LEG image=$ARC_IMAGE model=qwen3.8-27b-fp8 tp=2 posture=eager(P1) gmu=0.8 mnbt=8192 seqs=64"
+  echo "leg=$ARC_LEG image=$ARC_IMAGE model=qwen3.8-27b-fp8 tp=2 graph=${ARC_LEG_GRAPH:-0} spec=${ARC_LEG_SPEC:-0} lmc=${ARC_LEG_LMC:-0} gmu=0.8 mnbt=8192 seqs=64"
   echo "gates: platform=PASS xe2=PASS meminfo=PASS modelid=$MODEL_ID"
 } > "$PLEG/summary.txt"
 say "leg artifacts: $PLEG"
