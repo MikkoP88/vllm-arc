@@ -132,6 +132,96 @@ def _is_capturing() -> bool:
     return _capture_state()[0]
 
 
+def _stream_ids() -> str:
+    """Identity line for hygiene logs: which streams exist and their queue
+    ids — identifies the poisoned stream class (default vs side capture vs
+    runner stream) when the alarm fires."""
+    try:
+        parts = [f"cur={torch.xpu.current_stream()}"]
+        try:
+            parts.append(f"default={torch.xpu.default_stream()}")
+        except Exception:  # noqa: BLE001
+            parts.append("default=ERR")
+        side = getattr(torch.xpu.graph, "default_capture_stream", None)
+        parts.append(f"side={side}")
+        return " ".join(parts)
+    except Exception as e:  # noqa: BLE001
+        return f"ids ERR {e!r}"
+
+
+_WATCHDOG_STARTED = False
+
+
+def _ensure_watchdog() -> None:
+    """Start the onset watchdog exactly once per process, and only where a
+    GPU context already exists — probing streams initializes an XPU context,
+    which CPU-only processes (APIServer, EngineCore) must not pay for."""
+    global _WATCHDOG_STARTED
+    if _WATCHDOG_STARTED:
+        return
+    if not (torch.xpu.is_available() and torch.xpu.is_initialized()):
+        return
+    _WATCHDOG_STARTED = True
+    _start_watchdog()
+
+
+def _start_watchdog() -> None:
+    """Onset detector (p12b round 2): poll the default and side capture
+    streams for a recording flag with no capture open, and log the FIRST
+    transition with a timestamp — bracketing the flip against vllm's own
+    log timeline (warmup vs first request vs quiet window) to pin the
+    poisoning operation. Thread-local current streams mean the watchdog
+    can only speak for default/side streams; worker-thread streams are
+    identified by id at the alarm itself. Daemon, self-terminating on
+    error, transitions logged with a budget.
+    """
+    import threading
+    import time as _time
+
+    def _probe(stream) -> bool:
+        me = torch.xpu.current_stream()
+        torch.xpu.set_stream(stream)
+        try:
+            return _capture_state()[0]
+        finally:
+            torch.xpu.set_stream(me)
+
+    state = {"default": False, "side": False, "logs": 0}
+
+    def _run():
+        try:
+            side = torch.xpu.graph.default_capture_stream
+        except Exception:  # noqa: BLE001
+            side = None
+        while state["logs"] < 8:
+            try:
+                if _captures_open > 0:
+                    _time.sleep(0.1)
+                    continue
+                dnow = _probe(torch.xpu.default_stream())
+                if dnow and not state["default"]:
+                    state["default"] = True
+                    state["logs"] += 1
+                    logger.warning(
+                        "ArcXpuPlatform: ARC_GRAPH_ZOMBIE_ONSET default "
+                        "stream now recording (no capture open) at %s "
+                        "(ids: %s)", _time.strftime("%H:%M:%S"), _stream_ids())
+                snow = side is not None and _probe(side)
+                if snow and not state["side"]:
+                    state["side"] = True
+                    state["logs"] += 1
+                    logger.warning(
+                        "ArcXpuPlatform: ARC_GRAPH_ZOMBIE_ONSET side capture "
+                        "stream now recording (no capture open) at %s (ids: "
+                        "%s)", _time.strftime("%H:%M:%S"), _stream_ids())
+            except Exception:  # noqa: BLE001 — watchdog must never disturb
+                return
+            _time.sleep(0.1)
+
+    t = threading.Thread(target=_run, name="arc-graph-watchdog", daemon=True)
+    t.start()
+
+
 def _zombie_evidence() -> str:
     """Recovery proof for the hygiene log: fill on the (post-swap) current
     stream, give queued work a second, read back via a clean stream."""
@@ -167,8 +257,9 @@ def _dezombie(tag: str) -> bool:
             logger.warning(
                 "ArcXpuPlatform: graph stream hygiene (%s): current stream "
                 "%s was left recording with no capture open — swapped to a "
-                "fresh stream (post-swap capturing=%s, %s).",
-                tag, dead, _capture_state()[0], _zombie_evidence())
+                "fresh stream (post-swap capturing=%s, %s; ids: %s).",
+                tag, dead, _capture_state()[0], _zombie_evidence(),
+                _stream_ids())
         else:
             logger.warning(
                 "ArcXpuPlatform: graph stream hygiene (%s): zombie stream "
@@ -275,6 +366,9 @@ def _install() -> None:
     def _graph_safe_init(orig_init):
         def __init__(self, *args, **kwargs):
             global _applied_logs, _deferred_logs, _probe_err_logs
+            # A GPU worker mid-inference: guaranteed-initialized context for
+            # the onset watchdog (lazy backstop for installs pre-device-init).
+            _ensure_watchdog()
             # Probe BEFORE the copy is enqueued: a zombie current stream must
             # be cleared before upstream records the copy event on it.
             capturing, probe_err = _capture_state()
@@ -370,6 +464,7 @@ def _install() -> None:
     # Boundary hygiene must be in place before any capture runs (worker init
     # captures follow the install hooks); idempotent per-process.
     _wrap_xpu_graph()
+    _ensure_watchdog()
     _INSTALLED = True
     logger.info(
         "ArcXpuPlatform: graph-safe output patch installed (pid %d, "
