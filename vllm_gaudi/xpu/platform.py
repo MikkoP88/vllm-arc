@@ -18,6 +18,7 @@ declared in setup.py alongside upstream's ``hpu`` entry).
 
 from __future__ import annotations
 
+import os
 from typing import TYPE_CHECKING
 
 import torch
@@ -75,5 +76,16 @@ class ArcXpuPlatform(XPUPlatform):
         # Core XPU posture first: XPU-graph env law, fusion-pass disabling,
         # XPUWorker selection, spawn multiproc, oneCCL shutdown timeout.
         super().check_and_update_config(vllm_config)
+        # Dual-B70 ZE_AFFINITY law (rig law, plan Appendix F): one Arc per
+        # socket, TP2 needs an explicit ZE_AFFINITY_MASK=0,1 so the level-zero
+        # drivers of both cards are visible to the workers. Warn only — an
+        # operator-set mask is always respected.
+        tp_size = vllm_config.parallel_config.tensor_parallel_size
+        if tp_size > 1 and not os.environ.get("ZE_AFFINITY_MASK"):
+            logger.warning(
+                "ArcXpuPlatform: tensor_parallel_size=%d but ZE_AFFINITY_MASK "
+                "is unset. The validated dual-B70 posture sets "
+                "ZE_AFFINITY_MASK=0,1 (one Arc Pro B70 per socket); without "
+                "it level-zero device enumeration can silently degrade.", tp_size)
         logger.info_once("ArcXpuPlatform: Intel Arc Xe2 posture active (%s).",
                          torch.xpu.get_device_name(0))
