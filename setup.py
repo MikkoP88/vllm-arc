@@ -64,7 +64,12 @@ setup(
     ext_modules=ext_modules,
     extras_require={},
     entry_points={
-        "vllm.platform_plugins": ["hpu = vllm_gaudi:register"],
+        "vllm.platform_plugins": [
+            "hpu = vllm_gaudi:register",
+            # Arc/Xe2 XPU lane: activates only on Arc devices (returns None
+            # elsewhere, deferring to core's builtin XPUPlatform).
+            "arc = vllm_gaudi.xpu:register",
+        ],
         "vllm.general_plugins": [
             "01.hpu_custom_utils = vllm_gaudi:register_utils",
             "02.hpu_custom_ops = vllm_gaudi:register_ops",

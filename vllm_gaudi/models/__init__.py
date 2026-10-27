@@ -1,7 +1,17 @@
 from vllm.model_executor.models.registry import ModelRegistry
 
+from vllm_gaudi import _HPU_AVAILABLE
 
-def register_model():
+
+def _register_hpu_overrides() -> None:
+    """Override upstream architectures with HPU-tuned implementations.
+
+    Every eager import below reaches HPU-only code (``habana_frameworks``
+    imports at module level or HPU ops), so the whole block stays behind the
+    runtime availability gate: on hosts without a Gaudi runtime (the vllm-arc
+    XPU lane) none of it runs and core's own implementations serve those
+    architectures.
+    """
     from vllm_gaudi.models.gemma3_mm import HpuGemma3ForConditionalGeneration  # noqa: F401
     ModelRegistry.register_model(
         "Gemma3ForConditionalGeneration",  # Original architecture identifier in vLLM
@@ -83,3 +93,17 @@ def register_model():
     import vllm_gaudi.models.kimi_k25_vit  # noqa: F401
     import vllm_gaudi.models.kimi_k25  # noqa: F401
     import vllm_gaudi.models.gemma4_mm  # noqa: F401
+
+
+def register_model():
+    import vllm_gaudi.models.utils  # noqa: F401
+    import vllm_gaudi.models.interfaces  # noqa: F401
+    import vllm_gaudi.models.bert  # noqa: F401
+
+    if _HPU_AVAILABLE:
+        _register_hpu_overrides()
+    # No XPU model overrides at this layer: the target model
+    # (qwen3.8-27b-fp8, Qwen3_5 hybrid family) is served by core's own
+    # implementation on XPU, radiance-leg-B-proven on the 0.30 stack.
+    # Arc-specific registrations (MTP drafter head, attention wiring) enter
+    # through vllm_gaudi/xpu/ when they land.
