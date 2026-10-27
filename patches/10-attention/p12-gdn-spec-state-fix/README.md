@@ -40,10 +40,20 @@ not-installed indistinguishable from deferred — every branch now speaks.
 ## Scope
 
 Part 2 (GDN builder persistent-buffer spec_state_indices port from the 0.26
-Intel arc, `src_v126_gdn_attn.py` reference) lands after graph-only serving
-is green — it is required for MTP legs, not for graph-only legs. Core 0.30's
-GDNAttentionMetadataBuilder already ships the persistent-buffer machinery
-pre-sized by `decode_cudagraph_max_bs`; part 2 may shrink to verification.
+Intel arc, `src_v126_gdn_attn.py` reference) — **ASSESSED 2026-10-27:
+shrinks to MTP-time verification, no port**. Side-by-side (donor
+src_v126_gdn_attn.py 475 L vs core 0.30 gdn_attn.py 548 L, mirrored at
+results/2026-10-27-p2r3e-zombie-noshow/ref/): core 0.30 carries the SAME
+persistent-buffer machinery (spec/non_spec_state_indices_tensor,
+token_indx, query_start_loc pre-sized by decode_cudagraph_max_bs,
+non_blocking copy_ fill, NULL_BLOCK_ID padding) PLUS newer surface the
+donor lacks (chunk-prefill metadata: prefill_query_start_loc /
+prefill_state_indices / prefill_has_initial_state; gdn_prefill_backend
+resolution triton|flashinfer|cutedsl). The donor is the ancestor lineage —
+porting backwards would drop functionality. Residual part-2 work: at the
+first MTP leg (p30+), verify spec_state_indices reach the kernel with
+correct geometry under k4 spec (k1k spec cells + golden-logit spot check);
+any defect found there gets its own patch item.
 
 ## Validation
 
