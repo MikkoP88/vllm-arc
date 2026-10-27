@@ -33,3 +33,13 @@ death; ArcXpuPlatform resolved; mem-info patch live; k1k cells sane.
 **OUTCOME: PASS** — §10 P1 gate met. Banking p01–p06 + build pipeline to
 main authorized (plan §10/§11 banking directive). P2 (attention + graphs)
 starts next.
+
+> **Amendment 2026-10-27 (p13, audit leg)**: this gate table omitted the
+> §10 P1 row item "vxk wedge-site audit clean (or v88 wheel rebuilt +
+> device-gated, §6)". The audit was executed later the same day at owner
+> prompt: **NOT CLEAN** — the pinned vllm-xpu-kernels==0.1.14.1 carries 6
+> bare int32 id×stride sites; §6 contingency invoked. Evidence:
+> results/2026-10-27-p1-vxk-wedge-audit/ (incl. the discrimination showing
+> the P2 defect-b capture-zombie is a separate defect). The PASS above
+> stands for the checks actually run; the wedge item is closed by the p13
+> contingency, not by this leg.

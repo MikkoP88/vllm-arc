@@ -20,6 +20,12 @@ mkdir -p "$CTX/wheels" "$CTX/tools" "$CTX/src"
 # (md5s pinned in external_patches/wheels.pins.md5; wheel_guard enforces).
 cp /root/build/radiance_wheels/vllm-0.30.0+xpu-cp38-abi3-manylinux_2_34_x86_64.whl "$CTX/wheels/"
 cp /root/build/radiance_wheels/triton-3.7.2+xpu-py3-none-any.whl "$CTX/wheels/"
+# §6 contingency wheel (p13): int64-fixed vllm-xpu-kernels, built INSIDE the
+# arc runtime image with the staged DPC++ 7.2.0 toolchain (arc2 — arc1, built
+# in the omix devel image, linked libsycl.so.8 and ImportError-d against the
+# venv so.9 runtime). Explicit filename: the build dir also holds the arc1
+# reject, which must never enter an image.
+cp /root/build/wheels-arc-vxk/vllm_xpu_kernels-0.1.14.1+arc2-cp312-cp312-linux_x86_64.whl "$CTX/wheels/"
 
 tar -xf "$archive" -C "$CTX/src"
 cp "$CTX/src/Dockerfile" "$CTX/Dockerfile"

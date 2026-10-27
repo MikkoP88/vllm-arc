@@ -4,8 +4,41 @@
 
 `patch_vxk_int64fix.py` widens the 6 bare `states_id * conv_states_stride_0`
 int32 multiplies in the GDN conv-state kernels to int64, then
-`build_vxk_wheel_arc.sh` rebuilds the wheel torch-matched to the arc image
-stack (torch 2.13.0+xpu), version `0.1.14.1+arc1`.
+`build_vxk_wheel_arc2.sh` (+ in-container `vxk_arc2_inner.sh`) rebuilds the
+wheel INSIDE the arc runtime image with the staged DPC++ 7.2.0 toolchain,
+version `0.1.14.1+arc2`.
+
+## arc1 postmortem (why arc2 exists — ABI lesson, banked)
+
+arc1 was built in the omix devel image (oneAPI 2025.3): the wheel links
+`libsycl.so.8`, while the arc image venv runs `intel_sycl_rt 2026.0.0`
+(`libsycl.so.9`) → `ImportError: libsycl.so.8: cannot open shared object
+file` at wheel load inside the gate container. **Never reuse a wheel across
+SYCL runtime majors — build against the target runtime image.** (A so.8→so.9
+symlink or dual-runtime mount was rejected as unevidenced customization.)
+
+arc2 recipe (validated fixes over arc1's flow):
+
+- builder `FROM vllm-arc:v0.30.0-b70-p12` (target runtime, torch 2.13.0+xpu
+  and all pip build deps preinstalled — cmake 4.4.4, ninja, setuptools-scm).
+- toolchain `/root/build/dpcpp72/dpcpp` (DPC++ 7.2.0 = clang 23.1.1,
+  intel/llvm 5680988, docker-cp'd from esimd-w11 — the W14-recipe toolchain
+  whose output is proven to run on the so.9 venv family). Symlinks
+  `icpx→clang++`, `icx→clang` inside our private copy (setup.py probes
+  `$SYCL_HOME/bin/icpx -v` and resolves `which icx/icpx` for CMake).
+- `CMPLR_ROOT=/src/dpcpp` — vxk `cmake/toolchain.cmake` derives the CMake
+  compilers as `${CMPLR_ROOT}/bin/{icx,icpx}`; unset, it produces `/bin/icpx`
+  and dies.
+- `XPU_SYCL_COMPILER=dpclang` + `PKG_CONFIG_PATH=/src/dpcpp/lib/pkgconfig` —
+  torch's `FindSYCLToolkit.cmake` default icx parser expects an Intel(R)
+  banner and CMake `math()`-dies on the raw clang banner; the dpclang parser
+  matches this toolchain's "DPC++ compiler 7.2.0" banner (mapped 2019+7 =
+  oneAPI 2026.2) and consumes the shipped `sycl-dpcpp-7.pc`.
+- venv-first `LD_LIBRARY_PATH` (venv torch libs, then `/src/dpcpp/lib`);
+  `TORCH_XPU_ARCH_LIST=bmg`, `MAX_JOBS=52 KERNELS_MAX_JOBS=52`,
+  `SETUPTOOLS_SCM_PRETEND_VERSION=0.1.14.1+arc2`, clean `build/`,
+  `pip wheel --no-build-isolation --no-deps`.
+
 
 ## Why (audit evidence — results/2026-10-27-p1-vxk-wedge-audit/)
 
