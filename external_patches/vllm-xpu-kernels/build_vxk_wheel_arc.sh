@@ -37,7 +37,12 @@ docker run --rm \
     uv pip install torch==2.13.0+xpu --index-url https://download.pytorch.org/whl/xpu
     cd /src/vllm-xpu-kernels
     rm -rf build vllm_xpu_kernels.egg-info dist
-    uv pip install -r requirements.txt
+    # PyPI stays primary (cmake>=3.26 lives there), xpu index allowed for
+    # torch-family locals; without unsafe-best-match uv pins cmake to the
+    # 3.25.0 on the pytorch index and the resolve fails (rig-proven today)
+    uv pip install -r requirements.txt \
+      --extra-index-url https://download.pytorch.org/whl/xpu \
+      --index-strategy unsafe-best-match
     export CMAKE_PREFIX_PATH="$(python3 -c "import site; print(site.getsitepackages()[0])"):${CMAKE_PREFIX_PATH:-}"
     # fixed-wheel identity: never confusable with the PyPI 0.1.14.1 release
     export SETUPTOOLS_SCM_PRETEND_VERSION=0.1.14.1+arc1
