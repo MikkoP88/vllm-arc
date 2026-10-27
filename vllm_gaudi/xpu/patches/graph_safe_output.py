@@ -134,11 +134,44 @@ def _install() -> None:
                             "law).", probe_err)
                 elif _deferred_logs < _LOG_BUDGET:
                     _deferred_logs += 1
+                    # Discriminate per-stream vs device-global recording flag:
+                    # probe on a brand-new stream and report both answers plus
+                    # the current stream. Decides the fix shape (fresh-stream
+                    # copies are viable only if recording is per-stream).
+                    fresh_cap = "n/a"
+                    try:
+                        _fresh = torch.xpu.Stream()
+                        with torch.xpu.stream(_fresh):
+                            fresh_cap = _capture_state()[0]
+                    except Exception as fresh_err:  # noqa: BLE001
+                        fresh_cap = f"ERR {fresh_err!r}"
+                    # Canary: does a kernel enqueued on the (flagged) current
+                    # stream actually EXECUTE? fill a distinctive value on the
+                    # current stream, give it a second, then read it back via
+                    # a blocking copy on a clean stream. Executed -> the zombie
+                    # state only breaks waits, and fresh-stream output copies
+                    # are a complete fix; never-executed -> forward outputs are
+                    # garbage and the zombie itself must be cleared instead.
+                    canary = "n/a"
+                    try:
+                        import time as _time
+
+                        _c = torch.full((4,), 123.456,
+                                        device=torch.xpu.current_device())
+                        _time.sleep(1.0)
+                        with torch.xpu.stream(torch.xpu.Stream()):
+                            _v = _c.to("cpu")
+                        canary = (f"executed={bool((_v == 123.456).all())} "
+                                  f"vals={_v.tolist()}")
+                    except Exception as canary_err:  # noqa: BLE001
+                        canary = f"ERR {canary_err!r}"
                     logger.warning(
                         "ArcXpuPlatform: graph-safe output deferred to "
-                        "upstream (capture window active). Stack at this "
-                        "moment:\n%s",
-                        "".join(traceback.format_stack()[-18:]))
+                        "upstream (capture window active). current_stream=%s "
+                        "capturing(cur)=%s capturing(fresh stream)=%s "
+                        "canary[%s]. Stack at this moment:\n%s",
+                        torch.xpu.current_stream(), capturing, fresh_cap,
+                        canary, "".join(traceback.format_stack()[-18:]))
                 return
             torch.xpu.synchronize()
             # Host buffers are complete; the recorded event may carry a
