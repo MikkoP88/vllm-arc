@@ -45,6 +45,52 @@ _BMG_DEVICE_ID_MIN = 0xE200
 _BMG_DEVICE_ID_MAX = 0xE2FF
 
 
+# Monkey-patch torch.accelerator.get_memory_info for Arc/Xe2 XPU — the same
+# idiom as upstream gaudi's HPU patch at the top of vllm_gaudi/platform.py.
+#
+# On Arc B70 the accelerator-level query flips to a static device-properties
+# view once vLLM's package has been imported: free memory reports exactly 0
+# and the total shrinks to torch.xpu.get_device_properties().total_memory
+# (31.89 -> 30.3 GiB). MemorySnapshot.measure (vllm/v1/worker) reads that
+# query, so request_memory rejects an idle GPU ("Free memory on device
+# xpu:N (0.0/30.3 GiB) ... is less than desired GPU memory utilization") and
+# every EngineCore boot aborts in XPUWorker.init_device. torch.xpu
+# .mem_get_info keeps the live driver view in every context probed
+# (before/after allocations, after import vllm, after platform resolution,
+# after xccl init). The wrapper keeps free/total self-consistent from one
+# live source and passes non-XPU devices through to the original.
+#
+# Imported at platform-resolution time — always before any worker
+# init_device. Idempotent by construction (module import happens once;
+# the previous symbol, core's _C_cache_ops wrapper from
+# vllm/platforms/xpu.py, is kept for passthrough). Implementation
+# radiance-proven on the 0.30 stack (patch_xpu_accelerator_memory_info).
+def _xpu_get_memory_info(device=None, /):
+    if device is None:
+        return torch.xpu.mem_get_info()
+    if isinstance(device, int):
+        return torch.xpu.mem_get_info(device)
+    parsed = device if isinstance(device, torch.device) else torch.device(device)
+    if parsed.type == "xpu" or (parsed.type == "" and parsed.index is not None):
+        index = parsed.index if parsed.index is not None else torch.xpu.current_device()
+        return torch.xpu.mem_get_info(index)
+    return _ORIGINAL_GET_MEMORY_INFO(device)
+
+
+import torch.accelerator as _torch_accelerator  # noqa: E402
+import torch.accelerator.memory as _torch_accelerator_memory  # noqa: E402
+
+# The pre-patch symbol (core's _C_cache_ops wrapper once vllm.platforms.xpu
+# above has imported) is kept for non-XPU passthrough.
+_ORIGINAL_GET_MEMORY_INFO = _torch_accelerator.get_memory_info
+
+if torch.xpu.is_available():
+    _torch_accelerator.get_memory_info = _xpu_get_memory_info
+    # Patch the defining module too, so call sites that imported the symbol
+    # from there (rather than the package re-export) see the same wrapper.
+    _torch_accelerator_memory.get_memory_info = _xpu_get_memory_info
+
+
 def is_xe2_arch(device_id: int = 0) -> bool:
     """True when the XPU device at ``device_id`` is a BMG/Xe2 discrete Arc.
 
