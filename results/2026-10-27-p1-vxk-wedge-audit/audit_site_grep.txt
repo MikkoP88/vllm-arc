@@ -1,0 +1,33 @@
+# Raw site audit — vllm-xpu-kernels conv-state headers (2026-10-27)
+# Method: GitHub tag tarballs audited on rig 10.20.3.65 (/tmp/vxk_audit);
+# pattern = donor wedgefix-v88 law (states_id|init_state_id|save_state_id
+# * conv_states_stride_0 without static_cast<int64_t> prefix).
+# grep -nE "(states_id|init_state_id|save_state_id) \* conv_states_stride_0"
+
+== v0.1.14 (tag tarball; lineage of the shipped 0.1.14.1 wheel) ==
+csrc/xpu/gdn_attn/causal_conv1d.hpp
+232:    T* conv_states_ptr = conv_states + states_id * conv_states_stride_0;
+452:    T* conv_states_ptr = conv_states + states_id * conv_states_stride_0;
+csrc/xpu/gdn_attn/xe_2/chunk_causal_conv1d_xe2.hpp
+203:    T* conv_states_ptr = conv_states + states_id * conv_states_stride_0;
+627:    T* conv_states_ptr = conv_states + states_id * conv_states_stride_0;
+csrc/xpu/gdn_attn/xe_2/chunk_causal_conv1d_tiled_xe2.hpp
+220:    T* conv_states_ptr = conv_states + states_id * conv_states_stride_0;
+585:      T* st = conv_states + states_id * conv_states_stride_0;
+-> 6 bare sites, 0 static_cast<int64_t> (all three files)
+
+== v0.1.15 (tag tarball; fix never landed upstream) ==
+causal_conv1d.hpp                        bare=2 int64=0
+chunk_causal_conv1d_xe2.hpp              bare=2 int64=0
+chunk_causal_conv1d_tiled_xe2.hpp        bare=2 int64=0
+-> 6 bare sites, 0 static_cast<int64_t>
+
+== 0.1.14.1 lineage proof ==
+PyPI JSON: only bdist_wheel (no sdist), upload_time 2026-08-28T07:03:44Z
+GitHub commits API path=csrc/xpu/gdn_attn/xe_2/chunk_causal_conv1d_tiled_xe2.hpp
+  since=2026-08-01 until=2026-09-15 -> [] (zero commits)
+=> 0.1.14.1 source == v0.1.14 tag source: the shipped wheel is BARE.
+
+== tags list (repo) ==
+v0.1.16.1, v0.1.16, v0.1.15, v0.1.14, v0.1.13.1, v0.1.13, v0.1.12.1, ...
+(no v0.1.14.1 tag — PyPI-only patch release)
