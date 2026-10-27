@@ -8,9 +8,12 @@
 #   ARC_NAME    container name       (default arc-test)
 #   ARC_GRAPH   0 eager | 1 VLLM_XPU_ENABLE_XPU_GRAPH=1 graph posture
 #               (standing rig law: every graph leg runs with it set)
-#   ARC_SPEC    0 MTP off | 1 MTP k4 (D-champion speculative config; only
-#               meaningful once p30..p32 land at P2 — gate refuses spec
-#               before that)
+#   ARC_SPEC    0 MTP off | 1 MTP k4 — appends the D-champion spec CLI
+#               (--speculative-config method mtp, num_speculative_tokens 4;
+#               rig /root/serve_lmc_v133.sh:53 parity). Spec-config law:
+#               CLI flag, not env (plan p30). P2-candidate posture — the
+#               §10 P2 gate ("FULL graph + MTP boots and survives first
+#               request") is proven by the P2 spec legs, not assumed.
 #   ARC_LMC     0 no LMCache | 1 D-champion kv-transfer config (P3)
 #   ARC_GMU     --gpu-memory-utilization (default 0.8, D-champion certified
 #               posture — V1227_GMU lineage, plan Appendix F)
@@ -38,11 +41,16 @@ ARC_MAXSEQS=${ARC_MAXSEQS:-64}
 ARC_PORT=${ARC_PORT:-8000}
 RIG=/root/build
 
-# Refusals guard certified postures; ARC_ALLOW_UNVALIDATED=1 unlocks a leg
-# for defect REPRODUCTION ONLY (pre-fix evidence capture — never a certified
-# posture; repro legs record the death traceback as their artifact).
+# Refusal posture (p30 merge): ARC_SPEC=1 is a P2-candidate posture —
+# allowed by default; its validation IS the §10 P2 spec-leg row.
+# ARC_ALLOW_UNVALIDATED=1 unlocks the still-future cache posture for defect
+# REPRODUCTION ONLY (pre-fix evidence capture — never a certified posture;
+# repro legs record the death traceback as their artifact).
+if [ "$ARC_SPEC" = 1 ] && [ "$ARC_GRAPH" = 0 ]; then
+  echo "NOTE: ARC_SPEC=1 with ARC_GRAPH=0 — non-champion combo (D v133 runs MTP"
+  echo "with FULL_DECODE_ONLY graphs); allowed for spec-eager A/B isolation only."
+fi
 if [ "${ARC_ALLOW_UNVALIDATED:-0}" != 1 ]; then
-  [ "$ARC_SPEC" = 0 ] || { echo "REFUSE: ARC_SPEC=1 before p30..p32 land (P2) — spec posture not yet validated on this image (ARC_ALLOW_UNVALIDATED=1 to repro)"; exit 3; }
   [ "$ARC_LMC" = 0 ] || { echo "REFUSE: ARC_LMC=1 before p40..p43 land (P3) — cache posture not yet validated on this image (ARC_ALLOW_UNVALIDATED=1 to repro)"; exit 3; }
 fi
 
@@ -102,6 +110,17 @@ if [ "${VLLM_ARC_XG_COMPACT:-0}" = 1 ]; then
   XG_FLAG="--structured-outputs-config '{\"backend\":\"xgrammar\",\"disable_any_whitespace\":true}'"
 fi
 
+# MTP k4 (p30): D-champion spec config, CLI flag not env — rig
+# /root/serve_lmc_v133.sh:53 parity. k=4 is the certified D value (plan
+# Appendix F champion chain). The draft side resolves entirely inside
+# upstream 0.30: qwen3_5 model_type -> Qwen3_5MTP arch, n_predict from
+# text_config.mtp_num_hidden_layers (p30 README assessment) — no draft-model
+# path, the head ships inside the target checkpoint (mtp.* weights).
+SPEC_FLAG=""
+if [ "$ARC_SPEC" = 1 ]; then
+  SPEC_FLAG="--speculative-config '{\"method\":\"mtp\",\"num_speculative_tokens\":4}'"
+fi
+
 docker exec -d "$ARC_NAME" bash -c "
 export PYTHONHASHSEED=0
 export ZE_AFFINITY_MASK=0,1
@@ -137,8 +156,9 @@ exec /opt/venv/bin/vllm serve --model /models/target \
   --chat-template /root/chat_template_qwen38_high.jinja \
   --no-disable-hybrid-kv-cache-manager \
   $COMPILATION_FLAG \
+  $SPEC_FLAG \
   $XG_FLAG \
   --port $ARC_PORT \
   > /root/serve_full.log 2>&1"
 
-echo "ARC_SERVE_LAUNCHED image=$ARC_IMAGE name=$ARC_NAME graph=$ARC_GRAPH gmu=$ARC_GMU mnbt=$ARC_MNBT seqs=$ARC_MAXSEQS xgc=${VLLM_ARC_XG_COMPACT:-0} port=$ARC_PORT $(date +%H:%M:%S)"
+echo "ARC_SERVE_LAUNCHED image=$ARC_IMAGE name=$ARC_NAME graph=$ARC_GRAPH spec=$ARC_SPEC gmu=$ARC_GMU mnbt=$ARC_MNBT seqs=$ARC_MAXSEQS xgc=${VLLM_ARC_XG_COMPACT:-0} port=$ARC_PORT $(date +%H:%M:%S)"
