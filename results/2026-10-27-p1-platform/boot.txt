@@ -1,0 +1,2 @@
+620e3a39fdaedae7a486d01fd2566e8847c4b2f62a78e0b4b813ba62f27f0c7d
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70 name=arc-test graph=0 gmu=0.8 mnbt=8192 seqs=64 xgc=0 port=8000 13:17:19

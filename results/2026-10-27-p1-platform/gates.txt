@@ -1,0 +1,10 @@
+INFO 10-27 13:24:21 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+INFO 10-27 13:24:21 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+INFO 10-27 13:24:21 [__init__.py:54] - hpu -> vllm_gaudi:register
+INFO 10-27 13:24:21 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+INFO 10-27 13:24:22 [__init__.py:272] Platform plugin arc is activated
+PLATFORM=vllm_gaudi.xpu.platform.ArcXpuPlatform
+XE2=True
+MEMINFO free=4.77GiB total=31.89GiB nonzero=True
+DEVICE=Intel(R) Graphics [0xe223] count=2
+MODEL_ID ['Qwen3_5ForConditionalGeneration'] fp8

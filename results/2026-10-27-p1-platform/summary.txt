@@ -1,0 +1,2 @@
+leg=p1-platform image=vllm-arc:v0.30.0-b70 model=qwen3.8-27b-fp8 tp=2 posture=eager(P1) gmu=0.8 mnbt=8192 seqs=64
+gates: platform=PASS xe2=PASS meminfo=PASS modelid=['Qwen3_5ForConditionalGeneration'] fp8
