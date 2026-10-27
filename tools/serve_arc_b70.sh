@@ -53,7 +53,20 @@ fi
 # (radiance-test W14 env == lsv-test iexperimental v1.0.0 env, byte-compared
 # 2026-10-27; CCL_ZE_IPC_EXCHANGE=pidfd is what keeps oneCCL's ze_fd_manager
 # off the opendir device walk that kills non-privileged TP2 init). ---
-if ! docker inspect "$ARC_NAME" >/dev/null 2>&1; then
+# Container freshness law: the serve container must come from $ARC_IMAGE. A
+# stale container from a previous leg's image silently runs old code — the
+# p2r3 leg (2026-10-27) reproduced a fixed defect verbatim because the new
+# image was built but the old container was reused (zero new-code log lines
+# was the tell). Recreate whenever the container is missing OR its image
+# differs from the requested one.
+WANT_IMG_ID=$(docker image inspect "$ARC_IMAGE" --format '{{.Id}}') || {
+  echo "REFUSE: image $ARC_IMAGE not present" >&2; exit 2; }
+HAVE_IMG_ID=$(docker inspect "$ARC_NAME" --format '{{.Image}}' 2>/dev/null || true)
+if [ "$HAVE_IMG_ID" != "$WANT_IMG_ID" ]; then
+  HAVE_SRC=${HAVE_IMG_ID:7:12}
+  [ -n "$HAVE_SRC" ] || HAVE_SRC=none
+  docker rm -f "$ARC_NAME" >/dev/null 2>&1 || true
+  echo "ARC_CONTAINER_FRESH image=$ARC_IMAGE id=${WANT_IMG_ID:7:12} (recreated from $HAVE_SRC)"
   docker run -d --name "$ARC_NAME" \
     --privileged \
     --device /dev/dri --ipc host --network host \
