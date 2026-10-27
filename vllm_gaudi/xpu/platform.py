@@ -133,6 +133,21 @@ class ArcXpuPlatform(XPUPlatform):
                 "is unset. The validated dual-B70 posture sets "
                 "ZE_AFFINITY_MASK=0,1 (one Arc Pro B70 per socket); without "
                 "it level-zero device enumeration can silently degrade.", tp_size)
+        # GMU conditional relax (VLLM_ARC_GMU_RELAX): when the engine default
+        # utilization is still in place and the env pins a sanctioned Arc
+        # fraction, relax to it instead of failing boot on headroom. 0.8 is
+        # the D-champion certified value (rig law, plan Appendix I #11);
+        # 0 (default) disables. A user-passed --gpu-memory-utilization is
+        # always respected (only the engine default 0.92 is relaxed).
+        from vllm_gaudi.envs import VLLM_ARC_GMU_RELAX
+
+        cache_config = vllm_config.cache_config
+        if 0.0 < VLLM_ARC_GMU_RELAX <= 1.0 and cache_config.gpu_memory_utilization == 0.92:
+            logger.info(
+                "ArcXpuPlatform: relaxing gpu_memory_utilization %.2f -> %.2f "
+                "(VLLM_ARC_GMU_RELAX; D-champion certified B70 posture).",
+                cache_config.gpu_memory_utilization, VLLM_ARC_GMU_RELAX)
+            cache_config.gpu_memory_utilization = VLLM_ARC_GMU_RELAX
         logger.info("ArcXpuPlatform: Intel Arc Xe2 posture active (%s).",
                          torch.xpu.get_device_name(0))
         # Graph posture visibility (one line per phase, upstream lmcache
