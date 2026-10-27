@@ -45,11 +45,13 @@ ENV PIP_CONSTRAINT= \
 COPY wheels/ /wheels/arc/
 COPY pins.md5 /etc/vllm-arc/pins.md5
 COPY tools/wheel_guard.sh /usr/local/bin/wheel_guard.sh
-COPY src/ /build/vllm-arc/
 
 # Stack swap to the validated 0.30 set (venv ground truth,
 # results/2026-10-27-p0-venv-groundtruth/): uninstall the base 0.26 stack,
-# install pinned wheels + torch 2.13.0+xpu family + the fork dist.
+# install pinned wheels + torch 2.13.0+xpu family. Layer-order law: this RUN
+# precedes COPY src/ so fork-source changes never invalidate the multi-GB
+# stack install — rebuilds after a source edit cache everything but the
+# fork dist install + gates (~1 min instead of ~12).
 RUN set -euxo pipefail; \
     bash /usr/local/bin/wheel_guard.sh /etc/vllm-arc/pins.md5 /wheels/arc; \
     pip uninstall -y vllm triton-xpu vllm-xpu-kernels; \
@@ -59,7 +61,11 @@ RUN set -euxo pipefail; \
         "torch==2.13.0" \
         "torchvision==0.28.0+xpu" \
         "vllm-xpu-kernels==0.1.14.1" \
-        "xgrammar==0.2.8"; \
+        "xgrammar==0.2.8"
+
+# Fork dist on top of the pinned stack (re-installed on every source change).
+COPY src/ /build/vllm-arc/
+RUN set -euxo pipefail; \
     pip install /build/vllm-arc; \
     pip freeze > /opt/vllm-arc-v0.30.0.constraints.txt; \
     pip check || true
