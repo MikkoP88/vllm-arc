@@ -28,10 +28,11 @@ done
 
 # ---------- 1. boot (default P1 posture: eager, MTP off, no LMCache) ----------
 # ARC_LEG_GRAPH/ARC_LEG_SPEC/ARC_LEG_LMC override the posture for later-phase
-# legs; a nonzero SPEC/LMC auto-sets ARC_ALLOW_UNVALIDATED=1 (repro law: the
-# serve script refuses unvalidated postures unless repro is explicit).
+# legs (p30: SPEC is a P2-candidate posture — no override needed; a nonzero
+# LMC still auto-sets ARC_ALLOW_UNVALIDATED=1 per the repro law: the serve
+# script refuses unvalidated cache postures unless repro is explicit).
 say "boot: serve qwen3.8-27b-fp8 TP2 (graph=${ARC_LEG_GRAPH:-0} spec=${ARC_LEG_SPEC:-0} lmc=${ARC_LEG_LMC:-0})"
-if [ "${ARC_LEG_SPEC:-0}" != 0 ] || [ "${ARC_LEG_LMC:-0}" != 0 ]; then
+if [ "${ARC_LEG_LMC:-0}" != 0 ]; then
   export ARC_ALLOW_UNVALIDATED=1
 fi
 ARC_GRAPH=${ARC_LEG_GRAPH:-0} ARC_SPEC=${ARC_LEG_SPEC:-0} ARC_LMC=${ARC_LEG_LMC:-0} bash /root/build/serve_arc_b70.sh 2>&1 | tee "$PLEG/boot.txt"
@@ -96,6 +97,19 @@ echo "MODEL_ID $MODEL_ID" | tee -a "$PLEG/gates.txt"
 say "bench: k1k sanity (1024 ctx, c1/c4/c8 warm pass)"
 docker cp /root/build/arc_pybench.py "$ARC_NAME":/root/arc_pybench.py
 docker exec "$ARC_NAME" /opt/venv/bin/python /root/arc_pybench.py 1024 1 8 8 2>&1 | tail -20 | tee "$PLEG/k1k_sanity.txt" || true
+
+# ---------- 3b. p31 spec-acceptance gate (every leg gated) ----------
+# Spec legs: pos1 hard >= 0.5 (wrong-logits family detector), overall
+# acceptance vs 0.85 contract target. Non-spec legs: expect-off posture
+# purity (spec counters must be ABSENT). Plan §10 P2 row: "acceptance
+# telemetry live (p31 gate wired, every leg gated)".
+if [ "${ARC_LEG_SPEC:-0}" = 1 ]; then
+  say "p31 gate: spec acceptance (pos1 hard >=0.5, target 0.85)"
+  python3 /root/build/arc_spec_gate.py --json-out "$PLEG/spec_gate.json" 2>&1 | tee "$PLEG/spec_gate.txt"
+else
+  say "p31 gate: expect-off (non-spec leg posture purity)"
+  python3 /root/build/arc_spec_gate.py --expect-off 2>&1 | tee "$PLEG/spec_gate.txt"
+fi
 
 # ---------- 4. env + summary ----------
 docker exec "$ARC_NAME" sh -c "tr '\0' '\n' < /proc/1/environ" > "$PLEG/env.txt" 2>/dev/null || true
