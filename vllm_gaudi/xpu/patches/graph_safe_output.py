@@ -38,6 +38,7 @@ capture-probe fail-safe law = D-line waveD patch_gdn_metadata_026.py
 from __future__ import annotations
 
 import os
+import traceback
 
 import torch
 
@@ -133,9 +134,11 @@ def _install() -> None:
                             "law).", probe_err)
                 elif _deferred_logs < _LOG_BUDGET:
                     _deferred_logs += 1
-                    logger.info(
+                    logger.warning(
                         "ArcXpuPlatform: graph-safe output deferred to "
-                        "upstream (capture window active).")
+                        "upstream (capture window active). Stack at this "
+                        "moment:\n%s",
+                        "".join(traceback.format_stack()[-18:]))
                 return
             torch.xpu.synchronize()
             # Host buffers are complete; the recorded event may carry a
@@ -161,14 +164,24 @@ def _install() -> None:
                 # association. The copy itself has long since completed —
                 # take the device-sync barrier once and retry; the retry's
                 # synchronize is the no-op above or an already-satisfied
-                # upstream event.
-                torch.xpu.synchronize()
+                # upstream event. Log FIRST (p2r3b lesson: a sync that raises
+                # mid-capture would otherwise swallow the diagnosis).
                 if _healed_logs < _LOG_BUDGET:
                     _healed_logs += 1
                     logger.warning(
-                        "ArcXpuPlatform: graph-safe output self-healed a "
-                        "command-graph-associated copy event (device-sync "
-                        "barrier + retry): %s", e)
+                        "ArcXpuPlatform: graph-safe output self-heal engaged "
+                        "for a command-graph-associated copy event: %s", e)
+                try:
+                    torch.xpu.synchronize()
+                except RuntimeError as sync_err:
+                    # The barrier itself is illegal while a capture window is
+                    # STILL open (p2r3b: "wait cannot be called for a queue
+                    # which is recording to a command graph") — nothing can
+                    # wait here. Surface the original error.
+                    logger.error(
+                        "ArcXpuPlatform: graph-safe output self-heal barrier "
+                        "illegal (capture still open): %r", sync_err)
+                    raise e from sync_err
                 self.copy_event = _ArcNoOpEvent()
                 return orig_get_output(self)
 
