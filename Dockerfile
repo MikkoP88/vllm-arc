@@ -26,6 +26,9 @@ FROM ${BASE_IMAGE} AS oneapi-base
 # ---- stage 3: runtime ------------------------------------------------------
 FROM oneapi-base AS vllm-arc
 
+# Stage-scope ARGs: the global BASE_IMAGE above is only visible to FROM —
+# re-declare it here or ${BASE_IMAGE} trips set -u in the manifest step.
+ARG BASE_IMAGE=vllm-iexperimental:base-v0.26.0
 ARG FORK_SHA=unknown
 ARG BUILD_HOST=rig
 
