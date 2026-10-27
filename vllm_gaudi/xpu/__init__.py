@@ -41,13 +41,23 @@ def register():
     # XPU graph-safety patches (defect-b family, plan Appendix C): installed
     # in every vllm process on Arc hosts before worker modules bind their
     # classes. In-place class patching survives later ``from ... import``
-    # rebinding.
+    # rebinding. Expected to FAIL here — this runs mid platform-resolution,
+    # where importing vllm.v1.worker.gpu is circular; the platform hooks
+    # (check_and_update_config / check_if_supports_dtype) retry post-import.
+    # Logged, never silent, and never fatal to resolution.
     try:
         from vllm_gaudi.xpu.patches import graph_safe_output
 
         graph_safe_output._install()
-    except Exception:  # noqa: BLE001 — patch is best-effort at import time;
-        # the P2 gate leg verifies it live (missing patch = boot death).
-        pass
+    except Exception as e:  # noqa: BLE001 — must not break platform resolution
+        try:
+            from vllm.logger import init_logger
+
+            init_logger("vllm.platforms.arc").warning(
+                "ArcXpuPlatform: graph-safe output install failed at "
+                "register() (expected mid-resolution; platform hooks retry): "
+                "%r", e)
+        except Exception:  # noqa: BLE001 — logging must never break resolution
+            pass
 
     return "vllm_gaudi.xpu.platform.ArcXpuPlatform"

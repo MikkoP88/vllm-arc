@@ -129,8 +129,10 @@ class ArcXpuPlatform(XPUPlatform):
             from vllm_gaudi.xpu.patches import graph_safe_output
 
             graph_safe_output._install()
-        except Exception:  # noqa: BLE001 — see register(): gate leg verifies
-            pass
+        except Exception as e:  # noqa: BLE001 — visibility law: leg logs must show it
+            logger.warning(
+                "ArcXpuPlatform: graph-safe output install failed at "
+                "check_and_update_config: %r", e)
         # Dual-B70 ZE_AFFINITY law (rig law, plan Appendix F): one Arc per
         # socket, TP2 needs an explicit ZE_AFFINITY_MASK=0,1 so the level-zero
         # drivers of both cards are visible to the workers. Warn only — an
@@ -186,6 +188,8 @@ class ArcXpuPlatform(XPUPlatform):
             from vllm_gaudi.xpu.patches import graph_safe_output
 
             graph_safe_output._install()
-        except Exception:  # noqa: BLE001 — gate leg verifies the patch live
-            pass
+        except Exception as e:  # noqa: BLE001 — visibility law: leg logs must show it
+            logger.warning(
+                "ArcXpuPlatform: graph-safe output install failed at "
+                "check_if_supports_dtype: %r", e)
         super().check_if_supports_dtype(dtype)

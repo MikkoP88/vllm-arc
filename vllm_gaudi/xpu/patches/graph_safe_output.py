@@ -20,9 +20,15 @@ copy logic untouched, then take a full device synchronize as the barrier and
 neutralize the event for ``get_output``. All values are identical — the host
 arrays are provably complete once ``torch.xpu.synchronize()`` returns — only
 the completion mechanism changes. Inside an active graph capture the device
-sync is illegal, so we fail safe to upstream behavior there (capture-time
-handles demonstrably synchronize fine; boot captures completed 27/27 before
-the repro death).
+sync is illegal, so the wrapper fails safe to upstream behavior there; the
+``get_output`` wrapper below then self-heals if such a capture-time event
+ever carries a command-graph association at wait time (device-sync barrier +
+retry, once).
+
+Visibility law: every install, apply, defer, and self-heal logs (rate-limited)
+under ``vllm.platforms.arc`` so rig legs can prove which process patched and
+which branch ran — the p2r2 leg died with this defect while all three install
+hooks passed silently.
 
 Provenance: error family + fix direction = plan Appendix C defect (b);
 capture-probe fail-safe law = D-line waveD patch_gdn_metadata_026.py
@@ -31,7 +37,24 @@ capture-probe fail-safe law = D-line waveD patch_gdn_metadata_026.py
 
 from __future__ import annotations
 
+import os
+
 import torch
+
+from vllm.logger import init_logger
+
+logger = init_logger("vllm.platforms.arc")
+
+# The L0 error text this patch exists to neutralize (see module docstring).
+_COMMAND_GRAPH_ERR = "command graph"
+
+# Rate-limited first-occurrence logging: leg logs must show the branch that
+# ran without per-step spam (thousands of steps per leg).
+_LOG_BUDGET = 3
+_applied_logs = 0
+_deferred_logs = 0
+_probe_err_logs = 0
+_healed_logs = 0
 
 
 class _ArcNoOpEvent:
@@ -46,29 +69,40 @@ class _ArcNoOpEvent:
 _INSTALLED = False
 
 
-def _is_capturing() -> bool:
-    """True when an XPU graph capture is active (fail-safe: assume yes).
+def _capture_state() -> tuple[bool, Exception | None]:
+    """(capturing, probe_error) — fail-safe: assume capturing on any doubt.
 
     Mirrors D-line ``_iexp_is_capturing`` (waveD law): a probe that errors is
-    treated as capturing so nothing graph-unsafe runs on a guess.
+    treated as capturing so nothing graph-unsafe runs on a guess. Only
+    ``torch.xpu.is_current_stream_capturing`` is consulted — the
+    ``torch.cuda.`` alias raises "dummy base class" on this torch-xpu build
+    (rig-verified 2026-10-27).
     """
     try:
         probe = getattr(torch.xpu, "is_current_stream_capturing", None)
-        if probe is not None:
-            return bool(probe())
-    except Exception:  # noqa: BLE001 — cannot prove not-capturing
-        return True
-    return False
+        if probe is None:
+            return True, RuntimeError(
+                "torch.xpu.is_current_stream_capturing unavailable")
+        return bool(probe()), None
+    except Exception as e:  # noqa: BLE001 — cannot prove not-capturing
+        return True, e
+
+
+def _is_capturing() -> bool:
+    """True when an XPU graph capture is active (fail-safe: assume yes)."""
+    return _capture_state()[0]
 
 
 def _install() -> None:
     """Patch the async output classes in-place (idempotent, per-process).
 
     Call sites (belt and suspenders — each vllm process must patch its own
-    classes): plugin ``register()`` (early, best-effort), platform
-    ``check_and_update_config`` (config time, APIServer + EngineCore), and
-    platform ``check_if_supports_dtype`` (per-worker from
-    ``XPUWorker.init_device`` — the guaranteed post-import point).
+    classes): platform ``check_and_update_config`` (config time, APIServer +
+    EngineCore), platform ``check_if_supports_dtype`` (per-worker from
+    ``XPUWorker.init_device`` — the guaranteed post-import point), and plugin
+    ``register()`` (earliest, best-effort — the ``vllm.v1.worker.gpu`` import
+    is circular mid platform-resolution and is expected to fail there; the
+    platform hooks retry it post-import).
     """
     global _INSTALLED
     if _INSTALLED:
@@ -77,21 +111,76 @@ def _install() -> None:
 
     _orig_async_output_init = au.AsyncOutput.__init__
     _orig_pooling_init = au.AsyncPoolingOutput.__init__
+    _orig_async_output_get = au.AsyncOutput.get_output
+    _orig_pooling_get = au.AsyncPoolingOutput.get_output
 
     def _graph_safe_init(orig_init):
         def __init__(self, *args, **kwargs):
+            global _applied_logs, _deferred_logs, _probe_err_logs
             orig_init(self, *args, **kwargs)
-            if _is_capturing():
+            capturing, probe_err = _capture_state()
+            if capturing:
                 # Inside a capture window a device sync is illegal; upstream
-                # behavior is correct there (capture-time handles sync fine).
+                # behavior is correct there. If the capture-time event ever
+                # turns out poisoned at wait time, the get_output wrapper
+                # below self-heals instead of killing the engine.
+                if probe_err is not None:
+                    if _probe_err_logs < _LOG_BUDGET:
+                        _probe_err_logs += 1
+                        logger.warning(
+                            "ArcXpuPlatform: graph-safe output probe failed "
+                            "(%r) — deferred to upstream event (fail-safe "
+                            "law).", probe_err)
+                elif _deferred_logs < _LOG_BUDGET:
+                    _deferred_logs += 1
+                    logger.info(
+                        "ArcXpuPlatform: graph-safe output deferred to "
+                        "upstream (capture window active).")
                 return
             torch.xpu.synchronize()
             # Host buffers are complete; the recorded event may carry a
             # command-graph association and must never be waited on.
             self.copy_event = _ArcNoOpEvent()
+            if _applied_logs < _LOG_BUDGET:
+                _applied_logs += 1
+                logger.info(
+                    "ArcXpuPlatform: graph-safe output applied — device-sync "
+                    "barrier + no-op copy event.")
 
         return __init__
 
+    def _graph_safe_get_output(orig_get_output):
+        def get_output(self):
+            global _healed_logs
+            try:
+                return orig_get_output(self)
+            except RuntimeError as e:
+                if _COMMAND_GRAPH_ERR not in str(e):
+                    raise
+                # An unpatched (capture-created) event carried a command-graph
+                # association. The copy itself has long since completed —
+                # take the device-sync barrier once and retry; the retry's
+                # synchronize is the no-op above or an already-satisfied
+                # upstream event.
+                torch.xpu.synchronize()
+                if _healed_logs < _LOG_BUDGET:
+                    _healed_logs += 1
+                    logger.warning(
+                        "ArcXpuPlatform: graph-safe output self-healed a "
+                        "command-graph-associated copy event (device-sync "
+                        "barrier + retry): %s", e)
+                self.copy_event = _ArcNoOpEvent()
+                return orig_get_output(self)
+
+        return get_output
+
     au.AsyncOutput.__init__ = _graph_safe_init(_orig_async_output_init)
     au.AsyncPoolingOutput.__init__ = _graph_safe_init(_orig_pooling_init)
+    au.AsyncOutput.get_output = _graph_safe_get_output(_orig_async_output_get)
+    au.AsyncPoolingOutput.get_output = _graph_safe_get_output(
+        _orig_pooling_get)
     _INSTALLED = True
+    logger.info(
+        "ArcXpuPlatform: graph-safe output patch installed (pid %d, "
+        "AsyncOutput/AsyncPoolingOutput __init__ + get_output wrapped).",
+        os.getpid())
