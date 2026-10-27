@@ -122,6 +122,15 @@ class ArcXpuPlatform(XPUPlatform):
         # Core XPU posture first: XPU-graph env law, fusion-pass disabling,
         # XPUWorker selection, spawn multiproc, oneCCL shutdown timeout.
         super().check_and_update_config(vllm_config)
+        # XPU graph-safety patches (defect-b family): idempotent per-process
+        # install — this runs at config time in APIServer + EngineCore; the
+        # per-worker guarantee comes from check_if_supports_dtype below.
+        try:
+            from vllm_gaudi.xpu.patches import graph_safe_output
+
+            graph_safe_output._install()
+        except Exception:  # noqa: BLE001 — see register(): gate leg verifies
+            pass
         # Dual-B70 ZE_AFFINITY law (rig law, plan Appendix F): one Arc per
         # socket, TP2 needs an explicit ZE_AFFINITY_MASK=0,1 so the level-zero
         # drivers of both cards are visible to the workers. Warn only — an
@@ -166,3 +175,17 @@ class ArcXpuPlatform(XPUPlatform):
             tuple(compilation_config.cudagraph_capture_sizes)
             if compilation_config.cudagraph_capture_sizes else None,
             VLLM_XPU_ENABLE_XPU_GRAPH)
+
+    @classmethod
+    def check_if_supports_dtype(cls, dtype: torch.dtype) -> None:
+        # Per-worker install point: XPUWorker.init_device calls this after
+        # the import is complete — the guaranteed post-import moment in every
+        # WorkerProc (the register()-time attempt can hit a half-initialized
+        # vllm package). Idempotent; failure surfaces in the gate leg.
+        try:
+            from vllm_gaudi.xpu.patches import graph_safe_output
+
+            graph_safe_output._install()
+        except Exception:  # noqa: BLE001 — gate leg verifies the patch live
+            pass
+        super().check_if_supports_dtype(dtype)

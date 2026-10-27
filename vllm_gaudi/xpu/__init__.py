@@ -37,4 +37,17 @@ def register():
         # A probe failure must never break platform resolution: defer to
         # whatever core resolves on its own.
         return None
+
+    # XPU graph-safety patches (defect-b family, plan Appendix C): installed
+    # in every vllm process on Arc hosts before worker modules bind their
+    # classes. In-place class patching survives later ``from ... import``
+    # rebinding.
+    try:
+        from vllm_gaudi.xpu.patches import graph_safe_output
+
+        graph_safe_output._install()
+    except Exception:  # noqa: BLE001 — patch is best-effort at import time;
+        # the P2 gate leg verifies it live (missing patch = boot death).
+        pass
+
     return "vllm_gaudi.xpu.platform.ArcXpuPlatform"
