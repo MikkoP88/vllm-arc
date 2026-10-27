@@ -44,6 +44,28 @@ logger = init_logger("vllm.platforms.arc")
 _BMG_DEVICE_ID_MIN = 0xE200
 _BMG_DEVICE_ID_MAX = 0xE2FF
 
+# In-place XPU core patches installed from both platform hooks (config time
+# + per-worker init_device). Each module owns its idempotence and logs its
+# own state (visibility law — a silent non-install is indistinguishable
+# from a deferred patch, p2r2 lesson); an install failure must never break
+# platform resolution.
+_XPU_PATCH_MODULES = (
+    "graph_safe_output",        # defect-b: graph-safe worker output copies
+    "speculator_full_capture",  # defect-a: PIECEWISE-family -> FULL coercion
+)
+
+
+def _install_xpu_patches(site: str) -> None:
+    from importlib import import_module
+
+    for name in _XPU_PATCH_MODULES:
+        try:
+            module = import_module(f"vllm_gaudi.xpu.patches.{name}")
+            module._install()
+        except Exception as e:  # noqa: BLE001 — visibility law: leg logs must show it
+            logger.warning(
+                "ArcXpuPlatform: %s install failed at %s: %r", name, site, e)
+
 
 # Monkey-patch torch.accelerator.get_memory_info for Arc/Xe2 XPU — the same
 # idiom as upstream gaudi's HPU patch at the top of vllm_gaudi/platform.py.
@@ -122,17 +144,11 @@ class ArcXpuPlatform(XPUPlatform):
         # Core XPU posture first: XPU-graph env law, fusion-pass disabling,
         # XPUWorker selection, spawn multiproc, oneCCL shutdown timeout.
         super().check_and_update_config(vllm_config)
-        # XPU graph-safety patches (defect-b family): idempotent per-process
-        # install — this runs at config time in APIServer + EngineCore; the
-        # per-worker guarantee comes from check_if_supports_dtype below.
-        try:
-            from vllm_gaudi.xpu.patches import graph_safe_output
-
-            graph_safe_output._install()
-        except Exception as e:  # noqa: BLE001 — visibility law: leg logs must show it
-            logger.warning(
-                "ArcXpuPlatform: graph-safe output install failed at "
-                "check_and_update_config: %r", e)
+        # XPU in-place patches (defect-b graph-safe outputs, defect-a
+        # speculator FULL-capture): idempotent per-process install — this
+        # runs at config time in APIServer + EngineCore; the per-worker
+        # guarantee comes from check_if_supports_dtype below.
+        _install_xpu_patches("check_and_update_config")
         # Dual-B70 ZE_AFFINITY law (rig law, plan Appendix F): one Arc per
         # socket, TP2 needs an explicit ZE_AFFINITY_MASK=0,1 so the level-zero
         # drivers of both cards are visible to the workers. Warn only — an
@@ -184,12 +200,5 @@ class ArcXpuPlatform(XPUPlatform):
         # the import is complete — the guaranteed post-import moment in every
         # WorkerProc (the register()-time attempt can hit a half-initialized
         # vllm package). Idempotent; failure surfaces in the gate leg.
-        try:
-            from vllm_gaudi.xpu.patches import graph_safe_output
-
-            graph_safe_output._install()
-        except Exception as e:  # noqa: BLE001 — visibility law: leg logs must show it
-            logger.warning(
-                "ArcXpuPlatform: graph-safe output install failed at "
-                "check_if_supports_dtype: %r", e)
+        _install_xpu_patches("check_if_supports_dtype")
         super().check_if_supports_dtype(dtype)
