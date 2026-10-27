@@ -133,5 +133,21 @@ class ArcXpuPlatform(XPUPlatform):
                 "is unset. The validated dual-B70 posture sets "
                 "ZE_AFFINITY_MASK=0,1 (one Arc Pro B70 per socket); without "
                 "it level-zero device enumeration can silently degrade.", tp_size)
-        logger.info_once("ArcXpuPlatform: Intel Arc Xe2 posture active (%s).",
+        logger.info("ArcXpuPlatform: Intel Arc Xe2 posture active (%s).",
                          torch.xpu.get_device_name(0))
+        # Graph posture visibility (one line per phase, upstream lmcache
+        # logging style): core honors VLLM_XPU_ENABLE_XPU_GRAPH above; log
+        # the effective mode so every rig leg's serve log states its graph
+        # posture explicitly. Standing rig law: all graph legs run with
+        # VLLM_XPU_ENABLE_XPU_GRAPH=1 (plan Appendix F).
+        from vllm.envs import VLLM_XPU_ENABLE_XPU_GRAPH
+
+        compilation_config = vllm_config.compilation_config
+        logger.info(
+            "ArcXpuPlatform: graph posture cudagraph_mode=%s "
+            "capture_sizes=%s (VLLM_XPU_ENABLE_XPU_GRAPH=%s).",
+            getattr(compilation_config.cudagraph_mode, "name",
+                    compilation_config.cudagraph_mode),
+            tuple(compilation_config.cudagraph_capture_sizes)
+            if compilation_config.cudagraph_capture_sizes else None,
+            VLLM_XPU_ENABLE_XPU_GRAPH)
