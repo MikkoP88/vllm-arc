@@ -50,7 +50,7 @@ say "gates: platform + mem-info + posture + model identity"
 PLAT=$(docker exec "$ARC_NAME" /opt/venv/bin/python -c \
   "import vllm_gaudi.xpu.platform as p; print(p.__name__)" 2>&1) || fail "xpu platform module unimportable: $PLAT"
 
-RES=$(docker exec "$ARC_NAME" /opt/venv/bin/python - <<'EOF'
+RES=$(docker exec -i "$ARC_NAME" /opt/venv/bin/python - <<'EOF'
 import torch, vllm
 from vllm.platforms import current_platform
 name = type(current_platform).__name__
