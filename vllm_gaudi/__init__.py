@@ -1,6 +1,17 @@
-import os
+import importlib.util
 import json
+import os
 import sys
+
+# The plugin can be installed on hosts without a Gaudi runtime — the
+# vllm-arc XPU lane (Intel Arc / Xe2 GPUs served by ``vllm_gaudi/xpu``).
+# ``habana_frameworks`` imports fail at module import time on such hosts,
+# and the plugin loader calls the general-plugin entry points without
+# exception handling, so the HPU platform, ops, and model overrides must be
+# gated on runtime availability. Device-neutral registrations
+# (``models.utils`` / ``interfaces`` / ``bert``) always load; the Arc XPU
+# platform registers from its own entry point (``vllm_gaudi.xpu:register``).
+_HPU_AVAILABLE = importlib.util.find_spec("habana_frameworks") is not None
 
 
 def _uses_lmcache_connector() -> bool:
@@ -50,6 +61,11 @@ def _uses_lmcache_connector() -> bool:
 
 def register():
     """Register the HPU platform."""
+    if not _HPU_AVAILABLE:
+        # No Gaudi runtime: contribute no platform. vLLM treats a None return
+        # from a platform plugin as "not activated" and keeps resolving (the
+        # Arc XPU lane registers separately via vllm_gaudi.xpu:register).
+        return None
     # Import lazily so that `import vllm_gaudi` (performed by vLLM's plugin
     # loader to obtain this `register` callable) does not pull in
     # `vllm_gaudi.platform` -> `vllm` at package-import time. Importing `vllm`
@@ -78,6 +94,8 @@ def register():
 
 def register_utils():
     """Register utility functions for the HPU platform."""
+    if not _HPU_AVAILABLE:
+        return
     import vllm_gaudi.utils  # noqa: F401
 
     vllm_gaudi.utils.patch_nixl_utils_for_hpu()
@@ -98,6 +116,8 @@ def register_utils():
 
 def register_ops():
     """Register custom PluggableLayers for the HPU platform"""
+    if not _HPU_AVAILABLE:
+        return
     import vllm_gaudi.attention.oot_mla  # noqa: F401
     """Register custom ops for the HPU platform."""
     import vllm_gaudi.v1.sample.hpu_rejection_sampler  # noqa: F401

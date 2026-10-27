@@ -21,6 +21,13 @@ if TYPE_CHECKING:
     VLLM_HPU_MOE_GATHER_RATIO: float = 0.4
     VLLM_HPU_MOE_GATHER_VERIFY: bool = False
     VLLM_COMPACT_GDN: bool = False
+    # vllm-arc XPU lane (VLLM_ARC_* namespace; Intel Arc / Xe2 devices).
+    VLLM_ARC_ASYNC: Optional[bool] = None
+    VLLM_ARC_YIELD_TOKENS: int = 4096
+    VLLM_ARC_LOOKUP_ELIDE: bool = True
+    VLLM_ARC_XG_COMPACT: bool = False
+    VLLM_ARC_GMU_RELAX: float = 0.0
+    VLLM_ARC_COMPACT_GDN: bool = False
 
 # The begin-* and end* here are used by the documentation generator
 # to extract the used env vars.
@@ -115,6 +122,45 @@ environment_variables: dict[str, Callable[[], Any]] = {
     # it lazily rather than caching it at import time.
     "VLLM_COMPACT_GDN":
     lambda: os.environ.get("VLLM_COMPACT_GDN", "0").strip().lower() in ("1", "true"),
+
+    # --------------------- vllm-arc XPU lane (Intel Arc / Xe2) ------------
+    # Async-scheduling posture: unset (None) follows core's 0.30 default;
+    # an explicit "1"/"true" or "0"/"false" pins it. Port of D champion's
+    # IEXP_ASYNC=1 (0.26 stack) — revalidated on 0.30 by p50.
+    "VLLM_ARC_ASYNC":
+    lambda: None if os.environ.get("VLLM_ARC_ASYNC") is None else
+    os.environ.get("VLLM_ARC_ASYNC").strip().lower() in ("1", "true"),
+
+    # Scheduler yield threshold in scheduled tokens: once a step schedules
+    # this many tokens, yield the engine loop to output processing (port of
+    # D champion's IEXP_YIELD_TOK=4096). Consumed by p51.
+    "VLLM_ARC_YIELD_TOKENS":
+    lambda: int(os.environ.get("VLLM_ARC_YIELD_TOKENS", "4096")),
+
+    # Skip the LMCache lookup when the engine prefix cache already covers
+    # the request span (port of D champion's extyield2 / IEXP_LOOKUP_MEMO=1).
+    # Consumed by p42.
+    "VLLM_ARC_LOOKUP_ELIDE":
+    lambda: os.environ.get("VLLM_ARC_LOOKUP_ELIDE", "true").strip().lower() in ("1", "true"),
+
+    # Compact-JSON structured-output posture for the xgrammar backend (port
+    # of the C/D V1227_XGCOMPACT boot-script edit). Consumed by p06.
+    "VLLM_ARC_XG_COMPACT":
+    lambda: os.environ.get("VLLM_ARC_XG_COMPACT", "false").strip().lower() in ("1", "true"),
+
+    # gpu-memory-utilization conditional relax: when free device memory at
+    # engine start is below the requested utilization, relax the utilization
+    # to this fraction instead of aborting the boot (0 disables; 0.8 is the
+    # sanctioned B70 rig posture — standing directive Appendix I #11).
+    # Consumed by p05.
+    "VLLM_ARC_GMU_RELAX":
+    lambda: float(os.environ.get("VLLM_ARC_GMU_RELAX", "0")),
+
+    # Compact recurrent-state (conv/ssm) layout for gated-delta-net layers
+    # on XPU (upstream VLLM_COMPACT_GDN precedent above; gaudi law). Consumed
+    # by p13.
+    "VLLM_ARC_COMPACT_GDN":
+    lambda: os.environ.get("VLLM_ARC_COMPACT_GDN", "false").strip().lower() in ("1", "true"),
 }
 
 # end-env-vars-definition
