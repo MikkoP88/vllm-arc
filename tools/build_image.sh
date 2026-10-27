@@ -20,6 +20,12 @@ mkdir -p "$CTX/wheels" "$CTX/tools" "$CTX/src"
 # (md5s pinned in external_patches/wheels.pins.md5; wheel_guard enforces).
 cp /root/build/radiance_wheels/vllm-0.30.0+xpu-cp38-abi3-manylinux_2_34_x86_64.whl "$CTX/wheels/"
 cp /root/build/radiance_wheels/triton-3.7.2+xpu-py3-none-any.whl "$CTX/wheels/"
+# §6 contingency wheel (p13): int64-fixed vllm-xpu-kernels, built in
+# omix 0.2.0-devel (oneAPI 2026.0.0 = the venv runtime generation) against
+# torch 2.13.0+xpu; device-gated CLEAN (results/2026-10-27-p13-vxk-wheel/).
+# Explicit filename: the build dir also holds the arc1/arc2 ABI rejects,
+# which must never enter an image.
+cp /root/build/wheels-arc-vxk/vllm_xpu_kernels-0.1.14.1+arc3-cp312-cp312-linux_x86_64.whl "$CTX/wheels/"
 
 tar -xf "$archive" -C "$CTX/src"
 cp "$CTX/src/Dockerfile" "$CTX/Dockerfile"

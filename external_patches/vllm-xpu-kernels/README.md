@@ -4,8 +4,54 @@
 
 `patch_vxk_int64fix.py` widens the 6 bare `states_id * conv_states_stride_0`
 int32 multiplies in the GDN conv-state kernels to int64, then
-`build_vxk_wheel_arc.sh` rebuilds the wheel torch-matched to the arc image
-stack (torch 2.13.0+xpu), version `0.1.14.1+arc1`.
+`build_vxk_wheel_arc3.sh` (+ in-container `vxk_arc3_inner.sh`) rebuilds the
+wheel in `intel/omix:0.2.0-devel-ubuntu24.04` (oneAPI **2026.0.0**) against
+a venv pinned to the target stack torch 2.13.0+xpu, version
+`0.1.14.1+arc3`.
+
+## Wheel ABI lessons (arc1/arc2 postmortems — banked)
+
+The arc image venv runtime is `intel_sycl_rt 2026.0.0` + `intel-cmplr-lib-rt
+2026.0.0` (PyPI release train 2026-04-24; `libsycl.so.9`). Two failed
+builders bracket the requirement:
+
+- **arc1** (omix 0.1.0-devel = oneAPI 2025.3): wheel linked `libsycl.so.8` →
+  `ImportError` at load. **A wheel never crosses SYCL runtime sonames.**
+- **arc2** (DPC++ 7.2.0 = oneAPI 2026.2, staged from esimd-w11): linked
+  so.9 ✓ but emitted calls to `sycl::detail::reportAdjustedRange`, which the
+  2026.0 runtime does not export → `undefined symbol` at import. **The
+  COMPILER GENERATION must equal the RUNTIME GENERATION** — a newer compiler
+  references helper symbols the older runtime never had. (Older compiler +
+  newer runtime would be the compatible direction but is unreachable here:
+  2025.3 emits so.8 references — arc1.)
+
+arc3 = the D-lineage v78/v88 recipe shape (rig `build_vxk_v78.sh`: oneAPI
+setvars + venv + `pip wheel --no-build-isolation --no-deps`) with two pin
+changes: oneAPI 2025.3 → **2026.0** (omix 0.2.0 = "Intel(R) oneAPI DPC++/C++
+Compiler 2026.0.0 (2026.0.0.20260331)", per Intel's OMIX support matrix:
+0.1.0→2025.3, 0.2.0→2026.0, 0.3.0→2026.1) and torch 2.11.0+xpu →
+2.13.0+xpu. The PyPI 0.1.14.1 wheel imports cleanly in the arc venv — Intel
+CI built it with this same generation — so generation-matched linking is
+proven sound by that precedent.
+
+arc3 builder environment notes (all diagnosed live, 2026-10-27):
+
+- `set -u` kills the SHELL inside `source setvars.sh` (compiler
+  `env/vars.sh:258` references unset `OCL_ICD_FILENAMES`; an expansion error
+  aborts before `|| true` can run) — guard with `set +u` around the source.
+  This is why the v78 recipe used plain `set -eo pipefail`.
+- omix ships a hollow `/opt/venv` (python symlinks, no pip) — use our own
+  `/opt/arcvenv`.
+- Ubuntu's ensurepip needs the `python3.12-venv` deb (not installed) —
+  create with `python3 -m venv --without-pip` + `get-pip.py` bootstrap.
+- astral.com (uv) is unreachable from the rig; pypi/pytorch indexes are not.
+- torch `FindSYCLToolkit.cmake` default `icx` parser works with the real
+  Intel banner (no `XPU_SYCL_COMPILER=dpclang` workaround — that was only
+  needed for arc2's raw-clang toolchain).
+- `rm -rf build .deps` between attempts: incremental reuse across compiler
+  generations is an ABI hazard.
+
+
 
 ## Why (audit evidence — results/2026-10-27-p1-vxk-wedge-audit/)
 
