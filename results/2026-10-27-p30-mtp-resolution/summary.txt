@@ -1,0 +1,3 @@
+CPU-only config dry-run of the p30 ARC_SPEC=1 posture. PASS: upstream
+resolves Qwen3_5MTP from the embedded checkpoint head (mtp.* weights,
+text_config.mtp_num_hidden_layers=1). See VERDICT.md.
