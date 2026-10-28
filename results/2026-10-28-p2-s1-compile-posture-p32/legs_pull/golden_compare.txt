@@ -1,0 +1,6 @@
+[golden] len=64 DRIFT run=a8a1f9863209f2b121643155664a4fd83a9d62c56c3abf6e69af9aad5e068e31 ref=b0efe294733eb82cc1d18d88d472a86975e4212e1df058eccc780d39f46a9b3a
+[golden] len=256 match
+[golden] len=1024 match
+[golden] len=2048 DRIFT run=785b74ef78386c11837cf46b2e141ca2cbcac0b25a8f77d802ebcd418af3e2bb ref=5b9a5168ae023dcb030f3616c512a76b440fd53b389ea9c37f7cbfdf2ec014cc
+[golden] len=4096 match
+GOLDEN_FAIL: 2/5 prompts drifted
