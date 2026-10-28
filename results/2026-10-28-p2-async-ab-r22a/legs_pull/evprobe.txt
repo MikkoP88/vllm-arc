@@ -1,0 +1,12 @@
+== 1. completed-event synchronize (idle GPU) ==
+n=30 p50=0.003 ms min=0.003 p90=0.004 max=0.010
+== 2. query() spin on completed event ==
+n=30 p50=0.002 ms min=0.002 max=0.006
+== 3. waiting synchronize behind ~50 ms enqueued matmuls ==
+40x 4096^2 matmul wall = 368.1 ms
+n=10 p50=273.984 ms min=271.823 max=274.212
+== 4. Event(blocking=True) ctor + completed sync ==
+blocking kwarg REJECTED: Event.__new__() got an unexpected keyword argument 'blocking'
+== 5. side-stream pattern (AsyncOutput replica) ==
+n=30 p50=0.010 ms min=0.008 max=0.050
+EVPROBE_DONE

@@ -1,0 +1,77 @@
+r22a — p50 async-scheduling A/B: async ACTIVE verified; mamba-align skip
+theory FALSIFIED; the 58 ms sync is AsyncOutput.get_output's copy_event wait
+(GPU-pipeline wait, mode-independent).
+
+POSTURE (p12b2 image, fork ca75f1d8+, arc-test container):
+- serve: r22a_serve_noprof.sh = r18/r21b product posture VERBATIM except
+  --no-enable-prefix-caching (r18 had --enable-prefix-caching).
+- effect chain: prefix caching OFF -> MambaModelConfig forces
+  mamba_cache_mode 'none' (models/config.py:617) -> gpu_model_runner.py:2119
+  skip condition `use_async_scheduling and mode != 'align'` TRUE ->
+  needs_cpu_accepted_counts path skipped entirely.
+- async scheduling: ACTIVE on both boots (silent auto-enable in
+  config/vllm.py:1420-1500 else-branch; no disable-gate warning in either
+  boot log; async_utils.py frames present in both traces).
+- warmup interlock (p12b defect-b fix, lane W) present: survival flip
+  payload (832-tok large, FIRST traffic) -> 200 in 6.72 s incl. 5.9 s
+  interlock; onset count 0 through full suite (survival.txt).
+
+A/B RESULT (traces r21b_rank0/r22a_rank0, same load, c8 steady decode):
+  metric                    r21b (align)   r22a (none)
+  step wall                   90.1 ms       87.1 ms
+  Event.synchronize p50       58.02 ms      58.58 ms   (n=78/80, flat)
+  get_output p50              58.04 ms      58.60 ms
+  prepare_attn tot            5.75 s        5.87 s
+  => IDENTICAL within noise. The mamba accepted-tokens sync is NOT the 58 ms.
+  The 58 ms = AsyncOutput.get_output copy_event.synchronize() on the
+  scheduler thread (tid 7732) — waits on in-order GPU stream progress
+  (graph replay + eager tail + D2H copies). "4.2% GPU busy" is a trace
+  artifact: kernels inside command-graph replays are invisible.
+
+BENCH (boot2, no profiler, seed 20261027) vs r18 (caching ON):
+  posture-clean cells (fresh prompts BOTH postures / same load):
+    c1 rows: TPOT 66.68-76.91 vs r18 66.75-75.59; TTFT 25718/58173 vs
+    25764/58546 — identical.
+    k1k-c8: 96.95 / 96.11 re-pass vs r18 135.39 (staggered entry, both
+    fresh-prompt cells; steady step is the same 87-90 ms in both).
+    run7n: agg 183-218 vs 195.7-213.1; solo 57.8-58.1 vs 57.5-57.7.
+  uncached k>=8k c>=2 cells COLLAPSE (TPOT 689-3641 ms): decode starves
+  behind other streams' chunked prefills; r18's cells were cache-aided
+  (k8k-c4 TTFT 3.3 s vs 16.9 s here). Matrix is cache-dependent at c>=2;
+  no-cache is NOT shippable (P3 lmcache builds on caching).
+  c16 cliff (273-277 k1k / 275-328 r18) pre-exists both postures.
+  spec gate: pos1 0.8821 >= 0.5 hard PASS, acceptance 0.7028 vs 0.85
+  target (miss recorded, P4). onset count 0 through full suite.
+
+STEPPROBE (ran; new instrument, no profiler): c1 step = 64.4 ms (tight,
+p90 64.7); c8 step = 79.6 ms (p90 79.9) — batch scaling only +15 ms.
+Reconciles ALL TPOT faces: solo 57.9 tok/s = 64.4/3.73 (acc, spec-gate
+3.81 family); matrix c1 TPOT 66.7 = step/1 (acc~1 on random tokens).
+TPOT = step / acceptance, one law.
+
+EVPROBE (ran): XPU Event.synchronize is HONEST — completed sync 0.003 ms,
+query spin 0.002 ms, waiting sync drains real work (274 of 368 ms),
+Event(blocking=True) ctor REJECTED (product shim only), side-stream
+replica 0.010 ms. NO event pathology. The 58 ms = real in-order pipeline:
+copy_stream waits on main stream = graph replay + gdn build's eager tail
+(aten::index/_to_copy/copy_ ~5.2 s/window) + D2H, and next replay can't
+enqueue until the build's ~50 ms CPU section finishes. The build sets the
+step length TWICE. p10 (build <=5 ms) is THE lever; p50 overlap secondary.
+
+PROFILER LAW (new, r22a casualty): torch_profiler_dump_cuda_time_total=True
++ with_stack (1.5M events) -> both workers spin ~96% CPU in
+torch/autograd/profiler_util.py device_time_total for >=15 min AFTER trace
+files are written; EngineCore blocks in profile collective_rpc; all
+requests hang. LAWS: profile legs LAST on any boot; always set
+torch_profiler_dump_cuda_time_total: false.
+
+RIG OPS: radiance-test must be STOPPED before arc legs (port-8000 collision
+gave a false-HEALTHY + 'Address already in use' engine death); arc-test
+boot2 healthy 15:08:11, align count 0, no async warning.
+
+DISPOSITION: P2 row: async-ACTIVE closed (this leg); decomposition
+published; TPOT c8 OPEN (steady ~80 ms step, 96-97 measured > 60 gate).
+p10 (build <=5 ms) is THE lever with mechanism-backed budget: 50->5 ms
+cut gives step ~30-35 ms at c8 => TPOT c8 ~35 ms <= gate; solo ~105
+tok/s > 79.74 bar. p50 overlap secondary polish.
+Files: legs_pull/ (full inventory in VERDICT.md Artifacts).
