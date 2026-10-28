@@ -1,0 +1,1 @@
+SPEC_GATE expect-off PASS: no spec counters (non-spec posture pure)
