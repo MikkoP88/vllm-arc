@@ -47,24 +47,45 @@ permanently graph-associated (``ev.synchronize()`` outside raises the exact
 defect-b text). The leak therefore needs the real captured runnable (CCL /
 GDN / sampler content) on this torch 2.13.0+xpu + oneAPI 2026.0 stack.
 
-Fix law (this module, p12b): clear the zombie at every boundary where a swap
-cannot be undone — after each capture context teardown
-(``torch.xpu.graph.__exit__``; capture accounting via
-``XPUGraph.capture_begin``/``capture_end``: a recording flag with none open
-= leaked recorder), before and after each ``replay``, and as a last-resort
-alarm at serve time. A stuck recorder is swapped for a fresh stream
-(probe-validated recovery: fresh-stream kernels execute; the swap is
-serve-transparent). The serve-time
-alarm also FAILS the in-flight request loudly — its forward was enqueued on
-the dead queue, so its outputs are garbage, and the integrity law forbids
-returning unverifiable tokens. capture-time events that later carry a
-command-graph association remain covered by the ``get_output`` self-heal.
+ROUND-2/3 EVIDENCE (2026-10-28, results/2026-10-28-p2-graph-p12b-r1r2/ and
+rig legs arc-p2-graph-20261028-{002040,005232}): a request is fully served
+clean (vllm warmup AND the first real request both returned 200 with clean
+probes), then the flip lands BETWEEN requests — the fixed watchdog caught the
+onset on the device-default stream at 00:59:52, two seconds BEFORE the next
+request's alarm (00:59:54) and ~1s after the previous response. The worker
+serves on the device default stream (onset id == alarm's poisoned id). The
+poison is not one stream: the async copy stream (created at module import,
+pre-flip) ALSO probes recording post-flip — every PRE-flip stream is dead,
+only post-flip-created streams are live. Drain-path deaths showed
+``torch.xpu.synchronize()`` (device-wide) refuses forever while any abandoned
+queue records: barrier law — per-stream waits tolerate the zombie, device
+syncs do not. Dezombie (swap current for a fresh stream) validated in
+production three times (post-swap canaries all ``executed=True``).
+
+FIX LAW (round 4): never enqueue on, wait for, or record events on a dead
+stream. ``torch.xpu.set_stream`` transparently substitutes a cached live
+replacement when its target probes recording with no capture open (the
+``torch.cuda.set_stream`` alias is rebound too whenever the donor alias law
+bound it to the same original — async_utils' stream ctx calls the cuda
+name); ``Stream.wait_stream`` skips dead arguments (a dead queue produces
+nothing worth waiting for); ``Event.record`` reroutes a dead argument to the
+current stream; ``GPUModelRunner.execute_model`` entry hygiene clears a
+worker thread still parked on the poisoned default BEFORE any forward is
+enqueued (threads start on the device default, and thread-local currents mean
+one dezombie does not fix another thread). The healthy-path output copy keeps
+upstream's own blocking event — recorded on a live stream outside any
+capture, therefore waitable — instead of the device-wide sync. The capture
+accounting, boundary hygiene and serve-time alarm (raise: integrity law) stay
+as verifiers for the unobserved mid-request flip class.
 
 Provenance: error family + fix direction = plan Appendix C defect (b);
 capture-probe fail-safe law = D-line waveD patch_gdn_metadata_026.py
 (``_iexp_is_capturing``, results/2026-10-18-waveD-anchor-analysis.log);
 zombie discrimination + fresh-stream recovery law = rig probes
-2026-10-27/28 (probe_zombie{,2}.py, results/2026-10-27-p2-graph-defectb-answer/).
+2026-10-27/28 (probe_zombie{,2}.py, results/2026-10-27-p2-graph-defectb-answer/);
+between-requests flip + all-pre-flip-streams-dead + barrier law = p12b
+rounds 1-3 legs (results/2026-10-28-p2-graph-p12b-r1r2/, rig legs
+arc-p2-graph-20261028-*).
 """
 
 from __future__ import annotations
@@ -94,6 +115,22 @@ _healed_logs = 0
 # the current stream with none open = leaked recorder = zombie.
 _captures_open = 0
 _dezombie_logs = 0
+
+# --- stream-reroute state (round 4) ---
+# Armed by the first zombie evidence (watchdog onset, dezombie action, or a
+# guard detection). Pre-flip this is False and every guard below is a single
+# boolean check — zero probing on the hot path.
+_zombie_ever = False
+# Dead stream -> its live replacement (one per dead stream, so ordering
+# among things rerouted from the same dead stream is preserved).
+_LIVE_REPLACEMENTS: dict[int, torch.xpu.Stream] = {}
+_SUBST_LOGS = 0
+_WAIT_SKIP_LOGS = 0
+_RECORD_REROUTE_LOGS = 0
+_SYNC_TRIP_LOGS = 0
+# The unwrapped set_stream, captured at install: internal switches (watchdog
+# side-probe, _stream_poisoned) must bypass the substitution shim.
+_ORIG_SET_STREAM = None
 
 
 class _ArcNoOpEvent:
@@ -145,6 +182,40 @@ def _stream_ids() -> str:
         return f"ids ERR {e!r}"
 
 
+def _note_zombie() -> None:
+    """Arm the stream-reroute guards (idempotent; see round-4 fix law)."""
+    global _zombie_ever
+    _zombie_ever = True
+
+
+def _stream_poisoned(s) -> bool:
+    """Probe a specific stream object by switching to it (thread-local,
+    unwrapped set/restore — must bypass the substitution shim). False while a
+    capture is open (the capture stream legitimately records then)."""
+    if _captures_open > 0:
+        return False
+    set_ = _ORIG_SET_STREAM or torch.xpu.set_stream
+    me = torch.xpu.current_stream()
+    if me == s:
+        return _capture_state()[0]
+    set_(s)
+    try:
+        return _capture_state()[0]
+    finally:
+        set_(me)
+
+
+def _replacement_for(dead) -> torch.xpu.Stream:
+    """Cached live replacement for a dead stream (created post-flip = live,
+    probe-validated; one per dead stream preserves rerouted ordering)."""
+    key = id(dead)
+    live = _LIVE_REPLACEMENTS.get(key)
+    if live is None:
+        live = torch.xpu.Stream()
+        _LIVE_REPLACEMENTS[key] = live
+    return live
+
+
 _WATCHDOG_STARTED = False
 
 
@@ -169,8 +240,10 @@ def _start_watchdog() -> None:
     ``torch.xpu.default_stream()`` API is never called), so an onset here
     means the DEFAULT stream — the worker's serving stream if serving runs
     on the default — is the poisoned one. The side capture stream is
-    probed via an explicit thread-local switch. Daemon; stops after the
-    transition budget.
+    probed via an explicit thread-local switch (unwrapped set_stream). On
+    onset the reroute guards are armed immediately (round 4): every later
+    switch onto any dead stream is substituted before the next request can
+    enqueue on it. Daemon; stops after the transition budget.
     """
     import threading
     import time as _time
@@ -182,6 +255,7 @@ def _start_watchdog() -> None:
             side = torch.xpu.graph.default_capture_stream
         except Exception:  # noqa: BLE001
             side = None
+        set_ = _ORIG_SET_STREAM or torch.xpu.set_stream
         while state["logs"] < 8:
             try:
                 if _captures_open > 0:
@@ -190,21 +264,24 @@ def _start_watchdog() -> None:
                 if not state["own"] and _capture_state()[0]:
                     state["own"] = True
                     state["logs"] += 1
+                    _note_zombie()
                     logger.warning(
                         "ArcXpuPlatform: ARC_GRAPH_ZOMBIE_ONSET this "
                         "thread's current (device default) stream now "
-                        "RECORDING with no capture open at %s (ids: %s)",
+                        "RECORDING with no capture open at %s — reroute "
+                        "guards ARMED (ids: %s)",
                         _time.strftime("%H:%M:%S"), _stream_ids())
                 if side is not None and not state["side"]:
                     me = torch.xpu.current_stream()
-                    torch.xpu.set_stream(side)
+                    set_(side)
                     try:
                         snow = _capture_state()[0]
                     finally:
-                        torch.xpu.set_stream(me)
+                        set_(me)
                     if snow:
                         state["side"] = True
                         state["logs"] += 1
+                        _note_zombie()
                         logger.warning(
                             "ArcXpuPlatform: ARC_GRAPH_ZOMBIE_ONSET side "
                             "capture stream now RECORDING with no capture "
@@ -216,66 +293,6 @@ def _start_watchdog() -> None:
 
     t = threading.Thread(target=_run, name="arc-graph-watchdog", daemon=True)
     t.start()
-
-
-def _install_tripwires() -> None:
-    """Post-flip context capture (p12b round 3): wrap the rarely-called
-    stream/event APIs so the FIRST call made while the recording flag is
-    stuck (no capture open) logs its caller stack — naming the code region
-    that operated right after the poison entered. Budgeted per API."""
-    import traceback
-
-    budget = {}
-
-    def _armed() -> bool:
-        # CPU-only processes (no XPU context) must never arm: the fail-safe
-        # probe treats "cannot answer" as capturing=True.
-        try:
-            if not torch.xpu.is_initialized():
-                return False
-        except Exception:  # noqa: BLE001
-            return False
-        return _captures_open == 0 and _capture_state()[0]
-
-    def _trip(name, orig):
-        def wrapped(*args, **kwargs):
-            try:
-                armed = _armed()
-            except Exception:  # noqa: BLE001 — instrumentation only
-                armed = False
-            if armed and budget.get(name, 0) < 2:
-                budget[name] = budget.get(name, 0) + 1
-                logger.warning(
-                    "ArcXpuPlatform: ARC_GRAPH_TRIPWIRE %s called with "
-                    "zombie recording flag (ids: %s). Caller:\n%s",
-                    name, _stream_ids(),
-                    "".join(traceback.format_stack()[-6:]))
-            return orig(*args, **kwargs)
-        return wrapped
-
-    try:
-        xpu_sync_orig = torch.xpu.synchronize
-        torch.xpu.synchronize = _trip("xpu.synchronize", xpu_sync_orig)
-        torch.xpu.Event.record = _trip("Event.record", torch.xpu.Event.record)
-        torch.xpu.Stream.wait_stream = _trip(
-            "Stream.wait_stream", torch.xpu.Stream.wait_stream)
-        for attr in ("wait_event", "synchronize"):
-            fn = getattr(torch.xpu.Stream, attr, None)
-            if fn is not None:
-                setattr(torch.xpu.Stream, attr, _trip(
-                    f"Stream.{attr}", fn))
-        # The donor wheel's _torch_cuda_wrapper aliases bound torch.cuda.* to
-        # the ORIGINAL torch.xpu functions at import time, so vllm core's
-        # cuda-named calls bypass the wraps above — wrap the alias too, but
-        # only when it demonstrably points at the same original (identity
-        # check against the pre-wrap function object).
-        if getattr(torch.cuda, "synchronize", None) is xpu_sync_orig:
-            torch.cuda.synchronize = _trip("cuda.synchronize", xpu_sync_orig)
-        logger.info(
-            "ArcXpuPlatform: zombie tripwires installed (pid %d, "
-            "synchronize/Event.record/Stream.wait_* wrapped).", os.getpid())
-    except Exception as e:  # noqa: BLE001 — instrumentation only
-        logger.warning("ArcXpuPlatform: tripwire install failed: %r", e)
 
 
 def _zombie_evidence() -> str:
@@ -305,9 +322,11 @@ def _dezombie(tag: str) -> bool:
     capturing, probe_err = _capture_state()
     if not capturing or probe_err is not None or _captures_open > 0:
         return False
+    _note_zombie()
     try:
         dead = torch.xpu.current_stream()
-        torch.xpu.set_stream(torch.xpu.Stream())
+        set_ = _ORIG_SET_STREAM or torch.xpu.set_stream
+        set_(_replacement_for(dead))
         if _dezombie_logs < _LOG_BUDGET:
             _dezombie_logs += 1
             logger.warning(
@@ -340,9 +359,11 @@ def _wrap_xpu_graph() -> None:
     context fully tears down (``torch.xpu.graph.__exit__`` restores the
     pre-capture current stream AFTER ``capture_end``, so a swap made inside
     ``capture_end`` would be silently reverted) and before/after each
-    ``replay``. Applies to every graph use in the process — vllm's
-    CUDAGraphWrapper (``torch.cuda.graph`` aliased to ``torch.xpu.graph``)
-    and the speculator graph manager share these classes.
+    ``replay``. Post-round-4 the set_stream shim covers these transitions
+    too; the wraps stay as verifiers for replays that bypass set_stream.
+    Applies to every graph use in the process — vllm's CUDAGraphWrapper
+    (``torch.cuda.graph`` aliased to ``torch.xpu.graph``) and the
+    speculator graph manager share these classes.
     """
     global _captures_open
     cls = torch.xpu.XPUGraph
@@ -398,6 +419,148 @@ def _wrap_xpu_graph() -> None:
         "wrapped).", os.getpid())
 
 
+def _wrap_stream_apis() -> None:
+    """Round-4 fix law (module docstring): functional guards on the stream/
+    event APIs so nothing is ever enqueued on, waited from, or recorded onto
+    a dead (recording-with-no-capture) stream.
+
+    - ``torch.xpu.set_stream(s)``: if s probes dead post-switch, switch to
+      its cached live replacement instead (and rebind the ``torch.cuda``
+      alias when the donor alias law bound it to the same original —
+      async_utils' stream ctx switches via the cuda name).
+    - ``Stream.wait_stream(s)``: skip dead arguments — a dead queue never
+      progresses, so waiting on it could only hang; it also produces no
+      outputs anyone needs ordered.
+    - ``Event.record(s)``: reroute a dead argument to the current stream so
+      the event actually fires when the (rerouted) copies complete.
+    - ``torch.xpu.synchronize``: log-only tripwire kept from round 3 (a
+      device-wide sync is forever illegal once a queue is abandoned).
+
+    All guards arm on ``_zombie_ever`` only — before the flip they cost one
+    boolean check; genuine captures (``_captures_open > 0``) are exempt.
+    """
+    global _ORIG_SET_STREAM, _SUBST_LOGS, _WAIT_SKIP_LOGS
+    global _RECORD_REROUTE_LOGS, _SYNC_TRIP_LOGS
+    import traceback
+
+    _ORIG_SET_STREAM = torch.xpu.set_stream
+    orig_set = _ORIG_SET_STREAM
+    orig_wait = torch.xpu.Stream.wait_stream
+    orig_record = torch.xpu.Event.record
+    orig_sync = torch.xpu.synchronize
+
+    def _arc_set_stream(s):
+        global _SUBST_LOGS
+        orig_set(s)
+        if _zombie_ever and _captures_open == 0:
+            try:
+                if _capture_state()[0]:
+                    live = _replacement_for(s)
+                    orig_set(live)
+                    if _SUBST_LOGS < _LOG_BUDGET:
+                        _SUBST_LOGS += 1
+                        logger.warning(
+                            "ArcXpuPlatform: ARC_GRAPH_SUBSTITUTE set_stream "
+                            "target %s probes recording (no capture open) — "
+                            "rerouted to live %s (ids: %s).",
+                            s, live, _stream_ids())
+            except Exception:  # noqa: BLE001 — never block a stream switch
+                pass
+
+    def _arc_wait_stream(self, s=None):
+        global _WAIT_SKIP_LOGS
+        if _zombie_ever and s is not None and _captures_open == 0:
+            try:
+                if _stream_poisoned(s):
+                    if _WAIT_SKIP_LOGS < _LOG_BUDGET:
+                        _WAIT_SKIP_LOGS += 1
+                        logger.warning(
+                            "ArcXpuPlatform: ARC_GRAPH_WAIT_SKIP "
+                            "wait_stream argument %s probes recording (no "
+                            "capture open) — skip (dead queue never "
+                            "progresses; ids: %s).", s, _stream_ids())
+                    return None
+            except Exception:  # noqa: BLE001 — fall through to upstream
+                pass
+        return orig_wait(self, s)
+
+    def _arc_event_record(self, stream=None):
+        global _RECORD_REROUTE_LOGS
+        if _zombie_ever and stream is not None and _captures_open == 0:
+            try:
+                if _stream_poisoned(stream):
+                    if _RECORD_REROUTE_LOGS < _LOG_BUDGET:
+                        _RECORD_REROUTE_LOGS += 1
+                        logger.warning(
+                            "ArcXpuPlatform: ARC_GRAPH_RECORD_REROUTE "
+                            "Event.record argument %s probes recording (no "
+                            "capture open) — recording on current stream "
+                            "instead (ids: %s).", stream, _stream_ids())
+                    stream = None
+            except Exception:  # noqa: BLE001 — fall through to upstream
+                pass
+        return orig_record(self, stream)
+
+    def _arc_xpu_sync(*args, **kwargs):
+        global _SYNC_TRIP_LOGS
+        if (_zombie_ever and _captures_open == 0
+                and _capture_state()[0] and _SYNC_TRIP_LOGS < _LOG_BUDGET):
+            _SYNC_TRIP_LOGS += 1
+            logger.warning(
+                "ArcXpuPlatform: ARC_GRAPH_TRIPWIRE xpu.synchronize called "
+                "with zombie recording flag (device-wide barriers stay "
+                "illegal while a queue is abandoned; ids: %s). Caller:\n%s",
+                _stream_ids(), "".join(traceback.format_stack()[-6:]))
+        return orig_sync(*args, **kwargs)
+
+    torch.xpu.set_stream = _arc_set_stream
+    torch.xpu.Stream.wait_stream = _arc_wait_stream
+    torch.xpu.Event.record = _arc_event_record
+    torch.xpu.synchronize = _arc_xpu_sync
+    # The donor wheel's _torch_cuda_wrapper aliases bound torch.cuda.* to
+    # the ORIGINAL torch.xpu functions at import time, so cuda-named calls
+    # bypass the wraps above — rebind when the alias demonstrably points at
+    # the same original (identity check against the pre-wrap object).
+    if getattr(torch.cuda, "set_stream", None) is orig_set:
+        torch.cuda.set_stream = _arc_set_stream
+    logger.info(
+        "ArcXpuPlatform: zombie stream-reroute guards installed (pid %d, "
+        "set_stream substitution + wait_stream skip + Event.record reroute "
+        "+ synchronize tripwire).", os.getpid())
+
+
+def _wrap_runner_entry() -> bool:
+    """Round-4 save point: ``GPUModelRunner.execute_model`` entry hygiene.
+    Worker threads start life parked on the device default stream — the
+    poisoned one — and thread-local currents mean a dezombie on one thread
+    does not fix another. Probing (and clearing) at every execute_model
+    entry guarantees no forward is ever enqueued on a dead queue, even for
+    the first RPC on a fresh thread. XPUModelRunner subclasses
+    GPUModelRunner without overriding execute_model (wheel-verified
+    2026-10-28), so the base-class wrap covers it."""
+    try:
+        from vllm.v1.worker.gpu import model_runner as mr
+    except Exception as e:  # noqa: BLE001 — circular import at register()
+        logger.warning(
+            "ArcXpuPlatform: runner-entry hygiene install deferred (%r) — "
+            "platform hooks retry post-import.", e)
+        return False
+    if getattr(mr.GPUModelRunner, "_arc_entry_hygiene", False):
+        return True
+    orig_exec = mr.GPUModelRunner.execute_model
+
+    def _arc_execute_model(self, *args, **kwargs):
+        _hygiene("execute_model-entry")
+        return orig_exec(self, *args, **kwargs)
+
+    mr.GPUModelRunner.execute_model = _arc_execute_model
+    mr.GPUModelRunner._arc_entry_hygiene = True
+    logger.info(
+        "ArcXpuPlatform: runner-entry hygiene installed (pid %d, "
+        "GPUModelRunner.execute_model wrapped).", os.getpid())
+    return True
+
+
 def _install() -> None:
     """Patch the async output classes in-place (idempotent, per-process).
 
@@ -435,8 +598,9 @@ def _install() -> None:
                 # leaked recorder. The in-flight request's forward was
                 # enqueued on the dead queue and its outputs are garbage —
                 # clear the zombie, then fail loudly (integrity law: never
-                # return unverifiable tokens). Unreachable when the boundary
-                # hygiene above did its job; this is the last-resort alarm.
+                # return unverifiable tokens). Unreachable when the reroute
+                # guards + entry hygiene did their job; this is the
+                # last-resort alarm for the unobserved mid-request flip.
                 _dezombie("serve-time output alarm")
                 raise RuntimeError(
                     "ArcXpuPlatform: zombie graph stream (recorder left open, "
@@ -462,15 +626,17 @@ def _install() -> None:
                         "upstream (genuine capture window active, "
                         "captures_open=%d).", _captures_open)
                 return
-            torch.xpu.synchronize()
-            # Host buffers are complete; the recorded event may carry a
-            # command-graph association and must never be waited on.
-            self.copy_event = _ArcNoOpEvent()
+            # Healthy path (round 4): upstream's own blocking event is the
+            # barrier — the stream-reroute guards above make the copy ctx
+            # and the event record land on a LIVE stream outside any
+            # capture, so the event is waitable. The round-1/2 device-wide
+            # synchronize is gone: it is forever illegal once a poisoned
+            # queue has been abandoned (drain-path deaths, round 2/3).
             if _applied_logs < _LOG_BUDGET:
                 _applied_logs += 1
                 logger.info(
-                    "ArcXpuPlatform: graph-safe output applied — device-sync "
-                    "barrier + no-op copy event.")
+                    "ArcXpuPlatform: graph-safe output applied — reroute "
+                    "guards active, upstream copy event retained.")
 
         return __init__
 
@@ -507,7 +673,6 @@ def _install() -> None:
                         "ArcXpuPlatform: graph-safe output self-heal barrier "
                         "illegal (capture still open): %r", sync_err)
                     raise e from sync_err
-                self.copy_event = _ArcNoOpEvent()
                 return orig_get_output(self)
 
         return get_output
@@ -518,10 +683,12 @@ def _install() -> None:
     au.AsyncPoolingOutput.get_output = _graph_safe_get_output(
         _orig_pooling_get)
     # Boundary hygiene must be in place before any capture runs (worker init
-    # captures follow the install hooks); idempotent per-process. Tripwires
-    # (round 3) name the first stream/event API to run on the stuck flag.
+    # captures follow the install hooks); idempotent per-process. The
+    # stream-reroute guards (round 4) and the runner-entry save point
+    # install alongside; the watchdog arms them at onset.
     _wrap_xpu_graph()
-    _install_tripwires()
+    _wrap_stream_apis()
+    _wrap_runner_entry()
     _ensure_watchdog()
     _INSTALLED = True
     logger.info(
