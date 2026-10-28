@@ -480,11 +480,15 @@ def _start_watchdog() -> None:
 
 def _wrap_kernel_launch_tracer() -> None:
     """r12b tracer: probe capture-state around EVERY triton kernel launch
-    and the extern aten mm — names the kernel/op whose launch flips the
-    serving stream (ARC_TRACE_FLIP legs only; inert otherwise). r12 pinned
-    the flip inside a piecewise-compiled callable (extern_kernels.mm on the
-    stack, output_code.py:763); toy compiles never flip, so the real
-    kernels are the remaining suspects."""
+    — names the kernel whose launch flips the serving stream
+    (ARC_TRACE_FLIP legs only; inert otherwise). r12 pinned the flip
+    inside a piecewise-compiled callable (extern_kernels.mm on the stack,
+    output_code.py:763); toy compiles never flip, so the real kernels are
+    the remaining suspects. NOTE: never assign onto torch.ops entries —
+    the r12b leg's aten.mm.out wrap corrupted the op registry
+    ("Expected qualname ... but got _traced_mm") and killed boot; an
+    aten-op flip between two triton kernels still shows as FLIP at the
+    next triton-pre."""
     if not _TRACE_FLIP or _zombie_ever:
         return
     global _TRACE_KERNELS_OK
@@ -519,20 +523,6 @@ def _wrap_kernel_launch_tracer() -> None:
         wrapped.append("triton:CachingAutotuner.run")
     except Exception as e:  # noqa: BLE001 — optional probe
         logger.warning("ArcXpuPlatform: tracer triton wrap skipped %r", e)
-
-    try:
-        orig_mm = torch.ops.aten.mm.out
-
-        def _traced_mm(a, b, *, out=None):
-            _probe("aten:mm.out-pre")
-            r = orig_mm(a, b, out=out)
-            _probe("aten:mm.out-post")
-            return r
-
-        torch.ops.aten.mm.out = _traced_mm
-        wrapped.append("aten:mm.out")
-    except Exception as e:  # noqa: BLE001 — optional probe
-        logger.warning("ArcXpuPlatform: tracer mm wrap skipped %r", e)
 
     logger.info(
         "ArcXpuPlatform: r12b kernel-launch tracer installed (%s).",
