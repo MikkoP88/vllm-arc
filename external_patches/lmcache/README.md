@@ -52,6 +52,28 @@ needs NO patch: upstream 0.5.5 ships `csrc/sycl/*` + `SyclProfile`
 `v1/platform/xpu/device_ops.py` binds the built extension with a torch
 fallback. We build it with upstream's own recipe.
 
+## vllm-side connector glue (r30 leg, 2026-10-28 — sitecustomize patches,
+`vllm_gaudi/xpu/patches/`, NOT wheel patches)
+
+The r30 first leg exposed three vllm-side incompatibilities between
+upstream-0.30 and the lmcache-0.5.5+arc1 stack; all cured with C's own
+files/deltas as the byte-preserved reference (full evidence:
+`results/2026-10-28-p3-r30-lmcache-first-leg/`):
+
+| patch | target | provenance | content |
+|---|---|---|---|
+| `lmcache_hma_connector.py` (p41b) | `vllm.distributed.kv_transfer.kv_connector.v1.lmcache_connector` (exec_module, subclass-rebind) | C v1.2.35 file md5 `cee1a393…` (same reference D's resume13 byte-preserved; D adjudication: flag-flip REJECTED, HMA-on bar) | (a) SupportsHMA mixin + `request_finished_all_groups` (cures factory.py:58 HMA refusal); (b) v133 async-gate fix — real `load_kv_async` from `get_num_new_matched_tokens` + 3-arg `update_state_after_alloc` (hardcoded False made loads land a step late, "byte-perfect but useless"); (c) KV-events guard (0.5.5 has no get_kv_events). Knob `VLLM_ARC_LMC_HMA=0`. |
+| `lmcint/` kit (p41b) | `…v1.lmcache_integration{,.vllm_v1_adapter,.utils}` (source-override exec at import) | C image files, md5 `1f3e97d3`/`dcb23fbe`/`b5300ee0` — C's 0.5.5-compat patch of vllm-0.30's vendored integration | C's `__init__` drops `multi_process_adapter` ("requires lmcache main (CudaIPCWrapper)… NOT importable here" — cures the boot ImportError); the vendored adapter is the LIVE engine under `use_native:true` (mamba-hybrid: `MambaPageConnector`, `_init_mamba_engine`, per-group block_ids, late-imports p41's `_LMC_*` at its lines 1741/2049). |
+| `lmc_xpu_pinned_env.py` (p40c) | `lmcache.v1.platform.xpu.device_ops` (exec_module wrap) | C serve_lmc_v133.sh law (pinned USM >16–32 GiB/pro process segfaults, probed 2026-10-08 → pools pageable) | our built `lmcache.xpu_ops` exports native `alloc_pinned_ptr`/`free_pinned_ptr` that `bind_native` layers OVER the env-honoring torch baseline (C's 0.4.7 binary lacked the pair); with `LMCACHE_DISABLE_PINNED_MEMORY=1`, drop the two instance bindings post-bind → pageable baseline serves them, all other native ops stay native. Cured the 100 GiB `sycl::malloc_host` boot death. |
+
+Also discovered en route: lmcache-0.5.5 runtime deps `aiofile` + `redis`
+missed by the p40 `--no-deps` set (upstream Requires-Dist; eager import in
+`storage_backend/connector/fs_connector.py`) — installed in r30_boot.sh,
+Dockerfile dep line gains both at next image build. And the env set needs
+`PYTHONHASHSEED=0` (C CRITICAL: chunk keys chain from builtin hash;
+without a fixed seed scheduler/workers derive different hashes → 100%
+lookup misses despite clean stores) — already in r30_serve.sh line 8.
+
 ## Build law
 
 `build_lmcache_arc.sh` (rig host): fresh sdist extract → md5 guard vs the
@@ -74,12 +96,20 @@ Inner script: `lmc_arc1_inner.sh` (copied to the rig at
 - `extyield`, `flushmove` → DROP (superseded / falsified, plan law).
 - `kvev`, `xfer`, `btg`, `seedfix-v5`, `storededup` → REVAL on 0.5.5 at P3:
   port as e05+ ONLY if 0.5.5 lacks the fix AND the P3 gates expose the
-  defect it fixed. Status: pending first p40 leg ( Stored/Retrieved + churn
-  + integrity gates ).
+  defect it fixed. Status after r30 (2026-10-28): store/load/integrity all
+  PROVEN clean (golden zero-drift, 5/5 byte-identical re-hits, warm
+  755 ms vs cold 5556 ms) — none of the five defects surfaced at the
+  gate level; keep pending p43 (warm-hit closure may stress the store
+  path harder). New telemetry from r30: ~80 "Lagged attn store failed
+  (cached chunk absent; later lookups recompute)" events ×2 ranks during
+  the agg phases — C's graceful-degrade path, non-fatal; re-examine
+  after p43 changes store timing (candidate `storededup` trigger).
 - usage telemetry (plan e04 slot) → 0.5.5 ships `LMCStatsMonitor` +
-  `InitializeUsageContext` + observability.py natively; p40 leg verifies the
-  counters suffice for the "prewarm counts = usage-truth" gate before any
-  port is considered.
+  `InitializeUsageContext` + observability.py natively. r30 finding: the
+  engine-stat "External prefix cache hit rate" counter reads 0.0% even
+  while sha-verified external hits land (7.4× warm speedup) — NOT usable
+  as gate evidence; gate truth stays sha-identity + warm/cold timing.
+  LMC INFO lines (hybrid-mode init, hash init) do log and are banked.
 - **v138c sanitize-carry** (D + C both carry it, env-gated default ON in
   both donors; NaN/Inf→0 healing on FALLBACK-path carried pages) → REVAL:
   our live posture is align-mode FUSED copies, which no donor hooks it
@@ -95,6 +125,9 @@ Inner script: `lmc_arc1_inner.sh` (copied to the rig at
 ## Certified env set (p40 serve config — D champion serve line verbatim)
 
 ```
+PYTHONHASHSEED=0  # C CRITICAL law (serve_lmc_v133.sh): chunk keys chain
+                  # from builtin hash; unset seed -> per-process hashes
+                  # -> 100% lookup misses despite clean stores
 LMCACHE_USE_EXPERIMENTAL_API=True LMCACHE_MAX_LOCAL_CPU_SIZE=100
 LMCACHE_LOCAL_CPU=True LMCACHE_EVICT_POLICY=lr_u LMCACHE_CHUNK_SIZE=1024
 LMCACHE_SAVE_DECODE_CACHE=True LMCACHE_MIN_RETRIEVE_TOKENS=1024

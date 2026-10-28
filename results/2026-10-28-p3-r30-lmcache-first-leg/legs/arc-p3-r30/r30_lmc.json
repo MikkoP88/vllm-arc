@@ -1,0 +1,71 @@
+{
+ "warm_hit": {
+  "t_cold_ms": 5556.1,
+  "t_warm_ms": 778.2,
+  "sha_match": true,
+  "bar_ms": 750.0,
+  "PASS": false
+ },
+ "integrity": [
+  {
+   "i": 0,
+   "sha_cold": "8898f039827046cf4fd0b1c302eabc0e472d0a882bf7f3531ccaf92436dd03d0",
+   "sha_rehit": "8898f039827046cf4fd0b1c302eabc0e472d0a882bf7f3531ccaf92436dd03d0",
+   "match": true
+  },
+  {
+   "i": 1,
+   "sha_cold": "28f2a474bdb08c616b4095e5e36526240c2f1ba82d4b9063c6f6c8bafcc49eb6",
+   "sha_rehit": "28f2a474bdb08c616b4095e5e36526240c2f1ba82d4b9063c6f6c8bafcc49eb6",
+   "match": true
+  },
+  {
+   "i": 2,
+   "sha_cold": "8fa239e95ea31f5212cf97867c4b31a1fe63bd699211214a1b87345faf77b787",
+   "sha_rehit": "8fa239e95ea31f5212cf97867c4b31a1fe63bd699211214a1b87345faf77b787",
+   "match": true
+  },
+  {
+   "i": 3,
+   "sha_cold": "d9f601923574d20910c191cd7ee6a90085dcfd75bfa38736f78238b02caf5339",
+   "sha_rehit": "d9f601923574d20910c191cd7ee6a90085dcfd75bfa38736f78238b02caf5339",
+   "match": true
+  },
+  {
+   "i": 4,
+   "sha_cold": "138272250b2e056c06745fd1bdaff04756b811a2eed4f663623c4289be5ba3e5",
+   "sha_rehit": "138272250b2e056c06745fd1bdaff04756b811a2eed4f663623c4289be5ba3e5",
+   "match": true
+  }
+ ],
+ "churn": {
+  "cold_ms": [
+   5500.7,
+   5510.9,
+   5515.2,
+   5503.8,
+   5497.1,
+   5509.4,
+   5505.0,
+   5507.3,
+   5508.7,
+   5509.1,
+   5510.6,
+   5514.1,
+   5513.6,
+   5514.9,
+   5514.9,
+   5515.9,
+   5516.6,
+   5519.4,
+   5522.1,
+   5527.1,
+   5520.4,
+   5525.1,
+   5522.0,
+   5523.6
+  ],
+  "rehit_recent_ms": 776.8,
+  "rehit_evicted_ms": 769.4
+ }
+}
