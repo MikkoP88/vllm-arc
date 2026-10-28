@@ -1,0 +1,29 @@
+leg:    arc-graph-nocompile-r13-20261028-073651 (r13 — mode=none + graphs ON;
+        owner-approved fix candidate #1)
+image:  vllm-arc:v0.30.0-b70-p12b c966fcf89a3f (fork cbb6937e)
+env:    ARC_LEG_GRAPH=1 ARC_LEG_SPEC=0 ARC_NOCOMPILE=1 ARC_TRACE=1
+posture: CompilationMode.NONE confirmed in engine config
+        (<CompilationMode.NONE: 0>, "Inductor compilation was disabled by
+        user settings", NO compile at boot — init 2.5 min vs ~7 min);
+        FULL decode graphs still captured cleanly (27/27 in 8 s).
+result: FIX CANDIDATE REFUTED — the flip still happened. First request
+        200 (07:39:44), ARC_GRAPH_ZOMBIE_ONSET 07:39:46 during the k1k
+        bench, every request after 500, integrity guard killed the
+        engine (fail-loud, no garbage served). Compilation is NOT the
+        mechanism.
+new evidence: the eager-mode ONSET STACK names the flip frame with NO
+        inductor noise: MainThread is inside the GDN linear-attention
+        PREFILL — qwen_gdn_linear_attn.py:992 forward_xpu →
+        in_proj_ba(hidden_states) → F.linear (default_unquantized_gemm).
+        This is the SAME GEMM family r12 caught compiled
+        (extern_kernels.mm (5120,48)) — the GDN ba projection. Tracer
+        note: zero FLIP-at-triton lines — eager GDN kernels bypass
+        inductor's CachingAutotuner; the 10 ms watchdog caught the onset.
+model v2: defect-b = the stock Qwen GDN XPU prefill path × live XPU
+        graph machinery. W14 (core 0.30, clean, TPOT c8 33 ms) runs its
+        GDN on ported radiance ESIMD kernels — the plan-sanctioned
+        shared-component lane (QSA/GDN). 0.26 D champion clean on older
+        torch/GDN code. Next: r14 W14-graph-posture leg (FAP + sizes
+        [4,8,16,32,64] + max 64, compile ON) — decisive between
+        "graph posture suffices" vs "GDN kernel path is the poison
+        (ESIMD import required)".
