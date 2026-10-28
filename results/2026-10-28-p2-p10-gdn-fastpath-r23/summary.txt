@@ -1,0 +1,34 @@
+p10/r23 — GDN metadata fast path: budget law MET (0.49 ms p50 / 0.81 ms
+max vs <=5 ms law); TPOT improves at every c8 cell (k1k-c8 135->111-116)
+and solo +2.5%; step wall barely moves — the wall is now the GPU pipeline
+(compile=none replay ~63 ms at c1), promoting the compile A/B into the P2
+critical path.
+
+PATCH: vllm_gaudi/xpu/patches/gdn_metadata_fastpath.py — replaces the
+steady spec-decode GDNAttentionMetadataBuilder.build with an all-async
+construction. Stock build kept for prefill/mixed/zero-spec/over-limit/
+non-contiguous (guarded, telemetered). Mechanism: core's two CPU-bool-mask
+advanced indexes on XPU tensors each force a blocking mask H2D (+ variable-
+shape syncs: probe measured 678 ms behind a 290 ms-drain stream); v1's
+nonzero+index_select ALSO blocks (count readback D2H — probe falsified it
+mid-leg); v2 = pure slices (spec rows front-contiguous, the invariant core
+itself relies on), no H2D, no nonzero, CPU-scalar tail fills. Deployed via
+PYTHONPATH sitecustomize (p10_sitecustomize.py) on p12b2 image, product
+posture verbatim (prefix caching ON).
+
+EVIDENCE: probe.txt (mechanism + nonzero falsification); p10_stats.txt
+(serve-time build sampler: p50 0.49 / p90 0.62 / max 0.81 ms over 4608
+builds, both workers; v1 contrast 77-115 ms max at capture); stepprobe
+c1 62.9 / c8 77.4 (was 64.4 / 79.6); matrix all-cells vs r18 (every c8
+improved, c1 -3.3%, c16 noise, TTFT unchanged); run7n solo 59.1-59.3
+(was 57.5-57.7), agg 206.7-222.3 (was 195.7-213.1); spec gate identical
+(pos1 0.8768, acc 0.6979, len 3.79 — correctness); onset 0.
+
+KEY FINDING: removing the 50 ms CPU-serial build moved the step wall only
+-2.3/-2.8% — the build ran parallel to the scheduler-thread pipeline wait;
+the pipeline itself (replay + eager tail + D2H, ~63 ms at c1, ~1 ms/layer,
+compile=none unfused) is the remaining wall. W14's 33 ms steps and
+champion D's ~50 ms c8 run COMPILED. Next lever: compile A/B (P4 item
+promoted into the P2 critical path); p50 output-sync overlap secondary.
+
+RIG: restored to W14 serving (health 200 verified) after the leg.

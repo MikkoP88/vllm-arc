@@ -1,0 +1,7 @@
+=== PYMATRIX r23k1 start ===
+prompts ready
+CELL k1k-c1 ttft_ms=781.0 prefill_tps=1311.2 tpot_ms=65.04 agg_tps=10.53 per_req_tps=15.37 ok=1/1 wall=2.28
+CELL k1k-c4 ttft_ms=2818.8 prefill_tps=363.3 tpot_ms=74.18 agg_tps=21.21 per_req_tps=13.48 ok=4/4 wall=4.53
+CELL k1k-c8 ttft_ms=4942.7 prefill_tps=207.2 tpot_ms=110.75 agg_tps=25.28 per_req_tps=9.03 ok=8/8 wall=7.56
+CELL k1k-c16 ttft_ms=7545.9 prefill_tps=135.7 tpot_ms=282.53 agg_tps=27.05 per_req_tps=3.54 ok=16/16 wall=14.16
+=== PYMATRIX r23k1 DONE ===

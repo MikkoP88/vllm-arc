@@ -1,0 +1,21 @@
+=== PYMATRIX r23 start ===
+prompts ready
+CELL k1k-c1 ttft_ms=794.8 prefill_tps=1288.3 tpot_ms=64.53 agg_tps=10.52 per_req_tps=15.50 ok=1/1 wall=2.28
+CELL k1k-c4 ttft_ms=2796.7 prefill_tps=366.1 tpot_ms=73.90 agg_tps=21.34 per_req_tps=13.53 ok=4/4 wall=4.50
+CELL k1k-c8 ttft_ms=4953.6 prefill_tps=206.7 tpot_ms=115.66 agg_tps=24.98 per_req_tps=8.65 ok=8/8 wall=7.69
+CELL k1k-c16 ttft_ms=7549.7 prefill_tps=135.6 tpot_ms=282.76 agg_tps=27.06 per_req_tps=3.54 ok=16/16 wall=14.15
+CELL k8k-c1 ttft_ms=5792.1 prefill_tps=1414.3 tpot_ms=66.24 agg_tps=3.79 per_req_tps=15.10 ok=1/1 wall=7.65
+CELL k8k-c4 ttft_ms=3288.8 prefill_tps=2490.9 tpot_ms=102.38 agg_tps=18.64 per_req_tps=9.77 ok=4/4 wall=6.17
+CELL k8k-c8 ttft_ms=6233.0 prefill_tps=1314.3 tpot_ms=148.14 agg_tps=22.15 per_req_tps=6.75 ok=8/8 wall=10.48
+CELL k8k-c16 ttft_ms=10531.0 prefill_tps=777.9 tpot_ms=325.88 agg_tps=23.44 per_req_tps=3.07 ok=16/16 wall=19.92
+CELL k16k-c1 ttft_ms=12009.4 prefill_tps=1364.3 tpot_ms=67.02 agg_tps=1.77 per_req_tps=14.92 ok=1/1 wall=13.55
+CELL k16k-c4 ttft_ms=2579.7 prefill_tps=6351.0 tpot_ms=93.44 agg_tps=18.87 per_req_tps=10.70 ok=4/4 wall=5.57
+CELL k16k-c8 ttft_ms=5329.0 prefill_tps=3074.5 tpot_ms=117.37 agg_tps=23.77 per_req_tps=8.52 ok=8/8 wall=9.59
+CELL k16k-c16 ttft_ms=8198.7 prefill_tps=1998.4 tpot_ms=319.47 agg_tps=24.40 per_req_tps=3.13 ok=16/16 wall=16.80
+CELL k32k-c1 ttft_ms=25811.0 prefill_tps=1269.5 tpot_ms=68.77 agg_tps=1.11 per_req_tps=14.54 ok=1/1 wall=27.88
+CELL k32k-c4 ttft_ms=3175.8 prefill_tps=10318.0 tpot_ms=105.63 agg_tps=19.33 per_req_tps=9.47 ok=4/4 wall=6.47
+CELL k32k-c8 ttft_ms=5420.2 prefill_tps=6045.5 tpot_ms=182.23 agg_tps=22.80 per_req_tps=5.49 ok=8/8 wall=11.14
+CELL k64k-c1 ttft_ms=58609.9 prefill_tps=1118.2 tpot_ms=72.72 agg_tps=0.48 per_req_tps=13.75 ok=1/1 wall=60.65
+CELL k64k-c2 ttft_ms=2528.0 prefill_tps=25924.5 tpot_ms=105.75 agg_tps=10.40 per_req_tps=9.46 ok=2/2 wall=5.58
+CELL k64k-c4 ttft_ms=4699.7 prefill_tps=13944.6 tpot_ms=131.22 agg_tps=13.74 per_req_tps=7.62 ok=4/4 wall=8.44
+=== PYMATRIX r23 DONE ===

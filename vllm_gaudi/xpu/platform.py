@@ -54,6 +54,8 @@ _XPU_PATCH_MODULES = (
     "speculator_full_capture",  # defect-a: PIECEWISE-family -> FULL coercion
     "first_request_warmup",     # defect-b fix (lane W): warm the first eager
                                 # large TP AR before serving traffic (r16/r17)
+    "gdn_metadata_fastpath",    # p10: steady spec-decode GDN metadata builds
+                                # without blocking H2D (r19-r22a; <=5ms law)
 )
 
 

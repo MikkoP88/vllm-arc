@@ -1,0 +1,7 @@
+calibration: pipeline=424ms enqueue=136.2ms
+A cpu-mask index wall=678.7ms  (blocked behind stream: True)
+A2 cpu-mask index (1-D) wall=263.3ms  (blocked: True)
+B nonzero+index_select wall=275.04ms (async)
+C equal(bt): True  equal(na): True
+D idle cpu-mask index wall=0.42ms
+P10_PROBE_DONE
