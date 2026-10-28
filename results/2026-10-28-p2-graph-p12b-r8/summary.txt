@@ -1,0 +1,18 @@
+leg:    arc-p2-graph-20261028-043949 (r8 — capture-stream fix attempt)
+image:  vllm-arc:v0.30.0-b70-p12b b1d3b34e1eb7 (fork 94e39c3d)
+env:    ARC_LEG=graph ARC_LEG_GRAPH=1 ARC_LEG_SPEC=0 (prefix on, gmu 0.8, TP2)
+posture: FULL_DECODE_ONLY 84 sizes, VLLM_XPU_ENABLE_XPU_GRAPH=1
+result: FLIP AGAIN at first real request — but r8 is INVALID as a disproof
+        (wrapper hole found post-hoc, see VERDICT): capture #1 still rode
+        the device default because torch.xpu.graph.default_capture_stream
+        is lazily initialized (None until the first graph() entry); the
+        round-8 wrapper read None and fell through to upstream behavior
+        for capture #1, then rode the side stream for #2..84.
+onset:  04:49:01 ARC_GRAPH_ZOMBIE_ONSET device default, TP0/TP1, first
+        /v1/completions in flight; death cascade + engine exit 04:49:05.
+r8b:    bare-torch probe matrix (this dir, probe_r8b.log): phases a/b both
+        CLEAN — toy graphs never poison any stream, capture-on-default
+        included; single-world confirmed (xpu_model_runner.py:60 rebinds
+        torch.cuda.graph→torch.xpu.graph at worker init, stream= honored).
+fix:    r9 = eager side-stream init in _arc_capture_stream (champion
+        discipline from capture #1).
