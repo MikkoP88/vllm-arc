@@ -134,17 +134,13 @@ def _is_capturing() -> bool:
 
 def _stream_ids() -> str:
     """Identity line for hygiene logs: which streams exist and their queue
-    ids — identifies the poisoned stream class (default vs side capture vs
-    runner stream) when the alarm fires."""
+    ids — names the poisoned stream class when the alarm fires. NOTE:
+    ``torch.xpu.default_stream()`` raises on this build (round-2 leg,
+    ``default=ERR``) — a fresh thread's own current IS the device default,
+    which is what the watchdog probes instead."""
     try:
-        parts = [f"cur={torch.xpu.current_stream()}"]
-        try:
-            parts.append(f"default={torch.xpu.default_stream()}")
-        except Exception:  # noqa: BLE001
-            parts.append("default=ERR")
         side = getattr(torch.xpu.graph, "default_capture_stream", None)
-        parts.append(f"side={side}")
-        return " ".join(parts)
+        return f"cur={torch.xpu.current_stream()} side={side}"
     except Exception as e:  # noqa: BLE001
         return f"ids ERR {e!r}"
 
@@ -166,27 +162,20 @@ def _ensure_watchdog() -> None:
 
 
 def _start_watchdog() -> None:
-    """Onset detector (p12b round 2): poll the default and side capture
-    streams for a recording flag with no capture open, and log the FIRST
-    transition with a timestamp — bracketing the flip against vllm's own
-    log timeline (warmup vs first request vs quiet window) to pin the
-    poisoning operation. Thread-local current streams mean the watchdog
-    can only speak for default/side streams; worker-thread streams are
-    identified by id at the alarm itself. Daemon, self-terminating on
-    error, transitions logged with a budget.
+    """Onset detector (p12b round 3): poll for a recording flag with no
+    capture open and log the first transition with a timestamp — bracketing
+    the flip against vllm's log timeline. This thread's OWN current stream
+    is the device default (fresh threads start on the default; the broken
+    ``torch.xpu.default_stream()`` API is never called), so an onset here
+    means the DEFAULT stream — the worker's serving stream if serving runs
+    on the default — is the poisoned one. The side capture stream is
+    probed via an explicit thread-local switch. Daemon; stops after the
+    transition budget.
     """
     import threading
     import time as _time
 
-    def _probe(stream) -> bool:
-        me = torch.xpu.current_stream()
-        torch.xpu.set_stream(stream)
-        try:
-            return _capture_state()[0]
-        finally:
-            torch.xpu.set_stream(me)
-
-    state = {"default": False, "side": False, "logs": 0}
+    state = {"own": False, "side": False, "logs": 0}
 
     def _run():
         try:
@@ -198,28 +187,95 @@ def _start_watchdog() -> None:
                 if _captures_open > 0:
                     _time.sleep(0.1)
                     continue
-                dnow = _probe(torch.xpu.default_stream())
-                if dnow and not state["default"]:
-                    state["default"] = True
+                if not state["own"] and _capture_state()[0]:
+                    state["own"] = True
                     state["logs"] += 1
                     logger.warning(
-                        "ArcXpuPlatform: ARC_GRAPH_ZOMBIE_ONSET default "
-                        "stream now recording (no capture open) at %s "
-                        "(ids: %s)", _time.strftime("%H:%M:%S"), _stream_ids())
-                snow = side is not None and _probe(side)
-                if snow and not state["side"]:
-                    state["side"] = True
-                    state["logs"] += 1
-                    logger.warning(
-                        "ArcXpuPlatform: ARC_GRAPH_ZOMBIE_ONSET side capture "
-                        "stream now recording (no capture open) at %s (ids: "
-                        "%s)", _time.strftime("%H:%M:%S"), _stream_ids())
+                        "ArcXpuPlatform: ARC_GRAPH_ZOMBIE_ONSET this "
+                        "thread's current (device default) stream now "
+                        "RECORDING with no capture open at %s (ids: %s)",
+                        _time.strftime("%H:%M:%S"), _stream_ids())
+                if side is not None and not state["side"]:
+                    me = torch.xpu.current_stream()
+                    torch.xpu.set_stream(side)
+                    try:
+                        snow = _capture_state()[0]
+                    finally:
+                        torch.xpu.set_stream(me)
+                    if snow:
+                        state["side"] = True
+                        state["logs"] += 1
+                        logger.warning(
+                            "ArcXpuPlatform: ARC_GRAPH_ZOMBIE_ONSET side "
+                            "capture stream now RECORDING with no capture "
+                            "open at %s (ids: %s)",
+                            _time.strftime("%H:%M:%S"), _stream_ids())
             except Exception:  # noqa: BLE001 — watchdog must never disturb
                 return
             _time.sleep(0.1)
 
     t = threading.Thread(target=_run, name="arc-graph-watchdog", daemon=True)
     t.start()
+
+
+def _install_tripwires() -> None:
+    """Post-flip context capture (p12b round 3): wrap the rarely-called
+    stream/event APIs so the FIRST call made while the recording flag is
+    stuck (no capture open) logs its caller stack — naming the code region
+    that operated right after the poison entered. Budgeted per API."""
+    import traceback
+
+    budget = {}
+
+    def _armed() -> bool:
+        # CPU-only processes (no XPU context) must never arm: the fail-safe
+        # probe treats "cannot answer" as capturing=True.
+        try:
+            if not torch.xpu.is_initialized():
+                return False
+        except Exception:  # noqa: BLE001
+            return False
+        return _captures_open == 0 and _capture_state()[0]
+
+    def _trip(name, orig):
+        def wrapped(*args, **kwargs):
+            try:
+                armed = _armed()
+            except Exception:  # noqa: BLE001 — instrumentation only
+                armed = False
+            if armed and budget.get(name, 0) < 2:
+                budget[name] = budget.get(name, 0) + 1
+                logger.warning(
+                    "ArcXpuPlatform: ARC_GRAPH_TRIPWIRE %s called with "
+                    "zombie recording flag (ids: %s). Caller:\n%s",
+                    name, _stream_ids(),
+                    "".join(traceback.format_stack()[-6:]))
+            return orig(*args, **kwargs)
+        return wrapped
+
+    try:
+        xpu_sync_orig = torch.xpu.synchronize
+        torch.xpu.synchronize = _trip("xpu.synchronize", xpu_sync_orig)
+        torch.xpu.Event.record = _trip("Event.record", torch.xpu.Event.record)
+        torch.xpu.Stream.wait_stream = _trip(
+            "Stream.wait_stream", torch.xpu.Stream.wait_stream)
+        for attr in ("wait_event", "synchronize"):
+            fn = getattr(torch.xpu.Stream, attr, None)
+            if fn is not None:
+                setattr(torch.xpu.Stream, attr, _trip(
+                    f"Stream.{attr}", fn))
+        # The donor wheel's _torch_cuda_wrapper aliases bound torch.cuda.* to
+        # the ORIGINAL torch.xpu functions at import time, so vllm core's
+        # cuda-named calls bypass the wraps above — wrap the alias too, but
+        # only when it demonstrably points at the same original (identity
+        # check against the pre-wrap function object).
+        if getattr(torch.cuda, "synchronize", None) is xpu_sync_orig:
+            torch.cuda.synchronize = _trip("cuda.synchronize", xpu_sync_orig)
+        logger.info(
+            "ArcXpuPlatform: zombie tripwires installed (pid %d, "
+            "synchronize/Event.record/Stream.wait_* wrapped).", os.getpid())
+    except Exception as e:  # noqa: BLE001 — instrumentation only
+        logger.warning("ArcXpuPlatform: tripwire install failed: %r", e)
 
 
 def _zombie_evidence() -> str:
@@ -462,8 +518,10 @@ def _install() -> None:
     au.AsyncPoolingOutput.get_output = _graph_safe_get_output(
         _orig_pooling_get)
     # Boundary hygiene must be in place before any capture runs (worker init
-    # captures follow the install hooks); idempotent per-process.
+    # captures follow the install hooks); idempotent per-process. Tripwires
+    # (round 3) name the first stream/event API to run on the stuck flag.
     _wrap_xpu_graph()
+    _install_tripwires()
     _ensure_watchdog()
     _INSTALLED = True
     logger.info(
