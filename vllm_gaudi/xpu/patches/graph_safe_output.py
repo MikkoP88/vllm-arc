@@ -140,6 +140,24 @@ reroute stays as law-correct hardening (a dead waiter's ordering is void),
 but the storm itself is what killed the retry, and the storm-wait is the
 answer to it.
 
+ROUND-7 RESULT (leg arc-p2-graph-20261028-031336, image 02961955b15a):
+ARC_GRAPH_STORM_ENDED fired at 0.0 s on every poll — fresh streams are
+ALWAYS clean at creation (and stay clean while unused: the cache-hit
+replacement probed clean + canary OK a full second after creation), but
+every stream that RAN A FORWARD was recording at that forward's exit —
+three fresh streams, three on-use flips within ~1 s of use. THERE IS NO
+TIME-BOUNDED STORM: the first flip puts the runtime into a PERMANENT
+state where any queue that enqueues real model work is hijacked into
+command-graph recording mid-forward. Waiting cannot produce a servable
+stream; stream-layer recovery is impossible post-trigger. POSTURE
+DECISION (results/2026-10-28-p2-graph-p12b-r7): the graph lane is
+abandoned for serving — P2 runs graphs-OFF eager
+(VLLM_XPU_ENABLE_XPU_GRAPH unset → platforms/xpu.py:301 → NONE, no
+capture sessions, the poison cannot arm). This module's layers stay as
+proven integrity keepers should graphs ever be re-enabled; on the eager
+lane they are dormant (guards arm only on the first flip, which never
+comes without graphs).
+
 Provenance: error family + fix direction = plan Appendix C defect (b);
 capture-probe fail-safe law = D-line waveD patch_gdn_metadata_026.py
 (``_iexp_is_capturing``, results/2026-10-18-waveD-anchor-analysis.log);
