@@ -1,0 +1,48 @@
+(APIServer pid=20923) INFO 10-28 11:38:00 [launcher.py:70] Route: /is_scaling_elastic_ep, Methods: POST
+(APIServer pid=20923) INFO:     Started server process [20923]
+(APIServer pid=20923) INFO:     Waiting for application startup.
+(APIServer pid=20923) INFO:     Application startup complete.
+(APIServer pid=20923) INFO:     127.0.0.1:59212 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=20923) INFO:     127.0.0.1:59228 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=20923) INFO:     127.0.0.1:59242 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=20923) INFO:     127.0.0.1:39186 - "GET /metrics HTTP/1.1" 200 OK
+(Worker_TP1 pid=21444) [r16pre] AR entry numel=(832, 5120) bytes=8519680 pre_rec=True
+(Worker_TP0 pid=21443) [r16pre] AR entry numel=(832, 5120) bytes=8519680 pre_rec=True
+(Worker_TP1 pid=21444) [r16pre] AR exit  pre_rec=True
+(Worker_TP0 pid=21443) [r16pre] AR exit  pre_rec=True
+(Worker_TP1 pid=21444) [r16pre] AR entry numel=(832, 5120) bytes=8519680 pre_rec=True
+(Worker_TP0 pid=21443) [r16pre] AR entry numel=(832, 5120) bytes=8519680 pre_rec=True
+(Worker_TP1 pid=21444) [r16pre] AR exit  pre_rec=True
+(Worker_TP0 pid=21443) [r16pre] AR exit  pre_rec=True
+(Worker_TP0 pid=21443) [r16pre] AR entry numel=(832, 5120) bytes=8519680 pre_rec=True
+(Worker_TP1 pid=21444) [r16pre] AR entry numel=(832, 5120) bytes=8519680 pre_rec=True
+(Worker_TP1 pid=21444) [r16pre] AR exit  pre_rec=True
+(Worker_TP0 pid=21443) [r16pre] AR exit  pre_rec=True
+(Worker_TP1 pid=21444) [r16pre] AR entry numel=(832, 5120) bytes=8519680 pre_rec=True
+(Worker_TP0 pid=21443) [r16pre] AR entry numel=(832, 5120) bytes=8519680 pre_rec=True
+(Worker_TP1 pid=21444) [r16pre] AR exit  pre_rec=True
+(Worker_TP0 pid=21443) [r16pre] AR exit  pre_rec=True
+(Worker_TP1 pid=21444) [r16pre] AR entry numel=(832, 5120) bytes=8519680 pre_rec=True
+(Worker_TP0 pid=21443) [r16pre] AR entry numel=(832, 5120) bytes=8519680 pre_rec=True
+(Worker_TP1 pid=21444) [r16pre] AR exit  pre_rec=True
+(Worker_TP0 pid=21443) [r16pre] AR exit  pre_rec=True
+(Worker_TP1 pid=21444) [r16pre] AR entry numel=(832, 5120) bytes=8519680 pre_rec=True
+(Worker_TP0 pid=21443) [r16pre] AR entry numel=(832, 5120) bytes=8519680 pre_rec=True
+(Worker_TP1 pid=21444) [r16pre] AR exit  pre_rec=True
+(Worker_TP0 pid=21443) [r16pre] AR exit  pre_rec=True
+(Worker_TP1 pid=21444) [r16pre] AR entry numel=(832, 5120) bytes=8519680 pre_rec=True
+(Worker_TP0 pid=21443) [r16pre] AR entry numel=(832, 5120) bytes=8519680 pre_rec=True
+(Worker_TP1 pid=21444) [r16pre] AR exit  pre_rec=True
+(Worker_TP0 pid=21443) [r16pre] AR exit  pre_rec=True
+(Worker_TP1 pid=21444) [r16pre] AR entry numel=(832, 5120) bytes=8519680 pre_rec=True
+(Worker_TP0 pid=21443) [r16pre] AR entry numel=(832, 5120) bytes=8519680 pre_rec=True
+(Worker_TP1 pid=21444) [r16pre] AR exit  pre_rec=True
+(Worker_TP0 pid=21443) [r16pre] AR exit  pre_rec=True
+(Worker_TP0 pid=21443) [r16pre] AR entry numel=(832, 5120) bytes=8519680 pre_rec=True
+(Worker_TP1 pid=21444) [r16pre] AR entry numel=(832, 5120) bytes=8519680 pre_rec=True
+(Worker_TP0 pid=21443) [r16pre] AR exit  pre_rec=True
+(Worker_TP1 pid=21444) [r16pre] AR exit  pre_rec=True
+(Worker_TP0 pid=21443) [r16pre] AR entry numel=(832, 5120) bytes=8519680 pre_rec=True
+(Worker_TP1 pid=21444) [r16pre] AR entry numel=(832, 5120) bytes=8519680 pre_rec=True
+(Worker_TP0 pid=21443) [r16pre] AR exit  pre_rec=True
+(Worker_TP1 pid=21444) [r16pre] AR exit  pre_rec=True
