@@ -1,0 +1,29 @@
+Legs: p2-graph p12b rounds 4+5 (fix legs; engine still dies at the flip — each
+round converts one death class into survival, one class remains)
+Round 4: rig leg arc-p2-graph-20261028-013037, image vllm-arc:v0.30.0-b70-p12b
+         = 7495f59ae025 (fork bb0606e4)
+Round 5: rig leg arc-p2-graph-20261028-020249, image = 471baa7e8d7c (fork f4a5671f)
+Env: TP2, qwen3.8-27b-fp8, gmu=0.8 mnbt=8192 seqs=64, VLLM_XPU_ENABLE_XPU_GRAPH=1,
+     FULL_DECODE_ONLY, spec=0 lmc=0, arc3 wheel.
+
+Round 4 (stream-reroute fix): EVERY guard worked — onset 01:37:57 armed them,
+ARC_GRAPH_SUBSTITUTE + WAIT_SKIP fired on the next request's copy path, only 2
+device-sync raises (vs 6 in r3; the healthy-path device sync is gone). Engine
+still died: execute_model and sample_tokens are SEPARATE RPCs on DIFFERENT
+executor threads; the forward ran on a live thread but the construction RPC ran
+on a thread parked on the dead default (a thread that never transitions never
+passes a set_stream guard) → alarm raised on a HEALTHY request.
+
+Round 5 (RPC-entry hygiene + step-poison flag): all machinery fired — onset
+02:10:10, "execute_model-exit (mid-forward flip)" dezombie on both workers
+02:10:11 (the flip landed between the clean entry probe and the exit probe:
+genuinely MID-FORWARD; flip timing inside the post-completion window varies —
+r3/r4 between requests, r5 mid-forward), poison flag raised at sample_tokens,
+no garbage served (k1k 200, then integrity 500s).
+
+Round 6 (5e9b2217, building): lost-step retry — kernels enqueued before the
+flip NEVER execute (canary law) → a mid-forward flip loses the step ATOMICALLY
+(no KV writes, no partial state) → execute_model retries once on the live
+stream; construction dead-current dezombies and PROCEEDS (forward already
+verified by the exit probe). Expected: flip becomes serve-transparent.
+Raws: rig leg dirs (serve/serve_full.log in each).
