@@ -78,6 +78,22 @@ capture, therefore waitable — instead of the device-wide sync. The capture
 accounting, boundary hygiene and serve-time alarm (raise: integrity law) stay
 as verifiers for the unobserved mid-request flip class.
 
+ROUND-4 RESULT (leg arc-p2-graph-20261028-013037): every guard worked as
+designed — onset 01:37:57 armed them, ARC_GRAPH_SUBSTITUTE / WAIT_SKIP fired
+on the next request's copy path — but the engine still died at the
+serve-time alarm: ``execute_model`` and ``sample_tokens`` are SEPARATE RPCs
+on DIFFERENT executor threads. The forward ran on a live thread (entry
+hygiene held), yet the construction RPC ran on a thread still parked on the
+dead default — a thread that never transitions never passes a guard — and
+the alarm raised on a perfectly healthy request.
+
+ROUND-5 LAW: entry hygiene on every worker-RPC entry that touches the GPU
+(``execute_model`` AND ``sample_tokens`` — thread-local currents make
+per-entry clearing mandatory), plus a step-poison flag: the execute_model
+EXIT probe marks the step when the flip lands mid-forward (entry was clean,
+exit dead — kernels may be lost) and the next sample_tokens raises on it
+(integrity law: unverifiable outputs are never returned).
+
 Provenance: error family + fix direction = plan Appendix C defect (b);
 capture-probe fail-safe law = D-line waveD patch_gdn_metadata_026.py
 (``_iexp_is_capturing``, results/2026-10-18-waveD-anchor-analysis.log);
@@ -131,6 +147,10 @@ _SYNC_TRIP_LOGS = 0
 # The unwrapped set_stream, captured at install: internal switches (watchdog
 # side-probe, _stream_poisoned) must bypass the substitution shim.
 _ORIG_SET_STREAM = None
+# Set by the execute_model EXIT probe when the flip landed mid-forward
+# (entry clean, exit dead): the step's kernels may be lost, so the following
+# sample_tokens fails the request loudly (integrity law, round 5).
+_poisoned_step = False
 
 
 class _ArcNoOpEvent:
@@ -530,14 +550,26 @@ def _wrap_stream_apis() -> None:
 
 
 def _wrap_runner_entry() -> bool:
-    """Round-4 save point: ``GPUModelRunner.execute_model`` entry hygiene.
-    Worker threads start life parked on the device default stream — the
-    poisoned one — and thread-local currents mean a dezombie on one thread
-    does not fix another. Probing (and clearing) at every execute_model
-    entry guarantees no forward is ever enqueued on a dead queue, even for
-    the first RPC on a fresh thread. XPUModelRunner subclasses
-    GPUModelRunner without overriding execute_model (wheel-verified
-    2026-10-28), so the base-class wrap covers it."""
+    """Round-4/5 save points on ``GPUModelRunner`` (XPUModelRunner subclasses
+    it without overriding these methods — wheel-verified 2026-10-28):
+
+    - ``execute_model`` ENTRY hygiene: worker threads start life parked on
+      the device default stream — the poisoned one — and thread-local
+      currents mean a dezombie on one thread does not fix another. Probing
+      (and clearing) at every entry guarantees no forward is ever enqueued
+      on a dead queue, even for the first RPC on a fresh thread.
+    - ``execute_model`` EXIT probe (round 5): entry was clean but the
+      current is dead at exit → the flip landed MID-FORWARD and this step's
+      kernels may be lost. Clear the recorder and set the step-poison flag;
+      the following sample_tokens fails that request loudly (integrity law).
+    - ``sample_tokens`` ENTRY hygiene (round 5, the round-4 lesson):
+      execute_model and sample_tokens are SEPARATE RPCs on DIFFERENT
+      executor threads — a construction RPC on a thread parked on the dead
+      default never transitions, so it never passes a set_stream guard.
+      Clearing here keeps the construction probe healthy so the alarm stays
+      a real integrity tripwire instead of a thread-locals artifact.
+    """
+    global _poisoned_step
     try:
         from vllm.v1.worker.gpu import model_runner as mr
     except Exception as e:  # noqa: BLE001 — circular import at register()
@@ -548,16 +580,41 @@ def _wrap_runner_entry() -> bool:
     if getattr(mr.GPUModelRunner, "_arc_entry_hygiene", False):
         return True
     orig_exec = mr.GPUModelRunner.execute_model
+    orig_sample = mr.GPUModelRunner.sample_tokens
 
     def _arc_execute_model(self, *args, **kwargs):
+        global _poisoned_step
         _hygiene("execute_model-entry")
-        return orig_exec(self, *args, **kwargs)
+        try:
+            return orig_exec(self, *args, **kwargs)
+        finally:
+            if _captures_open == 0:
+                capturing, probe_err = _capture_state()
+                if capturing and probe_err is None:
+                    # Entry was cleared above, so the recorder was opened
+                    # DURING this forward — its kernels may never execute.
+                    _poisoned_step = True
+                    _note_zombie()
+                    _dezombie("execute_model-exit (mid-forward flip)")
+
+    def _arc_sample_tokens(self, *args, **kwargs):
+        global _poisoned_step
+        if _poisoned_step:
+            _poisoned_step = False
+            _dezombie("sample_tokens-entry (poisoned forward)")
+            raise RuntimeError(
+                "ArcXpuPlatform: zombie graph stream flipped mid-forward — "
+                "the step's outputs were enqueued on a dead queue and are "
+                "unreliable (integrity law: retry the request)")
+        _hygiene("sample_tokens-entry")
+        return orig_sample(self, *args, **kwargs)
 
     mr.GPUModelRunner.execute_model = _arc_execute_model
+    mr.GPUModelRunner.sample_tokens = _arc_sample_tokens
     mr.GPUModelRunner._arc_entry_hygiene = True
     logger.info(
         "ArcXpuPlatform: runner-entry hygiene installed (pid %d, "
-        "GPUModelRunner.execute_model wrapped).", os.getpid())
+        "GPUModelRunner.execute_model + sample_tokens wrapped).", os.getpid())
     return True
 
 
