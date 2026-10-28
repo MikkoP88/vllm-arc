@@ -1,0 +1,17 @@
+leg:    arc-graph-trace3-20261028-071549 (r12c — triton-only kernel tracer)
+image:  vllm-arc:v0.30.0-b70-p12b c966fcf89a3f (fork cbb6937e)
+env:    ARC_LEG=graph-trace3 GRAPH=1 SPEC=0 ARC_TRACE=1
+result: flip PINPOINTED. First request 200 (log line 293, 07:25:0x),
+        then FIRST probe hit at line 294 07:25:00 = "FLIP at triton-pre"
+        on BOTH workers — the immediately preceding triton kernel's
+        post-probe was clean, so the poison entered BETWEEN two triton
+        kernel launches: the extern aten mm window (the exact frame r12's
+        stack dump named: extern_kernels.mm inside the piecewise-compiled
+        prefill callable). 838 FLIP lines thereafter (permanent flip),
+        every subsequent request 500, engine dead; matrix cells all
+        connection-refused. Integrity law held (no garbage served).
+next:   r13 — --compilation-config mode=NONE + graphs ON (champion posture
+        on 0.30: piecewise backend never constructed, decode FULL graphs
+        stay). Owner-approved; then productize in
+        ArcXpuPlatform.check_and_update_config (force mode=NONE whenever
+        cudagraph_mode != NONE, env override for A/B), citing r12/r12c.
