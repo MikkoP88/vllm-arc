@@ -1,0 +1,4 @@
+large-first: HTTP 200
+small-after: HTTP 200
+onset_count: 0
+(from battery stdout — survival cell, 832-tok flip payload as first traffic)

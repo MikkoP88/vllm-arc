@@ -1,0 +1,6 @@
+r29 p14+closeout — 2026-10-28T19:32Z
+TTFT ladder: 5469.3/11285.9/24207.0/54781.8 vs bars 3944/8083/17447/41565 (+38.7/+39.6/+38.7/+31.8%)
+stepprobe timers-off: c1 63.4-63.5 / c8 77.9 (r22a-identical; timers-on era was 77.6/92.8 -> +14ms stepprobe-face distortion amendment)
+8k prefill attribution: content 5402/5555 ms (97%): gemm 3482 (64.5%, fp8_gemm 520@6.65ms, 63.5 TFLOPS/rank eff) + AR 1198 (22.2%, 265@4.505ms, 84MB@~19GB/s) + FA 241 + GDN 182 | 2 forwards (target+draft) = 265 ARs
+gate pos1 0.8798 PASS hard; survival 200/200 onset 0; TPOT<=60 MISSED-with-proof (BW wall)
+p14 DIAGNOSED: engine-path GEMM-tile rate + CCL AR staging = §12-14 C bake-chain reval lane; no flag delta (prior diff); D archive has no kernel trace (client TTFT only)

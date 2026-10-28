@@ -1,0 +1,18 @@
+{
+ "wall_s": 4.25,
+ "streams_ok": "4/4",
+ "drafts": 208,
+ "draft_tokens": 832,
+ "accepted": 592,
+ "pos": {
+  "0": 0.8798,
+  "1": 0.7596,
+  "2": 0.6442,
+  "3": 0.5625
+ },
+ "pos1": 0.8798,
+ "acceptance": 0.7115,
+ "mean_acceptance_length": 3.85,
+ "hard": 0.5,
+ "target": 0.85
+}
