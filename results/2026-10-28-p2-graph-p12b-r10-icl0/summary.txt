@@ -1,0 +1,13 @@
+leg:    arc-graph-icl0-20261028-053737 (r10 — UR_L0_USE_IMMEDIATE_COMMANDLISTS=0)
+image:  vllm-arc:v0.30.0-b70-p12b f790fb4adee0 (fork b8bf1431)
+env:    ARC_LEG=graph-icl0 ARC_LEG_GRAPH=1 ARC_LEG_SPEC=0 ARC_ICL=0
+result: FLIP AGAIN — classic signature: first /v1/completions 200 OK,
+        ARC_GRAPH_ZOMBIE_ONSET 05:40:12 in the completion window, then
+        every request 500, engine death. IMMEDIATE COMMAND LISTS
+        EXONERATED (knob confirmed passed: 'ARC_ICL: forcing ...=0').
+ordering: one generation completes before the flip — the trigger is in
+        the first request COMPLETION path (AsyncOutput copy / cleanup),        not prefill, not replay launch per se.
+next:   r11 = --async-scheduling leg (champion has it, ours never did;
+        restructures exactly the completion/copy path), then r12 tracer
+        build (phase-level capture-state logging) if it persists.
+raw:    serve_full.log, boot.txt, matrix.log (rig leg dir arc-graph-icl0-20261028-053737)
