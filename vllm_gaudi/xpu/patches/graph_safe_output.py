@@ -94,6 +94,24 @@ EXIT probe marks the step when the flip lands mid-forward (entry was clean,
 exit dead — kernels may be lost) and the next sample_tokens raises on it
 (integrity law: unverifiable outputs are never returned).
 
+ROUND-5 RESULT (leg arc-p2-graph-20261028-020249): all machinery fired —
+onset 02:10:10, ``execute_model-exit (mid-forward flip)`` dezombie on both
+workers 02:10:11 (the flip landed between the clean entry probe and the exit
+probe — genuinely MID-FORWARD this time; earlier rounds caught it between
+requests — the flip timing inside the post-completion window varies), the
+step-poison flag raised at sample_tokens, no garbage served, engine died.
+
+ROUND-6 LAW (the lost-step retry): kernels enqueued on a queue before it
+flipped NEVER execute (canary law) — so a mid-forward flip loses the ENTIRE
+step atomically: no KV writes, no sampler RNG effects, no partial state. The
+execute_model wrap therefore CLEARS the recorder and RE-RUNS the same call
+once on the live stream; the retry's outputs are correct and the flip is
+serve-transparent. A second consecutive exit-poison (double flip in one
+step) gives up loudly. Symmetrically, a dead current at the AsyncOutput
+construction can no longer mean a lost forward (the exit probe verified the
+forward completed on a live stream): dezombie and PROCEED unless the poison
+flag is set — the alarm stays only for the double-flip corner.
+
 Provenance: error family + fix direction = plan Appendix C defect (b);
 capture-probe fail-safe law = D-line waveD patch_gdn_metadata_026.py
 (``_iexp_is_capturing``, results/2026-10-18-waveD-anchor-analysis.log);
@@ -558,10 +576,13 @@ def _wrap_runner_entry() -> bool:
       currents mean a dezombie on one thread does not fix another. Probing
       (and clearing) at every entry guarantees no forward is ever enqueued
       on a dead queue, even for the first RPC on a fresh thread.
-    - ``execute_model`` EXIT probe (round 5): entry was clean but the
-      current is dead at exit → the flip landed MID-FORWARD and this step's
-      kernels may be lost. Clear the recorder and set the step-poison flag;
-      the following sample_tokens fails that request loudly (integrity law).
+    - ``execute_model`` EXIT probe + lost-step RETRY (rounds 5/6): entry was
+      clean but the current is dead at exit → the flip landed MID-FORWARD.
+      Kernels enqueued before the flip never execute, so the whole step was
+      lost atomically (no KV writes, no partial state) — clear the recorder
+      and RE-RUN the same call once on the live stream. A second consecutive
+      exit-poison sets the step-poison flag and the next sample_tokens fails
+      the request loudly (integrity law).
     - ``sample_tokens`` ENTRY hygiene (round 5, the round-4 lesson):
       execute_model and sample_tokens are SEPARATE RPCs on DIFFERENT
       executor threads — a construction RPC on a thread parked on the dead
@@ -585,17 +606,42 @@ def _wrap_runner_entry() -> bool:
     def _arc_execute_model(self, *args, **kwargs):
         global _poisoned_step
         _hygiene("execute_model-entry")
-        try:
-            return orig_exec(self, *args, **kwargs)
-        finally:
-            if _captures_open == 0:
-                capturing, probe_err = _capture_state()
-                if capturing and probe_err is None:
-                    # Entry was cleared above, so the recorder was opened
-                    # DURING this forward — its kernels may never execute.
-                    _poisoned_step = True
+
+        def _flip_poisoned() -> bool:
+            if _captures_open > 0:
+                return False
+            capturing, probe_err = _capture_state()
+            return capturing and probe_err is None
+
+        for attempt in (1, 2):
+            try:
+                out = orig_exec(self, *args, **kwargs)
+            except RuntimeError as e:
+                # Raise-flavored flip: a mid-forward op errored with the
+                # recording-queue text. Same lost-step law — clear, retry.
+                if (attempt == 1 and _captures_open == 0
+                        and (_COMMAND_GRAPH_ERR in str(e)
+                             or "recording" in str(e))):
                     _note_zombie()
-                    _dezombie("execute_model-exit (mid-forward flip)")
+                    _dezombie(
+                        "execute_model-raise (mid-forward flip, retrying)")
+                    continue
+                raise
+            if not _flip_poisoned():
+                # Healthy exit — includes capture contexts (boot captures),
+                # where probing is meaningless and upstream stands.
+                return out
+            # The recorder was opened DURING this forward: every kernel of
+            # the attempt was enqueued on the now-dead queue and none of
+            # them executed — the step was lost atomically. Clear and retry.
+            _note_zombie()
+            if attempt == 1:
+                _dezombie("execute_model-exit (mid-forward flip, retrying)")
+                continue
+            _dezombie("execute_model-exit (mid-forward flip, retry failed)")
+            _poisoned_step = True
+            return out
+        return out  # unreachable
 
     def _arc_sample_tokens(self, *args, **kwargs):
         global _poisoned_step
@@ -603,9 +649,10 @@ def _wrap_runner_entry() -> bool:
             _poisoned_step = False
             _dezombie("sample_tokens-entry (poisoned forward)")
             raise RuntimeError(
-                "ArcXpuPlatform: zombie graph stream flipped mid-forward — "
-                "the step's outputs were enqueued on a dead queue and are "
-                "unreliable (integrity law: retry the request)")
+                "ArcXpuPlatform: zombie graph stream flipped mid-forward "
+                "twice in one step — the outputs were enqueued on a dead "
+                "queue and are unreliable (integrity law: retry the "
+                "request)")
         _hygiene("sample_tokens-entry")
         return orig_sample(self, *args, **kwargs)
 
@@ -642,6 +689,7 @@ def _install() -> None:
     def _graph_safe_init(orig_init):
         def __init__(self, *args, **kwargs):
             global _applied_logs, _deferred_logs, _probe_err_logs
+            global _poisoned_step
             # A GPU worker mid-inference: guaranteed-initialized context for
             # the onset watchdog (lazy backstop for installs pre-device-init).
             _ensure_watchdog()
@@ -649,20 +697,22 @@ def _install() -> None:
             # be cleared before upstream records the copy event on it.
             capturing, probe_err = _capture_state()
             if capturing and probe_err is None and _captures_open == 0:
-                # Zombie alarm (p12b): no capture is open by accounting, yet
-                # the current stream reports recording. The RPC sample_tokens
-                # path never sits inside a genuine capture, so this is the
-                # leaked recorder. The in-flight request's forward was
-                # enqueued on the dead queue and its outputs are garbage —
-                # clear the zombie, then fail loudly (integrity law: never
-                # return unverifiable tokens). Unreachable when the reroute
-                # guards + entry hygiene did their job; this is the
-                # last-resort alarm for the unobserved mid-request flip.
-                _dezombie("serve-time output alarm")
-                raise RuntimeError(
-                    "ArcXpuPlatform: zombie graph stream (recorder left open, "
-                    "no capture active) cleared at serve time; the in-flight "
-                    "request's outputs are unreliable — retry the request")
+                # Dead current at construction (round 6 law): the forward of
+                # THIS output was already verified complete on a live stream
+                # by the execute_model exit probe — so the flip landed AFTER
+                # it (or this thread was parked on the default; the
+                # sample_tokens entry hygiene normally clears that first).
+                # Clear the recorder and PROCEED: the outputs are
+                # trustworthy. Raise only when the step-poison flag says a
+                # retry already failed (double flip in one step).
+                _dezombie("serve-time output dezombie")
+                if _poisoned_step:
+                    _poisoned_step = False
+                    raise RuntimeError(
+                        "ArcXpuPlatform: zombie graph stream (recorder left "
+                        "open, no capture active) cleared at serve time; the "
+                        "in-flight request's outputs are unreliable "
+                        "(integrity law: retry the request)")
             orig_init(self, *args, **kwargs)
             if capturing:
                 # Genuine capture window (or probe-doubt fail-safe): a device
