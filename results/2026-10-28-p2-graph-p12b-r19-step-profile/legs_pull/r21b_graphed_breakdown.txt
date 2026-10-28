@@ -1,0 +1,34 @@
+kernels=5616 span=7.03s
+decode span: 7.03s, 5616 kernels (prefill excluded 0.00s)
+
+== FULL-WINDOW total_xpu=0.389s ==
+  collective                  0.189s  48.5%  n=  312 avg=     0.6us
+  gemm(fp8/gemm_kernel)       0.183s  47.0%  n=   78 avg=     2.3us
+  other                       0.009s   2.4%  n= 2340 avg=     0.0us
+  copy/elementwise            0.008s   2.1%  n= 2808 avg=     0.0us
+  rope                        0.000s   0.1%  n=   78 avg=     0.0us
+
+== DECODE-SPAN total_xpu=0.389s ==
+  collective                  0.189s  48.5%  n=  312 avg=     0.6us
+  gemm(fp8/gemm_kernel)       0.183s  47.0%  n=   78 avg=     2.3us
+  other                       0.009s   2.4%  n= 2340 avg=     0.0us
+  copy/elementwise            0.008s   2.1%  n= 2808 avg=     0.0us
+  rope                        0.000s   0.1%  n=   78 avg=     0.0us
+
+decode-span gemm calls=78 min=2us p50=2us p90=2us max=2us
+  gemm 512-4096us: 78
+decode-span collective calls=312 p50=1us p90=1us max=3us
+
+== top kernels (decode span) ==
+    0.183s n=  78 avg=     2.3us  gemm_kernel
+    0.109s n=  78 avg=     1.4us  oneccl_allreduce_pcie<sycl::_V1::detail::half_impl::half, Rt64_128_PCI
+    0.079s n=  78 avg=     1.0us  allgatherv_large_su_ring_chunking<sycl::_V1::detail::half_impl::half>(
+    0.004s n=  78 avg=     0.1us  at::native::xpu::VectorizedElementwiseKernel<8, at::native::xpu::CopyS
+    0.002s n= 702 avg=     0.0us  at::native::xpu::IndexKernelFunctor<at::native::xpu::IndexFunctor<at::
+    0.002s n=  78 avg=     0.0us  _compute_local_logits_stats_kernel
+    0.001s n= 156 avg=     0.0us  _compute_slot_mappings_kernel
+    0.001s n=  78 avg=     0.0us  _resample_kernel
+    0.001s n= 546 avg=     0.0us  at::native::xpu::VectorizedElementwiseKernel<4, at::native::xpu::BUnar
+    0.001s n=  78 avg=     0.0us  oneccl_invoke_barrier
+    0.001s n= 312 avg=     0.0us  at::native::xpu::UnrolledElementwiseKernel<at::native::xpu::CopyScalar
+    0.001s n= 312 avg=     0.0us  at::native::xpu::ElementwiseGlobalRangeKernel<at::native::xpu::LegacyK

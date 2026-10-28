@@ -1,0 +1,12 @@
+-rw-r--r-- 1 root root      811 Oct 28 13:20 ainode01_2645.async_llm.1793193629851756556.pt.trace.json.gz
+-rw-r--r-- 1 root root      812 Oct 28 13:35 ainode01_5440.async_llm.1793194548166564850.pt.trace.json.gz
+-rw-r--r-- 1 root root  4895084 Oct 28 13:43 ainode01_6877.async_llm.1793194995795430175.pt.trace.json.gz
+-rw-r--r-- 1 root root  3240825 Oct 28 13:20 rank0.1793193630717124378.pt.trace.json.gz
+-rw-r--r-- 1 root root  3355050 Oct 28 13:35 rank0.1793194548962161458.pt.trace.json.gz
+-rw-r--r-- 1 root root 30420321 Oct 28 13:44 rank0.1793195004174489854.pt.trace.json.gz
+-rw-r--r-- 1 root root  3239496 Oct 28 13:20 rank1.1793193630709640232.pt.trace.json.gz
+-rw-r--r-- 1 root root  3354527 Oct 28 13:35 rank1.1793194548950228206.pt.trace.json.gz
+-rw-r--r-- 1 root root 29756847 Oct 28 13:44 rank1.1793195004200245143.pt.trace.json.gz
+-rw-r--r-- 1 root root      815 Oct 28 13:28 ainode01_4051.async_llm.1793194108042704158.pt.trace.json.gz
+-rw-r--r-- 1 root root 16512483 Oct 28 13:28 rank0.1793194112772811825.pt.trace.json.gz
+-rw-r--r-- 1 root root 15942495 Oct 28 13:28 rank1.1793194112792602495.pt.trace.json.gz

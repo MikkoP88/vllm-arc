@@ -1,0 +1,47 @@
+kernels=8039 span=10.12s
+decode span: 10.12s, 8039 kernels (prefill excluded 0.00s)
+
+== FULL-WINDOW total_xpu=6.901s ==
+  gemm(fp8/gemm_kernel)       4.208s  61.0%  n=  654 avg=     6.4us
+  collective                  1.506s  21.8%  n= 1466 avg=     1.0us
+  rope                        0.630s   9.1%  n=  134 avg=     4.7us
+  gdn                         0.195s   2.8%  n=  864 avg=     0.2us
+  quant                       0.130s   1.9%  n=  520 avg=     0.2us
+  norm                        0.115s   1.7%  n=  432 avg=     0.3us
+  act                         0.061s   0.9%  n=  130 avg=     0.5us
+  copy/elementwise            0.049s   0.7%  n= 2669 avg=     0.0us
+  other                       0.007s   0.1%  n= 1136 avg=     0.0us
+  fa2-attn                    0.001s   0.0%  n=   34 avg=     0.0us
+
+== DECODE-SPAN total_xpu=6.901s ==
+  gemm(fp8/gemm_kernel)       4.208s  61.0%  n=  654 avg=     6.4us
+  collective                  1.506s  21.8%  n= 1466 avg=     1.0us
+  rope                        0.630s   9.1%  n=  134 avg=     4.7us
+  gdn                         0.195s   2.8%  n=  864 avg=     0.2us
+  quant                       0.130s   1.9%  n=  520 avg=     0.2us
+  norm                        0.115s   1.7%  n=  432 avg=     0.3us
+  act                         0.061s   0.9%  n=  130 avg=     0.5us
+  copy/elementwise            0.049s   0.7%  n= 2669 avg=     0.0us
+  other                       0.007s   0.1%  n= 1136 avg=     0.0us
+  fa2-attn                    0.001s   0.0%  n=   34 avg=     0.0us
+
+decode-span gemm calls=654 min=0us p50=3us p90=12us max=24us
+  gemm 8-64us: 48
+  gemm 64-512us: 48
+  gemm 512-4096us: 234
+  gemm 4096-32768us: 324
+decode-span collective calls=1466 p50=0us p90=4us max=11us
+
+== top kernels (decode span) ==
+    4.208s n= 654 avg=     6.4us  gemm_kernel
+    0.683s n= 264 avg=     2.6us  ReduceCopyKernel<sycl::_V1::detail::half_impl::half, 8>
+    0.681s n= 264 avg=     2.6us  allreduce_large_su_ring_write_multi_kernel<sycl::_V1::detail::half_imp
+    0.628s n=  34 avg=    18.5us  compat::experimental::detail::KernelFunctor<&(void cutlass::device_ker
+    0.130s n= 520 avg=     0.2us  vllm::per_token_group_quant_8bit_vec_kernel<c10::Half, c10::Float8_e4m
+    0.091s n= 260 avg=     0.3us  vllm::fused_add_rms_norm_kernel<sycl::_V1::detail::half_impl::half, 8,
+    0.087s n= 302 avg=     0.3us  oneccl_invoke_barrier
+    0.073s n=  96 avg=     0.8us  gdn::tiled_kernel_launcher<sycl::_V1::detail::half_impl::half, 4, 8, t
+    0.061s n= 130 avg=     0.5us  vllm::act_and_mul_vec_kernel<sycl::_V1::detail::half_impl::half, &(syc
+    0.053s n=  96 avg=     0.6us  gdn::ChunkFwdOKernel<cutlass::half_t, cutlass::half_t>
+    0.039s n=  38 avg=     1.0us  allgatherv_large_su_ring_chunking<sycl::_V1::detail::half_impl::half>(
+    0.036s n=  96 avg=     0.4us  gdn::ChunkComputeWUKernel<cutlass::half_t, cutlass::half_t>

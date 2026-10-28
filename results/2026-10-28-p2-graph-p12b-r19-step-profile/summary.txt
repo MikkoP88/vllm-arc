@@ -1,0 +1,37 @@
+leg:    arc-p2-r19-step-profile-20261028 (r19-r21b: WHERE the c8 TPOT goes)
+image:  vllm-arc:v0.30.0-b70-p12b2 f92060624185 (fork ca75f1d8), arc-test
+posture:r18 product posture (graphs+MTP k4) for r19/r21/r21b; r20 = same
+        minus graphs (cudagraph NONE) — diagnostic eager leg; torch profiler
+        via --profiler-config (with_stack for r21b)
+finding: QSA ROW VOID ON TARGET MODEL — qwen3.5 (qwen3_5.py, config
+        text_config) has NO sparse indexer (48 linear_attention + 16
+        full_attention layers, no index_topk_str/line_size; zero indexer
+        refs in the model file). qsa_sparse_paged_attention never runs;
+        the W14 "58% of c8 step" QSA law was measured on the flash-next
+        posture (different model). Porting qsa_esimd.so would be dead code.
+        Step is NOT kernel-bound anywhere:
+        - r19 (graphed, window=first prefill chunks): eager prefill gemms
+          3-24ms each (343/pass, ~2.1s GPU/pass); TTFT face, not TPOT.
+        - r20 (EAGER decode, c8 1k ctx): 23 verify steps / 12.43s = ~540ms
+          step; GPU-busy ~135ms; ~1870 launches/step with 0.05-0.2ms
+          launch tax each = ~400ms LAUNCH-BOUND wall (only 15 gaps >1ms).
+        - r21 (GRAPHED decode): 79 steps / 6.89s = ~87ms step, GPU idle 96%;
+          decode forward FULLY graphed (only ~3.7ms eager tail: lm-head
+          gemm 2.3ms + allgatherv 1.0ms + logits/resample).
+        - r21b stacks name the wall: per step ~54ms Event.synchronize in
+          the output path (graph_safe_output.py:1075 get_output <- our
+          defect-b hygiene patch) + ~50ms gdn_attn.py:209 build /
+          build_attn_metadata / mamba_hybrid prepare_attn CPU build —
+          serialized against ~25ms GPU. aten::index/_to_copy chain = the
+          visible D2H.
+implication: TPOT c8 gate <=60ms is a CPU-serialization problem:
+        cutting the ~100ms/step CPU serial section lands the step at
+        ~30-40ms GPU-bound -> gate met with acceptance >=1, and solo
+        contract (79.74) is then exceeded at acc ~4.9 (measured on the
+        run7n counting prompt). p10 (radiance newer-fixed GDN port,
+        plan §12 step 2) is the promoted lever for the metadata build;
+        the output sync needs an overlap lane. Champion's own step×acc
+        law (104-109ms at acc ~1.8) implies champion step ~58ms — our
+        gap is exactly the CPU serial section.
+next:   p10 radiance gdn_attn port (metadata build cost) + output-sync
+        overlap lane; then re-run r18 gate cells.

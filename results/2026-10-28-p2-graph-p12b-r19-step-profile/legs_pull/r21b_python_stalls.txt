@@ -1,0 +1,28 @@
+stalls sampled: 20
+python_function events: 1542717
+== python frames >1ms inside stall windows (top 25) ==
+    2.225s  torch/utils/_contextlib.py(120): decorate_context
+    1.161s  <built-in function sleep>
+    1.082s  vllm/v1/executor/multiproc_executor.py(1035): _execute_worker_rpc
+    1.082s  vllm/v1/worker/worker_base.py(370): execute_model
+    1.082s  vllm/v1/worker/gpu_worker.py(1147): execute_model
+    1.079s  vllm/v1/executor/multiproc_executor.py(982): enqueue_output
+    1.079s  vllm_gaudi/xpu/patches/graph_safe_output.py(1075): get_output
+    1.079s  vllm/v1/worker/gpu/async_utils.py(167): get_output
+    1.079s  torch/xpu/streams.py(165): synchronize
+    1.079s  <built-in method synchronize of Event object at 0x73cf6f1a1d30>
+    1.078s  vllm_gaudi/xpu/patches/graph_safe_output.py(874): _arc_execute_model
+    1.078s  vllm/v1/worker/gpu/model_runner.py(1630): execute_model
+    1.010s  vllm/v1/worker/gpu/model_states/mamba_hybrid.py(232): prepare_attn
+    0.999s  vllm/v1/worker/gpu/attn_utils.py(392): build_attn_metadata
+    0.998s  vllm/v1/attention/backends/gdn_attn.py(209): build
+    0.128s  threading.py(323): wait
+    0.127s  <built-in method acquire of _thread.lock object at 0x73d042bb2d40>
+    0.100s  queue.py(154): get
+    0.067s  torch/distributed/c10d_logger.py(80): wrapper
+    0.050s  vllm/v1/worker/gpu/spec_decode/rejection_sampler.py(287): __call__
+    0.044s  vllm/v1/worker/gpu/spec_decode/autoregressive/speculator.py(203): propose
+    0.040s  vllm/v1/worker/gpu/spec_decode/rejection_sampler.py(210): _verify_in_chunks
+    0.037s  vllm/v1/worker/gpu/model_runner.py(1270): prepare_inputs
+    0.036s  vllm/v1/worker/gpu/spec_decode/rejection_sampler.py(168): _verify
+    0.035s  vllm/v1/worker/gpu/spec_decode/rejection_sampler_utils.py(983): rejection_sample

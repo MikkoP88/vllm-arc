@@ -1,0 +1,56 @@
+-------------------------------------------------------  ------------  ------------  ------------  ------------  ------------  ------------  
+                                                   Name    Self CPU %      Self CPU   CPU total %     CPU total  CPU time avg    # of Calls  
+-------------------------------------------------------  ------------  ------------  ------------  ------------  ------------  ------------  
+              concurrent/futures/thread.py(89): _worker        16.67%       12.212s        33.33%       24.424s       12.212s             2  
+<built-in method get of _queue.SimpleQueue object at...        16.66%       12.211s        16.66%       12.211s       12.211s             1  
+                              <built-in function sleep>        16.64%       12.191s        16.64%       12.191s      10.151ms          1201  
+                           asyncio/runners.py(118): run        16.07%       11.775s        16.67%       12.212s       12.212s             1  
+<built-in method poll of select.poll object at 0x762...        15.58%       11.419s        15.58%       11.419s     951.583ms            12  
+<built-in method acquire of _thread.lock object at 0...        14.55%       10.662s        14.55%       10.662s     380.782ms            28  
+                                threading.py(355): wait         1.89%        1.382s         1.89%        1.382s        1.382s             1  
+                              selectors.py(415): select         1.08%     791.269ms         1.08%     791.269ms     791.269ms             1  
+vllm/entrypoints/openai/completion/serving.py(308): ...         0.05%      39.190ms         0.14%     101.561ms     161.208us           630  
+    uvicorn/protocols/http/httptools_impl.py(463): send         0.05%      35.489ms         0.06%      41.126ms      62.692us           656  
+      prometheus_client/exposition.py(276): sample_line         0.04%      29.135ms         0.13%      94.599ms      47.394us          1996  
+vllm/entrypoints/serve/engine/protocol.py(44): __log...         0.03%      21.641ms         0.03%      25.518ms      13.445us          1898  
+               vllm/v1/metrics/loggers.py(1017): record         0.03%      18.408ms         0.07%      48.401ms     597.543us            81  
+prometheus_client/exposition.py(265): generate_lates...         0.02%      17.021ms         0.23%     167.586ms      41.897ms             4  
+vllm/v1/engine/output_processor.py(629): process_out...         0.02%      14.297ms         0.15%     110.154ms       1.394ms            79  
+vllm_gaudi/xpu/patches/graph_safe_output.py(475): _r...         0.02%      13.460ms        16.67%       12.212s       12.212s             1  
+<built-in method step of tokenizers.decoders.DecodeS...         0.02%      12.862ms         0.02%      12.862ms       4.093us          3142  
+           starlette/responses.py(250): stream_response         0.02%      12.704ms         0.24%     176.774ms     280.594us           630  
+<built-in method to_json of pydantic_core._pydantic_...         0.02%      11.350ms         0.02%      11.350ms      18.016us           630  
+              vllm/v1/engine/detokenizer.py(96): update         0.02%      11.302ms         0.05%      34.770ms      55.191us           630  
+<built-in method match of re.Pattern object at 0x763...         0.01%      10.257ms         0.01%      10.257ms       0.754us         13596  
+vllm/v1/engine/output_processor.py(352): _new_reques...         0.01%       9.635ms         0.02%      11.279ms      17.904us           630  
+prometheus_client/openmetrics/exposition.py(219): _e...         0.01%       8.200ms         0.02%      13.797ms       2.551us          5408  
+prometheus_client/validation.py(94): _is_valid_legac...         0.01%       7.702ms         0.02%      16.289ms       3.012us          5408  
+         prometheus_client/utils.py(9): floatToGoString         0.01%       7.409ms         0.02%      12.255ms       3.732us          3284  
+prometheus_client/openmetrics/exposition.py(196): es...         0.01%       7.315ms         0.03%      24.883ms       4.601us          5408  
+<built-in method format of str object at 0x7631b13e3...         0.01%       7.268ms         0.01%       7.268ms       0.748us          9720  
+vllm/v1/engine/output_processor.py(398): _new_comple...         0.01%       7.020ms         0.01%       9.850ms      15.635us           630  
+      vllm/v1/metrics/stats.py(455): update_from_output         0.01%       7.020ms         0.04%      26.249ms      41.666us           630  
+                         <built-in function isinstance>         0.01%       6.951ms         0.01%       6.967ms       0.647us         10765  
+      prometheus_client/metrics.py(276): _multi_samples         0.01%       6.889ms         0.01%      10.653ms       5.815us          1832  
+                                <built-in function len>         0.01%       6.668ms         0.01%       6.668ms       0.315us         21179  
+      prometheus_client/metrics.py(692): _child_samples         0.01%       6.364ms         0.02%      15.217ms     200.218us            76  
+<built-in method replace of str object at 0x7631a894...         0.01%       6.073ms         0.01%       6.073ms       0.357us         17008  
+                   prometheus_client/values.py(18): inc         0.01%       6.066ms         0.01%       7.743ms       2.462us          3145  
+<built-in method validate_python of pydantic_core._p...         0.01%       5.614ms         0.04%      29.362ms      23.156us          1268  
+                                 enum.py(1562): __and__         0.01%       5.556ms         0.02%      12.574ms      19.168us           656  
+vllm/v1/engine/output_processor.py(286): make_reques...         0.01%       5.513ms         0.04%      26.642ms      42.289us           630  
+                          <frozen os>(680): __getitem__         0.01%       5.249ms         0.01%      10.127ms       7.091us          1428  
+              prometheus_client/metrics.py(89): collect         0.01%       4.898ms         0.06%      43.976ms     233.915us           188  
+             prometheus_client/metrics.py(665): observe         0.01%       4.860ms         0.01%      10.511ms      12.649us           831  
+        vllm/v1/engine/detokenizer.py(211): decode_next         0.01%       4.572ms         0.03%      21.001ms       6.684us          3142  
+                   zmq/_future.py(470): _add_recv_event         0.01%       4.476ms         0.02%      17.211ms     209.894us            82  
+prometheus_client/openmetrics/exposition.py(173): es...         0.01%       4.475ms         0.02%      11.961ms       4.302us          2780  
+vllm_gaudi/xpu/patches/graph_safe_output.py(282): _c...         0.01%       4.360ms         0.01%       7.543ms       6.281us          1201  
+                              enum.py(1544): _get_value         0.01%       4.204ms         0.01%       6.386ms       2.503us          2551  
+                                  <string>(1): <lambda>         0.01%       4.045ms         0.01%       6.719ms       1.149us          5850  
+                 prometheus_client/metrics.py(335): inc         0.01%       3.977ms         0.01%      10.826ms       7.482us          1447  
+                           vllm/envs.py(1793): <lambda>         0.01%       3.855ms         0.03%      19.316ms      27.205us           710  
+prometheus_client/metrics.py(73): _raise_if_not_obse...         0.01%       3.795ms         0.01%       5.937ms       2.198us          2701  
+-------------------------------------------------------  ------------  ------------  ------------  ------------  ------------  ------------  
+Self CPU time total: 73.273s
+

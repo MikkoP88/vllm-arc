@@ -1,0 +1,24 @@
+gather stalls >10ms: 79
+total stall time 4.98s
+== CPU ops inside stall windows (self-overlap summed, top 20) ==
+    4.331s  n=   76  execute_context_0(0)_generation_8(40)
+    4.197s  n=   79  aten::copy_
+    4.166s  n=   79  aten::to
+    4.164s  n=   79  aten::_to_copy
+    4.161s  n=   79  aten::index
+    0.113s  n=    2  execute_context_0(0)_generation_7(35)
+    0.050s  n=   79  vllm::all_gather
+    0.034s  n=   79  c10d::_allgather_base_
+    0.031s  n=   79  xccl:_all_gather_base
+    0.023s  n=   78  aten::arange
+    0.023s  n=   79  aten::fill_
+    0.021s  n=   79  aten::sub
+    0.019s  n=   79  aten::slice
+    0.014s  n=   79  aten::linear
+    0.013s  n=   79  aten::matmul
+    0.013s  n=   79  aten::mm
+    0.012s  n=   79  aten::empty
+    0.011s  n=   78  aten::gather
+    0.009s  n=   78  aten::sum
+    0.009s  n=   79  aten::empty_strided
+== runtime sync/stream calls in stalls ==

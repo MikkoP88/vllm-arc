@@ -1,0 +1,20 @@
+kernels=5688
+span=6.89s busy=294310.78s gap_total=6.60s (96%)
+
+== idle gaps ATTRIBUTED TO THE NEXT KERNEL (top 14 by total) ==
+    4.990s  n=  237 avg=  21.05ms  -> at::native::xpu::VectorizedGatherKernel<16, long>
+    0.917s  n=  790 avg=   1.16ms  -> at::native::xpu::IndexKernelFunctor<at::native::xpu:
+    0.300s  n=   79 avg=   3.79ms  -> _prepare_decode_inputs_kernel
+    0.111s  n=  943 avg=   0.12ms  -> at::native::xpu::VectorizedElementwiseKernel<4, at::
+    0.080s  n=  555 avg=   0.14ms  -> at::native::xpu::UnrolledElementwiseKernel<at::nativ
+    0.070s  n=   79 avg=   0.89ms  -> triton_poi_fused_add_bitwise_and_bitwise_not_bitwise
+    0.050s  n=  473 avg=   0.11ms  -> at::native::xpu::ElementwiseKernelWithIndexFunctor<i
+    0.020s  n=   79 avg=   0.25ms  -> oneccl_allreduce_pcie<sycl::_V1::detail::half_impl::
+    0.019s  n=  237 avg=   0.08ms  -> at::native::xpu::ScatterGatherElementwiseKernelFunct
+    0.019s  n=   79 avg=   0.24ms  -> _prepare_rope_positions_kernel
+    0.019s  n=  316 avg=   0.06ms  -> at::native::xpu::ElementwiseGlobalRangeKernel<at::na
+    0.001s  n=   79 avg=   0.01ms  -> _expand_idx_mapping_kernel
+    0.001s  n=   79 avg=   0.01ms  -> _post_update_kernel
+    0.000s  n=   79 avg=   0.00ms  -> postprocess_mamba_fused_kernel
+
+gap p50=0.01ms p90=0.00ms max=63.9ms; gaps>1ms: 239
