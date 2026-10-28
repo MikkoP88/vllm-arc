@@ -196,6 +196,18 @@ pool-shared 84-graph boot), matching the p13 note; single stream world at
 serve confirmed (xpu_model_runner.py:60 rebinds torch.cuda.graph →
 torch.xpu.graph, stream= honored). results/2026-10-28-p2-graph-p12b-r8/.
 
+ROUND-9..11 LAW — RUNTIME-SIDE TRIGGER (r9/r10/r11 legs): with ALL captures
+on the side stream (r9 verified engaged), UR_L0_USE_IMMEDIATE_COMMANDLISTS=0
+(r10), and --async-scheduling (r11), the flip STILL lands — first
+generation completes 200, then the device default reads recording in the
+COMPLETION window and everything after dies. Serve-level champion deltas
+are exhausted; the trigger lives in the vllm-0.30/torch-2.13 completion
+path (AsyncOutput copy / cleanup — the one region that runs once per
+request and never in boot warmup). r12 = onset TRACER (ARC_TRACE_FLIP=1):
+10 ms watchdog polls, all-thread python stack dump at the flip moment,
+capture-state transition logging at every hygiene boundary. Diagnostic
+legs only — inert by default. results/2026-10-28-p2-graph-p12b-r{9,10-icl0,11-async}/.
+
 Provenance: error family + fix direction = plan Appendix C defect (b);
 capture-probe fail-safe law = D-line waveD patch_gdn_metadata_026.py
 (``_iexp_is_capturing``, results/2026-10-18-waveD-anchor-analysis.log);
@@ -351,6 +363,34 @@ def _replacement_for(dead) -> torch.xpu.Stream:
 
 _WATCHDOG_STARTED = False
 
+# r12 onset tracer (diagnostic legs only; inert unless ARC_TRACE_FLIP=1):
+# 10 ms watchdog polls + all-thread python stack dump the moment the
+# recording flag is first observed, and capture-state transition logging at
+# every hygiene boundary — names the frame executing at the flip.
+_TRACE_FLIP = os.environ.get("ARC_TRACE_FLIP", "") == "1"
+_TRACE_LAST = None
+_TRACE_LOGS = 0
+_TRACE_BUDGET = 400
+
+
+def _dump_threads(marker: str) -> None:
+    """All-thread python stacks at the flip moment (r12 tracer)."""
+    import sys
+    import threading
+    import traceback
+    try:
+        frames = sys._current_frames()
+        names = {t.ident: t.name for t in threading.enumerate()}
+        parts = []
+        for tid, frame in frames.items():
+            stack = traceback.format_stack(frame)[-10:]
+            parts.append(f"[{names.get(tid, tid)}]\n" + "".join(stack))
+        logger.warning(
+            "ARC_GRAPH_ONSET_STACKS %s begin\n%s\nARC_GRAPH_ONSET_STACKS end",
+            marker, "\n".join(parts))
+    except Exception as e:  # noqa: BLE001 — tracer must never disturb
+        logger.warning("ARC_GRAPH_ONSET_STACKS %s dump failed %r", marker, e)
+
 
 def _ensure_watchdog() -> None:
     """Start the onset watchdog exactly once per process, and only where a
@@ -389,10 +429,11 @@ def _start_watchdog() -> None:
         except Exception:  # noqa: BLE001
             side = None
         set_ = _ORIG_SET_STREAM or torch.xpu.set_stream
+        poll = 0.01 if _TRACE_FLIP else 0.1
         while state["logs"] < 8:
             try:
                 if _captures_open > 0:
-                    _time.sleep(0.1)
+                    _time.sleep(poll)
                     continue
                 if not state["own"] and _capture_state()[0]:
                     state["own"] = True
@@ -404,6 +445,8 @@ def _start_watchdog() -> None:
                         "RECORDING with no capture open at %s — reroute "
                         "guards ARMED (ids: %s)",
                         _time.strftime("%H:%M:%S"), _stream_ids())
+                    if _TRACE_FLIP:
+                        _dump_threads("onset-default")
                 if side is not None and not state["side"]:
                     me = torch.xpu.current_stream()
                     set_(side)
@@ -420,9 +463,11 @@ def _start_watchdog() -> None:
                             "capture stream now RECORDING with no capture "
                             "open at %s (ids: %s)",
                             _time.strftime("%H:%M:%S"), _stream_ids())
+                        if _TRACE_FLIP:
+                            _dump_threads("onset-side")
             except Exception:  # noqa: BLE001 — watchdog must never disturb
                 return
-            _time.sleep(0.1)
+            _time.sleep(poll)
 
     t = threading.Thread(target=_run, name="arc-graph-watchdog", daemon=True)
     t.start()
@@ -493,6 +538,16 @@ def _dezombie(tag: str) -> bool:
 
 def _hygiene(tag: str) -> None:
     """Post-boundary zombie check (call after each capture_end / replay)."""
+    if _TRACE_FLIP:  # r12 tracer: log capture-state TRANSITIONS only
+        global _TRACE_LAST, _TRACE_LOGS
+        if _TRACE_LOGS < _TRACE_BUDGET:
+            now = _captures_open > 0 or _capture_state()[0]
+            if now != _TRACE_LAST:
+                _TRACE_LAST = now
+                _TRACE_LOGS += 1
+                logger.warning(
+                    "ArcXpuPlatform: ARC_GRAPH_TRACE state->%s at %s "
+                    "(captures_open=%d)", now, tag, _captures_open)
     _dezombie(tag)
 
 
