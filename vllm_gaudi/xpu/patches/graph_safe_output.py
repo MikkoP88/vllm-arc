@@ -371,6 +371,7 @@ _TRACE_FLIP = os.environ.get("ARC_TRACE_FLIP", "") == "1"
 _TRACE_LAST = None
 _TRACE_LOGS = 0
 _TRACE_BUDGET = 400
+_TRACE_KERNELS_OK = False
 
 
 def _dump_threads(marker: str) -> None:
@@ -425,6 +426,10 @@ def _start_watchdog() -> None:
 
     def _run():
         try:
+            _wrap_kernel_launch_tracer()  # r12b: before any compiled run
+        except Exception:  # noqa: BLE001 — tracer must never disturb
+            pass
+        try:
             side = torch.xpu.graph.default_capture_stream
         except Exception:  # noqa: BLE001
             side = None
@@ -471,6 +476,68 @@ def _start_watchdog() -> None:
 
     t = threading.Thread(target=_run, name="arc-graph-watchdog", daemon=True)
     t.start()
+
+
+def _wrap_kernel_launch_tracer() -> None:
+    """r12b tracer: probe capture-state around EVERY triton kernel launch
+    and the extern aten mm — names the kernel/op whose launch flips the
+    serving stream (ARC_TRACE_FLIP legs only; inert otherwise). r12 pinned
+    the flip inside a piecewise-compiled callable (extern_kernels.mm on the
+    stack, output_code.py:763); toy compiles never flip, so the real
+    kernels are the remaining suspects."""
+    if not _TRACE_FLIP or _zombie_ever:
+        return
+    global _TRACE_KERNELS_OK
+    if _TRACE_KERNELS_OK:
+        return
+    wrapped = []
+
+    def _probe(tag):
+        if _TRACE_LOGS >= _TRACE_BUDGET or _zombie_ever or _captures_open > 0:
+            return
+        try:
+            rec = _capture_state()[0]
+        except Exception:  # noqa: BLE001
+            return
+        if rec:
+            logger.warning(
+                "ArcXpuPlatform: ARC_GRAPH_TRACE FLIP at %s — stream now "
+                "recording (captures_open=%d)", tag, _captures_open)
+
+    try:
+        from torch._inductor.runtime import triton_heuristics as _th
+
+        orig_run = _th.CachingAutotuner.run
+
+        def _traced_run(self, *args, **kwargs):
+            _probe("triton-pre")
+            out = orig_run(self, *args, **kwargs)
+            _probe("triton-post")
+            return out
+
+        _th.CachingAutotuner.run = _traced_run
+        wrapped.append("triton:CachingAutotuner.run")
+    except Exception as e:  # noqa: BLE001 — optional probe
+        logger.warning("ArcXpuPlatform: tracer triton wrap skipped %r", e)
+
+    try:
+        orig_mm = torch.ops.aten.mm.out
+
+        def _traced_mm(a, b, *, out=None):
+            _probe("aten:mm.out-pre")
+            r = orig_mm(a, b, out=out)
+            _probe("aten:mm.out-post")
+            return r
+
+        torch.ops.aten.mm.out = _traced_mm
+        wrapped.append("aten:mm.out")
+    except Exception as e:  # noqa: BLE001 — optional probe
+        logger.warning("ArcXpuPlatform: tracer mm wrap skipped %r", e)
+
+    logger.info(
+        "ArcXpuPlatform: r12b kernel-launch tracer installed (%s).",
+        ", ".join(wrapped))
+    _TRACE_KERNELS_OK = bool(wrapped)
 
 
 def _zombie_evidence() -> str:
