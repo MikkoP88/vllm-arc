@@ -112,6 +112,22 @@ construction can no longer mean a lost forward (the exit probe verified the
 forward completed on a live stream): dezombie and PROCEED unless the poison
 flag is set — the alarm stays only for the double-flip corner.
 
+ROUND-6 RESULT (leg arc-p2-graph-20261028-023623): the retry fired
+("mid-forward flip, retrying", both workers) — and attempt 2 ALSO exited
+poisoned: the "double flip" raise killed the engine. The substitution ids
+show WHY: the dezombie's own fresh stream (created at 02:43:46) was the
+TARGET of a substitution one second later — dead already. This is not a
+one-time flip but a POISON STORM: a multi-second window (~3+ s observed)
+during which every queue dies, existing and freshly created alike. No leg
+has ever outlived the storm, so whether it is time-bounded is unknown.
+
+ROUND-7 LAW (storm-wait): on the first exit-poison, do not retry
+immediately — poll freshly-created streams (200 ms cadence) until one
+survives, up to 15 s, then retry the forward on THAT stream. If a stream
+survives, the storm is bounded: log its measured duration and serve on. If
+none survives in 15 s, the storm is permanent on this stack: fail loudly
+with that verdict (definitive evidence for the posture decision).
+
 Provenance: error family + fix direction = plan Appendix C defect (b);
 capture-probe fail-safe law = D-line waveD patch_gdn_metadata_026.py
 (``_iexp_is_capturing``, results/2026-10-18-waveD-anchor-analysis.log);
@@ -567,6 +583,37 @@ def _wrap_stream_apis() -> None:
         "+ synchronize tripwire).", os.getpid())
 
 
+def _wait_out_storm(deadline_s: float = 15.0):
+    """Round-7 storm-wait: poll freshly-created streams until one survives
+    (probes clean), then leave it current and return it. Returns None when
+    the deadline passes — every queue dying for that long means the poison
+    is permanent on this stack (posture-decision verdict, module docstring).
+    Fresh-stream creation during the storm is safe: r6 substitutions created
+    and rerouted streams mid-storm without device errors.
+    """
+    import time as _time
+    set_ = _ORIG_SET_STREAM or torch.xpu.set_stream
+    t0 = _time.monotonic()
+    last = None
+    while _time.monotonic() - t0 < deadline_s:
+        s = torch.xpu.Stream()
+        set_(s)
+        capturing, probe_err = _capture_state()
+        if not capturing and probe_err is None:
+            logger.warning(
+                "ArcXpuPlatform: ARC_GRAPH_STORM_ENDED a fresh stream "
+                "survived after %.1fs — retrying the lost step on it "
+                "(ids: cur=%s).", _time.monotonic() - t0, s)
+            return s
+        last = s
+        _time.sleep(0.2)
+    logger.error(
+        "ArcXpuPlatform: ARC_GRAPH_STORM_PERMANENT no fresh stream survived "
+        "%.1fs — every queue dies on this stack (last probe: %s).",
+        deadline_s, last)
+    return None
+
+
 def _wrap_runner_entry() -> bool:
     """Round-4/5 save points on ``GPUModelRunner`` (XPUModelRunner subclasses
     it without overriding these methods — wheel-verified 2026-10-28):
@@ -613,18 +660,20 @@ def _wrap_runner_entry() -> bool:
             capturing, probe_err = _capture_state()
             return capturing and probe_err is None
 
-        for attempt in (1, 2):
+        for attempt in (1, 2, 3):
             try:
                 out = orig_exec(self, *args, **kwargs)
             except RuntimeError as e:
                 # Raise-flavored flip: a mid-forward op errored with the
-                # recording-queue text. Same lost-step law — clear, retry.
-                if (attempt == 1 and _captures_open == 0
+                # recording-queue text. Same lost-step law — storm-wait,
+                # then retry.
+                if (attempt < 3 and _captures_open == 0
                         and (_COMMAND_GRAPH_ERR in str(e)
                              or "recording" in str(e))):
                     _note_zombie()
-                    _dezombie(
-                        "execute_model-raise (mid-forward flip, retrying)")
+                    if _wait_out_storm() is None:
+                        _poisoned_step = True
+                        raise
                     continue
                 raise
             if not _flip_poisoned():
@@ -633,10 +682,16 @@ def _wrap_runner_entry() -> bool:
                 return out
             # The recorder was opened DURING this forward: every kernel of
             # the attempt was enqueued on the now-dead queue and none of
-            # them executed — the step was lost atomically. Clear and retry.
+            # them executed — the step was lost atomically. Wait out the
+            # poison storm, then re-run the same call on the surviving
+            # stream (round 7 — an immediate retry just dies with it).
             _note_zombie()
-            if attempt == 1:
-                _dezombie("execute_model-exit (mid-forward flip, retrying)")
+            if attempt < 3:
+                _dezombie("execute_model-exit (mid-forward flip, "
+                          "storm-waiting)")
+                if _wait_out_storm() is None:
+                    _poisoned_step = True
+                    return out
                 continue
             _dezombie("execute_model-exit (mid-forward flip, retry failed)")
             _poisoned_step = True
