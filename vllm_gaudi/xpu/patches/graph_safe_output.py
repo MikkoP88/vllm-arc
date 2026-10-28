@@ -131,7 +131,11 @@ Corpse-proof cache: a replacement created mid-storm is itself dead — every
 ``_LIVE_REPLACEMENTS`` hit is re-probed and evicted if recording, and a
 dezombie whose swapped-to stream dies under it evicts + storm-waits in
 place (otherwise the first healthy post-storm request's copy path would
-substitute onto a corpse and its copy_event would never fire).
+substitute onto a corpse and its copy_event would never fire). r6 raw also
+showed streams dead AT CREATION (retry canary executed=False, garbage
+vals) and the engine-killing raise was a wait issued ON a dead queue
+(dead.wait_stream(live) — argument guard blind to it): wait_stream now
+reroutes a recording CALLER onto the thread's live current.
 
 Provenance: error family + fix direction = plan Appendix C defect (b);
 capture-probe fail-safe law = D-line waveD patch_gdn_metadata_026.py
@@ -550,9 +554,9 @@ def _wrap_stream_apis() -> None:
 
     def _arc_wait_stream(self, s=None):
         global _WAIT_SKIP_LOGS
-        if _zombie_ever and s is not None and _captures_open == 0:
+        if _zombie_ever and _captures_open == 0:
             try:
-                if _stream_poisoned(s):
+                if s is not None and _stream_poisoned(s):
                     if _WAIT_SKIP_LOGS < _LOG_BUDGET:
                         _WAIT_SKIP_LOGS += 1
                         logger.warning(
@@ -561,6 +565,25 @@ def _wrap_stream_apis() -> None:
                             "capture open) — skip (dead queue never "
                             "progresses; ids: %s).", s, _stream_ids())
                     return None
+                if _stream_poisoned(self):
+                    # r6 leg lines 467/491: a wait issued ON a dead queue
+                    # ("dead.wait_stream(live)") raises "wait cannot be
+                    # called for a queue which is recording" and killed the
+                    # engine — the argument guard cannot see this. The dead
+                    # waiter's ordering is void (nothing it enqueued will
+                    # ever execute), so let the thread's live current wait
+                    # instead.
+                    live = torch.xpu.current_stream()
+                    if live is not self:
+                        if _WAIT_SKIP_LOGS < _LOG_BUDGET:
+                            _WAIT_SKIP_LOGS += 1
+                            logger.warning(
+                                "ArcXpuPlatform: ARC_GRAPH_WAIT_REROUTE "
+                                "wait_stream caller %s probes recording (no "
+                                "capture open) — waiting from current %s "
+                                "instead (ids: %s).", self, live,
+                                _stream_ids())
+                        return orig_wait(live, s)
             except Exception:  # noqa: BLE001 — fall through to upstream
                 pass
         return orig_wait(self, s)
