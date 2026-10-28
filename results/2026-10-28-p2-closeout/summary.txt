@@ -1,0 +1,15 @@
+P2 CLOSE-OUT — 2026-10-28, after r29 (09dcdec5). Disposition of §10 P2 row:
+DONE: defects a/b (regression cells held every leg r18-r29), acceptance telemetry
+(pos1 0.877-0.912 band), CPU-serial killed (p10 0.49 ms), step decomposition x2
+(r25 split + r26 draft-internal), AR share published (132/step, 2-5 ms central, no
+>10ms contingency). UNREACHABLE/MISSED-WITH-PROOF: S1 forward <=45 (48 ms GEMM BW
+floor; compile x3 falsified), draft <=7 (8.5 ms lm_head floor; propose 15.06-15.18),
+TPOT k1k-c8 <=60 (77.9 timers-off; BW wall; 60 predates the law). CLOSED: p11
+void-on-dense; p50 evidence-complete (no leg). DIAGNOSED: p14 (r29 - GEMM 64.5% +
+AR 22.2% of 97%-busy 8k window; C bake-chain §12-14 reval lane, AR-staging first).
+Laws established: BW-wall; profiler-visibility (eager-proxy); golden nondeterminism
+floor; timers-off gate faces (stepprobe +14 ms amendment); profile legs LAST.
+Merge executed: feat/arc-p33-draft-chain -> main squash (linear chain = all P2
+product code p12b/p32/p30/p31/p10 + r18-r29 evidence), per owner "p12b -> main at
+close". Phase scorecard: solo 53.5-56.9 / agg 196.7-209.8 vs contract 79.74/274.41 —
+distance attributed to P4 acceptance, p14 prefill rate, P3 cache. Next: P3 per §12.
