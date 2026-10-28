@@ -177,6 +177,25 @@ in every poisoned round). Prefix-caching OFF also flipped
 (results/2026-10-28-p2-graph-prefixoff) — trigger was never the prefix
 write, it was the capture stream choice all along.
 
+ROUND-8b LAW — THE LAZY-INIT HOLE (r8 leg INVALID, r8b probe): the round-8
+wrapper was a NO-OP for capture #1. ``torch.xpu.graph.default_capture_stream``
+is a class attribute lazily initialized INSIDE ``graph.__init__``
+(torch/xpu/graphs.py:167-183) — it is None until the first ``graph()``
+context entry, and vllm evaluates ``stream=self._capture_stream(desc)``
+BEFORE that entry. So capture #1 read None, fell through to upstream
+(current_stream = the device default) and poisoned the serving default at
+boot; captures #2..84 rode the side stream. The champion passes NO stream
+arg, so torch's own lazy init fires inside ``__init__`` and capture #1
+rides the side stream from the start. r9 fix: the wrapper EAGERLY
+initializes the class attribute (constructs ``torch.xpu.Stream()`` and
+assigns it) exactly as torch's own lazy init would — champion parity for
+every capture. Bare-torch probe matrix (r8b): toy graphs never poison any
+stream (capture-on-default included, same-stream capture+replay clean) —
+the leak needs the real captured runnable (CCL, capture-time events,
+pool-shared 84-graph boot), matching the p13 note; single stream world at
+serve confirmed (xpu_model_runner.py:60 rebinds torch.cuda.graph →
+torch.xpu.graph, stream= honored). results/2026-10-28-p2-graph-p12b-r8/.
+
 Provenance: error family + fix direction = plan Appendix C defect (b);
 capture-probe fail-safe law = D-line waveD patch_gdn_metadata_026.py
 (``_iexp_is_capturing``, results/2026-10-18-waveD-anchor-analysis.log);
@@ -834,21 +853,27 @@ def _wrap_capture_stream() -> bool:
     manager = getattr(cgu, "CudaGraphManager", None)
     if manager is None or getattr(manager, "_arc_capture_stream", False):
         return True
-    orig_capture_stream = manager._capture_stream
 
     def _arc_capture_stream(self, desc=None):
         side = getattr(torch.xpu.graph, "default_capture_stream", None)
-        if side is not None:
-            return side
-        # No side stream on this build — upstream's choice stands.
-        return orig_capture_stream(self, desc)
+        if side is None:
+            # Round-8b hole: the class attr is None until the first
+            # graph() context entry, and this method runs BEFORE that
+            # entry (vllm builds the stream= arg with it) — capture #1
+            # would fall through to the device default and poison the
+            # serving stream at boot. Eager init, identical to torch's
+            # own lazy init in graph.__init__.
+            side = torch.xpu.Stream()
+            torch.xpu.graph.default_capture_stream = side
+        return side
 
     manager._capture_stream = _arc_capture_stream
     manager._arc_capture_stream = True
     logger.info(
         "ArcXpuPlatform: capture-stream fix installed (pid %d, captures "
-        "ride torch.xpu.graph.default_capture_stream — the serving default "
-        "never enters capture; champion 0.26.1 discipline).", os.getpid())
+        "ride torch.xpu.graph.default_capture_stream, EAGERLY INITED "
+        "before capture #1 — the serving default never enters capture; "
+        "champion 0.26.1 discipline, r9).", os.getpid())
     return True
 
 
