@@ -1,0 +1,25 @@
+total kernels 378 span_s 0.38997200830078127
+     13.0u n=   6 avg=    2.2u  gemm_kernel
+      0.8u n=   6 avg=    0.1u  allgatherv_large_su_ring_chunking<sycl::_V1::detail::half_impl::half>(sycl::_V
+      0.1u n=  24 avg=    0.0u  at::native::xpu::IndexKernelFunctor<at::native::xpu::IndexFunctor<at::native::
+      0.1u n=   6 avg=    0.0u  oneccl_allreduce_pcie<sycl::_V1::detail::half_impl::half, Rt64_128_PCIE, false
+      0.1u n=  12 avg=    0.0u  _compute_slot_mappings_kernel
+      0.1u n=  42 avg=    0.0u  at::native::xpu::VectorizedElementwiseKernel<4, at::native::xpu::BUnaryFunctor
+      0.1u n=   6 avg=    0.0u  at::native::xpu::IndexSelectSmallIndexFunctor<c10::Half, long, unsigned int, 2
+      0.0u n=  24 avg=    0.0u  at::native::xpu::ElementwiseGlobalRangeKernel<at::native::xpu::LegacyKernelSca
+      0.0u n=  24 avg=    0.0u  at::native::xpu::VectorizedElementwiseKernel<16, at::native::xpu::FillFunctor<
+      0.0u n=   6 avg=    0.0u  _compute_local_logits_stats_kernel
+      0.0u n=   6 avg=    0.0u  _rejection_kernel
+      0.0u n=   6 avg=    0.0u  at::native::xpu::VectorizedElementwiseKernel<8, at::native::xpu::CopyScalarFun
+      0.0u n=   6 avg=    0.0u  oneccl_invoke_barrier
+      0.0u n=   6 avg=    0.0u  _resample_kernel
+      0.0u n=  18 avg=    0.0u  at::native::xpu::UnrolledElementwiseKernel<at::native::xpu::CopyScalarFunc<int
+      0.0u n=  18 avg=    0.0u  at::native::xpu::ScatterGatherElementwiseKernelFunctor<at::native::xpu::Scatte
+      0.0u n=   6 avg=    0.0u  invoke_p2p_barrier(std::shared_ptr<ccl_comm>, sycl::_V1::queue, std::vector<sy
+      0.0u n=   6 avg=    0.0u  _gather_block_tables_kernel
+      0.0u n=   6 avg=    0.0u  at::native::xpu::IndexKernelFunctor<at::native::xpu::IndexPutFunctor<at::nativ
+      0.0u n=  18 avg=    0.0u  at::native::xpu::VectorizedElementwiseKernel<4, at::native::xpu::ClampScalarFu
+      0.0u n=  18 avg=    0.0u  at::native::xpu::ElementwiseKernelWithIndexFunctor<int, at::native::xpu::Arang
+      0.0u n=   6 avg=    0.0u  _post_update_kernel
+      0.0u n=   6 avg=    0.0u  _prepare_rope_positions_kernel
+      0.0u n=   6 avg=    0.0u  preprocess_mamba_align_fused_kernel

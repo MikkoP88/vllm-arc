@@ -1,0 +1,101 @@
+traces: ['rank0.1793213687677660554.pt.trace.json.gz', 'rank1.1793213687656523847.pt.trace.json.gz']
+
+>>> rank0.1793213687677660554.pt.trace.json.gz: kernels=86445 gemms=16779 span=15.4s -> eager
+
+########## rank0.1793213687677660554.pt.trace.json.gz [EAGER] ##########
+kernels=86445 gemms=16779 lm_head-class (>=0.5*max, max=2.2u): 255
+steps=51 verify-lm_head gap p50=302.2ms p90=306.0ms (eager step wall; launch-bound)
+lm_head dur: verify avg=2.1u draft avg=2.1u (BW-bound -> ~equal)
+
+== STEP segment (V_k, V_{k+1}] — forward+sample+verify+draft (n/step=1666 kernels) ==
+  content total  169.35 ms/step (dur-units)
+  collective        112.30 ms/step  66.3% n/step= 149.5 avg=    0.8u
+  gemm-fp8           51.44 ms/step  30.4% n/step= 322.0 avg=    0.2u
+  fa-attn             1.72 ms/step   1.0% n/step=  59.1 avg=    0.0u
+  gdn                 1.23 ms/step   0.7% n/step=  94.1 avg=    0.0u
+  quant               0.82 ms/step   0.5% n/step= 267.0 avg=    0.0u
+  copy/elementwise    0.78 ms/step   0.5% n/step= 386.4 avg=    0.0u
+  norm                0.49 ms/step   0.3% n/step= 232.9 avg=    0.0u
+  other               0.34 ms/step   0.2% n/step=  71.4 avg=    0.0u
+  act                 0.16 ms/step   0.1% n/step=  66.7 avg=    0.0u
+  rope                0.07 ms/step   0.0% n/step=  16.7 avg=    0.0u
+
+== DRAFT cluster (d1-3ms .. d4+3ms) (n/step=197 kernels) ==
+  content total   19.60 ms/step (dur-units)
+  gemm-fp8           11.15 ms/step  56.9% n/step=  21.6 avg=    0.5u
+  collective          7.68 ms/step  39.2% n/step=  17.6 avg=    0.4u
+  fa-attn             0.31 ms/step   1.6% n/step=  10.3 avg=    0.0u
+  other               0.20 ms/step   1.0% n/step=  29.8 avg=    0.0u
+  copy/elementwise    0.16 ms/step   0.8% n/step=  76.1 avg=    0.0u
+  norm                0.04 ms/step   0.2% n/step=  23.0 avg=    0.0u
+  quant               0.04 ms/step   0.2% n/step=  14.6 avg=    0.0u
+  act                 0.01 ms/step   0.1% n/step=   4.0 avg=    0.0u
+
+== ASKS (content units) ==
+  lm_head GEMMs: 10.64 ms/step total (draft 10.60 + verify 2.13)
+  draft collectives: 7.68 ms/step (18 calls/step)
+  forward collectives (step-draft): 104.62 ms/step (132 calls/step)
+
+== top DRAFT-cluster kernels ==
+   11.15 ms/step n/step=21.6 avg=    0.5u  gemm_kernel
+    6.01 ms/step n/step=10.6 avg=    0.6u  oneccl_allreduce_pcie<sycl::_V1::detail::half_impl::half, Rt64_128_PCIE,
+    1.67 ms/step n/step= 7.0 avg=    0.2u  oneccl_allgatherv_pcie<sycl::_V1::detail::half_impl::half, Rt64_128_PCIE
+    0.30 ms/step n/step= 7.3 avg=    0.0u  _ZTSN6compat12experimental6detail13KernelFunctorIXadL_ZN7cutlass13device
+    0.13 ms/step n/step= 4.0 avg=    0.0u  at::native::xpu::ReduceKernel<1, at::native::xpu::ReduceOp<c10::Half, at
+    0.04 ms/step n/step=14.6 avg=    0.0u  vllm::per_token_group_quant_8bit_vec_kernel<c10::Half, c10::Float8_e4m3f
+    0.04 ms/step n/step=27.9 avg=    0.0u  at::native::xpu::ElementwiseGlobalRangeKernel<at::native::xpu::LegacyKer
+    0.03 ms/step n/step=15.6 avg=    0.0u  at::native::xpu::VectorizedElementwiseKernel<8, at::native::xpu::BinaryF
+    0.03 ms/step n/step= 9.0 avg=    0.0u  at::native::xpu::CatArrayBatchedCopy_contig<at::native::xpu::OpaqueType<
+    0.02 ms/step n/step= 6.0 avg=    0.0u  at::native::xpu::CatArrayBatchedCopy<at::native::xpu::OpaqueType<2u>, un
+    0.02 ms/step n/step= 6.0 avg=    0.0u  at::native::xpu::VectorizedElementwiseKernel<8, at::native::xpu::CopySca
+    0.02 ms/step n/step= 3.4 avg=    0.0u  _compute_slot_mappings_kernel
+
+>>> rank1.1793213687656523847.pt.trace.json.gz: kernels=86445 gemms=16779 span=15.4s -> eager
+
+########## rank1.1793213687656523847.pt.trace.json.gz [EAGER] ##########
+kernels=86445 gemms=16779 lm_head-class (>=0.5*max, max=2.2u): 255
+steps=51 verify-lm_head gap p50=301.0ms p90=307.5ms (eager step wall; launch-bound)
+lm_head dur: verify avg=2.1u draft avg=2.1u (BW-bound -> ~equal)
+
+== STEP segment (V_k, V_{k+1}] — forward+sample+verify+draft (n/step=1666 kernels) ==
+  content total  168.66 ms/step (dur-units)
+  collective        111.53 ms/step  66.1% n/step= 149.5 avg=    0.7u
+  gemm-fp8           51.38 ms/step  30.5% n/step= 322.0 avg=    0.2u
+  fa-attn             1.74 ms/step   1.0% n/step=  59.1 avg=    0.0u
+  gdn                 1.24 ms/step   0.7% n/step=  94.1 avg=    0.0u
+  copy/elementwise    0.83 ms/step   0.5% n/step= 386.4 avg=    0.0u
+  quant               0.81 ms/step   0.5% n/step= 267.0 avg=    0.0u
+  norm                0.52 ms/step   0.3% n/step= 232.9 avg=    0.0u
+  other               0.36 ms/step   0.2% n/step=  71.4 avg=    0.0u
+  act                 0.17 ms/step   0.1% n/step=  66.7 avg=    0.0u
+  rope                0.07 ms/step   0.0% n/step=  16.7 avg=    0.0u
+
+== DRAFT cluster (d1-3ms .. d4+3ms) (n/step=197 kernels) ==
+  content total   21.89 ms/step (dur-units)
+  gemm-fp8           11.10 ms/step  50.7% n/step=  21.5 avg=    0.5u
+  collective         10.03 ms/step  45.8% n/step=  17.5 avg=    0.6u
+  fa-attn             0.30 ms/step   1.4% n/step=  10.0 avg=    0.0u
+  other               0.20 ms/step   0.9% n/step=  30.2 avg=    0.0u
+  copy/elementwise    0.16 ms/step   0.7% n/step=  76.6 avg=    0.0u
+  norm                0.04 ms/step   0.2% n/step=  23.0 avg=    0.0u
+  quant               0.04 ms/step   0.2% n/step=  14.5 avg=    0.0u
+  act                 0.01 ms/step   0.0% n/step=   4.0 avg=    0.0u
+
+== ASKS (content units) ==
+  lm_head GEMMs: 10.64 ms/step total (draft 10.60 + verify 2.13)
+  draft collectives: 10.03 ms/step (18 calls/step)
+  forward collectives (step-draft): 101.50 ms/step (132 calls/step)
+
+== top DRAFT-cluster kernels ==
+   11.10 ms/step n/step=21.5 avg=    0.5u  gemm_kernel
+    7.72 ms/step n/step=10.5 avg=    0.7u  oneccl_allreduce_pcie<sycl::_V1::detail::half_impl::half, Rt64_128_PCIE,
+    2.31 ms/step n/step= 7.0 avg=    0.3u  oneccl_allgatherv_pcie<sycl::_V1::detail::half_impl::half, Rt64_128_PCIE
+    0.29 ms/step n/step= 7.0 avg=    0.0u  _ZTSN6compat12experimental6detail13KernelFunctorIXadL_ZN7cutlass13device
+    0.13 ms/step n/step= 4.0 avg=    0.0u  at::native::xpu::ReduceKernel<1, at::native::xpu::ReduceOp<c10::Half, at
+    0.04 ms/step n/step=14.5 avg=    0.0u  vllm::per_token_group_quant_8bit_vec_kernel<c10::Half, c10::Float8_e4m3f
+    0.04 ms/step n/step=27.7 avg=    0.0u  at::native::xpu::ElementwiseGlobalRangeKernel<at::native::xpu::LegacyKer
+    0.03 ms/step n/step=15.5 avg=    0.0u  at::native::xpu::VectorizedElementwiseKernel<8, at::native::xpu::BinaryF
+    0.03 ms/step n/step= 9.0 avg=    0.0u  at::native::xpu::CatArrayBatchedCopy_contig<at::native::xpu::OpaqueType<
+    0.02 ms/step n/step= 6.0 avg=    0.0u  at::native::xpu::CatArrayBatchedCopy<at::native::xpu::OpaqueType<2u>, un
+    0.02 ms/step n/step= 6.0 avg=    0.0u  at::native::xpu::VectorizedElementwiseKernel<8, at::native::xpu::CopySca
+    0.02 ms/step n/step= 5.5 avg=    0.0u  at::native::xpu::IndexKernelFunctor<at::native::xpu::IndexFunctor<at::na
