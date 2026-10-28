@@ -1,0 +1,15 @@
+=== PYMATRIX 1024 start ===
+prompts ready
+CELL k1k-c1 ttft_ms=969.4 prefill_tps=1056.3 tpot_ms=216.34 agg_tps=4.04 per_req_tps=4.62 ok=1/1 wall=5.95
+CELL k1k-c4 ttft_ms=2886.3 prefill_tps=354.8 tpot_ms=118.37 agg_tps=17.11 per_req_tps=8.45 ok=4/4 wall=5.61
+CELL k1k-c8 ttft_ms=4961.9 prefill_tps=206.4 tpot_ms=151.85 agg_tps=22.44 per_req_tps=6.59 ok=8/8 wall=8.56
+CELL k1k-c16 ttft_ms=7806.3 prefill_tps=131.2 tpot_ms=282.85 agg_tps=26.50 per_req_tps=3.54 ok=16/16 wall=14.49
+CELL k8k-c1 ttft_ms=5817.5 prefill_tps=1408.2 tpot_ms=115.28 agg_tps=3.27 per_req_tps=8.67 ok=1/1 wall=9.16
+CELL k8k-c16 ttft_ms=10512.8 prefill_tps=779.2 tpot_ms=338.12 agg_tps=22.99 per_req_tps=2.96 ok=16/16 wall=20.23
+CELL k16k-c1 ttft_ms=11979.6 prefill_tps=1367.7 tpot_ms=115.19 agg_tps=1.64 per_req_tps=8.68 ok=1/1 wall=14.63
+CELL k16k-c4 ttft_ms=2646.9 prefill_tps=6189.9 tpot_ms=158.34 agg_tps=14.92 per_req_tps=6.32 ok=4/4 wall=6.50
+CELL k16k-c8 ttft_ms=5441.1 prefill_tps=3011.1 tpot_ms=164.59 agg_tps=18.44 per_req_tps=6.08 ok=8/8 wall=11.28
+CELL k16k-c16 ttft_ms=8369.0 prefill_tps=1957.7 tpot_ms=313.69 agg_tps=23.82 per_req_tps=3.19 ok=16/16 wall=17.88
+CELL k32k-c1 ttft_ms=25738.7 prefill_tps=1273.1 tpot_ms=114.44 agg_tps=1.09 per_req_tps=8.74 ok=1/1 wall=29.29
+CELL k64k-c1 ttft_ms=58459.8 prefill_tps=1121.0 tpot_ms=113.96 agg_tps=0.47 per_req_tps=8.77 ok=1/1 wall=61.66
+=== PYMATRIX 1024 DONE ===
