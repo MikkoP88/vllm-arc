@@ -1,0 +1,43 @@
+r22b — c8/c1 step decomposition, BEFORE (r21b/r22a traces, pre-p10) vs
+AFTER (r23 stepprobe + p10 budget sampler). §10 P2-row evidence artifact.
+
+STEADY DECODE, graphs + MTP k4, product posture (p12b2 image), 1k-ctx
+counting prompts (acc family 3.7-4.2) unless noted.
+
+component                          BEFORE                     AFTER (p10)
+--------------------------------------------------------------------------------
+step wall (c8, trace/probe)        90.1 ms (align) /          77.4 ms
+                                   87.1 ms (no-cache)
+step wall (c1, stepprobe)          64.4 ms                    62.9 ms
+gdn build_attn_metadata            ~50 ms CPU serial/step     0.49 ms p50 /
+(one slow of 3 builds/step,        (p90 69 ms; aten::index    0.62 p90 / 0.81 max
+gaps before IndexKernel ~63 ms)    + _to_copy + mask H2D)     (4608 builds, both workers)
+AsyncOutput copy_event sync        58.0 ms p50 (flat,         pipeline-bound
+(scheduler thread)                 mode-independent)          (~60 ms: replay+tail+D2H)
+XPU Event.synchronize itself       0.003 ms completed /       (unchanged law)
+                                   honest drain (evprobe)
+GPU pipeline (replay + eager       masked by CPU serial       ~63 ms at c1 (~1 ms/layer,
+tail + D2H, in-order stream)       section                    compile=none unfused replay)
+TPOT k1k-c8 (matrix, random        135.39 ms                  110.75-115.66 ms
+tokens acc~1)
+run7n solo (counting)              57.5-57.7 tok/s            59.07-59.33 tok/s
+run7n agg 4x256                    195.7-213.1 tok/s          206.7-222.3 tok/s
+
+LAWS ESTABLISHED BY THE DECOMPOSITION
+1. TPOT = step wall / acceptance, one law across all faces (random-token
+   cells acc~1: TPOT == step; counting cells acc~3.8: per-token ~= step/3.8).
+2. The step wall = max(GPU pipeline, CPU serial), and the two ran on
+   different threads (worker build vs scheduler sync) — removing the 50 ms
+   CPU serial (p10) exposed the pipeline as the sole pacing term.
+3. The pipeline at compile=none is ~63 ms at c1 (5 tokens, 27B fp8, TP2)
+   ~= 1 ms/layer — the unfused replay. W14 incumbent: 33 ms c8 steps with
+   graphs+compile; champion D ~50 ms c8 TPOT compiled+MTP.
+   => the remaining TPOT c8 lever is the COMPILE A/B (P4 item promoted
+   into the P2 critical path by this evidence), then output-sync overlap.
+4. Instrument inventory: stepprobe (chunk-gap = step wall, no profiler),
+   in-patch budget sampler, evprobe (event semantics), trace analyzers
+   (r21b/r22a) — profile legs LAST on any boot (aggregation-hang law).
+
+Sources: results/2026-10-28-p2-graph-p12b-r19-step-profile (r21b traces),
+2026-10-28-p2-async-ab-r22a (A/B + stepprobe + evprobe),
+2026-10-28-p2-p10-gdn-fastpath-r23 (after + budget sampler + matrix).

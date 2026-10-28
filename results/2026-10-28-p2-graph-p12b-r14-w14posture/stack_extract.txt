@@ -1,0 +1,19 @@
+(Worker_TP0 pid=5145) WARNING 10-28 07:51:48 [graph_safe_output.py:389] [MainThread]
+(Worker_TP0 pid=5145) WARNING 10-28 07:51:48 [graph_safe_output.py:389]   File "/opt/venv/lib/python3.12/site-packages/vllm/compilation/piecewise_backend.py", line 380, in __call__
+(Worker_TP0 pid=5145) WARNING 10-28 07:51:48 [graph_safe_output.py:389]     return range_entry.runnable(*args)
+(Worker_TP0 pid=5145) WARNING 10-28 07:51:48 [graph_safe_output.py:389]   File "/opt/venv/lib/python3.12/site-packages/torch/_inductor/standalone_compile.py", line 321, in __call__
+(Worker_TP0 pid=5145) WARNING 10-28 07:51:48 [graph_safe_output.py:389]     return self.inner_fn(*args)
+(Worker_TP0 pid=5145) WARNING 10-28 07:51:48 [graph_safe_output.py:389]   File "/opt/venv/lib/python3.12/site-packages/torch/_dynamo/aot_compile_types.py", line 221, in __call__
+(Worker_TP0 pid=5145) WARNING 10-28 07:51:48 [graph_safe_output.py:389]     return self.compiled_fn(*args, **kwargs)
+(Worker_TP0 pid=5145) WARNING 10-28 07:51:48 [graph_safe_output.py:389]   File "/opt/venv/lib/python3.12/site-packages/torch/_dynamo/eval_frame.py", line 1446, in _fn
+(Worker_TP0 pid=5145) WARNING 10-28 07:51:48 [graph_safe_output.py:389]     return fn(*args, **kwargs)
+(Worker_TP0 pid=5145) WARNING 10-28 07:51:48 [graph_safe_output.py:389]   File "/opt/venv/lib/python3.12/site-packages/torch/_functorch/aot_autograd.py", line 1277, in forward
+(Worker_TP0 pid=5145) WARNING 10-28 07:51:48 [graph_safe_output.py:389]     return compiled_fn(full_args)
+(Worker_TP0 pid=5145) WARNING 10-28 07:51:48 [graph_safe_output.py:389]   File "/opt/venv/lib/python3.12/site-packages/torch/_functorch/_aot_autograd/runtime_wrappers.py", line 1141, in runtime_wrapper
+(Worker_TP0 pid=5145) WARNING 10-28 07:51:48 [graph_safe_output.py:389]     result = _codegen_runtime_wrapper(
+(Worker_TP0 pid=5145) WARNING 10-28 07:51:48 [graph_safe_output.py:389]   File "/opt/venv/lib/python3.12/site-packages/torch/_functorch/_aot_autograd/subclass_codegen.py:codegen(runtime_wrapper_orchestration)", line 8, in _runtime_wrapper
+(Worker_TP0 pid=5145) WARNING 10-28 07:51:48 [graph_safe_output.py:389]   File "/opt/venv/lib/python3.12/site-packages/torch/_functorch/_aot_autograd/runtime_wrappers.py", line 2548, in __call__
+(Worker_TP0 pid=5145) WARNING 10-28 07:51:48 [graph_safe_output.py:389]     return self.compiled_fn(*args, **kwargs)
+(Worker_TP0 pid=5145) WARNING 10-28 07:51:48 [graph_safe_output.py:389]   File "/opt/venv/lib/python3.12/site-packages/torch/_inductor/output_code.py", line 763, in __call__
+(Worker_TP0 pid=5145) WARNING 10-28 07:51:48 [graph_safe_output.py:389]     return self.current_callable(inputs)
+(Worker_TP0 pid=5145) WARNING 10-28 07:51:48 [graph_safe_output.py:389]   File "/root/.cache/vllm/torch_compile_cache/torch_aot_compile/d0987b84aa31033577cc14ecc1dfdb21040b9b6a0d7ff564e2324860947cb111/inductor_cache/tq/ctq7xkzltuarhqvu2togua2j4e4oravxdgikd52bupfzwcwvtjfi.py", line 362, in call

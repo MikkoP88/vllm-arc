@@ -1,0 +1,12 @@
+(Worker_TP0 pid=781) WARNING 10-28 06:19:46 [graph_safe_output.py:388]   File "/opt/venv/lib/python3.12/site-packages/vllm/compilation/piecewise_backend.py", line 380, in __call__
+(Worker_TP0 pid=781) WARNING 10-28 06:19:46 [graph_safe_output.py:388]     return range_entry.runnable(*args)
+(Worker_TP0 pid=781) WARNING 10-28 06:19:46 [graph_safe_output.py:388]   File "/opt/venv/lib/python3.12/site-packages/torch/_inductor/standalone_compile.py", line 321, in __call__
+(Worker_TP0 pid=781) WARNING 10-28 06:19:46 [graph_safe_output.py:388]   File "/opt/venv/lib/python3.12/site-packages/torch/_dynamo/aot_compile_types.py", line 221, in __call__
+(Worker_TP0 pid=781) WARNING 10-28 06:19:46 [graph_safe_output.py:388]   File "/opt/venv/lib/python3.12/site-packages/torch/_dynamo/eval_frame.py", line 1446, in _fn
+(Worker_TP0 pid=781) WARNING 10-28 06:19:46 [graph_safe_output.py:388]   File "/opt/venv/lib/python3.12/site-packages/torch/_functorch/aot_autograd.py", line 1277, in forward
+(Worker_TP0 pid=781) WARNING 10-28 06:19:46 [graph_safe_output.py:388]   File "/opt/venv/lib/python3.12/site-packages/torch/_functorch/_aot_autograd/runtime_wrappers.py", line 1141, in runtime_wrapper
+(Worker_TP0 pid=781) WARNING 10-28 06:19:46 [graph_safe_output.py:388]   File "/opt/venv/lib/python3.12/site-packages/torch/_functorch/_aot_autograd/subclass_codegen.py:codegen(runtime_wrapper_orchestration)", line 8, in _runtime_wrapper
+(Worker_TP0 pid=781) WARNING 10-28 06:19:46 [graph_safe_output.py:388]   File "/opt/venv/lib/python3.12/site-packages/torch/_functorch/_aot_autograd/runtime_wrappers.py", line 2548, in __call__
+(Worker_TP0 pid=781) WARNING 10-28 06:19:46 [graph_safe_output.py:388]   File "/opt/venv/lib/python3.12/site-packages/torch/_inductor/output_code.py", line 763, in __call__
+(Worker_TP0 pid=781) WARNING 10-28 06:19:46 [graph_safe_output.py:388]   File "/root/.cache/vllm/torch_compile_cache/torch_aot_compile/9cd4e713c4965913ea0fad805a488ad42e89ff5459dabe8024980741ef5c08ce/inductor_cache/i7/ci7x45lu2y6wafmprmr24numhf2yh6p4kvqm4mvkeamta6ypzwnl.py", line 362, in call
+(Worker_TP0 pid=781) WARNING 10-28 06:19:46 [graph_safe_output.py:388]     extern_kernels.mm(buf1, reinterpret_tensor(arg6_1, (5120, 48), (1, 5120), 0), out=buf12)

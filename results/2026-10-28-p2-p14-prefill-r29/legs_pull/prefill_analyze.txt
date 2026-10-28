@@ -1,0 +1,67 @@
+traces: ['rank0.1793215668034086414.pt.trace.json.gz', 'rank1.1793215668054256811.pt.trace.json.gz']
+
+########## rank0.1793215668034086414.pt.trace.json.gz ##########
+kernels total=5270 prefill-span=5270 span wall=5555 ms (bar 3944 — client TTFT adds tokenize/queue/sampling)
+
+== PREFILL SPAN: content total 5402 ms (97% of span wall) ==
+  gemm-fp8           3481.9 ms  64.5% n=  623 avg=     5.6u
+  collective         1198.5 ms  22.2% n= 1334 avg=     0.9u
+  fa-attn             240.9 ms   4.5% n=  102 avg=     2.4u
+  gdn                 182.3 ms   3.4% n=  672 avg=     0.3u
+  quant               109.8 ms   2.0% n=  520 avg=     0.2u
+  norm                 96.8 ms   1.8% n=  432 avg=     0.2u
+  act                  51.4 ms   1.0% n=  130 avg=     0.4u
+  copy/elementwise     36.6 ms   0.7% n= 1304 avg=     0.0u
+  other                 2.4 ms   0.0% n=  118 avg=     0.0u
+  rope                  1.5 ms   0.0% n=   35 avg=     0.0u
+
+  AR/collective: 1198.5 ms (22.2% of content), 1334 calls (expect ~128 layer ARs + draft/misc; per-call 1u)
+
+== top kernels ==
+    3481.9 ms n=  623 avg=     5.6u  gemm_kernel
+     571.6 ms n=  264 avg=     2.2u  ReduceCopyKernel<sycl::_V1::detail::half_impl::half, 8>
+     570.7 ms n=  264 avg=     2.2u  allreduce_large_su_ring_write_multi_kernel<sycl::_V1::detail::half_impl::h
+     239.8 ms n=   34 avg=     7.1u  compat::experimental::detail::KernelFunctor<&(void cutlass::device_kernel<
+     109.8 ms n=  520 avg=     0.2u  vllm::per_token_group_quant_8bit_vec_kernel<c10::Half, c10::Float8_e4m3fn>
+      76.9 ms n=  260 avg=     0.3u  vllm::fused_add_rms_norm_kernel<sycl::_V1::detail::half_impl::half, 8, tru
+      64.5 ms n=   96 avg=     0.7u  gdn::ChunkFwdOKernel<cutlass::half_t, cutlass::half_t>
+      60.7 ms n=   96 avg=     0.6u  gdn::tiled_kernel_launcher<sycl::_V1::detail::half_impl::half, 4, 8, true>
+      51.4 ms n=  130 avg=     0.4u  vllm::act_and_mul_vec_kernel<sycl::_V1::detail::half_impl::half, &(sycl::_
+      50.0 ms n=  267 avg=     0.2u  oneccl_invoke_barrier
+      33.5 ms n=   96 avg=     0.3u  gdn::ChunkComputeWUKernel<cutlass::half_t, cutlass::half_t>
+      18.2 ms n=  672 avg=     0.0u  at::native::xpu::VectorizedElementwiseKernel<8, at::native::xpu::FillFunct
+      17.2 ms n=   96 avg=     0.2u  gdn::ChunkComputeAKernel<cutlass::half_t, cutlass::half_t>
+      14.6 ms n=   96 avg=     0.2u  layer_norm_fwd_kernel
+
+########## rank1.1793215668054256811.pt.trace.json.gz ##########
+kernels total=5270 prefill-span=5270 span wall=5555 ms (bar 3944 — client TTFT adds tokenize/queue/sampling)
+
+== PREFILL SPAN: content total 5403 ms (97% of span wall) ==
+  gemm-fp8           3525.4 ms  65.3% n=  623 avg=     5.7u
+  collective         1150.6 ms  21.3% n= 1334 avg=     0.9u
+  fa-attn             244.3 ms   4.5% n=  102 avg=     2.4u
+  gdn                 183.0 ms   3.4% n=  672 avg=     0.3u
+  quant               111.2 ms   2.1% n=  520 avg=     0.2u
+  norm                 96.8 ms   1.8% n=  432 avg=     0.2u
+  act                  51.4 ms   1.0% n=  130 avg=     0.4u
+  copy/elementwise     36.4 ms   0.7% n= 1304 avg=     0.0u
+  other                 2.0 ms   0.0% n=  118 avg=     0.0u
+  rope                  1.5 ms   0.0% n=   35 avg=     0.0u
+
+  AR/collective: 1150.6 ms (21.3% of content), 1334 calls (expect ~128 layer ARs + draft/misc; per-call 1u)
+
+== top kernels ==
+    3525.4 ms n=  623 avg=     5.7u  gemm_kernel
+     571.1 ms n=  264 avg=     2.2u  ReduceCopyKernel<sycl::_V1::detail::half_impl::half, 8>
+     570.3 ms n=  264 avg=     2.2u  allreduce_large_su_ring_write_multi_kernel<sycl::_V1::detail::half_impl::h
+     243.2 ms n=   34 avg=     7.2u  compat::experimental::detail::KernelFunctor<&(void cutlass::device_kernel<
+     111.2 ms n=  520 avg=     0.2u  vllm::per_token_group_quant_8bit_vec_kernel<c10::Half, c10::Float8_e4m3fn>
+      76.7 ms n=  260 avg=     0.3u  vllm::fused_add_rms_norm_kernel<sycl::_V1::detail::half_impl::half, 8, tru
+      65.0 ms n=   96 avg=     0.7u  gdn::ChunkFwdOKernel<cutlass::half_t, cutlass::half_t>
+      60.8 ms n=   96 avg=     0.6u  gdn::tiled_kernel_launcher<sycl::_V1::detail::half_impl::half, 4, 8, true>
+      51.4 ms n=  130 avg=     0.4u  vllm::act_and_mul_vec_kernel<sycl::_V1::detail::half_impl::half, &(sycl::_
+      33.5 ms n=   96 avg=     0.3u  gdn::ChunkComputeWUKernel<cutlass::half_t, cutlass::half_t>
+      18.0 ms n=  672 avg=     0.0u  at::native::xpu::VectorizedElementwiseKernel<8, at::native::xpu::FillFunct
+      17.4 ms n=   96 avg=     0.2u  gdn::ChunkComputeAKernel<cutlass::half_t, cutlass::half_t>
+      14.8 ms n=   96 avg=     0.2u  layer_norm_fwd_kernel
+       6.5 ms n=  135 avg=     0.0u  at::native::xpu::VectorizedElementwiseKernel<8, at::native::xpu::CopyScala

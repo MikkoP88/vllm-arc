@@ -1,0 +1,26 @@
+leg:    arc-graph-20261028-052336 (r9 — eager side-stream init, all captures
+        on the side stream from #1)
+image:  vllm-arc:v0.30.0-b70-p12b f790fb4adee0 (fork b8bf1431)
+env:    ARC_LEG=graph ARC_LEG_GRAPH=1 ARC_LEG_SPEC=0 (prefix on)
+result: FLIP AGAIN — capture-stream theory DISPROVEN as the mechanism.
+        All 84 captures rode torch.xpu.graph.default_capture_stream
+        (single _capture_stream definition in the base class; wrapper
+        verified engaged, EAGERLY INITED install marker in log), yet the
+        device default STILL flipped at the FIRST real request.
+onset:  05:30:57 ARC_GRAPH_ZOMBIE_ONSET device default (28 s after server
+        start, first k1k request in flight; prefill+first decode step).
+        NEW signature vs r3-r8: the flip now hits MID-FORWARD — every
+        request 500s from the first; our sample_tokens integrity guard
+        raised "flipped mid-forward twice in one step" (r3-r8 served k1k
+        200 through the poisoned window).
+r9b:    bare interleave probes (icl_probe.py, shapes c/d/e): eager→replay,
+        repeated alternation, pool-shared double replay — ALL clean.
+        Toy scale fully exhausted; repro needs the real captured runnable.
+theory: poison is RUNTIME-side — candidates: (1) first replay on the
+        default following eager prefill kernels on the same queue (boot
+        warmup never interleaves); (2) oneAPI 2026 immediate command
+        lists default (UR_L0_USE_IMMEDIATE_COMMANDLISTS exists in the
+        adapter; ICL graph launch = command-graph append → queue reads
+        "recording"). r10 = ARC_ICL=0 knob leg (classic command queues).
+next:   serve_arc_b70.sh gains ARC_ICL knob (-e UR_L0_USE_IMMEDIATE_-
+        COMMANDLISTS only when set; default unset = byte-identical).

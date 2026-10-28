@@ -3,3 +3,6 @@
 # Regenerate: tools/pin_kit.sh <wheels-dir>
 1f14d00ba178540b85c8ccc29883e3fb  vllm-0.30.0+xpu-cp38-abi3-manylinux_2_34_x86_64.whl
 708e93ed4392da98ab071b507050abc7  triton-3.7.2+xpu-py3-none-any.whl
+# §6 contingency wheel (p13): int64 wedge fix, oneAPI 2026.0-built, device-gated
+# CLEAN 2026-10-27 (results/2026-10-27-p13-vxk-wheel/)
+a51df187aae8efa3871b0cb9b7d3f3c7  vllm_xpu_kernels-0.1.14.1+arc3-cp312-cp312-linux_x86_64.whl

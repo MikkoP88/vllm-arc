@@ -1,0 +1,6 @@
+(Worker_TP0 pid=1952) INFO 10-28 16:06:09 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=4096 p50=0.49ms p90=0.59ms max=0.76ms fallbacks=216 {'zero-spec': 150, 'mixed': 66}
+(Worker_TP1 pid=2066) INFO 10-28 16:06:09 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=4096 p50=0.49ms p90=0.62ms max=0.79ms fallbacks=216 {'zero-spec': 150, 'mixed': 66}
+(Worker_TP1 pid=2066) INFO 10-28 16:06:35 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=4352 p50=0.49ms p90=0.62ms max=0.79ms fallbacks=231 {'zero-spec': 159, 'mixed': 72}
+(Worker_TP0 pid=1952) INFO 10-28 16:06:35 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=4352 p50=0.49ms p90=0.59ms max=0.78ms fallbacks=231 {'zero-spec': 159, 'mixed': 72}
+(Worker_TP1 pid=2066) INFO 10-28 16:13:28 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=4608 p50=0.49ms p90=0.62ms max=0.74ms fallbacks=252 {'zero-spec': 171, 'mixed': 81}
+(Worker_TP0 pid=1952) INFO 10-28 16:13:28 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=4608 p50=0.49ms p90=0.59ms max=0.81ms fallbacks=252 {'zero-spec': 171, 'mixed': 81}

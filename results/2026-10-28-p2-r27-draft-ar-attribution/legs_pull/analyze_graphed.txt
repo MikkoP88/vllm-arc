@@ -1,0 +1,13 @@
+traces: ['rank0.1793213322462787198.pt.trace.json.gz', 'rank1.1793213322463519666.pt.trace.json.gz']
+
+>>> rank0.1793213322462787198.pt.trace.json.gz: kernels=378 gemms=6 span=0.4s -> graphed
+
+########## rank0.1793213322462787198.pt.trace.json.gz [GRAPHED] ##########
+kernels=378 varlen=0 clusters=0 cluster-size hist (5=>=5): {}
+TOO FEW single anchors (0)
+
+>>> rank1.1793213322463519666.pt.trace.json.gz: kernels=378 gemms=6 span=0.4s -> graphed
+
+########## rank1.1793213322463519666.pt.trace.json.gz [GRAPHED] ##########
+kernels=378 varlen=0 clusters=0 cluster-size hist (5=>=5): {}
+TOO FEW single anchors (0)

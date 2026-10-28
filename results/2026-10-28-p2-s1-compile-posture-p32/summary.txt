@@ -1,0 +1,39 @@
+S1/p32 — compile posture leg (FULL_AND_PIECEWISE, W14 capture sizes)
+VERDICT: LEG FAILS — record + fallback, no merge (gate law)
+
+LEG        : arc-p2-p32 (rig /root/build/legs/arc-p2-p32)
+IMAGE      : vllm-arc:v0.30.0-b70-p12b2 (arc-test)
+PHASE R    : product mode=none boot (timers-off) 17:37-17:40 ->
+             golden-logits REFERENCE captured (5 seeded prompts, greedy,
+             sha256-of-text): the standing correctness reference
+PHASE S    : W14 compilation-config transplant (FULL_AND_PIECEWISE,
+             capture [4,8,16,32,64], max 64; VLLM_COMPILE mode confirmed) +
+             p10 + r25 timer; healthy 17:47:18
+
+GATES:
+  (b) survival        PASS   flip payload 200 in 8.09s; follow-up 200
+                           (defect-b absent on captured-pieces mode, 2nd proof)
+  (a) acceptance      FAIL   pos1 0.4697 < 0.5 hard; acc 0.353; len 2.41
+                           (product band 0.8768-0.9082; r24 was 0.382)
+  (c) golden logits   FAIL   2/5 prompts DRIFT (len 64, 2048)
+                           -> compiled path computes different logits;
+                              independent of acceptance stats
+  (d) forward <=45ms  FAIL   forward 49.3-50.2 ms c1 / 54.9-55.0 c8
+                           (identical to product 49.0-54.5) — compile does
+                           not shrink the replay
+  step wall           worse  c1 66.0 / c8 87.6 (product 65.3/80.0)
+  solo                40.7 tok/s (acceptance collapse; product 59.1)
+  controls            green  p10 0.48ms; onset 0; TP0==TP1
+
+LAWS sharpened:
+  - compile x spec law: posture-independent on 0.30 + qwen3.8-27b-fp8
+    (two capture ladders both hard-fail; W14's clean compile+MTP is a
+    radiance-fork/flash-next property, not transplantable)
+  - forward content compile-invariant (49-55 ms both postures)
+  - golden-logits instrument = standing gate (c) tool from now on
+
+DISPOSITION: compile lane CLOSED for MTP on this stack/model; product
+posture stays mode=none + FULL_DECODE_ONLY + p10. Forward-lever moves to
+p33 (draft chain) + AR-attribution. Branch not merged (evidence-only).
+
+RIG: restored to W14 (health 200, 17:57).

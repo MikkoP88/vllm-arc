@@ -1,0 +1,57 @@
+208:(Worker_TP1 pid=782) INFO 10-28 02:42:33 [graph_safe_output.py:744] ArcXpuPlatform: graph-safe output applied — reroute guards active, upstream copy event retained.
+209:(Worker_TP0 pid=781) INFO 10-28 02:42:33 [graph_safe_output.py:744] ArcXpuPlatform: graph-safe output applied — reroute guards active, upstream copy event retained.
+210:(Worker_TP0 pid=781) INFO 10-28 02:42:34 [graph_safe_output.py:744] ArcXpuPlatform: graph-safe output applied — reroute guards active, upstream copy event retained.
+211:(Worker_TP1 pid=782) INFO 10-28 02:42:34 [graph_safe_output.py:744] ArcXpuPlatform: graph-safe output applied — reroute guards active, upstream copy event retained.
+212:(Worker_TP1 pid=782) INFO 10-28 02:42:37 [graph_safe_output.py:744] ArcXpuPlatform: graph-safe output applied — reroute guards active, upstream copy event retained.
+213:(Worker_TP0 pid=781) INFO 10-28 02:42:37 [graph_safe_output.py:744] ArcXpuPlatform: graph-safe output applied — reroute guards active, upstream copy event retained.
+283:(APIServer pid=13) INFO:     127.0.0.1:50148 - "POST /v1/completions HTTP/1.1" 200 OK
+284:(Worker_TP0 pid=781) WARNING 10-28 02:43:44 [graph_safe_output.py:306] ArcXpuPlatform: ARC_GRAPH_ZOMBIE_ONSET this thread's current (device default) stream now RECORDING with no capture open at 02:43:44 — reroute guards ARMED (ids: cur=torch.xpu.Stream(device=xpu:0 sycl_queue=0x1b3754c0) side=torch.xpu.Stream(device=xpu:0 sycl_queue=0x1b21e4c0))
+286:(Worker_TP1 pid=782) WARNING 10-28 02:43:46 [graph_safe_output.py:370] ArcXpuPlatform: graph stream hygiene (execute_model-exit (mid-forward flip, retrying)): current stream torch.xpu.Stream(device=xpu:1 sycl_queue=0x34c6ce70) was left recording with no capture open — swapped to a fresh stream (post-swap capturing=False, post-swap canary[executed=True vals=[123.45600128173828, 123.45600128173828, 123.45600128173828, 123.45600128173828]]; ids: cur=torch.xpu.Stream(device=xpu:1 sycl_queue=0x34857c40) side=torch.xpu.Stream(device=xpu:1 sycl_queue=0x3484a0d0)).
+287:(Worker_TP0 pid=781) WARNING 10-28 02:43:46 [graph_safe_output.py:370] ArcXpuPlatform: graph stream hygiene (execute_model-exit (mid-forward flip, retrying)): current stream torch.xpu.Stream(device=xpu:0 sycl_queue=0x1b3754c0) was left recording with no capture open — swapped to a fresh stream (post-swap capturing=False, post-swap canary[executed=True vals=[123.45600128173828, 123.45600128173828, 123.45600128173828, 123.45600128173828]]; ids: cur=torch.xpu.Stream(device=xpu:0 sycl_queue=0x1b22c030) side=torch.xpu.Stream(device=xpu:0 sycl_queue=0x1b21e4c0)).
+290:(Worker_TP1 pid=782) WARNING 10-28 02:43:47 [graph_safe_output.py:500] ArcXpuPlatform: ARC_GRAPH_SUBSTITUTE set_stream target torch.xpu.Stream(device=xpu:1 sycl_queue=0x34857c40) probes recording (no capture open) — rerouted to live torch.xpu.Stream(device=xpu:1 sycl_queue=0x348664b0) (ids: cur=torch.xpu.Stream(device=xpu:1 sycl_queue=0x348664b0) side=torch.xpu.Stream(device=xpu:1 sycl_queue=0x3484a0d0)).
+291:(Worker_TP0 pid=781) WARNING 10-28 02:43:47 [graph_safe_output.py:500] ArcXpuPlatform: ARC_GRAPH_SUBSTITUTE set_stream target torch.xpu.Stream(device=xpu:0 sycl_queue=0x1b22c030) probes recording (no capture open) — rerouted to live torch.xpu.Stream(device=xpu:0 sycl_queue=0x1b255280) (ids: cur=torch.xpu.Stream(device=xpu:0 sycl_queue=0x1b255280) side=torch.xpu.Stream(device=xpu:0 sycl_queue=0x1b21e4c0)).
+292:(Worker_TP1 pid=782) WARNING 10-28 02:43:47 [graph_safe_output.py:370] ArcXpuPlatform: graph stream hygiene (execute_model-exit (mid-forward flip, retry failed)): current stream torch.xpu.Stream(device=xpu:1 sycl_queue=0x34857c40) was left recording with no capture open — swapped to a fresh stream (post-swap capturing=True, post-swap canary[executed=False vals=[0.0, -8.36225881018909e-23, 1.1453447782208692e-12, 1.5786335997095002e-12]]; ids: cur=torch.xpu.Stream(device=xpu:1 sycl_queue=0x348664b0) side=torch.xpu.Stream(device=xpu:1 sycl_queue=0x3484a0d0)).
+293:(Worker_TP0 pid=781) WARNING 10-28 02:43:47 [graph_safe_output.py:370] ArcXpuPlatform: graph stream hygiene (execute_model-exit (mid-forward flip, retry failed)): current stream torch.xpu.Stream(device=xpu:0 sycl_queue=0x1b22c030) was left recording with no capture open — swapped to a fresh stream (post-swap capturing=True, post-swap canary[executed=False vals=[0.0, -9.169160080091387e-07, 3.457522422122168e-15, 7.240835708799409e-11]]; ids: cur=torch.xpu.Stream(device=xpu:0 sycl_queue=0x1b255280) side=torch.xpu.Stream(device=xpu:0 sycl_queue=0x1b21e4c0)).
+305:(Worker_TP1 pid=782) ERROR 10-28 02:43:47 [multiproc_executor.py:1055]   File "/opt/venv/lib/python3.12/site-packages/vllm_gaudi/xpu/patches/graph_safe_output.py", line 651, in _arc_sample_tokens
+318:(Worker_TP1 pid=782) ERROR 10-28 02:43:47 [multiproc_executor.py:1055]   File "/opt/venv/lib/python3.12/site-packages/vllm_gaudi/xpu/patches/graph_safe_output.py", line 651, in _arc_sample_tokens
+333:(Worker_TP0 pid=781) ERROR 10-28 02:43:47 [multiproc_executor.py:1055]   File "/opt/venv/lib/python3.12/site-packages/vllm_gaudi/xpu/patches/graph_safe_output.py", line 651, in _arc_sample_tokens
+346:(Worker_TP0 pid=781) ERROR 10-28 02:43:47 [multiproc_executor.py:1055]   File "/opt/venv/lib/python3.12/site-packages/vllm_gaudi/xpu/patches/graph_safe_output.py", line 651, in _arc_sample_tokens
+408:(APIServer pid=13) INFO:     127.0.0.1:50200 - "POST /v1/completions HTTP/1.1" 500 Internal Server Error
+409:(APIServer pid=13) INFO:     127.0.0.1:50210 - "POST /v1/completions HTTP/1.1" 500 Internal Server Error
+410:(APIServer pid=13) INFO:     127.0.0.1:50214 - "POST /v1/completions HTTP/1.1" 500 Internal Server Error
+411:(APIServer pid=13) INFO:     127.0.0.1:50220 - "POST /v1/completions HTTP/1.1" 500 Internal Server Error
+412:(APIServer pid=13) INFO:     127.0.0.1:50236 - "POST /v1/completions HTTP/1.1" 500 Internal Server Error
+413:(APIServer pid=13) INFO:     127.0.0.1:50222 - "POST /v1/completions HTTP/1.1" 500 Internal Server Error
+414:(APIServer pid=13) INFO:     127.0.0.1:50224 - "POST /v1/completions HTTP/1.1" 500 Internal Server Error
+415:(APIServer pid=13) INFO:     127.0.0.1:50248 - "POST /v1/completions HTTP/1.1" 500 Internal Server Error
+416:(APIServer pid=13) INFO:     127.0.0.1:50252 - "POST /v1/completions HTTP/1.1" 500 Internal Server Error
+417:(APIServer pid=13) INFO:     127.0.0.1:50254 - "POST /v1/completions HTTP/1.1" 500 Internal Server Error
+418:(APIServer pid=13) INFO:     127.0.0.1:50256 - "POST /v1/completions HTTP/1.1" 500 Internal Server Error
+419:(APIServer pid=13) INFO:     127.0.0.1:50270 - "POST /v1/completions HTTP/1.1" 500 Internal Server Error
+420:(APIServer pid=13) INFO:     127.0.0.1:50274 - "POST /v1/completions HTTP/1.1" 500 Internal Server Error
+421:(APIServer pid=13) INFO:     127.0.0.1:50292 - "POST /v1/completions HTTP/1.1" 500 Internal Server Error
+422:(APIServer pid=13) INFO:     127.0.0.1:50298 - "POST /v1/completions HTTP/1.1" 500 Internal Server Error
+423:(APIServer pid=13) INFO:     127.0.0.1:50280 - "POST /v1/completions HTTP/1.1" 500 Internal Server Error
+424:(APIServer pid=13) INFO:     127.0.0.1:50312 - "POST /v1/completions HTTP/1.1" 500 Internal Server Error
+425:(APIServer pid=13) INFO:     127.0.0.1:50316 - "POST /v1/completions HTTP/1.1" 500 Internal Server Error
+426:(APIServer pid=13) INFO:     127.0.0.1:50328 - "POST /v1/completions HTTP/1.1" 500 Internal Server Error
+427:(APIServer pid=13) INFO:     127.0.0.1:50336 - "POST /v1/completions HTTP/1.1" 500 Internal Server Error
+428:(APIServer pid=13) INFO:     127.0.0.1:50344 - "POST /v1/completions HTTP/1.1" 500 Internal Server Error
+429:(APIServer pid=13) INFO:     127.0.0.1:50360 - "POST /v1/completions HTTP/1.1" 500 Internal Server Error
+430:(APIServer pid=13) INFO:     127.0.0.1:50370 - "POST /v1/completions HTTP/1.1" 500 Internal Server Error
+431:(APIServer pid=13) INFO:     127.0.0.1:50386 - "POST /v1/completions HTTP/1.1" 500 Internal Server Error
+432:(APIServer pid=13) INFO:     127.0.0.1:50390 - "POST /v1/completions HTTP/1.1" 500 Internal Server Error
+433:(APIServer pid=13) INFO:     127.0.0.1:50394 - "POST /v1/completions HTTP/1.1" 500 Internal Server Error
+434:(APIServer pid=13) INFO:     127.0.0.1:50404 - "POST /v1/completions HTTP/1.1" 500 Internal Server Error
+435:(APIServer pid=13) INFO:     127.0.0.1:50410 - "POST /v1/completions HTTP/1.1" 500 Internal Server Error
+436:(APIServer pid=13) INFO:     127.0.0.1:50420 - "POST /v1/completions HTTP/1.1" 500 Internal Server Error
+437:(APIServer pid=13) INFO:     127.0.0.1:50444 - "POST /v1/completions HTTP/1.1" 500 Internal Server Error
+439:(APIServer pid=13) INFO:     127.0.0.1:50438 - "POST /v1/completions HTTP/1.1" 500 Internal Server Error
+440:(APIServer pid=13) INFO:     127.0.0.1:50458 - "POST /v1/completions HTTP/1.1" 500 Internal Server Error
+441:(APIServer pid=13) INFO:     127.0.0.1:50424 - "POST /v1/completions HTTP/1.1" 500 Internal Server Error
+442:(APIServer pid=13) INFO:     127.0.0.1:50462 - "POST /v1/completions HTTP/1.1" 500 Internal Server Error
+443:(APIServer pid=13) INFO:     127.0.0.1:50468 - "POST /v1/completions HTTP/1.1" 500 Internal Server Error
+444:(Worker_TP0 pid=781) WARNING 10-28 02:43:47 [graph_safe_output.py:515] ArcXpuPlatform: ARC_GRAPH_WAIT_SKIP wait_stream argument torch.xpu.Stream(device=xpu:0 sycl_queue=0x1b3754c0) probes recording (no capture open) — skip (dead queue never progresses; ids: cur=torch.xpu.Stream(device=xpu:0 sycl_queue=0x1b1d9390) side=torch.xpu.Stream(device=xpu:0 sycl_queue=0x1b21e4c0)).
+445:(Worker_TP0 pid=781) WARNING 10-28 02:43:47 [graph_safe_output.py:500] ArcXpuPlatform: ARC_GRAPH_SUBSTITUTE set_stream target torch.xpu.Stream(device=xpu:0 sycl_queue=0x1b3754c0) probes recording (no capture open) — rerouted to live torch.xpu.Stream(device=xpu:0 sycl_queue=0x1b262df0) (ids: cur=torch.xpu.Stream(device=xpu:0 sycl_queue=0x1b262df0) side=torch.xpu.Stream(device=xpu:0 sycl_queue=0x1b21e4c0)).
+468:(Worker_TP1 pid=782) WARNING 10-28 02:43:47 [graph_safe_output.py:515] ArcXpuPlatform: ARC_GRAPH_WAIT_SKIP wait_stream argument torch.xpu.Stream(device=xpu:1 sycl_queue=0x34c6ce70) probes recording (no capture open) — skip (dead queue never progresses; ids: cur=torch.xpu.Stream(device=xpu:1 sycl_queue=0x348875b0) side=torch.xpu.Stream(device=xpu:1 sycl_queue=0x3484a0d0)).
+469:(Worker_TP1 pid=782) WARNING 10-28 02:43:47 [graph_safe_output.py:500] ArcXpuPlatform: ARC_GRAPH_SUBSTITUTE set_stream target torch.xpu.Stream(device=xpu:1 sycl_queue=0x34c6ce70) probes recording (no capture open) — rerouted to live torch.xpu.Stream(device=xpu:1 sycl_queue=0x34874020) (ids: cur=torch.xpu.Stream(device=xpu:1 sycl_queue=0x34874020) side=torch.xpu.Stream(device=xpu:1 sycl_queue=0x3484a0d0)).

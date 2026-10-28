@@ -1,0 +1,4 @@
+ARC_TRACE: passing ARC_TRACE_FLIP=1
+ARC_CONTAINER_FRESH image=vllm-arc:v0.30.0-b70-p12b id=171654f579a6 (recreated from f790fb4adee0)
+9f41964dab7e59aeb2da8ad533b071eb67d2a22b6de6cd58284bedae2f2c0e4c
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-p12b name=arc-test graph=1 spec=0 gmu=0.8 mnbt=8192 seqs=64 xgc=0 port=8000 06:12:31

@@ -1,0 +1,9 @@
+p13 §6 contingency: int64-fixed vxk wheel built generation-matched (oneAPI
+2026.0.0 == venv intel_sycl_rt 2026.0.0) and device-gated: fixed seeded +
+noseed both CLEAN WHEEL exit 0 (LO+HI+BND, HI row 4343 = former overflow
+region, zero new engine resets); bare 0.1.14.1 positive control BUGGY
+(UR_RESULT_ERROR_DEVICE_LOST at HI, +1 reset, device self-recovered).
+Wheel vllm_xpu_kernels-0.1.14.1+arc3 md5 a51df187aae8efa3871b0cb9b7d3f3c7
+pinned in wheels.pins.md5; Dockerfile stack swap + in-build import gate.
+arc1 (so.8 link) and arc2 (2026.2 helper symbol) rejects documented.
+VERDICT: PASS — P1 gate row closed; image build + P2 legs next.

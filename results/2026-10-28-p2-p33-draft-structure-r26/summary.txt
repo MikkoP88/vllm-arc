@@ -1,0 +1,7 @@
+=== r26 p33 draft-structure probe — one-line law ===
+propose 15.18 ms = prefill FULL replay 5.18 + fused decode FULL replay 9.99 + gap 0.01 (exact); CPU meta 0.16, fused_cpu 3.77 overlapped; steady eager prefill=7 gen=0
+
+gates: survival PASS 200/6.91s onset0 | pos1 0.9122 PASS (acc 0.7329) | golden 1/5 drift len4096 (mode=none nondeterminism floor — p32 proof downgraded) | TPOT c1 77.6 c8 92.8 (timers on) | r25 split re-confirmed forward 49.4-55.0 fgap=bgap=0 | p10 0.49ms intact
+verdict: p33 chained-graph CLOSED by measurement (2 replays gapless, premise dead); lever -> r27 draft-content attribution (collectives/lm_head) + forward AR share
+(Worker_TP0 pid=611) [arc-p33] draft structure n=384 | propose p50=15.18ms | prefill.rep p50=5.18ms x0.98 | decode.rep p50=9.99ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.76ms | meta_cpu p50=0.16ms | prefill.eager=7 gen.eager=0
+(Worker_TP1 pid=718) [arc-p33] draft structure n=384 | propose p50=15.18ms | prefill.rep p50=5.18ms x0.98 | decode.rep p50=9.99ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.76ms | meta_cpu p50=0.16ms | prefill.eager=7 gen.eager=0

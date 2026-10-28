@@ -1,0 +1,21 @@
+Leg: p2-graph p12b rounds 1+2 (evidence legs; FAIL by design — alarm raises)
+Round 1: rig leg arc-p2-graph-20261027-234609, image vllm-arc:v0.30.0-b70-p12b (fork 987cec4a)
+Round 2: rig leg arc-p2-graph-20261028-002040, image vllm-arc:v0.30.0-b70-p12b (fork 9f216d9b)
+Env: TP2, qwen3.8-27b-fp8, gmu=0.8 mnbt=8192 seqs=64, VLLM_XPU_ENABLE_XPU_GRAPH=1,
+     cudagraph_mode=FULL_DECODE_ONLY (capture sizes 1..320 capped by seqs=64),
+     spec=0 lmc=0, arc3 wheel, oneAPI 2026.0, torch 2.13.0+xpu.
+
+Round-1 outcome: serve-time output alarm fired on BOTH TP workers at request 1
+(23:53:29); dezombie swapped the poisoned stream, post-swap canary executed=True;
+our integrity RuntimeError killed EngineCore (v1 fail-fast) — bench then refused
+(expected). Raws: /root/build/legs/arc-p2-graph-20261027-234609/.
+
+Round-2 outcome: same alarm + dezombie + raise, PLUS the stream-identity ids line
+(default=ERR — torch.xpu.default_stream() raises on this build) and the full death
+chain. NEW: request A was FULLY served clean first (3 budgeted "graph-safe output
+applied" constructions at 00:26:52–57 + POST /v1/completions 200 OK), then request
+B alarmed at 00:28:03. Flip window = [A last sample, B forward]. The round-2
+onset watchdog produced ZERO lines (its first probe called the broken
+default_stream(); the thread exited silently) — round 3 (90aee3b3) fixes the probe
+and adds post-flip tripwires. Raws:
+/root/build/legs/arc-p2-graph-20261028-002040/ (serve/serve_full.log, excerpts.txt).

@@ -1,0 +1,25 @@
+leg:    arc-graph-kwcapture-r16-20261028 (r16 — real-kwargs capture +
+        preamble bisection; defect-b mechanism identified)
+image:  vllm-arc:v0.30.0-b70-p12b c966fcf89a3f (fork cbb6937e)
+posture:r13 serve (mode=NONE + FULL_DECODE_ONLY + sizes 1..320), TP2,
+        graphs ON, oneCCL env mirrored, PYTHONPATH capture hook v7
+result: SMOKING GUN — stream flips INSIDE the first eager LARGE TP
+        allreduce: AR entry (832,5120) 8.5MB pre_rec=False -> AR exit
+        pre_rec=True -> onset (both ranks). Large-as-first flips 2/2
+        boots (+1 with SYCL_CACHE_PERSISTENT=0 — env not the cure);
+        small-as-first (250 tok, 2.6MB AR) 200 + PERMANENTLY vaccinates
+        (same 832-tok request afterwards 200, pre_rec=False).
+        Standalone: real-kwargs GDN op CLEAN +- graphs (kernel+gemms+
+        graphs exonerated; r15 synthetic crash was an artifact); 2-proc
+        xccl mini-serve ALL CLEAN (wedge needs vllm runner context);
+        capturing an AR into XPUGraph raises "Graph nodes cannot depend
+        on events from outside the graph" (ARs excluded from decode
+        graphs by break, replay eagerly — first big EAGER AR at prefill
+        is the wedge).
+conclusion: defect-b model v3 = first eager large AR after decode-graph
+        capture warmup, on vllm 0.30 XPU TP2 (no warmup generate in
+        0.30). Fix = boot-time 2-stage warmup (small then max-batch) in
+        vllm_gaudi/xpu platform layer, fail-loud at boot. Kernel wheel
+        lane stays CLOSED; lane A demoted to perf-only; SYCL_CACHE env
+        refuted as fix. Ops law: kill by proctitle "[V]LLM::" + "[v]llm
+        serve", verify port 000 + fresh wrap prints before any serve leg.

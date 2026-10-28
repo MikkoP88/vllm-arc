@@ -44,6 +44,32 @@ logger = init_logger("vllm.platforms.arc")
 _BMG_DEVICE_ID_MIN = 0xE200
 _BMG_DEVICE_ID_MAX = 0xE2FF
 
+# In-place XPU core patches installed from both platform hooks (config time
+# + per-worker init_device). Each module owns its idempotence and logs its
+# own state (visibility law — a silent non-install is indistinguishable
+# from a deferred patch, p2r2 lesson); an install failure must never break
+# platform resolution.
+_XPU_PATCH_MODULES = (
+    "graph_safe_output",        # defect-b: graph-safe worker output copies
+    "speculator_full_capture",  # defect-a: PIECEWISE-family -> FULL coercion
+    "first_request_warmup",     # defect-b fix (lane W): warm the first eager
+                                # large TP AR before serving traffic (r16/r17)
+    "gdn_metadata_fastpath",    # p10: steady spec-decode GDN metadata builds
+                                # without blocking H2D (r19-r22a; <=5ms law)
+)
+
+
+def _install_xpu_patches(site: str) -> None:
+    from importlib import import_module
+
+    for name in _XPU_PATCH_MODULES:
+        try:
+            module = import_module(f"vllm_gaudi.xpu.patches.{name}")
+            module._install()
+        except Exception as e:  # noqa: BLE001 — visibility law: leg logs must show it
+            logger.warning(
+                "ArcXpuPlatform: %s install failed at %s: %r", name, site, e)
+
 
 # Monkey-patch torch.accelerator.get_memory_info for Arc/Xe2 XPU — the same
 # idiom as upstream gaudi's HPU patch at the top of vllm_gaudi/platform.py.
@@ -122,6 +148,11 @@ class ArcXpuPlatform(XPUPlatform):
         # Core XPU posture first: XPU-graph env law, fusion-pass disabling,
         # XPUWorker selection, spawn multiproc, oneCCL shutdown timeout.
         super().check_and_update_config(vllm_config)
+        # XPU in-place patches (defect-b graph-safe outputs, defect-a
+        # speculator FULL-capture): idempotent per-process install — this
+        # runs at config time in APIServer + EngineCore; the per-worker
+        # guarantee comes from check_if_supports_dtype below.
+        _install_xpu_patches("check_and_update_config")
         # Dual-B70 ZE_AFFINITY law (rig law, plan Appendix F): one Arc per
         # socket, TP2 needs an explicit ZE_AFFINITY_MASK=0,1 so the level-zero
         # drivers of both cards are visible to the workers. Warn only — an
@@ -166,3 +197,12 @@ class ArcXpuPlatform(XPUPlatform):
             tuple(compilation_config.cudagraph_capture_sizes)
             if compilation_config.cudagraph_capture_sizes else None,
             VLLM_XPU_ENABLE_XPU_GRAPH)
+
+    @classmethod
+    def check_if_supports_dtype(cls, dtype: torch.dtype) -> None:
+        # Per-worker install point: XPUWorker.init_device calls this after
+        # the import is complete — the guaranteed post-import moment in every
+        # WorkerProc (the register()-time attempt can hit a half-initialized
+        # vllm package). Idempotent; failure surfaces in the gate leg.
+        _install_xpu_patches("check_if_supports_dtype")
+        super().check_if_supports_dtype(dtype)

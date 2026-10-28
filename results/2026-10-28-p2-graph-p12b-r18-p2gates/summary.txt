@@ -1,0 +1,24 @@
+leg:    arc-p2-r18-20261028 (§10 P2 gate sweep on the defect-b fix, PRODUCT
+        posture — no PYTHONPATH injection)
+image:  vllm-arc:v0.30.0-b70-p12b2 f92060624185 (fork ca75f1d8)
+posture:mode=none + FULL_DECODE_ONLY graphs (capture sizes 1..320) + MTP k4
+        (speculative-config mtp/4) + TP2 — first serve with ALL FOUR product
+        patches wired via platform _XPU_PATCH_MODULES (first_request_warmup
+        now installs from check_and_update_config in the FRONTEND process:
+        APIServer pid=16 12:51:53, EngineCore pid=757 12:55:24)
+result: SURVIVAL GATE PASS — the exact r16/r17 large flip payload (832 tok,
+        3/3 pre-fix flips + r17b control flip) as FIRST traffic: interlock
+        fired (small 2.2s + max-batch 5.6s = 7.8s, trimmed sizing works),
+        HTTP 200, follow-ups 0.43s/0.82s, onset_count=0 through the whole
+        bench suite. p31 acceptance: pos1 0.8756 >= 0.5 hard PASS (log
+        window avg draft 81.1%, mean acceptance length 4.24); 0.85 contract
+        target miss recorded (tuning = P4). TPOT c8 gate FAIL at 113-185ms
+        (bar 60ms) — the designed blocker: Triton QSA at 0.8% XMX = 58% of
+        the c8 step; lever = p11 QSA ESIMD (same P2 gate row). This matrix
+        = the Triton comparison cell for the >=7x A/B.
+run7n:  agg 195.7-213.1 tok/s, solo 57.5-57.7 tok/s (D champion bars
+        254/274 + 79.7 need ESIMD + cache + acceptance tuning — planned
+        P2-remainder/P3/P4 levers, gap not a regression)
+onset:  0 (zero integrity drift)
+next:   p11 QSA ESIMD (+ p90/p91 build) -> re-run c8 cells + >=7x A/B;
+        arc4 vxk wheel (9th bare site) before P3; then p12b merge decision.

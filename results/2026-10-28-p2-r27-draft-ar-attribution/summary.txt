@@ -1,0 +1,5 @@
+=== r27 draft-content + forward-AR attribution — the two asks, answered ===
+DRAFT (reconciled to r26 propose 15.18ms): lm_head GEMMs 8.5ms/56% (4x2.1ms fp8 weight reads = 635MB/rank @ ~302GB/s tile-BW ceiling — IRREDUCIBLE) + layer/fc gemms ~2.5 + FA/norm ~0.6 + collectives ~3.6ms/24% (18 calls lock-step; eager 7.7-10.0 is skew-inflated, counts only) => p33 <=7ms UNREACHABLE (lm_head floor alone 8.5ms); best in-scope = use_local_argmax_reduction ~1-2ms
+FORWARD AR: 132 calls/step (128 layer AR + logits gather); forward wall 49-55ms == GEMM+attn content (48 layer-gemm + 2.1 lm_head + ~4 attn/misc) => collective residual 0-8ms central ~2-5ms (<=8%) — NO >10ms contingency
+LAWS: XPU graph replays INVISIBLE to torch profiler (phase A: per-step visible set = 1 gemm+1 AR+1 allgatherv+bookkeeping only) => eager-proxy attribution method; step = BW WALL (~63ms c1 = 27GB/rank weight reads @300GB/s) => TPOT moves only via acceptance (P4), not fusion/overlap; p50 <=15ms residue expected moot
+cross-validation: 322 gemms/step = 64x5+5; layer-gemm 0.15ms x320 = 48ms = BW floor; lm_head 2.1-2.7ms; TP0==TP1

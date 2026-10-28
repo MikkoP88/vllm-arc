@@ -1,0 +1,19 @@
+INFO 10-28 04:08:58 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+INFO 10-28 04:08:58 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+INFO 10-28 04:08:58 [__init__.py:54] - hpu -> vllm_gaudi:register
+INFO 10-28 04:08:58 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+INFO 10-28 04:08:58 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+INFO 10-28 04:08:58 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+INFO 10-28 04:08:58 [__init__.py:54] - hpu -> vllm_gaudi:register
+INFO 10-28 04:08:58 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+WARNING 10-28 04:08:58 [__init__.py:56] ArcXpuPlatform: graph-safe output install failed at register() (expected mid-resolution; platform hooks retry): AttributeError("partially initialized module 'vllm.v1.worker.gpu.async_utils' has no attribute 'AsyncOutput' (most likely due to a circular import)")
+WARNING 10-28 04:08:58 [__init__.py:56] ArcXpuPlatform: graph-safe output install failed at register() (expected mid-resolution; platform hooks retry): AttributeError("partially initialized module 'vllm.v1.worker.gpu.async_utils' has no attribute 'AsyncOutput' (most likely due to a circular import)")
+INFO 10-28 04:08:58 [__init__.py:272] Platform plugin arc is activated
+WARNING 10-28 04:08:58 [__init__.py:56] ArcXpuPlatform: graph-safe output install failed at register() (expected mid-resolution; platform hooks retry): ImportError("cannot import name 'direct_register_custom_op' from partially initialized module 'vllm.utils.torch_utils' (most likely due to a circular import) (/opt/venv/lib/python3.12/site-packages/vllm/utils/torch_utils.py)")
+WARNING 10-28 04:08:58 [__init__.py:56] ArcXpuPlatform: graph-safe output install failed at register() (expected mid-resolution; platform hooks retry): ImportError("cannot import name 'direct_register_custom_op' from partially initialized module 'vllm.utils.torch_utils' (most likely due to a circular import) (/opt/venv/lib/python3.12/site-packages/vllm/utils/torch_utils.py)")
+INFO 10-28 04:08:58 [__init__.py:272] Platform plugin arc is activated
+PLATFORM=vllm_gaudi.xpu.platform.ArcXpuPlatform
+XE2=True
+MEMINFO free=5.61GiB total=31.89GiB nonzero=True
+DEVICE=Intel(R) Graphics [0xe223] count=2
+MODEL_ID ['Qwen3_5ForConditionalGeneration'] fp8

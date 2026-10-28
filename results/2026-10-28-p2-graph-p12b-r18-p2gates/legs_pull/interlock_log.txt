@@ -1,0 +1,10 @@
+(APIServer pid=16) INFO 10-28 12:51:53 [first_request_warmup.py:126] ArcXpuPlatform: first-request warmup interlock installed (defect-b lane W, r16 evidence)
+(Worker pid=996) INFO 10-28 12:52:37 [first_request_warmup.py:126] ArcXpuPlatform: first-request warmup interlock installed (defect-b lane W, r16 evidence)
+(Worker pid=1103) INFO 10-28 12:52:50 [first_request_warmup.py:126] ArcXpuPlatform: first-request warmup interlock installed (defect-b lane W, r16 evidence)
+(APIServer pid=16) INFO 10-28 12:52:50 [base.py:261] Multi-modal warmup completed in 29.056s
+(APIServer pid=16) INFO 10-28 12:52:53 [base.py:261] Readonly multi-modal warmup completed in 2.735s
+(EngineCore pid=757) INFO 10-28 12:55:24 [first_request_warmup.py:126] ArcXpuPlatform: first-request warmup interlock installed (defect-b lane W, r16 evidence)
+(APIServer pid=16) INFO 10-28 12:56:13 [first_request_warmup.py:105] ArcXpuPlatform: first generate (request cmpl-b61a8c4292fb9b11-0) — running defect-b warmup interlock first
+(APIServer pid=16) INFO 10-28 12:56:15 [first_request_warmup.py:63] ArcXpuPlatform: first-request warmup stage small done in 2.2s (2 outputs, 640 prompt chars)
+(APIServer pid=16) INFO 10-28 12:56:21 [first_request_warmup.py:63] ArcXpuPlatform: first-request warmup stage max-batch done in 5.6s (2 outputs, 44253 prompt chars)
+(APIServer pid=16) INFO 10-28 12:56:21 [first_request_warmup.py:115] ArcXpuPlatform: warmup complete in 7.8s — engine hot, serving request cmpl-b61a8c4292fb9b11-0

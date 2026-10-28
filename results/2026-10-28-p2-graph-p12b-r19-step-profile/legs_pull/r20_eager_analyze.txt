@@ -1,0 +1,48 @@
+kernels=43040 span=12.43s
+decode span: 12.43s, 43040 kernels (prefill excluded 0.00s)
+
+== FULL-WINDOW total_xpu=8.122s ==
+  gemm(fp8/gemm_kernel)       4.944s  60.9%  n= 7896 avg=     0.6us
+  collective                  2.338s  28.8%  n= 4882 avg=     0.5us
+  gdn                         0.315s   3.9%  n= 2880 avg=     0.1us
+  rope                        0.139s   1.7%  n= 1011 avg=     0.1us
+  quant                       0.137s   1.7%  n= 6528 avg=     0.0us
+  norm                        0.116s   1.4%  n= 5688 avg=     0.0us
+  copy/elementwise            0.060s   0.7%  n=10345 avg=     0.0us
+  act                         0.059s   0.7%  n= 1632 avg=     0.0us
+  other                       0.011s   0.1%  n= 1698 avg=     0.0us
+  fa2-attn                    0.003s   0.0%  n=  480 avg=     0.0us
+
+== DECODE-SPAN total_xpu=8.122s ==
+  gemm(fp8/gemm_kernel)       4.944s  60.9%  n= 7896 avg=     0.6us
+  collective                  2.338s  28.8%  n= 4882 avg=     0.5us
+  gdn                         0.315s   3.9%  n= 2880 avg=     0.1us
+  rope                        0.139s   1.7%  n= 1011 avg=     0.1us
+  quant                       0.137s   1.7%  n= 6528 avg=     0.0us
+  norm                        0.116s   1.4%  n= 5688 avg=     0.0us
+  copy/elementwise            0.060s   0.7%  n=10345 avg=     0.0us
+  act                         0.059s   0.7%  n= 1632 avg=     0.0us
+  other                       0.011s   0.1%  n= 1698 avg=     0.0us
+  fa2-attn                    0.003s   0.0%  n=  480 avg=     0.0us
+
+decode-span gemm calls=7896 min=0us p50=0us p90=0us max=23us
+  gemm 1-8us: 48
+  gemm 8-64us: 1550
+  gemm 64-512us: 5657
+  gemm 512-4096us: 388
+  gemm 4096-32768us: 253
+decode-span collective calls=4882 p50=0us p90=1us max=10us
+
+== top kernels (decode span) ==
+    4.944s n=7896 avg=     0.6us  gemm_kernel
+    0.819s n=3120 avg=     0.3us  oneccl_allreduce_pcie<sycl::_V1::detail::half_impl::half, Rt64_128_PCI
+    0.600s n= 264 avg=     2.3us  ReduceCopyKernel<sycl::_V1::detail::half_impl::half, 8>
+    0.598s n= 264 avg=     2.3us  allreduce_large_su_ring_write_multi_kernel<sycl::_V1::detail::half_imp
+    0.178s n= 103 avg=     1.7us  oneccl_allgatherv_pcie<sycl::_V1::detail::half_impl::half, Rt64_128_PC
+    0.137s n=6528 avg=     0.0us  vllm::per_token_group_quant_8bit_vec_kernel<c10::Half, c10::Float8_e4m
+    0.133s n=1104 avg=     0.1us  gdn::gated_delta_rule_spec_kernel<sycl::_V1::detail::half_impl::half, 
+    0.096s n= 377 avg=     0.3us  oneccl_invoke_barrier
+    0.089s n=3264 avg=     0.0us  vllm::fused_add_rms_norm_kernel<sycl::_V1::detail::half_impl::half, 8,
+    0.081s n= 569 avg=     0.1us  _ZTSN6compat12experimental6detail13KernelFunctorIXadL_ZN7cutlass13devi
+    0.064s n=  96 avg=     0.7us  gdn::tiled_kernel_launcher<sycl::_V1::detail::half_impl::half, 4, 8, t
+    0.059s n=1632 avg=     0.0us  vllm::act_and_mul_vec_kernel<sycl::_V1::detail::half_impl::half, &(syc

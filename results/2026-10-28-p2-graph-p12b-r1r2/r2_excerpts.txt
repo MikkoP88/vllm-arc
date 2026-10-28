@@ -1,0 +1,50 @@
+=== r2 alarm lines (both TP) ===
+(Worker_TP0 pid=787) WARNING 10-28 00:28:03 [graph_safe_output.py:257] ArcXpuPlatform: graph stream hygiene (serve-time output alarm): current stream torch.xpu.Stream(device=xpu:0 sycl_queue=0x1d443410) was left recording with no capture open — swapped to a fresh stream (post-swap capturing=False, post-swap canary[executed=True vals=[123.45600128173828, 123.45600128173828, 123.45600128173828, 123.45600128173828]]; ids: cur=torch.xpu.Stream(device=xpu:0 sycl_queue=0x1d2f9f80) default=ERR side=torch.xpu.Stream(device=xpu:0 sycl_queue=0x1d2ec410)).
+(Worker_TP1 pid=788) WARNING 10-28 00:28:03 [graph_safe_output.py:257] ArcXpuPlatform: graph stream hygiene (serve-time output alarm): current stream torch.xpu.Stream(device=xpu:1 sycl_queue=0x1c4aa570) was left recording with no capture open — swapped to a fresh stream (post-swap capturing=False, post-swap canary[executed=True vals=[123.45600128173828, 123.45600128173828, 123.45600128173828, 123.45600128173828]]; ids: cur=torch.xpu.Stream(device=xpu:1 sycl_queue=0x1c9ce6d0) default=ERR side=torch.xpu.Stream(device=xpu:1 sycl_queue=0x1cb11570)).
+
+=== r2 our-raise tracebacks (count + first) ===
+5
+(Worker_TP0 pid=787) ERROR 10-28 00:28:03 [multiproc_executor.py:1055]     result = fn(self, *args, **kwargs)
+(Worker_TP0 pid=787) ERROR 10-28 00:28:03 [multiproc_executor.py:1055]              ^^^^^^^^^^^^^^^^^^^^^^^^^
+(Worker_TP0 pid=787) ERROR 10-28 00:28:03 [multiproc_executor.py:1055]   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/worker/gpu/model_runner.py", line 2082, in sample_tokens
+(Worker_TP0 pid=787) ERROR 10-28 00:28:03 [multiproc_executor.py:1055]     async_output = AsyncOutput(
+(Worker_TP0 pid=787) ERROR 10-28 00:28:03 [multiproc_executor.py:1055]                    ^^^^^^^^^^^^
+(Worker_TP0 pid=787) ERROR 10-28 00:28:03 [multiproc_executor.py:1055]   File "/opt/venv/lib/python3.12/site-packages/vllm_gaudi/xpu/patches/graph_safe_output.py", line 385, in __init__
+(Worker_TP0 pid=787) ERROR 10-28 00:28:03 [multiproc_executor.py:1055]     raise RuntimeError(
+(Worker_TP0 pid=787) ERROR 10-28 00:28:03 [multiproc_executor.py:1055] RuntimeError: ArcXpuPlatform: zombie graph stream (recorder left open, no capture active) cleared at serve time; the in-flight request's outputs are unreliable — retry the request
+(Worker_TP0 pid=787) ERROR 10-28 00:28:03 [multiproc_executor.py:1055] Traceback (most recent call last):
+
+=== r2 healthy-path device-sync deaths (post-dezombie drain) ===
+(Worker_TP0 pid=787) ERROR 10-28 00:28:03 [multiproc_executor.py:1055]                    ^^^^^^^^^^^^
+(Worker_TP0 pid=787) ERROR 10-28 00:28:03 [multiproc_executor.py:1055]   File "/opt/venv/lib/python3.12/site-packages/vllm_gaudi/xpu/patches/graph_safe_output.py", line 409, in __init__
+(Worker_TP0 pid=787) ERROR 10-28 00:28:03 [multiproc_executor.py:1055]     torch.xpu.synchronize()
+(Worker_TP0 pid=787) ERROR 10-28 00:28:03 [multiproc_executor.py:1055]   File "/opt/venv/lib/python3.12/site-packages/torch/xpu/__init__.py", line 702, in synchronize
+(Worker_TP0 pid=787) ERROR 10-28 00:28:03 [multiproc_executor.py:1055]     return torch._C._xpu_synchronize(device)
+(Worker_TP0 pid=787) ERROR 10-28 00:28:03 [multiproc_executor.py:1055]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(Worker_TP0 pid=787) ERROR 10-28 00:28:03 [multiproc_executor.py:1055] RuntimeError: wait cannot be called for a queue which is recording to a command graph.
+(Worker_TP0 pid=787) ERROR 10-28 00:28:03 [multiproc_executor.py:1055] Traceback (most recent call last):
+(Worker_TP0 pid=787) ERROR 10-28 00:28:03 [multiproc_executor.py:1055]   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/executor/multiproc_executor.py", line 1047, in _execute_worker_rpc
+(Worker_TP0 pid=787) ERROR 10-28 00:28:03 [multiproc_executor.py:1055]     output = func(*args, **kwargs)
+(Worker_TP0 pid=787) ERROR 10-28 00:28:03 [multiproc_executor.py:1055]              ^^^^^^^^^^^^^^^^^^^^^
+(Worker_TP0 pid=787) ERROR 10-28 00:28:03 [multiproc_executor.py:1055]   File "/opt/venv/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+(Worker_TP0 pid=787) ERROR 10-28 00:28:03 [multiproc_executor.py:1055]     return func(*args, **kwargs)
+(Worker_TP0 pid=787) ERROR 10-28 00:28:03 [multiproc_executor.py:1055]            ^^^^^^^^^^^^^^^^^^^^^
+(Worker_TP0 pid=787) ERROR 10-28 00:28:03 [multiproc_executor.py:1055]   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/worker/gpu_worker.py", line 1145, in sample_tokens
+(Worker_TP0 pid=787) ERROR 10-28 00:28:03 [multiproc_executor.py:1055]     return self.model_runner.sample_tokens(grammar_output)
+(Worker_TP0 pid=787) ERROR 10-28 00:28:03 [multiproc_executor.py:1055]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(Worker_TP0 pid=787) ERROR 10-28 00:28:03 [multiproc_executor.py:1055]   File "/opt/venv/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+(Worker_TP0 pid=787) ERROR 10-28 00:28:03 [multiproc_executor.py:1055]     return func(*args, **kwargs)
+(Worker_TP0 pid=787) ERROR 10-28 00:28:03 [multiproc_executor.py:1055]            ^^^^^^^^^^^^^^^^^^^^^
+(Worker_TP0 pid=787) ERROR 10-28 00:28:03 [multiproc_executor.py:1055]   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/worker/gpu/eplb_utils.py", line 27, in wrapper
+(Worker_TP0 pid=787) ERROR 10-28 00:28:03 [multiproc_executor.py:1055]     result = fn(self, *args, **kwargs)
+(Worker_TP0 pid=787) ERROR 10-28 00:28:03 [multiproc_executor.py:1055]              ^^^^^^^^^^^^^^^^^^^^^^^^^
+(Worker_TP0 pid=787) ERROR 10-28 00:28:03 [multiproc_executor.py:1055]   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/worker/gpu/model_runner.py", line 2082, in sample_tokens
+(Worker_TP0 pid=787) ERROR 10-28 00:28:03 [multiproc_executor.py:1055]     async_output = AsyncOutput(
+(Worker_TP0 pid=787) ERROR 10-28 00:28:03 [multiproc_executor.py:1055]                    ^^^^^^^^^^^^
+(Worker_TP0 pid=787) ERROR 10-28 00:28:03 [multiproc_executor.py:1055]   File "/opt/venv/lib/python3.12/site-packages/vllm_gaudi/xpu/patches/graph_safe_output.py", line 409, in __init__
+(Worker_TP0 pid=787) ERROR 10-28 00:28:03 [multiproc_executor.py:1055]     torch.xpu.synchronize()
+(Worker_TP0 pid=787) ERROR 10-28 00:28:03 [multiproc_executor.py:1055]   File "/opt/venv/lib/python3.12/site-packages/torch/xpu/__init__.py", line 702, in synchronize
+(Worker_TP0 pid=787) ERROR 10-28 00:28:03 [multiproc_executor.py:1055]     return torch._C._xpu_synchronize(device)
+(Worker_TP0 pid=787) ERROR 10-28 00:28:03 [multiproc_executor.py:1055]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(Worker_TP0 pid=787) ERROR 10-28 00:28:03 [multiproc_executor.py:1055] RuntimeError: wait cannot be called for a queue which is recording to a command graph.
+(Worker_TP0 pid=787) ERROR 10-28 00:28:03 [multiproc_executor.py:1055] 

@@ -1,0 +1,12 @@
+leg:    arc-graph-trace-20261028-061226 (r12 — ARC_TRACE_FLIP onset tracer)
+image:  vllm-arc:v0.30.0-b70-p12b 171654f579a6 (fork 07403f46)
+env:    ARC_LEG=graph-trace GRAPH=1 SPEC=0 ARC_TRACE=1
+result: BREAKTHROUGH — all-thread stack dump at onset names the flip frame:
+        piecewise_backend.py:380 -> inductor AOT cache callable ->
+        extern_kernels.mm — the first real request's COMPILED PREFILL
+        flips the device default to recording. Cofactor verified: eager
+        legs compiled too (199s) and served clean — graphs posture must
+        be live for the flip (pool/stream context of the callable).
+next:   r12b kernel-launch tracer (6c25db06) — probes around every
+        triton launch + aten mm.out; then targeted fix (disable piecewise
+        compile on xpu / the implicated knob).

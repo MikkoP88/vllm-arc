@@ -1,0 +1,10 @@
+p2-graph leg on p13: boot+capture clean (27/27), platform gates PASS, engine
+DEAD at first /v1/completions (one 200 with garbage content, then refused).
+Canary on both TP workers: capturing(cur)=True, capturing(fresh)=False,
+executed=False -> TRUE ZOMBIE stream (recorder left open by capture; kernels
+never execute). Death chain = defect-b text (event graph-associated ->
+barrier illegal -> EngineCore death). dmesg 0 resets. Device probes: bare
+captures clean; event-inside-capture poison reproduced; set_stream(fresh)
+recovery validated. Answer evidence for feat/arc-p12b-graph-stream-hygiene
+(capture accounting + boundary hygiene swaps + serve-time alarm). See
+VERDICT.md.

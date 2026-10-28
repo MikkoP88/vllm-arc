@@ -1,0 +1,5 @@
+TTFT ctx=  8192 cold=  5469.3 ms  bar=3944  delta=+38.7%
+TTFT ctx= 16384 cold= 11285.9 ms  bar=8083  delta=+39.6%
+TTFT ctx= 32768 cold= 24207.0 ms  bar=17447  delta=+38.7%
+TTFT ctx= 65536 cold= 54781.8 ms  bar=41565  delta=+31.8%
+TTFT_LADDER_DONE

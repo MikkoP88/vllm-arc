@@ -1,0 +1,40 @@
+Leg: p2-graph p12b round 7 (storm-wait) — rig leg
+arc-p2-graph-20261028-031336, image vllm-arc:v0.30.0-b70-p12b = 02961955b15a
+(fork 986b2c49). Env: TP2, qwen3.8-27b-fp8, gmu=0.8 mnbt=8192 seqs=64,
+VLLM_XPU_ENABLE_XPU_GRAPH=1, FULL_DECODE_ONLY, spec=0 lmc=0, arc3 wheel.
+
+THE READOUT: ARC_GRAPH_STORM_ENDED fired at 0.0 s — three times, once per
+retry — and the engine still died at the third exit-poison. There is no
+time-bounded storm. The correct model, proven by this leg:
+
+- A FRESH, UNUSED stream probes clean ALWAYS (storm-wait succeeded
+  instantly every time; the cached replacement created 03:20:58 and not
+  used in between still probed clean + canary executed at 03:20:59).
+- The moment a stream is USED for a real forward, the recorder flips it
+  MID-FORWARD (~1 s window): every retry's exit probe found the survivor
+  recording. Attempt 1 (03:20:58), attempt 2 (03:20:59), attempt 3
+  (03:21:00) — three fresh streams, three on-use flips.
+- Therefore the poison is a PERMANENT runtime state entered at the first
+  flip (right after the first real generation completes): any queue that
+  enqueues model work gets hijacked into command-graph recording. Waiting
+  cannot produce a servable stream; stream-layer recovery is impossible.
+
+Death: attempt-3 exit-poison → _poisoned_step=True → integrity raise →
+500s → teardown (the usual shutdown-path accelerator.synchronize noise).
+Integrity law held: no garbage served; the poison flag failed the request
+honestly.
+
+POSTURE DECISION (pre-committed contingency, plan §10/§12 lane): P2 pivots
+to the graphs-OFF eager posture — VLLM_XPU_ENABLE_XPU_GRAPH unset →
+platforms/xpu.py:301 flips FULL_AND_PIECEWISE→NONE (wheel-verified), the
+W14-incumbent-immune lane. This directory is the definitive evidence for
+that decision. Contract numbers (agg/solo/TPOT) get MEASURED on eager; if
+they fall short, the remaining root-cause lead is the prefix-cache-write
+trigger (flip lands right after the first real request's completion — the
+prefix write is the differentiator vs the clean dummy warmup;
+enable_prefix_caching=True in current args) — one diagnostic leg with the
+serve flag flipped, no image rebuild needed (serve_arc_b70.sh is
+host-side).
+
+Raws: rig leg dir arc-p2-graph-20261028-031336/serve/serve_full.log
+(excerpt: r7_excerpt.txt here).

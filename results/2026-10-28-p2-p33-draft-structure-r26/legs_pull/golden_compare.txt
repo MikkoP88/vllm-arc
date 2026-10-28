@@ -1,0 +1,6 @@
+[golden] len=64 match
+[golden] len=256 match
+[golden] len=1024 match
+[golden] len=2048 match
+[golden] len=4096 DRIFT run=99955622040dbcc31b0c1674b1738db43050db970e1b3a0b1e6cca33401d86e2 ref=0825deba844b8262dd46a70df5441a3f1f9bb70137939bcb6579d583a05d516b
+GOLDEN_FAIL: 1/5 prompts drifted

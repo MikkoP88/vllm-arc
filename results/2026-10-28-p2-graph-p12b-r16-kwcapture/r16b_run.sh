@@ -1,0 +1,17 @@
+#!/bin/bash
+set -eo pipefail
+export PYTHONHASHSEED=0
+export ZE_AFFINITY_MASK=
+export CCL_ENABLE_SYCL_KERNELS=1
+export CCL_ZE_IPC_EXCHANGE=pidfd
+export CCL_TOPO_P2P_ACCESS=1
+export CCL_TOPO_FABRIC_VERTEX_CONNECTION_CHECK=0
+export CCL_SYCL_ALLGATHERV_SMALL_THRESHOLD=131072
+export CCL_SYCL_ALLGATHERV_SCALEOUT_THRESHOLD=1048576
+export CCL_SYCL_ALLGATHERV_TMP_BUF=0
+export CCL_SYCL_ALLREDUCE_TMP_BUF=0
+export MASTER_ADDR=127.0.0.1 MASTER_PORT=29617
+export R16_CAP_DIR=/root/r16cap/out
+cd /root
+timeout 240 /opt/venv/bin/torchrun --nproc_per_node 2 /root/r16_replay2.py 2>&1
+echo TORCHRUN-EXIT=0

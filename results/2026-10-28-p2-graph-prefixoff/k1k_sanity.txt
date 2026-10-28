@@ -1,0 +1,20 @@
+  stream_FAIL URLError: <urlopen error [Errno 111] Connection refused>
+  stream_FAIL URLError: <urlopen error [Errno 111] Connection refused>
+  stream_FAIL URLError: <urlopen error [Errno 111] Connection refused>
+  stream_FAIL URLError: <urlopen error [Errno 111] Connection refused>
+  stream_FAIL URLError: <urlopen error [Errno 111] Connection refused>
+  stream_FAIL URLError: <urlopen error [Errno 111] Connection refused>
+  stream_FAIL URLError: <urlopen error [Errno 111] Connection refused>
+  stream_FAIL URLError: <urlopen error [Errno 111] Connection refused>
+  stream_FAIL URLError: <urlopen error [Errno 111] Connection refused>
+  stream_FAIL URLError: <urlopen error [Errno 111] Connection refused>
+  stream_FAIL URLError: <urlopen error [Errno 111] Connection refused>
+  stream_FAIL URLError: <urlopen error [Errno 111] Connection refused>
+  stream_FAIL URLError: <urlopen error [Errno 111] Connection refused>
+  stream_FAIL URLError: <urlopen error [Errno 111] Connection refused>
+CELL k16k-c16 FAIL ok=0/16
+  stream_FAIL URLError: <urlopen error [Errno 111] Connection refused>
+CELL k32k-c1 FAIL ok=0/1
+  stream_FAIL URLError: <urlopen error [Errno 111] Connection refused>
+CELL k64k-c1 FAIL ok=0/1
+=== PYMATRIX 1024 DONE ===

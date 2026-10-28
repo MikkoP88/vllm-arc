@@ -1,0 +1,2 @@
+leg=p2-graph image=vllm-arc:v0.30.0-b70-p12b model=qwen3.8-27b-fp8 tp=2 graph=0 spec=0 lmc=0 gmu=0.8 mnbt=8192 seqs=64
+gates: platform=PASS xe2=PASS meminfo=PASS modelid=['Qwen3_5ForConditionalGeneration'] fp8

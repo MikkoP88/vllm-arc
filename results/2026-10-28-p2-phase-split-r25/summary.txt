@@ -1,0 +1,55 @@
+r25 — GPU-side phase split of the compile-independent MTP decode step
+(product posture, post-p10, timers ON = diagnostic leg)
+
+LEG        : arc-p2-r25 (rig /root/build/legs/arc-p2-r25)
+IMAGE      : vllm-arc:v0.30.0-b70-p12b2 (arc-test container reused)
+POSTURE    : product flags verbatim (mode=none + FULL_DECODE_ONLY, MTP k4,
+             prefix caching ON) + p10 fastpath + r25 phase timer
+             (PYTHONPATH=/root/p25cap sitecustomize, meta-path hooks)
+BOOT       : healthy 17:16:38; timer installed in both TP workers
+
+SPLIT (steady decode, TP0 == TP1, ring=96 steps):
+  forward  49.0-54.5 ms p50   (c1 49.0 / c8 54.5)  ~75% of step
+  tail     16.6-17.4 ms p50                          ~26%
+    sample+verify   2.4-2.8 ms   (healthy)
+    draft           14.1-14.6 ms (4 MTP replays, ~3.5 ms fixed per-replay
+                                  overhead vs ~1-2 ms compute)
+    tailres         ~0 (max 6.2)
+  fgap     0.0 (max 0.2)     forward_end -> tail_start: NO idle
+  bgap     0.0 (max = inter-leg idle)  tail_end -> next forward: NO idle
+  reconciliation: 49.0+16.6=65.6 ~= stepprobe c1 65.3; 54.5+17.4 ~= c8 80.0
+
+CONTROLS:
+  spec gate   PASS pos1=0.8804 acc=0.7045 len=3.82 (band 0.8768-0.9082)
+  onset       0
+  p10 stats   p50 0.48-0.51 ms (budget law held)
+  stepprobe   c1 65.3 / c8 80.0 (vs 62.9/77.5 timerless = +3.8-4.1%)
+  solo        57.09/57.00 (vs 59.1 timerless = -3.5%)
+  => TIMER DISTORTION LAW: enable_timing = +2.4 ms/step event stalls;
+     gates/cert run TIMERS-OFF; profile legs LAST on any boot.
+
+DISCOVERIES (instrument + stack):
+  - vLLM 0.30 runs Model Runner V2 here: XPUModelRunnerV2 =
+    vllm.v1.worker.gpu.model_runner.GPUModelRunner (V1 module wraps are dead).
+  - V2 async step split: execute_model (forward) -> sample_tokens continuation
+    (sample+verify, speculator.propose draft, postprocess).
+  - Upstream has StepTimingCollector (gpu/async_utils.py:48) wired only to
+    adaptive-verification capture profiling; this leg wired the pattern to
+    steady state.
+  - XPU Event needs enable_timing=True (default events return elapsed 0).
+  - sitecustomize find_spec(target=...) param shadows closure vars (boot-1
+    hooks matched nothing; renamed mod_target).
+
+LAWS (Appendix B r24 revision):
+  - step-split law: step 100% accounted as above; fgap=bgap=0 -> overlap
+    lanes DEAD; levers = replay CONTENT (fusion, collectives, replay count).
+  - BW floor law: 27 GB fp8 / TP2 / 608 GB/s ~= 22-23 ms weight-read floor;
+    forward has ~2x headroom; landing zone 33-35 ms (W14 = 33 ms control).
+  - timer distortion law (above).
+
+NEXT (plan §12): S1/p32 FULL_AND_PIECEWISE compile posture leg (forward
+<=45 ms c1, acceptance-gated), then p33 draft-replay chain (draft <=7 ms),
+then AR-attribution leg.
+
+RIG: restored to W14 (docker start radiance-test + w14_serve_only.sh,
+health 200 at 17:33).

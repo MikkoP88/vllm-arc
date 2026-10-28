@@ -1,0 +1,20 @@
+leg:    arc-graph-w14posture-r14-20261028-074551 (r14 — W14 incumbent graph
+        posture on OUR stack; the decisive control-group-1 experiment)
+image:  vllm-arc:v0.30.0-b70-p12b c966fcf89a3f (fork cbb6937e)
+env:    ARC_LEG_GRAPH=1 ARC_LEG_SPEC=0 ARC_GMODE=FULL_AND_PIECEWISE
+        ARC_GSIZES=4,8,16,32,64 ARC_GMAX=64 ARC_TRACE=1
+posture: FULL_AND_PIECEWISE (2,1) confirmed in engine config; sizes
+        [4,8,16,32,64] max 64; PIECEWISE 5/5 + FULL 5/5 captured clean.
+result: STILL FLIPS. Serve ready 07:51:24, ARC_GRAPH_ZOMBIE_ONSET
+        07:51:48 at first traffic, 12x HTTP 500, engine died 07:51:51.
+        Onset inside the compiled prefill artifact (piecewise_backend:380),
+        consistent with r12.
+conclusion: graph posture EXONERATED (with r13's compile exoneration, both
+        candidate mechanisms eliminated). Defect-b model v2 stands: the
+        stock Qwen GDN XPU prefill path x live graph machinery. W14 is
+        clean because its radiance fork swaps the GDN attention class to a
+        pytorch implementation (ops/hpu_gdn_pytorch.py) — the SYCL
+        gdn_attention prefill never runs there. Fix lane = reroute/replace
+        the prefill path (radiance port, plan-sanctioned) or kernel fix;
+        r16 kwargs-capture replay decides between kernel-bug-on-TP2 vs
+        kernel-x-graphs interaction.

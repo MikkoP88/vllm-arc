@@ -1,0 +1,25 @@
+steps (record_batch frames): 80
+window span 6.97s  GPU busy 0.29s (4.2%)
+step wall = span/steps = 87.1 ms  GPU busy/step = 3.7 ms
+total gap time 6.29s; top gaps:
+     63.60 ms  before at::native::xpu::IndexKernelFunctor<at::native::xpu::IndexFu
+     63.58 ms  before at::native::xpu::IndexKernelFunctor<at::native::xpu::IndexFu
+     63.47 ms  before at::native::xpu::IndexKernelFunctor<at::native::xpu::IndexFu
+     63.47 ms  before at::native::xpu::IndexKernelFunctor<at::native::xpu::IndexFu
+     63.47 ms  before at::native::xpu::IndexKernelFunctor<at::native::xpu::IndexFu
+     63.43 ms  before at::native::xpu::ElementwiseKernelWithIndexFunctor<int, at::
+     63.39 ms  before at::native::xpu::IndexKernelFunctor<at::native::xpu::IndexFu
+     63.37 ms  before at::native::xpu::IndexKernelFunctor<at::native::xpu::IndexFu
+
+Event.synchronize python frames: 81
+  n=  80 tot= 4.687s p50=  58.58ms  torch/xpu/streams.py(165): synchronize
+  n=   1 tot= 0.061s p50=  60.57ms  torch/xpu/streams.py(171): synchronize
+
+metadata-path frames (total):
+    5.867s  vllm/v1/worker/gpu/model_states/mamba_hybrid.py(232): prepare_attn
+    5.834s  vllm/v1/worker/gpu/attn_utils.py(392): build_attn_metadata
+    5.805s  vllm/v1/attention/backends/gdn_attn.py(209): build
+    0.045s  vllm/v1/worker/gpu/model_runner.py(1472): prepare_attn
+    0.021s  vllm/v1/worker/gpu/spec_decode/speculator.py(298): _build_attn_metadata
+
+get_output: n=80 tot=4.688s p50=58.60ms p90=58.99ms

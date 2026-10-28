@@ -1,0 +1,16 @@
+p1-vxk-wedge-audit (2026-10-27)
+- Owner asked: is the p2r3 first-request death the vxk wedge-site issue? NO —
+  five discriminators (see VERDICT): error signature, state-query trigger,
+  pool-row>=4097 unreachable at first request, clean 27-capture campaign with
+  the same kernels, same wheel serving correctly on p2r3e boots.
+- But the audit itself was MISSING from the P1 gate record, and it returns
+  NOT CLEAN: shipped 0.1.14.1 wheel carries 6 bare int32 id*stride sites
+  (v0.1.14 tag lineage proven via PyPI release window + zero commits).
+- v0.1.15 also bare — fix never landed upstream.
+- Exposure: stride 524288 wraps int32 at id>=4097; mamba_pool_ratio 2 puts
+  dense qwen3.8-27b rows past 4096; every prefill >=8 tok takes the tiled
+  path. Silent-corruption/DEVICE_LOST landmine for P4 integrity + P5 soak.
+- Action: §6 contingency invoked — external_patches/vllm-xpu-kernels/
+  (patcher + torch-2.13 build script ported from donor kit), wheel
+  0.1.14.1+arc1, device-gate (cap727 repro LO+HI+BND noseed+seeded,
+  serialized-24, burst x3, dmesg clean, k1k unchanged) before image pin swap.

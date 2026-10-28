@@ -1,0 +1,3 @@
+ARC_TRACE: passing ARC_TRACE_FLIP=1
+ARC_NOCOMPILE: compilation mode=none (eager prefill; graphs stay FULL_DECODE_ONLY)
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-p12b name=arc-test graph=1 spec=0 gmu=0.8 mnbt=8192 seqs=64 xgc=0 port=8000 07:36:53

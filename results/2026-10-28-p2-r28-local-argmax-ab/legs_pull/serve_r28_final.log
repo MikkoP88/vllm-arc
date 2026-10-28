@@ -1,0 +1,926 @@
+INFO 10-28 19:06:08 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+INFO 10-28 19:06:08 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+INFO 10-28 19:06:08 [__init__.py:54] - hpu -> vllm_gaudi:register
+INFO 10-28 19:06:08 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+INFO 10-28 19:06:09 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+INFO 10-28 19:06:09 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+INFO 10-28 19:06:09 [__init__.py:54] - hpu -> vllm_gaudi:register
+INFO 10-28 19:06:09 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+WARNING 10-28 19:06:09 [__init__.py:56] ArcXpuPlatform: graph-safe output install failed at register() (expected mid-resolution; platform hooks retry): AttributeError("partially initialized module 'vllm.v1.worker.gpu.async_utils' has no attribute 'AsyncOutput' (most likely due to a circular import)")
+WARNING 10-28 19:06:09 [__init__.py:56] ArcXpuPlatform: graph-safe output install failed at register() (expected mid-resolution; platform hooks retry): AttributeError("partially initialized module 'vllm.v1.worker.gpu.async_utils' has no attribute 'AsyncOutput' (most likely due to a circular import)")
+INFO 10-28 19:06:09 [__init__.py:272] Platform plugin arc is activated
+WARNING 10-28 19:06:09 [__init__.py:56] ArcXpuPlatform: graph-safe output install failed at register() (expected mid-resolution; platform hooks retry): ImportError("cannot import name 'direct_register_custom_op' from partially initialized module 'vllm.utils.torch_utils' (most likely due to a circular import) (/opt/venv/lib/python3.12/site-packages/vllm/utils/torch_utils.py)")
+WARNING 10-28 19:06:09 [__init__.py:56] ArcXpuPlatform: graph-safe output install failed at register() (expected mid-resolution; platform hooks retry): ImportError("cannot import name 'direct_register_custom_op' from partially initialized module 'vllm.utils.torch_utils' (most likely due to a circular import) (/opt/venv/lib/python3.12/site-packages/vllm/utils/torch_utils.py)")
+INFO 10-28 19:06:09 [__init__.py:272] Platform plugin arc is activated
+WARNING 10-28 19:06:21 [argparse_utils.py:276] With `vllm serve`, you should provide the model as a positional argument or in a config file instead of via the `--model` option. The `--model` option will be removed in a future version.
+(APIServer pid=50) INFO 10-28 19:06:21 [api_utils.py:347] 
+(APIServer pid=50) INFO 10-28 19:06:21 [api_utils.py:347]        █     █     █▄   ▄█
+(APIServer pid=50) INFO 10-28 19:06:21 [api_utils.py:347]  ▄▄ ▄█ █     █     █ ▀▄▀ █  version 0.30.0
+(APIServer pid=50) INFO 10-28 19:06:21 [api_utils.py:347]   █▄█▀ █     █     █     █  model   /models/target
+(APIServer pid=50) INFO 10-28 19:06:21 [api_utils.py:347]    ▀▀  ▀▀▀▀▀ ▀▀▀▀▀ ▀     ▀
+(APIServer pid=50) INFO 10-28 19:06:21 [api_utils.py:347] 
+(APIServer pid=50) INFO 10-28 19:06:21 [api_utils.py:286] non-default args: {'model_tag': '/models/target', 'chat_template': '/root/chat_template_qwen38_high.jinja', 'enable_auto_tool_choice': True, 'tool_call_parser': 'qwen3_coder', 'model': '/models/target', 'trust_remote_code': True, 'dtype': 'float16', 'max_model_len': 262144, 'quantization': 'fp8', 'served_model_name': ['qwen3.8-27b-fp8'], 'reasoning_parser': 'qwen3', 'tensor_parallel_size': 2, 'block_size': 64, 'gpu_memory_utilization': 0.8, 'kv_cache_dtype': 'fp8_e4m3', 'enable_prefix_caching': True, 'mamba_ssm_cache_dtype': 'float16', 'max_num_batched_tokens': 8192, 'max_num_seqs': 64, 'disable_hybrid_kv_cache_manager': False, 'speculative_config': {'method': 'mtp', 'num_speculative_tokens': 4, 'use_local_argmax_reduction': True}, 'compilation_config': {'mode': <CompilationMode.NONE: 0>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': [], 'ir_enable_torch_wrap': None, 'splitting_ops': None, 'compile_mm_encoder': False, 'cudagraph_mm_encoder': False, 'encoder_cudagraph_token_budgets': [], 'encoder_cudagraph_max_vision_items_per_batch': 0, 'encoder_cudagraph_max_frames_per_batch': None, 'compile_sizes': None, 'compile_ranges_endpoints': None, 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.FULL_DECODE_ONLY: (2, 0)>, 'cudagraph_num_of_warmups': 0, 'cudagraph_capture_sizes': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 20, 25, 30, 35, 40, 45, 48, 50, 55, 60, 64, 65, 70, 75, 80, 85, 90, 95, 96, 100, 105, 110, 112, 115, 120, 125, 128, 130, 135, 140, 145, 150, 155, 160, 165, 170, 175, 180, 185, 190, 192, 195, 200, 205, 210, 215, 220, 224, 225, 230, 235, 240, 245, 250, 255, 256, 260, 265, 270, 275, 280, 285, 290, 295, 300, 305, 310, 315, 320], 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': None, 'pass_config': {}, 'max_cudagraph_capture_size': None, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': False}, 'local_cache_dir': None, 'fast_moe_cold_start': None, 'static_all_moe_layers': []}}
+(APIServer pid=50) WARNING 10-28 19:06:21 [envs.py:2248] Unknown vLLM environment variable detected: VLLM_QUANTIZE_Q40_LIB
+(APIServer pid=50) INFO 10-28 19:06:21 [model.py:692] Resolved architecture: Qwen3_5ForConditionalGeneration
+(APIServer pid=50) WARNING 10-28 19:06:21 [model.py:2364] Casting torch.bfloat16 to torch.float16.
+(APIServer pid=50) INFO 10-28 19:06:21 [model.py:2030] Using max model len 262144
+(APIServer pid=50) INFO 10-28 19:06:22 [gdn_metadata_fastpath.py:283] [arc-p10] gdn metadata fastpath installed (steady spec-decode builds; stock build kept for prefill/mixed)
+(APIServer pid=50) [gdn_attn] _install OK (pid=50)
+(APIServer pid=50) WARNING 10-28 19:06:23 [indexer_topk.py:29] Failed to import the DeepSelect extension (vllm._deepselect_C): No module named 'vllm._deepselect_C'
+(APIServer pid=50) INFO 10-28 19:06:23 [cache.py:343] Using fp8_e4m3 data type to store kv cache. It reduces the GPU memory footprint and boosts the performance. Meanwhile, it may cause accuracy drop without a proper scaling factor
+(APIServer pid=50) INFO 10-28 19:06:23 [model.py:692] Resolved architecture: Qwen3_5MTP
+(APIServer pid=50) WARNING 10-28 19:06:23 [model.py:2364] Casting torch.bfloat16 to torch.float16.
+(APIServer pid=50) INFO 10-28 19:06:23 [model.py:2030] Using max model len 262144
+(APIServer pid=50) INFO 10-28 19:06:23 [model.py:900] Disabled mm_prefix attention mode because multimodal inputs are configuration-disabled. Attention backends without mm_prefix support may now be selected.
+(APIServer pid=50) WARNING 10-28 19:06:23 [speculative.py:1361] Enabling num_speculative_tokens > 1 will run multiple times of forward on same MTP layer,which may result in lower acceptance rate
+(APIServer pid=50) INFO 10-28 19:06:23 [scheduler.py:288] Chunked prefill is enabled with max_num_batched_tokens=8192.
+(APIServer pid=50) WARNING 10-28 19:06:23 [config.py:819] Qwen3.5 model specifies mamba_ssm_dtype='float32' in its config, but --mamba-ssm-cache-dtype='float16' was passed. Using the user-specified value.
+(APIServer pid=50) INFO 10-28 19:06:23 [config.py:625] Mamba cache mode is set to 'align' for Qwen3_5ForConditionalGeneration by default when prefix caching is enabled
+(APIServer pid=50) WARNING 10-28 19:06:23 [vllm.py:1570] Inductor compilation was disabled by user settings, optimizations settings that are only active during inductor compilation will be ignored.
+(APIServer pid=50) INFO 10-28 19:06:23 [kernel.py:416] Final IR op priority after setting platform defaults: IrOpPriorityConfig(rms_norm=['vllm_c', 'native'], fused_add_rms_norm=['vllm_c', 'native'], gelu_and_mul_sparse=['native'])
+(APIServer pid=50) WARNING 10-28 19:06:23 [xpu.py:308] XPU Graph support is experimental and currently only supports single-GPU execution.
+(APIServer pid=50) INFO 10-28 19:06:23 [xpu.py:382] XPU platform: set server shutdown_timeout=5.
+(APIServer pid=50) INFO 10-28 19:06:23 [graph_safe_output.py:672] ArcXpuPlatform: XPU graph boundary hygiene installed (pid 50, XPUGraph capture_begin/capture_end/replay + graph context __exit__ wrapped).
+(APIServer pid=50) INFO 10-28 19:06:23 [graph_safe_output.py:801] ArcXpuPlatform: zombie stream-reroute guards installed (pid 50, set_stream substitution + wait_stream skip + Event.record reroute + synchronize tripwire).
+(APIServer pid=50) [arc-p33] manager probe installed (pid=50)
+(APIServer pid=50) [cudagraph_utils] install_for_cudagraph_utils OK (pid=50)
+(APIServer pid=50) [arc-p33] speculator probe installed (pid=50)
+(APIServer pid=50) [speculator] install_for_speculator OK (pid=50)
+(APIServer pid=50) INFO 10-28 19:06:24 [r25_phase_timer.py:181] [arc-r25] v2 phase timer installed (forward/tail/sample/draft; logs every 96 steps)
+(APIServer pid=50) [model_runner] _install OK (pid=50)
+(APIServer pid=50) INFO 10-28 19:06:24 [graph_safe_output.py:938] ArcXpuPlatform: runner-entry hygiene installed (pid 50, GPUModelRunner.execute_model + sample_tokens wrapped).
+(APIServer pid=50) INFO 10-28 19:06:24 [graph_safe_output.py:984] ArcXpuPlatform: capture-stream fix installed (pid 50, captures ride torch.xpu.graph.default_capture_stream, EAGERLY INITED before capture #1 — the serving default never enters capture; champion 0.26.1 discipline, r9).
+(APIServer pid=50) INFO 10-28 19:06:24 [graph_safe_output.py:527] ArcXpuPlatform: r12b kernel-launch tracer installed (triton:CachingAutotuner.run).
+(APIServer pid=50) INFO 10-28 19:06:24 [graph_safe_output.py:1126] ArcXpuPlatform: graph-safe output patch installed (pid 50, AsyncOutput/AsyncPoolingOutput __init__ + get_output wrapped).
+(APIServer pid=50) INFO 10-28 19:06:24 [speculator_full_capture.py:116] ArcXpuPlatform: speculator FULL-capture patch installed (pid 50, SpeculatorCudaGraphManager.__init__ wrapped).
+(APIServer pid=50) INFO 10-28 19:06:24 [first_request_warmup.py:126] ArcXpuPlatform: first-request warmup interlock installed (defect-b lane W, r16 evidence)
+(APIServer pid=50) INFO 10-28 19:06:24 [platform.py:180] ArcXpuPlatform: Intel Arc Xe2 posture active (Intel(R) Graphics [0xe223]).
+(APIServer pid=50) INFO 10-28 19:06:24 [platform.py:190] ArcXpuPlatform: graph posture cudagraph_mode=FULL_DECODE_ONLY capture_sizes=(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 20, 25, 30, 35, 40, 45, 48, 50, 55, 60, 64, 65, 70, 75, 80, 85, 90, 95, 96, 100, 105, 110, 112, 115, 120, 125, 128, 130, 135, 140, 145, 150, 155, 160, 165, 170, 175, 180, 185, 190, 192, 195, 200, 205, 210, 215, 220, 224, 225, 230, 235, 240, 245, 250, 255, 256, 260, 265, 270, 275, 280, 285, 290, 295, 300, 305, 310, 315, 320) (VLLM_XPU_ENABLE_XPU_GRAPH=True).
+(APIServer pid=50) INFO 10-28 19:06:24 [compilation.py:336] Enabled custom fusions: norm_quant, act_quant
+(APIServer pid=50) [transformers] The `use_fast` parameter is deprecated and will be removed in a future version. Use `backend="torchvision"` instead of `use_fast=True`, or `backend="pil"` instead of `use_fast=False`.
+INFO 10-28 19:06:41 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+INFO 10-28 19:06:41 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+INFO 10-28 19:06:41 [__init__.py:54] - hpu -> vllm_gaudi:register
+INFO 10-28 19:06:41 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+INFO 10-28 19:06:42 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+INFO 10-28 19:06:42 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+INFO 10-28 19:06:42 [__init__.py:54] - hpu -> vllm_gaudi:register
+INFO 10-28 19:06:42 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+WARNING 10-28 19:06:42 [__init__.py:56] ArcXpuPlatform: graph-safe output install failed at register() (expected mid-resolution; platform hooks retry): AttributeError("partially initialized module 'vllm.v1.worker.gpu.async_utils' has no attribute 'AsyncOutput' (most likely due to a circular import)")
+WARNING 10-28 19:06:42 [__init__.py:56] ArcXpuPlatform: graph-safe output install failed at register() (expected mid-resolution; platform hooks retry): AttributeError("partially initialized module 'vllm.v1.worker.gpu.async_utils' has no attribute 'AsyncOutput' (most likely due to a circular import)")
+INFO 10-28 19:06:42 [__init__.py:272] Platform plugin arc is activated
+WARNING 10-28 19:06:42 [__init__.py:56] ArcXpuPlatform: graph-safe output install failed at register() (expected mid-resolution; platform hooks retry): ImportError("cannot import name 'direct_register_custom_op' from partially initialized module 'vllm.utils.torch_utils' (most likely due to a circular import) (/opt/venv/lib/python3.12/site-packages/vllm/utils/torch_utils.py)")
+WARNING 10-28 19:06:42 [__init__.py:56] ArcXpuPlatform: graph-safe output install failed at register() (expected mid-resolution; platform hooks retry): ImportError("cannot import name 'direct_register_custom_op' from partially initialized module 'vllm.utils.torch_utils' (most likely due to a circular import) (/opt/venv/lib/python3.12/site-packages/vllm/utils/torch_utils.py)")
+INFO 10-28 19:06:42 [__init__.py:272] Platform plugin arc is activated
+(EngineCore pid=352) INFO 10-28 19:06:52 [core.py:123] Initializing a V1 LLM engine (v0.30.0) with config: model='/models/target', speculative_config=SpeculativeConfig(method='mtp', model='/models/target', num_spec_tokens=4), tokenizer='/models/target', skip_tokenizer_init=False, tokenizer_mode=auto, revision=None, tokenizer_revision=None, trust_remote_code=True, dtype=torch.float16, max_seq_len=262144, download_dir=None, load_format=auto, tensor_parallel_size=2, pipeline_parallel_size=1, data_parallel_size=1, decode_context_parallel_size=1, dcp_comm_backend=ag_rs, disable_custom_all_reduce=True, quantization=fp8, quantization_config=None, enforce_eager=False, enable_return_routed_experts=False, kv_cache_dtype=fp8_e4m3, device_config=xpu, structured_outputs_config=StructuredOutputsConfig(backend='auto', disable_any_whitespace=False, disable_additional_properties=False, reasoning_parser='qwen3', reasoning_parser_plugin='', enable_in_reasoning=False), observability_config=ObservabilityConfig(show_hidden_metrics_for_version=None, otlp_traces_endpoint=None, collect_detailed_traces=None, per_request_spec_decode_metrics='none', kv_cache_metrics=False, kv_cache_metrics_sample=0.01, cudagraph_metrics=False, enable_layerwise_nvtx_tracing=False, enable_mfu_metrics=False, enable_mm_processor_stats=False, enable_logging_iteration_details=False, jit_monitor_mode='warn', jit_monitor_verbose=False), seed=0, served_model_name=qwen3.8-27b-fp8, enable_prefix_caching=True, enable_chunked_prefill=True, pooler_config=None, compilation_config={'mode': <CompilationMode.NONE: 0>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': ['+quant_fp8', 'all', '+quant_fp8'], 'ir_enable_torch_wrap': False, 'splitting_ops': [], 'compile_mm_encoder': False, 'cudagraph_mm_encoder': False, 'encoder_cudagraph_token_budgets': [], 'encoder_cudagraph_max_vision_items_per_batch': 0, 'encoder_cudagraph_max_frames_per_batch': None, 'compile_sizes': [], 'compile_ranges_endpoints': [8192], 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.FULL_DECODE_ONLY: (2, 0)>, 'cudagraph_num_of_warmups': 1, 'cudagraph_capture_sizes': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 20, 25, 30, 35, 40, 45, 48, 50, 55, 60, 64, 65, 70, 75, 80, 85, 90, 95, 96, 100, 105, 110, 112, 115, 120, 125, 128, 130, 135, 140, 145, 150, 155, 160, 165, 170, 175, 180, 185, 190, 192, 195, 200, 205, 210, 215, 220, 224, 225, 230, 235, 240, 245, 250, 255, 256, 260, 265, 270, 275, 280, 285, 290, 295, 300, 305, 310, 315, 320], 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': False, 'pass_config': {'fuse_norm_quant': True, 'fuse_act_quant': True, 'fuse_attn_quant': False, 'enable_sp': False, 'fuse_gemm_comms': False, 'fuse_allreduce_rms': False, 'enable_qk_norm_rope_fusion': False, 'fuse_rope_kvcache_cat_mla': False, 'fuse_act_padding': False, 'fuse_qk_norm_rope_kvcache': False}, 'max_cudagraph_capture_size': 320, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': False}, 'local_cache_dir': None, 'fast_moe_cold_start': False, 'static_all_moe_layers': []}, kernel_config=KernelConfig(ir_op_priority=IrOpPriorityConfig(rms_norm=['vllm_c', 'native'], fused_add_rms_norm=['vllm_c', 'native'], gelu_and_mul_sparse=['native']), enable_flashinfer_autotune=True, enable_cutedsl_warmup=True, enable_jit_warmup=True, moe_backend='auto', sparse_indexer_topk_backend='auto', linear_backend='auto', linear_backend_per_quant=None)
+(EngineCore pid=352) INFO 10-28 19:06:52 [multiproc_executor.py:153] DP group leader: node_rank=0, node_rank_within_dp=0, master_addr=127.0.0.1, mq_connect_ip=10.20.3.65 (local), world_size=2, local_world_size=2
+INFO 10-28 19:06:54 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+INFO 10-28 19:06:54 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+INFO 10-28 19:06:54 [__init__.py:54] - hpu -> vllm_gaudi:register
+INFO 10-28 19:06:54 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+INFO 10-28 19:06:55 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+INFO 10-28 19:06:55 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+INFO 10-28 19:06:55 [__init__.py:54] - hpu -> vllm_gaudi:register
+INFO 10-28 19:06:55 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+WARNING 10-28 19:06:55 [__init__.py:56] ArcXpuPlatform: graph-safe output install failed at register() (expected mid-resolution; platform hooks retry): AttributeError("partially initialized module 'vllm.v1.worker.gpu.async_utils' has no attribute 'AsyncOutput' (most likely due to a circular import)")
+WARNING 10-28 19:06:55 [__init__.py:56] ArcXpuPlatform: graph-safe output install failed at register() (expected mid-resolution; platform hooks retry): AttributeError("partially initialized module 'vllm.v1.worker.gpu.async_utils' has no attribute 'AsyncOutput' (most likely due to a circular import)")
+INFO 10-28 19:06:55 [__init__.py:272] Platform plugin arc is activated
+WARNING 10-28 19:06:55 [__init__.py:56] ArcXpuPlatform: graph-safe output install failed at register() (expected mid-resolution; platform hooks retry): ImportError("cannot import name 'direct_register_custom_op' from partially initialized module 'vllm.utils.torch_utils' (most likely due to a circular import) (/opt/venv/lib/python3.12/site-packages/vllm/utils/torch_utils.py)")
+WARNING 10-28 19:06:55 [__init__.py:56] ArcXpuPlatform: graph-safe output install failed at register() (expected mid-resolution; platform hooks retry): ImportError("cannot import name 'direct_register_custom_op' from partially initialized module 'vllm.utils.torch_utils' (most likely due to a circular import) (/opt/venv/lib/python3.12/site-packages/vllm/utils/torch_utils.py)")
+INFO 10-28 19:06:55 [__init__.py:272] Platform plugin arc is activated
+[arc-p33] manager probe installed (pid=591)
+[cudagraph_utils] install_for_cudagraph_utils OK (pid=591)
+[arc-p33] speculator probe installed (pid=591)
+[speculator] install_for_speculator OK (pid=591)
+INFO 10-28 19:07:05 [r25_phase_timer.py:181] [arc-r25] v2 phase timer installed (forward/tail/sample/draft; logs every 96 steps)
+[model_runner] _install OK (pid=591)
+INFO 10-28 19:07:05 [gdn_metadata_fastpath.py:283] [arc-p10] gdn metadata fastpath installed (steady spec-decode builds; stock build kept for prefill/mixed)
+[gdn_attn] _install OK (pid=591)
+WARNING 10-28 19:07:05 [indexer_topk.py:29] Failed to import the DeepSelect extension (vllm._deepselect_C): No module named 'vllm._deepselect_C'
+INFO 10-28 19:07:07 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+INFO 10-28 19:07:07 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+INFO 10-28 19:07:07 [__init__.py:54] - hpu -> vllm_gaudi:register
+INFO 10-28 19:07:07 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+(Worker pid=591) INFO 10-28 19:07:07 [graph_safe_output.py:672] ArcXpuPlatform: XPU graph boundary hygiene installed (pid 591, XPUGraph capture_begin/capture_end/replay + graph context __exit__ wrapped).
+(Worker pid=591) INFO 10-28 19:07:07 [graph_safe_output.py:801] ArcXpuPlatform: zombie stream-reroute guards installed (pid 591, set_stream substitution + wait_stream skip + Event.record reroute + synchronize tripwire).
+(Worker pid=591) INFO 10-28 19:07:07 [graph_safe_output.py:938] ArcXpuPlatform: runner-entry hygiene installed (pid 591, GPUModelRunner.execute_model + sample_tokens wrapped).
+(Worker pid=591) INFO 10-28 19:07:07 [graph_safe_output.py:984] ArcXpuPlatform: capture-stream fix installed (pid 591, captures ride torch.xpu.graph.default_capture_stream, EAGERLY INITED before capture #1 — the serving default never enters capture; champion 0.26.1 discipline, r9).
+(Worker pid=591) INFO 10-28 19:07:07 [graph_safe_output.py:527] ArcXpuPlatform: r12b kernel-launch tracer installed (triton:CachingAutotuner.run).
+(Worker pid=591) INFO 10-28 19:07:07 [graph_safe_output.py:1126] ArcXpuPlatform: graph-safe output patch installed (pid 591, AsyncOutput/AsyncPoolingOutput __init__ + get_output wrapped).
+(Worker pid=591) INFO 10-28 19:07:07 [speculator_full_capture.py:116] ArcXpuPlatform: speculator FULL-capture patch installed (pid 591, SpeculatorCudaGraphManager.__init__ wrapped).
+(Worker pid=591) INFO 10-28 19:07:07 [first_request_warmup.py:126] ArcXpuPlatform: first-request warmup interlock installed (defect-b lane W, r16 evidence)
+INFO 10-28 19:07:08 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+INFO 10-28 19:07:08 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+INFO 10-28 19:07:08 [__init__.py:54] - hpu -> vllm_gaudi:register
+INFO 10-28 19:07:08 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+WARNING 10-28 19:07:08 [__init__.py:56] ArcXpuPlatform: graph-safe output install failed at register() (expected mid-resolution; platform hooks retry): AttributeError("partially initialized module 'vllm.v1.worker.gpu.async_utils' has no attribute 'AsyncOutput' (most likely due to a circular import)")
+WARNING 10-28 19:07:08 [__init__.py:56] ArcXpuPlatform: graph-safe output install failed at register() (expected mid-resolution; platform hooks retry): AttributeError("partially initialized module 'vllm.v1.worker.gpu.async_utils' has no attribute 'AsyncOutput' (most likely due to a circular import)")
+INFO 10-28 19:07:08 [__init__.py:272] Platform plugin arc is activated
+WARNING 10-28 19:07:08 [__init__.py:56] ArcXpuPlatform: graph-safe output install failed at register() (expected mid-resolution; platform hooks retry): ImportError("cannot import name 'direct_register_custom_op' from partially initialized module 'vllm.utils.torch_utils' (most likely due to a circular import) (/opt/venv/lib/python3.12/site-packages/vllm/utils/torch_utils.py)")
+WARNING 10-28 19:07:08 [__init__.py:56] ArcXpuPlatform: graph-safe output install failed at register() (expected mid-resolution; platform hooks retry): ImportError("cannot import name 'direct_register_custom_op' from partially initialized module 'vllm.utils.torch_utils' (most likely due to a circular import) (/opt/venv/lib/python3.12/site-packages/vllm/utils/torch_utils.py)")
+INFO 10-28 19:07:08 [__init__.py:272] Platform plugin arc is activated
+(Worker pid=591) INFO 10-28 19:07:08 [parallel_state.py:1827] world_size=2 rank=0 local_rank=0 distributed_init_method=file:///tmp/vllm_dist_180835cf5f8649f6a7fe00544ac98338 backend=xccl
+(APIServer pid=50) [transformers] Qwen3VL video processing does not apply the per-frame pixel cap the reference implementation (qwen-vl-utils) applies, so some videos cost far more tokens than they would there. In v5.22 the capped behavior will become the default and `cap_pixels_per_frame` will be removed. Pass `cap_pixels_per_frame=True` to adopt the reference behavior now, or `False` to keep the current behavior and silence this warning.
+[arc-p33] manager probe installed (pid=699)
+[cudagraph_utils] install_for_cudagraph_utils OK (pid=699)
+[arc-p33] speculator probe installed (pid=699)
+[speculator] install_for_speculator OK (pid=699)
+INFO 10-28 19:07:18 [r25_phase_timer.py:181] [arc-r25] v2 phase timer installed (forward/tail/sample/draft; logs every 96 steps)
+[model_runner] _install OK (pid=699)
+INFO 10-28 19:07:18 [gdn_metadata_fastpath.py:283] [arc-p10] gdn metadata fastpath installed (steady spec-decode builds; stock build kept for prefill/mixed)
+[gdn_attn] _install OK (pid=699)
+WARNING 10-28 19:07:19 [indexer_topk.py:29] Failed to import the DeepSelect extension (vllm._deepselect_C): No module named 'vllm._deepselect_C'
+(APIServer pid=50) INFO 10-28 19:07:20 [base.py:261] Multi-modal warmup completed in 28.621s
+(Worker pid=699) INFO 10-28 19:07:20 [graph_safe_output.py:672] ArcXpuPlatform: XPU graph boundary hygiene installed (pid 699, XPUGraph capture_begin/capture_end/replay + graph context __exit__ wrapped).
+(Worker pid=699) INFO 10-28 19:07:20 [graph_safe_output.py:801] ArcXpuPlatform: zombie stream-reroute guards installed (pid 699, set_stream substitution + wait_stream skip + Event.record reroute + synchronize tripwire).
+(Worker pid=699) INFO 10-28 19:07:20 [graph_safe_output.py:938] ArcXpuPlatform: runner-entry hygiene installed (pid 699, GPUModelRunner.execute_model + sample_tokens wrapped).
+(Worker pid=699) INFO 10-28 19:07:20 [graph_safe_output.py:984] ArcXpuPlatform: capture-stream fix installed (pid 699, captures ride torch.xpu.graph.default_capture_stream, EAGERLY INITED before capture #1 — the serving default never enters capture; champion 0.26.1 discipline, r9).
+(Worker pid=699) INFO 10-28 19:07:20 [graph_safe_output.py:527] ArcXpuPlatform: r12b kernel-launch tracer installed (triton:CachingAutotuner.run).
+(Worker pid=699) INFO 10-28 19:07:20 [graph_safe_output.py:1126] ArcXpuPlatform: graph-safe output patch installed (pid 699, AsyncOutput/AsyncPoolingOutput __init__ + get_output wrapped).
+(Worker pid=699) INFO 10-28 19:07:20 [speculator_full_capture.py:116] ArcXpuPlatform: speculator FULL-capture patch installed (pid 699, SpeculatorCudaGraphManager.__init__ wrapped).
+(Worker pid=699) INFO 10-28 19:07:20 [first_request_warmup.py:126] ArcXpuPlatform: first-request warmup interlock installed (defect-b lane W, r16 evidence)
+(Worker pid=699) INFO 10-28 19:07:21 [parallel_state.py:1827] world_size=2 rank=1 local_rank=1 distributed_init_method=file:///tmp/vllm_dist_180835cf5f8649f6a7fe00544ac98338 backend=xccl
+(Worker pid=591) INFO 10-28 19:07:21 [parallel_state.py:2267] rank 0 in world size 2 is assigned as DP rank 0, PP rank 0, PCP rank 0, TP rank 0, ETP rank 0, EP rank N/A, EPLB rank N/A
+2026:10:28-19:07:21:  699 |CCL_WARN| value of CCL_ATL_TRANSPORT changed to be ofi (default:mpi)
+2026:10:28-19:07:21:  699 |CCL_WARN| value of CCL_SYCL_ALLGATHERV_SCALEOUT_THRESHOLD changed to be 1048576 (default:1073741824)
+2026:10:28-19:07:21:  699 |CCL_WARN| value of CCL_TOPO_P2P_ACCESS changed to be 1 (default:-1)
+2026:10:28-19:07:21:  699 |CCL_WARN| value of CCL_TOPO_FABRIC_VERTEX_CONNECTION_CHECK changed to be 0 (default:1)
+2026:10:28-19:07:21:  591 |CCL_WARN| value of CCL_ATL_TRANSPORT changed to be ofi (default:mpi)
+2026:10:28-19:07:21:  591 |CCL_WARN| value of CCL_SYCL_ALLGATHERV_SCALEOUT_THRESHOLD changed to be 1048576 (default:1073741824)
+2026:10:28-19:07:21:  591 |CCL_WARN| value of CCL_TOPO_P2P_ACCESS changed to be 1 (default:-1)
+2026:10:28-19:07:21:  591 |CCL_WARN| value of CCL_TOPO_FABRIC_VERTEX_CONNECTION_CHECK changed to be 0 (default:1)
+2026:10:28-19:07:21:  699 |CCL_WARN| could not get local_idx/count from environment variables, trying to get them from ATL
+2026:10:28-19:07:21:  591 |CCL_WARN| could not get local_idx/count from environment variables, trying to get them from ATL
+(Worker pid=591) INFO 10-28 19:07:22 [xpu_worker.py:169] Using V2 Model Runner
+(Worker_TP0 pid=591) INFO 10-28 19:07:23 [model_runner.py:396] Loading model from scratch...
+(APIServer pid=50) INFO 10-28 19:07:23 [base.py:261] Readonly multi-modal warmup completed in 2.776s
+(Worker_TP0 pid=591) INFO 10-28 19:07:23 [xpu.py:233] Using backend AttentionBackendEnum.FLASH_ATTN for vit attention
+(Worker_TP0 pid=591) INFO 10-28 19:07:23 [mm_encoder_attention.py:372] Using AttentionBackendEnum.FLASH_ATTN for MMEncoderAttention.
+(Worker_TP0 pid=591) INFO 10-28 19:07:23 [__init__.py:726] Selected XPUFp8BlockScaledMMKernel for Fp8LinearMethod
+(Worker_TP0 pid=591) INFO 10-28 19:07:23 [qwen_gdn_linear_attn.py:176] Using Triton/FLA GDN prefill kernel (requested=auto, head_k_dim=128).
+(Worker_TP0 pid=591) INFO 10-28 19:07:23 [qwen_gdn_linear_attn.py:528] GDN decode kernel: cuda
+(Worker_TP0 pid=591) INFO 10-28 19:07:23 [xpu.py:199] Using Flash Attention backend.
+(Worker_TP0 pid=591) INFO 10-28 19:07:23 [flash_attn.py:1116] Using FlashAttention version 2
+(Worker_TP0 pid=591) INFO 10-28 19:07:24 [weight_utils.py:895] Filesystem type for checkpoints: EXT4. Checkpoint size: 28.75 GiB. Available RAM: 362.00 GiB.
+(Worker_TP0 pid=591) INFO 10-28 19:07:24 [weight_utils.py:918] Auto-prefetch is disabled because the filesystem (EXT4) is not a recognized network FS (NFS/Lustre). If you want to force prefetching, start vLLM with --safetensors-load-strategy=prefetch.
+(Worker_TP0 pid=591) Loading safetensors checkpoint shards:   0% Completed | 0/66 [00:00<?, ?it/s]
+(Worker_TP0 pid=591) Loading safetensors checkpoint shards:   3% Completed | 2/66 [00:00<00:03, 19.23it/s]
+(Worker_TP0 pid=591) Loading safetensors checkpoint shards:   6% Completed | 4/66 [00:00<00:03, 19.49it/s]
+(Worker_TP0 pid=591) Loading safetensors checkpoint shards:   9% Completed | 6/66 [00:00<00:03, 19.47it/s]
+(Worker_TP0 pid=591) Loading safetensors checkpoint shards:  12% Completed | 8/66 [00:00<00:02, 19.50it/s]
+(Worker_TP0 pid=591) Loading safetensors checkpoint shards:  15% Completed | 10/66 [00:00<00:02, 19.20it/s]
+(Worker_TP0 pid=591) Loading safetensors checkpoint shards:  18% Completed | 12/66 [00:00<00:02, 19.07it/s]
+(Worker_TP0 pid=591) Loading safetensors checkpoint shards:  21% Completed | 14/66 [00:00<00:02, 19.01it/s]
+(Worker_TP0 pid=591) Loading safetensors checkpoint shards:  24% Completed | 16/66 [00:00<00:02, 18.83it/s]
+(Worker_TP0 pid=591) Loading safetensors checkpoint shards:  27% Completed | 18/66 [00:00<00:02, 19.15it/s]
+(Worker_TP0 pid=591) Loading safetensors checkpoint shards:  30% Completed | 20/66 [00:01<00:02, 19.32it/s]
+(Worker_TP0 pid=591) Loading safetensors checkpoint shards:  33% Completed | 22/66 [00:01<00:02, 19.35it/s]
+(Worker_TP0 pid=591) Loading safetensors checkpoint shards:  36% Completed | 24/66 [00:01<00:02, 19.33it/s]
+(Worker_TP0 pid=591) Loading safetensors checkpoint shards:  39% Completed | 26/66 [00:01<00:02, 19.46it/s]
+(Worker_TP0 pid=591) Loading safetensors checkpoint shards:  42% Completed | 28/66 [00:01<00:01, 19.40it/s]
+(Worker_TP0 pid=591) Loading safetensors checkpoint shards:  45% Completed | 30/66 [00:01<00:01, 19.56it/s]
+(Worker_TP0 pid=591) Loading safetensors checkpoint shards:  48% Completed | 32/66 [00:01<00:01, 19.57it/s]
+(Worker_TP0 pid=591) Loading safetensors checkpoint shards:  52% Completed | 34/66 [00:01<00:01, 19.64it/s]
+(Worker_TP0 pid=591) Loading safetensors checkpoint shards:  55% Completed | 36/66 [00:01<00:01, 19.32it/s]
+(Worker_TP0 pid=591) Loading safetensors checkpoint shards:  58% Completed | 38/66 [00:01<00:01, 19.15it/s]
+(Worker_TP0 pid=591) Loading safetensors checkpoint shards:  62% Completed | 41/66 [00:02<00:01, 19.28it/s]
+(Worker_TP0 pid=591) Loading safetensors checkpoint shards:  65% Completed | 43/66 [00:02<00:01, 18.65it/s]
+(Worker_TP0 pid=591) Loading safetensors checkpoint shards:  68% Completed | 45/66 [00:02<00:01, 18.25it/s]
+(Worker_TP0 pid=591) Loading safetensors checkpoint shards:  71% Completed | 47/66 [00:02<00:01, 18.06it/s]
+(Worker_TP0 pid=591) Loading safetensors checkpoint shards:  74% Completed | 49/66 [00:02<00:00, 18.08it/s]
+(Worker_TP0 pid=591) Loading safetensors checkpoint shards:  77% Completed | 51/66 [00:02<00:00, 18.01it/s]
+(Worker_TP0 pid=591) Loading safetensors checkpoint shards:  80% Completed | 53/66 [00:02<00:00, 17.75it/s]
+(Worker_TP0 pid=591) Loading safetensors checkpoint shards:  83% Completed | 55/66 [00:02<00:00, 17.65it/s]
+(Worker_TP0 pid=591) Loading safetensors checkpoint shards:  86% Completed | 57/66 [00:03<00:00, 17.63it/s]
+(Worker_TP0 pid=591) Loading safetensors checkpoint shards:  89% Completed | 59/66 [00:03<00:00, 17.60it/s]
+(Worker_TP0 pid=591) Loading safetensors checkpoint shards:  92% Completed | 61/66 [00:03<00:00, 17.50it/s]
+(Worker_TP0 pid=591) Loading safetensors checkpoint shards:  95% Completed | 63/66 [00:03<00:00, 17.32it/s]
+(Worker_TP0 pid=591) Loading safetensors checkpoint shards: 100% Completed | 66/66 [00:04<00:00,  5.82it/s]
+(Worker_TP0 pid=591) Loading safetensors checkpoint shards: 100% Completed | 66/66 [00:04<00:00, 14.88it/s]
+(Worker_TP0 pid=591) 
+(Worker_TP0 pid=591) INFO 10-28 19:07:28 [default_loader.py:430] Loading weights took 4.51 seconds
+(Worker_TP0 pid=591) WARNING 10-28 19:07:29 [kv_cache.py:147] Checkpoint does not provide a q scaling factor. Setting it to k_scale. This only matters for FP8 Attention backends (flash-attn or flashinfer).
+(Worker_TP0 pid=591) WARNING 10-28 19:07:29 [kv_cache.py:164] Using KV cache scaling factor 1.0 for fp8_e4m3. If this is unintended, verify that k/v_scale scaling factors are properly set in the checkpoint.
+(Worker_TP0 pid=591) INFO 10-28 19:07:29 [weight_utils.py:895] Filesystem type for checkpoints: EXT4. Checkpoint size: 28.75 GiB. Available RAM: 361.03 GiB.
+(Worker_TP0 pid=591) Loading safetensors checkpoint shards:   0% Completed | 0/66 [00:00<?, ?it/s]
+(Worker_TP0 pid=591) Loading safetensors checkpoint shards:  98% Completed | 65/66 [00:00<00:00, 572.40it/s]
+(Worker_TP0 pid=591) Loading safetensors checkpoint shards: 100% Completed | 66/66 [00:00<00:00, 71.93it/s]
+(Worker_TP0 pid=591)  
+(Worker_TP0 pid=591) INFO 10-28 19:07:30 [default_loader.py:430] Loading weights took 0.97 seconds
+(Worker_TP0 pid=591) INFO 10-28 19:07:30 [speculator.py:395] Using local argmax reduction for draft token generation (communication: O(2*tp_size) vs O(vocab_size)).
+(Worker_TP0 pid=591) [arc-p33] draft model: Qwen3_5MTP children=['model:Qwen3_5MultiTokenPredictor', 'logits_processor:LogitsProcessor', 'lm_head:ParallelLMHead'] inner=['fc:ColumnParallelLinear', 'layers:ModuleList', 'norm:GemmaRMSNorm', 'pre_fc_norm_hidden:GemmaRMSNorm', 'pre_fc_norm_embedding:GemmaRMSNorm', 'embed_tokens:VocabParallelEmbedding']
+(Worker_TP1 pid=699) INFO 10-28 19:07:30 [speculator.py:395] Using local argmax reduction for draft token generation (communication: O(2*tp_size) vs O(vocab_size)).
+(Worker_TP1 pid=699) [arc-p33] draft model: Qwen3_5MTP children=['model:Qwen3_5MultiTokenPredictor', 'logits_processor:LogitsProcessor', 'lm_head:ParallelLMHead'] inner=['fc:ColumnParallelLinear', 'layers:ModuleList', 'norm:GemmaRMSNorm', 'pre_fc_norm_hidden:GemmaRMSNorm', 'pre_fc_norm_embedding:GemmaRMSNorm', 'embed_tokens:VocabParallelEmbedding']
+(Worker_TP0 pid=591) INFO 10-28 19:07:31 [model_runner.py:428] Model loading took 14.74 GiB memory and 8.591319 seconds
+(Worker_TP0 pid=591) INFO 10-28 19:07:31 [interface.py:933] Setting attention block size to 896 tokens to ensure that attention page size is >= mamba page size.
+(Worker_TP0 pid=591) INFO 10-28 19:07:31 [interface.py:957] Padding mamba page size by 6.92% to ensure that mamba page size and attention page size are exactly equal.
+(Worker_TP1 pid=699) INFO 10-28 19:07:31 [model_runner.py:428] Model loading took 14.74 GiB memory and 8.836924 seconds
+(Worker_TP1 pid=699) INFO 10-28 19:07:31 [interface.py:933] Setting attention block size to 896 tokens to ensure that attention page size is >= mamba page size.
+(Worker_TP1 pid=699) INFO 10-28 19:07:31 [interface.py:957] Padding mamba page size by 6.92% to ensure that mamba page size and attention page size are exactly equal.
+(EngineCore pid=352) INFO 10-28 19:07:31 [torch_utils.py:287] Reducing Torch threads from 32 to 1 for serving. Set OMP_NUM_THREADS in the external environment to override.
+(EngineCore pid=352) INFO 10-28 19:07:31 [utils.py:320] Using LBNHC KV cache layout.
+(Worker_TP1 pid=699) [transformers] The `use_fast` parameter is deprecated and will be removed in a future version. Use `backend="torchvision"` instead of `use_fast=True`, or `backend="pil"` instead of `use_fast=False`.
+(Worker_TP0 pid=591) [transformers] The `use_fast` parameter is deprecated and will be removed in a future version. Use `backend="torchvision"` instead of `use_fast=True`, or `backend="pil"` instead of `use_fast=False`.
+(Worker_TP0 pid=591) INFO 10-28 19:07:41 [encoder_runner.py:131] Encoder cache will be initialized with a budget of 16384 tokens, and profiled with 1 image items of the maximum feature size.
+(Worker_TP0 pid=591) WARNING 10-28 19:07:47 [graph_safe_output.py:605] ArcXpuPlatform: ARC_GRAPH_TRACE state->False at execute_model-entry (captures_open=0)
+(Worker_TP1 pid=699) WARNING 10-28 19:07:47 [graph_safe_output.py:605] ArcXpuPlatform: ARC_GRAPH_TRACE state->False at execute_model-entry (captures_open=0)
+(Worker_TP1 pid=699) /opt/venv/lib/python3.12/site-packages/torch/distributed/c10d_logger.py:83: FutureWarning: `torch.distributed.all_gather_into_tensor` is deprecated. Please use `torch.distributed.all_gather_single` instead.
+(Worker_TP1 pid=699)   return func(*args, **kwargs)
+(Worker_TP0 pid=591) /opt/venv/lib/python3.12/site-packages/torch/distributed/c10d_logger.py:83: FutureWarning: `torch.distributed.all_gather_into_tensor` is deprecated. Please use `torch.distributed.all_gather_single` instead.
+(Worker_TP0 pid=591)   return func(*args, **kwargs)
+(Worker_TP0 pid=591) INFO 10-28 19:08:00 [gpu_worker.py:640] Available KV cache memory: 6.9 GiB
+(EngineCore pid=352) WARNING 10-28 19:08:00 [kv_cache_utils.py:1556] Add 3 padding layers, may waste at most 6.25% KV cache memory
+(EngineCore pid=352) WARNING 10-28 19:08:00 [kv_cache_utils.py:2206] Speculative decoding (method=mtp) is enabled but no KV cache group could be identified as the draft model's.
+(EngineCore pid=352) INFO 10-28 19:08:00 [kv_cache_utils.py:2395] XPU KV cache size: 400,380 tokens, Maximum concurrency for 262,144 tokens per request: 1.53x
+(Worker_TP1 pid=699) [arc-p33] structure: use_fused=True advance_pos=True k=4 share_topk=False draft_groups=[('FlashAttentionBackend', 1, True)]
+(Worker_TP0 pid=591) [arc-p33] structure: use_fused=True advance_pos=True k=4 share_topk=False draft_groups=[('FlashAttentionBackend', 1, True)]
+(Worker_TP1 pid=699) [arc-p33] managers: mode_in=FULL_DECODE_ONLY registered (pid=699)
+(Worker_TP0 pid=591) [arc-p33] managers: mode_in=FULL_DECODE_ONLY registered (pid=591)
+(Worker_TP1 pid=699) INFO 10-28 19:08:01 [kernel_warmup.py:172] JIT kernel warmup starting.
+(Worker_TP1 pid=699) INFO 10-28 19:08:01 [kernel_warmup.py:185] JIT kernel warmup finished in 0.00s.
+(Worker_TP1 pid=699) INFO 10-28 19:08:01 [qwen_triton_warmup.py:294] Warming up Qwen GDN Triton kernels for model_type=qwen3_5_text.
+(Worker_TP0 pid=591) INFO 10-28 19:08:01 [kernel_warmup.py:172] JIT kernel warmup starting.
+(Worker_TP0 pid=591) INFO 10-28 19:08:01 [kernel_warmup.py:185] JIT kernel warmup finished in 0.00s.
+(Worker_TP0 pid=591) INFO 10-28 19:08:01 [qwen_triton_warmup.py:294] Warming up Qwen GDN Triton kernels for model_type=qwen3_5_text.
+(Worker_TP1 pid=699) INFO 10-28 19:08:01 [qwen_vl_triton_warmup.py:57] Warmed position embedding and vision rotary kernels on grids=[(1, 16, 16), (1, 16, 2), (1, 2, 16), (1, 2, 2)].
+(Worker_TP0 pid=591) INFO 10-28 19:08:01 [qwen_vl_triton_warmup.py:57] Warmed position embedding and vision rotary kernels on grids=[(1, 16, 16), (1, 16, 2), (1, 2, 16), (1, 2, 2)].
+(Worker_TP1 pid=699) INFO 10-28 19:08:01 [qwen_vl_triton_warmup.py:98] Warmed M-RoPE Triton kernels.
+(Worker_TP0 pid=591) INFO 10-28 19:08:01 [qwen_vl_triton_warmup.py:98] Warmed M-RoPE Triton kernels.
+(Worker_TP0 pid=591) INFO 10-28 19:08:02 [graph_safe_output.py:1068] ArcXpuPlatform: graph-safe output applied — reroute guards active, upstream copy event retained.
+(Worker_TP1 pid=699) INFO 10-28 19:08:02 [graph_safe_output.py:1068] ArcXpuPlatform: graph-safe output applied — reroute guards active, upstream copy event retained.
+(Worker_TP1 pid=699) INFO 10-28 19:08:02 [graph_safe_output.py:1068] ArcXpuPlatform: graph-safe output applied — reroute guards active, upstream copy event retained.
+(Worker_TP0 pid=591) INFO 10-28 19:08:02 [graph_safe_output.py:1068] ArcXpuPlatform: graph-safe output applied — reroute guards active, upstream copy event retained.
+(Worker_TP0 pid=591) INFO 10-28 19:08:02 [graph_safe_output.py:1068] ArcXpuPlatform: graph-safe output applied — reroute guards active, upstream copy event retained.
+(Worker_TP1 pid=699) INFO 10-28 19:08:02 [graph_safe_output.py:1068] ArcXpuPlatform: graph-safe output applied — reroute guards active, upstream copy event retained.
+(Worker_TP0 pid=591) Capturing CUDA graphs (FULL):   0%|          | 0/64 [00:00<?, ?it/s]Capturing CUDA graphs (FULL):   2%|▏         | 1/64 [00:00<00:28,  2.20it/s]Capturing CUDA graphs (FULL):   3%|▎         | 2/64 [00:00<00:23,  2.60it/s]Capturing CUDA graphs (FULL):   5%|▍         | 3/64 [00:01<00:21,  2.78it/s]Capturing CUDA graphs (FULL):   6%|▋         | 4/64 [00:01<00:20,  2.87it/s]Capturing CUDA graphs (FULL):   8%|▊         | 5/64 [00:01<00:20,  2.92it/s]Capturing CUDA graphs (FULL):   9%|▉         | 6/64 [00:02<00:19,  2.93it/s]Capturing CUDA graphs (FULL):  11%|█         | 7/64 [00:02<00:19,  2.94it/s]Capturing CUDA graphs (FULL):  12%|█▎        | 8/64 [00:02<00:19,  2.94it/s]Capturing CUDA graphs (FULL):  14%|█▍        | 9/64 [00:03<00:18,  2.95it/s]Capturing CUDA graphs (FULL):  16%|█▌        | 10/64 [00:03<00:18,  2.96it/s]Capturing CUDA graphs (FULL):  17%|█▋        | 11/64 [00:03<00:17,  2.96it/s]Capturing CUDA graphs (FULL):  19%|█▉        | 12/64 [00:04<00:17,  2.96it/s]Capturing CUDA graphs (FULL):  20%|██        | 13/64 [00:04<00:17,  2.97it/s]Capturing CUDA graphs (FULL):  22%|██▏       | 14/64 [00:04<00:16,  3.04it/s]Capturing CUDA graphs (FULL):  23%|██▎       | 15/64 [00:05<00:15,  3.10it/s]Capturing CUDA graphs (FULL):  25%|██▌       | 16/64 [00:05<00:15,  3.16it/s]Capturing CUDA graphs (FULL):  27%|██▋       | 17/64 [00:05<00:14,  3.20it/s]Capturing CUDA graphs (FULL):  28%|██▊       | 18/64 [00:06<00:14,  3.24it/s]Capturing CUDA graphs (FULL):  30%|██▉       | 19/64 [00:06<00:13,  3.27it/s]Capturing CUDA graphs (FULL):  31%|███▏      | 20/64 [00:06<00:13,  3.30it/s]Capturing CUDA graphs (FULL):  33%|███▎      | 21/64 [00:06<00:12,  3.33it/s]Capturing CUDA graphs (FULL):  34%|███▍      | 22/64 [00:07<00:12,  3.37it/s]Capturing CUDA graphs (FULL):  36%|███▌      | 23/64 [00:07<00:12,  3.39it/s]Capturing CUDA graphs (FULL):  38%|███▊      | 24/64 [00:07<00:11,  3.41it/s]Capturing CUDA graphs (FULL):  39%|███▉      | 25/64 [00:08<00:11,  3.42it/s]Capturing CUDA graphs (FULL):  41%|████      | 26/64 [00:08<00:11,  3.43it/s]Capturing CUDA graphs (FULL):  42%|████▏     | 27/64 [00:08<00:10,  3.53it/s]Capturing CUDA graphs (FULL):  44%|████▍     | 28/64 [00:08<00:09,  3.61it/s]Capturing CUDA graphs (FULL):  45%|████▌     | 29/64 [00:09<00:09,  3.67it/s]Capturing CUDA graphs (FULL):  47%|████▋     | 30/64 [00:09<00:09,  3.70it/s]Capturing CUDA graphs (FULL):  48%|████▊     | 31/64 [00:09<00:08,  3.75it/s]Capturing CUDA graphs (FULL):  50%|█████     | 32/64 [00:09<00:08,  3.78it/s]Capturing CUDA graphs (FULL):  52%|█████▏    | 33/64 [00:10<00:08,  3.81it/s]Capturing CUDA graphs (FULL):  53%|█████▎    | 34/64 [00:10<00:07,  3.85it/s]Capturing CUDA graphs (FULL):  55%|█████▍    | 35/64 [00:10<00:07,  3.89it/s]Capturing CUDA graphs (FULL):  56%|█████▋    | 36/64 [00:10<00:07,  3.89it/s]Capturing CUDA graphs (FULL):  58%|█████▊    | 37/64 [00:11<00:06,  3.92it/s]Capturing CUDA graphs (FULL):  59%|█████▉    | 38/64 [00:11<00:06,  3.92it/s]Capturing CUDA graphs (FULL):  61%|██████    | 39/64 [00:11<00:06,  3.93it/s]Capturing CUDA graphs (FULL):  62%|██████▎   | 40/64 [00:11<00:06,  3.87it/s]Capturing CUDA graphs (FULL):  64%|██████▍   | 41/64 [00:12<00:05,  3.91it/s](Worker_TP1 pid=699) INFO 10-28 19:08:16 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=256 p50=0.49ms p90=0.68ms max=1.49ms fallbacks=12 {'zero-spec': 9, 'mixed': 3}
+(Worker_TP0 pid=591) INFO 10-28 19:08:16 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=256 p50=0.50ms p90=0.67ms max=1.34ms fallbacks=12 {'zero-spec': 9, 'mixed': 3}
+Capturing CUDA graphs (FULL):  66%|██████▌   | 42/64 [00:12<00:05,  3.92it/s]Capturing CUDA graphs (FULL):  67%|██████▋   | 43/64 [00:12<00:05,  3.93it/s]Capturing CUDA graphs (FULL):  69%|██████▉   | 44/64 [00:12<00:05,  3.94it/s]Capturing CUDA graphs (FULL):  70%|███████   | 45/64 [00:13<00:04,  3.94it/s]Capturing CUDA graphs (FULL):  72%|███████▏  | 46/64 [00:13<00:04,  3.94it/s]Capturing CUDA graphs (FULL):  73%|███████▎  | 47/64 [00:13<00:04,  3.95it/s]Capturing CUDA graphs (FULL):  75%|███████▌  | 48/64 [00:13<00:04,  3.95it/s]Capturing CUDA graphs (FULL):  77%|███████▋  | 49/64 [00:14<00:03,  3.95it/s]Capturing CUDA graphs (FULL):  78%|███████▊  | 50/64 [00:14<00:03,  3.90it/s]Capturing CUDA graphs (FULL):  80%|███████▉  | 51/64 [00:14<00:03,  3.91it/s]Capturing CUDA graphs (FULL):  81%|████████▏ | 52/64 [00:15<00:03,  3.91it/s]Capturing CUDA graphs (FULL):  83%|████████▎ | 53/64 [00:15<00:02,  3.93it/s]Capturing CUDA graphs (FULL):  84%|████████▍ | 54/64 [00:15<00:02,  3.94it/s]Capturing CUDA graphs (FULL):  86%|████████▌ | 55/64 [00:15<00:02,  3.96it/s]Capturing CUDA graphs (FULL):  88%|████████▊ | 56/64 [00:16<00:02,  3.95it/s]Capturing CUDA graphs (FULL):  89%|████████▉ | 57/64 [00:16<00:01,  3.95it/s]Capturing CUDA graphs (FULL):  91%|█████████ | 58/64 [00:16<00:01,  3.96it/s]Capturing CUDA graphs (FULL):  92%|█████████▏| 59/64 [00:16<00:01,  3.97it/s]Capturing CUDA graphs (FULL):  94%|█████████▍| 60/64 [00:17<00:01,  3.97it/s]Capturing CUDA graphs (FULL):  95%|█████████▌| 61/64 [00:17<00:00,  3.97it/s]Capturing CUDA graphs (FULL):  97%|█████████▋| 62/64 [00:17<00:00,  3.97it/s]Capturing CUDA graphs (FULL):  98%|█████████▊| 63/64 [00:17<00:00,  3.97it/s](Worker_TP1 pid=699) INFO 10-28 19:08:22 [speculator.py:151] Capturing model for speculator...
+Capturing CUDA graphs (FULL): 100%|██████████| 64/64 [00:18<00:00,  3.97it/s]Capturing CUDA graphs (FULL): 100%|██████████| 64/64 [00:18<00:00,  3.55it/s]
+(Worker_TP0 pid=591) INFO 10-28 19:08:22 [speculator.py:151] Capturing model for speculator...
+(Worker_TP0 pid=591) Capturing prefill CUDA graphs (FULL):   0%|          | 0/64 [00:00<?, ?it/s]Capturing prefill CUDA graphs (FULL):   2%|▏         | 1/64 [00:00<00:30,  2.09it/s]Capturing prefill CUDA graphs (FULL):   8%|▊         | 5/64 [00:00<00:05, 10.75it/s]Capturing prefill CUDA graphs (FULL):  17%|█▋        | 11/64 [00:00<00:02, 22.15it/s]Capturing prefill CUDA graphs (FULL):  23%|██▎       | 15/64 [00:00<00:02, 21.20it/s]Capturing prefill CUDA graphs (FULL):  30%|██▉       | 19/64 [00:01<00:01, 25.08it/s](Worker_TP1 pid=699) INFO 10-28 19:08:23 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=512 p50=0.49ms p90=0.63ms max=1.49ms fallbacks=12 {'zero-spec': 9, 'mixed': 3}
+(Worker_TP0 pid=591) INFO 10-28 19:08:23 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=512 p50=0.49ms p90=0.64ms max=1.34ms fallbacks=12 {'zero-spec': 9, 'mixed': 3}
+Capturing prefill CUDA graphs (FULL):  39%|███▉      | 25/64 [00:01<00:01, 31.97it/s]Capturing prefill CUDA graphs (FULL):  48%|████▊     | 31/64 [00:01<00:00, 37.32it/s]Capturing prefill CUDA graphs (FULL):  58%|█████▊    | 37/64 [00:01<00:00, 42.21it/s]Capturing prefill CUDA graphs (FULL):  66%|██████▌   | 42/64 [00:01<00:00, 43.74it/s]Capturing prefill CUDA graphs (FULL):  75%|███████▌  | 48/64 [00:01<00:00, 46.05it/s]Capturing prefill CUDA graphs (FULL):  86%|████████▌ | 55/64 [00:01<00:00, 50.59it/s]Capturing prefill CUDA graphs (FULL):  97%|█████████▋| 62/64 [00:01<00:00, 53.88it/s](Worker_TP1 pid=699) INFO 10-28 19:08:23 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=768 p50=0.48ms p90=0.61ms max=1.28ms fallbacks=12 {'zero-spec': 9, 'mixed': 3}
+(Worker_TP0 pid=591) INFO 10-28 19:08:23 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=768 p50=0.48ms p90=0.62ms max=1.39ms fallbacks=12 {'zero-spec': 9, 'mixed': 3}
+Capturing prefill CUDA graphs (FULL): 100%|██████████| 64/64 [00:01<00:00, 35.05it/s]
+(Worker_TP0 pid=591) Capturing decode CUDA graphs (FULL):   0%|          | 0/27 [00:00<?, ?it/s]Capturing decode CUDA graphs (FULL):  15%|█▍        | 4/27 [00:00<00:00, 31.67it/s]Capturing decode CUDA graphs (FULL):  30%|██▉       | 8/27 [00:00<00:00, 32.79it/s]Capturing decode CUDA graphs (FULL):  44%|████▍     | 12/27 [00:00<00:00, 33.23it/s]Capturing decode CUDA graphs (FULL):  59%|█████▉    | 16/27 [00:00<00:00, 32.75it/s]Capturing decode CUDA graphs (FULL):  74%|███████▍  | 20/27 [00:00<00:00, 32.97it/s]Capturing decode CUDA graphs (FULL):  89%|████████▉ | 24/27 [00:00<00:00, 33.07it/s](Worker_TP1 pid=699) [arc-p33] captured sizes: prefill=[5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100, 105, 110, 115, 120, 125, 130, 135, 140, 145, 150, 155, 160, 165, 170, 175, 180, 185, 190, 195, 200, 205, 210, 215, 220, 225, 230, 235, 240, 245, 250, 255, 260, 265, 270, 275, 280, 285, 290, 295, 300, 305, 310, 315, 320] decode=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 20, 25, 30, 35, 40, 45, 48, 50, 55, 60, 64]
+Capturing decode CUDA graphs (FULL): 100%|██████████| 27/27 [00:00<00:00, 33.14it/s]
+(Worker_TP0 pid=591) [arc-p33] captured sizes: prefill=[5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100, 105, 110, 115, 120, 125, 130, 135, 140, 145, 150, 155, 160, 165, 170, 175, 180, 185, 190, 195, 200, 205, 210, 215, 220, 225, 230, 235, 240, 245, 250, 255, 260, 265, 270, 275, 280, 285, 290, 295, 300, 305, 310, 315, 320] decode=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 20, 25, 30, 35, 40, 45, 48, 50, 55, 60, 64]
+(Worker_TP0 pid=591) INFO 10-28 19:08:25 [model_runner.py:1066] Graph capturing finished in 22 secs, took 0.84 GiB
+(Worker_TP0 pid=591) INFO 10-28 19:08:25 [gpu_worker.py:888] Free memory on device (30.54/31.89 GiB) on startup. Desired GPU memory utilization is (0.8, 25.51 GiB). Actual usage is 17.15 GiB for consumed memory (weights + non-torch), 1.46 GiB for peak activation, and 0.84 GiB for CUDAGraph memory. Replace gpu_memory_utilization config with `--kv-cache-memory=6356908749` (5.92 GiB) to fit into requested memory, or `--kv-cache-memory=11759771136` (10.95 GiB) to fully utilize gpu memory. Current kv cache memory in use is 6.9 GiB.
+(Worker_TP0 pid=591) INFO 10-28 19:08:25 [jit_monitor.py:85] Kernel JIT monitor activated; monitored JIT compilations during inference will use mode=warn.
+(Worker_TP1 pid=699) INFO 10-28 19:08:25 [model_runner.py:1066] Graph capturing finished in 22 secs, took 0.82 GiB
+(Worker_TP1 pid=699) INFO 10-28 19:08:25 [gpu_worker.py:888] Free memory on device (30.92/31.89 GiB) on startup. Desired GPU memory utilization is (0.8, 25.51 GiB). Actual usage is 17.15 GiB for consumed memory (weights + non-torch), 1.46 GiB for peak activation, and 0.82 GiB for CUDAGraph memory. Replace gpu_memory_utilization config with `--kv-cache-memory=6373923533` (5.94 GiB) to fit into requested memory, or `--kv-cache-memory=12182494720` (11.35 GiB) to fully utilize gpu memory. Current kv cache memory in use is 6.9 GiB.
+(Worker_TP1 pid=699) INFO 10-28 19:08:25 [jit_monitor.py:85] Kernel JIT monitor activated; monitored JIT compilations during inference will use mode=warn.
+(Worker_TP0 pid=591) INFO 10-28 19:08:25 [torch_utils.py:287] Reducing Torch threads from 32 to 1 for serving. Set OMP_NUM_THREADS in the external environment to override.
+(EngineCore pid=352) INFO 10-28 19:08:25 [core.py:379] init engine (profile, create kv cache, warmup model) took 54.11 s
+(EngineCore pid=352) INFO 10-28 19:08:27 [kv_cache_utils.py:748] kv cache group sizes [896, 896, 896, 896]
+(EngineCore pid=352) INFO 10-28 19:08:27 [kv_cache_utils.py:749] kv lcm block sizes 896
+(EngineCore pid=352) INFO 10-28 19:08:27 [gdn_metadata_fastpath.py:283] [arc-p10] gdn metadata fastpath installed (steady spec-decode builds; stock build kept for prefill/mixed)
+(EngineCore pid=352) [gdn_attn] _install OK (pid=352)
+(EngineCore pid=352) [transformers] The `use_fast` parameter is deprecated and will be removed in a future version. Use `backend="torchvision"` instead of `use_fast=True`, or `backend="pil"` instead of `use_fast=False`.
+(EngineCore pid=352) WARNING 10-28 19:08:37 [vllm.py:1570] Inductor compilation was disabled by user settings, optimizations settings that are only active during inductor compilation will be ignored.
+(EngineCore pid=352) INFO 10-28 19:08:37 [kernel.py:416] Final IR op priority after setting platform defaults: IrOpPriorityConfig(rms_norm=['vllm_c', 'native'], fused_add_rms_norm=['vllm_c', 'native'], gelu_and_mul_sparse=['native'])
+(EngineCore pid=352) WARNING 10-28 19:08:37 [xpu.py:308] XPU Graph support is experimental and currently only supports single-GPU execution.
+(EngineCore pid=352) INFO 10-28 19:08:37 [graph_safe_output.py:672] ArcXpuPlatform: XPU graph boundary hygiene installed (pid 352, XPUGraph capture_begin/capture_end/replay + graph context __exit__ wrapped).
+(EngineCore pid=352) INFO 10-28 19:08:37 [graph_safe_output.py:801] ArcXpuPlatform: zombie stream-reroute guards installed (pid 352, set_stream substitution + wait_stream skip + Event.record reroute + synchronize tripwire).
+(EngineCore pid=352) [arc-p33] manager probe installed (pid=352)
+(EngineCore pid=352) [cudagraph_utils] install_for_cudagraph_utils OK (pid=352)
+(EngineCore pid=352) [arc-p33] speculator probe installed (pid=352)
+(EngineCore pid=352) [speculator] install_for_speculator OK (pid=352)
+(EngineCore pid=352) INFO 10-28 19:08:37 [r25_phase_timer.py:181] [arc-r25] v2 phase timer installed (forward/tail/sample/draft; logs every 96 steps)
+(EngineCore pid=352) [model_runner] _install OK (pid=352)
+(EngineCore pid=352) INFO 10-28 19:08:37 [graph_safe_output.py:938] ArcXpuPlatform: runner-entry hygiene installed (pid 352, GPUModelRunner.execute_model + sample_tokens wrapped).
+(EngineCore pid=352) INFO 10-28 19:08:37 [graph_safe_output.py:984] ArcXpuPlatform: capture-stream fix installed (pid 352, captures ride torch.xpu.graph.default_capture_stream, EAGERLY INITED before capture #1 — the serving default never enters capture; champion 0.26.1 discipline, r9).
+(EngineCore pid=352) INFO 10-28 19:08:37 [graph_safe_output.py:527] ArcXpuPlatform: r12b kernel-launch tracer installed (triton:CachingAutotuner.run).
+(EngineCore pid=352) INFO 10-28 19:08:37 [graph_safe_output.py:1126] ArcXpuPlatform: graph-safe output patch installed (pid 352, AsyncOutput/AsyncPoolingOutput __init__ + get_output wrapped).
+(EngineCore pid=352) INFO 10-28 19:08:37 [speculator_full_capture.py:116] ArcXpuPlatform: speculator FULL-capture patch installed (pid 352, SpeculatorCudaGraphManager.__init__ wrapped).
+(EngineCore pid=352) INFO 10-28 19:08:37 [first_request_warmup.py:126] ArcXpuPlatform: first-request warmup interlock installed (defect-b lane W, r16 evidence)
+(EngineCore pid=352) INFO 10-28 19:08:37 [platform.py:180] ArcXpuPlatform: Intel Arc Xe2 posture active (Intel(R) Graphics [0xe223]).
+(EngineCore pid=352) INFO 10-28 19:08:37 [platform.py:190] ArcXpuPlatform: graph posture cudagraph_mode=FULL_DECODE_ONLY capture_sizes=(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 20, 25, 30, 35, 40, 45, 48, 50, 55, 60, 64, 65, 70, 75, 80, 85, 90, 95, 96, 100, 105, 110, 112, 115, 120, 125, 128, 130, 135, 140, 145, 150, 155, 160, 165, 170, 175, 180, 185, 190, 192, 195, 200, 205, 210, 215, 220, 224, 225, 230, 235, 240, 245, 250, 255, 256, 260, 265, 270, 275, 280, 285, 290, 295, 300, 305, 310, 315, 320) (VLLM_XPU_ENABLE_XPU_GRAPH=True).
+(EngineCore pid=352) INFO 10-28 19:08:37 [compilation.py:336] Enabled custom fusions: norm_quant, act_quant
+(APIServer pid=50) INFO 10-28 19:08:37 [entry.py:135] Supported tasks: ['generate']
+(APIServer pid=50) INFO 10-28 19:08:37 [factories.py:76] Scale-out endpoints are disabled. Set --enable-scale-out to enable them.
+(APIServer pid=50) INFO 10-28 19:08:37 [parser_manager.py:36] "auto" tool choice has been enabled.
+(APIServer pid=50) INFO 10-28 19:08:37 [hf.py:642] Detected the chat template content format to be 'openai'. You can set `--chat-template-content-format` to override this.
+(APIServer pid=50) WARNING 10-28 19:08:37 [model.py:1772] Default vLLM sampling parameters have been overridden by the model's `generation_config.json`: `{'repetition_penalty': 1.0, 'temperature': 0.6, 'top_k': 20, 'top_p': 0.95, 'min_p': 0.0}`. If this is not intended, please relaunch vLLM instance with `--generation-config vllm`.
+(APIServer pid=50) INFO 10-28 19:08:37 [entry.py:139] Starting vLLM server on http://0.0.0.0:8000
+(APIServer pid=50) INFO 10-28 19:08:37 [launcher.py:61] Available routes are:
+(APIServer pid=50) INFO 10-28 19:08:37 [launcher.py:70] Route: /openapi.json, Methods: GET, HEAD
+(APIServer pid=50) INFO 10-28 19:08:37 [launcher.py:70] Route: /docs, Methods: GET, HEAD
+(APIServer pid=50) INFO 10-28 19:08:37 [launcher.py:70] Route: /docs/oauth2-redirect, Methods: GET, HEAD
+(APIServer pid=50) INFO 10-28 19:08:37 [launcher.py:70] Route: /redoc, Methods: GET, HEAD
+(APIServer pid=50) INFO 10-28 19:08:37 [launcher.py:70] Route: /load, Methods: GET
+(APIServer pid=50) INFO 10-28 19:08:37 [launcher.py:70] Route: /version, Methods: GET
+(APIServer pid=50) INFO 10-28 19:08:37 [launcher.py:70] Route: /health, Methods: GET
+(APIServer pid=50) INFO 10-28 19:08:37 [launcher.py:70] Route: /metrics, Methods: GET
+(APIServer pid=50) INFO 10-28 19:08:37 [launcher.py:70] Route: /tokenize, Methods: POST
+(APIServer pid=50) INFO 10-28 19:08:37 [launcher.py:70] Route: /detokenize, Methods: POST
+(APIServer pid=50) INFO 10-28 19:08:37 [launcher.py:70] Route: /v1/models, Methods: GET
+(APIServer pid=50) INFO 10-28 19:08:37 [launcher.py:70] Route: /ping, Methods: GET
+(APIServer pid=50) INFO 10-28 19:08:37 [launcher.py:70] Route: /ping, Methods: POST
+(APIServer pid=50) INFO 10-28 19:08:37 [launcher.py:70] Route: /invocations, Methods: POST
+(APIServer pid=50) INFO 10-28 19:08:37 [launcher.py:70] Route: /v1/chat/completions, Methods: POST
+(APIServer pid=50) INFO 10-28 19:08:37 [launcher.py:70] Route: /v1/chat/completions/batch, Methods: POST
+(APIServer pid=50) INFO 10-28 19:08:37 [launcher.py:70] Route: /v1/responses, Methods: POST
+(APIServer pid=50) INFO 10-28 19:08:37 [launcher.py:70] Route: /v1/responses/{response_id}, Methods: GET
+(APIServer pid=50) INFO 10-28 19:08:37 [launcher.py:70] Route: /v1/responses/{response_id}/cancel, Methods: POST
+(APIServer pid=50) INFO 10-28 19:08:37 [launcher.py:70] Route: /v1/completions, Methods: POST
+(APIServer pid=50) INFO 10-28 19:08:37 [launcher.py:70] Route: /v1/messages, Methods: POST
+(APIServer pid=50) INFO 10-28 19:08:37 [launcher.py:70] Route: /v1/messages/count_tokens, Methods: POST
+(APIServer pid=50) INFO 10-28 19:08:37 [launcher.py:70] Route: /generative_scoring, Methods: POST
+(APIServer pid=50) INFO 10-28 19:08:37 [launcher.py:70] Route: /scale_elastic_ep, Methods: POST
+(APIServer pid=50) INFO 10-28 19:08:37 [launcher.py:70] Route: /is_scaling_elastic_ep, Methods: POST
+(APIServer pid=50) INFO:     Started server process [50]
+(APIServer pid=50) INFO:     Waiting for application startup.
+(APIServer pid=50) INFO:     Application startup complete.
+(APIServer pid=50) INFO:     127.0.0.1:47900 - "GET /health HTTP/1.1" 200 OK
+(APIServer pid=50) INFO 10-28 19:08:38 [first_request_warmup.py:105] ArcXpuPlatform: first generate (request cmpl-979bbe2ac2aa68b9-0) — running defect-b warmup interlock first
+(APIServer pid=50) WARNING 10-28 19:08:38 [input_processor.py:315] Passing raw prompts to InputProcessor is deprecated and will be removed in the future. You should instead pass the outputs of Renderer.render_cmpl() or Renderer.render_chat().
+(Worker_TP0 pid=591) WARNING 10-28 19:08:38 [jit_monitor.py:141] Triton kernel JIT compilation during inference: _compute_local_logits_stats_kernel. This causes a latency spike; consider extending warmup to cover this shape/config.
+(Worker_TP0 pid=591) WARNING 10-28 19:08:38 [jit_monitor.py:141] Triton kernel JIT compilation during inference: _rejection_kernel. This causes a latency spike; consider extending warmup to cover this shape/config.
+(Worker_TP0 pid=591) WARNING 10-28 19:08:38 [jit_monitor.py:141] Triton kernel JIT compilation during inference: _resample_kernel. This causes a latency spike; consider extending warmup to cover this shape/config.
+(APIServer pid=50) INFO 10-28 19:08:39 [first_request_warmup.py:63] ArcXpuPlatform: first-request warmup stage small done in 0.4s (2 outputs, 640 prompt chars)
+(APIServer pid=50) INFO:     127.0.0.1:46982 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:46998 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:47006 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO 10-28 19:08:44 [first_request_warmup.py:63] ArcXpuPlatform: first-request warmup stage max-batch done in 5.7s (2 outputs, 44253 prompt chars)
+(APIServer pid=50) INFO 10-28 19:08:44 [first_request_warmup.py:115] ArcXpuPlatform: warmup complete in 6.1s — engine hot, serving request cmpl-979bbe2ac2aa68b9-0
+(APIServer pid=50) INFO:     127.0.0.1:47902 - "POST /v1/completions HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:47022 - "POST /v1/completions HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:47024 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO 10-28 19:08:48 [loggers.py:315] Engine 000: Avg prompt throughput: 870.4 tokens/s, Avg generation throughput: 31.3 tokens/s, Running: 4 reqs, Waiting: 0 reqs, XPU KV cache usage: 13.5%, Prefix cache hit rate: 0.0%
+(APIServer pid=50) INFO 10-28 19:08:48 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 3.21, Accepted throughput: 21.21 tokens/s, Drafted throughput: 38.30 tokens/s, Accepted: 237 tokens, Drafted: 428 tokens, Per-position acceptance rate: 0.785, 0.636, 0.439, 0.355, Avg Draft acceptance rate: 55.4%
+(APIServer pid=50) INFO:     127.0.0.1:47058 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:47034 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:47068 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:47044 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:47078 - "GET /metrics HTTP/1.1" 200 OK
+(Worker_TP1 pid=699) [arc-p33] draft structure n=96 | propose p50=15.14ms | prefill.rep p50=5.12ms x0.84 | decode.rep p50=9.95ms x0.93 | gap p50=0.01ms | fused_cpu p50=3.73ms | meta_cpu p50=0.16ms | prefill.eager=15 gen.eager=21
+(Worker_TP0 pid=591) [arc-p33] draft structure n=96 | propose p50=15.14ms | prefill.rep p50=5.12ms x0.84 | decode.rep p50=9.95ms x0.93 | gap p50=0.01ms | fused_cpu p50=3.76ms | meta_cpu p50=0.17ms | prefill.eager=15 gen.eager=21
+(APIServer pid=50) INFO:     127.0.0.1:47092 - "POST /v1/completions HTTP/1.1" 200 OK
+(Worker_TP1 pid=699) INFO 10-28 19:08:52 [r25_phase_timer.py:118] [arc-r25] phase split n=96 | tail p50=18.0 p90=21.1 max=365.4 | forward p50=55.0 p90=145.3 max=5140.6 | sample p50=2.8 p90=2.8 max=151.6 | draft p50=15.1 p90=18.8 max=277.1 | fgap p50=0.0 p90=0.0 max=0.1 | bgap p50=0.0 p90=0.0 max=35123.8 | tailres p50=0.0 max=18.3
+(Worker_TP0 pid=591) INFO 10-28 19:08:52 [r25_phase_timer.py:118] [arc-r25] phase split n=96 | tail p50=18.0 p90=21.1 max=364.9 | forward p50=55.0 p90=145.3 max=5136.3 | sample p50=2.8 p90=2.8 max=157.0 | draft p50=15.1 p90=17.7 max=277.1 | fgap p50=0.0 p90=0.0 max=0.2 | bgap p50=0.0 p90=0.0 max=35123.9 | tailres p50=0.0 max=5.2
+(APIServer pid=50) INFO:     127.0.0.1:38650 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:38662 - "GET /metrics HTTP/1.1" 200 OK
+(Worker_TP1 pid=699) INFO 10-28 19:08:52 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=1024 p50=0.48ms p90=0.62ms max=1.35ms fallbacks=39 {'zero-spec': 33, 'mixed': 6}
+(Worker_TP0 pid=591) INFO 10-28 19:08:52 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=1024 p50=0.49ms p90=0.63ms max=1.39ms fallbacks=39 {'zero-spec': 33, 'mixed': 6}
+(APIServer pid=50) INFO:     127.0.0.1:38642 - "POST /v1/completions HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:38680 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:38664 - "POST /v1/completions HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:38688 - "POST /v1/completions HTTP/1.1" 200 OK
+(APIServer pid=50) INFO 10-28 19:08:58 [loggers.py:315] Engine 000: Avg prompt throughput: 339.2 tokens/s, Avg generation throughput: 66.3 tokens/s, Running: 1 reqs, Waiting: 0 reqs, XPU KV cache usage: 4.0%, Prefix cache hit rate: 0.0%
+(APIServer pid=50) INFO 10-28 19:08:58 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 4.08, Accepted throughput: 50.90 tokens/s, Drafted throughput: 66.00 tokens/s, Accepted: 509 tokens, Drafted: 660 tokens, Per-position acceptance rate: 0.921, 0.842, 0.733, 0.588, Avg Draft acceptance rate: 77.1%
+(APIServer pid=50) INFO:     127.0.0.1:38692 - "POST /v1/completions HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:55294 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:55300 - "GET /metrics HTTP/1.1" 200 OK
+(Worker_TP0 pid=591) INFO 10-28 19:09:03 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=1280 p50=0.49ms p90=0.62ms max=1.34ms fallbacks=60 {'zero-spec': 51, 'mixed': 9}
+(Worker_TP1 pid=699) INFO 10-28 19:09:03 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=1280 p50=0.48ms p90=0.62ms max=1.35ms fallbacks=60 {'zero-spec': 51, 'mixed': 9}
+(Worker_TP0 pid=591) [arc-p33] draft structure n=192 | propose p50=15.12ms | prefill.rep p50=5.09ms x0.88 | decode.rep p50=9.98ms x0.96 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=23 gen.eager=21
+(Worker_TP1 pid=699) [arc-p33] draft structure n=192 | propose p50=15.12ms | prefill.rep p50=5.09ms x0.88 | decode.rep p50=9.98ms x0.96 | gap p50=0.01ms | fused_cpu p50=3.73ms | meta_cpu p50=0.16ms | prefill.eager=23 gen.eager=21
+(APIServer pid=50) INFO:     127.0.0.1:55314 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     10.100.8.6:56182 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     10.100.8.6:56168 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     10.100.8.6:56180 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     10.100.8.6:56156 - "GET /v1/models HTTP/1.1" 200 OK
+(Worker_TP1 pid=699) INFO 10-28 19:09:04 [r25_phase_timer.py:118] [arc-r25] phase split n=192 | tail p50=17.7 p90=19.2 max=58.6 | forward p50=50.5 p90=55.7 max=1728.0 | sample p50=2.4 p90=2.8 max=3.0 | draft p50=15.1 p90=15.5 max=54.6 | fgap p50=0.0 p90=0.0 max=0.0 | bgap p50=0.0 p90=0.0 max=291.8 | tailres p50=0.0 max=2.6
+(Worker_TP0 pid=591) INFO 10-28 19:09:04 [r25_phase_timer.py:118] [arc-r25] phase split n=192 | tail p50=17.7 p90=19.2 max=58.6 | forward p50=50.5 p90=55.7 max=1728.0 | sample p50=2.4 p90=2.8 max=2.9 | draft p50=15.1 p90=15.5 max=54.6 | fgap p50=0.0 p90=0.0 max=0.2 | bgap p50=0.0 p90=0.0 max=291.8 | tailres p50=0.0 max=2.3
+(APIServer pid=50) INFO:     127.0.0.1:55252 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:55262 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:55264 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:55280 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=50) INFO 10-28 19:09:08 [loggers.py:315] Engine 000: Avg prompt throughput: 427.9 tokens/s, Avg generation throughput: 136.8 tokens/s, Running: 4 reqs, Waiting: 0 reqs, XPU KV cache usage: 13.5%, Prefix cache hit rate: 0.0%
+(APIServer pid=50) INFO 10-28 19:09:08 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 3.94, Accepted throughput: 101.59 tokens/s, Drafted throughput: 137.99 tokens/s, Accepted: 1016 tokens, Drafted: 1380 tokens, Per-position acceptance rate: 0.893, 0.791, 0.667, 0.594, Avg Draft acceptance rate: 73.6%
+(Worker_TP1 pid=699) INFO 10-28 19:09:10 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=1536 p50=0.48ms p90=0.61ms max=1.32ms fallbacks=63 {'zero-spec': 54, 'mixed': 9}
+(Worker_TP0 pid=591) INFO 10-28 19:09:10 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=1536 p50=0.48ms p90=0.59ms max=1.05ms fallbacks=63 {'zero-spec': 54, 'mixed': 9}
+(APIServer pid=50) INFO:     127.0.0.1:55344 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(Worker_TP1 pid=699) [arc-p33] draft structure n=288 | propose p50=15.13ms | prefill.rep p50=5.09ms x0.92 | decode.rep p50=9.99ms x0.98 | gap p50=0.01ms | fused_cpu p50=3.76ms | meta_cpu p50=0.16ms | prefill.eager=24 gen.eager=21
+(Worker_TP0 pid=591) [arc-p33] draft structure n=288 | propose p50=15.12ms | prefill.rep p50=5.09ms x0.92 | decode.rep p50=9.99ms x0.98 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=24 gen.eager=21
+(Worker_TP1 pid=699) INFO 10-28 19:09:11 [r25_phase_timer.py:118] [arc-r25] phase split n=288 | tail p50=18.0 p90=18.2 max=25.0 | forward p50=55.2 p90=55.6 max=133.2 | sample p50=2.8 p90=2.8 max=2.8 | draft p50=15.1 p90=15.4 max=21.9 | fgap p50=0.0 p90=0.0 max=0.0 | bgap p50=0.0 p90=0.0 max=4.8 | tailres p50=0.0 max=1.7
+(Worker_TP0 pid=591) INFO 10-28 19:09:11 [r25_phase_timer.py:118] [arc-r25] phase split n=288 | tail p50=18.0 p90=18.2 max=25.4 | forward p50=55.2 p90=55.6 max=133.2 | sample p50=2.8 p90=2.8 max=2.8 | draft p50=15.1 p90=15.4 max=22.4 | fgap p50=0.0 p90=0.0 max=0.0 | bgap p50=0.0 p90=0.0 max=5.2 | tailres p50=0.0 max=2.6
+(APIServer pid=50) INFO:     127.0.0.1:55338 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:55326 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:55356 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:41610 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:41618 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:41628 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:41600 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(Worker_TP1 pid=699) INFO 10-28 19:09:16 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=1792 p50=0.48ms p90=0.61ms max=1.33ms fallbacks=69 {'zero-spec': 60, 'mixed': 9}
+(Worker_TP0 pid=591) INFO 10-28 19:09:16 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=1792 p50=0.48ms p90=0.59ms max=1.05ms fallbacks=69 {'zero-spec': 60, 'mixed': 9}
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.11ms | prefill.rep p50=5.09ms x0.93 | decode.rep p50=9.95ms x0.98 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=26 gen.eager=21
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.11ms | prefill.rep p50=5.09ms x0.93 | decode.rep p50=9.95ms x0.98 | gap p50=0.01ms | fused_cpu p50=3.73ms | meta_cpu p50=0.16ms | prefill.eager=26 gen.eager=21
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.11ms | prefill.rep p50=5.09ms x0.93 | decode.rep p50=9.95ms x0.98 | gap p50=0.01ms | fused_cpu p50=3.73ms | meta_cpu p50=0.16ms | prefill.eager=25 gen.eager=18
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.11ms | prefill.rep p50=5.09ms x0.93 | decode.rep p50=9.95ms x0.98 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=25 gen.eager=18
+(Worker_TP1 pid=699) INFO 10-28 19:09:17 [r25_phase_timer.py:118] [arc-r25] phase split n=384 | tail p50=17.4 p90=17.8 max=26.5 | forward p50=49.5 p90=49.9 max=138.5 | sample p50=2.4 p90=2.4 max=2.9 | draft p50=15.0 p90=15.4 max=23.8 | fgap p50=0.0 p90=0.0 max=0.2 | bgap p50=0.0 p90=0.0 max=6.4 | tailres p50=0.0 max=1.6
+(Worker_TP0 pid=591) INFO 10-28 19:09:17 [r25_phase_timer.py:118] [arc-r25] phase split n=384 | tail p50=17.4 p90=17.9 max=26.5 | forward p50=49.5 p90=49.9 max=138.4 | sample p50=2.4 p90=2.4 max=2.8 | draft p50=15.0 p90=15.4 max=23.9 | fgap p50=0.0 p90=0.0 max=0.2 | bgap p50=0.0 p90=0.0 max=6.4 | tailres p50=0.0 max=2.8
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.11ms | prefill.rep p50=5.09ms x0.94 | decode.rep p50=9.95ms x0.99 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=24 gen.eager=15
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.11ms | prefill.rep p50=5.09ms x0.94 | decode.rep p50=9.95ms x0.99 | gap p50=0.01ms | fused_cpu p50=3.73ms | meta_cpu p50=0.16ms | prefill.eager=24 gen.eager=15
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.11ms | prefill.rep p50=5.09ms x0.94 | decode.rep p50=9.95ms x0.99 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=23 gen.eager=12
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.10ms | prefill.rep p50=5.09ms x0.94 | decode.rep p50=9.95ms x0.99 | gap p50=0.01ms | fused_cpu p50=3.73ms | meta_cpu p50=0.16ms | prefill.eager=23 gen.eager=12
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.10ms | prefill.rep p50=5.09ms x0.94 | decode.rep p50=9.95ms x0.99 | gap p50=0.01ms | fused_cpu p50=3.73ms | meta_cpu p50=0.16ms | prefill.eager=22 gen.eager=9
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.10ms | prefill.rep p50=5.09ms x0.94 | decode.rep p50=9.95ms x0.99 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=22 gen.eager=9
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.10ms | prefill.rep p50=5.09ms x0.95 | decode.rep p50=9.95ms x0.99 | gap p50=0.01ms | fused_cpu p50=3.73ms | meta_cpu p50=0.16ms | prefill.eager=21 gen.eager=6
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.10ms | prefill.rep p50=5.09ms x0.95 | decode.rep p50=9.95ms x0.99 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=21 gen.eager=6
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.10ms | prefill.rep p50=5.09ms x0.95 | decode.rep p50=9.95ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=20 gen.eager=3
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.10ms | prefill.rep p50=5.09ms x0.95 | decode.rep p50=9.95ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=20 gen.eager=3
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.10ms | prefill.rep p50=5.09ms x0.95 | decode.rep p50=9.95ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=19 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.10ms | prefill.rep p50=5.09ms x0.95 | decode.rep p50=9.95ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=19 gen.eager=0
+(APIServer pid=50) INFO 10-28 19:09:18 [loggers.py:315] Engine 000: Avg prompt throughput: 4.6 tokens/s, Avg generation throughput: 109.0 tokens/s, Running: 1 reqs, Waiting: 0 reqs, XPU KV cache usage: 3.4%, Prefix cache hit rate: 0.0%
+(APIServer pid=50) INFO 10-28 19:09:18 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 4.27, Accepted throughput: 83.99 tokens/s, Drafted throughput: 102.79 tokens/s, Accepted: 840 tokens, Drafted: 1028 tokens, Per-position acceptance rate: 0.926, 0.852, 0.774, 0.716, Avg Draft acceptance rate: 81.7%
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.10ms | prefill.rep p50=5.09ms x0.95 | decode.rep p50=9.95ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=18 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.10ms | prefill.rep p50=5.09ms x0.95 | decode.rep p50=9.95ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=18 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.10ms | prefill.rep p50=5.09ms x0.95 | decode.rep p50=9.94ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=18 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.10ms | prefill.rep p50=5.09ms x0.95 | decode.rep p50=9.95ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=18 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.10ms | prefill.rep p50=5.09ms x0.96 | decode.rep p50=9.94ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=17 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.10ms | prefill.rep p50=5.09ms x0.96 | decode.rep p50=9.94ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.71ms | meta_cpu p50=0.16ms | prefill.eager=17 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.10ms | prefill.rep p50=5.09ms x0.96 | decode.rep p50=9.94ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=16 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.09ms x0.96 | decode.rep p50=9.94ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.71ms | meta_cpu p50=0.16ms | prefill.eager=16 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.09ms x0.96 | decode.rep p50=9.94ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=16 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.10ms | prefill.rep p50=5.09ms x0.96 | decode.rep p50=9.94ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=16 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.09ms x0.96 | decode.rep p50=9.94ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=15 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.09ms x0.96 | decode.rep p50=9.94ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=15 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.09ms x0.96 | decode.rep p50=9.94ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=15 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.09ms x0.96 | decode.rep p50=9.94ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=15 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.09ms x0.96 | decode.rep p50=9.94ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=14 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.09ms x0.96 | decode.rep p50=9.94ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=14 gen.eager=0
+(APIServer pid=50) INFO:     127.0.0.1:41640 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.09ms x0.96 | decode.rep p50=9.94ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=14 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.09ms x0.96 | decode.rep p50=9.94ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=14 gen.eager=0
+(APIServer pid=50) INFO:     127.0.0.1:41648 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:41660 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.09ms x0.96 | decode.rep p50=9.94ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=15 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.09ms x0.96 | decode.rep p50=9.94ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=15 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.09ms x0.96 | decode.rep p50=9.94ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=15 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.09ms x0.96 | decode.rep p50=9.94ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.71ms | meta_cpu p50=0.16ms | prefill.eager=15 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.09ms x0.96 | decode.rep p50=9.94ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=15 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.09ms x0.96 | decode.rep p50=9.94ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.71ms | meta_cpu p50=0.16ms | prefill.eager=15 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.09ms x0.96 | decode.rep p50=9.94ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=14 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.09ms x0.96 | decode.rep p50=9.94ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.71ms | meta_cpu p50=0.16ms | prefill.eager=14 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.09ms x0.96 | decode.rep p50=9.94ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=14 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.09ms x0.96 | decode.rep p50=9.94ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.71ms | meta_cpu p50=0.16ms | prefill.eager=14 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.94ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.94ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.71ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.94ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.71ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.94ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.94ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.94ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.71ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.94ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.94ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.71ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.94ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.94ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.71ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.94ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.94ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.71ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.94ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.94ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.71ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.94ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.94ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.71ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.94ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.94ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.71ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.94ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.71ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.94ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.94ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.94ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.71ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.94ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.94ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.71ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.94ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.94ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.71ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.94ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.94ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.71ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.94ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.94ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.71ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.94ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.71ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.71ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.71ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.71ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.70ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.70ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.70ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.73ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.70ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.73ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.70ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.73ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.70ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.70ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.70ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.70ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.70ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.70ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.70ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.70ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.70ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.70ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(APIServer pid=50) INFO:     127.0.0.1:49622 - "GET /metrics HTTP/1.1" 200 OK
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.70ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(APIServer pid=50) INFO:     127.0.0.1:49630 - "GET /metrics HTTP/1.1" 200 OK
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.70ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.70ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.70ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.70ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.73ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.07ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.70ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.07ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.07ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.70ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.07ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.07ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.70ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.07ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.73ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.07ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.69ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.07ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.07ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.70ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.07ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.73ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.07ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.69ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.07ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.73ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.07ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.69ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP1 pid=699) INFO 10-28 19:09:23 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=2048 p50=0.48ms p90=0.60ms max=1.33ms fallbacks=72 {'zero-spec': 63, 'mixed': 9}
+(Worker_TP0 pid=591) INFO 10-28 19:09:23 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=2048 p50=0.48ms p90=0.62ms max=1.02ms fallbacks=72 {'zero-spec': 63, 'mixed': 9}
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.07ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.73ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.07ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.69ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.07ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.73ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.07ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.69ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.07ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.73ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.07ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.69ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.07ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.07ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.69ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.07ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.07ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.69ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.07ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.07ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.69ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.07ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.07ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.69ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.07ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.07ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.70ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.07ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.07ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.70ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(APIServer pid=50) INFO:     127.0.0.1:49644 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:49646 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:49658 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:49668 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:49672 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:49682 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:49684 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:49698 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:49704 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:49706 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:49708 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.07ms | prefill.rep p50=5.09ms x0.96 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.70ms | meta_cpu p50=0.16ms | prefill.eager=14 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.07ms | prefill.rep p50=5.09ms x0.96 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=14 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.06ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.70ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.07ms | prefill.rep p50=5.09ms x0.97 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.07ms | prefill.rep p50=5.09ms x0.96 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=14 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.06ms | prefill.rep p50=5.09ms x0.96 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.70ms | meta_cpu p50=0.16ms | prefill.eager=14 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.07ms | prefill.rep p50=5.09ms x0.96 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.70ms | meta_cpu p50=0.16ms | prefill.eager=14 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.07ms | prefill.rep p50=5.09ms x0.96 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=14 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.07ms | prefill.rep p50=5.09ms x0.96 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=14 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.07ms | prefill.rep p50=5.09ms x0.96 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.70ms | meta_cpu p50=0.16ms | prefill.eager=14 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.07ms | prefill.rep p50=5.09ms x0.96 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.70ms | meta_cpu p50=0.16ms | prefill.eager=14 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.07ms | prefill.rep p50=5.09ms x0.96 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=14 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.07ms | prefill.rep p50=5.09ms x0.96 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.70ms | meta_cpu p50=0.16ms | prefill.eager=14 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.07ms | prefill.rep p50=5.09ms x0.96 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=14 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.07ms | prefill.rep p50=5.09ms x0.96 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.70ms | meta_cpu p50=0.16ms | prefill.eager=14 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.07ms | prefill.rep p50=5.09ms x0.96 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=14 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.07ms | prefill.rep p50=5.10ms x0.96 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=14 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.07ms | prefill.rep p50=5.10ms x0.96 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.70ms | meta_cpu p50=0.16ms | prefill.eager=14 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.07ms | prefill.rep p50=5.11ms x0.96 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.73ms | meta_cpu p50=0.16ms | prefill.eager=14 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.07ms | prefill.rep p50=5.10ms x0.96 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.70ms | meta_cpu p50=0.16ms | prefill.eager=14 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.07ms | prefill.rep p50=5.10ms x0.96 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.70ms | meta_cpu p50=0.16ms | prefill.eager=14 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.11ms x0.96 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.73ms | meta_cpu p50=0.16ms | prefill.eager=14 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.11ms x0.96 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.73ms | meta_cpu p50=0.16ms | prefill.eager=14 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.11ms x0.96 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.70ms | meta_cpu p50=0.16ms | prefill.eager=14 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.11ms x0.96 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.70ms | meta_cpu p50=0.16ms | prefill.eager=14 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.11ms x0.96 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.73ms | meta_cpu p50=0.16ms | prefill.eager=14 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.11ms x0.96 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.70ms | meta_cpu p50=0.16ms | prefill.eager=14 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.11ms x0.96 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.73ms | meta_cpu p50=0.16ms | prefill.eager=14 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.11ms x0.96 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.70ms | meta_cpu p50=0.16ms | prefill.eager=14 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.11ms x0.96 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.73ms | meta_cpu p50=0.16ms | prefill.eager=14 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.12ms x0.96 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.73ms | meta_cpu p50=0.16ms | prefill.eager=14 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.11ms x0.96 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.70ms | meta_cpu p50=0.16ms | prefill.eager=14 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.12ms x0.96 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.73ms | meta_cpu p50=0.16ms | prefill.eager=14 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.11ms x0.96 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.70ms | meta_cpu p50=0.16ms | prefill.eager=14 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.11ms x0.96 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.71ms | meta_cpu p50=0.16ms | prefill.eager=14 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.12ms x0.96 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.73ms | meta_cpu p50=0.16ms | prefill.eager=14 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.12ms x0.96 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.73ms | meta_cpu p50=0.16ms | prefill.eager=14 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.11ms x0.96 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.71ms | meta_cpu p50=0.16ms | prefill.eager=14 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.11ms x0.96 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.71ms | meta_cpu p50=0.16ms | prefill.eager=14 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.12ms x0.96 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.73ms | meta_cpu p50=0.16ms | prefill.eager=14 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.11ms x0.96 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.71ms | meta_cpu p50=0.16ms | prefill.eager=14 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.12ms x0.96 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.73ms | meta_cpu p50=0.16ms | prefill.eager=14 gen.eager=0
+(Worker_TP0 pid=591) INFO 10-28 19:09:28 [r25_phase_timer.py:118] [arc-r25] phase split n=480 | tail p50=25.0 p90=27.5 max=29.5 | forward p50=53.0 p90=65.6 max=157.5 | sample p50=2.4 p90=3.5 max=3.5 | draft p50=22.4 p90=24.1 max=26.1 | fgap p50=0.0 p90=0.0 max=0.2 | bgap p50=0.2 p90=0.3 max=1997.2 | tailres p50=0.2 max=0.5
+(Worker_TP1 pid=699) INFO 10-28 19:09:28 [r25_phase_timer.py:118] [arc-r25] phase split n=480 | tail p50=24.3 p90=27.6 max=29.6 | forward p50=53.6 p90=65.7 max=157.1 | sample p50=2.4 p90=3.5 max=3.5 | draft p50=21.7 p90=24.0 max=26.8 | fgap p50=0.0 p90=0.0 max=0.2 | bgap p50=0.2 p90=0.3 max=2000.2 | tailres p50=0.2 max=0.4
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.11ms x0.97 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.71ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.12ms x0.97 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.73ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.11ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.71ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.12ms x0.97 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.73ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(APIServer pid=50) INFO 10-28 19:09:28 [loggers.py:315] Engine 000: Avg prompt throughput: 20.7 tokens/s, Avg generation throughput: 86.8 tokens/s, Running: 8 reqs, Waiting: 0 reqs, XPU KV cache usage: 27.0%, Prefix cache hit rate: 0.0%
+(APIServer pid=50) INFO 10-28 19:09:28 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 3.79, Accepted throughput: 63.49 tokens/s, Drafted throughput: 91.19 tokens/s, Accepted: 635 tokens, Drafted: 912 tokens, Per-position acceptance rate: 0.864, 0.807, 0.614, 0.500, Avg Draft acceptance rate: 69.6%
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.12ms x0.97 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.73ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.11ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.71ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.12ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.71ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.13ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.73ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.12ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.71ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.13ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.73ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.13ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.73ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.12ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.71ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.13ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.12ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.71ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.12ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.71ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.13ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.12ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.71ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.13ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.13ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.12ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.13ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.13ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.13ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.13ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.13ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.13ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.13ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.13ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.13ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.13ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.13ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.13ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.13ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.13ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.13ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.13ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=13 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.13ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=12 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.13ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=12 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.13ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=12 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.13ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=12 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.13ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=12 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.13ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=12 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.13ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=12 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.13ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=12 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.13ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=12 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.13ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=12 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.13ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=12 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.13ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=12 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.13ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=12 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.13ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=12 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.13ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=12 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.14ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=12 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.13ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.73ms | meta_cpu p50=0.16ms | prefill.eager=12 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.14ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=12 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.13ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=12 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.14ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=12 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.13ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.73ms | meta_cpu p50=0.16ms | prefill.eager=12 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.10ms | prefill.rep p50=5.14ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=12 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.13ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.73ms | meta_cpu p50=0.16ms | prefill.eager=12 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.10ms | prefill.rep p50=5.14ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=12 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.14ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=12 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.13ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.73ms | meta_cpu p50=0.16ms | prefill.eager=12 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.13ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.73ms | meta_cpu p50=0.16ms | prefill.eager=12 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.10ms | prefill.rep p50=5.14ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=12 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.10ms | prefill.rep p50=5.14ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=11 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.13ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.73ms | meta_cpu p50=0.16ms | prefill.eager=11 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.13ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.73ms | meta_cpu p50=0.16ms | prefill.eager=10 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.10ms | prefill.rep p50=5.14ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=10 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.10ms | prefill.rep p50=5.14ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.73ms | meta_cpu p50=0.16ms | prefill.eager=10 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.10ms | prefill.rep p50=5.14ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=10 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.10ms | prefill.rep p50=5.14ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.73ms | meta_cpu p50=0.16ms | prefill.eager=10 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.10ms | prefill.rep p50=5.14ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=10 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.10ms | prefill.rep p50=5.14ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.73ms | meta_cpu p50=0.16ms | prefill.eager=10 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.10ms | prefill.rep p50=5.14ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=10 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.10ms | prefill.rep p50=5.14ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=10 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.10ms | prefill.rep p50=5.14ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.73ms | meta_cpu p50=0.16ms | prefill.eager=10 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.14ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.73ms | meta_cpu p50=0.16ms | prefill.eager=10 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.10ms | prefill.rep p50=5.14ms x0.97 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=10 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.10ms | prefill.rep p50=5.14ms x0.97 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=10 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.10ms | prefill.rep p50=5.14ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.73ms | meta_cpu p50=0.16ms | prefill.eager=10 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.10ms | prefill.rep p50=5.14ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.73ms | meta_cpu p50=0.16ms | prefill.eager=10 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.10ms | prefill.rep p50=5.15ms x0.97 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=10 gen.eager=0
+(APIServer pid=50) INFO:     127.0.0.1:52760 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:52764 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:52766 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:52776 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:52780 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.10ms | prefill.rep p50=5.14ms x0.97 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=11 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.10ms | prefill.rep p50=5.14ms x0.97 | decode.rep p50=9.93ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.73ms | meta_cpu p50=0.16ms | prefill.eager=11 gen.eager=0
+(APIServer pid=50) INFO:     127.0.0.1:52792 - "GET /metrics HTTP/1.1" 200 OK
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.10ms | prefill.rep p50=5.14ms x0.97 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=11 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.10ms | prefill.rep p50=5.14ms x0.97 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.73ms | meta_cpu p50=0.16ms | prefill.eager=11 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.10ms | prefill.rep p50=5.14ms x0.97 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.73ms | meta_cpu p50=0.16ms | prefill.eager=11 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.10ms | prefill.rep p50=5.14ms x0.97 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=11 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.10ms | prefill.rep p50=5.14ms x0.97 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.73ms | meta_cpu p50=0.16ms | prefill.eager=11 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.10ms | prefill.rep p50=5.14ms x0.97 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=11 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.10ms | prefill.rep p50=5.14ms x0.97 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.73ms | meta_cpu p50=0.16ms | prefill.eager=11 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.10ms | prefill.rep p50=5.15ms x0.97 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=11 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.10ms | prefill.rep p50=5.14ms x0.97 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.73ms | meta_cpu p50=0.16ms | prefill.eager=11 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.10ms | prefill.rep p50=5.14ms x0.97 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=11 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.10ms | prefill.rep p50=5.14ms x0.97 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.73ms | meta_cpu p50=0.16ms | prefill.eager=11 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.10ms | prefill.rep p50=5.14ms x0.97 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=11 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.14ms x0.97 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=10 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.10ms | prefill.rep p50=5.14ms x0.97 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=10 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.13ms x0.98 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=9 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.14ms x0.98 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=9 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.14ms x0.98 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=9 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.14ms x0.98 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=9 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.14ms x0.98 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=9 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.14ms x0.98 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=9 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.14ms x0.98 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=9 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.14ms x0.98 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=9 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.14ms x0.98 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=9 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.14ms x0.98 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=9 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.14ms x0.98 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=9 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.14ms x0.98 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=9 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.14ms x0.98 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=9 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.14ms x0.98 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=9 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.14ms x0.98 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=9 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.14ms x0.98 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=9 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.14ms x0.98 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=9 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.14ms x0.98 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=9 gen.eager=0
+(Worker_TP1 pid=699) INFO 10-28 19:09:35 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=2304 p50=0.48ms p90=0.62ms max=0.97ms fallbacks=81 {'zero-spec': 69, 'mixed': 12}
+(Worker_TP0 pid=591) INFO 10-28 19:09:35 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=2304 p50=0.48ms p90=0.63ms max=1.13ms fallbacks=81 {'zero-spec': 69, 'mixed': 12}
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.14ms x0.98 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=9 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.14ms x0.98 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=9 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.14ms x0.98 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=9 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.14ms x0.98 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=9 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.14ms x0.98 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=9 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.14ms x0.98 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=9 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.14ms x0.98 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=9 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.14ms x0.98 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=9 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.14ms x0.98 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=9 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.14ms x0.98 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=9 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.14ms x0.98 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=8 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.14ms x0.98 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=8 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.14ms x0.98 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=8 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.14ms x0.98 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=8 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.14ms x0.98 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=7 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.14ms x0.98 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=7 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.14ms x0.98 | decode.rep p50=9.92ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=7 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.14ms x0.98 | decode.rep p50=9.91ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=7 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.14ms x0.98 | decode.rep p50=9.91ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=7 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.14ms x0.98 | decode.rep p50=9.91ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=7 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.14ms x0.98 | decode.rep p50=9.91ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=7 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.14ms x0.98 | decode.rep p50=9.91ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=7 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.14ms x0.98 | decode.rep p50=9.91ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=7 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.14ms x0.98 | decode.rep p50=9.91ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=7 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.14ms x0.98 | decode.rep p50=9.91ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=7 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.14ms x0.98 | decode.rep p50=9.91ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=7 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.09ms | prefill.rep p50=5.14ms x0.98 | decode.rep p50=9.91ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=7 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.13ms x0.98 | decode.rep p50=9.91ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=7 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.14ms x0.98 | decode.rep p50=9.91ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=7 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.13ms x0.98 | decode.rep p50=9.91ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=7 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.14ms x0.98 | decode.rep p50=9.91ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=7 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.13ms x0.98 | decode.rep p50=9.91ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=7 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.13ms x0.98 | decode.rep p50=9.91ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=7 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.14ms x0.98 | decode.rep p50=9.91ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=7 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.13ms x0.98 | decode.rep p50=9.91ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=7 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.13ms x0.98 | decode.rep p50=9.91ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=7 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.13ms x0.98 | decode.rep p50=9.91ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=7 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.13ms x0.98 | decode.rep p50=9.91ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=7 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.13ms x0.98 | decode.rep p50=9.91ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=7 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.13ms x0.98 | decode.rep p50=9.91ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=7 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.13ms x0.98 | decode.rep p50=9.91ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=7 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.13ms x0.98 | decode.rep p50=9.91ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.72ms | meta_cpu p50=0.16ms | prefill.eager=7 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.13ms x0.98 | decode.rep p50=9.91ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=7 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.13ms x0.98 | decode.rep p50=9.91ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.71ms | meta_cpu p50=0.16ms | prefill.eager=7 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.13ms x0.98 | decode.rep p50=9.91ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.71ms | meta_cpu p50=0.16ms | prefill.eager=7 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.13ms x0.98 | decode.rep p50=9.91ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=7 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.13ms x0.98 | decode.rep p50=9.91ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.71ms | meta_cpu p50=0.16ms | prefill.eager=7 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.13ms x0.98 | decode.rep p50=9.91ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=7 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.13ms x0.98 | decode.rep p50=9.91ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=7 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.13ms x0.98 | decode.rep p50=9.91ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.71ms | meta_cpu p50=0.16ms | prefill.eager=7 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.13ms x0.98 | decode.rep p50=9.91ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=7 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.13ms x0.98 | decode.rep p50=9.91ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.71ms | meta_cpu p50=0.16ms | prefill.eager=7 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.13ms x0.98 | decode.rep p50=9.91ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=7 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.08ms | prefill.rep p50=5.13ms x0.98 | decode.rep p50=9.91ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.71ms | meta_cpu p50=0.16ms | prefill.eager=7 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.07ms | prefill.rep p50=5.13ms x0.98 | decode.rep p50=9.91ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.71ms | meta_cpu p50=0.16ms | prefill.eager=7 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.07ms | prefill.rep p50=5.13ms x0.98 | decode.rep p50=9.91ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=7 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.07ms | prefill.rep p50=5.13ms x0.98 | decode.rep p50=9.91ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=7 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.07ms | prefill.rep p50=5.13ms x0.98 | decode.rep p50=9.91ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.71ms | meta_cpu p50=0.16ms | prefill.eager=7 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.07ms | prefill.rep p50=5.13ms x0.98 | decode.rep p50=9.91ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=7 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.07ms | prefill.rep p50=5.13ms x0.98 | decode.rep p50=9.91ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.71ms | meta_cpu p50=0.16ms | prefill.eager=7 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.07ms | prefill.rep p50=5.13ms x0.98 | decode.rep p50=9.91ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=7 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.07ms | prefill.rep p50=5.13ms x0.98 | decode.rep p50=9.91ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.71ms | meta_cpu p50=0.16ms | prefill.eager=7 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.07ms | prefill.rep p50=5.13ms x0.98 | decode.rep p50=9.91ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=7 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.07ms | prefill.rep p50=5.13ms x0.98 | decode.rep p50=9.91ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.71ms | meta_cpu p50=0.16ms | prefill.eager=7 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.07ms | prefill.rep p50=5.13ms x0.98 | decode.rep p50=9.91ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=7 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.07ms | prefill.rep p50=5.13ms x0.98 | decode.rep p50=9.91ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.70ms | meta_cpu p50=0.16ms | prefill.eager=7 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.07ms | prefill.rep p50=5.13ms x0.98 | decode.rep p50=9.91ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.70ms | meta_cpu p50=0.16ms | prefill.eager=7 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.07ms | prefill.rep p50=5.13ms x0.98 | decode.rep p50=9.91ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=7 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.07ms | prefill.rep p50=5.13ms x0.98 | decode.rep p50=9.91ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=7 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.07ms | prefill.rep p50=5.13ms x0.98 | decode.rep p50=9.91ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.70ms | meta_cpu p50=0.16ms | prefill.eager=7 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.07ms | prefill.rep p50=5.13ms x0.98 | decode.rep p50=9.91ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.71ms | meta_cpu p50=0.16ms | prefill.eager=7 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.07ms | prefill.rep p50=5.13ms x0.98 | decode.rep p50=9.91ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=7 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.07ms | prefill.rep p50=5.13ms x0.98 | decode.rep p50=9.91ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.71ms | meta_cpu p50=0.16ms | prefill.eager=7 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.07ms | prefill.rep p50=5.13ms x0.98 | decode.rep p50=9.91ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=7 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.07ms | prefill.rep p50=5.13ms x0.98 | decode.rep p50=9.91ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=7 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.07ms | prefill.rep p50=5.13ms x0.98 | decode.rep p50=9.91ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.71ms | meta_cpu p50=0.16ms | prefill.eager=7 gen.eager=0
+(Worker_TP0 pid=591) INFO 10-28 19:09:38 [r25_phase_timer.py:118] [arc-r25] phase split n=576 | tail p50=25.5 p90=27.2 max=37.5 | forward p50=53.8 p90=66.1 max=177.6 | sample p50=2.4 p90=3.5 max=3.5 | draft p50=22.3 p90=23.7 max=33.9 | fgap p50=0.0 p90=0.0 max=0.2 | bgap p50=0.2 p90=0.3 max=1968.1 | tailres p50=0.2 max=1.0
+(Worker_TP1 pid=699) INFO 10-28 19:09:38 [r25_phase_timer.py:118] [arc-r25] phase split n=576 | tail p50=25.5 p90=27.0 max=33.5 | forward p50=53.6 p90=66.0 max=177.4 | sample p50=2.4 p90=3.5 max=3.5 | draft p50=22.4 p90=23.8 max=30.0 | fgap p50=0.0 p90=0.0 max=0.0 | bgap p50=0.2 p90=0.3 max=1967.7 | tailres p50=0.2 max=0.4
+(APIServer pid=50) INFO 10-28 19:09:38 [loggers.py:315] Engine 000: Avg prompt throughput: 2.3 tokens/s, Avg generation throughput: 155.2 tokens/s, Running: 1 reqs, Waiting: 0 reqs, XPU KV cache usage: 3.4%, Prefix cache hit rate: 0.0%
+(APIServer pid=50) INFO 10-28 19:09:38 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 4.44, Accepted throughput: 121.89 tokens/s, Drafted throughput: 141.59 tokens/s, Accepted: 1219 tokens, Drafted: 1416 tokens, Per-position acceptance rate: 0.944, 0.867, 0.831, 0.802, Avg Draft acceptance rate: 86.1%
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.07ms | prefill.rep p50=5.13ms x0.98 | decode.rep p50=9.91ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.71ms | meta_cpu p50=0.16ms | prefill.eager=7 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.07ms | prefill.rep p50=5.13ms x0.98 | decode.rep p50=9.91ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.74ms | meta_cpu p50=0.16ms | prefill.eager=7 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.07ms | prefill.rep p50=5.13ms x0.98 | decode.rep p50=9.91ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.71ms | meta_cpu p50=0.16ms | prefill.eager=7 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.07ms | prefill.rep p50=5.13ms x0.98 | decode.rep p50=9.91ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.73ms | meta_cpu p50=0.16ms | prefill.eager=7 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.07ms | prefill.rep p50=5.13ms x0.98 | decode.rep p50=9.91ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.70ms | meta_cpu p50=0.16ms | prefill.eager=7 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.07ms | prefill.rep p50=5.13ms x0.98 | decode.rep p50=9.91ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.73ms | meta_cpu p50=0.16ms | prefill.eager=7 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.07ms | prefill.rep p50=5.13ms x0.98 | decode.rep p50=9.91ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.73ms | meta_cpu p50=0.16ms | prefill.eager=7 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.07ms | prefill.rep p50=5.13ms x0.98 | decode.rep p50=9.91ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.70ms | meta_cpu p50=0.16ms | prefill.eager=7 gen.eager=0
+(Worker_TP0 pid=591) [arc-p33] draft structure n=384 | propose p50=15.06ms | prefill.rep p50=5.13ms x0.98 | decode.rep p50=9.91ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.70ms | meta_cpu p50=0.16ms | prefill.eager=7 gen.eager=0
+(Worker_TP1 pid=699) [arc-p33] draft structure n=384 | propose p50=15.07ms | prefill.rep p50=5.13ms x0.98 | decode.rep p50=9.91ms x1.00 | gap p50=0.01ms | fused_cpu p50=3.73ms | meta_cpu p50=0.16ms | prefill.eager=7 gen.eager=0
+(APIServer pid=50) INFO:     127.0.0.1:52802 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:60876 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:60892 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:60894 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO 10-28 19:09:48 [loggers.py:315] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1.8 tokens/s, Running: 0 reqs, Waiting: 0 reqs, XPU KV cache usage: 0.0%, Prefix cache hit rate: 0.0%
+(APIServer pid=50) INFO 10-28 19:09:48 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 5.00, Accepted throughput: 1.60 tokens/s, Drafted throughput: 1.60 tokens/s, Accepted: 16 tokens, Drafted: 16 tokens, Per-position acceptance rate: 1.000, 1.000, 1.000, 1.000, Avg Draft acceptance rate: 100.0%
+(APIServer pid=50) INFO:     127.0.0.1:56192 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:56206 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:56214 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO 10-28 19:09:58 [loggers.py:315] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 0.0 tokens/s, Running: 0 reqs, Waiting: 0 reqs, XPU KV cache usage: 0.0%, Prefix cache hit rate: 0.0%
+(APIServer pid=50) INFO:     127.0.0.1:46520 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:46524 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:46528 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:59044 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:59056 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:59060 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:60904 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:60914 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:60928 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:40542 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:40550 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:40554 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:42388 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:42392 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:42394 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:40354 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:40366 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:40378 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:51282 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:51284 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:51288 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:53250 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:53266 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:53272 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:54746 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:54756 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:54772 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:60372 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:60388 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:60394 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:54908 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:54914 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:54918 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:58066 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:58082 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:58084 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:42818 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:42824 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:42834 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:54632 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:54634 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:54636 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:52016 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:52030 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:52036 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:52092 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:52104 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:52120 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:45150 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:45152 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:45168 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:54160 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:54168 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:54176 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:55592 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:55600 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:55614 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:49268 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:49278 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:49284 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:60234 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:60246 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:60260 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:39554 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:39562 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:39570 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:59916 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:59928 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:59934 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:38400 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:38404 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=50) INFO:     127.0.0.1:38410 - "GET /metrics HTTP/1.1" 200 OK

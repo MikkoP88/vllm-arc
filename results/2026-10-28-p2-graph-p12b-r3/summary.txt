@@ -1,0 +1,27 @@
+Leg: p2-graph p12b round 3 (evidence leg; FAIL by design at the alarm)
+Rig leg: /root/build/legs/arc-p2-graph-20261028-005232/
+Image: vllm-arc:v0.30.0-b70-p12b = 318064fddd52 (fork 90aee3b3)
+Env: TP2, qwen3.8-27b-fp8, gmu=0.8 mnbt=8192 seqs=64, VLLM_XPU_ENABLE_XPU_GRAPH=1,
+     FULL_DECODE_ONLY (sizes 1..320 capped 64), spec=0 lmc=0, arc3 wheel.
+
+Round-3 instrumentation (watchdog own-current probe + post-flip tripwires)
+delivered the onset: ARC_GRAPH_ZOMBIE_ONSET on TP0 at 00:59:52 — the
+device-default stream flipped recording with no capture open — 2 s BEFORE the
+next request's serve-time alarm (00:59:54) and ~1 s after the previous request
+returned 200 OK. The k1k sanity request was fully served clean first (budgeted
+constructions 00:58:41–46 are vllm's internal warmup; k1k's own constructions
+ran silently, budget spent, and its POST returned 200).
+
+Findings (full narrative in VERDICT.md):
+1. The flip lands BETWEEN requests — after a successful completion, before the
+   next forward. An entry-point dezombie can therefore save the next request
+   entirely (no lost kernels, no alarm).
+2. The worker serves on the device DEFAULT stream (onset id 0x325574c0 ==
+   alarm's poisoned current on TP0).
+3. The poison is not one stream: the async copy stream (created at module
+   import, pre-flip) also probes recording post-flip (Event.record tripwire,
+   cur=0x45b5a750 ≠ poisoned ≠ fresh). Every PRE-flip stream is dead; only
+   post-flip-created streams are live.
+4. Device-wide torch.xpu.synchronize() stays illegal forever while any
+   abandoned queue records (6 drain-path raises).
+→ round 4 (bb0606e4): stream-reroute fix built on these laws.

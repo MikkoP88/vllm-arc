@@ -1,0 +1,22 @@
+{
+ "64": {
+  "sha": "a8a1f9863209f2b121643155664a4fd83a9d62c56c3abf6e69af9aad5e068e31",
+  "chars": 161
+ },
+ "256": {
+  "sha": "9e9d9aa9a5d8b4f823dbf959fd58a75222b9fd8d0d43e77e16d8a3b5e3d7db43",
+  "chars": 24
+ },
+ "1024": {
+  "sha": "702a74d2eda92e5d9e1b1bac237f55757aa728c66600e93056393d9a904450a6",
+  "chars": 48
+ },
+ "2048": {
+  "sha": "785b74ef78386c11837cf46b2e141ca2cbcac0b25a8f77d802ebcd418af3e2bb",
+  "chars": 95
+ },
+ "4096": {
+  "sha": "0825deba844b8262dd46a70df5441a3f1f9bb70137939bcb6579d583a05d516b",
+  "chars": 48
+ }
+}

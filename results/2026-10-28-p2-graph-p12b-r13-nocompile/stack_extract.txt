@@ -1,0 +1,25 @@
+(Worker_TP0 pid=3123) WARNING 10-28 07:39:46 [graph_safe_output.py:389] [MainThread]
+(Worker_TP0 pid=3123) WARNING 10-28 07:39:46 [graph_safe_output.py:389]   File "/opt/venv/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+(Worker_TP0 pid=3123) WARNING 10-28 07:39:46 [graph_safe_output.py:389]     return self._call_impl(*args, **kwargs)
+(Worker_TP0 pid=3123) WARNING 10-28 07:39:46 [graph_safe_output.py:389]   File "/opt/venv/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+(Worker_TP0 pid=3123) WARNING 10-28 07:39:46 [graph_safe_output.py:389]     return forward_call(*args, **kwargs)
+(Worker_TP0 pid=3123) WARNING 10-28 07:39:46 [graph_safe_output.py:389]   File "/opt/venv/lib/python3.12/site-packages/vllm/model_executor/layers/mamba/gdn/qwen_gdn_linear_attn.py", line 841, in forward
+(Worker_TP0 pid=3123) WARNING 10-28 07:39:46 [graph_safe_output.py:389]     return self._forward_method(hidden_states)
+(Worker_TP0 pid=3123) WARNING 10-28 07:39:46 [graph_safe_output.py:389]   File "/opt/venv/lib/python3.12/site-packages/vllm/model_executor/layers/mamba/gdn/qwen_gdn_linear_attn.py", line 992, in forward_xpu
+(Worker_TP0 pid=3123) WARNING 10-28 07:39:46 [graph_safe_output.py:389]     projected_states_ba, _ = self.in_proj_ba(hidden_states)
+(Worker_TP0 pid=3123) WARNING 10-28 07:39:46 [graph_safe_output.py:389]   File "/opt/venv/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+(Worker_TP0 pid=3123) WARNING 10-28 07:39:46 [graph_safe_output.py:389]     return self._call_impl(*args, **kwargs)
+(Worker_TP0 pid=3123) WARNING 10-28 07:39:46 [graph_safe_output.py:389]   File "/opt/venv/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+(Worker_TP0 pid=3123) WARNING 10-28 07:39:46 [graph_safe_output.py:389]     return forward_call(*args, **kwargs)
+(Worker_TP0 pid=3123) WARNING 10-28 07:39:46 [graph_safe_output.py:389]   File "/opt/venv/lib/python3.12/site-packages/vllm/model_executor/layers/linear.py", line 606, in forward
+(Worker_TP0 pid=3123) WARNING 10-28 07:39:46 [graph_safe_output.py:389]     output_parallel = self.quant_method.apply(self, input_, bias)
+(Worker_TP0 pid=3123) WARNING 10-28 07:39:46 [graph_safe_output.py:389]   File "/opt/venv/lib/python3.12/site-packages/vllm/model_executor/layers/linear.py", line 238, in apply
+(Worker_TP0 pid=3123) WARNING 10-28 07:39:46 [graph_safe_output.py:389]     return self._gemm_impl(layer, x, layer.weight, bias)
+(Worker_TP0 pid=3123) WARNING 10-28 07:39:46 [graph_safe_output.py:389]   File "/opt/venv/lib/python3.12/site-packages/vllm/model_executor/layers/utils.py", line 90, in default_unquantized_gemm
+(Worker_TP0 pid=3123) WARNING 10-28 07:39:46 [graph_safe_output.py:389]     return torch.nn.functional.linear(x, weight, bias)
+(Worker_TP0 pid=3123) WARNING 10-28 07:39:46 [graph_safe_output.py:389]   File "/opt/venv/lib/python3.12/site-packages/vllm/model_executor/parameter.py", line 126, in __torch_function__
+(Worker_TP0 pid=3123) WARNING 10-28 07:39:46 [graph_safe_output.py:389]     return super().__torch_function__(func, types, args, kwargs)
+(Worker_TP0 pid=3123) WARNING 10-28 07:39:46 [graph_safe_output.py:389] 
+(Worker_TP0 pid=3123) WARNING 10-28 07:39:46 [graph_safe_output.py:389] ARC_GRAPH_ONSET_STACKS end
+(Worker_TP0 pid=3123) WARNING 10-28 07:39:47 [graph_safe_output.py:567] ArcXpuPlatform: graph stream hygiene (execute_model-exit (mid-forward flip, storm-waiting)): current stream torch.xpu.Stream(device=xpu:0 sycl_queue=0x21b8c490) was left recording with no capture open — swapped to a fresh stream (post-swap capturing=False, post-swap canary[executed=True vals=[123.45600128173828, 123.45600128173828, 123.45600128173828, 123.45600128173828]]; ids: cur=torch.xpu.Stream(device=xpu:0 sycl_queue=0x21a43000) side=torch.xpu.Stream(device=xpu:0 sycl_queue=0x21a35490)).
+(Worker_TP0 pid=3123) WARNING 10-28 07:39:47 [graph_safe_output.py:824] ArcXpuPlatform: ARC_GRAPH_STORM_ENDED a fresh stream survived after 0.0s — retrying the lost step on it (ids: cur=torch.xpu.Stream(device=xpu:0 sycl_queue=0x21a5e6e0)).
