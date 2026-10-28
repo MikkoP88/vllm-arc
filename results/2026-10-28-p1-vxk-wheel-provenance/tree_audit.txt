@@ -1,0 +1,17 @@
+== tree: current-file bare sites (excluding .vxki64bak backups) ==
+/root/build/vxk-arc-src/csrc/xpu/gdn_attn/causal_conv1d.hpp:684:                            ? conv_states + state_id * conv_states_stride_0
+== tree: int64 casts per file ==
+/root/build/vxk-arc-src/csrc/xpu/gdn_attn/causal_conv1d.hpp:2
+/root/build/vxk-arc-src/csrc/xpu/gdn_attn/xe_2/chunk_causal_conv1d_xe2.hpp:2
+/root/build/vxk-arc-src/csrc/xpu/gdn_attn/xe_2/chunk_causal_conv1d_tiled_xe2.hpp:2
+== v_head_id guard ==
+80:  if (v_head_id >= num_v_heads) return;
+== gate_fixed repro tail ==
+[BND] aim=[100, 4096] rows_changed=[100, 2857, 2858, 2859, 2860, 3131, 4096] (n=7, expect [100, 2857, 2858, 2859, 2860, 3131, 4096]) wrote_conv=True wrote_ssm=True finite=True -> OK
+[verdict] {'LO': True, 'HI': True, 'BND': True} -> CLEAN WHEEL
+REPRO_EXIT=0
+[BND] aim=[100, 4096] rows_changed=[100, 2857, 2858, 2859, 2860, 3131, 4096] (n=7, expect [100, 2857, 2858, 2859, 2860, 3131, 4096]) wrote_conv=True wrote_ssm=True finite=True -> OK
+[verdict] {'LO': True, 'HI': True, 'BND': True} -> CLEAN WHEEL
+REPRO_EXIT=0
+== wheel sha ==
+b4a6b2018b170aeff258b63ab8d82aaa34a0fe313ff05d196593f4aaaa6718ed  /root/build/wheels-arc-vxk/vllm_xpu_kernels-0.1.14.1+arc3-cp312-cp312-linux_x86_64.whl
