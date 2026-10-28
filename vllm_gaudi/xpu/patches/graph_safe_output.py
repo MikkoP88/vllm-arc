@@ -127,6 +127,11 @@ survives, up to 15 s, then retry the forward on THAT stream. If a stream
 survives, the storm is bounded: log its measured duration and serve on. If
 none survives in 15 s, the storm is permanent on this stack: fail loudly
 with that verdict (definitive evidence for the posture decision).
+Corpse-proof cache: a replacement created mid-storm is itself dead — every
+``_LIVE_REPLACEMENTS`` hit is re-probed and evicted if recording, and a
+dezombie whose swapped-to stream dies under it evicts + storm-waits in
+place (otherwise the first healthy post-storm request's copy path would
+substitute onto a corpse and its copy_event would never fire).
 
 Provenance: error family + fix direction = plan Appendix C defect (b);
 capture-probe fail-safe law = D-line waveD patch_gdn_metadata_026.py
@@ -261,9 +266,20 @@ def _stream_poisoned(s) -> bool:
 
 def _replacement_for(dead) -> torch.xpu.Stream:
     """Cached live replacement for a dead stream (created post-flip = live,
-    probe-validated; one per dead stream preserves rerouted ordering)."""
+    probe-validated; one per dead stream preserves rerouted ordering).
+    Round 7: a replacement created DURING the poison storm can itself have
+    flipped (r6: the dezombie stream was a substitution target 1s later) —
+    re-probe every cache hit and evict corpses; a stream created after the
+    storm ends is live, so the cache self-heals on first post-storm use."""
     key = id(dead)
     live = _LIVE_REPLACEMENTS.get(key)
+    if live is not None and _stream_poisoned(live):
+        _LIVE_REPLACEMENTS.pop(key, None)
+        logger.warning(
+            "ArcXpuPlatform: ARC_GRAPH_STORM cached replacement %s for dead "
+            "%s probes recording — evicted, creating fresh (ids: %s).",
+            live, dead, _stream_ids())
+        live = None
     if live is None:
         live = torch.xpu.Stream()
         _LIVE_REPLACEMENTS[key] = live
@@ -394,6 +410,17 @@ def _dezombie(tag: str) -> bool:
                 "ArcXpuPlatform: graph stream hygiene (%s): zombie stream "
                 "swapped (post-swap capturing=%s).",
                 tag, _capture_state()[0])
+        if _capture_state()[0]:
+            # Round 7: the swapped-to stream died too — cache race or a
+            # mid-storm entry. Evict it and wait out the storm on fresh
+            # streams; the survivor is left current. If the storm is
+            # permanent the current stays dead and the caller's integrity
+            # probes trip (fail loud, posture evidence).
+            _LIVE_REPLACEMENTS.pop(id(dead), None)
+            logger.warning(
+                "ArcXpuPlatform: ARC_GRAPH_STORM dezombie target died under "
+                "us (storm, %s) — waiting out the storm.", tag)
+            _wait_out_storm()
         return True
     except Exception as e:  # noqa: BLE001 — never mask the caller's path
         logger.error(
