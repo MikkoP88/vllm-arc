@@ -1,0 +1,10 @@
+leg:    arc-graph-trace2-20261028 (r12b — kernel-launch tracer leg)
+image:  vllm-arc:v0.30.0-b70-p12b efd14b88388c (fork 6c25db06)
+env:    ARC_LEG=graph-trace2 GRAPH=1 SPEC=0 ARC_TRACE=1
+result: BOOT DEATH (0 requests) — TRACER BUG, not the defect: the
+        aten.mm.out wrap (torch.ops.aten.mm.out = plain function)
+        corrupted the op registry; profile_run compile failed with
+        "Expected qualname ... but got _wrap_kernel_launch_tracer.
+        locals._traced_mm". Triton wrap installed fine on both ranks.
+fix:    cbb6937e — triton-only tracer (r12c leg). Lesson recorded in
+        the patch docstring: never assign onto torch.ops entries.
