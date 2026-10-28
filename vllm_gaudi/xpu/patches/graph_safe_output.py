@@ -158,6 +158,25 @@ proven integrity keepers should graphs ever be re-enabled; on the eager
 lane they are dormant (guards arm only on the first flip, which never
 comes without graphs).
 
+ROUND-8 LAW — ROOT CAUSE (champion control leg 2026-10-28 + code diff):
+the D champion (lsv-test, vllm 0.26.1.dev0+g568afb3a1, torch 2.12.0+xpu)
+serves FULL_DECODE_ONLY graphs + MTP k4 on THIS rig today — the lane is
+viable on this hardware+driver; the poison is OUR stack. The diff:
+their capture is ``torch.cuda.graph(graph, self.pool)`` — NO stream arg →
+torch.xpu captures on its own ``default_capture_stream`` (the side
+stream). Our 0.30 wrapper passes ``stream=self._capture_stream(desc)``
+which returns ``current_stream()`` — the worker's device DEFAULT — and on
+torch 2.13.0+xpu the capture stream stays graph-associated after
+capture_end ("poison enters during capture",
+results/2026-10-27-p2-graph-defectb-answer: 27/27 captures finish clean,
+nothing runs in between, yet the default is recording-dead at the first
+real op). FIX: ``CudaGraphManager._capture_stream`` is wrapped to return
+``torch.xpu.graph.default_capture_stream`` — captures never touch the
+serving default (champion discipline; replays were always fine: k1k 200
+in every poisoned round). Prefix-caching OFF also flipped
+(results/2026-10-28-p2-graph-prefixoff) — trigger was never the prefix
+write, it was the capture stream choice all along.
+
 Provenance: error family + fix direction = plan Appendix C defect (b);
 capture-probe fail-safe law = D-line waveD patch_gdn_metadata_026.py
 (``_iexp_is_capturing``, results/2026-10-18-waveD-anchor-analysis.log);
@@ -791,6 +810,48 @@ def _wrap_runner_entry() -> bool:
     return True
 
 
+def _wrap_capture_stream() -> bool:
+    """Round-8 root-cause fix: capture on torch.xpu's OWN capture stream,
+    never the worker's current (device default). Champion discipline (D
+    v133 / vllm 0.26.1: ``torch.cuda.graph(graph, pool)`` with no stream
+    arg) — their captures ride ``torch.xpu.graph.default_capture_stream``
+    (the side stream) and the serving default stays clean through boot and
+    serving (champion control leg 2026-10-28: graphs + MTP survive on this
+    rig). Our 0.30 wrapper passes ``stream=current_stream()`` and on torch
+    2.13.0+xpu the capture stream stays graph-associated after
+    capture_end — the device default is recording-dead at boot capture
+    time and the first real op on it kills serving
+    (results/2026-10-27-p2-graph-defectb-answer). Replays are unaffected
+    (k1k 200 in every poisoned round).
+    """
+    try:
+        from vllm.v1.worker.gpu import cudagraph_utils as cgu
+    except Exception as e:  # noqa: BLE001 — circular import at register()
+        logger.warning(
+            "ArcXpuPlatform: capture-stream fix install deferred (%r) — "
+            "platform hooks retry post-import.", e)
+        return False
+    manager = getattr(cgu, "CudaGraphManager", None)
+    if manager is None or getattr(manager, "_arc_capture_stream", False):
+        return True
+    orig_capture_stream = manager._capture_stream
+
+    def _arc_capture_stream(self, desc=None):
+        side = getattr(torch.xpu.graph, "default_capture_stream", None)
+        if side is not None:
+            return side
+        # No side stream on this build — upstream's choice stands.
+        return orig_capture_stream(self, desc)
+
+    manager._capture_stream = _arc_capture_stream
+    manager._arc_capture_stream = True
+    logger.info(
+        "ArcXpuPlatform: capture-stream fix installed (pid %d, captures "
+        "ride torch.xpu.graph.default_capture_stream — the serving default "
+        "never enters capture; champion 0.26.1 discipline).", os.getpid())
+    return True
+
+
 def _install() -> None:
     """Patch the async output classes in-place (idempotent, per-process).
 
@@ -922,6 +983,7 @@ def _install() -> None:
     _wrap_xpu_graph()
     _wrap_stream_apis()
     _wrap_runner_entry()
+    _wrap_capture_stream()
     _ensure_watchdog()
     _INSTALLED = True
     logger.info(
