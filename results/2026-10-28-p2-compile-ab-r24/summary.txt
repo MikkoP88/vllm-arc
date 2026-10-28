@@ -1,0 +1,23 @@
+r24 — compile A/B on 0.30 (FULL_AND_PIECEWISE vs product mode=none), P4
+row executed early because r23 promoted it into the P2 critical path.
+
+VERDICT: compile lane DEAD for MTP on this stack —
+1. Acceptance law CONFIRMED (0.26 law REVAL on 0.30): pos1 0.8821 -> 0.382
+   (< 0.5 hard FAIL), acceptance 0.698 -> 0.2825, mean length 3.79 -> 2.13;
+   gate's own verdict names the wrong-logits family (D r1 mojibake).
+2. Step wall compile-INDEPENDENT: c1 62.6-62.9 / c8 78.6 ms on compile-ON
+   vs 62.9 / 77.4 compile-off — falsifies r23's "unfused replay" theory;
+   the ~63 ms c1 step lives in MTP step structure (draft replays + verify
+   tail + output path) or fixed GPU-side serialization, not kernel fusion.
+3. Survival cell PASS on the compiled posture: flip payload 200 in 21.15 s,
+   onset 0 — compiled prefill pieces are captured (never loose) under
+   FULL_AND_PIECEWISE; defect-b fix family holds across both postures.
+4. Solo on compile-ON 7.26 tok/s (acceptance death; mojibake output).
+
+NEXT LEVER: GPU-side phase split of the compile-independent step (r25:
+event timestamps around decode replay / draft replays / verify+sample
+tail / D2H copy) -> tail-overlap lane (p50) or kernel-kit delta (twin v21
+vs radiance-inherited) by what the split shows. Champion D's ~50 ms step
+(0.26, compile OFF, twin kit) bounds the hardware.
+
+Rig restored to W14 (health 200).

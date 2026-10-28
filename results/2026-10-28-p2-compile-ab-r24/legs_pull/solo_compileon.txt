@@ -1,0 +1,1 @@
+compileON solo: 92 tok in 12.68s = 7.26 tok/s

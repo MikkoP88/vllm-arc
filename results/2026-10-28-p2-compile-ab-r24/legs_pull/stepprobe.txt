@@ -1,0 +1,5 @@
+STEPPROBE_START
+[c1] conc=1 wall=15.1s chunks=239 gap_p50=62.6ms mean=62.6ms p90=62.9ms | drafts=0 draft_tokens=0 accepted=0 acc_len=0.00
+[c8] conc=8 wall=8.7s chunks=781 gap_p50=78.6ms mean=78.2ms p90=79.0ms | drafts=0 draft_tokens=0 accepted=0 acc_len=0.00
+[c1-again] conc=1 wall=15.1s chunks=239 gap_p50=62.9ms mean=62.9ms p90=63.2ms | drafts=0 draft_tokens=0 accepted=0 acc_len=0.00
+STEPPROBE_DONE
