@@ -52,6 +52,8 @@ _BMG_DEVICE_ID_MAX = 0xE2FF
 _XPU_PATCH_MODULES = (
     "graph_safe_output",        # defect-b: graph-safe worker output copies
     "speculator_full_capture",  # defect-a: PIECEWISE-family -> FULL coercion
+    "first_request_warmup",     # defect-b fix (lane W): warm the first eager
+                                # large TP AR before serving traffic (r16/r17)
 )
 
 

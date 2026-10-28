@@ -1,0 +1,17 @@
+leg:    arc-graph-warmupfix-r17-20261028 (r17 — defect-b fix validation)
+image:  vllm-arc:v0.30.0-b70-p12b c966fcf89a3f (fork cbb6937e)
+posture:r13/r16 serve verbatim (mode=none + FULL_DECODE_ONLY, TP2, graphs
+        ON) + first_request_warmup interlock via PYTHONPATH sitecustomize
+fix:    vllm_gaudi/xpu/patches/first_request_warmup.py (lane W) — first
+        AsyncLLM.generate runs small (128 tok) + max-batch (~2x 8192-tok
+        chunks) warmup generations through the same engine first;
+        fail-loud; kill-switch VLLM_ARC_WARMUP_DISABLE=1
+result: r17a (patch ON): large-as-first 200 (warmup 0.5s + 70.4s stages,
+        then request ~1.3s), ZERO onset, follow-ups 0.9-1.0s. r17b
+        (control, DISABLE=1): same request 500 in 3.8s + onset — flip
+        exactly as r16. Counterfactual pair complete.
+conclusion: defect-b CLOSED at posture level — mechanism (r16: first
+        eager large TP AR after decode-graph capture warmup) + fix (r17)
+        + counterfactual (r17b) banked. Next: P2 gates on the patched
+        boot (graphs+MTP, TPOT, acceptance, warm-hit), then arc4 wheel
+        (9th site) before P3, upstream issue after owner sign-off.
