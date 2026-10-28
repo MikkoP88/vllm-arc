@@ -54,14 +54,20 @@ COPY tools/wheel_guard.sh /usr/local/bin/wheel_guard.sh
 # fork dist install + gates (~1 min instead of ~12).
 RUN set -euxo pipefail; \
     bash /usr/local/bin/wheel_guard.sh /etc/vllm-arc/pins.md5 /wheels/arc; \
-    pip uninstall -y vllm triton-xpu vllm-xpu-kernels; \
+    pip uninstall -y vllm triton-xpu vllm-xpu-kernels lmcache; \
     pip install \
         /wheels/arc/vllm-0.30.0+xpu-cp38-abi3-manylinux_2_34_x86_64.whl \
         /wheels/arc/triton-3.7.2+xpu-py3-none-any.whl \
         "torch==2.13.0" \
         "torchvision==0.28.0+xpu" \
         /wheels/arc/vllm_xpu_kernels-0.1.14.1+arc3-cp312-cp312-linux_x86_64.whl \
-        "xgrammar==0.2.8"
+        "xgrammar==0.2.8"; \
+    pip install --no-deps /wheels/arc/lmcache-0.5.5+arc1-*.whl; \
+    pip install "msgspec" "numpy<=2.2.6" "numba" "nvtx" \
+        "opentelemetry-api>=1.20.0,<=1.40.0" "opentelemetry-sdk>=1.20.0" \
+        "opentelemetry-exporter-otlp>=1.20.0" \
+        "opentelemetry-exporter-prometheus>=0.50b0,<=0.61b0" \
+        "prometheus_client>=0.18.0,<=0.24.1" "psutil" "py-cpuinfo"
 
 # Fork dist on top of the pinned stack (re-installed on every source change).
 COPY src/ /build/vllm-arc/
@@ -79,7 +85,8 @@ RUN set -euxo pipefail; \
     python -c "from importlib.metadata import entry_points; eps = {e.name: e.value for e in entry_points(group='vllm.platform_plugins')}; assert eps.get('arc') == 'vllm_gaudi.xpu:register', eps; print('ARC_ENTRYPOINT_OK')"; \
     python -c "import vllm; from vllm.platforms import current_platform; print('PLATFORM_RESOLVE_OK', type(current_platform).__name__)"; \
     python -c "from vllm_gaudi.xpu.platform import ArcXpuPlatform, is_xe2_arch; print('ARC_PLATFORM_IMPORT_OK')"; \
-    python -c "import vllm_xpu_kernels; from importlib.metadata import version; v = version('vllm-xpu-kernels'); assert '+arc3' in v, v; print('VXK_ARC3_PIN_OK', v)"
+    python -c "import vllm_xpu_kernels; from importlib.metadata import version; v = version('vllm-xpu-kernels'); assert '+arc3' in v, v; print('VXK_ARC3_PIN_OK', v)"; \
+    python -c "import lmcache, lmcache.xpu_ops; from importlib.metadata import version; v = version('lmcache'); assert v == '0.5.5+arc1', v; print('LMCACHE_ARC1_PIN_OK', v)"
 
 # ---- IMAGE_MANIFEST (governance: every certified image reproducible) ------
 RUN set -euxo pipefail; \
@@ -90,6 +97,7 @@ RUN set -euxo pipefail; \
       echo "vllm_core=0.30.0+xpu $(md5sum /wheels/arc/vllm-0.30.0+xpu-*.whl)"; \
       echo "triton=3.7.2+xpu $(md5sum /wheels/arc/triton-3.7.2+xpu-*.whl)"; \
       echo "vxk=0.1.14.1+arc3 (int64 wedge fix, §6) $(md5sum /wheels/arc/vllm_xpu_kernels-0.1.14.1+arc3-*.whl)"; \
+      echo "lmcache=0.5.5+arc1 (SYCL XPU build + C 3-file delta, external_patches/lmcache) $(md5sum /wheels/arc/lmcache-0.5.5+arc1-*.whl)"; \
       echo "stack_freeze=/etc/vllm-arc/venv-freeze.txt"; \
       echo "dpcpp=none (esimd-build stage lands at P2, plan §8)"; \
       echo "built=$(date -u +%Y-%m-%dT%H:%M:%SZ)"; \
