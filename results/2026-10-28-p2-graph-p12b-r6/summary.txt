@@ -1,0 +1,42 @@
+Leg: p2-graph p12b round 6 (lost-step retry) — rig leg
+arc-p2-graph-20261028-023623, image vllm-arc:v0.30.0-b70-p12b = ef5f7812c2bf
+(fork 5e9b2217). Env: TP2, qwen3.8-27b-fp8, gmu=0.8 mnbt=8192 seqs=64,
+VLLM_XPU_ENABLE_XPU_GRAPH=1, FULL_DECODE_ONLY, spec=0 lmc=0, arc3 wheel.
+
+Every guard fired as designed; the retry itself revealed the next law. The
+poison is a STORM, not a one-time flip: during a multi-second window EVERY
+queue dies — pre-flip streams AND freshly-created ones, some dead at
+creation.
+
+Death chain (corrected on raw re-read — see VERDICT.md):
+- 02:43:44 onset (device default, TP0 watchdog); k1k returned 200 at 02:43:44
+- 02:43:46 both workers: attempt-1 exit-poison → dezombie (canary
+  executed=True at swap) → immediate retry (round-6 design)
+- 02:43:47 the dezombie stream was ALREADY dead (SUBSTITUTE rerouted threads
+  entering it; retry's exit probe poisoned → "retry failed") — created 02:43:46,
+  substitution target 02:43:47: lifetime < 1 s
+- 02:43:47 retry-failed dezombie's BRAND-NEW stream: post-swap capturing=True,
+  canary executed=False, garbage vals — DEAD AT CREATION
+- _poisoned_step=True → sample_tokens integrity raise → two 500s → engine dead
+- Teardown: torch.accelerator.synchronize() (model_runner.py:2241) raises the
+  recording error on both workers — POST-MORTEM NOISE, not the killer (the
+  shutdown-path device sync can never succeed while a queue is abandoned —
+  barrier law, known since r2)
+
+Integrity law held: no garbage served (k1k 200, then honest 500s).
+
+Round 7 (986b2c49, building): storm-wait — on first exit-poison, poll fresh
+streams every 200 ms until one survives (≤15 s), retry the lost step on the
+survivor (ARC_GRAPH_STORM_ENDED logs the measured storm duration); no survivor
+= ARC_GRAPH_STORM_PERMANENT → fail loud, definitive posture evidence.
+Hardening in the same build: corpse-proof _LIVE_REPLACEMENTS (re-probe every
+cache hit, evict recording entries — otherwise the first healthy post-storm
+request's copy path substitutes onto a mid-storm corpse and its copy_event
+never fires); dezombie storm-waits in place when its swap target dies under
+it; wait_stream reroutes a recording CALLER onto the live current (law-correct
+hardening — NOT the r6 killer, which was the shutdown sync; the earlier claim
+in 986b2c49's message is corrected here).
+
+Open question round 7 answers: is the storm time-bounded (a survivor exists
+after N seconds → serve on) or permanent (pivot to graphs-OFF eager posture
+with this evidence)?

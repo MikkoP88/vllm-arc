@@ -133,9 +133,12 @@ dezombie whose swapped-to stream dies under it evicts + storm-waits in
 place (otherwise the first healthy post-storm request's copy path would
 substitute onto a corpse and its copy_event would never fire). r6 raw also
 showed streams dead AT CREATION (retry canary executed=False, garbage
-vals) and the engine-killing raise was a wait issued ON a dead queue
-(dead.wait_stream(live) — argument guard blind to it): wait_stream now
-reroutes a recording CALLER onto the thread's live current.
+vals). CORRECTION (results/2026-10-28-p2-graph-p12b-r6): the r6 raises
+were the SHUTDOWN-path torch.accelerator.synchronize (barrier law,
+post-mortem noise), NOT construction-path waits — the wait_stream caller
+reroute stays as law-correct hardening (a dead waiter's ordering is void),
+but the storm itself is what killed the retry, and the storm-wait is the
+answer to it.
 
 Provenance: error family + fix direction = plan Appendix C defect (b);
 capture-probe fail-safe law = D-line waveD patch_gdn_metadata_026.py
