@@ -30,14 +30,21 @@ wrap ``MambaHybridModelState.preprocess_state``. Per step:
     block — exactly the dead path's contract), then run the v135 fp16
     repair over that page.
   AFTER the kernel launch (insertions 3+4):
-  - for each row, the deepest COMPLETE mamba block j = ncc//bs - 1 is
-    final (all its tokens computed; 0.30's align mode has NO nulling
-    pass — verified: no "null" sites in mamba_utils/mamba_hybrid/kernels,
-    unlike the 0.26 null-table world that forced D's carry-window snap),
-    so D2H-freeze B = (ncc//bs)*bs into the registry via the p41 glue's
+  - for each row at an EXACT chunk-end boundary (ncc % bs == 0 — r31
+    root cause #2: a boundary crossed mid-chunk never materializes in
+    the block table; the pre-copy carries bt[src] -> bt[dst] directly,
+    skipping the crossed column, and the postprocess migration only
+    fires on chunk-end-aligned boundaries, so bt[ncc//bs - 1] is a
+    stale/foreign page for mid-chunk crossings — banking it poisoned
+    every warm resume; probe-proven 2026-10-29: ncc 7168 -> 8192 with
+    no 8064 step, snap B=8064 stored a page no write ever touched),
+    D2H-freeze B = ncc into the registry via the p41 glue's
     ``_lmc_snap_boundary`` (same-B re-snaps replace; registry caps
     8/req + FIFO 48 global as before). The snap's device sync is
-    stream-ordered after the just-launched kernel.
+    stream-ordered after the just-launched kernel. Decode-step
+    crossings migrate correctly (postprocess fires on the aligned
+    running state), so the exact-boundary rule is uniform over
+    prefill and decode.
 
 Everything else (registry contract, adapter pack order group-major/
 layer/conv-ssm, m-store tokens[:deepest]) is the C adapter's byte-preserved
@@ -120,6 +127,25 @@ def _glue():
     return m
 
 
+def _bmd5(fc, kv_cache_config, gids, row_state, blk):
+    """Probe-only (ARC_SNAP_PROBE) md5 over one boundary block's pages —
+    the SAME group→layer→st iteration order as the glue's snap pack and
+    seed write, so the hashes compare across requests/boots. One 41 MB
+    D2H per call; only used at deep boundaries in probe runs."""
+    import hashlib
+
+    h = hashlib.md5()
+    for gid in gids:
+        bid = row_state.block_ids[gid][blk]
+        for lname in kv_cache_config.kv_cache_groups[gid].layer_names:
+            for st in fc[lname].kv_cache:
+                h.update(
+                    st[bid].reshape(-1).view(torch.uint8)
+                    .detach().cpu().numpy().tobytes()
+                )
+    return h.hexdigest()[:16]
+
+
 def _install(mod) -> None:
     """Wrap MambaHybridModelState.preprocess_state with the v136 blocks.
     Idempotent."""
@@ -170,6 +196,35 @@ def _install(mod) -> None:
                         num_computed_tokens)
 
         n = input_batch.num_reqs
+        # --- (0) r31 probe (root cause #2): pre-orig md5 of the boundary and
+        # running blocks for deep rows. Paired with the post-orig snapmd5
+        # print it shows, per step, whether the fused pre-copy wrote the
+        # running block and what the decision inputs were. ARC_SNAP_PROBE
+        # runs only (diagnostic boots; 2x41 MB D2H per deep row per step).
+        _chain_rows = []
+        if os.environ.get("ARC_SNAP_PROBE"):
+            for i in range(n):
+                ncc = int(input_batch.num_computed_tokens_np[i])
+                j = ncc // bs - 1
+                if j < 6:
+                    continue
+                _chain_rows.append((i, j))
+            for i, j in _chain_rows:
+                try:
+                    _rs = _RowState(block_tables, i, j + 2)
+                    _slot = int(input_batch.idx_mapping[i])
+                    print(
+                        f"[r31probe p41c-pre req={input_batch.req_ids[i]} "
+                        f"ncc={int(input_batch.num_computed_tokens_np[i])} "
+                        f"sidx={int(self._mamba_state_idx_gpu[_slot].item())} "
+                        f"nacc={int(self.num_accepted_tokens_gpu[_slot].item())} "
+                        f"blk{j}={_bmd5(state['fc'], kv_cache_config, state['gids'], _rs, j)} "
+                        f"blk{j + 1}={_bmd5(state['fc'], kv_cache_config, state['gids'], _rs, j + 1)}]",
+                        flush=True,
+                    )
+                except Exception as e:  # noqa: BLE001
+                    print(f"[r31probe p41c-pre-ERR {repr(e)[:80]}]", flush=True)
+
         # --- (1)+(2) v136 load half: seed write + v135 fp16 repair into the
         # carry-from page, BEFORE the fused kernel launch below.
         for i in range(n):
@@ -214,6 +269,24 @@ def _install(mod) -> None:
                 req_id, seed[0], prev, bs, row_state, kv_cache_config,
                 state["gids"], state["fc"], seed[1],
             )
+            if os.environ.get("ARC_SNAP_PROBE"):
+                import hashlib
+
+                _smd5 = hashlib.md5(
+                    seed[1].cpu().numpy().tobytes()
+                ).hexdigest()[:16]
+                _bids = {
+                    gid: row_state.block_ids[gid][prev:prev + 2]
+                    for gid in state["gids"]
+                }
+                print(
+                    f"[r31probe p41c-seedmd5 req={req_id} B={seed[0]} "
+                    f"prev={prev} seed_bytes={_smd5} "
+                    f"postwrite={_bmd5(state['fc'], kv_cache_config, state['gids'], row_state, prev)} "
+                    f"bids={_bids}]",
+                    flush=True,
+                )
+                state.setdefault("seed_pending", {})[req_id] = (i, prev)
             if g._FP16_SEED_REPAIR:
                 try:
                     for gid in state["gids"]:
@@ -235,6 +308,23 @@ def _install(mod) -> None:
 
         r = orig(self, input_batch, block_tables, kv_cache_config,
                  num_computed_tokens)
+
+        # --- r31 probe: the fused kernel's actual copy decision for seed
+        # rows (post-orig: state_idx advanced, src_col/src_off emitted).
+        if os.environ.get("ARC_SNAP_PROBE"):
+            for _rid, (_i, _prev) in state.pop("seed_pending", {}).items():
+                try:
+                    _slot = int(input_batch.idx_mapping[_i])
+                    print(
+                        f"[r31probe p41c-postseed req={_rid} "
+                        f"sidx={int(self._mamba_state_idx_gpu[_slot].item())} "
+                        f"src_col={int(self._mamba_src_col_gpu[_slot].item())} "
+                        f"src_off={int(self._mamba_src_off_gpu[_slot].item())}]",
+                        flush=True,
+                    )
+                except Exception as e:  # noqa: BLE001
+                    print(f"[r31probe p41c-postseed-ERR {repr(e)[:80]}]",
+                          flush=True)
 
         # --- (3)+(4) v136 store half: freeze the deepest COMPLETE boundary
         # per row, after the fused kernel (sync ordered behind its writes).
@@ -259,10 +349,25 @@ def _install(mod) -> None:
             for i in range(n):
                 req_id = input_batch.req_ids[i]
                 ncc = int(input_batch.num_computed_tokens_np[i])
+                if ncc % bs:
+                    # r31 root cause #2 (2026-10-29, probe-proven): a boundary
+                    # crossed MID-CHUNK never materializes in the block table.
+                    # The fused pre-copy carries bt[src] -> bt[dst] directly
+                    # (dst = ceil(computed_after/bs)-1, skipping the crossed
+                    # column) and the postprocess migration only fires when
+                    # aligned_new_computed >= num_tokens_running_state (chunk
+                    # end aligned). bt[j] for such a boundary is a stale/
+                    # foreign page no write ever touched (probe: ncc 7168 ->
+                    # 8192 with no 8064 step; snap B=8064 banked garbage;
+                    # warm resume re-seeded it -> integrity 0/5, golden 4096
+                    # drift). Only exact chunk-end boundaries are present —
+                    # decode crossings migrate correctly, so the rule is
+                    # uniform: snap iff ncc % bs == 0.
+                    continue
                 j = ncc // bs - 1
                 if j < 0:
                     continue
-                b = (j + 1) * bs
+                b = ncc
                 if b <= last_b.get(req_id, 0):
                     continue
                 row_state = _RowState(block_tables, i, j + 2)
@@ -277,6 +382,24 @@ def _install(mod) -> None:
                         f"B={b} idx={j} bs={bs}]",
                         flush=True,
                     )
+                if os.environ.get("ARC_SNAP_PROBE") and b >= 6272:
+                    # md5 chain (r31 root-cause #2 probe): block j = the
+                    # state leaving the GPU toward the pool (cold truth);
+                    # block j+1 = the running state AFTER this step's
+                    # pre-copy (what the forward reads). On a warm resume
+                    # the same two prints at the same B give the warm-side
+                    # truth — equality across the pair localizes the
+                    # corruption to seed-content vs carry vs attn-load.
+                    try:
+                        print(
+                            f"[r31probe p41c-snapmd5 req={req_id} B={b} "
+                            f"blk{j}={_bmd5(state['fc'], kv_cache_config, state['gids'], row_state, j)} "
+                            f"blk{j + 1}={_bmd5(state['fc'], kv_cache_config, state['gids'], row_state, j + 1)}]",
+                            flush=True,
+                        )
+                    except Exception as e:  # noqa: BLE001
+                        print(f"[r31probe p41c-snapmd5-ERR {repr(e)[:80]}]",
+                              flush=True)
         except Exception as e:  # noqa: BLE001
             _warn("snap-failed", repr(e)[:160])
         if not state["live"]:

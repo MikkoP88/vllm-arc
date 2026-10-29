@@ -114,22 +114,43 @@ diverges from C's `b5300ee0…` by exactly this set).
 **r31 leg outcome** (full evidence + root-cause analysis:
 `results/2026-10-29-p3-r31-mamba-live/VERDICT.md`): the mamba chain is LIVE
 end-to-end (snaps→stores→m-keys→joint lookups→seed parks→seed writes), but
-integrity FAILS (5×8k re-hit 0/5 sha, golden len=4096 drift). Root cause #1
-FOUND+FIXED: upstream `mamba_hybrid.py:121` seeds the running-state column
-as `(num_computed−1)//cache_config.block_size` with the ATTENTION block size
-(64) while column units are mamba blocks (896) — a loaded resume lands at
-column 97 instead of 6 and the pre-copy carries a foreign page (p41c wrapper
-corrects the column for seed rows; probe print `p41c-sidx`). Necessary but
-not sufficient — at least one more defect lives in the external-load path,
-which r30 (and C's own champion: their mamba half was equally dead under
-specdec, so their 750 ms bar was APC-only) never exercised: the joint clamp
-(`mamba_hit=0 → 0`) means every pre-r31 "hit" was a vllm-APC shadow.
-Ruled out: fp16 seed-repair asymmetry (E1: repair off → still 0/5); seed
-byte accounting (parks exact 41,189,376; pure-CPU roundtrip). Open
-suspects: attn external-load port onto 0.30 blocks, or mamba seed CONTENT
-(conv-ring `token_bias` rotation semantics of `_copy_mamba_state_block`).
-Interim safe knob: `VLLM_ARC_LMC_MAMBA_SNAP=0` (mamba keys never bank →
-joint 0 → APC-only r30-equivalent posture).
+integrity FAILED (5×8k re-hit 0/5 sha, golden len=4096 drift). Both root
+causes are now FIXED (r32, evidence
+`results/2026-10-29-p3-r32-integrity-fixed/VERDICT.md`; integrity **5/5**):
+
+- **#1 upstream `mamba_hybrid.py:121`** seeds the running-state column as
+  `(num_computed−1)//cache_config.block_size` with the ATTENTION block size
+  (64) while column units are mamba blocks (896) — a loaded resume lands at
+  column 97 instead of 6 and the pre-copy carries a foreign page (p41c
+  wrapper corrects the column for seed rows; probe print `p41c-sidx`).
+- **#2 mid-chunk boundary crossings never materialize in the block table**
+  (p41c snap defect, fixed 2026-10-29): a boundary crossed inside a chunk
+  (8k prompts: the final `[7168,8192)` 1024-token chunk crosses 8064) is
+  skipped by the pre-copy (`bt[7]→bt[9]` directly) and never migrated
+  (postprocess fires only on chunk-end-aligned boundaries) — `bt[j]` is a
+  stale/foreign page, and banking it as the boundary state poisoned every
+  warm resume (the E3 "byte-exact roundtrip" was delivering garbage).
+  Fix: the p41c snap banks ONLY exact chunk-end boundaries
+  (`ncc % bs == 0`); the joint then books the true deepest banked boundary
+  and the warm resume recomputes the identical chunk shape → bit-identical
+  outputs.
+
+Ruled out en route: fp16 seed-repair asymmetry (E1); seed byte accounting;
+conv-ring `token_bias` rotation semantics (bias-0 copies are verbatim —
+proven by kernel source + E4 md5s); attn external-load port (integrity 5/5
+with attn loads live). Interim safe knob retained:
+`VLLM_ARC_LMC_MAMBA_SNAP=0` (mamba keys never bank → joint 0 → APC-only
+r30-equivalent posture).
+
+**r32 clean-boot battery** (full evidence
+`results/2026-10-29-p3-r32-integrity-fixed/`): ALL correctness gates green —
+survival 200/200, spec pos1 0.872, golden 5/5 zero-drift vs the P2 product
+ref (the len=4096 face is a context-sensitive knife-edge: matches the ref in
+the certified gate order; flips deterministically to 99955622 after heavier
+prior traffic or with the snap off — documented, not a defect), integrity
+5/5. Warm-hit 1047.1 ms vs 750 bar FAIL → p43 lane with named mechanisms
+(final-boundary-at-finish snap killing the −1024-token recompute, async
+pinned snaps, seed-load overlap, store-lag-on-immediate-rehit).
 
 ## Build law
 
