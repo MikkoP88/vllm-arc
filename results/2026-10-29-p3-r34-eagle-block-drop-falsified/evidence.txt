@@ -1,0 +1,55 @@
+r34 evidence — raw captures (session-ordered)
+
+=== FIX BOOT cmdline (16:35) ===
+speculative-config {"method":"mtp","num_speculative_tokens":4,"disable_eagle_block_drop":true}
+(kv-transfer-config LMCacheConnectorV1 use_native, --mamba-cache-mode align, --port 8000 all intact —
+the 16:24 boot of this session had launched TRUNCATED from an ssh-mangled backslash; fixed via
+chr(92) patch, then cmdline-verified every boot)
+
+=== FIX BOOT scheduler warning (serve_full.log:502) ===
+(EngineCore pid=4125) WARNING 10-29 16:38:42 [scheduler.py:289] EAGLE trailing prefix-cache block
+dropping is disabled. This is experimental and may affect speculative-token acceptance rates.
+
+=== FIX BOOT boundary + stores (TP0 excerpts) ===
+[r31probe p41c-snap req=cmpl-838d0e72c6f7002d-0-b0b222e9 ncc=8064 B=8064 idx=8 bs=896]
+[r31probe p41c-snap req=cmpl-be92df88f8bbaea3-0-901ffa86 ncc=8064 B=8064 idx=8 bs=896]
+LMCache: Stored 8064 out of total 8064 tokens. size: 0.1307 GB   (x2 ranks)
+LMCache: Stored 896 out of total 896 tokens. size: 0.0384 GB     (x2 ranks)
+grep "Retrieved" -> 0 hits entire boot (warms ride GPU-resident hybrid APC)
+
+=== A/B cells ===
+baseline (drop ON, probe boot): N1 cold 15340.7 sha=7eb70257593da06f; warm med 1390.5 6/6 same sha
+fix (drop OFF, probe boot):    N1 cold 14640.0 sha=7eb70257593da06f; warm med 836.2  6/6 same sha
+N3 (drop OFF): warm1k med 418.8 ms 5/5 sha=8a5edab282632443  GATE<=750 PASS (r33: ~9200 ms)
+N4 (drop OFF): cold 5390.8 / warm[0] 6224.0 / warm[1] 1332.6 / warm[2] 1327.6  sha=9c1623f0d38e28e9 all
+
+=== THE BREAK (drop ON -> OFF comparison, golden=r31_integrity cold-vs-warm-within-run) ===
+run1 (after N3+N4): INTEGRITY 3/5   (2 prompts cold!=warm; detail lines lost to tail -2)
+run2 (rerun):       INTEGRITY 5/5
+run3 (N4 -> golden):   integrity[2]: match=False  5479/5497ms  37a00b32da76 vs 8fa239e95ea3  -> 4/5
+run4 (N4 -> N2 -> golden): [2] match=False 37a00b32da76 vs 8fa239e95ea3 (same wrong value, deterministic)
+                          [3] match=True  d9f601923574 vs d9f601923574 (NEW stable value, was a15739023154)
+                          -> 4/5
+
+=== DISCRIMINATOR r34_disc.py (prompt g2=seed 30303002/8192; N4 cell = seed 202610294/8064 x4 mt=1) ===
+A1 g2 mt=1   875ms ca978112ca1bbdca     (warm-cached)
+B1 g2 mt=64 5260ms 37a00b32da765658
+N4[0..3]     1308/1346/1335/1331ms sha=9c1623f0d38e28e9
+A2 g2 mt=1   861ms 56ee5b508706bf2d     <-- PREFILL_FLIP (same cached request, new bytes)
+B2 g2 mt=64 5271ms 37a00b32da765658     <-- DECODE_STABLE
+PREFILL_FLIP DECODE_STABLE
+
+=== CONTROL (flag reverted, fresh boot 16:57) ===
+N4 -> golden: INTEGRITY 5/5 ([2] back to 8fa239e95ea3; [3] d9f601923574 persists from boot state —
+cross-boot marginal flip class, within-run consistency intact)
+N1 warm med 1390.7 (probe env still on at that point)
+
+=== E4 CLEAN RE-GATE BATTERY (first-traffic, timers-off, 17:03 boot) ===
+regate_r43_n4:         warm 1287.6/1293.1  9c1623f0d38e28e9
+regate_r31_integrity:  INTEGRITY 5/5
+regate_r43_n2:         N2_WARM7168 min=1195.5 med=1257.9 max=1266.5  2b4c342f5433ebe5
+regate_r43_n5:         warm8960 1256.6/1348.3  7eb70257593da06f
+regate_r30_warm5:      WARM5 min=1018.0 med=1021.6 max=5966.2 (first-warm blip)  d03502c43d74a30b
+regate_r43_n1:         N1_WARM5 min=1031.2 med=1033.1 max=1038.3  7eb70257593da06f
+r34_engine_posture.txt: mamba_cache_mode 'align' x1, num_speculative_tokens 4, disable_eagle_block_drop 0,
+                        probe prints 0, "disabled" warning 0, block size 896 x2
