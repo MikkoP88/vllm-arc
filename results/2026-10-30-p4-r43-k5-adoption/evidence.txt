@@ -1,0 +1,55 @@
+0
+4
+large-first: HTTP 200 in 6.09s
+small-after: HTTP 200
+SPEC_GATE {"wall_s": 3.07, "streams_ok": "4/4", "drafts": 185, "draft_tokens": 925, "accepted": 622, "pos": {"0": 0.8919, "1": 0.7622, "2": 0.6324, "3": 0.5622}, "pos1": 0.8919, "acceptance": 0.6724, "mean_acceptance_length": 4.36, "hard": 0.5, "target": 0.85}
+SPEC_GATE log_window: (APIServer pid=2001) INFO 10-29 23:22:51 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 1.00, Accepted throughput: 0.00 tokens/s, Drafted throughput: 0.45 tokens/s, Accepted: 0 tokens, Drafted: 5 tokens, Per-position acceptance rate: 0.000, 0.000, 0.000, 0.000, 0.000, Avg Draft acceptance rate: 0.0%
+SPEC_GATE PASS: pos1=0.8919 >= 0.5 hard, acceptance=0.6724 vs 0.85 target (TARGET MISS — recorded, --strict-target for certification)
+[integrity] seed 101: PASS cold=873c1a7d4813 rehit=873c1a7d4813 chars=916/916
+[integrity] seed 202: PASS cold=a43423a2dffb rehit=a43423a2dffb chars=922/922
+[integrity] seed 303: PASS cold=725780f72fa8 rehit=725780f72fa8 chars=922/922
+[integrity] seed 404: PASS cold=3035cc42e47d rehit=3035cc42e47d chars=922/922
+[integrity] seed 505: PASS cold=3272828b5966 rehit=3272828b5966 chars=928/928
+[determinism] seed 11: PASS 630f74c0ce54
+[determinism] seed 22: PASS fc7c414ef0ce
+[determinism] seed 33: PASS 74704cbaa5a2
+INTEGRITY 5/5 PASS
+DETERMINISM 3/3 PASS
+=== bench_run7n (cert16s4 methodology replica) ===
+agg4x256#1 wall=3.74s aggregate=274.01 tok/s ok_streams=4/4 [256tok/3.7s 256tok/3.7s 256tok/3.7s 256tok/3.7s]
+agg4x256#2 wall=3.37s aggregate=303.48 tok/s ok_streams=4/4 [256tok/3.3s 256tok/3.4s 256tok/3.3s 256tok/3.4s]
+solo200 n=200 dt=2.30s tps=87.13
+solo200 n=200 dt=2.32s tps=86.39
+BENCH_RUN7N_DONE
+=== bench_run7n (cert16s4 methodology replica) ===
+agg4x256#1 wall=3.74s aggregate=273.52 tok/s ok_streams=4/4 [256tok/3.7s 256tok/3.6s 256tok/3.7s 256tok/3.7s]
+agg4x256#2 wall=3.35s aggregate=305.42 tok/s ok_streams=4/4 [256tok/3.4s 256tok/3.4s 256tok/3.4s 256tok/3.4s]
+solo200 n=200 dt=2.31s tps=86.50
+solo200 n=200 dt=2.31s tps=86.40
+BENCH_RUN7N_DONE
+
+=== longctx t1/t2 ===
+[small~600tok] t1 ttft=0.298s wall=0.35s prompt=600 cached=-1
+[small~600tok] t2 ttft=0.313s wall=0.36s prompt=609 cached=-1 (rehit depth -1/609)
+[mid~8ktok] t1 ttft=3.987s wall=4.04s prompt=7950 cached=-1
+[mid~8ktok] t2 ttft=0.848s wall=0.97s prompt=7959 cached=-1 (rehit depth -1/7959)
+[mid~16ktok] t1 ttft=7.238s wall=7.28s prompt=16237 cached=-1
+[mid~16ktok] t2 ttft=0.675s wall=0.89s prompt=16246 cached=-1 (rehit depth -1/16246)
+[long~32ktok] t1 ttft=15.534s wall=15.57s prompt=32081 cached=-1
+[long~32ktok] t2 ttft=1.178s wall=1.55s prompt=32090 cached=-1 (rehit depth -1/32090)
+
+=== prefix ===
+=== bench_prefix (docs ~5k tok, orig=16 churn=112) ===
+cold: n=16 wall=36.9s ttft_med=2.23s ttft_mean=2.25s ttft_min=2.18s ttft_max=2.35s ptok_med=5202 cached_med=-1 cached_n=0/16 ttft_sum=35.9s
+warm: n=16 wall=13.2s ttft_med=0.74s ttft_mean=0.73s ttft_min=0.49s ttft_max=0.82s ptok_med=5202 cached_med=-1 cached_n=0/16 ttft_sum=11.6s
+churn: n=112 wall=282.8s ttft_med=2.47s ttft_mean=2.47s ttft_min=2.44s ttft_max=2.54s ptok_med=5697 cached_med=-1 cached_n=0/112 ttft_sum=276.3s
+rehit: n=16 wall=37.0s ttft_med=2.25s ttft_mean=2.25s ttft_min=2.19s ttft_max=2.35s ptok_med=5202 cached_med=-1 cached_n=0/16 ttft_sum=36.1s
+BENCH_PREFIX_DONE
+
+=== golden k5 (== k4 all cells) ===
+[golden] len=64 sha=63b97ff326763a37 chars=48
+[golden] len=256 sha=9e9d9aa9a5d8b4f8 chars=24
+[golden] len=1024 sha=702a74d2eda92e5d chars=48
+[golden] len=2048 sha=785b74ef78386c11 chars=95
+[golden] len=4096 sha=99955622040dbcc3 chars=48
+GOLDEN_CAPTURED -> /root/build/legs/arc-p4-r43/golden_run_k5.json
