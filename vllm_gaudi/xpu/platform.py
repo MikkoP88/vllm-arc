@@ -99,6 +99,41 @@ _WHEEL_HOOKS = (
 # in-place (_XPU_PATCH_MODULES) — no exec-wrap needed.
 
 
+def _load_wheel_patch(patch_name: str):
+    """Import a _WHEEL_HOOKS patch, standalone when it lives in a sub-package.
+
+    The lmcint kit's ``__init__`` IS the lmcache_integration entry (it
+    imports the heavy vllm_v1_adapter -> lmcache.v1.cache_engine at module
+    level), and two of its files hook lmcache-internal targets that exec
+    MID lmcache package init (detectors.vllm finishes while cache_engine is
+    still executing; torch_ops while lmcache/__init__ is). Importing those
+    patches as regular package submodules would first execute the package
+    ``__init__`` and re-enter the partially initialized lmcache package —
+    the circular-import death of the first p45 image boot (r42). The r30
+    cap sitecustomize loaded these files standalone via
+    spec_from_file_location for eleven legs; same semantics here — one
+    source, two callers. Top-level patch modules (no dot) import normally:
+    their package __init__ is the light patches/__init__.
+    """
+    from importlib import import_module
+    from importlib.util import module_from_spec, spec_from_file_location
+
+    if "." not in patch_name:
+        return import_module(f"vllm_gaudi.xpu.patches.{patch_name}")
+    qualname = f"vllm_gaudi.xpu.patches.{patch_name}"
+    if qualname in sys.modules:
+        return sys.modules[qualname]
+    import vllm_gaudi.xpu.patches as _patches
+
+    path = os.path.join(os.path.dirname(_patches.__file__),
+                        *patch_name.split(".")) + ".py"
+    spec = spec_from_file_location(qualname, path)
+    module = module_from_spec(spec)
+    sys.modules[qualname] = module
+    spec.loader.exec_module(module)
+    return module
+
+
 class _WheelHookFinder:
     """One-shot meta-path finder wrapping the exec of each _WHEEL_HOOKS
     target so its patch module can rebind symbols inside it."""
@@ -129,9 +164,7 @@ class _WheelHookFinder:
                 sys.meta_path.remove(self)  # last hook fired — retire
             patch_name = dict(_WHEEL_HOOKS)[fullname]
             try:
-                from importlib import import_module
-
-                patch = import_module(f"vllm_gaudi.xpu.patches.{patch_name}")
+                patch = _load_wheel_patch(patch_name)
                 patch._install(module)
                 logger.info(
                     "ArcXpuPlatform: wheel hook %s <- patches.%s OK",
