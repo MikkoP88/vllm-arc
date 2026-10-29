@@ -1,0 +1,14 @@
+      1 INFO 10-29 23:00:52 [platform.py:169] ArcXpuPlatform: wheel hook mamba_utils <- patches.mamba_lmcache_glue OK
+      1 INFO 10-29 23:00:39 [platform.py:169] ArcXpuPlatform: wheel hook mamba_utils <- patches.mamba_lmcache_glue OK
+      1 (Worker_TP1 pid=1107) [r43kvfmt] arc interleaved attn pool -> NL_X_NB_BS_NH_TWO_HS (NB=476 BS=896 TWO=2 HS=512)
+      1 (Worker_TP1 pid=1107) INFO 10-29 23:01:39 [platform.py:169] ArcXpuPlatform: wheel hook vllm <- patches.lmcint.lmc_kvfmt_detector OK
+      1 (Worker_TP1 pid=1107) INFO 10-29 23:01:39 [platform.py:169] ArcXpuPlatform: wheel hook torch_ops <- patches.lmcint.lmc_twohs_transfer OK
+      1 (Worker_TP1 pid=1107) INFO 10-29 23:01:39 [platform.py:169] ArcXpuPlatform: wheel hook device_ops <- patches.lmc_xpu_pinned_env OK
+      1 (Worker_TP1 pid=1107) INFO 10-29 23:01:38 [platform.py:169] ArcXpuPlatform: wheel hook lmcache_connector <- patches.lmcache_hma_connector OK
+      1 (Worker_TP1 pid=1107) INFO 10-29 23:01:05 [platform.py:169] ArcXpuPlatform: wheel hook mamba_hybrid <- patches.mamba_hybrid_snap_glue OK
+      1 (Worker_TP1 pid=1107) [33;20m[2026-10-29 23:03:56,409] LMCache WARNING:[0m NL_X_NB_BS_NH_TWO_HS_Spec.__init__ is deprecated: NL_X_NB_BS_NH_TWO_HS is superseded by NL_X_NB_BS_NH_CS (raw 4-D content-size layout) [3m(utils.py:724:lmcache.utils)[0m
+      1 (Worker_TP1 pid=1107) [32;20m[2026-10-29 23:03:56,409] LMCache INFO:[0m Engine KV Format: EngineKVFormat.NL_X_NB_BS_NH_TWO_HS NL x [NB, BS, NH, 2, HS] [3m(detection.py:69:lmcache.v1.gpu_connector.kv_format.detection)[0m
+      1 (Worker_TP0 pid=993) [r43kvfmt] arc interleaved attn pool -> NL_X_NB_BS_NH_TWO_HS (NB=476 BS=896 TWO=2 HS=512)
+      1 (Worker_TP0 pid=993) INFO 10-29 23:01:39 [platform.py:169] ArcXpuPlatform: wheel hook vllm <- patches.lmcint.lmc_kvfmt_detector OK
+      1 (Worker_TP0 pid=993) INFO 10-29 23:01:39 [platform.py:169] ArcXpuPlatform: wheel hook torch_ops <- patches.lmcint.lmc_twohs_transfer OK
+      1 (Worker_TP0 pid=993) INFO 10-29 23:01:39 [platform.py:169] ArcXpuPlatform: wheel hook device_ops <- patches.lmc_xpu_pinned_env OK
