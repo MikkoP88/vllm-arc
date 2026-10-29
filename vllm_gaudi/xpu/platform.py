@@ -56,6 +56,9 @@ _XPU_PATCH_MODULES = (
                                 # large TP AR before serving traffic (r16/r17)
     "gdn_metadata_fastpath",    # p10: steady spec-decode GDN metadata builds
                                 # without blocking H2D (r19-r22a; <=5ms law)
+    "fp8_block_w8a16",          # p44: block-fp8 linear -> fp8_gemm_w8a16 with
+                                # fp16 activations, input quant skipped (r40:
+                                # 3-8x/GEMM decode Ms, fixed-cost W8A8 path)
 )
 
 

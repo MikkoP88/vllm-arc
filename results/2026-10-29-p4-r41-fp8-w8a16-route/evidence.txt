@@ -1,0 +1,68 @@
+r41 evidence — raws (TIMERS-OFF clean boot, first-traffic battery)
+
+Boot: arc-test (vllm-arc:v0.30.0-b70-p41 + cap overlay), serve line =
+r30_serve.sh VERBATIM (r38 k4 posture) + p44 sitecustomize hook; health
+200 first poll. Patch lines in every process:
+  "fp8_block_linear_reroute_ACTIVE ... apply_input_quant=False,
+   apply_block_scaled_mm -> _xpu_C.fp8_gemm_w8a16" (APIserver + 2 workers)
+
+=== run7n invocation 1 ===
+agg4x256#1 wall=3.76s aggregate=272.58 tok/s ok_streams=4/4
+agg4x256#2 wall=3.32s aggregate=308.07 tok/s ok_streams=4/4
+solo200 n=200 dt=2.31s tps=86.64
+solo200 n=200 dt=2.32s tps=86.33
+=== run7n invocation 2 ===
+agg4x256#1 wall=3.68s aggregate=278.12 tok/s
+agg4x256#2 wall=3.41s aggregate=300.60 tok/s
+solo200 n=200 dt=2.32s tps=86.32
+solo200 n=200 dt=2.32s tps=86.31
+(r37 same tools: agg 196.06/209.20, solo 59.07/59.13, dt 3.38-3.39;
+ P2r6-CKPT champion bars: agg#1 254.33 / agg#2 274.41, solo 79.73/79.74
+ dt 2.51)
+
+=== longctx t1 (cold TTFT) / t2 (warm rehit) ===
+600tok:  t1 0.311s  t2 0.310s
+8ktok:   t1 3.729s  t2 1.108s   (r37 5.726 ; parity bar 3.944)
+16ktok:  t1 7.788s  t2 0.922s   (r37 12.074 ; parity bar 8.083)
+32ktok:  t1 16.630s t2 1.426s   (r37 25.288 ; parity bar 17.447)
+prefill rate 7950tok/3.729s = 2132 tok/s (r37 1.27-1.39k; D matrix 1836)
+
+=== spec gate (arc_spec_gate, temp0 4-stream) ===
+SPEC_GATE pos=[0.8919 0.7622 0.6324 0.5622] pos1=0.8919 acceptance=0.6724
+mean_acceptance_length=4.36 hard=0.5 target=0.85 -> PASS (target MET)
+r38 same tool: [0.910/0.806/0.682/0.632] agg 0.7575
+run7n-window counters (serve log): solo 21:36:05 mean len 4.14
+[0.845/0.703/0.584/0.525]; agg 21:38:15 4.31 [0.891/0.759/0.616/0.544];
+21:38:25 4.87 [0.926/0.833/0.740/0.696]
+
+=== correctness ===
+survival: flip-first HTTP 200 in 6.60s; small-after 200
+determinism: seeds 11/22/33 twice each -> 3/3 identical sha
+integrity: 5/5 PASS (8k seeded cold sha == re-hit sha):
+  101 f442622653d3 / 202 994e2d7892e2 / 303 7404f9398229
+  404 0ec53bf373c9 / 505 f037f7771110
+golden vs banked ref: 256+1024 SAME; 64/2048/4096 DRIFT (length-class
+shift = EOS timing under improved numerics; re-bank owed at cert)
+
+=== prefix (docs ~5k tok, churn=112) ===
+cold n=16 med 2.51s ; warm n=16 med 0.99s ; churn 112 med 2.72s ;
+rehit-after-churn med 1.17s
+
+=== step decomposition (arithmetic) ===
+solo: dt 2.315, emitted 4.14 -> ~48.3 steps -> c1 step ~47-48 ms
+  (r37 63-70; D 43; residual -10% vs D)
+agg#2: 1024 tok / emitted ~4.3-4.9 -> c4 step ~53-58 ms (D ~46); emitted
+  advantage covers residual -> aggregate bar beaten anyway
+
+=== patch (product form, this repo) ===
+vllm_gaudi/xpu/patches/fp8_block_w8a16.py (+ platform.py registration).
+Leg form: same file docker-cp'd to arc-test:/root/r30cap/ + one hook in
+the cap sitecustomize (target vllm.model_executor.kernels.linear.
+scaled_mm.xpu, pass_module=True). Kill-switch VLLM_ARC_FP8_W8A16_DISABLE=1.
+In-container pre-boot smoke: "[xpu] _install OK", flag flipped,
+apply_block_scaled_mm route relerr 4.95e-4 vs fp32 dequant-block ref
+(gdn_out shape M=5).
+
+=== rig end-state ===
+arc-test stopped; radiance-test W14 restored HEALTH=200 (poll 3,
+w14_restore_r41.log). Artifacts: /root/build/legs/arc-p4-r41/ + this dir.
