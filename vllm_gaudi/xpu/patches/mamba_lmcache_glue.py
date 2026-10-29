@@ -138,6 +138,13 @@ def _lmc_snap_boundary(
             lst.append((aligned_tokens, cpu))
         while len(lst) > _LMC_BOUNDARY_PER_REQ:
             lst.pop(0)
+        if os.environ.get("ARC_SNAP_PROBE"):  # r31 diagnostic (silent off)
+            print(
+                f"[r31probe snap req={req_id} B={aligned_tokens} "
+                f"bytes={total} reg_len={len(lst)} "
+                f"global={len(_LMC_BOUNDARY_REGISTRY)}]",
+                flush=True,
+            )
         # Global FIFO bound: the finishing request's store pops its own
         # entry at wait_for_save; anything the store never consumed is
         # retired oldest-first here (a dropped entry only turns a later
@@ -219,6 +226,16 @@ def _arc_p41_preprocess_mamba(
     import vllm.v1.worker.mamba_utils as _mu
 
     fused = _mu._resolve_fused_precopy(align_ctx)
+
+    if os.environ.get("ARC_SNAP_PROBE"):  # r31 diagnostic (silent off)
+        _n = globals().get("_arc_p41_calls", 0) + 1
+        globals()["_arc_p41_calls"] = _n
+        if _n <= 6:
+            print(
+                f"[r31probe ppm#{_n} reqs={len(input_batch.req_ids)} "
+                f"fused={fused is not None} align_ctx={align_ctx is not None}]",
+                flush=True,
+            )
     mamba_group_ids = copy_bufs.mamba_group_ids
     mamba_spec = copy_bufs.mamba_spec
     num_speculative_blocks = mamba_spec.num_speculative_blocks
@@ -336,6 +353,14 @@ def _arc_p41_preprocess_mamba(
                 boundary_rows.append(
                     (req_id, _lmc_b, _lmc_b_idx, req_state)
                 )
+                if os.environ.get("ARC_SNAP_PROBE"):  # r31 diagnostic
+                    print(
+                        f"[r31probe carry req={req_id} ncc="
+                        f"{req_state.num_computed_tokens} B={_lmc_b} "
+                        f"idx={_lmc_b_idx} prev={prev_state_idx} "
+                        f"curr={curr_state_idx} bs={block_size}]",
+                        flush=True,
+                    )
 
     if fused is not None:
         fused.state_idx.copy_to_gpu(num_reqs)
@@ -395,6 +420,33 @@ def _install(mod) -> None:
     _arc_p41_preprocess_mamba._arc_p41 = True
     mod.preprocess_mamba = _arc_p41_preprocess_mamba
     mod.cleanup_mamba_state_idx = _cleanup_with_seeds
+
+    if os.environ.get("ARC_SNAP_PROBE"):  # r31 diagnostic (silent off)
+        # Which specdec-path mamba_utils entry points actually run under
+        # MTP k4 + align (the preprocess_mamba carry branch is dead there)?
+        for _fname in (
+            "preprocess_mamba_all_specdec",
+            "postprocess_mamba_align_gpu",
+            "stage_postprocess_inputs_to_gpu",
+            "postprocess_mamba_all",
+        ):
+            _orig = getattr(mod, _fname, None)
+            if _orig is None:
+                continue
+
+            def _mk(_name, _fn):
+                def _w(*a, **k):
+                    _r = _fn(*a, **k)
+                    _c = globals().setdefault("_arc_p41_probe_calls", {})
+                    _c[_name] = _c.get(_name, 0) + 1
+                    if _c[_name] <= 4:
+                        print(f"[r31probe {_name}#{_c[_name]}]", flush=True)
+                    return _r
+
+                return _w
+
+            setattr(mod, _fname, _mk(_fname, _orig))
+
     logger.info(
         "arc-p41 mamba LMCache glue installed (registry caps %d/%d, "
         "fp16_seed_repair=%s)",

@@ -74,6 +74,63 @@ Dockerfile dep line gains both at next image build. And the env set needs
 without a fixed seed scheduler/workers derive different hashes → 100%
 lookup misses despite clean stores) — already in r30_serve.sh line 8.
 
+## r31 fork deltas on the C adapter (2026-10-29 — breaks byte-preservation,
+provenance per site; live evidence `results/2026-10-29-p3-r31-mamba-live/`)
+
+The C-adapter port proved the mamba half LIVE under our posture (p41c snaps
+fire on the V2 model-states site; `LMC mamba store` ×2 ranks; joint lookups
+`attn_hit>0 ∧ mamba_hit>0` → `LMCache hit tokens` > 0 for the first time).
+Getting there required fixing a C-v136 arithmetic assumption our spec breaks:
+
+- **The 256-byte floor bug family (4 sites, floor→ceil).** C v136's object
+  sizing computes `page_size_bytes × num_layers // chunk_size`-family floors;
+  our true mamba page is 858,112 B/layer (conv 71,680 + ssm 786,432 fp16),
+  ×48 layers = 41,189,376 = 896×45,970 + **256** — the floor truncated the
+  deepest layer's last 256 state bytes (store side logged
+  `Mamba store seed size mismatch: 41189376 vs obj 41189120` ×56; the
+  initial ceil edits at `get_shape`/`_init_mamba_engine` did NOT cure it
+  because the LIVE site is the adapter's post-init "Mamba dtype page
+  override" `metadata.kv_shape` rewrite — instrumentation showed the same
+  connector id mutate psb 917,504→858,112 after init). Fixed at all four
+  sites (`-(-a*b//c)`): `MambaPageConnector.get_shape`,
+  `_init_mamba_engine` kv_shape, the post-init dtype-page-override
+  `metadata.kv_shape` (live), scheduler-side mamba lookup-client metadata.
+  Ceil is REQUIRED, not cosmetic: floor would corrupt the deepest layer's
+  last 256 state bytes on every load.
+- **Prefix-copy + zero-tail in `batched_from_gpu`.** Ceil-sized dst vs exact
+  src: copy `dst[:src.numel()] = src`, zero the pad tail (guard still raises
+  on true overflow `src > dst`).
+- **Load-side seed slice.** Retrieved ceil-sized seeds (41,190,016) park
+  sliced to exactly `page_size_bytes × num_layers` (41,189,376); undersized
+  stays a HARD error (real truncation). Without this the engine 500s
+  (`Mamba seed size 41190016 != expected 41189376`) on the first mamba load.
+- Probe-gated r31 instrumentation (`ARC_SNAP_PROBE`): connector/engine init
+  lines, `bfg` copy lines, snap/ncc prints — silent when the env is unset.
+
+All four deltas are commented `arc r31 fork delta (2026-10-29)` in
+`vllm_gaudi/xpu/patches/lmcint/vllm_v1_adapter.py` (deployed md5 lineage
+diverges from C's `b5300ee0…` by exactly this set).
+
+**r31 leg outcome** (full evidence + root-cause analysis:
+`results/2026-10-29-p3-r31-mamba-live/VERDICT.md`): the mamba chain is LIVE
+end-to-end (snaps→stores→m-keys→joint lookups→seed parks→seed writes), but
+integrity FAILS (5×8k re-hit 0/5 sha, golden len=4096 drift). Root cause #1
+FOUND+FIXED: upstream `mamba_hybrid.py:121` seeds the running-state column
+as `(num_computed−1)//cache_config.block_size` with the ATTENTION block size
+(64) while column units are mamba blocks (896) — a loaded resume lands at
+column 97 instead of 6 and the pre-copy carries a foreign page (p41c wrapper
+corrects the column for seed rows; probe print `p41c-sidx`). Necessary but
+not sufficient — at least one more defect lives in the external-load path,
+which r30 (and C's own champion: their mamba half was equally dead under
+specdec, so their 750 ms bar was APC-only) never exercised: the joint clamp
+(`mamba_hit=0 → 0`) means every pre-r31 "hit" was a vllm-APC shadow.
+Ruled out: fp16 seed-repair asymmetry (E1: repair off → still 0/5); seed
+byte accounting (parks exact 41,189,376; pure-CPU roundtrip). Open
+suspects: attn external-load port onto 0.30 blocks, or mamba seed CONTENT
+(conv-ring `token_bias` rotation semantics of `_copy_mamba_state_block`).
+Interim safe knob: `VLLM_ARC_LMC_MAMBA_SNAP=0` (mamba keys never bank →
+joint 0 → APC-only r30-equivalent posture).
+
 ## Build law
 
 `build_lmcache_arc.sh` (rig host): fresh sdist extract → md5 guard vs the

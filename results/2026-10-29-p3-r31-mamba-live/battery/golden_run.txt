@@ -1,0 +1,6 @@
+[golden] len=64 sha=b0efe294733eb82c chars=156
+[golden] len=256 sha=9e9d9aa9a5d8b4f8 chars=24
+[golden] len=1024 sha=702a74d2eda92e5d chars=48
+[golden] len=2048 sha=5b9a5168ae023dcb chars=52
+[golden] len=4096 sha=99955622040dbcc3 chars=48
+GOLDEN_CAPTURED -> /root/build/legs/arc-p3-r30/golden_run.json

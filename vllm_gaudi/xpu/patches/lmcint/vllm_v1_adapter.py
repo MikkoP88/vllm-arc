@@ -732,6 +732,13 @@ class MambaPageConnector(GPUConnectorInterface):
         self.tokens_per_page = tokens_per_page
         self.chunk_size = chunk_size
         self.num_layers = num_layers
+        if os.environ.get("ARC_SNAP_PROBE"):  # r31 diagnostic (silent off)
+            print(
+                f"[r31probe MambaPageConnector init id={id(self)} "
+                f"psb={page_size_bytes} tpp={tokens_per_page} "
+                f"cs={chunk_size} L={num_layers} G={num_groups}]",
+                flush=True,
+            )
         # llm-scaler LMC fix (2026-10-09): number of mamba kv-cache groups
         # sharing the pool storage. Each group owns a DIFFERENT page id for
         # the same token chunk, so one MemoryObj carries num_groups pages
@@ -752,12 +759,20 @@ class MambaPageConnector(GPUConnectorInterface):
         # mamba layer across all groups). v136: boundary objects are
         # registry/seed BYTES, not pool reads, but the sizing law is the
         # same: one page per layer.
+        # arc r31 fork delta (2026-10-29): CEIL, not floor — the C v136
+        # floor silently truncated the seed when page_size_bytes *
+        # num_layers is not a tokens_per_page multiple (our 0.30 spec:
+        # 858112 * 48 = 896*45970 + 256; floor dropped the deepest
+        # layer's last 256 state bytes on every store/load round trip).
         return torch.Size(
             (
                 1,
                 1,
                 num_tokens,
-                self.page_size_bytes * self.num_layers // self.tokens_per_page,
+                -(
+                    -self.page_size_bytes * self.num_layers
+                    // self.tokens_per_page
+                ),
             )
         )
 
@@ -839,12 +854,43 @@ class MambaPageConnector(GPUConnectorInterface):
             if seeds is not None:
                 dst = memory_obj.tensor.view(torch.uint8).reshape(-1)
                 src = seeds[i].to(dst.device, non_blocking=False)
-                if src.numel() != dst.numel():
+                if os.environ.get("ARC_SNAP_PROBE"):  # r31 diagnostic
+                    print(
+                        f"[r31probe bfg id={id(self)} psb={self.page_size_bytes}"
+                        f" obj={tuple(memory_obj.tensor.shape)} "
+                        f"src={src.numel()} dst={dst.numel()} span=({start},{end})]",
+                        flush=True,
+                    )
+                # arc r31 fork delta (2026-10-29): the C v136 object sizing
+                # FLOORS page_size_bytes*num_layers into chunk_size units,
+                # which truncates the seed whenever the product is not a
+                # chunk multiple (our 0.30 spec: 858112 B/page * 48 layers
+                # = 41189376 = 896*45970 + 256 — floor dropped the last 256
+                # bytes of the deepest layer's state and this guard raised
+                # "seed size mismatch" on every store, skipping the attn
+                # store too per the ordering law). kv_shape now CEILS (see
+                # _init_mamba_engine), so obj >= seed with a <chunk_size
+                # zero pad tail: copy the prefix, zero the pad. The pad is
+                # never interpreted — every consumer (_lmc_seed_write on
+                # load, the store pack on save) slices by layout offsets.
+                if src.numel() > dst.numel() or (
+                    src.numel() < dst.numel()
+                    and dst.numel() - src.numel() > (end - start)
+                ):
                     raise RuntimeError(
                         "Mamba store seed size mismatch: "
-                        f"{src.numel()} vs obj {dst.numel()}"
+                        f"{src.numel()} vs obj {dst.numel()} "
+                        f"shape={tuple(memory_obj.tensor.shape)} "
+                        f"dtype={memory_obj.tensor.dtype} "
+                        f"meta={getattr(memory_obj, 'metadata', None)} "
+                        f"span=({start},{end}) tpp={self.tokens_per_page} "
+                        f"psb={self.page_size_bytes} L={self.num_layers}"
                     )
-                dst.copy_(src)
+                if src.numel() == dst.numel():
+                    dst.copy_(src)
+                else:
+                    dst[: src.numel()].copy_(src)
+                    dst[src.numel() :].zero_()
             else:
                 self.from_gpu(memory_obj, start, end, **kwargs)
 
@@ -889,6 +935,15 @@ def _init_mamba_engine(
     follows the total layer count, not the group count.
     """
     engine_name = f"{ENGINE_NAME}-mamba"
+    if os.environ.get("ARC_SNAP_PROBE"):  # r31 diagnostic (silent off)
+        _cached = LMCacheEngineBuilder.get(engine_name)
+        print(
+            f"[r31probe _init_mamba_engine name={engine_name} "
+            f"cached={'yes id=' + str(id(_cached)) if _cached else 'no'} "
+            f"psb={page_size_bytes} tpp={tokens_per_page} "
+            f"L={num_layers} G={num_groups}]",
+            flush=True,
+        )
     if curr_engine := LMCacheEngineBuilder.get(engine_name):
         return curr_engine
 
@@ -935,11 +990,14 @@ def _init_mamba_engine(
     chunk_size = tokens_per_page
     # llm-scaler v136: one stored chunk = one page per mamba LAYER (all
     # groups), so the MemoryObj must hold num_layers pages of bytes.
+    # arc r31 fork delta (2026-10-29): CEIL matches get_shape — floor
+    # truncates non-chunk-multiple page totals (858112*48 = 896*45970+256
+    # on our 0.30 spec); see MambaPageConnector.get_shape.
     kv_shape = (
         1,
         1,
         chunk_size,
-        max(1, page_size_bytes * num_layers // chunk_size),
+        max(1, -(-page_size_bytes * num_layers // chunk_size)),
         1,
     )
     rpc_engine_id, kv_connector_extra = _get_rpc_identity(vllm_config)
@@ -1201,9 +1259,11 @@ class LMCacheConnectorV1Impl:
                         self._mamba_tokens_per_page,
                         max(
                             1,
-                            self._mamba_page_size_bytes
-                            * len(self._mamba_layer_names)
-                            // self._mamba_tokens_per_page,
+                            -(
+                                -self._mamba_page_size_bytes
+                                * len(self._mamba_layer_names)
+                                // self._mamba_tokens_per_page
+                            ),
                         ),
                         1,
                     ),
@@ -1557,15 +1617,21 @@ class LMCacheConnectorV1Impl:
                         num_blocks,
                     )
                     self._mamba_page_size_bytes = layer_page_bytes
+                    # arc r31 fork delta (2026-10-29): CEIL, not floor —
+                    # 858112 * 48 = 896*45970 + 256; the floor form dropped
+                    # the deepest layer's last 256 state bytes from every
+                    # stored/loaded object (matches get_shape/_init above).
                     self.mamba_engine.metadata.kv_shape = (
                         1,
                         1,
                         self._mamba_tokens_per_page,
                         max(
                             1,
-                            layer_page_bytes
-                            * len(self._mamba_layer_names)
-                            // self._mamba_tokens_per_page,
+                            -(
+                                -layer_page_bytes
+                                * len(self._mamba_layer_names)
+                                // self._mamba_tokens_per_page
+                            ),
                         ),
                         1,
                     )
@@ -1803,11 +1869,19 @@ class LMCacheConnectorV1Impl:
                         f"{self._lmcache_chunk_size} tokens, "
                         f"seed_end={seed_end}, B={b_tokens}"
                     )
-                if seed.numel() != _seed_bytes_expected:
+                # arc r31 fork delta (2026-10-29): with ceil-sized objects
+                # (see get_shape / dtype-page-override kv_shape) the
+                # retrieved seed carries a trailing zero pad of up to
+                # chunk_size-1 bytes; slice it off so the parked seed is
+                # exactly page_size_bytes * num_layers. Undersized seeds
+                # stay a hard error (real truncation/corruption).
+                if seed.numel() < _seed_bytes_expected:
                     raise RuntimeError(
                         f"Mamba seed size {seed.numel()} != expected "
                         f"{_seed_bytes_expected} for req {request.req_id}"
                     )
+                if seed.numel() > _seed_bytes_expected:
+                    seed = seed[:_seed_bytes_expected].clone()
                 _LMC_SEED_OVERRIDE[request.req_id] = (b_tokens, seed)
                 logger.debug(
                     "LMC mamba seed parked req=%s B=%d bytes=%d",

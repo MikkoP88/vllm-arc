@@ -1,6 +1,32 @@
 """arc p41b — LMCacheConnectorV1 HMA + lmcache-0.5.5 compat port
++ arc p42 — lookup-elide / lookup-memo (D v139 extyield2 port)
 (vllm-side connector glue; installed via sitecustomize exec_module hook
 on `vllm.distributed.kv_transfer.kv_connector.v1.lmcache_connector`).
+
+p42 (r31, 2026-10-28): the r30 warm-hit gate landed at median 755.1 ms
+vs the 750 ms bar with sha-verified full hits — the adder is the same
+one D's probe29 closed (results/2026-10-21-probe29-lookupidle): the
+per-call ZMQ lookup round trips (attn pair + v136 joint mamba pair,
+1.6–3.5 calls/request), paid even when the answer is 0. Port of D's
+extyield2 v139 guards onto the p41b wrapper override (the engine-side
+attrs all verified in the C vendored adapter: _requests_priority :1338,
+load_specs :1295, _lmc_async_pending :1311, async_loading :1139,
+kv_role :1011, producer corner :2463): (1) LOOKUP-ELIDE — engine holds
+a prefix AND residual <= VLLM_ARC_LOOKUP_ELIDE (default 0 = off, 0
+disables) → skip both lookups, natural-yield LoadSpec, discard pending,
+return 0 (byte-equivalent to the declined path minus the round trips;
+cold faces never elide; saturation form rejected — misses
+ncc=5120/5201). DEFAULT FLIPPED 4096→0 (r31 disposition, 2026-10-28):
+elide was scoped when every warm answer was provably 0 (APC-only world)
+and the round trips were pure loss; with p40d (torch-baseline KV
+transfer → real attn stores) + p41c (live-site boundary snaps → real
+joint loads) the same residual<=4096 faces now claim real bytes (the
+8192 gate face: APC 7168, joint 8064 — residual 1024 would elide and
+FORFEIT the load), so the guard only remains as an explicit opt-in;
+(2) LOOKUP-MEMO — per-rid post-clamp hit memo replaying
+the resolved depth through the same LoadSpec/pending tail (incl.
+full-prompt-hit −1), async-mode only, kill-switch
+VLLM_ARC_LOOKUP_MEMO=0.
 
 TWO defects cured (r30 first LMCache leg, 2026-10-28), both with the C
 champion (llm-scaler-exp v1.2.35 = vllm 0.30 + lmcache 0.5.5) as the
@@ -140,8 +166,11 @@ def _install(mod) -> None:
 
     from vllm.distributed.kv_transfer.kv_connector.v1.base import SupportsHMA
 
+    _logger = getattr(mod, "logger", None)
+
     class LMCacheConnectorV1(_base, SupportsHMA):
-        """arc p41b: HMA-capable LMCacheConnectorV1 (C v1.2.35 deltas)."""
+        """arc p41b: HMA-capable LMCacheConnectorV1 (C v1.2.35 deltas)
+        + arc p42: lookup-elide / lookup-memo (D v139 extyield2 port)."""
 
         _arc_p41b = True
 
@@ -161,14 +190,130 @@ def _install(mod) -> None:
             WAITING_FOR_REMOTE_KVS handshake: a dedicated no-forward step
             performs the load, get_finished reports completion, and only then
             is the forward scheduled.
+
+            arc p42 lookup-elide (D v139 extyield2 port; probe29 law:
+            the flat warm/t2 adder is the PER-CALL ZMQ LOOKUP ROUND
+            TRIPS — attn pair + v136 joint mamba pair, 1.6–3.5
+            calls/request — paid even when the answer is 0 and nothing
+            will be claimed; claim == idle == decline). When the engine
+            already holds a prefix (num_computed_tokens > 0) and the
+            residual (request.num_tokens - num_computed_tokens) is
+            within VLLM_ARC_LOOKUP_ELIDE (default 0 = off; r31: real
+            joint loads exist, elide would forfeit them — opt-in only),
+            skip BOTH lookups entirely, write the natural-yield
+            LoadSpec, and return 0 — byte-equivalent outcome to the
+            declined path minus the round trips. Cold/evicted faces
+            (num_computed_tokens == 0) never elide. Saturation-form
+            elision was REJECTED upstream of this port (misses the
+            ncc=5120/5201 face); only the residual form catches it.
+
+            arc p42 lookup-memo (same D port; kill-switch
+            VLLM_ARC_LOOKUP_MEMO=0): per-request post-clamp hit memo —
+            repeat scheduler calls replay the resolved depth through
+            the same LoadSpec/pending tail (incl. the full-prompt-hit
+            −1) without re-paying the round trips. Async-mode only;
+            never returns more than the inner call resolved for the
+            same depth.
             """
-            num_tokens = self._lmcache_engine.get_num_new_matched_tokens(
+            eng = self._lmcache_engine
+
+            # kv_producer corner: preserve inner behavior exactly (it
+            # returns 0 immediately without lookups when producer reuse
+            # is unsupported) — D's wrapper guards this before anything.
+            if eng.kv_role == "kv_producer" and not hasattr(
+                eng.lookup_client, "supports_producer_reuse"
+            ):
+                num_tokens = eng.get_num_new_matched_tokens(
+                    request, num_computed_tokens
+                )
+                return num_tokens, False
+
+            # inner bookkeeping the elided/replayed paths must keep
+            eng._requests_priority[request.request_id] = request.priority
+
+            try:
+                _elide_tok = int(
+                    os.environ.get("VLLM_ARC_LOOKUP_ELIDE", "0")
+                )
+            except ValueError:
+                _elide_tok = 0
+            if (
+                _elide_tok > 0
+                and num_computed_tokens > 0
+                and request.num_tokens - num_computed_tokens <= _elide_tok
+            ):
+                from vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.vllm_v1_adapter import (
+                    LoadSpec,
+                )
+
+                if _logger is not None:
+                    _logger.info(
+                        "arc p42 lookup-elide: req=%s tot=%d engine=%d "
+                        "residual=%d <= %d -> skip zmq lookups",
+                        request.request_id,
+                        request.num_tokens,
+                        num_computed_tokens,
+                        request.num_tokens - num_computed_tokens,
+                        _elide_tok,
+                    )
+                eng.load_specs[request.request_id] = LoadSpec(
+                    vllm_cached_tokens=num_computed_tokens,
+                    lmcache_cached_tokens=num_computed_tokens,
+                    can_load=False,
+                )
+                eng._lmc_async_pending.discard(request.request_id)
+                return 0, False
+
+            _memo_on = (
+                os.environ.get("VLLM_ARC_LOOKUP_MEMO", "1") != "0"
+                and getattr(eng, "async_loading", False)
+            )
+            _memo = None
+            if _memo_on:
+                _memo = getattr(self, "_arc_p42_memo", None)
+                if _memo is None:
+                    _memo = self._arc_p42_memo = {}
+                if len(_memo) > 1024:
+                    _memo.clear()
+                _hit = _memo.get(request.request_id)
+                if _hit is not None:
+                    from vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.vllm_v1_adapter import (
+                        LoadSpec,
+                    )
+
+                    _need = _hit - num_computed_tokens
+                    if _hit >= request.num_tokens:
+                        _need -= 1
+                    if _logger is not None:
+                        _logger.info(
+                            "arc p42 memo-hit: req=%s hit=%d engine=%d need=%d",
+                            request.request_id,
+                            _hit,
+                            num_computed_tokens,
+                            _need,
+                        )
+                    eng.load_specs[request.request_id] = LoadSpec(
+                        vllm_cached_tokens=num_computed_tokens,
+                        lmcache_cached_tokens=_hit,
+                        can_load=False,
+                    )
+                    if _need <= 0:
+                        eng._lmc_async_pending.discard(request.request_id)
+                        return 0, False
+                    eng._lmc_async_pending.add(request.request_id)
+                    num_tokens = _need
+                    load_kv_async = True
+                    return num_tokens, load_kv_async
+
+            num_tokens = eng.get_num_new_matched_tokens(
                 request, num_computed_tokens
             )
+            if _memo_on and _memo is not None and num_tokens is not None:
+                _memo[request.request_id] = num_tokens + num_computed_tokens
             load_kv_async = (
                 num_tokens is not None
                 and num_tokens > 0
-                and request.request_id in self._lmcache_engine._lmc_async_pending
+                and request.request_id in eng._lmc_async_pending
             )
             return num_tokens, load_kv_async
 
