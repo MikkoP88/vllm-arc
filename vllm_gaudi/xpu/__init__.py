@@ -38,6 +38,25 @@ def register():
         # whatever core resolves on its own.
         return None
 
+    # Wheel-module exec hooks (P3 glues' product wiring, platform.py
+    # _WHEEL_HOOKS): inserted at the earliest per-process moment — before
+    # any v1/lmcache worker module imports — and importing nothing, so it
+    # cannot trip the circularity the in-place patches above hit. Each hook
+    # fires once at its target's first import.
+    try:
+        from vllm_gaudi.xpu.platform import _install_wheel_hooks
+
+        _install_wheel_hooks()
+    except Exception as e:  # noqa: BLE001 — must not break platform resolution
+        try:
+            from vllm.logger import init_logger
+
+            init_logger("vllm.platforms.arc").warning(
+                "ArcXpuPlatform: wheel-hook install failed at register(): "
+                "%r", e)
+        except Exception:  # noqa: BLE001
+            pass
+
     # XPU graph-safety patches (defect-b family, plan Appendix C): installed
     # in every vllm process on Arc hosts before worker modules bind their
     # classes. In-place class patching survives later ``from ... import``
