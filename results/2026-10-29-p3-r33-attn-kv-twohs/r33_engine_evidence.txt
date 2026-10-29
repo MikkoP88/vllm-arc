@@ -1,0 +1,16 @@
+      1 (Worker_TP1 pid=1232) [r43xfer] TWO_HS interleaved branch live: NB=476 BS=896 L=17 H=512 nslots=896 dir=D2H
+      1 (Worker_TP1 pid=1232) [r43kvfmt] arc interleaved attn pool -> NL_X_NB_BS_NH_TWO_HS (NB=476 BS=896 TWO=2 HS=512)
+      1 (Worker_TP1 pid=1232) [32;20m[2026-10-29 15:32:26,397] LMCache INFO:[0m [req_id=cmpl-9deb54fcfc0b8648-0-9ff331b5] Retrieved 7168 out of 7168 required tokens (from 7168 total tokens). size: 0.1162 gb, cost 185.0662 ms, throughput: 0.6279 GB/s; [3m(cache_engine.py:962:lmcache.v1.cache_engine)[0m
+      1 (Worker_TP1 pid=1232) [32;20m[2026-10-29 15:32:24,099] LMCache INFO:[0m [req_id=cmpl-ba7f9ad99862af2e-0-aeaee571] Retrieved 7168 out of 7168 required tokens (from 7168 total tokens). size: 0.1162 gb, cost 188.2049 ms, throughput: 0.6175 GB/s; [3m(cache_engine.py:962:lmcache.v1.cache_engine)[0m
+      1 (Worker_TP1 pid=1232) [32;20m[2026-10-29 15:32:21,752] LMCache INFO:[0m [req_id=cmpl-86bee4a1674388b8-0-8dc3b0fb] Retrieved 7168 out of 7168 required tokens (from 7168 total tokens). size: 0.1162 gb, cost 189.1048 ms, throughput: 0.6145 GB/s; [3m(cache_engine.py:962:lmcache.v1.cache_engine)[0m
+      1 (Worker_TP0 pid=1118) [r43xfer] TWO_HS interleaved branch live: NB=476 BS=896 L=17 H=512 nslots=896 dir=D2H
+      1 (Worker_TP0 pid=1118) [r43kvfmt] arc interleaved attn pool -> NL_X_NB_BS_NH_TWO_HS (NB=476 BS=896 TWO=2 HS=512)
+      1 (Worker_TP0 pid=1118) [32;20m[2026-10-29 15:32:26,399] LMCache INFO:[0m [req_id=cmpl-9deb54fcfc0b8648-0-9ff331b5] Retrieved 7168 out of 7168 required tokens (from 7168 total tokens). size: 0.1162 gb, cost 186.6634 ms, throughput: 0.6226 GB/s; [3m(cache_engine.py:962:lmcache.v1.cache_engine)[0m
+      1 (Worker_TP0 pid=1118) [32;20m[2026-10-29 15:32:24,099] LMCache INFO:[0m [req_id=cmpl-ba7f9ad99862af2e-0-aeaee571] Retrieved 7168 out of 7168 required tokens (from 7168 total tokens). size: 0.1162 gb, cost 187.5528 ms, throughput: 0.6196 GB/s; [3m(cache_engine.py:962:lmcache.v1.cache_engine)[0m
+      1 (Worker_TP0 pid=1118) [32;20m[2026-10-29 15:32:21,751] LMCache INFO:[0m [req_id=cmpl-86bee4a1674388b8-0-8dc3b0fb] Retrieved 7168 out of 7168 required tokens (from 7168 total tokens). size: 0.1162 gb, cost 187.9023 ms, throughput: 0.6185 GB/s; [3m(cache_engine.py:962:lmcache.v1.cache_engine)[0m
+1f3e97d33cc8c0875c68138ff44b2e4b  /root/build/r30/patches/lmcint/__init__.py
+6fd9f127064c711df80e023ad5ffad12  /root/build/r30/patches/lmcint/lmc_kvfmt_detector.py
+46c33de7d913693b6bc5ce594fac2a4c  /root/build/r30/patches/lmcint/lmc_twohs_transfer.py
+b5300ee017ce5e3c833b0d438372066b  /root/build/r30/patches/lmcint/utils.py
+79e8dbd8e410db7affffad5b9af7b85d  /root/build/r30/patches/lmcint/vllm_v1_adapter.py
+8064c3052216b0170b47688630346c83  /root/build/r30/r30_sitecustomize.py

@@ -152,6 +152,36 @@ prior traffic or with the snap off — documented, not a defect), integrity
 (final-boundary-at-finish snap killing the −1024-token recompute, async
 pinned snaps, seed-load overlap, store-lag-on-immediate-rehit).
 
+## r33 attn-KV format fix (2026-10-29 — per-token K/V interleaved pool;
+byte-true `NL_X_NB_BS_NH_TWO_HS` path; `vllm_gaudi/xpu/patches/lmcint/`,
+NOT wheel patches; full evidence `results/2026-10-29-p3-r33-attn-kv-twohs/`)
+
+The N2/N4-class warm re-hit integrity break root-caused to the attn pool's
+GEOMETRY, not the mamba half (r31/r32): the FA-XPU pool is ONE stacked
+tensor per layer `(NB, 2, BS, kvdim)` whose strides make the PHYSICAL order
+`(NB, BS tokens, K/V, kvdim)` — per-token K/V interleaving; a K-plane
+tensor view of it is impossible. lmcache could neither DETECT nor EXECUTE
+that layout: the raw rank-4 pool lands on the fused-CS branch whose slot
+model folds every page P onto P//2 (verified 8/8 aliases), and both XPU
+transfer backends lack the interleaved branch — the native SYCL
+`multi_layer_kv_transfer` implements 3 GQA formats + MLA only (CUDA has the
+`NL_X_NB_BS_NH_TWO_HS` branch at mem_kernels.cu:310; the SYCL port never
+got it — raises `Unsupported non-MLA`), and the torch fallback (the LIVE
+path under p40d) folds it again via its generic `(2, page_buffer_size,
+hidden)` half-plane view. Three kit files close the chain (all
+sitecustomize source-overrides; installed tree untouched):
+
+| patch | target | content |
+|---|---|---|
+| `lmcint/vllm_v1_adapter.py` `_arc_attn_pool_view` + seam transforms (r43) | every site handing attn pools to lmcache (register, load, store ×6) | contiguous ZERO-COPY 5-D view `pool.permute(0,2,1,3).reshape(NB, BS, 1, TWO, kvdim)` (permute of the non-contiguous pool IS contiguous in (NB,BS,K/V,kvdim) order; same storage/data_ptr). |
+| `lmcint/lmc_kvfmt_detector.py` (r43) | `lmcache.v1.gpu_connector.kv_format.detectors.vllm` (exec_module wrap of `VLLM_Detector.discover`) | maps the 5-D view to `NL_X_NB_BS_NH_TWO_HS` (NH=1, HS=kvdim) — get_block_size=BS, num_blocks=NB correct; canonicalizes the singleton axis wherever the contiguity recovery's stride sort puts it. |
+| `lmcint/lmc_twohs_transfer.py` (r43) | `lmcache.v1.platform.torch_ops` (exec_module wrap of `multi_layer_kv_transfer`) | TWO_HS-only branch: pool viewed physically `(NB, BS, 2, HS)`, vectorized gather/scatter per layer — `D2H: kv[:, l, valid, :] = pool[bidx, boff, :, :].T`; H2D mirror — byte-true per token, one slot per token, both K and V per slot. All other formats pass through to the original (p40d baseline posture preserved). |
+
+Result: N4 8k cold+3 warms ALL `9c1623f0d38e28e9` with `Retrieved 7168`×6
+(real loads), 0 store failures. REVAL adds: native SYCL TWO_HS branch
+(CUDA parity) = perf-only follow-up — the torch-baseline branch is C's
+posture and is correct.
+
 ## Build law
 
 `build_lmcache_arc.sh` (rig host): fresh sdist extract → md5 guard vs the

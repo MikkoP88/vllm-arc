@@ -1518,6 +1518,27 @@ class LMCacheConnectorV1Impl:
     ####################
     # Worker side APIs
     ####################
+    @staticmethod
+    def _arc_attn_pool_view(t: torch.Tensor) -> torch.Tensor:
+        # arc r43 (2026-10-29): this engine's hybrid FA-XPU pool is a single
+        # stacked (num_blocks, 2=K/V, block_size, kv_heads*head_size) tensor
+        # whose PHYSICAL order is (num_blocks, block_size tokens, K/V,
+        # kvdim) -- per-token K/V interleaving, strides (2*bs*kvd, kvd,
+        # 2*kvd, 1). The raw rank-4 pool lands on lmcache's fused-CS
+        # branch, whose slot model counts K/V as separate slot units and
+        # folds every page P onto page P//2 (the N4-class warm re-hit
+        # integrity break, root-caused this leg). permute(0,2,1,3) of this
+        # non-contiguous pool IS contiguous in (NB, BS, K/V, kvdim) order,
+        # so the 5-D reshape below is a zero-copy view (same storage, same
+        # data_ptr) that the arc detector override (kit file
+        # lmcint/lmc_kvfmt_detector.py) maps to NL_X_NB_BS_NH_TWO_HS:
+        # slot s -> block s//BS, within token two*HS + hs. Byte-true.
+        if t.dim() == 4 and int(t.shape[1]) == 2:
+            return t.permute(0, 2, 1, 3).reshape(
+                int(t.shape[0]), int(t.shape[2]), 1, 2, int(t.shape[3])
+            )
+        return t
+
     @_lmcache_nvtx_annotate
     def register_kv_caches(self, kv_caches: dict[str, torch.Tensor]):
         logger.info("Registering KV caches")
@@ -1530,7 +1551,7 @@ class LMCacheConnectorV1Impl:
                 # Hybrid: attention tensors in group order (layer count must
                 # match the engine's kv_shape[0]).
                 attn_kvs = [
-                    kv_caches[n]
+                    self._arc_attn_pool_view(kv_caches[n])
                     for n in self._attn_layer_names
                     if n in kv_caches
                 ]
@@ -1654,13 +1675,19 @@ class LMCacheConnectorV1Impl:
                     kvcaches=[pool_view]
                 )
             else:
-                kvcaches = list(self.kv_caches.values())
+                kvcaches = [
+                self._arc_attn_pool_view(t)
+                for t in self.kv_caches.values()
+            ]
                 self.lmcache_engine.post_init(kvcaches=kvcaches)
                 self.lmcache_engine.gpu_connector.initialize_kvcaches_ptr(
                     kvcaches=kvcaches
                 )
         if len(self._attn_kvcaches) == 0 and self.lmcache_engine is not None:
-            self._attn_kvcaches = list(self.kv_caches.values())
+            self._attn_kvcaches = [
+                self._arc_attn_pool_view(t)
+                for t in self.kv_caches.values()
+            ]
 
     @_lmcache_nvtx_annotate
     def start_load_kv(self, forward_context: "ForwardContext", **kwargs) -> None:
@@ -1686,7 +1713,10 @@ class LMCacheConnectorV1Impl:
         if len(self._attn_kvcaches) > 0:
             kvcaches = self._attn_kvcaches
         else:
-            kvcaches = list(self.kv_caches.values())
+            kvcaches = [
+                self._arc_attn_pool_view(t)
+                for t in self.kv_caches.values()
+            ]
         device = kvcaches[0].device
 
         attn_metadata = forward_context.attn_metadata
@@ -1707,7 +1737,6 @@ class LMCacheConnectorV1Impl:
         assert self.lmcache_engine is not None
 
         self.lmcache_engine.post_init(kvcaches=kvcaches)
-
         self.layerwise_retrievers = []
 
         for idx, request in enumerate(metadata.requests):
@@ -1973,7 +2002,10 @@ class LMCacheConnectorV1Impl:
         if len(self._attn_kvcaches) > 0:
             kvcaches = self._attn_kvcaches
         else:
-            kvcaches = list(self.kv_caches.values())
+            kvcaches = [
+                self._arc_attn_pool_view(t)
+                for t in self.kv_caches.values()
+            ]
         device = kvcaches[0].device
         if self.current_layer == 0:
             self.layerwise_storers = []
@@ -2084,7 +2116,10 @@ class LMCacheConnectorV1Impl:
         if len(self._attn_kvcaches) > 0:
             kvcaches = self._attn_kvcaches
         else:
-            kvcaches = list(self.kv_caches.values())
+            kvcaches = [
+                self._arc_attn_pool_view(t)
+                for t in self.kv_caches.values()
+            ]
         device = kvcaches[0].device
 
         assert self.lmcache_engine is not None
@@ -2134,10 +2169,34 @@ class LMCacheConnectorV1Impl:
                 _stash = self._lmc_token_stash = {}
             for _r in connector_metadata.requests:
                 _tok = getattr(_r, "token_ids", None)
-                if _tok:
+                # arc p43a fork delta (2026-10-29): monotonic — keep the
+                # LONGEST cumulative span. A later short row (decode rows
+                # can carry only their new tokens) would clobber the only
+                # token witness for the re-serve sweep below.
+                if _tok and len(_tok) > len(_stash.get(_r.req_id, ())):
                     _stash[_r.req_id] = list(_tok)
             while len(_stash) > 64:
                 _stash.pop(next(iter(_stash)))
+            # arc p43a fork delta (2026-10-29): per-request deepest-served
+            # ledger for the re-serve sweep below.
+            _served = getattr(self, "_lmc_mamba_served", None)
+            if _served is None:
+                _served = self._lmc_mamba_served = {}
+            # arc p43b fork delta (2026-10-29): boot-scoped content-key memo.
+            # Measured law (r43c clean boot, first-traffic WARM5): every warm
+            # re-hit carries a FRESH req_id -> served=0 -> the row loop/sweep
+            # re-store the SAME content m-keys the cold already banked (83-94
+            # ms blocked inside each warm's wfs; store#3-8 in the leg log —
+            # the difference between warm[0] 788 and warm[1-4] 873 flat).
+            # m-keys are content-addressed (hash of tokens[0:B]), so a key
+            # already banked this boot needs no re-store. Staleness: if the
+            # pool evicts the page the memo still claims banked, later
+            # re-hits of that content recompute (graceful) until the FIFO
+            # ages the entry out — no pressure at the 100 GiB pool vs the
+            # battery's 24x8k working set (r30/r32 churn cells: no eviction).
+            _banked = getattr(self, "_lmc_mkey_banked", None)
+            if _banked is None:
+                _banked = self._lmc_mkey_banked = {}
 
             for request in connector_metadata.requests:
                 save_spec = request.save_spec
@@ -2168,14 +2227,43 @@ class LMCacheConnectorV1Impl:
                     ]
 
                 boundaries = _LMC_BOUNDARY_REGISTRY.pop(request.req_id, None)
+                if os.environ.get("ARC_SNAP_PROBE"):
+                    print(
+                        "[r31probe mrow req=%s tok=%d last_pf=%s bnd=%s]" % (
+                            request.req_id,
+                            len(token_ids),
+                            getattr(request, "is_last_prefill", "?"),
+                            [b for b, _ in (boundaries or [])],
+                        ),
+                        flush=True,
+                    )
                 if not boundaries:
                     continue
                 try:
                     deepest = boundaries[-1][0]
                     if deepest > len(token_ids):
-                        boundaries = [
+                        _kept = [
                             (b, s) for (b, s) in boundaries if b <= len(token_ids)
                         ]
+                        # arc p43a fork delta (2026-10-29): do NOT lose
+                        # deeper-than-span entries — the async-overlap
+                        # interleave can hand this row a registry holding
+                        # boundaries beyond the row's token span; re-insert
+                        # them so the re-serve sweep (with the stash span)
+                        # can still bank them.
+                        _reinsert = [
+                            (b, s) for (b, s) in boundaries if b > len(token_ids)
+                        ]
+                        if _reinsert:
+                            _cur = _LMC_BOUNDARY_REGISTRY.setdefault(
+                                request.req_id, []
+                            )
+                            _cur.extend(
+                                (b, s)
+                                for (b, s) in _reinsert
+                                if b > (_cur[-1][0] if _cur else 0)
+                            )
+                        boundaries = _kept
                         if not boundaries:
                             continue
                         deepest = boundaries[-1][0]
@@ -2199,10 +2287,18 @@ class LMCacheConnectorV1Impl:
                         # idempotent overwrites.
                         if b not in hash_map:
                             continue
+                        # arc p43b: skip m-keys already banked this boot
+                        # (content-addressed; see the memo block above).
+                        if str(hash_map[b]) in _banked:
+                            continue
                         hashes.append(hash_map[b])
                         offsets.append(self._lmcache_chunk_size)
                         seeds.append(cpu_bytes)
                     if not hashes:
+                        # All boundaries already banked — retire the request
+                        # at the FULL deepest so the sweep below does not
+                        # re-derive (and re-store) the same keys.
+                        _served[request.req_id] = deepest
                         continue
                     # store() tensorizes slot_mapping itself when hashes
                     # are given; a plain list avoids torch.tensor(tensor).
@@ -2226,12 +2322,18 @@ class LMCacheConnectorV1Impl:
                         # across requests (None on both sides of the pair).
                         request_configs=None,
                     )
+                    # arc p43b: register the banked m-keys.
+                    for _h in hashes:
+                        _banked[str(_h)] = True
+                    while len(_banked) > 512:
+                        _banked.pop(next(iter(_banked)))
                     logger.debug(
                         "LMC mamba store req=%s boundaries=%d deepest=%d",
                         request.req_id,
                         len(hashes),
                         boundaries[-1][0],
                     )
+                    _served[request.req_id] = deepest
                 except Exception:
                     logger.exception(
                         "Mamba engine store failed for req %s; skipping "
@@ -2241,29 +2343,63 @@ class LMCacheConnectorV1Impl:
                     )
                     mamba_store_failed.add(request.req_id)
 
-            # llm-scaler v139: finish/lag flush. Boundary snapshots whose
-            # consuming wfs row never arrived (overlap-drop) or whose
-            # materialization lagged past the request's last wfs are still
-            # sitting in the registry — store them now from the stashed
-            # token_ids so a later resume reaches the deepest boundary.
-            # Early flush of a mid-flight request is harmless: bytes were
-            # frozen at materialization, the key is a strict-prefix hash,
-            # and re-stores are idempotent overwrites.
+            # arc p43a fork delta (2026-10-29): late-boundary re-serve
+            # sweep (replaces the v139 finish/lag flush). Measured law
+            # (probe boot p43b, 2026-10-29): in vllm-0.30 wait_for_save
+            # fires in the kv-connector CM's finally INSIDE the step —
+            # BEFORE sample/postprocess — so the final prefill chunk's row
+            # pops the registry before the B=L boundary materializes at
+            # postprocess, the late append then orphans in the registry,
+            # and the v139 flush could never pick it up (a live request
+            # has rows on every decode step, and the engine idles with no
+            # wfs at all between requests). Net: every mamba store banked
+            # deepest=7168 for 8k prompts and each warm resume recomputed
+            # the final chunk (warm 1047 ms vs 750 bar; both donor
+            # champions share this posture — their bars include the tail
+            # recompute). Sweep ALL registry entries at EVERY wfs instead:
+            # store any boundary deeper than the last served depth for
+            # that request, tokens from the v139 stash (the cumulative-
+            # span witness). The first wfs after the append — the end of
+            # the request's own first decode step — banks it. Idempotence:
+            # the served ledger skips already-stored depths; re-stores
+            # after preemption rematerialization are overwrites of the
+            # same chained-hash keys. Entries stay in the registry for
+            # deeper late arrivals (decode-crossed boundaries) and are
+            # retired by the glue's global FIFO.
             try:
-                _live = {_r.req_id for _r in connector_metadata.requests}
                 for _rid in list(_LMC_BOUNDARY_REGISTRY.keys()):
-                    if _rid in _live:
+                    if _rid in mamba_store_failed:
+                        continue
+                    _bnd = _LMC_BOUNDARY_REGISTRY.get(_rid)
+                    if not _bnd:
+                        _LMC_BOUNDARY_REGISTRY.pop(_rid, None)
+                        continue
+                    _served_b = _served.get(_rid, 0)
+                    _new = [(b, s) for (b, s) in _bnd if b > _served_b]
+                    if os.environ.get("ARC_SNAP_PROBE"):
+                        print(
+                            "[r31probe msweep req=%s entries=%s served=%d "
+                            "stash=%d]" % (
+                                _rid,
+                                [b for b, _ in _bnd],
+                                _served_b,
+                                len(_stash.get(_rid, ())),
+                            ),
+                            flush=True,
+                        )
+                    if not _new:
                         continue
                     _tok = _stash.get(_rid)
                     if not _tok:
+                        # No token witness yet (row never seen); retry at a
+                        # later wfs — do NOT pop, the entry is not lost.
                         continue
-                    _bnd = _LMC_BOUNDARY_REGISTRY.pop(_rid)
-                    _deepest = _bnd[-1][0]
+                    _deepest = _new[-1][0]
                     if _deepest > len(_tok):
-                        _bnd = [(b, s) for (b, s) in _bnd if b <= len(_tok)]
-                        if not _bnd:
+                        _new = [(b, s) for (b, s) in _new if b <= len(_tok)]
+                        if not _new:
                             continue
-                        _deepest = _bnd[-1][0]
+                        _deepest = _new[-1][0]
                     _hash_map: dict[int, object] = {}
                     for _s, _e, _h in (
                         self.mamba_engine.token_database.process_tokens(
@@ -2272,13 +2408,21 @@ class LMCacheConnectorV1Impl:
                     ):
                         _hash_map[int(_e)] = _h
                     _hashes, _offsets, _seeds = [], [], []
-                    for _b, _cpu_bytes in _bnd:
+                    for _b, _cpu_bytes in _new:
                         if _b not in _hash_map:
+                            continue
+                        # arc p43b: skip m-keys already banked this boot
+                        # (warm re-hits of the same content — see the memo
+                        # block at the stash init for the measured law).
+                        if str(_hash_map[_b]) in _banked:
                             continue
                         _hashes.append(_hash_map[_b])
                         _offsets.append(self._lmcache_chunk_size)
                         _seeds.append(_cpu_bytes)
                     if not _hashes:
+                        # Everything already banked — retire the entry at
+                        # the full deepest so later wfs passes skip it.
+                        _served[_rid] = _deepest
                         continue
                     self.mamba_engine.store(
                         None,
@@ -2289,15 +2433,23 @@ class LMCacheConnectorV1Impl:
                         lmc_seed_bytes=_seeds,
                         request_configs=None,
                     )
+                    # arc p43b: register the banked m-keys.
+                    for _h in _hashes:
+                        _banked[str(_h)] = True
+                    while len(_banked) > 512:
+                        _banked.pop(next(iter(_banked)))
+                    _served[_rid] = _deepest
+                    while len(_served) > 64:
+                        _served.pop(next(iter(_served)))
                     logger.debug(
-                        "LMC mamba store(final) req=%s boundaries=%d deepest=%d",
+                        "LMC mamba store(sweep) req=%s boundaries=%d deepest=%d",
                         _rid,
                         len(_hashes),
-                        _bnd[-1][0],
+                        _deepest,
                     )
             except Exception:
                 logger.exception(
-                    "LMC mamba finish-flush failed (non-fatal)"
+                    "LMC mamba re-serve sweep failed (non-fatal)"
                 )
 
         for request in connector_metadata.requests:
@@ -2471,7 +2623,10 @@ class LMCacheConnectorV1Impl:
         if len(self._attn_kvcaches) > 0:
             kvcaches = self._attn_kvcaches
         else:
-            kvcaches = list(self.kv_caches.values())
+            kvcaches = [
+                self._arc_attn_pool_view(t)
+                for t in self.kv_caches.values()
+            ]
         for kind, rid, token_ids, mask, slot, offset, cfg, _pmap in pending:
             if kind != "a" or rid in failed:
                 continue
@@ -2589,8 +2744,22 @@ class LMCacheConnectorV1Impl:
             # (the joint depth can never exceed it) and keep
             # request_configs=None so the key space matches the store side,
             # which banks boundaries with None.
+            #
+            # arc p43a fork delta (2026-10-29): never let the joint depth
+            # reach num_tokens. The full-hit -1 law below (recompute the
+            # last token) would resume at L-1, where no banked boundary
+            # exists: the s(L) seed shares running column ceil(L/bs)-1 with
+            # L-1, PASSES the glue's column check, and double-consumes the
+            # last token's SSM update (silent corruption). Bound the m-walk
+            # at L-1: same-L re-hits resume at the deepest banked boundary
+            # below L (7168 for 8k prompts) exactly as pre-p43a, while the
+            # B=L boundary banked by the re-serve sweep serves continuation
+            # prompts (L' > L), where the -1 law cannot fire.
+            _m_bound = num_external_hit_tokens
+            if _m_bound >= request.num_tokens:
+                _m_bound = request.num_tokens - 1
             m_hit = self._mamba_lookup_client.lookup(
-                token_ids[:num_external_hit_tokens],
+                token_ids[:_m_bound],
                 lookup_id=f"m-{request.request_id}",
                 request_configs=None,
             )
