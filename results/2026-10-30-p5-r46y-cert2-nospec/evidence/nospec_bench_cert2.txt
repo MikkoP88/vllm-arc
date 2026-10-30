@@ -1,0 +1,30 @@
+r46y — non-spec performance batteries on the cert2 image (raw bench output)
+=============================================================================
+
+Serve: vllm-arc:v0.30.0-b70-cert2, arc-test (fresh from the tag-built
+image), certified posture minus --speculative-config (ARC_SPEC=0 via
+tools/serve_arc_b70.sh: full 24-var env chain, graphs, LMCache ON,
+chat template mounted). Engine config line confirms
+`speculative_config=None`. Health 200 after ~260 s (warm caches).
+glue-unavailable count: 0; `[p41c] wrap live (bs=832 gids=3)` both
+workers (the r46u fix native in the tag-built image).
+
+Battery A — greedy t0 (Run-7n exact, r46y leg, 2026-10-30 20:07Z):
+
+    === bench_run7n (cert16s4 methodology replica) temp=0.0 thinking=off
+        sampling={'top_p': 0.95, 'top_k': 20, 'min_p': 0.0,
+                  'presence_penalty': 0.0, 'repetition_penalty': 1.0} ===
+    agg4x256#1 wall=14.13s aggregate=72.46 tok/s ok_streams=4/4 [warmup]
+    agg4x256#2 wall=8.09s aggregate=126.52 tok/s ok_streams=4/4
+    solo200 n=200 dt=5.83s tps=34.33
+    solo200 n=200 dt=5.83s tps=34.32
+    BENCH_RUN7N_DONE
+
+Battery B — real-world face t1.0 xhigh thinking (20:08Z):
+
+    === bench_run7n temp=1.0 thinking=xhigh sampling={real-world set} ===
+    agg4x256#1 wall=8.45s aggregate=121.13 tok/s ok_streams=4/4
+    agg4x256#2 wall=8.89s aggregate=115.16 tok/s ok_streams=4/4
+    solo200 n=200 dt=5.95s tps=33.62
+    solo200 n=200 dt=5.95s tps=33.61
+    BENCH_RUN7N_DONE
