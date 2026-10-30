@@ -26,7 +26,6 @@ docker run -d --name arc-test \
   --privileged --network host --ipc host \
   --shm-size 64g \
   -v /models/qwen3.8-27b-fp8:/models/target:ro \
-  -v /root/build/v127_stage/chat_template_qwen38_high.jinja:/root/chat_template_qwen38_high.jinja:ro \
   -v /root/build/neo_cache:/root/.neo_cache \
   -v /root/build/triton_cache:/root/.triton_cache \
   -v /root/build/inductor_cache:/root/.inductor_cache \
@@ -36,10 +35,13 @@ docker run -d --name arc-test \
 ```
 
 These are the validated boot bytes (rig `r46t_campaign.sh:54-63`,
-`r42/r46_soak.sh:33-42`): `--shm-size 64g`, five mounts, and the two
-boot-layer vars of the 24-var chain below (`:ro` on model + template is
-the read-only posture law — the leg scripts omit it, the law is
-stricter). `--shm-size` is a tmpfs *ceiling*, not a reservation, and is
+`r42/r46_soak.sh:33-42`): `--shm-size 64g`, four mounts, and the two
+boot-layer vars of the 24-var chain below (`:ro` on the model is the
+read-only posture law — the leg scripts omit it, the law is stricter).
+The optional chat-template mount (below) is added to this block only if
+you use the template.
+
+`--shm-size` is a tmpfs *ceiling*, not a reservation, and is
 moot under `--ipc host` (host `/dev/shm` is used); 64g guards the
 private-IPC fallback, where small values ENOSPC-crash TP2 IPC buffers.
 
@@ -82,20 +84,20 @@ non-privileged TP2 init — validated posture, env-inspected 2026-10-27).
   --reasoning-parser qwen3 \
   --tool-call-parser qwen3_coder \
   --enable-auto-tool-choice \
-  --chat-template <chat_template_qwen38_high.jinja> \
   --no-disable-hybrid-kv-cache-manager \
   --compilation-config '{"mode":"none","cudagraph_mode":"FULL_DECODE_ONLY","cudagraph_capture_sizes":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,20,25,30,35,40,45,48,50,55,60,64,65,70,75,80,85,90,95,96,100,105,110,112,115,120,125,128,130,135,140,145,150,155,160,165,170,175,180,185,190,192,195,200,205,210,215,220,224,225,230,235,240,245,250,255,256,260,265,270,275,280,285,290,295,300,305,310,315,320]}' \
   --speculative-config '{"method":"mtp","num_speculative_tokens":3}' \
   --port 8000
 ```
 
-This block is the certified line verbatim (rig
-`/root/build/r42/r43_serve_k5.sh`, depth 3 per r46t) — byte-verified:
-every flag, `"mode":"none"` (no torch.compile), and the explicit
-85-entry capture list. `[1..320]` shorthand is **invalid JSON** and is
-never shipped anywhere; copy-paste this block as-is. `--kv-transfer-config`
-loads the LMCache connector — the certified posture runs LMCache **ON**
-(see [`envs.md`](envs.md) for the full env chain).
+This block is the certified line (rig
+`/root/build/r42/r43_serve_k5.sh`, depth 3 per r46t) minus the optional
+chat template — every remaining flag byte-verified, including
+`"mode":"none"` (no torch.compile) and the explicit 85-entry capture
+list. `[1..320]` shorthand is **invalid JSON** and is never shipped
+anywhere; copy-paste this block as-is. `--kv-transfer-config` loads the
+LMCache connector — the certified posture runs LMCache **ON** (see
+[`envs.md`](envs.md) for the full env chain).
 
 **Chat template — optional, ships in-repo**
 (`assets/chat_template_qwen38_high.jinja`, md5 `eb69f1c4…` =
@@ -108,9 +110,11 @@ own template (identical in `tokenizer_config.json` and
 Mount it only if you want OpenAI-standard `reasoning_effort`
 compatibility — without it, `"high"` and `"none"` requests fail with
 400 (`raise_exception` in the checkpoint template). The certified line
-includes it (that is the validated posture); add it with
-`-v …/chat_template_qwen38_high.jinja:/root/chat_template_qwen38_high.jinja:ro`
-plus `--chat-template /root/chat_template_qwen38_high.jinja`.
+includes it (that is the validated posture). To use it, add to the boot
+block:
+`-v /path/to/repo/assets/chat_template_qwen38_high.jinja:/root/chat_template_qwen38_high.jinja:ro`
+and to the serve line:
+`--chat-template /root/chat_template_qwen38_high.jinja`.
 
 ### MTP depth (num_speculative_tokens) — recommended 3
 
