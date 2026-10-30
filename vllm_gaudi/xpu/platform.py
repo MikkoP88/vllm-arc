@@ -19,6 +19,7 @@ declared in setup.py alongside upstream's ``hpu`` entry).
 from __future__ import annotations
 
 import os
+import sys
 from typing import TYPE_CHECKING
 
 import torch
@@ -56,6 +57,9 @@ _XPU_PATCH_MODULES = (
                                 # large TP AR before serving traffic (r16/r17)
     "gdn_metadata_fastpath",    # p10: steady spec-decode GDN metadata builds
                                 # without blocking H2D (r19-r22a; <=5ms law)
+    "fp8_block_w8a16",          # p44: block-fp8 linear -> fp8_gemm_w8a16 with
+                                # fp16 activations, input quant skipped (r40:
+                                # 3-8x/GEMM decode Ms, fixed-cost W8A8 path)
 )
 
 
@@ -69,6 +73,119 @@ def _install_xpu_patches(site: str) -> None:
         except Exception as e:  # noqa: BLE001 — visibility law: leg logs must show it
             logger.warning(
                 "ArcXpuPlatform: %s install failed at %s: %r", name, site, e)
+
+
+# Wheel-module exec hooks (P3 cache glues + p44 lane): patches that must
+# rebind symbols INSIDE a just-imported core/lmcache module can't be
+# in-place class patches — they wrap the module's exec. Product form of the
+# r30 cap sitecustomize hooks (one source, two callers: each patch module's
+# ``_install(mod)`` receives the executed target module). The meta-path
+# finder is inserted at register() time — the earliest moment in every vllm
+# process, before any v1/lmcache worker module imports — and inserting it
+# imports nothing (circular-import safe, unlike the in-place patches above).
+# Each hook fires once at its target's first import; the finder removes
+# itself after the last target has fired.
+_WHEEL_HOOKS = (
+    # (target module, patches submodule under vllm_gaudi.xpu.patches)
+    ("vllm.v1.worker.mamba_utils", "mamba_lmcache_glue"),          # p41
+    ("vllm.v1.worker.gpu.model_states.mamba_hybrid", "mamba_hybrid_snap_glue"),  # p41c
+    ("vllm.distributed.kv_transfer.kv_connector.v1.lmcache_connector", "lmcache_hma_connector"),  # p41b
+    ("lmcache.v1.platform.xpu.device_ops", "lmc_xpu_pinned_env"),  # p40c
+    ("lmcache.v1.gpu_connector.kv_format.detectors.vllm", "lmcint.lmc_kvfmt_detector"),  # r43
+    ("lmcache.v1.platform.torch_ops", "lmcint.lmc_twohs_transfer"),  # r43
+    ("vllm.v1.core.sched.scheduler", "sched_tail_split"),          # r35
+)
+# gdn_metadata_fastpath and fp8_block_w8a16 are NOT here: they self-install
+# in-place (_XPU_PATCH_MODULES) — no exec-wrap needed.
+
+
+def _load_wheel_patch(patch_name: str):
+    """Import a _WHEEL_HOOKS patch, standalone when it lives in a sub-package.
+
+    The lmcint kit's ``__init__`` IS the lmcache_integration entry (it
+    imports the heavy vllm_v1_adapter -> lmcache.v1.cache_engine at module
+    level), and two of its files hook lmcache-internal targets that exec
+    MID lmcache package init (detectors.vllm finishes while cache_engine is
+    still executing; torch_ops while lmcache/__init__ is). Importing those
+    patches as regular package submodules would first execute the package
+    ``__init__`` and re-enter the partially initialized lmcache package —
+    the circular-import death of the first p45 image boot (r42). The r30
+    cap sitecustomize loaded these files standalone via
+    spec_from_file_location for eleven legs; same semantics here — one
+    source, two callers. Top-level patch modules (no dot) import normally:
+    their package __init__ is the light patches/__init__.
+    """
+    from importlib import import_module
+    from importlib.util import module_from_spec, spec_from_file_location
+
+    if "." not in patch_name:
+        return import_module(f"vllm_gaudi.xpu.patches.{patch_name}")
+    qualname = f"vllm_gaudi.xpu.patches.{patch_name}"
+    if qualname in sys.modules:
+        return sys.modules[qualname]
+    import vllm_gaudi.xpu.patches as _patches
+
+    path = os.path.join(os.path.dirname(_patches.__file__),
+                        *patch_name.split(".")) + ".py"
+    spec = spec_from_file_location(qualname, path)
+    module = module_from_spec(spec)
+    sys.modules[qualname] = module
+    spec.loader.exec_module(module)
+    return module
+
+
+class _WheelHookFinder:
+    """One-shot meta-path finder wrapping the exec of each _WHEEL_HOOKS
+    target so its patch module can rebind symbols inside it."""
+
+    def __init__(self) -> None:
+        self._targets = {t for t, _ in _WHEEL_HOOKS}
+
+    def find_spec(self, fullname, path=None, target=None):  # noqa: D102
+        if fullname not in self._targets:
+            return None
+        from importlib.util import find_spec
+
+        sys.meta_path.remove(self)
+        try:
+            spec = find_spec(fullname)
+        finally:
+            if self._targets:
+                sys.meta_path.insert(0, self)
+        if spec is None or spec.loader is None:
+            self._targets.discard(fullname)
+            return None
+        orig_exec = spec.loader.exec_module
+
+        def exec_module(module):
+            orig_exec(module)
+            self._targets.discard(fullname)
+            if not self._targets and self in sys.meta_path:
+                sys.meta_path.remove(self)  # last hook fired — retire
+            patch_name = dict(_WHEEL_HOOKS)[fullname]
+            try:
+                patch = _load_wheel_patch(patch_name)
+                patch._install(module)
+                logger.info(
+                    "ArcXpuPlatform: wheel hook %s <- patches.%s OK",
+                    fullname.rsplit(".", 1)[-1], patch_name)
+            except Exception as e:  # noqa: BLE001 — visibility law
+                logger.warning(
+                    "ArcXpuPlatform: wheel hook %s <- patches.%s FAILED: %r",
+                    fullname, patch_name, e)
+
+        spec.loader.exec_module = exec_module
+        return spec
+
+
+def _install_wheel_hooks() -> None:
+    """Idempotent install of the exec-wrap hooks (register()-time, every
+    vllm process on Arc hosts)."""
+    if any(isinstance(f, _WheelHookFinder) for f in sys.meta_path):
+        return
+    if not _WHEEL_HOOKS:
+        return
+    sys.meta_path.insert(0, _WheelHookFinder())
 
 
 # Monkey-patch torch.accelerator.get_memory_info for Arc/Xe2 XPU — the same

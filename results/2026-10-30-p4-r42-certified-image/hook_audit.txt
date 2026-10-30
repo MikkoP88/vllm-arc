@@ -1,0 +1,17 @@
+hook OK lines per target:
+      3 device_ops <- patches.lmc_xpu_pinned_env
+      4 lmcache_connector <- patches.lmcache_hma_connector
+      2 mamba_hybrid <- patches.mamba_hybrid_snap_glue
+      2 mamba_utils <- patches.mamba_lmcache_glue
+      1 scheduler <- patches.sched_tail_split
+      3 torch_ops <- patches.lmcint.lmc_twohs_transfer
+      3 vllm <- patches.lmcint.lmc_kvfmt_detector
+hook FAILED lines:
+0
+reroute ACTIVE:
+4
+kvfmt TWO_HS:
+0
+twohs:
+aiofile errors:
+0

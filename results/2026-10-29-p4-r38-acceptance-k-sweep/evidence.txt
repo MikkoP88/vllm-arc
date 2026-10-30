@@ -1,0 +1,51 @@
+r38 evidence — spec-gate JSON + run7n outputs (both boots), config probes, source greps
+
+=== BOOT A (k4 product, serve verbatim) ===
+SPEC_GATE {"wall_s": 13.11, "streams_ok": "4/4", "drafts": 201, "draft_tokens": 804,
+  "accepted": 609, "pos": {"0": 0.9104, "1": 0.806, "2": 0.6816, "3": 0.6318},
+  "pos1": 0.9104, "acceptance": 0.7575, "mean_acceptance_length": 4.03,
+  "hard": 0.5, "target": 0.85}
+SPEC_GATE log_window: SpecDecoding metrics: Mean acceptance length: 3.63 ... Accepted: 350,
+  Drafted: 532, Per-position acceptance rate: 0.872, 0.714, 0.556, 0.489,
+  Avg Draft acceptance rate: 65.8%   (boot-cumulative incl. warmup; counter window is the steady read)
+SPEC_GATE PASS: pos1=0.9104 >= 0.5 hard, acceptance=0.7575 vs 0.85 target (TARGET MISS — recorded)
+run7n: agg 198.24 / 199.76 ok 4/4 ; solo200 59.72 / 59.72  (= r37 parity: 195.6-209.2 / 59.1-60.0)
+
+=== BOOT B (k5: num_speculative_tokens 4->5, one sed; verified num_spec_tokens=5 in boot log) ===
+SPEC_GATE {"wall_s": 12.67, "streams_ok": "4/4", "drafts": 181, "draft_tokens": 905,
+  "accepted": 630, "pos": {"0": 0.9061, "1": 0.8066, "2": 0.6796, "3": 0.5746},
+  "pos1": 0.9061, "acceptance": 0.6961, "mean_acceptance_length": 4.48,
+  "hard": 0.5, "target": 0.85}
+SPEC_GATE log_window: Per-position acceptance rate: 0.849, 0.710, 0.495, 0.333, 0.269 (5 positions,
+  boot-cumulative incl. warmup), Avg Draft acceptance rate: 53.1%
+run7n: agg 213.72 / 215.77 ok 4/4 ; solo200 62.75 / 63.73
+
+=== D REFERENCE (donor docs) ===
+D certified signature (arc_spec_gate docstring + P2r3): pos1 0.914-0.954, avg draft 86-87.5%,
+  mean length 4.45-5.00 (k4). D stack: 0.26, "eager MTP head, whole-step capture" posture.
+
+=== OUR SPEC CONFIG (boot log) ===
+speculative_config=SpeculativeConfig(method='mtp', model='/models/target', num_spec_tokens=4)
+  (baked head in the target checkpoint); target dtype float16 + quantization fp8;
+  kv fp8_e4m3; mamba_ssm fp16, mamba_cache_mode=align
+WARNING speculative.py:1361: num_speculative_tokens>1 runs multiple forwards on the same
+  MTP layer, which may result in lower acceptance rate
+WARNING kv_cache_utils.py:2206: speculative decoding enabled but no KV cache group
+  identified as the draft model's
+
+=== SPECULATIVE CONFIG FIELD SCAN (image vllm 0.30) ===
+notable knobs: model/method/quantization (drafter overrides), draft_tensor_parallel_size,
+  index_share_for_mtp_iteration, disable_padded_drafter_batch=False, use_local_argmax_reduction,
+  parallel_drafting=False, num_speculative_tokens_per_batch_size, rejection_sample_method=standard,
+  draft_sample_method=greedy, enable_adaptive_verification, dspark_draft_topk
+auto-enable: config/speculative.py:1462 "if method in (dflash, dspark): parallel_drafting = True"
+
+=== PARD AVAILABILITY (image source greps) ===
+parallel_drafting references in v1/spec_decode/: step3p5.py, dflash.py, utils.py,
+  llm_base_proposer.py — ZERO in eagle.py (our MTP proposer path)
+slot math config/speculative.py:1878: PARD "does not shift the existing input" ->
+  num_draft_tokens slots for draft-model; queries need new slots (parallel mask queries)
+
+=== E4 / RESTORE ===
+r30_serve.sh restored from r38k4bak (grep num_speculative_tokens.:4 -> 1); arc-test removed;
+radiance-test up; W14 host serve -> HEALTH=200

@@ -1,0 +1,77 @@
+r39 evidence — wheel-source citations, D champion raws, arithmetic
+
+=== PARD ARCHITECTURE GATE (0.30 wheel, image vllm-arc:v0.30.0-b70-p41) ===
+config/speculative.py:466  parallel_drafting: bool = False
+  docstring: "...all speculative tokens are generated in parallel rather than
+  sequentially. This can improve performance but REQUIRES THE SPECULATIVE
+  MODEL BE TRAINED to support parallel drafting. Only compatible with EAGLE
+  and draft model methods."
+config/speculative.py:1461-1462  if self.method in ("dflash", "dspark"):
+  self.parallel_drafting = True   (auto-ON for those two only)
+llm_base_proposer.py:359-383  _init_parallel_drafting_params:
+  ValueError "For parallel drafting, the draft model config must have
+  dflash_config.mask_token_id / mask_token_id / dspark_noise_token_id /
+  pard_token / ptd_token_id specified in its config.json."
+llm_base_proposer.py:885-933  _copy_and_expand_eagle_inputs packs K mask-token
+  queries (+ parallel_drafting_hidden_state_tensor fill for pass_hidden path)
+llm_base_proposer.py:632-638  first-pass early exit when parallel_drafting:
+  _sample_draft_tokens(...).view(-1, num_speculative_tokens)  (K rows/req)
+llm_base_proposer.py:1637  graph capture: only_one_forward_pass = capturing
+  or parallel_drafting  (vs num_speculative_tokens passes sequential)
+config/speculative.py:1872-1884  slot math: PARD K queries all need new slots
+step3p5.py:24 Step3p5MTPProposer(EagleProposer); :340 same early-exit;
+  _sample_draft_tokens_for_step(spec_step_idx) = per-pass multi-token head
+eagle.py (22 lines) = stub; propose logic is llm_base_proposer for BOTH
+our method=mtp and step3p5/dflash.
+Our checkpoint: /models/target fp8, method=mtp baked head, NO mask token,
+single next-token per forward (sequential argmax chain) -> PARD unportable.
+
+=== D 0.26 vs OUR 0.30 PROPOSER DIFF (semantics) ===
+diff d026/v1/spec_decode/llm_base_proposer.py v1/spec_decode/llm_base_proposer.py
+  (after removing warmup-refactor hunks): mrope_num_dims handling, xdrope
+  removal, local-argmax condition (D: shape>1 or not qwen), error-msg order.
+  NO propose-loop / replay-structure delta. D flag scan: use_local_argmax /
+  ALLOW_ASYNC appear in NO D serve script; "VLLM_XPU_ALLOW_ASYNC" string
+  exists in NEITHER wheel (binary grep of both images' site-packages) =
+  vestigial env, honestly exonerated.
+torch: D image = 2.12.0+xpu ; ours = 2.13.0+xpu (stack delta, unqualified)
+
+=== D CHAMPION CELL (P2r6-CKPT, /root/build/legs/p2r6/, the bars source) ===
+p2r6_summary.txt: leg=P2r6-CKPT stack=vllm-iexperimental:v1.0.0 twin=v21
+  posture=ckpt(/models/target fp8 — same model) spec=1(mtp-baked)
+  compile=off async=1 xpu_graph=1 yield_tok=4096 lookup_memo=1
+  flushmove guard prewarm=v7; bars=cl1b-spec1(SOLO 74.92 AGG 240.31)
+p2r6_run7n_1.out (invocation 1, cooler): agg 54.80 / 142.75 ; solo 79.60/79.68
+p2r6_run7n_2.out (invocation 2, warm — THE BARS): agg4x256#1 254.33
+  wall=4.03s; agg4x256#2 274.41 wall=3.73s; solo200 79.73 / 79.74 (dt=2.51s)
+p2r6_matrix_warm.out: CELL k1k-c1 ttft=557.7ms prefill_tps=1836.2
+  tpot_ms=47.97 ; CELL k1k-c16 tpot_ms=169.62
+p2r6_counts.txt telemetry (all windows): pos4 = 0.000/0.009 DEAD;
+  07:24:25 mean 3.14 [0.786/0.714/0.643/0.000] draft 53.6%
+  07:24:35 mean 3.60 [0.903/0.861/0.833/0.000] draft 64.9%
+  07:24:45 mean 3.59 [0.892/0.865/0.829/0.009] draft 64.9%
+  07:24:55 mean 2.56 [0.661/0.581/0.323/0.000] draft 39.1%
+  07:25:05 mean 3.46 [0.871/0.847/0.742/0.000] draft 61.5%
+    Accepted throughput 80.20 tok/s  <- the solo face (bench solo 79.74)
+p2r3 (comparison cell r37/r38 had used): 83 tps @ mean 4.45
+  [0.954/0.886/0.835/0.775] — twin v20, FAIL-verdict leg, NOT the bar cell.
+
+=== ARITHMETIC (face-scoping; r40 timers define precisely) ===
+D solo: accepted_tps 80.20 = emitted 3.46 x steps/s -> 23.2 steps/s
+  -> step 43.1 ms c1 (dt 2.51 s; TTFT-included tps 79.74)
+D c4 (agg#2): 256/3.46 = 73.2 steps/stream; (3.73 - ~0.35)/73.2 = ~46 ms
+  c1->c4 adder ~+3-6 ms
+Ours: r37 solo dt 3.38 s, emitted 4.03-4.295; TTFT-band 0.12-0.44 ->
+  step 63-70 ms c1; c4 83.4 (adder +13-20)
+Gap: -33..-40% c1, -45% c4. Acceptance: ours 4.03-4.30 > champion 3.46.
+Floor (plan P2 gate line): 27 GB fp8 / TP2 / 608 GB/s = ~23 ms forward;
+  our forward 49 ms = 47% of spec; D forward ~25-28 = 72-90%.
+Bar-reach with OUR emitted 4.03: solo 79.74 needs step <= ~42 ms;
+  agg 274.41 needs c4 <= ~46 ms. At forward ~27 our CURRENT tail+sample
+  (15.2+2.5) gives 44.7 -> bars clear with tail intact.
+Prefill same-class: ours 1.27-1.39k tok/s vs P2r6 k1k-c1 1836 (and
+  ladder bars 2.02k).
+
+=== RIG END-STATE ===
+No boots this leg; read-only docker run --rm source pulls only.
+radiance-test up (W14, HEALTH=200 from r38 restore), arc-test absent.

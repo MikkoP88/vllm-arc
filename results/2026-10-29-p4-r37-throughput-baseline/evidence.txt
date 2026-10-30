@@ -1,0 +1,61 @@
+r37 evidence — boot record, raw cells (verbatim), metrics counters, arithmetic
+
+=== BOOT (first-traffic clean, timers off, probes stripped) ===
+image vllm-arc:v0.30.0-b70-p41; overlay CAP-OVERLAY lines for
+lmc_xpu_pinned_env/mamba_hybrid_snap_glue/mamba_lmcache_glue/sched_tail_split/lmcint
+graphs: Capturing decode CUDA graphs (FULL) 0-27 steps; R30_BOOT_DONE; HEALTH=200
+model id: qwen3.8-27b-fp8 (matches bench scripts' MODEL)
+bench order = D leg driver: prefix x3 -> longctx x1 -> run7n x2, host-side, tools UNCHANGED:
+  bench_prefix.py  bfeaa4c43a7920033a9b6296fe4ea880
+  bench_longctx.py 3854f26f1750eec68a42745dc3a55502
+  bench_run7n.py   e5b8d59474c9fefc5f623c1225134cb6
+
+=== run7n (verbatim) ===
+invocation 1:
+agg4x256#1 wall=5.22s aggregate=196.06 tok/s ok_streams=4/4 [256tok/5.2s 256tok/5.1s 256tok/5.1s 256tok/5.2s]
+agg4x256#2 wall=4.89s aggregate=209.20 tok/s ok_streams=4/4 [256tok/4.7s 256tok/4.8s 256tok/4.7s 256tok/4.9s]
+solo200 n=200 dt=3.39s tps=59.07
+solo200 n=200 dt=3.38s tps=59.13
+invocation 2:
+agg4x256#1 wall=5.23s aggregate=195.63 tok/s ok_streams=4/4
+agg4x256#2 wall=4.97s aggregate=206.18 tok/s ok_streams=4/4
+solo200 n=200 dt=3.33s tps=60.02
+solo200 n=200 dt=3.38s tps=59.12
+
+=== longctx (verbatim) ===
+[small~600tok]  t1 ttft=0.439s prompt=600 | t2 ttft=0.460s prompt=609
+[mid~8ktok]     t1 ttft=5.726s prompt=7950 | t2 ttft=1.503s prompt=7959
+[mid~16ktok]    t1 ttft=12.074s prompt=16237 | t2 ttft=1.140s prompt=16246
+[long~32ktok]   t1 ttft=25.288s prompt=32081 | t2 ttft=1.850s prompt=32090
+(engine prompt_tokens_total deltas: excess 0 everywhere — no respin census anomaly)
+
+=== prefix p1 (first-traffic; p2/p3 in files, byte-identical phases) ===
+cold:  n=16  wall=71.5s  ttft_med=3.89s  min=3.71 max=12.37  ptok_med=5202
+warm:  n=16  wall=23.3s  ttft_med=1.39s  min=0.99 max=1.53
+churn: n=112 wall=475.1s ttft_med=4.16s  min=4.11 max=4.27  ptok_med=5697
+rehit: n=16  wall=26.9s  ttft_med=1.57s  min=1.17 max=1.70
+p2/p3 (steady): cold/warm 1.39-1.40, churn 1.36 (docs cached from p1), rehit 1.56-1.57
+
+=== spec-decode counters (/metrics at battery end) ===
+vllm:spec_decode_num_drafts_total 1712
+vllm:spec_decode_num_draft_tokens_total 6848   (= 4 x 1712, k4 full-width)
+vllm:spec_decode_num_accepted_tokens_total 5642
+-> aggregate acceptance 0.824; emitted/step = (5642+1712)/1712 = 4.295
+
+=== arithmetic ===
+solo decode window 200/(3.38-0.44)=67.8 tps -> step 4.295/67.8 = 63.4 ms @ c1
+  D-P2r3 comparison: 83 tps @ 4.45/step = 53.6 ms -> step +18%, acceptance -3.5%
+agg c4: 4.97s wall / (256/4.295=59.6 steps) = 83.4 ms @ c4 (c1->c4 +20 ms; D implied +10)
+prefill rates: 5202/3.89=1.34k | 5697/4.16=1.37k | 7950/5.726=1.39k | 16237/12.074=1.34k |
+  32081/25.288=1.27k tok/s  (D bars: 7950/3.944=2.02k = the +45% face)
+
+=== integrity (after the full battery, same boot) ===
+B integrity[0]: match=True 7060ms/2240ms 8898f0398270 vs 8898f0398270
+B integrity[1]: match=True 6727ms/1912ms 28f2a474bdb0 vs 28f2a474bdb0
+B integrity[2]: match=True 7110ms/2301ms 8fa239e95ea3 vs 8fa239e95ea3
+B integrity[3]: match=True 7126ms/2308ms a15739023154 vs a15739023154
+B integrity[4]: match=True 6902ms/2119ms 138272250b2e vs 138272250b2e
+INTEGRITY 5/5   (all five CANONICAL; zero drift under 160+ bench requests)
+
+=== rig end-state ===
+arc-test stopped; radiance-test started; host w14_serve_only.sh; HEALTH=200

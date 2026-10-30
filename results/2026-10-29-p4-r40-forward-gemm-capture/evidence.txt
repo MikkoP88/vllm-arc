@@ -1,0 +1,71 @@
+r40 evidence — GEMM microbench raws (per-GEMM ms; q=in-quant, w8a8=fp8_gemm,
+w8a16=fp8_gemm_w8a16, e=esimd_gemm_fp8_blockscale)
+
+Command (both images, only image tag differs):
+  docker run --rm --privileged -v /root/build/r40:/mnt --env ZE_AFFINITY_MASK=0 \
+    --entrypoint bash {vllm-arc:v0.30.0-b70-p41 | vllm-iexperimental:v1.0.0} \
+    -c 'cd /mnt && python3 r40_gemm_microbench.py' > r40_{ours,champ}.out
+  both end "# R40_GEMM_MICROBENCH_DONE", 60 rows each.
+  (First ours run silently probed no ops: torch.ops._xpu_C attrs need
+   `import vllm` to register — bench fixed + rerun; ops probe pre=False
+   post=True True for fp8_gemm and fp8_gemm_w8a16.)
+Bench law: torch.xpu.Event timing, 40 iters/10 warmup; w8 fp8 e4m3 [N,K];
+scale fp32 [N/128,K/128]; x fp16 [M,K]; relerr vs fp32 dequant-block ref.
+
+=== OURS (vllm-arc:v0.30.0-b70-p41, torch 2.13.0+xpu) ===
+shape            M=1 q/w8a8/w8a16          M=5 q/w8a8/w8a16          M=16 q/w8a8/w8a16
+gdn_qkvz         .218/.335/.093            .215/.338/.077            .214/.337/.080
+gdn_out          .214/.333/.064            .216/.331/.064            .212/.331/.064
+attn_qkvz        .214/.334/.066            .249/.328/.064            .212/.326/.065
+mlp_gate_up      .398/.334/.166            .211/.334/.167            .212/.418/.172
+mlp_down         .212/.329/.088            .213/.328/.081            .214/.329/.084
+lm_head          .365/.809/.674            .211/.801/.680            .212/.824/.696
+w8a8 relerr: Infinity on all rows (bench artifact — As [M,1] per-token probe;
+production block path uses group As; timing class valid).
+w8a16 relerr: 3.6e-4..5.5e-4 EVERY row M<=64. input-quant ~0.21-0.30 flat
+for M<=896 (0.40-1.15 at 2048) — per-call cost our path pays 320x/step.
+
+Effective GB/s at M=5 — w8a8: gdn_qkvz 124, gdn_out 48, attn_qkvz 112,
+gate_up 268, down 136, lm_head 487. w8a16: 547, 247, 579, 536, 549, 573.
+Spec 608/GPU. D-implied achieved ~537 = the w8a16 class, exactly.
+
+Prefill Ms (ours):
+  M=896:  gdn_qkvz 1.254->0.533 ; gdn_out .504->.269 ; attn_qkvz 1.256->.508
+          mlp_gate_up 2.454->1.154 ; mlp_down 1.639->.620 ; lm_head 11.37->5.92
+  M=2048: gdn_qkvz 3.020->1.234 ; gdn_out 1.295->.468 ; attn_qkvz 2.710->1.020
+          mlp_gate_up 6.196->2.921 ; mlp_down 3.608->1.251 ; lm_head 25.94->12.95
+(w8a8 -> w8a16; 2.2-2.4x across the board)
+
+=== CHAMPION (vllm-iexperimental:v1.0.0, torch 2.12.0+xpu) ===
+adds esimd rows; w8a8/w8a16 class-identical to ours:
+  w8a8 M=5: gdn_qkvz .347, gdn_out .346, attn_qkvz .444, gate_up .348,
+            down .443, lm_head .801  (>= ours; NOT a faster torch build)
+  w8a16 M=5: gdn_qkvz .078, gdn_out .067, attn_qkvz .083, gate_up .167,
+             down .084, lm_head .680 (class-equal; attn_qkvz OURS faster .064)
+esimd: M=1 .084/.038/.063/.158/.078/.658 (qkvz/out/attn/gateup/down/lmhead)
+       M=2 .076/.021/.058/.160/.080/.668   M=4 .085/.030/.082/.189/.100/.805
+       M=5 .098/.037/.092/.220/.121/.973   M=8 .145/.056/.146/.326/.178/1.45
+       M=16 .365/.110/.361/.741/.553/3.09  M=64 1.51/.44/1.45/3.08/2.22/12.5
+       M=896 21.6/8.3/20.4/44.5/28.7/176   M=2048 49.8/19.1/46.5/102/67.4/403
+=> ESIMD is a GEMV-corner kernel: wins only M<=2 on gdn_out/attn_qkvz
+   (1.4-1.8x vs w8a16), catastrophically worse at M>=64. Champion dispatch
+   (d026 scaled_mm/xpu.py): use_onednn = m>=8 or (m>=4 and shape in
+   _XPU_BLOCK_QWEN36_27B_SHAPES) -> fp8_gemm_w8a16(a16, B.t(),
+   scale.t().contiguous(), None); below -> esimd; apply_input_quant=False
+   ("optimized XPU paths consume the original fp16 activation").
+   _XPU_BLOCK_QWEN36_27B_SHAPES = {(7168,5120),(5120,3072),(17408,5120),
+   (5120,8704),(8192,5120)} = our five per-rank TP2 projections, verbatim.
+
+=== DECOMPOSITION ARITHMETIC ===
+Layers: 64 x (4-5 GEMMs) + 5 lm_head. Ours under graph (r27 proxy): GEMM avg
+~0.15 ms x ~320 = ~48 ms forward (the -26..-28% face). At w8a16 decode-class
+0.064-0.167: 48 -> 12-20 ms => forward 25-28 ms = D step 43-46 minus tail
+15.2 + sample 2.5. Step projection ours 63-70 -> ~44-50 c1; c4 83.4 -> same
+absolute cut at M~20 (w8a16 flat region extends to M=128). ESIMD port adds
+~0.1 ms/step => deferred, optional. torch-build suspect: CLOSED (above).
+Prefill face -31%: same lever, w8a16 2.2-2.4x at M=896/2048.
+
+=== RIG END-STATE ===
+Zero boots; docker run --rm probes only. radiance-test (W14) HEALTH=200,
+arc-test absent. Bench + outputs: rig /root/build/r40/ (script + 4 files),
+local .tmp/r39read/ (script + r40_ours.out + r40_champ.out).

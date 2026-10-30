@@ -1,0 +1,61 @@
+INFO 10-29 23:41:30 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+INFO 10-29 23:41:30 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+INFO 10-29 23:41:30 [__init__.py:54] - hpu -> vllm_gaudi:register
+INFO 10-29 23:41:30 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+INFO 10-29 23:41:31 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+INFO 10-29 23:41:31 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+INFO 10-29 23:41:31 [__init__.py:54] - hpu -> vllm_gaudi:register
+INFO 10-29 23:41:31 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+WARNING 10-29 23:41:31 [__init__.py:75] ArcXpuPlatform: graph-safe output install failed at register() (expected mid-resolution; platform hooks retry): AttributeError("partially initialized module 'vllm.v1.worker.gpu.async_utils' has no attribute 'AsyncOutput' (most likely due to a circular import)")
+WARNING 10-29 23:41:31 [__init__.py:75] ArcXpuPlatform: graph-safe output install failed at register() (expected mid-resolution; platform hooks retry): AttributeError("partially initialized module 'vllm.v1.worker.gpu.async_utils' has no attribute 'AsyncOutput' (most likely due to a circular import)")
+INFO 10-29 23:41:31 [__init__.py:272] Platform plugin arc is activated
+WARNING 10-29 23:41:31 [__init__.py:75] ArcXpuPlatform: graph-safe output install failed at register() (expected mid-resolution; platform hooks retry): ImportError("cannot import name 'direct_register_custom_op' from partially initialized module 'vllm.utils.torch_utils' (most likely due to a circular import) (/opt/venv/lib/python3.12/site-packages/vllm/utils/torch_utils.py)")
+WARNING 10-29 23:41:31 [__init__.py:75] ArcXpuPlatform: graph-safe output install failed at register() (expected mid-resolution; platform hooks retry): ImportError("cannot import name 'direct_register_custom_op' from partially initialized module 'vllm.utils.torch_utils' (most likely due to a circular import) (/opt/venv/lib/python3.12/site-packages/vllm/utils/torch_utils.py)")
+INFO 10-29 23:41:31 [__init__.py:272] Platform plugin arc is activated
+Namespace(subparser='bench', bench_type='serve', dispatch_function=<function BenchmarkServingSubcommand.cmd at 0x73fe4736d080>, trust_remote_code=True, seed=0, num_prompts=16, dataset_name='random', no_stream=False, dataset_path=None, no_oversample=False, skip_chat_template=False, enable_multimodal_chat=False, disable_shuffle=False, custom_output_len=256, custom_ensure_client_side_data=False, spec_bench_output_len=256, spec_bench_category=None, sonnet_input_len=550, sonnet_output_len=150, sonnet_prefix_len=200, sharegpt_output_len=None, timed_trace_chunk_hash_size=16, timed_trace_sec_multiplier=1, timed_trace_label_timestamp='timestamp', timed_trace_label_input_length='input_length', timed_trace_label_output_length='output_length', timed_trace_label_hash_ids='hash_ids', blazedit_min_distance=0.0, blazedit_max_distance=1.0, asr_max_audio_len_sec=inf, asr_min_audio_len_sec=0.0, random_input_len=32768, random_output_len=512, random_range_ratio='0.0', random_prefix_len=0, random_batch_size=1, no_reranker=False, random_mm_base_items_per_request=1, random_mm_num_mm_items_range_ratio=0.0, random_mm_limit_mm_per_prompt={'image': 255, 'video': 1}, random_mm_bucket_config={(256, 256, 1): 0.5, (720, 1280, 1): 0.5, (720, 1280, 16): 0.0}, hf_subset=None, hf_split=None, hf_name=None, hf_output_len=None, bfcl_categories=None, prefix_repetition_prefix_len=256, prefix_repetition_suffix_len=256, prefix_repetition_num_prefixes=10, prefix_repetition_output_len=128, speed_bench_dataset_subset='qualitative', speed_bench_output_len=4096, speed_bench_category=None, label=None, backend='openai', base_url=None, host='localhost', port=8000, endpoint='/v1/completions', header=None, max_concurrency=None, model='qwen3.8-27b-fp8', input_len=None, output_len=None, tokenizer='/models/target', tokenizer_mode='auto', use_beam_search=False, logprobs=None, request_rate=inf, burstiness=1.0, probe_request_rate=0.0, disable_tqdm=False, num_warmups=0, profile=False, save_result=False, save_detailed=False, append_result=False, metadata=None, result_dir=None, result_filename=None, ignore_eos=True, self_timed=None, percentile_metrics=None, metric_percentiles='99', goodput=None, request_id_prefix='bench-991e26c3-', top_p=None, top_k=None, min_p=None, temperature=None, frequency_penalty=None, presence_penalty=None, repetition_penalty=None, served_model_name=None, lora_modules=None, lora_assignment='random', ramp_up_strategy=None, ramp_up_start_rps=None, ramp_up_end_rps=None, ready_check_timeout_sec=0, chat_template_kwargs=None, extra_body=None, skip_tokenizer_init=False, insecure=False, plot_timeline=False, timeline_itl_thresholds='25,50', plot_dataset_stats=False)
+INFO 10-29 23:41:45 [utils.py:90] Sampling input_len from [32768, 32768] and output_len from [512, 512]
+WARNING: vllm bench serve no longer sets temperature==0 (greedy) in requests by default. The default will be determined on the server side and can be model/API specific. For the old behavior, include --temperature=0.
+Starting initial single prompt test run...
+Skipping endpoint ready check.
+Starting main benchmark run...
+Traffic request rate: inf
+Burstiness factor: 1.0 (Poisson process)
+Maximum request concurrency: None
+  0%|          | 0/16 [00:00<?, ?it/s]  6%|▋         | 1/16 [01:19<19:52, 79.48s/it] 12%|█▎        | 2/16 [01:37<10:08, 43.43s/it] 19%|█▉        | 3/16 [01:37<05:07, 23.65s/it] 25%|██▌       | 4/16 [01:37<02:52, 14.35s/it] 31%|███▏      | 5/16 [01:54<02:44, 15.00s/it] 38%|███▊      | 6/16 [02:42<04:25, 26.55s/it] 44%|████▍     | 7/16 [03:03<03:40, 24.48s/it] 50%|█████     | 8/16 [03:25<03:09, 23.71s/it] 56%|█████▋    | 9/16 [03:44<02:36, 22.29s/it] 62%|██████▎   | 10/16 [03:45<01:34, 15.80s/it] 69%|██████▉   | 11/16 [03:46<00:55, 11.05s/it] 75%|███████▌  | 12/16 [03:46<00:31,  7.96s/it] 81%|████████▏ | 13/16 [03:48<00:17,  5.93s/it] 88%|████████▊ | 14/16 [03:50<00:09,  4.81s/it] 94%|█████████▍| 15/16 [03:54<00:04,  4.46s/it]100%|██████████| 16/16 [03:55<00:00,  3.45s/it]100%|██████████| 16/16 [03:55<00:00, 14.69s/it]
+tip: install termplotlib and gnuplot to plot the metrics
+============ Serving Benchmark Result ============
+Successful requests:                     16        
+Failed requests:                         0         
+Benchmark duration (s):                  235.12    
+Total input tokens:                      524288    
+Total generated tokens:                  8192      
+Request throughput (req/s):              0.07      
+Output token throughput (tok/s):         34.84     
+Peak output token throughput (tok/s):    75.00     
+Peak concurrent requests:                16.00     
+Total token throughput (tok/s):          2264.72   
+---------------Time to First Token----------------
+Mean TTFT (ms):                          97008.14  
+Median TTFT (ms):                        84291.33  
+P99 TTFT (ms):                           219649.68 
+-----Time per Output Token (excl. 1st token)------
+Mean TPOT (ms):                          161.02    
+Median TPOT (ms):                        141.42    
+P99 TPOT (ms):                           315.99    
+---------------Inter-token Latency----------------
+Mean ITL (ms):                           708.16    
+Median ITL (ms):                         109.76    
+P99 ITL (ms):                            4460.38   
+---------------Speculative Decoding---------------
+Acceptance rate (%):                     68.28     
+Acceptance length:                       4.41      
+Drafts:                                  1859      
+Draft tokens:                            9295      
+Accepted tokens:                         6347      
+Per-position acceptance (%):
+  Position 0:                            81.98     
+  Position 1:                            73.21     
+  Position 2:                            66.76     
+  Position 3:                            61.27     
+  Position 4:                            58.20     
+==================================================

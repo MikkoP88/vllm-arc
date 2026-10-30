@@ -1,0 +1,68 @@
+hook OK lines per target:
+      3 device_ops <- patches.lmc_xpu_pinned_env
+      4 lmcache_connector <- patches.lmcache_hma_connector
+      2 mamba_hybrid <- patches.mamba_hybrid_snap_glue
+      2 mamba_utils <- patches.mamba_lmcache_glue
+      1 scheduler <- patches.sched_tail_split
+      3 torch_ops <- patches.lmcint.lmc_twohs_transfer
+      3 vllm <- patches.lmcint.lmc_kvfmt_detector
+hook FAILED lines:
+0
+reroute ACTIVE:
+4
+kvfmt TWO_HS:
+0
+twohs:
+aiofile errors:
+0
+[integrity] seed 101: PASS cold=873c1a7d4813 rehit=873c1a7d4813 chars=916/916
+[integrity] seed 202: PASS cold=a43423a2dffb rehit=a43423a2dffb chars=922/922
+[integrity] seed 303: PASS cold=725780f72fa8 rehit=725780f72fa8 chars=922/922
+[integrity] seed 404: PASS cold=3035cc42e47d rehit=3035cc42e47d chars=922/922
+[integrity] seed 505: PASS cold=3272828b5966 rehit=3272828b5966 chars=928/928
+[determinism] seed 11: PASS 630f74c0ce54
+[determinism] seed 22: PASS fc7c414ef0ce
+[determinism] seed 33: PASS 74704cbaa5a2
+INTEGRITY 5/5 PASS
+DETERMINISM 3/3 PASS
+SPEC_GATE {"wall_s": 3.1, "streams_ok": "4/4", "drafts": 204, "draft_tokens": 816, "accepted": 600, "pos": {"0": 0.902, "1": 0.8039, "2": 0.6471, "3": 0.5882}, "pos1": 0.902, "acceptance": 0.7353, "mean_acceptance_length": 3.94, "hard": 0.5, "target": 0.85}
+SPEC_GATE log_window: (APIServer pid=13) INFO 10-29 23:03:56 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 1.00, Accepted throughput: 0.00 tokens/s, Drafted throughput: 0.36 tokens/s, Accepted: 0 tokens, Drafted: 4 tokens, Per-position acceptance rate: 0.000, 0.000, 0.000, 0.000, Avg Draft acceptance rate: 0.0%
+SPEC_GATE PASS: pos1=0.9020 >= 0.5 hard, acceptance=0.7353 vs 0.85 target (TARGET MISS — recorded, --strict-target for certification)
+
+=== run7n ===
+=== bench_run7n (cert16s4 methodology replica) ===
+agg4x256#1 wall=3.84s aggregate=266.68 tok/s ok_streams=4/4 [256tok/3.8s 256tok/3.8s 256tok/3.8s 256tok/3.7s]
+agg4x256#2 wall=3.44s aggregate=297.94 tok/s ok_streams=4/4 [256tok/3.4s 256tok/3.4s 256tok/3.4s 256tok/3.4s]
+solo200 n=200 dt=2.35s tps=85.16
+solo200 n=200 dt=2.35s tps=85.01
+BENCH_RUN7N_DONE
+=== bench_run7n (cert16s4 methodology replica) ===
+agg4x256#1 wall=3.84s aggregate=266.72 tok/s ok_streams=4/4 [256tok/3.7s 256tok/3.8s 256tok/3.8s 256tok/3.8s]
+agg4x256#2 wall=3.44s aggregate=297.65 tok/s ok_streams=4/4 [256tok/3.4s 256tok/3.4s 256tok/3.4s 256tok/3.4s]
+solo200 n=200 dt=2.35s tps=85.11
+solo200 n=200 dt=2.35s tps=84.99
+BENCH_RUN7N_DONE
+
+=== golden compare (pre-rebank) ===
+[golden] len=64 DRIFT run=63b97ff326763a373401296d4eaf3fc8ddd1d9c79a27319e399f86e2025773ad ref=b0efe294733eb82cc1d18d88d472a86975e4212e1df058eccc780d39f46a9b3a
+[golden] len=256 match
+[golden] len=1024 match
+[golden] len=2048 DRIFT run=785b74ef78386c11837cf46b2e141ca2cbcac0b25a8f77d802ebcd418af3e2bb ref=5b9a5168ae023dcb030f3616c512a76b440fd53b389ea9c37f7cbfdf2ec014cc
+[golden] len=4096 DRIFT run=99955622040dbcc31b0c1674b1738db43050db970e1b3a0b1e6cca33401d86e2 ref=0825deba844b8262dd46a70df5441a3f1f9bb70137939bcb6579d583a05d516b
+GOLDEN_FAIL: 3/5 prompts drifted
+
+=== image/serve posture ===
+      1 INFO 10-29 23:00:52 [platform.py:169] ArcXpuPlatform: wheel hook mamba_utils <- patches.mamba_lmcache_glue OK
+      1 INFO 10-29 23:00:39 [platform.py:169] ArcXpuPlatform: wheel hook mamba_utils <- patches.mamba_lmcache_glue OK
+      1 (Worker_TP1 pid=1107) [r43kvfmt] arc interleaved attn pool -> NL_X_NB_BS_NH_TWO_HS (NB=476 BS=896 TWO=2 HS=512)
+      1 (Worker_TP1 pid=1107) INFO 10-29 23:01:39 [platform.py:169] ArcXpuPlatform: wheel hook vllm <- patches.lmcint.lmc_kvfmt_detector OK
+      1 (Worker_TP1 pid=1107) INFO 10-29 23:01:39 [platform.py:169] ArcXpuPlatform: wheel hook torch_ops <- patches.lmcint.lmc_twohs_transfer OK
+      1 (Worker_TP1 pid=1107) INFO 10-29 23:01:39 [platform.py:169] ArcXpuPlatform: wheel hook device_ops <- patches.lmc_xpu_pinned_env OK
+      1 (Worker_TP1 pid=1107) INFO 10-29 23:01:38 [platform.py:169] ArcXpuPlatform: wheel hook lmcache_connector <- patches.lmcache_hma_connector OK
+      1 (Worker_TP1 pid=1107) INFO 10-29 23:01:05 [platform.py:169] ArcXpuPlatform: wheel hook mamba_hybrid <- patches.mamba_hybrid_snap_glue OK
+      1 (Worker_TP1 pid=1107) [33;20m[2026-10-29 23:03:56,409] LMCache WARNING:[0m NL_X_NB_BS_NH_TWO_HS_Spec.__init__ is deprecated: NL_X_NB_BS_NH_TWO_HS is superseded by NL_X_NB_BS_NH_CS (raw 4-D content-size layout) [3m(utils.py:724:lmcache.utils)[0m
+      1 (Worker_TP1 pid=1107) [32;20m[2026-10-29 23:03:56,409] LMCache INFO:[0m Engine KV Format: EngineKVFormat.NL_X_NB_BS_NH_TWO_HS NL x [NB, BS, NH, 2, HS] [3m(detection.py:69:lmcache.v1.gpu_connector.kv_format.detection)[0m
+      1 (Worker_TP0 pid=993) [r43kvfmt] arc interleaved attn pool -> NL_X_NB_BS_NH_TWO_HS (NB=476 BS=896 TWO=2 HS=512)
+      1 (Worker_TP0 pid=993) INFO 10-29 23:01:39 [platform.py:169] ArcXpuPlatform: wheel hook vllm <- patches.lmcint.lmc_kvfmt_detector OK
+      1 (Worker_TP0 pid=993) INFO 10-29 23:01:39 [platform.py:169] ArcXpuPlatform: wheel hook torch_ops <- patches.lmcint.lmc_twohs_transfer OK
+      1 (Worker_TP0 pid=993) INFO 10-29 23:01:39 [platform.py:169] ArcXpuPlatform: wheel hook device_ops <- patches.lmc_xpu_pinned_env OK
