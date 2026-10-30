@@ -15,7 +15,9 @@
 #               CLI flag, not env (plan p30). P2-candidate posture — the
 #               §10 P2 gate ("FULL graph + MTP boots and survives first
 #               request") is proven by the P2 spec legs, not assumed.
-#   ARC_LMC     0 no LMCache | 1 D-champion kv-transfer config (P3)
+#   ARC_LMC     0 no LMCache | 1 D-champion kv-transfer config (P3; default —
+#               the certified posture: LMCacheConnectorV1 + the 9-var
+#               LMCACHE_* chain, keep as a set)
 #   ARC_GMU     --gpu-memory-utilization (default 0.8, D-champion certified
 #               posture — V1227_GMU lineage, plan Appendix F)
 #   ARC_MNBT    --max-num-batched-tokens (default 8192, D champion)
@@ -35,7 +37,7 @@ ARC_IMAGE=${ARC_IMAGE:-vllm-arc:v0.30.0-b70}
 ARC_NAME=${ARC_NAME:-arc-test}
 ARC_GRAPH=${ARC_GRAPH:-0}
 ARC_SPEC=${ARC_SPEC:-3}
-ARC_LMC=${ARC_LMC:-0}
+ARC_LMC=${ARC_LMC:-1}
 ARC_GMU=${ARC_GMU:-0.8}
 ARC_MNBT=${ARC_MNBT:-8192}
 ARC_MAXSEQS=${ARC_MAXSEQS:-64}
@@ -44,9 +46,8 @@ RIG=/root/build
 
 # Refusal posture (p30 merge): MTP-on (ARC_SPEC>0) is a P2-candidate
 # posture — allowed by default; its validation IS the §10 P2 spec-leg row.
-# ARC_ALLOW_UNVALIDATED=1 unlocks the still-future cache posture for defect
-# REPRODUCTION ONLY (pre-fix evidence capture — never a certified posture;
-# repro legs record the death traceback as their artifact).
+# (The pre-P3 ARC_LMC refusal gate is retired: p40..p43 landed and the
+# cache posture is certified — ARC_LMC=1 is now the default.)
 if [ "$ARC_SPEC" != 0 ] && [ "$ARC_GRAPH" = 0 ]; then
   echo "NOTE: ARC_SPEC=$ARC_SPEC with ARC_GRAPH=0 — non-champion combo (D v133 runs MTP"
   echo "with FULL_DECODE_ONLY graphs); allowed for spec-eager A/B isolation only."
@@ -57,9 +58,6 @@ case "$ARC_SPEC" in
   0|3|4|5) ;;
   *) echo "REFUSE: ARC_SPEC='$ARC_SPEC' — expected 0 (off) or MTP depth 3/4/5"; exit 3;;
 esac
-if [ "${ARC_ALLOW_UNVALIDATED:-0}" != 1 ]; then
-  [ "$ARC_LMC" = 0 ] || { echo "REFUSE: ARC_LMC=1 before p40..p43 land (P3) — cache posture not yet validated on this image (ARC_ALLOW_UNVALIDATED=1 to repro)"; exit 3; }
-fi
 
 # --- container: create if absent (W14 pattern: persistent container, serve
 # via exec — fast re-boots between legs; same device/ipc/net posture as the
@@ -128,6 +126,16 @@ if [ "$ARC_SPEC" != 0 ]; then
   SPEC_FLAG="--speculative-config '{\"method\":\"mtp\",\"num_speculative_tokens\":$ARC_SPEC}'"
 fi
 
+# LMCache (P3, certified posture): the D-champion kv-transfer config — exact
+# bytes of the certified line (rig /root/build/r42/r43_serve_k5.sh:53) — plus
+# the 9-var LMCACHE_* chain as one set (plan Appendix E; keep as a set).
+LMC_ENV=""
+LMC_FLAG=""
+if [ "$ARC_LMC" = 1 ]; then
+  LMC_ENV="export LMCACHE_USE_EXPERIMENTAL_API=True; export LMCACHE_MAX_LOCAL_CPU_SIZE=100; export LMCACHE_LOCAL_CPU=True; export LMCACHE_EVICT_POLICY=lr_u; export LMCACHE_CHUNK_SIZE=1024; export LMCACHE_SAVE_DECODE_CACHE=True; export LMCACHE_MIN_RETRIEVE_TOKENS=1024; export LMCACHE_LOG_LEVEL=INFO; export LMCACHE_DISABLE_PINNED_MEMORY=1;"
+  LMC_FLAG="--kv-transfer-config '{\"kv_connector\":\"LMCacheConnectorV1\",\"kv_role\":\"kv_both\",\"kv_connector_extra_config\":{\"use_native\":true,\"lmcache.extra_config\":{\"mamba_pool_ratio\":2}},\"engine_id\":\"arc-p40\"}'"
+fi
+
 docker exec -d "$ARC_NAME" bash -c "
 export PYTHONHASHSEED=0
 export ZE_AFFINITY_MASK=0,1
@@ -142,6 +150,7 @@ export CCL_SYCL_ALLGATHERV_SMALL_THRESHOLD=131072
 export CCL_SYCL_ALLGATHERV_SCALEOUT_THRESHOLD=1048576
 export CCL_SYCL_ALLGATHERV_TMP_BUF=0
 export CCL_SYCL_ALLREDUCE_TMP_BUF=0
+$LMC_ENV
 $GRAPH_ENV
 exec /opt/venv/bin/vllm serve --model /models/target \
   --served-model-name qwen3.8-27b-fp8 \
@@ -155,6 +164,7 @@ exec /opt/venv/bin/vllm serve --model /models/target \
   --quantization fp8 \
   --kv-cache-dtype fp8_e4m3 \
   --mamba-ssm-cache-dtype float16 \
+  --mamba-cache-mode=align \
   --enable-prefix-caching \
   --trust-remote-code \
   --reasoning-parser qwen3 \
@@ -162,6 +172,7 @@ exec /opt/venv/bin/vllm serve --model /models/target \
   --enable-auto-tool-choice \
   --chat-template /root/chat_template_qwen38_high.jinja \
   --no-disable-hybrid-kv-cache-manager \
+  $LMC_FLAG \
   $COMPILATION_FLAG \
   $SPEC_FLAG \
   $XG_FLAG \
