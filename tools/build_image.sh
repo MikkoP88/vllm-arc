@@ -26,10 +26,11 @@ cp /root/build/radiance_wheels/triton-3.7.2+xpu-py3-none-any.whl "$CTX/wheels/"
 # Explicit filename: the build dir also holds the arc1/arc2 ABI rejects,
 # which must never enter an image.
 cp /root/build/wheels-arc-vxk/vllm_xpu_kernels-0.1.14.1+arc3-cp312-cp312-linux_x86_64.whl "$CTX/wheels/"
-# P3 p40: internal lmcache wheel (upstream 0.5.5 sdist + C 3-file delta +
-# upstream SYCL XPU build, generation-matched per external_patches/lmcache).
+# P6.2: internal lmcache wheel (upstream 0.5.6 sdist + the 4-patch arc kit
+# [e-adapter-vllm-056-graft, e01-xpu-platform-ops, e02e03, e04] + upstream
+# SYCL XPU build, generation-matched per external_patches/lmcache).
 # Explicit filename: rejects/rebuilds must never enter an image silently.
-cp /root/build/wheels-arc-lmc/lmcache-0.5.5+arc1-cp312-cp312-manylinux_2_35_x86_64.whl "$CTX/wheels/"
+cp /root/build/wheels-arc-lmc/lmcache-0.5.6+arc1-cp312-cp312-manylinux_2_35_x86_64.whl "$CTX/wheels/"
 
 tar -xf "$archive" -C "$CTX/src"
 cp "$CTX/src/Dockerfile" "$CTX/Dockerfile"

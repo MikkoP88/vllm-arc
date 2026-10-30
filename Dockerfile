@@ -33,11 +33,12 @@ ARG FORK_SHA=unknown
 ARG BUILD_HOST=rig
 
 # Clear the base's 0.26-era constraints (they pin torch==2.12.0+xpu and would
-# conflict with the 0.30 stack swap below — radiance-proven) and the base's
-# VLLM_QUANTIZE_Q40_LIB arc-fork knob (no meaning on 0.30 core; not carried
-# by this project — no-unevidenced-customization law, plan §7).
+# conflict with the 0.30 stack swap below — radiance-proven).
+# VLLM_QUANTIZE_Q40_LIB (the base's arc-fork knob, no meaning on 0.30 core)
+# was removed at P6.3: an empty-value ENV stanza still EXPORTS the name, and
+# vllm-0.30's env parser then logs "non-default value" serve WARN noise on
+# every boot — the fork-added-warning audit item (r47a triage, P6.3).
 ENV PIP_CONSTRAINT= \
-    VLLM_QUANTIZE_Q40_LIB= \
     PIP_EXTRA_INDEX_URL=https://download.pytorch.org/whl/xpu \
     PIP_DISABLE_PIP_VERSION_CHECK=1 \
     PIP_NO_CACHE_DIR=1
@@ -62,7 +63,7 @@ RUN set -euxo pipefail; \
         "torchvision==0.28.0+xpu" \
         /wheels/arc/vllm_xpu_kernels-0.1.14.1+arc3-cp312-cp312-linux_x86_64.whl \
         "xgrammar==0.2.8"; \
-    pip install --no-deps /wheels/arc/lmcache-0.5.5+arc1-*.whl; \
+    pip install --no-deps /wheels/arc/lmcache-0.5.6+arc1-*.whl; \
     pip install "msgspec" "numpy<=2.2.6" "numba" "nvtx" \
         "opentelemetry-api>=1.20.0,<=1.40.0" "opentelemetry-sdk>=1.20.0" \
         "opentelemetry-exporter-otlp>=1.20.0" \
@@ -97,7 +98,7 @@ RUN set -euxo pipefail; \
     python -c "import vllm; from vllm.platforms import current_platform; print('PLATFORM_RESOLVE_OK', type(current_platform).__name__)"; \
     python -c "from vllm_gaudi.xpu.platform import ArcXpuPlatform, is_xe2_arch; print('ARC_PLATFORM_IMPORT_OK')"; \
     python -c "import vllm_xpu_kernels; from importlib.metadata import version; v = version('vllm-xpu-kernels'); assert '+arc3' in v, v; print('VXK_ARC3_PIN_OK', v)"; \
-    python -c "import lmcache, lmcache.xpu_ops; from importlib.metadata import version; v = version('lmcache'); assert v == '0.5.5+arc1', v; print('LMCACHE_ARC1_PIN_OK', v)"; \
+    python -c "import lmcache, lmcache.xpu_ops; from importlib.metadata import version; v = version('lmcache'); assert v == '0.5.6+arc1', v; print('LMCACHE_ARC1_PIN_OK', v)"; \
     python -c "import aiofile, caio, redis; print('LMCACHE_RUNTIME_DEPS_OK')"
 
 # ---- IMAGE_MANIFEST (governance: every certified image reproducible) ------
@@ -109,7 +110,7 @@ RUN set -euxo pipefail; \
       echo "vllm_core=0.30.0+xpu $(md5sum /wheels/arc/vllm-0.30.0+xpu-*.whl)"; \
       echo "triton=3.7.2+xpu $(md5sum /wheels/arc/triton-3.7.2+xpu-*.whl)"; \
       echo "vxk=0.1.14.1+arc3 (int64 wedge fix, §6) $(md5sum /wheels/arc/vllm_xpu_kernels-0.1.14.1+arc3-*.whl)"; \
-      echo "lmcache=0.5.5+arc1 (SYCL XPU build + C 3-file delta, external_patches/lmcache) $(md5sum /wheels/arc/lmcache-0.5.5+arc1-*.whl)"; \
+      echo "lmcache=0.5.6+arc1 (SYCL XPU build + 5-file patch kit, external_patches/lmcache P6.2) $(md5sum /wheels/arc/lmcache-0.5.6+arc1-*.whl)"; \
       echo "lmcache_closure=aiofile redis (Requires-Dist; gds_backend.py:19 module-level import, r42 fix)"; \
       echo "stack_freeze=/etc/vllm-arc/venv-freeze.txt"; \
       echo "dpcpp=none (esimd-build stage lands at P2, plan §8)"; \

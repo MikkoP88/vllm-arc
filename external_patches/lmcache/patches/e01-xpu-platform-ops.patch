@@ -1,0 +1,94 @@
+--- a/lmcache/v1/platform/torch_ops/mem_alloc.py
++++ b/lmcache/v1/platform/torch_ops/mem_alloc.py
+@@ -58,7 +58,19 @@
+ 
+     global _use_pinned
+     if _use_pinned is None:
+-        _use_pinned = torch_dev.is_available()
++        # llm-scaler arc law (e01 port, p40): USM-pinned host pools above
++        # ~16 GiB per process are the Arc segfault class; the certified
++        # chain sets LMCACHE_DISABLE_PINNED_MEMORY=1 to force pageable host
++        # allocations. Upstream only falls back lazily on the first
++        # RuntimeError, which a USM segfault never reaches.
++        _use_pinned = torch_dev.is_available() and not bool(
++            int(os.environ.get("LMCACHE_DISABLE_PINNED_MEMORY", "0"))
++        )
++        if torch_dev.is_available() and not _use_pinned:
++            logger.info(
++                "Pinned host allocations disabled via "
++                "LMCACHE_DISABLE_PINNED_MEMORY; using pageable memory."
++            )
+     try:
+         backing = torch.empty(
+             size + _PAGE_SIZE, dtype=torch.uint8, pin_memory=_use_pinned
+--- a/lmcache/v1/platform/devices/xpu/device_ops.py
++++ b/lmcache/v1/platform/devices/xpu/device_ops.py
+@@ -13,6 +13,9 @@
+ # Standard
+ from typing import ClassVar
+ 
++# Third Party
++import torch
++
+ # First Party
+ from lmcache.logging import init_logger
+ from lmcache.v1.platform.base.device_ops import DeviceOps
+@@ -37,3 +40,58 @@
+             )
+             return
+         self.bind_native(sycl)
++        # llm-scaler arc law (p40d): the native SYCL KV-transfer kernels are
++        # MLA-shaped (the GQA path raises); the champion posture routes all
++        # v1 transfers through the fully-vectorized torch baseline.
++        # bind_native above just overlaid them with native symbols; re-pin
++        # the four transfer entry points, keeping native-only symbols (host
++        # registration, pinned alloc) bound.
++        from lmcache.v1.platform import torch_ops
++
++        for _op in (
++            "multi_layer_kv_transfer",
++            "multi_layer_kv_transfer_unilateral",
++            "single_layer_kv_transfer",
++            "multi_layer_block_kv_transfer",
++        ):
++            if hasattr(torch_ops, _op):
++                setattr(self, _op, getattr(torch_ops, _op))
++
++    def tensor_from_ptr(
++        self,
++        ptr: int,
++        shape: tuple[int, ...],
++        dtype: "torch.dtype",
++        device: "torch.device",
++    ) -> "torch.Tensor":
++        """Non-owning XPU (SYCL USM) tensor view from a raw device pointer.
++
++        llm-scaler arc (e01 port): torch._C._construct_storage_from_data_pointer
++        takes a signed 64-bit pointer; XPU USM device addresses arrive as
++        unsigned values that can exceed 2**63, so wrap them into the signed
++        range first. Aliasing verified on B70: writes through the returned
++        tensor land in the original allocation.
++        """
++        if ptr == 0:
++            raise ValueError("Pointer must be non-zero")
++        total_bytes = dtype.itemsize
++        for dim in shape:
++            total_bytes *= int(dim)
++        signed_ptr = ptr if ptr < 2**63 else ptr - 2**64
++        try:
++            storage = torch._C._construct_storage_from_data_pointer(
++                signed_ptr,
++                device,
++                total_bytes,
++            )
++            tensor = torch.empty(0, dtype=dtype, device=storage.device)
++            strides = [1] * len(shape)
++            for index in range(len(shape) - 2, -1, -1):
++                strides[index] = strides[index + 1] * int(shape[index + 1])
++            tensor.set_(storage, 0, shape, tuple(strides))
++            return tensor
++        except Exception as exc:
++            raise RuntimeError(
++                "TorchXPU failed to construct a non-owning tensor from a "
++                "device pointer"
++            ) from exc

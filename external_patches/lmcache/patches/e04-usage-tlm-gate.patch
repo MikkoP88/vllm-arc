@@ -1,0 +1,41 @@
+--- a/lmcache/observability.py
++++ b/lmcache/observability.py
+@@ -23,7 +23,10 @@
+ 
+ # First Party
+ from lmcache.logging import init_logger
+-from lmcache.usage_telemetry import ContinuousUsageContext
++from lmcache.usage_telemetry import (
++    ContinuousUsageContext,
++    is_usage_tracking_enabled,
++)
+ from lmcache.utils import thread_safe
+ from lmcache.v1.metadata import LMCacheMetadata
+ 
+@@ -1962,7 +1965,15 @@
+         self.log_interval = log_interval
+         self.monitor = LMCStatsMonitor.GetOrCreate()
+         self.prometheus_logger = PrometheusLogger.GetOrCreate(metadata, config=config)
+-        self.lmc_usage_logger = ContinuousUsageContext.GetOrCreate(metadata)
++        # llm-scaler arc (P6.3): the fork runs TWO engines per worker (attn
++        # + mamba) whose kv metadata differs, and upstream constructs the
++        # process-wide ContinuousUsageContext unconditionally — the second
++        # engine logs an ERROR. Only build it when telemetry is enabled (the
++        # certified chain sets LMCACHE_TRACK_USAGE=false).
++        if is_usage_tracking_enabled():
++            self.lmc_usage_logger = ContinuousUsageContext.GetOrCreate(metadata)
++        else:
++            self.lmc_usage_logger = None
+         self.is_running = True
+         # Event for interruptible sleep during shutdown
+         self.shutdown_event = threading.Event()
+@@ -1976,7 +1987,8 @@
+         while self.is_running:
+             stats = self.monitor.get_stats_and_clear()
+             self.prometheus_logger.log_prometheus(stats)
+-            self.lmc_usage_logger.incr_or_send_stats(stats)
++            if self.lmc_usage_logger is not None:
++                self.lmc_usage_logger.incr_or_send_stats(stats)
+             # Use Event.wait() instead of time.sleep() for interruptible sleep
+             # Returns True if event was set, False if timeout occurred
+             self.shutdown_event.wait(self.log_interval)

@@ -1694,6 +1694,9 @@ class LMCacheConnectorV1Impl:
         """Start loading the KV cache from the connector buffer to vLLM's
         paged KV buffer.
 
+        Non-layerwise synchronous loads release each request's lookup pins
+        before loading the next request, allowing CPU cache space to be reused.
+
         Args:
             forward_context (ForwardContext): the forward context.
 
@@ -1798,6 +1801,12 @@ class LMCacheConnectorV1Impl:
                     request_configs=request.request_configs,
                     req_id=request.req_id,
                 )
+                if not self.async_loading:
+                    # Blocking retrieve releases get references, not lookup pins.
+                    # Release this request's pins before the next load may need
+                    # CPU staging space; wait_for_save cleanup is idempotent.
+                    # (upstream 0.5.6; pairs with the epoch-ledger unpin below)
+                    self.lmcache_engine.lookup_unpin(request.req_id)
 
                 # Check the result
                 num_retrieved_tokens = ret_token_mask.sum().item()
@@ -1960,7 +1969,7 @@ class LMCacheConnectorV1Impl:
             if self.current_layer == self.num_layers - 1:
                 assert ret_token_mask is not None
                 num_retrieved_tokens = ret_token_mask.sum().item()
-                logger.debug("Retrieved %s tokens", num_retrieved_tokens)
+                logger.info("Retrieved %s tokens", num_retrieved_tokens)
 
         return
 
@@ -2694,6 +2703,14 @@ class LMCacheConnectorV1Impl:
         ):
             return 0
 
+        # Ignore DP attention mock requests (upstream 0.5.6).
+        if request.request_id.startswith("mock_req"):
+            return 0
+        # Degraded mode (upstream 0.5.6): LMCache init failed and no lookup
+        # client is available — report no external hits and let vLLM recompute
+        # instead of crashing EngineCore during scheduling.
+        if self.lookup_client is None:
+            return 0
 
         self._requests_priority[request.request_id] = request.priority
 

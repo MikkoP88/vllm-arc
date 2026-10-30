@@ -62,7 +62,11 @@ def register():
     # rebinding. Expected to FAIL here — this runs mid platform-resolution,
     # where importing vllm.v1.worker.gpu is circular; the platform hooks
     # (check_and_update_config / check_if_supports_dtype) retry post-import.
-    # Logged, never silent, and never fatal to resolution.
+    # Logged, never silent, and never fatal to resolution. DEBUG level since
+    # P6.3: this expected-path line fired as WARNING in every one of the ~12
+    # processes of a TP2 boot (r47a serve WARN/ERROR audit, fork-added noise);
+    # the real failure signal stays WARNING in platform._install_xpu_patches,
+    # which only fires after the post-import retries had their chance.
     try:
         from vllm_gaudi.xpu.patches import graph_safe_output
 
@@ -71,8 +75,8 @@ def register():
         try:
             from vllm.logger import init_logger
 
-            init_logger("vllm.platforms.arc").warning(
-                "ArcXpuPlatform: graph-safe output install failed at "
+            init_logger("vllm.platforms.arc").debug(
+                "ArcXpuPlatform: graph-safe output install deferred at "
                 "register() (expected mid-resolution; platform hooks retry): "
                 "%r", e)
         except Exception:  # noqa: BLE001 — logging must never break resolution

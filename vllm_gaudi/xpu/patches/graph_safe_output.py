@@ -591,8 +591,13 @@ def _hygiene(tag: str) -> None:
             if now != _TRACE_LAST:
                 _TRACE_LAST = now
                 _TRACE_LOGS += 1
-                logger.warning("ArcXpuPlatform: ARC_GRAPH_TRACE state->%s at %s "
-                               "(captures_open=%d)", now, tag, _captures_open)
+                # DEBUG since P6.3 (r47a audit): the certified chain runs the
+                # flip-payload interlock (ARC_TRACE_FLIP=1), and these
+                # expected per-boot transition lines were the ×2 fork-added
+                # WARNING noise in every serve log. The interlock's failure
+                # signals (zombie detection) stay at ERROR/WARNING.
+                logger.debug("ArcXpuPlatform: ARC_GRAPH_TRACE state->%s at %s "
+                             "(captures_open=%d)", now, tag, _captures_open)
     _dezombie(tag)
 
 

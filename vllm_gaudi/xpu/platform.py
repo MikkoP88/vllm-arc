@@ -89,7 +89,12 @@ _WHEEL_HOOKS = (
     ("vllm.v1.worker.mamba_utils", "mamba_lmcache_glue"),  # p41
     ("vllm.v1.worker.gpu.model_states.mamba_hybrid", "mamba_hybrid_snap_glue"),  # p41c
     ("vllm.distributed.kv_transfer.kv_connector.v1.lmcache_connector", "lmcache_hma_connector"),  # p41b
-    ("lmcache.v1.platform.xpu.device_ops", "lmc_xpu_pinned_env"),  # p40c
+    # p40c/p40d (lmc_xpu_pinned_env) ABSORBED into the lmcache wheel patch
+    # e01-xpu-platform-ops.patch at 0.5.6 (P6.2): the 0.5.5 wrap targeted
+    # lmcache.v1.platform.xpu.device_ops, a module the 0.5.6 platform
+    # restructure deleted; the env-gated pinned-alloc re-pin and the
+    # unconditional KV-transfer torch-baseline re-pin now live wheel-side
+    # in XpuDeviceOps.ensure_native.
     ("lmcache.v1.gpu_connector.kv_format.detectors.vllm", "lmcint.lmc_kvfmt_detector"),  # r43
     ("lmcache.v1.platform.torch_ops", "lmcint.lmc_twohs_transfer"),  # r43
     ("vllm.v1.core.sched.scheduler", "sched_tail_split"),  # r35
