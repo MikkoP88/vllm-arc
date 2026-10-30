@@ -6,7 +6,7 @@
 # 708e93ed…) are local md5-guarded wheels installed by the Dockerfile
 # (wheel_guard law, external_patches/wheels.pins.md5); PyPI/index-resolved
 # pins are listed here for documentation and pip-check parity.
-vllm-xpu-kernels==0.1.14.1
+vllm-xpu-kernels==0.1.16.2
 xgrammar==0.2.8
 # lmcache enters at P3 as the patched internal wheel lmcache-arc-0.5.5+arc<N>
 # (external_patches/lmcache build law) — pinned there when it lands.
