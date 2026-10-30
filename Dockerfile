@@ -69,6 +69,17 @@ RUN set -euxo pipefail; \
         "opentelemetry-exporter-prometheus>=0.50b0,<=0.61b0" \
         "prometheus_client>=0.18.0,<=0.24.1" "psutil" "py-cpuinfo"
 
+# lmcache 0.5.5+arc1 Requires-Dist closure delta (r42): aiofile + redis.
+# The wheel installs --no-deps; storage_backend/__init__ imports
+# gds_backend unconditionally and gds_backend.py:19 does `import aiofile`
+# at module level — without it the first lmcache_integration import
+# (connector __init__ via the lmcint adapter -> cache_engine:62 ->
+# storage_manager) dies. Cap-era legs pip-installed both into the
+# running container at boot (r30_boot.sh "Requires-Dist" step); the
+# certified image carries them in-image. Placed after the stack RUN so
+# its multi-GB layer stays cached.
+RUN set -euxo pipefail; pip install "aiofile" "redis"
+
 # Fork dist on top of the pinned stack (re-installed on every source change).
 COPY src/ /build/vllm-arc/
 RUN set -euxo pipefail; \
@@ -86,7 +97,8 @@ RUN set -euxo pipefail; \
     python -c "import vllm; from vllm.platforms import current_platform; print('PLATFORM_RESOLVE_OK', type(current_platform).__name__)"; \
     python -c "from vllm_gaudi.xpu.platform import ArcXpuPlatform, is_xe2_arch; print('ARC_PLATFORM_IMPORT_OK')"; \
     python -c "import vllm_xpu_kernels; from importlib.metadata import version; v = version('vllm-xpu-kernels'); assert '+arc3' in v, v; print('VXK_ARC3_PIN_OK', v)"; \
-    python -c "import lmcache, lmcache.xpu_ops; from importlib.metadata import version; v = version('lmcache'); assert v == '0.5.5+arc1', v; print('LMCACHE_ARC1_PIN_OK', v)"
+    python -c "import lmcache, lmcache.xpu_ops; from importlib.metadata import version; v = version('lmcache'); assert v == '0.5.5+arc1', v; print('LMCACHE_ARC1_PIN_OK', v)"; \
+    python -c "import aiofile, caio, redis; print('LMCACHE_RUNTIME_DEPS_OK')"
 
 # ---- IMAGE_MANIFEST (governance: every certified image reproducible) ------
 RUN set -euxo pipefail; \
@@ -98,6 +110,7 @@ RUN set -euxo pipefail; \
       echo "triton=3.7.2+xpu $(md5sum /wheels/arc/triton-3.7.2+xpu-*.whl)"; \
       echo "vxk=0.1.14.1+arc3 (int64 wedge fix, §6) $(md5sum /wheels/arc/vllm_xpu_kernels-0.1.14.1+arc3-*.whl)"; \
       echo "lmcache=0.5.5+arc1 (SYCL XPU build + C 3-file delta, external_patches/lmcache) $(md5sum /wheels/arc/lmcache-0.5.5+arc1-*.whl)"; \
+      echo "lmcache_closure=aiofile redis (Requires-Dist; gds_backend.py:19 module-level import, r42 fix)"; \
       echo "stack_freeze=/etc/vllm-arc/venv-freeze.txt"; \
       echo "dpcpp=none (esimd-build stage lands at P2, plan §8)"; \
       echo "built=$(date -u +%Y-%m-%dT%H:%M:%SZ)"; \
