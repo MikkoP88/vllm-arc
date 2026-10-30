@@ -47,33 +47,82 @@ Container flags (docker run, P1 boot interface):
 | `VLLM_ALLOW_LONG_MAX_MODEL_LEN` | `1` | `--max-model-len 262144` exceeds derived config max |
 | `VLLM_WORKER_MULTIPROC_METHOD` | `spawn` | TP2 worker process law (P1) |
 
-## vllm-arc knobs (`vllm_gaudi/envs.py` arc lane)
+## vllm-arc knobs — complete control surface (r45g deep-audit truth table)
 
-| knob | default | consumer | status |
+Every env consumed by fork code, with its **true code default** and class.
+The certified serve line exports **none** of these — all ride code defaults
+(verified against `r43_serve_k5.sh`). The `envs.py` registry documents this
+surface (r45g law: registry documents, consumers read `os.environ` directly
+at the cited line — defaults must mirror each other).
+
+**Default-ON patches** (active in the certified posture without any env;
+kill-switch to disable):
+
+| knob | default | consumer (site) | patch | disable-by |
+|---|---|---|---|---|
+| `VLLM_ARC_WARMUP_DISABLE` | `0` → interlock ACTIVE | `patches/first_request_warmup.py:79` | p12b | `=1` |
+| `VLLM_ARC_GDN_FASTPATH_DISABLE` | `""` → fastpath ACTIVE | `patches/gdn_metadata_fastpath.py:275` | p10/r23 | any non-`0` |
+| `VLLM_ARC_LOOKUP_MEMO` | `1` → memo ACTIVE (async only) | `patches/lmcache_hma_connector.py:260` | p42 | `=0` |
+| `VLLM_ARC_LMC_HMA` | `1` → HMA mixin ACTIVE | `patches/lmcache_hma_connector.py:170` | p41b | `=0` (boot then dies at factory gate — A/B only) |
+| `VLLM_ARC_LMC_TORCH_KV` | `1` → torch-baseline KV ops ACTIVE | `patches/lmc_xpu_pinned_env.py:85` | p40d | `=0` (native pinned ops segfault >16–32 GiB/proc) |
+| `VLLM_ARC_LMC_MAMBA_SNAP` | `1` → boundary snap ACTIVE | `patches/mamba_hybrid_snap_glue.py:94` | p41c | `=0` (breaks integrity) |
+| `VLLM_MAMBA_FP16_SEED_REPAIR` | `1` → repair ACTIVE | `patches/mamba_lmcache_glue.py:69` | p41 | `=0` |
+| `VLLM_ARC_R35_TAIL_SPLIT` | `1` → tail-split v4 ACTIVE | `patches/sched_tail_split.py:59` | p43/r35 | `=0` |
+| `VLLM_ARC_FP8_W8A16_DISABLE` | `0` → W8A16 reroute ACTIVE | `patches/fp8_block_w8a16.py:65` | p44 | `=1` (stock W8A8) |
+
+**Default-OFF / opt-in** (inactive unless set):
+
+| knob | default | semantics | consumer |
 |---|---|---|---|
-| `VLLM_ARC_LOOKUP_ELIDE` | `true` | `patches/lmcache_hma_connector.py` (p42) | live |
-| `VLLM_ARC_GMU_RELAX` | `0.0` | `platform.py` (p05; 0.8 sanctioned on B70) | live |
-| `VLLM_ARC_XG_COMPACT` | `false` | `tools/serve_arc_b70.sh` (p06) | live |
+| `VLLM_ARC_LOOKUP_ELIDE` | `0` = OFF | **INT token count, not a bool** — skips both ZMQ lookups only when engine prefix held AND residual ≤ N tokens; r31 disposition: opt-in only (p40d/p41c made real joint loads exist; elide would forfeit them) | `patches/lmcache_hma_connector.py:235` |
+| `VLLM_ARC_XG_COMPACT` | `false` | compact-JSON structured-output posture | `tools/serve_arc_b70.sh` (p06) |
+| `VLLM_ARC_GMU_RELAX` | `0.0` | GMU conditional-relax fraction (0.8 = sanctioned B70 posture, set via serve env) | `platform.py` (p05) |
 
-Dropped at r45d (no-unevidenced law — declared, never consumed; audit r45
-findings F1–F3; re-add only with a consumer leg): `VLLM_ARC_ASYNC` (p50
-closed at P2 — core 0.30 auto-enables async scheduling), 
-`VLLM_ARC_YIELD_TOKENS` (p51 never built), `VLLM_ARC_COMPACT_GDN` (dead
-twin of the live `VLLM_COMPACT_GDN` below).
+**Tuning ints** (default-ON logging/caps, donor v136 lineage names):
 
-Live non-ARC fork knobs (auto-detected, not operator-set):
+| knob | default | meaning |
+|---|---|---|
+| `LMC_BOUNDARY_KEEP` | `8` | per-req mamba boundary-registry cap |
+| `LMC_BOUNDARY_CAP` | `48` | global boundary FIFO cap |
+| `LMC_BOUND_STATS` | `1` | boundary stats logging |
+| `LMC_BOUND_MD5` | `1` | boundary md5 logging |
+
+**Auto-detected (not operator-set):**
 
 | knob | set by | consumed by |
 |---|---|---|
 | `VLLM_COMPACT_GDN` | `hpu_model_runner.py` auto-detect (:1410) | `platform.py:501/539`, `hpu_worker.py` (GDN layout law) |
 
-## Kill-switches (patch escape hatches; all default-OFF = patch active)
+**Diagnostics (silent-off, never in the certified line):** `ARC_SNAP_PROBE`
+(r31/r34/r35 leg telemetry, ~12 sites, comment-marked "silent off").
+**Donor-internal (byte-pinned lmcint kit, not ours):** `LMCACHE_CONFIG_FILE`,
+`LMCACHE_FORCE_SKIP_SAVE`, `LMC_STORE_LAG`.
 
-| switch | off-value | patch |
+Dropped at r45d (no-unevidenced law — declared, never consumed; audit r45
+findings F1–F3; re-add only with a consumer leg): `VLLM_ARC_ASYNC` (p50
+closed at P2 — core 0.30 auto-enables async scheduling),
+`VLLM_ARC_YIELD_TOKENS` (p51 never built), `VLLM_ARC_COMPACT_GDN` (dead
+twin of the live `VLLM_COMPACT_GDN` above).
+
+## Naming map (r45g naming audit)
+
+In-line with best practice: `VLLM_ARC_*` engine-env namespace (15 vars),
+`NN-category/pNN-slug` patch dirs, `feat/arc-pNN-<slug>` branches,
+`vllm-arc:v0.30.0-b70[-pNN]` image tags, `ARC_*` **host-side script vars**
+(`tools/serve_arc_b70.sh` — a different layer from engine envs), kebab-case
+docs. Sanctioned deviations (kept for evidence-chain continuity; rename is
+an upstream-PR-lane item per §11.7 rule 8 — "format chosen to upstream
+without rewriting"):
+
+| name | deviation | why kept |
 |---|---|---|
-| `VLLM_ARC_FP8_W8A16_DISABLE` | unset → reroute ACTIVE | p44 fp8 block W8A16 route |
-| `VLLM_ARC_LMC_HMA` | `0` → mixin off | p41b HMA connector |
-| `VLLM_MAMBA_FP16_SEED_REPAIR` | `0` → repair off | p41 mamba glue |
+| `ARC_TRACE_FLIP` | no `VLLM_ARC_` prefix | §7-cited p12b interlock name; certified line + every evidence leg since r18 uses it |
+| `VLLM_MAMBA_FP16_SEED_REPAIR` | `VLLM_` without `ARC` | upstream-style name — an asset for the upstream PR lane |
+| `LMC_BOUND*` (4) | donor v136 lineage names | ported verbatim for provenance (p41 dual-donor convergence evidence) |
+| `VLLM_ARC_LOOKUP_ELIDE` | name reads bool, value is int tokens | documented above; rename candidate `..._ELIDE_TOKENS` at the upstream lane |
+
+Regenerate: this file is a snapshot; on any envs.py or serve-line change,
+update alongside the leg's VERDICT (the audit leg re-runs the §A–E sweeps).
 
 Regenerate: this file is a snapshot; on any envs.py or serve-line change,
 update alongside the leg's VERDICT (the audit leg re-runs the §A–E sweeps).

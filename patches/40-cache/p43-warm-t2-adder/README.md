@@ -23,6 +23,11 @@ the fixed ~0.39 s + residual cost on cache-hit requests.
   MET: 1.03–1.05 vs D-SPEC1 1.14–1.28; 1k face 545 ms beats even C's 0.587.
   r30's "755.1 ms FAIL-by-5ms" retired as a folded-transfer artifact.
 
+## Knobs
+
+`VLLM_ARC_R35_TAIL_SPLIT` (default 1 = v4 scoped tail-split ACTIVE, `=0`
+disables) — `patches/sched_tail_split.py:59`; see docs/envs.md.
+
 ## Test
 
 Warm faces t1/t2 per bench_longctx; churn re-hit warm-class; integrity 5/5

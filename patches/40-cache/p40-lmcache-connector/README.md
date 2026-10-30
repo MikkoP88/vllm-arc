@@ -30,6 +30,12 @@ LMCacheConnectorV1 use_native + mamba_pool_ratio 2, engine_id arc-p40`.
   all other native ops stay native.
 - **Certified env set** (Appendix E, D champion verbatim): the 9
   `LMCACHE_*` vars in the serve line — see `docs/envs.md`.
+- **Knobs** (default-ON, see docs/envs.md): `VLLM_ARC_LMC_HMA` (p41b HMA
+  mixin, `=0` = A/B only — boot dies at the factory gate) ·
+  `VLLM_ARC_LMC_TORCH_KV` (p40d KV-transfer ops on the torch baseline,
+  `=0` forces the native instance-bound ops that segfault >16–32
+  GiB/process) · `LMCACHE_DISABLE_PINNED_MEMORY` (p40d law, certified line
+  sets `=1`).
 - **Image self-containment** (r42 Fix A): Dockerfile vendors the
   `--no-deps`-missed closure (`aiofile`, `redis` — `gds_backend.py:19`
   module-level import) + in-build import gate + `IMAGE_MANIFEST

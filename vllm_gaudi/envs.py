@@ -25,7 +25,25 @@ if TYPE_CHECKING:
     # r45d: VLLM_ARC_ASYNC / VLLM_ARC_YIELD_TOKENS / VLLM_ARC_COMPACT_GDN
     # dropped — declared-but-never-consumed (no-unevidenced law, Appendix H
     # #6; audit r45 findings F1-F3). Re-add only WITH a consumer leg.
-    VLLM_ARC_LOOKUP_ELIDE: bool = True
+    # r45g: full live surface declared (deep-audit finding — most patch
+    # consumers read os.environ directly and had no registry entry); these
+    # annotations mirror the registry below, which documents but is NOT
+    # the read path.
+    ARC_TRACE_FLIP: bool = False
+    VLLM_ARC_WARMUP_DISABLE: bool = False
+    VLLM_ARC_GDN_FASTPATH_DISABLE: bool = False
+    VLLM_ARC_LOOKUP_ELIDE: int = 0
+    VLLM_ARC_LOOKUP_MEMO: bool = True
+    VLLM_ARC_LMC_HMA: bool = True
+    VLLM_ARC_LMC_TORCH_KV: bool = True
+    VLLM_ARC_LMC_MAMBA_SNAP: bool = True
+    VLLM_MAMBA_FP16_SEED_REPAIR: bool = True
+    LMC_BOUNDARY_KEEP: int = 8
+    LMC_BOUNDARY_CAP: int = 48
+    LMC_BOUND_STATS: bool = True
+    LMC_BOUND_MD5: bool = True
+    VLLM_ARC_R35_TAIL_SPLIT: bool = True
+    VLLM_ARC_FP8_W8A16_DISABLE: bool = False
     VLLM_ARC_XG_COMPACT: bool = False
     VLLM_ARC_GMU_RELAX: float = 0.0
 
@@ -129,12 +147,88 @@ environment_variables: dict[str, Callable[[], Any]] = {
     # VLLM_ARC_COMPACT_GDN (dead twin of the live VLLM_COMPACT_GDN above,
     # auto-set by the model runner) dropped — audit r45 findings F1-F3,
     # no-unevidenced law.
+    #
+    # r45g registry law: every LIVE vllm-arc env is declared here (deep-audit
+    # finding: the patch consumers read os.environ directly at their call
+    # sites — the registry DOCUMENTS the surface, it is not the read path).
+    # Defaults below MUST mirror the consumer's os.environ default exactly;
+    # the certified serve line (r43_serve_k5.sh) exports NONE of them — all
+    # ride these code defaults. Diagnostics (ARC_SNAP_PROBE) and
+    # donor-internal names (lmcint LMC_STORE_LAG) are documented in
+    # docs/envs.md, not registered here.
 
-    # Skip the LMCache lookup when the engine prefix cache already covers
-    # the request span (port of D champion's extyield2 / IEXP_LOOKUP_MEMO=1).
-    # Consumed by p42.
+    # p12b flip-payload trace interlock (defect-b family evidence); the
+    # certified serve line sets =1. patches/graph_safe_output.py:370.
+    "ARC_TRACE_FLIP":
+    lambda: os.environ.get("ARC_TRACE_FLIP", "") == "1",
+
+    # p12b first-request warmup interlock: =1 DISABLES the interlock
+    # (patch is active by default). patches/first_request_warmup.py:79.
+    "VLLM_ARC_WARMUP_DISABLE":
+    lambda: os.environ.get("VLLM_ARC_WARMUP_DISABLE", "0") == "1",
+
+    # p10/r23 GDN metadata fastpath (0.49 ms): any value other than ""/"0"
+    # disables it. patches/gdn_metadata_fastpath.py:275.
+    "VLLM_ARC_GDN_FASTPATH_DISABLE":
+    lambda: os.environ.get("VLLM_ARC_GDN_FASTPATH_DISABLE", "") not in ("", "0"),
+
+    # p42 lookup-elide: INT token count, NOT a bool — both ZMQ lookups are
+    # skipped only when the engine already holds a prefix AND the residual
+    # is <= this many tokens. 0 (default) = OFF, opt-in only (r31
+    # disposition: with p40d/p41c live, real joint loads exist and elide
+    # would forfeit them). patches/lmcache_hma_connector.py:235.
     "VLLM_ARC_LOOKUP_ELIDE":
-    lambda: os.environ.get("VLLM_ARC_LOOKUP_ELIDE", "true").strip().lower() in ("1", "true"),
+    lambda: int(os.environ.get("VLLM_ARC_LOOKUP_ELIDE", "0")),
+
+    # p42 lookup-memo: per-rid post-clamp hit-memo replay (async-mode
+    # only); =0 disables. patches/lmcache_hma_connector.py:260.
+    "VLLM_ARC_LOOKUP_MEMO":
+    lambda: os.environ.get("VLLM_ARC_LOOKUP_MEMO", "1") != "0",
+
+    # p41b HMA connector kill-switch: =0 leaves the stock connector (boot
+    # then dies at the factory HMA gate — A/B evidence only).
+    # patches/lmcache_hma_connector.py:170.
+    "VLLM_ARC_LMC_HMA":
+    lambda: os.environ.get("VLLM_ARC_LMC_HMA", "1") != "0",
+
+    # p40d KV-transfer ops on the torch baseline (native instance-bound
+    # pinned ops segfault >16-32 GiB/process): =0 forces back to native.
+    # patches/lmc_xpu_pinned_env.py:85.
+    "VLLM_ARC_LMC_TORCH_KV":
+    lambda: os.environ.get("VLLM_ARC_LMC_TORCH_KV", "1") != "0",
+
+    # p41c exact-boundary snap glue (integrity requires it ON): =0
+    # disables the boundary snapshot. patches/mamba_hybrid_snap_glue.py:94.
+    "VLLM_ARC_LMC_MAMBA_SNAP":
+    lambda: os.environ.get("VLLM_ARC_LMC_MAMBA_SNAP", "1") != "0",
+
+    # p41 fp16 mamba seed repair (v135; our --mamba-ssm-cache-dtype
+    # float16 posture): =0 disables. patches/mamba_lmcache_glue.py:69.
+    "VLLM_MAMBA_FP16_SEED_REPAIR":
+    lambda: os.environ.get("VLLM_MAMBA_FP16_SEED_REPAIR", "1") != "0",
+
+    # p41 mamba boundary registry caps + logging (donor v136 lineage names;
+    # rename is an upstream-PR-lane item, §11.7 rule 8): per-req boundary
+    # cap, global FIFO cap, stats logging, md5 logging.
+    # patches/mamba_lmcache_glue.py:53/56/107/121.
+    "LMC_BOUNDARY_KEEP":
+    lambda: int(os.environ.get("LMC_BOUNDARY_KEEP", "8")),
+    "LMC_BOUNDARY_CAP":
+    lambda: int(os.environ.get("LMC_BOUNDARY_CAP", "48")),
+    "LMC_BOUND_STATS":
+    lambda: os.environ.get("LMC_BOUND_STATS", "1") != "0",
+    "LMC_BOUND_MD5":
+    lambda: os.environ.get("LMC_BOUND_MD5", "1") != "0",
+
+    # r35 v4 scoped scheduler tail-split: =0 disables.
+    # patches/sched_tail_split.py:59.
+    "VLLM_ARC_R35_TAIL_SPLIT":
+    lambda: os.environ.get("VLLM_ARC_R35_TAIL_SPLIT", "1") != "0",
+
+    # p44 fp8 block W8A16 reroute kill-switch: =1 reroutes back to the
+    # stock per-token-quant W8A8 path. patches/fp8_block_w8a16.py:65.
+    "VLLM_ARC_FP8_W8A16_DISABLE":
+    lambda: os.environ.get("VLLM_ARC_FP8_W8A16_DISABLE", "0") == "1",
 
     # Compact-JSON structured-output posture for the xgrammar backend (port
     # of the C/D V1227_XGCOMPACT boot-script edit). Consumed by p06.

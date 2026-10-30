@@ -32,6 +32,14 @@ commit).
   (fallback-path-only in both donors; our posture is fused align),
   LMCDbg*/v52f debug telemetry.
 
+## Knobs (all default-ON / default caps; see docs/envs.md truth table)
+
+`VLLM_ARC_LMC_MAMBA_SNAP` (p41c, default 1 = snap ACTIVE, `=0` disables —
+breaks integrity) · `VLLM_MAMBA_FP16_SEED_REPAIR` (default 1, `=0`
+disables the v135 repair) · registry caps + logging (donor v136 lineage
+names): `LMC_BOUNDARY_KEEP` (8), `LMC_BOUNDARY_CAP` (48), `LMC_BOUND_STATS`
+(1), `LMC_BOUND_MD5` (1) — `patches/mamba_lmcache_glue.py:53–121`.
+
 ## Test
 
 Integrity 5/5 cold-vs-rehit after the full battery (zero drift under load —
