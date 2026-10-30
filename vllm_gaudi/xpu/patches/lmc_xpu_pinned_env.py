@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 """arc p40c — honor LMCACHE_DISABLE_PINNED_MEMORY under the native SYCL ops
 + arc p40d — KV-transfer ops on the torch baseline (C's XPU posture)
 (lmcache-side glue; installed via sitecustomize exec_module hook on

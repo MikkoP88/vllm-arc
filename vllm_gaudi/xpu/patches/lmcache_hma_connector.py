@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 """arc p41b — LMCacheConnectorV1 HMA + lmcache-0.5.5 compat port
 + arc p42 — lookup-elide / lookup-memo (D v139 extyield2 port)
 (vllm-side connector glue; installed via sitecustomize exec_module hook

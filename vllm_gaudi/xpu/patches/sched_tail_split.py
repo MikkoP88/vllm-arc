@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 """sched_tail_split.py — r35 fork patch (vllm_gaudi/xpu/patches/).
 
 Engine-core scheduler delta (v4, scoped): when the eagle backoff would

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 """mamba_lmcache_glue.py — p41 fork patch (vllm_gaudi/xpu/patches/).
 
 Worker-side LMCache mamba store/load glue for the hybrid-GDN target,

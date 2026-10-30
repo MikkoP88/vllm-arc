@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 """Speculator FULL-capture coercion (defect-a family, plan Appendix C).
 
 vLLM 0.30's v1 default cudagraph mode is ``FULL_AND_PIECEWISE``

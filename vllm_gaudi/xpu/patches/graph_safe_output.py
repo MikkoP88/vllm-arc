@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 """XPU graph-safe worker output copies (defect-b family, plan Appendix C).
 
 vLLM 0.30's ``AsyncOutput``/``AsyncPoolingOutput`` (v1/worker/gpu/

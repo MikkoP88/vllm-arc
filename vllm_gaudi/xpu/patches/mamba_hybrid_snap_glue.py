@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 """mamba_hybrid_snap_glue.py — p41c fork patch (vllm_gaudi/xpu/patches/).
 
 p41c PROBLEM (r31, 2026-10-28): p41's v136 snap lives in the carry branch of
