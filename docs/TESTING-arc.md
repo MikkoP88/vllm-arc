@@ -22,7 +22,9 @@ Model `qwen3.8-27b-fp8` (dense hybrid-GDN, MTP-capable), served with:
 TP2, block size 64, FP8 weights with the block-quant W8A16 route (p44),
 FP8 e4m3 KV cache, float16 Mamba SSM cache, `--mamba-cache-mode=align`
 (posture-pinned; see laws below), prefix caching ON, hybrid KV manager
-ON, MTP speculative decoding `num_speculative_tokens: 5`, XPU graphs ON
+ON, MTP speculative decoding `num_speculative_tokens: 3`
+(**recommended depth, r46t**; certified history also measured at 4 and
+5 — k5 dropped from the recommendation), XPU graphs ON
 (`VLLM_XPU_ENABLE_XPU_GRAPH=1`). The exact serve line is
 `tools/serve_arc_b70.sh` (posture knobs) and the certified env chain in
 [`CONFIGURATION-arc.md`](CONFIGURATION-arc.md).
@@ -31,13 +33,16 @@ ON, MTP speculative decoding `num_speculative_tokens: 5`, XPU graphs ON
 
 Every battery runs **first-traffic** on a fresh boot (engine restart,
 health 200 before any request) with timers/profilers OFF unless a suite
-says otherwise. **Sampling**: every in-house bench tool (suites 1–4, 6–8)
-sends `temperature: 0` (greedy) in the request body — required for the
-byte-identical integrity/golden faces and kept uniform across throughput
-suites; the `vllm bench serve` cells (suites 5 and the 64k face) run at
-server-default sampling (see the note in suite 5). Tools are md5-pinned
-in the evidence dirs; they are host-side python scripts using only the
-OpenAI-compatible HTTP API.
+says otherwise. **Sampling**: the certified suites (1–4, 6–8) send
+`temperature: 0` (greedy) — required for the byte-identical
+integrity/golden faces and kept uniform across throughput suites; every
+request also carries the inert-at-greedy real-world set (top_p 0.95,
+top_k 20, min_p 0, presence_penalty 0, repetition_penalty 1 — argmax
+survives top_k/top_p at temp 0, penalties are no-ops). Suite 12 defines
+the real-world (sampled) regimes; the `vllm bench serve` cells (suite 5
+and the 64k face) run at server-default sampling (note in suite 5).
+Tools are md5-pinned in the evidence dirs; they are host-side python
+scripts using only the OpenAI-compatible HTTP API.
 
 ### 1. Boot + survival flip
 First request after boot ("survival flip"): engine must return HTTP 200
@@ -127,6 +132,42 @@ Evidence: `results/2026-10-30-p5-r46-soak/`.
 identical container environment, A/B-proven; all errors are in
 upstream's own files). Run in a disposable container per leg.
 
+### 12. Real-world temperature × MTP-depth campaign — r46t
+`tools/bench_run7n.py` with flags (`--temperature`, `--thinking`,
+`--sampling alt`), one fresh boot per posture from the certified serve
+line (spec depth sed'd; non-MTP leg = line minus `--speculative-config`).
+Two regimes: **A** temperatures {0.2, 0.4, 0.6, 0.8, 1.0} ×
+{enable_thinking: true, reasoning_effort: "xhigh"} + real-world set
+(top_p 0.95 / top_k 20 / min_p 0 / presence_penalty 0 /
+repetition_penalty 1); **B** alt set (temperature 0.7 / top_p 0.80 /
+top_k 20 / min_p 0 / presence_penalty 1.5 / repetition_penalty 1.0),
+non-thinking. Acceptance deltas from pre/post `vllm:spec_decode`
+counter snapshots around every battery. Depths k3/k4 measured in both
+regimes (k5 measured in A, then dropped from recommendation and
+testing per owner directive — its alt-leg boot was cut by the rig
+watcher before starting). Output: the recommendation table in
+[`PERFORMANCE-arc.md`](PERFORMANCE-arc.md) +
+[`CONFIGURATION-arc.md`](CONFIGURATION-arc.md). Pass = every battery
+completes 4/4 streams × all cells, zero call failures, health 200
+throughout.
+
+### 13. Garbage/corruption hardening — `arc_garbage_probe.py` (v2)
+15 probes against the live server: well-formed-but-hostile content
+(binary mojibake `bytes(range(256))×64`, control chars, ~0.5 MB blob,
+100 k no-space run, empty content, unicode salad incl. ZWSP/RTL/emoji)
+and structurally invalid requests (null content, bad role,
+missing/empty/string-typed messages, string-typed max_tokens/
+temperature, raw truncated JSON, raw non-JSON body). After EVERY
+probe: `/health` must be 200; on 200-responses the content shape must
+be valid; a 400 within the expected set (e.g. oversized-payload
+rejection) counts as correct robust behavior. Suite closes with a
+temp-0 fixed-prompt generation run twice — sha256 must byte-match
+(engine state not corrupted). Pass = 15/15 + state stability. **v2
+note**: v1 misread two correct behaviors as failures (template
+thinking-on default → content in reasoning; oversized-payload 400) —
+post-capture root-caused as a probe defect; v1 outputs preserved as
+superseded evidence, v2 pins `enable_thinking: false` on valid probes.
+
 ## Laws that every test posture keeps
 
 - **align law**: never remove `--mamba-cache-mode=align`; never ship
@@ -156,3 +197,4 @@ dirs to date; the naming convention is documented in
 | P5 env/doc/lint/Dockerfile audits + mypy delta=0 | GREEN | `results/2026-10-30-p5-r45-env-log-audit/`, rig leg `arc-p5-r46` |
 | 64k TTFT face | GREEN (40,926 ms, concurrent-load conservative) | rig leg `arc-p5-r46/ttft64k_t1.txt` |
 | r46 8 h soak | GREEN — 46 cycles, zero errors, integrity 46/46, golden 5/5 zero-drift, pos-1 0.8919 steady, health 200 end-state | `results/2026-10-30-p5-r46-soak/` |
+| r46t real-world campaign (temps × depths × thinking × garbage) | GREEN — k3 recommended; garbage v2 5/5 suites 15/15; MTP 1.57–2.05× over no-spec | `results/2026-10-30-p5-r46t-temps/` |
