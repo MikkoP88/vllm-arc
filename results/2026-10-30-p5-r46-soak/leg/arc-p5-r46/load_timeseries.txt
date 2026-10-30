@@ -1,0 +1,414 @@
+== cyc1 06:53:51
+agg4x256#2 wall=3.38s aggregate=302.76 tok/s ok_streams=4/4 [256tok/3.3s 256tok/3.4s 256tok/3.3s 256tok/3.3s]
+solo200 n=200 dt=2.30s tps=87.06
+solo200 n=200 dt=2.30s tps=87.12
+BENCH_RUN7N_DONE
+[long~32ktok] t1 ttft=15.575s wall=15.62s prompt=32081 cached=-1
+[long~32ktok] t2 ttft=1.184s wall=1.61s prompt=32090 cached=-1 (rehit depth -1/32090)
+[long~32ktok] engine prompt_tokens_total delta: t1=32081 (excess 0)  t2=32090 (excess 0)
+=== BENCH_LONGCTX done 06:45:59
+== cyc2 07:04:23
+agg4x256#2 wall=3.39s aggregate=302.02 tok/s ok_streams=4/4 [256tok/3.3s 256tok/3.3s 256tok/3.3s 256tok/3.4s]
+solo200 n=200 dt=2.32s tps=86.21
+solo200 n=200 dt=2.30s tps=86.98
+BENCH_RUN7N_DONE
+[long~32ktok] t1 ttft=15.544s wall=15.58s prompt=32081 cached=-1
+[long~32ktok] t2 ttft=1.200s wall=1.60s prompt=32090 cached=-1 (rehit depth -1/32090)
+[long~32ktok] engine prompt_tokens_total delta: t1=32081 (excess 0)  t2=32090 (excess 0)
+=== BENCH_LONGCTX done 06:57:34
+== cyc3 07:14:58
+agg4x256#2 wall=3.37s aggregate=303.56 tok/s ok_streams=4/4 [256tok/3.3s 256tok/3.4s 256tok/3.4s 256tok/3.4s]
+solo200 n=200 dt=2.30s tps=86.86
+solo200 n=200 dt=2.30s tps=86.98
+BENCH_RUN7N_DONE
+[long~32ktok] t1 ttft=15.608s wall=15.65s prompt=32081 cached=-1
+[long~32ktok] t2 ttft=1.225s wall=1.64s prompt=32090 cached=-1 (rehit depth -1/32090)
+[long~32ktok] engine prompt_tokens_total delta: t1=32081 (excess 0)  t2=32090 (excess 0)
+=== BENCH_LONGCTX done 07:08:07
+== cyc4 07:25:29
+agg4x256#2 wall=3.32s aggregate=307.98 tok/s ok_streams=4/4 [256tok/3.3s 256tok/3.3s 256tok/3.3s 256tok/3.3s]
+solo200 n=200 dt=2.29s tps=87.17
+solo200 n=200 dt=2.30s tps=87.05
+BENCH_RUN7N_DONE
+[long~32ktok] t1 ttft=15.518s wall=15.56s prompt=32081 cached=-1
+[long~32ktok] t2 ttft=1.194s wall=1.61s prompt=32090 cached=-1 (rehit depth -1/32090)
+[long~32ktok] engine prompt_tokens_total delta: t1=32081 (excess 0)  t2=32090 (excess 0)
+=== BENCH_LONGCTX done 07:18:40
+== cyc5 07:36:02
+agg4x256#2 wall=3.40s aggregate=301.55 tok/s ok_streams=4/4 [256tok/3.4s 256tok/3.4s 256tok/3.3s 256tok/3.4s]
+solo200 n=200 dt=2.32s tps=86.09
+solo200 n=200 dt=2.32s tps=86.27
+BENCH_RUN7N_DONE
+[long~32ktok] t1 ttft=15.570s wall=15.61s prompt=32081 cached=-1
+[long~32ktok] t2 ttft=1.227s wall=1.60s prompt=32090 cached=-1 (rehit depth -1/32090)
+[long~32ktok] engine prompt_tokens_total delta: t1=32081 (excess 0)  t2=32090 (excess 0)
+=== BENCH_LONGCTX done 07:29:13
+== cyc6 07:46:33
+agg4x256#2 wall=3.37s aggregate=304.20 tok/s ok_streams=4/4 [256tok/3.4s 256tok/3.3s 256tok/3.3s 256tok/3.3s]
+solo200 n=200 dt=2.30s tps=86.98
+solo200 n=200 dt=2.30s tps=87.02
+BENCH_RUN7N_DONE
+[long~32ktok] t1 ttft=15.514s wall=15.55s prompt=32081 cached=-1
+[long~32ktok] t2 ttft=1.185s wall=1.56s prompt=32090 cached=-1 (rehit depth -1/32090)
+[long~32ktok] engine prompt_tokens_total delta: t1=32081 (excess 0)  t2=32090 (excess 0)
+=== BENCH_LONGCTX done 07:39:45
+== cyc7 07:57:06
+agg4x256#2 wall=3.35s aggregate=305.90 tok/s ok_streams=4/4 [256tok/3.3s 256tok/3.3s 256tok/3.3s 256tok/3.3s]
+solo200 n=200 dt=2.32s tps=86.31
+solo200 n=200 dt=2.32s tps=86.22
+BENCH_RUN7N_DONE
+[long~32ktok] t1 ttft=15.600s wall=15.64s prompt=32081 cached=-1
+[long~32ktok] t2 ttft=1.226s wall=1.63s prompt=32090 cached=-1 (rehit depth -1/32090)
+[long~32ktok] engine prompt_tokens_total delta: t1=32081 (excess 0)  t2=32090 (excess 0)
+=== BENCH_LONGCTX done 07:50:16
+== cyc8 08:07:39
+agg4x256#2 wall=3.37s aggregate=303.80 tok/s ok_streams=4/4 [256tok/3.4s 256tok/3.4s 256tok/3.4s 256tok/3.3s]
+solo200 n=200 dt=2.30s tps=86.95
+solo200 n=200 dt=2.29s tps=87.15
+BENCH_RUN7N_DONE
+[long~32ktok] t1 ttft=15.564s wall=15.60s prompt=32081 cached=-1
+[long~32ktok] t2 ttft=1.226s wall=1.60s prompt=32090 cached=-1 (rehit depth -1/32090)
+[long~32ktok] engine prompt_tokens_total delta: t1=32081 (excess 0)  t2=32090 (excess 0)
+=== BENCH_LONGCTX done 08:00:49
+== cyc9 08:18:11
+agg4x256#2 wall=3.35s aggregate=305.99 tok/s ok_streams=4/4 [256tok/3.3s 256tok/3.3s 256tok/3.3s 256tok/3.3s]
+solo200 n=200 dt=2.32s tps=86.36
+solo200 n=200 dt=2.32s tps=86.25
+BENCH_RUN7N_DONE
+[long~32ktok] t1 ttft=15.576s wall=15.62s prompt=32081 cached=-1
+[long~32ktok] t2 ttft=1.192s wall=1.60s prompt=32090 cached=-1 (rehit depth -1/32090)
+[long~32ktok] engine prompt_tokens_total delta: t1=32081 (excess 0)  t2=32090 (excess 0)
+=== BENCH_LONGCTX done 08:11:22
+== cyc10 08:28:43
+agg4x256#2 wall=3.32s aggregate=308.09 tok/s ok_streams=4/4 [256tok/3.3s 256tok/3.3s 256tok/3.3s 256tok/3.3s]
+solo200 n=200 dt=2.29s tps=87.21
+solo200 n=200 dt=2.30s tps=87.01
+BENCH_RUN7N_DONE
+[long~32ktok] t1 ttft=15.548s wall=15.59s prompt=32081 cached=-1
+[long~32ktok] t2 ttft=1.227s wall=1.60s prompt=32090 cached=-1 (rehit depth -1/32090)
+[long~32ktok] engine prompt_tokens_total delta: t1=32081 (excess 0)  t2=32090 (excess 0)
+=== BENCH_LONGCTX done 08:21:54
+== cyc11 08:39:15
+agg4x256#2 wall=3.37s aggregate=303.79 tok/s ok_streams=4/4 [256tok/3.4s 256tok/3.3s 256tok/3.3s 256tok/3.4s]
+solo200 n=200 dt=2.30s tps=86.95
+solo200 n=200 dt=2.30s tps=87.06
+BENCH_RUN7N_DONE
+[long~32ktok] t1 ttft=15.519s wall=15.56s prompt=32081 cached=-1
+[long~32ktok] t2 ttft=1.184s wall=1.56s prompt=32090 cached=-1 (rehit depth -1/32090)
+[long~32ktok] engine prompt_tokens_total delta: t1=32081 (excess 0)  t2=32090 (excess 0)
+=== BENCH_LONGCTX done 08:32:26
+== cyc12 08:49:48
+agg4x256#2 wall=3.32s aggregate=307.98 tok/s ok_streams=4/4 [256tok/3.3s 256tok/3.3s 256tok/3.3s 256tok/3.3s]
+solo200 n=200 dt=2.29s tps=87.15
+solo200 n=200 dt=2.30s tps=86.99
+BENCH_RUN7N_DONE
+[long~32ktok] t1 ttft=15.571s wall=15.61s prompt=32081 cached=-1
+[long~32ktok] t2 ttft=1.222s wall=1.60s prompt=32090 cached=-1 (rehit depth -1/32090)
+[long~32ktok] engine prompt_tokens_total delta: t1=32081 (excess 0)  t2=32090 (excess 0)
+=== BENCH_LONGCTX done 08:42:58
+== cyc13 09:00:21
+agg4x256#2 wall=3.37s aggregate=304.00 tok/s ok_streams=4/4 [256tok/3.3s 256tok/3.4s 256tok/3.3s 256tok/3.3s]
+solo200 n=200 dt=2.30s tps=87.01
+solo200 n=200 dt=2.30s tps=87.05
+BENCH_RUN7N_DONE
+[long~32ktok] t1 ttft=15.568s wall=15.61s prompt=32081 cached=-1
+[long~32ktok] t2 ttft=1.234s wall=1.61s prompt=32090 cached=-1 (rehit depth -1/32090)
+[long~32ktok] engine prompt_tokens_total delta: t1=32081 (excess 0)  t2=32090 (excess 0)
+=== BENCH_LONGCTX done 08:53:31
+== cyc14 09:10:53
+agg4x256#2 wall=3.37s aggregate=303.98 tok/s ok_streams=4/4 [256tok/3.3s 256tok/3.3s 256tok/3.3s 256tok/3.4s]
+solo200 n=200 dt=2.30s tps=87.03
+solo200 n=200 dt=2.30s tps=87.11
+BENCH_RUN7N_DONE
+[long~32ktok] t1 ttft=15.582s wall=15.62s prompt=32081 cached=-1
+[long~32ktok] t2 ttft=1.227s wall=1.60s prompt=32090 cached=-1 (rehit depth -1/32090)
+[long~32ktok] engine prompt_tokens_total delta: t1=32081 (excess 0)  t2=32090 (excess 0)
+=== BENCH_LONGCTX done 09:04:04
+== cyc15 09:21:27
+agg4x256#2 wall=3.32s aggregate=308.14 tok/s ok_streams=4/4 [256tok/3.3s 256tok/3.3s 256tok/3.3s 256tok/3.3s]
+solo200 n=200 dt=2.30s tps=87.13
+solo200 n=200 dt=2.30s tps=87.07
+BENCH_RUN7N_DONE
+[long~32ktok] t1 ttft=15.572s wall=15.61s prompt=32081 cached=-1
+[long~32ktok] t2 ttft=1.229s wall=1.60s prompt=32090 cached=-1 (rehit depth -1/32090)
+[long~32ktok] engine prompt_tokens_total delta: t1=32081 (excess 0)  t2=32090 (excess 0)
+=== BENCH_LONGCTX done 09:14:36
+== cyc16 09:31:59
+agg4x256#2 wall=3.39s aggregate=302.12 tok/s ok_streams=4/4 [256tok/3.3s 256tok/3.3s 256tok/3.3s 256tok/3.4s]
+solo200 n=200 dt=2.32s tps=86.07
+solo200 n=200 dt=2.32s tps=86.25
+BENCH_RUN7N_DONE
+[long~32ktok] t1 ttft=15.558s wall=15.60s prompt=32081 cached=-1
+[long~32ktok] t2 ttft=1.186s wall=1.60s prompt=32090 cached=-1 (rehit depth -1/32090)
+[long~32ktok] engine prompt_tokens_total delta: t1=32081 (excess 0)  t2=32090 (excess 0)
+=== BENCH_LONGCTX done 09:25:10
+== cyc17 09:42:31
+agg4x256#2 wall=3.34s aggregate=306.19 tok/s ok_streams=4/4 [256tok/3.3s 256tok/3.2s 256tok/3.3s 256tok/3.1s]
+solo200 n=200 dt=2.30s tps=87.08
+solo200 n=200 dt=2.30s tps=87.08
+BENCH_RUN7N_DONE
+[long~32ktok] t1 ttft=15.565s wall=15.60s prompt=32081 cached=-1
+[long~32ktok] t2 ttft=1.228s wall=1.60s prompt=32090 cached=-1 (rehit depth -1/32090)
+[long~32ktok] engine prompt_tokens_total delta: t1=32081 (excess 0)  t2=32090 (excess 0)
+=== BENCH_LONGCTX done 09:35:42
+== cyc18 09:53:04
+agg4x256#2 wall=3.38s aggregate=302.91 tok/s ok_streams=4/4 [256tok/3.3s 256tok/3.3s 256tok/3.4s 256tok/3.4s]
+solo200 n=200 dt=2.29s tps=87.41
+solo200 n=200 dt=2.30s tps=87.07
+BENCH_RUN7N_DONE
+[long~32ktok] t1 ttft=15.570s wall=15.61s prompt=32081 cached=-1
+[long~32ktok] t2 ttft=1.233s wall=1.61s prompt=32090 cached=-1 (rehit depth -1/32090)
+[long~32ktok] engine prompt_tokens_total delta: t1=32081 (excess 0)  t2=32090 (excess 0)
+=== BENCH_LONGCTX done 09:46:14
+== cyc19 10:03:37
+agg4x256#2 wall=3.33s aggregate=307.80 tok/s ok_streams=4/4 [256tok/3.3s 256tok/3.3s 256tok/3.3s 256tok/3.3s]
+solo200 n=200 dt=2.30s tps=87.09
+solo200 n=200 dt=2.30s tps=87.03
+BENCH_RUN7N_DONE
+[long~32ktok] t1 ttft=15.565s wall=15.61s prompt=32081 cached=-1
+[long~32ktok] t2 ttft=1.226s wall=1.60s prompt=32090 cached=-1 (rehit depth -1/32090)
+[long~32ktok] engine prompt_tokens_total delta: t1=32081 (excess 0)  t2=32090 (excess 0)
+=== BENCH_LONGCTX done 09:56:47
+== cyc20 10:14:10
+agg4x256#2 wall=3.37s aggregate=303.49 tok/s ok_streams=4/4 [256tok/3.3s 256tok/3.4s 256tok/3.3s 256tok/3.4s]
+solo200 n=200 dt=2.29s tps=87.15
+solo200 n=200 dt=2.30s tps=87.03
+BENCH_RUN7N_DONE
+[long~32ktok] t1 ttft=15.565s wall=15.60s prompt=32081 cached=-1
+[long~32ktok] t2 ttft=1.228s wall=1.60s prompt=32090 cached=-1 (rehit depth -1/32090)
+[long~32ktok] engine prompt_tokens_total delta: t1=32081 (excess 0)  t2=32090 (excess 0)
+=== BENCH_LONGCTX done 10:07:20
+== cyc21 10:24:42
+agg4x256#2 wall=3.35s aggregate=305.86 tok/s ok_streams=4/4 [256tok/3.3s 256tok/3.3s 256tok/3.3s 256tok/3.3s]
+solo200 n=200 dt=2.29s tps=87.17
+solo200 n=200 dt=2.30s tps=87.05
+BENCH_RUN7N_DONE
+[long~32ktok] t1 ttft=15.534s wall=15.57s prompt=32081 cached=-1
+[long~32ktok] t2 ttft=1.186s wall=1.57s prompt=32090 cached=-1 (rehit depth -1/32090)
+[long~32ktok] engine prompt_tokens_total delta: t1=32081 (excess 0)  t2=32090 (excess 0)
+=== BENCH_LONGCTX done 10:17:53
+== cyc22 10:35:14
+agg4x256#2 wall=3.37s aggregate=303.71 tok/s ok_streams=4/4 [256tok/3.4s 256tok/3.3s 256tok/3.4s 256tok/3.3s]
+solo200 n=200 dt=2.30s tps=87.02
+solo200 n=200 dt=2.31s tps=86.56
+BENCH_RUN7N_DONE
+[long~32ktok] t1 ttft=15.589s wall=15.63s prompt=32081 cached=-1
+[long~32ktok] t2 ttft=1.224s wall=1.60s prompt=32090 cached=-1 (rehit depth -1/32090)
+[long~32ktok] engine prompt_tokens_total delta: t1=32081 (excess 0)  t2=32090 (excess 0)
+=== BENCH_LONGCTX done 10:28:25
+== cyc23 10:45:47
+agg4x256#2 wall=3.37s aggregate=304.18 tok/s ok_streams=4/4 [256tok/3.3s 256tok/3.3s 256tok/3.4s 256tok/3.3s]
+solo200 n=200 dt=2.30s tps=87.05
+solo200 n=200 dt=2.30s tps=87.06
+BENCH_RUN7N_DONE
+[long~32ktok] t1 ttft=15.558s wall=15.60s prompt=32081 cached=-1
+[long~32ktok] t2 ttft=1.226s wall=1.60s prompt=32090 cached=-1 (rehit depth -1/32090)
+[long~32ktok] engine prompt_tokens_total delta: t1=32081 (excess 0)  t2=32090 (excess 0)
+=== BENCH_LONGCTX done 10:38:57
+== cyc24 10:56:20
+agg4x256#2 wall=3.37s aggregate=303.91 tok/s ok_streams=4/4 [256tok/3.4s 256tok/3.4s 256tok/3.4s 256tok/3.3s]
+solo200 n=200 dt=2.30s tps=86.98
+solo200 n=200 dt=2.30s tps=87.13
+BENCH_RUN7N_DONE
+[long~32ktok] t1 ttft=15.564s wall=15.60s prompt=32081 cached=-1
+[long~32ktok] t2 ttft=1.231s wall=1.60s prompt=32090 cached=-1 (rehit depth -1/32090)
+[long~32ktok] engine prompt_tokens_total delta: t1=32081 (excess 0)  t2=32090 (excess 0)
+=== BENCH_LONGCTX done 10:49:31
+== cyc25 11:06:52
+agg4x256#2 wall=3.32s aggregate=308.26 tok/s ok_streams=4/4 [256tok/3.3s 256tok/3.3s 256tok/3.3s 256tok/3.3s]
+solo200 n=200 dt=2.29s tps=87.23
+solo200 n=200 dt=2.30s tps=87.11
+BENCH_RUN7N_DONE
+[long~32ktok] t1 ttft=15.526s wall=15.56s prompt=32081 cached=-1
+[long~32ktok] t2 ttft=1.192s wall=1.57s prompt=32090 cached=-1 (rehit depth -1/32090)
+[long~32ktok] engine prompt_tokens_total delta: t1=32081 (excess 0)  t2=32090 (excess 0)
+=== BENCH_LONGCTX done 11:00:03
+== cyc26 11:17:25
+agg4x256#2 wall=3.37s aggregate=303.99 tok/s ok_streams=4/4 [256tok/3.3s 256tok/3.3s 256tok/3.3s 256tok/3.4s]
+solo200 n=200 dt=2.30s tps=87.03
+solo200 n=200 dt=2.30s tps=86.98
+BENCH_RUN7N_DONE
+[long~32ktok] t1 ttft=15.568s wall=15.61s prompt=32081 cached=-1
+[long~32ktok] t2 ttft=1.230s wall=1.60s prompt=32090 cached=-1 (rehit depth -1/32090)
+[long~32ktok] engine prompt_tokens_total delta: t1=32081 (excess 0)  t2=32090 (excess 0)
+=== BENCH_LONGCTX done 11:10:35
+== cyc27 11:27:57
+agg4x256#2 wall=3.37s aggregate=303.77 tok/s ok_streams=4/4 [256tok/3.3s 256tok/3.4s 256tok/3.4s 256tok/3.3s]
+solo200 n=200 dt=2.30s tps=86.96
+solo200 n=200 dt=2.30s tps=87.09
+BENCH_RUN7N_DONE
+[long~32ktok] t1 ttft=15.557s wall=15.60s prompt=32081 cached=-1
+[long~32ktok] t2 ttft=1.201s wall=1.61s prompt=32090 cached=-1 (rehit depth -1/32090)
+[long~32ktok] engine prompt_tokens_total delta: t1=32081 (excess 0)  t2=32090 (excess 0)
+=== BENCH_LONGCTX done 11:21:08
+== cyc28 11:38:30
+agg4x256#2 wall=3.42s aggregate=299.68 tok/s ok_streams=4/4 [256tok/3.4s 256tok/3.3s 256tok/3.3s 256tok/3.4s]
+solo200 n=200 dt=2.30s tps=87.02
+solo200 n=200 dt=2.30s tps=87.04
+BENCH_RUN7N_DONE
+[long~32ktok] t1 ttft=15.559s wall=15.60s prompt=32081 cached=-1
+[long~32ktok] t2 ttft=1.232s wall=1.60s prompt=32090 cached=-1 (rehit depth -1/32090)
+[long~32ktok] engine prompt_tokens_total delta: t1=32081 (excess 0)  t2=32090 (excess 0)
+=== BENCH_LONGCTX done 11:31:41
+== cyc29 11:49:03
+agg4x256#2 wall=3.35s aggregate=305.56 tok/s ok_streams=4/4 [256tok/3.3s 256tok/3.4s 256tok/3.2s 256tok/3.2s]
+solo200 n=200 dt=2.30s tps=87.05
+solo200 n=200 dt=2.30s tps=87.05
+BENCH_RUN7N_DONE
+[long~32ktok] t1 ttft=15.562s wall=15.60s prompt=32081 cached=-1
+[long~32ktok] t2 ttft=1.189s wall=1.60s prompt=32090 cached=-1 (rehit depth -1/32090)
+[long~32ktok] engine prompt_tokens_total delta: t1=32081 (excess 0)  t2=32090 (excess 0)
+=== BENCH_LONGCTX done 11:42:13
+== cyc30 11:59:35
+agg4x256#2 wall=3.39s aggregate=301.95 tok/s ok_streams=4/4 [256tok/3.3s 256tok/3.4s 256tok/3.3s 256tok/3.3s]
+solo200 n=200 dt=2.32s tps=86.18
+solo200 n=200 dt=2.32s tps=86.21
+BENCH_RUN7N_DONE
+[long~32ktok] t1 ttft=15.580s wall=15.62s prompt=32081 cached=-1
+[long~32ktok] t2 ttft=1.191s wall=1.63s prompt=32090 cached=-1 (rehit depth -1/32090)
+[long~32ktok] engine prompt_tokens_total delta: t1=32081 (excess 0)  t2=32090 (excess 0)
+=== BENCH_LONGCTX done 11:52:46
+== cyc31 12:10:08
+agg4x256#2 wall=3.36s aggregate=304.74 tok/s ok_streams=4/4 [256tok/3.1s 256tok/3.3s 256tok/3.3s 256tok/3.4s]
+solo200 n=200 dt=2.30s tps=87.00
+solo200 n=200 dt=2.30s tps=87.02
+BENCH_RUN7N_DONE
+[long~32ktok] t1 ttft=15.593s wall=15.63s prompt=32081 cached=-1
+[long~32ktok] t2 ttft=1.235s wall=1.61s prompt=32090 cached=-1 (rehit depth -1/32090)
+[long~32ktok] engine prompt_tokens_total delta: t1=32081 (excess 0)  t2=32090 (excess 0)
+=== BENCH_LONGCTX done 12:03:18
+== cyc32 12:20:40
+agg4x256#2 wall=3.35s aggregate=305.94 tok/s ok_streams=4/4 [256tok/3.3s 256tok/3.3s 256tok/3.3s 256tok/3.3s]
+solo200 n=200 dt=2.32s tps=86.37
+solo200 n=200 dt=2.32s tps=86.19
+BENCH_RUN7N_DONE
+[long~32ktok] t1 ttft=15.569s wall=15.61s prompt=32081 cached=-1
+[long~32ktok] t2 ttft=1.194s wall=1.61s prompt=32090 cached=-1 (rehit depth -1/32090)
+[long~32ktok] engine prompt_tokens_total delta: t1=32081 (excess 0)  t2=32090 (excess 0)
+=== BENCH_LONGCTX done 12:13:51
+== cyc33 12:31:13
+agg4x256#2 wall=3.36s aggregate=304.33 tok/s ok_streams=4/4 [256tok/3.3s 256tok/3.4s 256tok/3.3s 256tok/3.2s]
+solo200 n=200 dt=2.30s tps=87.01
+solo200 n=200 dt=2.30s tps=87.04
+BENCH_RUN7N_DONE
+[long~32ktok] t1 ttft=15.551s wall=15.59s prompt=32081 cached=-1
+[long~32ktok] t2 ttft=1.232s wall=1.60s prompt=32090 cached=-1 (rehit depth -1/32090)
+[long~32ktok] engine prompt_tokens_total delta: t1=32081 (excess 0)  t2=32090 (excess 0)
+=== BENCH_LONGCTX done 12:24:23
+== cyc34 12:41:44
+agg4x256#2 wall=3.38s aggregate=303.27 tok/s ok_streams=4/4 [256tok/3.3s 256tok/3.4s 256tok/3.3s 256tok/3.4s]
+solo200 n=200 dt=2.30s tps=87.08
+solo200 n=200 dt=2.30s tps=87.06
+BENCH_RUN7N_DONE
+[long~32ktok] t1 ttft=15.528s wall=15.57s prompt=32081 cached=-1
+[long~32ktok] t2 ttft=1.193s wall=1.57s prompt=32090 cached=-1 (rehit depth -1/32090)
+[long~32ktok] engine prompt_tokens_total delta: t1=32081 (excess 0)  t2=32090 (excess 0)
+=== BENCH_LONGCTX done 12:34:56
+== cyc35 12:52:17
+agg4x256#2 wall=3.37s aggregate=303.81 tok/s ok_streams=4/4 [256tok/3.3s 256tok/3.3s 256tok/3.3s 256tok/3.4s]
+solo200 n=200 dt=2.30s tps=87.04
+solo200 n=200 dt=2.30s tps=87.07
+BENCH_RUN7N_DONE
+[long~32ktok] t1 ttft=15.567s wall=15.61s prompt=32081 cached=-1
+[long~32ktok] t2 ttft=1.235s wall=1.61s prompt=32090 cached=-1 (rehit depth -1/32090)
+[long~32ktok] engine prompt_tokens_total delta: t1=32081 (excess 0)  t2=32090 (excess 0)
+=== BENCH_LONGCTX done 12:45:27
+== cyc36 13:02:49
+agg4x256#2 wall=3.42s aggregate=299.49 tok/s ok_streams=4/4 [256tok/3.4s 256tok/3.3s 256tok/3.3s 256tok/3.4s]
+solo200 n=200 dt=2.30s tps=87.05
+solo200 n=200 dt=2.30s tps=87.07
+BENCH_RUN7N_DONE
+[long~32ktok] t1 ttft=15.576s wall=15.61s prompt=32081 cached=-1
+[long~32ktok] t2 ttft=1.231s wall=1.60s prompt=32090 cached=-1 (rehit depth -1/32090)
+[long~32ktok] engine prompt_tokens_total delta: t1=32081 (excess 0)  t2=32090 (excess 0)
+=== BENCH_LONGCTX done 12:56:00
+== cyc37 13:13:22
+agg4x256#2 wall=3.38s aggregate=303.29 tok/s ok_streams=4/4 [256tok/3.3s 256tok/3.4s 256tok/3.3s 256tok/3.4s]
+solo200 n=200 dt=2.30s tps=86.99
+solo200 n=200 dt=2.30s tps=87.00
+BENCH_RUN7N_DONE
+[long~32ktok] t1 ttft=15.577s wall=15.62s prompt=32081 cached=-1
+[long~32ktok] t2 ttft=1.225s wall=1.60s prompt=32090 cached=-1 (rehit depth -1/32090)
+[long~32ktok] engine prompt_tokens_total delta: t1=32081 (excess 0)  t2=32090 (excess 0)
+=== BENCH_LONGCTX done 13:06:33
+== cyc38 13:23:54
+agg4x256#2 wall=3.37s aggregate=303.92 tok/s ok_streams=4/4 [256tok/3.3s 256tok/3.4s 256tok/3.3s 256tok/3.3s]
+solo200 n=200 dt=2.30s tps=87.01
+solo200 n=200 dt=2.30s tps=86.94
+BENCH_RUN7N_DONE
+[long~32ktok] t1 ttft=15.519s wall=15.56s prompt=32081 cached=-1
+[long~32ktok] t2 ttft=1.185s wall=1.56s prompt=32090 cached=-1 (rehit depth -1/32090)
+[long~32ktok] engine prompt_tokens_total delta: t1=32081 (excess 0)  t2=32090 (excess 0)
+=== BENCH_LONGCTX done 13:17:05
+== cyc39 13:34:25
+agg4x256#2 wall=3.32s aggregate=308.02 tok/s ok_streams=4/4 [256tok/3.3s 256tok/3.3s 256tok/3.3s 256tok/3.3s]
+solo200 n=200 dt=2.29s tps=87.19
+solo200 n=200 dt=2.31s tps=86.59
+BENCH_RUN7N_DONE
+[long~32ktok] t1 ttft=15.535s wall=15.57s prompt=32081 cached=-1
+[long~32ktok] t2 ttft=1.188s wall=1.56s prompt=32090 cached=-1 (rehit depth -1/32090)
+[long~32ktok] engine prompt_tokens_total delta: t1=32081 (excess 0)  t2=32090 (excess 0)
+=== BENCH_LONGCTX done 13:27:37
+== cyc40 13:44:57
+agg4x256#2 wall=3.37s aggregate=303.69 tok/s ok_streams=4/4 [256tok/3.4s 256tok/3.3s 256tok/3.3s 256tok/3.4s]
+solo200 n=200 dt=2.30s tps=87.06
+solo200 n=200 dt=2.30s tps=87.10
+BENCH_RUN7N_DONE
+[long~32ktok] t1 ttft=15.522s wall=15.56s prompt=32081 cached=-1
+[long~32ktok] t2 ttft=1.187s wall=1.56s prompt=32090 cached=-1 (rehit depth -1/32090)
+[long~32ktok] engine prompt_tokens_total delta: t1=32081 (excess 0)  t2=32090 (excess 0)
+=== BENCH_LONGCTX done 13:38:08
+== cyc41 13:55:29
+agg4x256#2 wall=3.32s aggregate=307.99 tok/s ok_streams=4/4 [256tok/3.3s 256tok/3.3s 256tok/3.3s 256tok/3.3s]
+solo200 n=200 dt=2.29s tps=87.21
+solo200 n=200 dt=2.30s tps=86.98
+BENCH_RUN7N_DONE
+[long~32ktok] t1 ttft=15.531s wall=15.57s prompt=32081 cached=-1
+[long~32ktok] t2 ttft=1.190s wall=1.56s prompt=32090 cached=-1 (rehit depth -1/32090)
+[long~32ktok] engine prompt_tokens_total delta: t1=32081 (excess 0)  t2=32090 (excess 0)
+=== BENCH_LONGCTX done 13:48:40
+== cyc42 14:06:02
+agg4x256#2 wall=3.38s aggregate=303.34 tok/s ok_streams=4/4 [256tok/3.4s 256tok/3.3s 256tok/3.4s 256tok/3.4s]
+solo200 n=200 dt=2.30s tps=86.84
+solo200 n=200 dt=2.30s tps=87.01
+BENCH_RUN7N_DONE
+[long~32ktok] t1 ttft=15.582s wall=15.62s prompt=32081 cached=-1
+[long~32ktok] t2 ttft=1.226s wall=1.60s prompt=32090 cached=-1 (rehit depth -1/32090)
+[long~32ktok] engine prompt_tokens_total delta: t1=32081 (excess 0)  t2=32090 (excess 0)
+=== BENCH_LONGCTX done 13:59:12
+== cyc43 14:16:35
+agg4x256#2 wall=3.37s aggregate=304.01 tok/s ok_streams=4/4 [256tok/3.3s 256tok/3.3s 256tok/3.3s 256tok/3.4s]
+solo200 n=200 dt=2.30s tps=87.01
+solo200 n=200 dt=2.30s tps=87.04
+BENCH_RUN7N_DONE
+[long~32ktok] t1 ttft=15.526s wall=15.57s prompt=32081 cached=-1
+[long~32ktok] t2 ttft=1.178s wall=1.55s prompt=32090 cached=-1 (rehit depth -1/32090)
+[long~32ktok] engine prompt_tokens_total delta: t1=32081 (excess 0)  t2=32090 (excess 0)
+=== BENCH_LONGCTX done 14:09:45
+== cyc44 14:27:08
+agg4x256#2 wall=3.43s aggregate=298.47 tok/s ok_streams=4/4 [256tok/3.4s 256tok/3.3s 256tok/3.1s 256tok/3.4s]
+solo200 n=200 dt=2.32s tps=86.17
+solo200 n=200 dt=2.32s tps=86.23
+BENCH_RUN7N_DONE
+[long~32ktok] t1 ttft=15.606s wall=15.65s prompt=32081 cached=-1
+[long~32ktok] t2 ttft=1.226s wall=1.64s prompt=32090 cached=-1 (rehit depth -1/32090)
+[long~32ktok] engine prompt_tokens_total delta: t1=32081 (excess 0)  t2=32090 (excess 0)
+=== BENCH_LONGCTX done 14:20:18
+== cyc45 14:37:40
+agg4x256#2 wall=3.32s aggregate=308.16 tok/s ok_streams=4/4 [256tok/3.3s 256tok/3.3s 256tok/3.3s 256tok/3.3s]
+solo200 n=200 dt=2.29s tps=87.18
+solo200 n=200 dt=2.30s tps=87.01
+BENCH_RUN7N_DONE
+[long~32ktok] t1 ttft=15.567s wall=15.61s prompt=32081 cached=-1
+[long~32ktok] t2 ttft=1.230s wall=1.60s prompt=32090 cached=-1 (rehit depth -1/32090)
+[long~32ktok] engine prompt_tokens_total delta: t1=32081 (excess 0)  t2=32090 (excess 0)
+=== BENCH_LONGCTX done 14:30:51
+== cyc46 14:48:12
+agg4x256#2 wall=3.33s aggregate=307.65 tok/s ok_streams=4/4 [256tok/3.3s 256tok/3.3s 256tok/3.3s 256tok/3.3s]
+solo200 n=200 dt=2.30s tps=87.11
+solo200 n=200 dt=2.30s tps=86.96
+BENCH_RUN7N_DONE
+[long~32ktok] t1 ttft=15.532s wall=15.57s prompt=32081 cached=-1
+[long~32ktok] t2 ttft=1.189s wall=1.57s prompt=32090 cached=-1 (rehit depth -1/32090)
+[long~32ktok] engine prompt_tokens_total delta: t1=32081 (excess 0)  t2=32090 (excess 0)
+=== BENCH_LONGCTX done 14:41:23

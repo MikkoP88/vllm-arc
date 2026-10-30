@@ -1,0 +1,6 @@
+[golden] len=64 sha=63b97ff326763a37 chars=48
+[golden] len=256 sha=9e9d9aa9a5d8b4f8 chars=24
+[golden] len=1024 sha=702a74d2eda92e5d chars=48
+[golden] len=2048 sha=785b74ef78386c11 chars=95
+[golden] len=4096 sha=99955622040dbcc3 chars=48
+GOLDEN_CAPTURED -> /root/build/legs/arc-p5-r46/pre_golden.json
