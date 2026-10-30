@@ -10,7 +10,7 @@ complete control surface + naming map); test definitions in
 
 | Item | Value |
 |---|---|
-| Image | `vllm-arc:v0.30.0-b70-p46` (validation) / `vllm-arc:v0.30.0-b70-cert` (certified release) |
+| Image | `vllm-arc:v0.30.0-b70-p47` (current validation build — first carrying the r46u glue-alias fix; build+import-validated r46v, serve leg ran on the equivalent hot-patched p46) / `v0.30.0-b70-p46` (r46t campaign) / `v0.30.0-b70-cert` (certified release — **predates r46u**, do not build from its tag until re-cert) |
 | Manifest | `/etc/vllm-arc/IMAGE_MANIFEST` inside the image — fork SHA, wheel pins, dependency closure (`lmcache_closure=`), build host |
 | Base | upstream vllm-gaudi v0.30.0 + pinned wheels (vllm 0.30.0+xpu, triton 3.7.2+xpu, vllm_xpu_kernels 0.1.14.1+arc3, lmcache 0.5.5+arc1) |
 
@@ -19,7 +19,16 @@ Verify before any leg: `docker run --rm --entrypoint bash <img> -c "cat
 built from (container-freshness law: a stale container silently runs old
 code).
 
-## Docker run (validated posture)
+## Deploy — in execution order
+
+The certified deployment is **three steps in this order**: boot the
+container (Step 1), then serve with the environment chain and the CLI as
+**one unit** (Step 2), then health-check (in Step 2). The serve CLI is
+only certified with its 22-var environment exported first — Step 2
+therefore ships env + CLI in a single script block, so the two can never
+be separated by following the guide top to bottom.
+
+### Step 1 — Boot the container (validated posture)
 
 ```bash
 docker run -d --name arc-test \
@@ -31,7 +40,7 @@ docker run -d --name arc-test \
   -v /root/build/inductor_cache:/root/.inductor_cache \
   -e VLLM_ALLOW_LONG_MAX_MODEL_LEN=1 \
   -e VLLM_WORKER_MULTIPROC_METHOD=spawn \
-  --entrypoint /bin/bash vllm-arc:v0.30.0-b70-p46 -c 'sleep infinity'
+  --entrypoint /bin/bash vllm-arc:v0.30.0-b70-p47 -c 'sleep infinity'
 ```
 
 These are the validated boot bytes (rig `r46t_campaign.sh:54-63`,
@@ -62,10 +71,47 @@ RAM).
 oneCCL's ze_fd_manager off the opendir device walk that kills
 non-privileged TP2 init — validated posture, env-inspected 2026-10-27).
 
-## vllm serve CLI (certified line)
+### Step 2 — Serve (environment chain + CLI as ONE unit)
+
+The CLI below is the certified line (rig
+`/root/build/r42/r43_serve_k5.sh`, depth 3 per r46t) minus the optional
+chat template — every flag byte-verified. It is certified **only**
+together with these 22 exported vars (13 runtime/system + 9 LMCache —
+the other 2 of the 24-var chain are the `-e` pair in Step 1). Ship it as
+one script inside the container — never a bare interactive
+`vllm serve`, which silently drops the graph law, the oneCCL block, and
+the whole LMCache set:
 
 ```bash
-/opt/venv/bin/vllm serve --model /models/target \
+# serve_k3.sh — run INSIDE the container (docker cp + exec below)
+#!/bin/bash
+# --- serve environment: 22 of the certified 24-var chain (2 set at boot) ---
+export PYTHONHASHSEED=0                 # init determinism
+export ZE_AFFINITY_MASK=0,1             # one Arc Pro B70 per socket
+export LD_LIBRARY_PATH=/opt/venv/lib:/opt/venv/lib/python3.12/site-packages/torch/lib
+export CCL_ENABLE_SYCL_KERNELS=1
+export CCL_ZE_IPC_EXCHANGE=pidfd        # pairs with --privileged (Step 1)
+export CCL_TOPO_P2P_ACCESS=1
+export CCL_TOPO_FABRIC_VERTEX_CONNECTION_CHECK=0
+export CCL_SYCL_ALLGATHERV_SMALL_THRESHOLD=131072
+export CCL_SYCL_ALLGATHERV_SCALEOUT_THRESHOLD=1048576
+export CCL_SYCL_ALLGATHERV_TMP_BUF=0
+export CCL_SYCL_ALLREDUCE_TMP_BUF=0
+export VLLM_XPU_ENABLE_XPU_GRAPH=1      # graph posture law
+export ARC_TRACE_FLIP=1                 # flip-payload interlock
+# --- LMCache certified set (9 — keep as a set) ---
+export LMCACHE_USE_EXPERIMENTAL_API=True
+export LMCACHE_MAX_LOCAL_CPU_SIZE=100
+export LMCACHE_LOCAL_CPU=True
+export LMCACHE_EVICT_POLICY=lr_u
+export LMCACHE_CHUNK_SIZE=1024
+export LMCACHE_SAVE_DECODE_CACHE=True
+export LMCACHE_MIN_RETRIEVE_TOKENS=1024
+export LMCACHE_LOG_LEVEL=INFO
+export LMCACHE_DISABLE_PINNED_MEMORY=1  # law: pinned USM >16-32 GiB/proc segfaults
+# --- the certified CLI: MTP k3 (recommended), LMCache ON, mode:none
+#     (no torch.compile) + decode-only graphs, explicit capture list ---
+exec /opt/venv/bin/vllm serve --model /models/target \
   --served-model-name qwen3.8-27b-fp8 \
   --tensor-parallel-size 2 \
   --gpu-memory-utilization 0.8 \
@@ -87,17 +133,23 @@ non-privileged TP2 init — validated posture, env-inspected 2026-10-27).
   --no-disable-hybrid-kv-cache-manager \
   --compilation-config '{"mode":"none","cudagraph_mode":"FULL_DECODE_ONLY","cudagraph_capture_sizes":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,20,25,30,35,40,45,48,50,55,60,64,65,70,75,80,85,90,95,96,100,105,110,112,115,120,125,128,130,135,140,145,150,155,160,165,170,175,180,185,190,192,195,200,205,210,215,220,224,225,230,235,240,245,250,255,256,260,265,270,275,280,285,290,295,300,305,310,315,320]}' \
   --speculative-config '{"method":"mtp","num_speculative_tokens":3}' \
-  --port 8000
+  --port 8000 \
+  > /root/serve_full.log 2>&1
 ```
 
-This block is the certified line (rig
-`/root/build/r42/r43_serve_k5.sh`, depth 3 per r46t) minus the optional
-chat template — every remaining flag byte-verified, including
-`"mode":"none"` (no torch.compile) and the explicit 85-entry capture
-list. `[1..320]` shorthand is **invalid JSON** and is never shipped
-anywhere; copy-paste this block as-is. `--kv-transfer-config` loads the
-LMCache connector — the certified posture runs LMCache **ON** (see
-[`envs.md`](envs.md) for the full env chain).
+Launch and health-check (the rig pattern; first boot ~10 min to 200 —
+model load + graph capture):
+
+```bash
+docker cp serve_k3.sh arc-test:/root/
+docker exec -d arc-test bash /root/serve_k3.sh
+curl -s -o /dev/null -w "%{http_code}\n" -m 5 http://127.0.0.1:8000/health
+```
+
+`[1..320]` shorthand is **invalid JSON** and is never shipped anywhere;
+copy-paste the block as-is. `--kv-transfer-config` loads the LMCache
+connector — the certified posture runs LMCache **ON** (semantics of
+every var: [`envs.md`](envs.md)).
 
 **Chat template — optional, ships in-repo**
 (`assets/chat_template_qwen38_high.jinja`, md5 `eb69f1c4…` =
@@ -136,14 +188,16 @@ pays when acceptance is high; real-world sampled thinking sits well
 below the crossover. Spec depth is serve-time CLI only — changing it
 rebuilds no image.
 
-## Runtime environment (24 vars — export exactly this set)
+## The 24-var chain (reference)
 
-Delivery split (validated bytes): 22 of these are exported in the serve
-environment (the canonical script's export block); the last two
-(`VLLM_ALLOW_LONG_MAX_MODEL_LEN`, `VLLM_WORKER_MULTIPROC_METHOD`) are
-delivered at `docker run` (`-e`, boot block above).
+The step blocks above already carry all 24. This section is the
+reference view: what each layer is and where it is delivered. Delivery
+split (validated bytes): **22 serve-time** (13 runtime/system + the
+LMCache 9 — the export block inside Step 2) and **2 boot-time**
+(`VLLM_ALLOW_LONG_MAX_MODEL_LEN`, `VLLM_WORKER_MULTIPROC_METHOD` — the
+`-e` pair in Step 1's `docker run`).
 
-Runtime/system (15):
+Serve-time runtime/system (13 — in Step 2's block):
 
 ```bash
 export PYTHONHASHSEED=0                # init determinism
@@ -159,11 +213,9 @@ export CCL_SYCL_ALLGATHERV_TMP_BUF=0
 export CCL_SYCL_ALLREDUCE_TMP_BUF=0
 export VLLM_XPU_ENABLE_XPU_GRAPH=1     # graph posture law
 export ARC_TRACE_FLIP=1                # flip-payload interlock
-export VLLM_ALLOW_LONG_MAX_MODEL_LEN=1 # 262144 > derived max
-export VLLM_WORKER_MULTIPROC_METHOD=spawn
 ```
 
-LMCache certified set (9 — keep as a set):
+Serve-time LMCache certified set (9 — keep as a set; in Step 2's block):
 
 ```bash
 export LMCACHE_USE_EXPERIMENTAL_API=True
@@ -175,6 +227,13 @@ export LMCACHE_SAVE_DECODE_CACHE=True
 export LMCACHE_MIN_RETRIEVE_TOKENS=1024
 export LMCACHE_LOG_LEVEL=INFO
 export LMCACHE_DISABLE_PINNED_MEMORY=1 # law: pinned USM >16-32 GiB/proc segfaults
+```
+
+Boot-time (2 — in Step 1's `docker run`):
+
+```bash
+-e VLLM_ALLOW_LONG_MAX_MODEL_LEN=1   # 262144 > derived max
+-e VLLM_WORKER_MULTIPROC_METHOD=spawn
 ```
 
 ## vllm-arc knobs — recommended settings
