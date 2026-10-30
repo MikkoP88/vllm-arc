@@ -97,17 +97,20 @@ never shipped anywhere; copy-paste this block as-is. `--kv-transfer-config`
 loads the LMCache connector — the certified posture runs LMCache **ON**
 (see [`envs.md`](envs.md) for the full env chain).
 
-**Why the mounted chat template is not removable** (diffed against the
-checkpoint's own, `2026-10-30`): the mounted
-`chat_template_qwen38_high.jinja` is the checkpoint template (identical
-in `tokenizer_config.json` and `chat_template.jinja`, md5 `519239a4…`)
-plus two edits — `reasoning_effort` `"high"`/`"max"` alias to `xhigh`,
-and `"none"` sets `enable_thinking=false`. Without it (engine falls
-back to the checkpoint's own template), the default path is unchanged
-(xhigh either way), but OpenAI-standard `reasoning_effort:"high"`
-requests — and `"none"` — fail with 400 (`raise_exception` in the
-template). The flag + mount are the API-compatibility shim; removing
-them is a posture change, not a cleanup.
+**Chat template — optional, ships in-repo**
+(`assets/chat_template_qwen38_high.jinja`, md5 `eb69f1c4…` =
+checkpoint's own template + two edits: `reasoning_effort`
+`"high"`/`"max"` → `xhigh`, `"none"` → `enable_thinking=false`).
+The engine serves fine without it — it falls back to the checkpoint's
+own template (identical in `tokenizer_config.json` and
+`chat_template.jinja`, md5 `519239a4…`), and the default path (no
+`reasoning_effort` sent) is byte-identical: xhigh thinking either way.
+Mount it only if you want OpenAI-standard `reasoning_effort`
+compatibility — without it, `"high"` and `"none"` requests fail with
+400 (`raise_exception` in the checkpoint template). The certified line
+includes it (that is the validated posture); add it with
+`-v …/chat_template_qwen38_high.jinja:/root/chat_template_qwen38_high.jinja:ro`
+plus `--chat-template /root/chat_template_qwen38_high.jinja`.
 
 ### MTP depth (num_speculative_tokens) — recommended 3
 

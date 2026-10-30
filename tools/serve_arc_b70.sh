@@ -80,6 +80,21 @@ esac
 WANT_IMG_ID=$(docker image inspect "$ARC_IMAGE" --format '{{.Id}}') || {
   echo "REFUSE: image $ARC_IMAGE not present" >&2; exit 2; }
 HAVE_IMG_ID=$(docker inspect "$ARC_NAME" --format '{{.Image}}' 2>/dev/null || true)
+# Chat template (OPTIONAL, in-repo copy at assets/chat_template_qwen38_high.jinja):
+# without it the engine uses the checkpoint's own template — default xhigh
+# thinking is identical; only OpenAI-style reasoning_effort high/max/none
+# requests differ (they 400 without the shim). On the rig the template is
+# present and the certified line mounts it (r43_serve_k5.sh parity).
+CT_SRC="$RIG/v127_stage/chat_template_qwen38_high.jinja"
+CT_MOUNT=""
+CT_FLAG=""
+if [ -f "$CT_SRC" ]; then
+  CT_MOUNT="-v $CT_SRC:/root/chat_template_qwen38_high.jinja:ro"
+  CT_FLAG="--chat-template /root/chat_template_qwen38_high.jinja"
+else
+  echo "NOTE: chat template not found at $CT_SRC — serving WITHOUT it (optional"
+  echo "OpenAI reasoning_effort compat; in-repo copy: assets/chat_template_qwen38_high.jinja)"
+fi
 if [ "$HAVE_IMG_ID" != "$WANT_IMG_ID" ]; then
   HAVE_SRC=${HAVE_IMG_ID:7:12}
   [ -n "$HAVE_SRC" ] || HAVE_SRC=none
@@ -93,7 +108,7 @@ if [ "$HAVE_IMG_ID" != "$WANT_IMG_ID" ]; then
     --privileged --network host --ipc host \
     --shm-size 64g \
     -v /models/qwen3.8-27b-fp8:/models/target:ro \
-    -v "$RIG/v127_stage/chat_template_qwen38_high.jinja:/root/chat_template_qwen38_high.jinja:ro" \
+    $CT_MOUNT \
     -v /root/build/neo_cache:/root/.neo_cache \
     -v /root/build/triton_cache:/root/.triton_cache \
     -v /root/build/inductor_cache:/root/.inductor_cache \
@@ -183,7 +198,7 @@ exec /opt/venv/bin/vllm serve --model /models/target \
   --reasoning-parser qwen3 \
   --tool-call-parser qwen3_coder \
   --enable-auto-tool-choice \
-  --chat-template /root/chat_template_qwen38_high.jinja \
+  $CT_FLAG \
   --no-disable-hybrid-kv-cache-manager \
   $LMC_FLAG \
   $COMPILATION_FLAG \
