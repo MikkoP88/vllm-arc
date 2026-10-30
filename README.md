@@ -39,30 +39,56 @@ Full methodology and numbers: [`docs/PERFORMANCE-arc.md`](docs/PERFORMANCE-arc.m
 git checkout rel/v0.30.0-b70-cert
 tools/build_image.sh          # -> vllm-arc:v0.30.0-b70-cert
 
-# 2. Boot (privileged is required — pidfd IPC law; shm 64g = validated posture)
+# 2. Boot — the validated posture, annotated:
+#    --privileged   REQUIRED: with CCL_ZE_IPC_EXCHANGE=pidfd it keeps
+#                   oneCCL's ze_fd_manager off the opendir device walk
+#                   that kills non-privileged TP2 init
+#    --ipc host     share host /dev/shm
+#    --shm-size 64g tmpfs ceiling, not a reservation (moot under
+#                   --ipc host; guards the private-IPC fallback)
+#    model :ro      the checkpoint is an input, never an output
+#    -e pair        the 2 boot-layer vars of the 24-var chain (22 in step 3)
 docker run -d --name arc-test --privileged --network host --ipc host \
   --shm-size 64g \
   -v /path/to/qwen3.8-27b-fp8:/models/target:ro \
   -v ~/.cache/arc/neo:/root/.neo_cache \
   -v ~/.cache/arc/triton:/root/.triton_cache \
   -v ~/.cache/arc/inductor:/root/.inductor_cache \
-  -e VLLM_ALLOW_LONG_MAX_MODEL_LEN=1 -e VLLM_WORKER_MULTIPROC_METHOD=spawn \
+  -e VLLM_ALLOW_LONG_MAX_MODEL_LEN=1 \
+  -e VLLM_WORKER_MULTIPROC_METHOD=spawn \
   --entrypoint bash vllm-arc:v0.30.0-b70-cert -c "sleep infinity"
 
-# 3. Serve — the certified line, complete (MTP k3 recommended, LMCache ON,
-#    mode:none + explicit capture list; all 18 flags + the 22-var exec env)
-docker exec -d \
-  -e PYTHONHASHSEED=0 -e ZE_AFFINITY_MASK=0,1 \
-  -e LD_LIBRARY_PATH=/opt/venv/lib:/opt/venv/lib/python3.12/site-packages/torch/lib \
-  -e CCL_ENABLE_SYCL_KERNELS=1 -e CCL_ZE_IPC_EXCHANGE=pidfd -e CCL_TOPO_P2P_ACCESS=1 \
-  -e CCL_TOPO_FABRIC_VERTEX_CONNECTION_CHECK=0 \
-  -e CCL_SYCL_ALLGATHERV_SMALL_THRESHOLD=131072 -e CCL_SYCL_ALLGATHERV_SCALEOUT_THRESHOLD=1048576 \
-  -e CCL_SYCL_ALLGATHERV_TMP_BUF=0 -e CCL_SYCL_ALLREDUCE_TMP_BUF=0 \
-  -e VLLM_XPU_ENABLE_XPU_GRAPH=1 -e ARC_TRACE_FLIP=1 \
-  -e LMCACHE_USE_EXPERIMENTAL_API=True -e LMCACHE_MAX_LOCAL_CPU_SIZE=100 -e LMCACHE_LOCAL_CPU=True \
-  -e LMCACHE_EVICT_POLICY=lr_u -e LMCACHE_CHUNK_SIZE=1024 -e LMCACHE_SAVE_DECODE_CACHE=True \
-  -e LMCACHE_MIN_RETRIEVE_TOKENS=1024 -e LMCACHE_LOG_LEVEL=INFO -e LMCACHE_DISABLE_PINNED_MEMORY=1 \
-  arc-test /opt/venv/bin/vllm serve --model /models/target \
+# 3. Serve — the certified line as an annotated script (the rig pattern:
+#    script + docker cp + exec; logs land in /root/serve_full.log)
+cat > serve_k3.sh <<'EOF'
+#!/bin/bash
+# --- serve environment: 22 of the certified 24-var chain (2 set at boot) ---
+export PYTHONHASHSEED=0                 # init determinism
+export ZE_AFFINITY_MASK=0,1             # one Arc Pro B70 per socket
+export LD_LIBRARY_PATH=/opt/venv/lib:/opt/venv/lib/python3.12/site-packages/torch/lib
+export CCL_ENABLE_SYCL_KERNELS=1
+export CCL_ZE_IPC_EXCHANGE=pidfd        # --privileged pair (TP2 init law)
+export CCL_TOPO_P2P_ACCESS=1
+export CCL_TOPO_FABRIC_VERTEX_CONNECTION_CHECK=0
+export CCL_SYCL_ALLGATHERV_SMALL_THRESHOLD=131072
+export CCL_SYCL_ALLGATHERV_SCALEOUT_THRESHOLD=1048576
+export CCL_SYCL_ALLGATHERV_TMP_BUF=0
+export CCL_SYCL_ALLREDUCE_TMP_BUF=0
+export VLLM_XPU_ENABLE_XPU_GRAPH=1      # graph posture law
+export ARC_TRACE_FLIP=1                 # flip-payload interlock
+# --- LMCache certified set (9 — keep as a set) ---
+export LMCACHE_USE_EXPERIMENTAL_API=True
+export LMCACHE_MAX_LOCAL_CPU_SIZE=100
+export LMCACHE_LOCAL_CPU=True
+export LMCACHE_EVICT_POLICY=lr_u
+export LMCACHE_CHUNK_SIZE=1024
+export LMCACHE_SAVE_DECODE_CACHE=True
+export LMCACHE_MIN_RETRIEVE_TOKENS=1024
+export LMCACHE_LOG_LEVEL=INFO
+export LMCACHE_DISABLE_PINNED_MEMORY=1  # law: pinned USM >16-32 GiB/proc segfaults
+# --- the certified CLI: MTP k3 (recommended), LMCache ON, mode:none
+#     (no torch.compile) + decode-only graphs, explicit capture list ---
+exec /opt/venv/bin/vllm serve --model /models/target \
   --served-model-name qwen3.8-27b-fp8 \
   --tensor-parallel-size 2 \
   --gpu-memory-utilization 0.8 \
@@ -84,18 +110,25 @@ docker exec -d \
   --no-disable-hybrid-kv-cache-manager \
   --compilation-config '{"mode":"none","cudagraph_mode":"FULL_DECODE_ONLY","cudagraph_capture_sizes":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,20,25,30,35,40,45,48,50,55,60,64,65,70,75,80,85,90,95,96,100,105,110,112,115,120,125,128,130,135,140,145,150,155,160,165,170,175,180,185,190,192,195,200,205,210,215,220,224,225,230,235,240,245,250,255,256,260,265,270,275,280,285,290,295,300,305,310,315,320]}' \
   --speculative-config '{"method":"mtp","num_speculative_tokens":3}' \
-  --port 8000
-```
+  --port 8000 \
+  > /root/serve_full.log 2>&1
+EOF
+docker cp serve_k3.sh arc-test:/root/
+docker exec -d arc-test bash /root/serve_k3.sh
 
-# Optional — OpenAI reasoning_effort compatibility (adds high/max→xhigh
-# aliasing and none→thinking-off; default path is identical either way):
+# 4. Health — first boot takes ~10 min to reach 200 (model load + graph capture)
+curl -s -o /dev/null -w "%{http_code}\n" -m 5 http://127.0.0.1:8000/health
+
+# Optional — OpenAI reasoning_effort compatibility (high/max→xhigh aliasing,
+# none→thinking-off; default path identical either way; ships in-repo):
 #   boot:  add -v $(pwd)/assets/chat_template_qwen38_high.jinja:/root/chat_template_qwen38_high.jinja:ro
 #   serve: add --chat-template /root/chat_template_qwen38_high.jinja
+```
 
 This quick start is the certified line (verified against rig
-`/root/build/r42/r43_serve_k5.sh`) minus the optional chat template
-above — the annotated form with semantics per flag/env is
-[`docs/CONFIGURATION-arc.md`](docs/CONFIGURATION-arc.md)); the uniform
+`/root/build/r42/r43_serve_k5.sh`) minus the optional chat template —
+semantics per flag/env, knobs, and posture laws in
+[`docs/CONFIGURATION-arc.md`](docs/CONFIGURATION-arc.md); the uniform
 boot interface with posture knobs is `tools/serve_arc_b70.sh`
 (rig paths).
 
