@@ -2,7 +2,7 @@
 
 **Certified vLLM stack for `qwen3.8-27b-fp8` (dense hybrid-GDN + MTP) on dual Intel® Arc™ Pro B70 — TP2.**
 
-A fork of [vllm-project/vllm-gaudi](https://github.com/vllm-project/vllm-gaudi) at **v0.30.0** (package name `vllm_gaudi` preserved; the Arc/XPU work lives in `vllm_gaudi/xpu/`). Certified release: **`rel/v0.30.0-b70-cert`** — every gate GREEN with banked evidence (see [Repository model](#repository-model)).
+A fork of [vllm-project/vllm-gaudi](https://github.com/vllm-project/vllm-gaudi) at **v0.30.0** (package name `vllm_gaudi` preserved; the Arc/XPU work lives in `vllm_gaudi/xpu/`). Certified release: **`rel/v0.30.0-b70-cert2`** — every gate GREEN with banked evidence (cert2 = the original cert + the r46u p41c glue-alias fix; see [Repository model](#repository-model)).
 
 ## What this fork adds
 
@@ -34,7 +34,9 @@ Full methodology and numbers: [`docs/PERFORMANCE-arc.md`](docs/PERFORMANCE-arc.m
 ## Quick start
 
 ```bash
-# 1. Build the image — two phases, validated end-to-end (r46v evidence).
+# 1. Build the certified image from the certified tag — two phases,
+#    validated end-to-end (r46v/r46x evidence: the r46u glue repro passes
+#    image-natively on a tag-built image).
 #    The build runs ON THE RIG (or an equally prepared Linux host): it
 #    needs the pinned-wheel stashes (/root/build/radiance_wheels,
 #    wheels-arc-vxk, wheels-arc-lmc — md5s enforced against
@@ -42,27 +44,27 @@ Full methodology and numbers: [`docs/PERFORMANCE-arc.md`](docs/PERFORMANCE-arc.m
 #    rig-local base image (vllm-iexperimental:base-v0.26.0), and internet
 #    on the FIRST build only (torch+xpu from download.pytorch.org/whl/xpu,
 #    the rest from PyPI — the stack layers cache in docker after).
-#    Every patch ships in the archive itself (COPY src/ + pip install .)
-#    — proven by the r46u glue repro passing image-natively on a build
-#    from main; the lmcache/vxk wheels are rebuildable from
-#    external_patches/ if a stash is ever lost.
+#    Every patch ships in the archive itself (COPY src/ + pip install .);
+#    the lmcache/vxk wheels are rebuildable from external_patches/ if a
+#    stash is ever lost.
 #
 #    repo side (your checkout of this fork):
 RIG=10.20.3.65                                  # <- your build host
-SHA=$(git rev-parse main)
-git archive --format=tar -o /tmp/fork.tar main
+SHA=$(git rev-parse rel/v0.30.0-b70-cert2)      # the certified commit
+git archive --format=tar -o /tmp/fork.tar rel/v0.30.0-b70-cert2
 scp /tmp/fork.tar root@$RIG:/root/build/
 #    rig side (via ssh — same effect as running them on the host):
 ssh root@$RIG 'tar -xOf /root/build/fork.tar tools/build_image.sh > /root/build/build_image.sh'
-ssh root@$RIG bash /root/build/build_image.sh /root/build/fork.tar $SHA vllm-arc:v0.30.0-b70-p47
+ssh root@$RIG bash /root/build/build_image.sh /root/build/fork.tar $SHA vllm-arc:v0.30.0-b70-cert2
 #    -> wheel_guard PASSes (4/4 md5s), in-build gates run, IMAGE_MANIFEST
-#       records fork_sha. ~15 min cold; ~1 min when only the source
-#       changed (stack layers cached — layer-order law in the Dockerfile).
+#       records fork_sha == $SHA (verify: docker run --rm --entrypoint cat
+#       vllm-arc:v0.30.0-b70-cert2 /etc/vllm-arc/IMAGE_MANIFEST).
+#       ~15 min cold; ~1 min when only the source changed (stack layers
+#       cached — layer-order law in the Dockerfile).
 #
-#    NOTE (r46u): build from main >= 38cf63f8. The certified tag
-#    rel/v0.30.0-b70-cert PREDATES the p41c glue-alias fix — building
-#    from it reproduces the glue-unavailable defect; this note retires
-#    when a re-certified tag is cut.
+#    Tag lineage: cert2 = the certified release (cert + the r46u p41c
+#    glue-alias fix). The original rel/v0.30.0-b70-cert PREDATES r46u —
+#    superseded, never build from it.
 
 # 2. Boot — the validated posture, annotated:
 #    --privileged   REQUIRED: with CCL_ZE_IPC_EXCHANGE=pidfd it keeps
@@ -81,7 +83,7 @@ docker run -d --name arc-test --privileged --network host --ipc host \
   -v ~/.cache/arc/inductor:/root/.inductor_cache \
   -e VLLM_ALLOW_LONG_MAX_MODEL_LEN=1 \
   -e VLLM_WORKER_MULTIPROC_METHOD=spawn \
-  --entrypoint bash vllm-arc:v0.30.0-b70-p47 -c "sleep infinity"
+  --entrypoint bash vllm-arc:v0.30.0-b70-cert2 -c "sleep infinity"
 
 # 3. Serve — the certified line as an annotated script (the rig pattern:
 #    script + docker cp + exec; logs land in /root/serve_full.log)
@@ -168,7 +170,7 @@ boot interface with posture knobs is `tools/serve_arc_b70.sh`
 ## Repository model
 
 - **`main` is linear and protected**: changes land as squash commits from per-item lanes (`feat/arc-pNN-*`); direct pushes, force pushes, and deletions are blocked; PRs are required.
-- **Certified releases are annotated tags** (`rel/v0.30.0-b70-cert`) pointing at the certified `main` commit; the Docker image embeds the fork SHA in `/etc/vllm-arc/IMAGE_MANIFEST` for A/B verification.
+- **Certified releases are annotated tags** pointing at the certified `main` commit — current: `rel/v0.30.0-b70-cert2`; superseded: `rel/v0.30.0-b70-cert` (predates the r46u glue-alias fix). The Docker image embeds the fork SHA in `/etc/vllm-arc/IMAGE_MANIFEST` for A/B verification.
 - **Evidence is in-tree**: every validation leg banks to `results/YYYY-MM-DD-<phase>-r<leg>-<slug>/` (VERDICT + raw outputs) — 60+ legs, P0 through P5.
 - The `feat/arc-*` branches are kept deliberately: squash-merging leaves the per-item development history nowhere else.
 
