@@ -1,0 +1,9 @@
+A warm-hit: cold=5556.1 ms  warm=778.2 ms  sha_match=True  gate(t2<=750)=FAIL
+B integrity[0]: match=True  8898f0398270 vs 8898f0398270
+B integrity[1]: match=True  28f2a474bdb0 vs 28f2a474bdb0
+B integrity[2]: match=True  8fa239e95ea3 vs 8fa239e95ea3
+B integrity[3]: match=True  d9f601923574 vs d9f601923574
+B integrity[4]: match=True  138272250b2e vs 138272250b2e
+C churn: 24 distinct 8k sent, cold ms=[5500.7, 5510.9, 5515.2, 5503.8, 5497.1, 5509.4]...[5525.1, 5522.0, 5523.6]
+C re-hit: most-recent=776.8 ms (expect warm-class)  oldest/evicted=769.4 ms (expect cold-class)
+R30_LMC_DONE CHECK-ABOVE

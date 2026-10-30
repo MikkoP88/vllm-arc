@@ -1,0 +1,6 @@
+B integrity[0]: match=False  3674ms/2789ms  739c3405b3bf vs 19c7574ffe66
+B integrity[1]: match=False  4422ms/3563ms  e5185cd9c398 vs ba852444dfb8
+B integrity[2]: match=False  2366ms/4013ms  580d0ea8b96f vs 637e300400b4
+B integrity[3]: match=False  4313ms/3707ms  0fc516788621 vs 39599f45085f
+B integrity[4]: match=False  3948ms/4095ms  85671559c8f4 vs 6d238906a33a
+INTEGRITY 0/5

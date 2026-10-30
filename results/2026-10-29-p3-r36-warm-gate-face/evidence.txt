@@ -1,0 +1,58 @@
+r36 evidence — raw captures (probe boot 18:55–, container /root/serve_full.log + driver outputs + donor primary sources)
+
+=== PHASE-TIMER CAPTURE (ARC_R36_PHASE=1, product = r35-banked v4) ===
+alloc lines (13 total, all requests this boot incl. warmup):
+(EngineCore pid=878) [r36ph alloc req=arc-warmup-small-a846b0b4 ms=0.0 since_lookup=0.7 ext=0]
+(EngineCore pid=878) [r36ph alloc req=arc-warmup-max-batch-84499b14 ms=0.0 since_lookup=2.2 ext=0]
+(EngineCore pid=878) [r36ph alloc req=cmpl-abd01be67b70fa68-0-b8b6bd36 ms=0.0 since_lookup=1.2 ext=0]
+(EngineCore pid=878) [r36ph alloc req=cmpl-a92f7351056d2fb1-0-8a547344 ms=0.0 since_lookup=3.4 ext=0]
+(EngineCore pid=878) [r36ph alloc req=cmpl-9061a5bfcaeaf263-0-95b7d943 ms=0.0 since_lookup=3.1 ext=0]
+... (8 more, identical shape)
+lookup prints >5ms: 0        grep -c 'r36ph lookup' -> 0
+Retrieved lines (whole boot): 0   -> ALL warms pure-local (APC pop-hit 7168 + 1024 recompute)
+
+=== CELLS ON THE PROBE BOOT (telemetry ON = diagnostics, not gate numbers) ===
+N1 8192 mt=1 (r43_n1.py):  WARM5 min=1046.3 med=1048.2 max=1050.7  sha=9d1e0e2d (within-run stable;
+  N1 cross-boot marginal class: 7eb70257593da06f / 01ba4719… / 9d1e0e2d)
+WARM5 8192 (r30_warm5.py): WARM5 min=1029.2 med=1034.3 max=5876.3 (first-warm blip, same class as
+  prior boots' 5962-5972)  sha=d03502c4 (within-run stable)
+
+=== THE HONEST 8k LOCAL WARM BAND (all legs, same mechanism) ===
+r33/r34/r35-E4/r36 boots: N1 1033.1 / 1037.7 / 1048.2 ; WARM5 1021.6 / 1025.5 / 1034.3
+r30 folded-era WARM5 (BYTE-WRONG transfer, pre-r33): 800.9/757.5/755.1/750.7/752.4 -> med 755.1
+  = the "FAIL by ~5ms" reference; ARTIFACT (r33 proved the folded loads byte-wrong;
+  r30 serve log preserved no Stored/Retrieved lines to size-check them)
+
+=== FACE DEFINITION — D DONOR PRIMARY SOURCE ===
+/c/Projects/vllm-iexperimental/vllm/patches/prod/v1235-certified/results/2026-10-19-cl1-legs/CL1_RESULTS.md
+  (launcher cl1_legs.sh md5 429d5703, image llm-scaler-exp:v1.2.35 = line C, swift posture,
+   old-stack identity v0.21.1.dev0+gad7125a43, derived serve /root/serve_lmc_v133.sh 6b455e8d)
+line 11-13: cl1b (SPEC=1) 15:10:35 -> HEALTH_OK ~270 s, GPU KV 506,110 tok / 1.93x (spec ENGAGED)
+line 18-19: speculative_config: {'method': 'mtp', 'num_speculative_tokens': 4};
+            Resolved architecture: Qwen3_5MTP; Worker_TP0 "Loading drafter model..."
+line 39:  longctx t1/t2 (s): 600tok 0.363/0.390; 8k 4.784/0.587; 16k 11.494/0.741; 32k 27.174/0.566
+line 38:  LMC Retrieved count 1088 (retrieval ENGAGED under spec leg)
+  -> the plan's "C bars 0.587-0.741 s" = cl1b longctx t2 at 8k / 16k; t2 SIZE-FLAT
+     (0.587/0.741/0.566) = near-full external retrieval posture of the v0.21.1 swift stack
+
+=== D-LINEAGE WALLS (same donor, program-status table + fail ledgers) ===
+resume5/F-b (SPEC=0):  lc t2 8k/16k/32k 0.703/0.867/0.720 vs 0.567/0.698/0.542 (+0.14-0.18 s);
+  "ZERO Retrieved lines = local GPU-prefix recompute at hybrid 1024-token granularity (t2 arithmetic
+   53 vs 31 us/tok). Old-project KNOWN_ISSUES #22 documented ceiling ... no cheap lever"
+resume7/10/13 (SPEC=0): t2 8k 0.717-0.733 persistent across every fix wave
+P2r3 (SPEC=1, VERDICT_fail_p2r3.md): "(B) flat warm-t2 adder 3 faces +0.526/+0.526/+0.714 at
+  8k/16k/32k (t2 ~=1.14-1.28 near-constant; parked post-TTFT completion-constant class)"
+
+=== BUDGET ARITHMETIC ===
+marginal warm-residual rate: (N1 1048.2 - N3 544.7) / 896 tokens = 0.561 ms/token
+intercept: 544.7 - 128*0.561 - 25(load 896) - 56(sync) ~= 0.39 s fixed
+floor with residual 1024 (coherence-capped depth 7168): ~0.87-1.0 s even at zero overhead
+-> 8k <=0.75 needs depth ~8064 = the falsified r34/r35-v3 class; law-blocked in 0.26+/0.30 lineage
+
+=== E4 STRIP ===
+repo: git checkout -- vllm_gaudi/xpu/patches/lmcint/vllm_v1_adapter.py
+  md5 79e8dbd8e410db7affffad5b9af7b85d (== committed p41 state; git status clean)
+rig:  scp -> /root/build/r30/patches/lmcint/vllm_v1_adapter.py (md5 verified 79e8dbd8…)
+      /root/build/r30/r30_serve.sh line 21 -> "# ARC_SNAP_PROBE stripped at r35 E4;
+      ARC_R36_PHASE stripped at r36 E4"; grep ARC_R36 -> only the comment
+next arc boot pulls the stripped overlay (r30_boot.sh copies /root/build/r30/patches -> /root/r30cap)

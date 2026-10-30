@@ -1,0 +1,67 @@
+--- a/lmcache/v1/cache_engine.py
++++ b/lmcache/v1/cache_engine.py
+@@ -217,6 +217,10 @@
+         self.lookup_pins: dict[str, dict[str, list]] = defaultdict(
+             lambda: defaultdict(list)
+         )
++        # llm-scaler v141: ids already released via the lookup_unpin pins
++        # path; guards the async event-cleanup branch from re-releasing
++        # the same objects (double unpin -> pin_count -1 warnings).
++        self._lookup_released: set = set()
+ 
+         InitializeUsageContext(config, metadata)
+         self.stats_monitor = LMCStatsMonitor.GetOrCreate()
+@@ -1188,6 +1192,32 @@
+                 request_configs=request_configs,
+             )
+ 
++            # llm-scaler v136 (llm-scaler fork): mamba boundary-state
++            # lookups (lookup_id "m-*"). This engine banks ONE state
++            # object per materialized 512-token boundary (scheduler chunk
++            # ends), so early chunk keys may legitimately be absent while
++            # deeper boundary objects exist — stock consecutive-prefix
++            # semantics would return 0 forever. For this flavor, return
++            # the deepest PRESENT chunk end and pin just that object
++            # (stock lookup_pins format, released by lookup_unpin from
++            # the worker connector).
++            if lookup_id is not None and str(lookup_id).startswith("m-"):
++                deep_end = 0
++                deep_key = None
++                for _s, _e, _k in chunk_info_iterator:
++                    if self.storage_manager.contains(_k, search_range):
++                        deep_end = _e
++                        deep_key = _k
++                if pin and deep_key is not None:
++                    _loc = self.storage_manager.contains(
++                        deep_key, search_range, True
++                    )
++                    if _loc is not None:
++                        self.lookup_pins[lookup_id] = {_loc: [deep_key]}
++                        self._lookup_released.discard(lookup_id)
++                res = deep_end
++                return res
++
+             # TODO: support batched_contains when layerwise is enabled
+             if self.use_layerwise:
+                 for start, end, key in chunk_info_iterator:
+@@ -1233,6 +1263,7 @@
+                         "lookup_id is required when pin is True"
+                     )
+                     self.lookup_pins[lookup_id] = block_mapping
++                    self._lookup_released.discard(lookup_id)
+                 for idx, (start, end, key) in enumerate(chunk_info_list):
+                     if idx < hit_chunks:
+                         res = end
+@@ -1546,6 +1577,12 @@
+             assert self.storage_manager is not None
+             for location, keys in self.lookup_pins.pop(lookup_id).items():
+                 self.storage_manager.batched_unpin(keys, [location])
++            self._lookup_released.add(lookup_id)
++
++        elif lookup_id in self._lookup_released:
++            # llm-scaler v141: already released via the pins path and not
++            # repinned since; the event cleanup below would double-release.
++            pass
+ 
+         elif (
+             self.async_loading is not None

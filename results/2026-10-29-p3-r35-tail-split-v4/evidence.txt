@@ -1,0 +1,54 @@
+r35 evidence — raw captures (session-ordered, rig log excerpts + driver outputs)
+
+=== v3 PROBE BOOT (17:55, ARC_SNAP_PROBE=1, delta ON all prompts) ===
+boot: [scheduler] _install OK (EngineCore pid=879); CAP-OVERLAY sched_tail_split.py
+r35probe split#6 req=cmpl-a011200382bf33e4 n=8192-class: new=8064   <- chunk1 ends 8064
+r35probe split#7 req=cmpl-a011200382bf33e4: new=128                  <- chunk2 residual
+p41c-snap req=cmpl-a011200382bf33e4 ncc=8064 B=8064 idx=8 bs=896 (x2 ranks)
+p41c-seedmd5 req=cmpl-b7f87b323a396f4d B=8064 prev=8 seed_bytes=8c563cc4a050988c postwrite=8c563cc4a050988c
+p41c-postseed req=cmpl-b7f87b323a396f4d sidx=9 src_col=8 src_off=0
+LMCache: Stored 8064 out of total 8064 tokens. size: 0.1307 GB (first 459 ms, then 88 ms re-stores)
+LMCache: Stored 896 out of total 896 tokens. size: 0.0384 GB (mamba boundary object)
+per warm req: Retrieved 8064 out of 8064 (cost ~185-210 ms, 0.63 GB/s) + Retrieved 896 (seed, ~25 ms) x2 ranks
+
+N1 cell (v3): cold 15404.0 sha=7eb70257593da06f; warm 1431.1/1413.2/1404.4/1402.7/1399.7 med=1404.4 SAME sha (probe env)
+N3 cell (v3): cold1k 1192.6 sha=8a5edab282632443; warm 733.9..745.1 med=740.4 GATE PASS same sha
+N4 cell (v3): cold 5404.4 sha=9c1623f0d38e28e9; warm[0] 6841.0 sha=7eb70257593da06f  <-- LOCAL-PATH FLIP
+             warm[1] 1911.1 / warm[2] 1920.9 sha=9c1623f0d38e28e9
+GOLDEN (v3): [0] 27be84612020 vs 8898f0398270  [3] d9f601923574 vs a15739023154  -> INTEGRITY 3/5
+r33 canonical (battery/regate_r31_integrity.log): [0]=8898f0398270 [2]=8fa239e95ea3 [3]=40865874313c
+
+=== v3 TIMELINE DECODE (the smoking gun, serve_full.log 18:03:0x-2x) ===
+18:03:07 RET896 x4  cmpl-b251fa96  (N3 last warm)
+18:03:14 STORED 896                      (N3 WFS)
+18:03:15-22 N4 warm[0] runs — NO Retrieved lines: external MISS (cold store not yet landed)
+18:03:21 STORED 8064 x2                  (N4 COLD's WFS store — landed DURING warm[1])
+18:03:21 SNAP B=6272 idx=6 req=ac6f9094  (N4 warm recompute path, 6272 local hit)
+18:03:23 STORED 6272 + STORED 896        (N4 warm[0]'s spans: 1792 attn recompute + seed)
+18:03:26/29 STORED 1792 x2               (N4 warm[1]/[2] local 6272-hit + 1792 recompute stores)
+golden warms (18:03:3x-18:04:2x): ZERO Retrieved lines — all-local paths, [0]/[3] mismatch
+
+=== CONTROL BOOT (18:16, VLLM_ARC_R35_TAIL_SPLIT=0, same patches installed) ===
+N4: cold 15205.2 (first-traffic) sha=9c1623; warms 1912.4/1865.4/1870.7 sha=9c1623
+GOLDEN: 5/5 — [0] 8898f0398270 [1] 28f2a474bdb0 [2] 8fa239e95ea3 [3] a15739023154 [4] 138272250b2e
+(all within-run consistent; canonical [0]/[2] restored; [3] = its known marginal variant)
+
+=== v4 PROBE BOOT (18:27, delta scoped to banked-nothing class) ===
+r35probe split fired 7x — ALL n=1024 deepest_full=896 (new=896 cold / new=128 warms); zero 8k calls
+28x p41c-snap B=896; 30x Retrieved 896
+N3: med 744.1 PASS sha 8a5edab2 stable | GOLDEN 5/5 | N1 med 1393.1 sha 7eb702 stable | N4 warms 1785-1859 sha 9c1623
+
+=== v4 E4 CLEAN BATTERY (18:36 boot, first-traffic, timers-off) ===
+regate_r43_n4:        warm 1346.0/1297.9/1303.7  9c1623f0d38e28e9
+regate_r31_integrity: INTEGRITY 5/5  ([2] 8fa239e95ea3, [3] d9f601923574 within-run, [4] 138272250b2e)
+regate_r43_n2:        N2_WARM7168 min=1198.4 med=1260.5 max=1262.7  2b4c342f5433ebe5
+regate_r43_n5:        warm7680 1292.5/1287.4 cc7e4412564ba8a7 | warm8960 1256.4/1349.4 7eb70257593da06f
+regate_r30_warm5:     WARM5 min=1021.9 med=1025.5 max=5972.7 (first-warm blip)  8a5edab282632443 within-run
+regate_r43_n1:        N1_WARM5 min=1031.9 med=1037.7 max=1038.0  7eb70257593da06f
+regate_r43_n3:        N3_WARM1K min=535.9 med=544.7 max=549.2  8a5edab282632443  GATE<=750 PASS
+
+=== deployed state (md5s) ===
+sched_tail_split.py 8778bbb753985df0044d1ca4dce11189 (v3 at rig-deploy; v4 redeployed same path,
+compiled OK; sitecustomize tuple arc_r35_patch on vllm.v1.core.sched.scheduler)
+WARM5 p41-leg reference: med 755.1 min 750.7 (r30 first-leg battery) vs 1021-1025 post-r33
+= the r36 overhead-capture lane (~266 ms on the 8k warm path)

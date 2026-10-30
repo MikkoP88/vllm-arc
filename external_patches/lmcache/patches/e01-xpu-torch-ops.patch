@@ -1,0 +1,73 @@
+--- a/lmcache/v1/platform/torch_ops.py
++++ b/lmcache/v1/platform/torch_ops.py
+@@ -154,8 +154,15 @@
+     if device.type == "musa":
+         return _tensor_from_musa_ptr(ptr, shape, dtype, device, total_bytes)
+ 
++    # ------------------------------------------------------------------ #
++    # XPU path                                                           #
++    # ------------------------------------------------------------------ #
++    if device.type == "xpu":
++        return _tensor_from_xpu_ptr(ptr, shape, dtype, device, total_bytes)
++
+     raise ValueError(
+-        f"Unsupported device type: {device.type!r}. Expected 'cpu', 'cuda', or 'musa'."
++        f"Unsupported device type: {device.type!r}. "
++        "Expected 'cpu', 'cuda', 'musa', or 'xpu'."
+     )
+ 
+ 
+@@ -296,6 +303,37 @@
+         ) from exc
+ 
+ 
++def _tensor_from_xpu_ptr(
++    ptr: int,
++    shape: tuple[int, ...],
++    dtype: torch.dtype,
++    device: torch.device,
++    total_bytes: int,
++) -> torch.Tensor:
++    """Create a non-owning XPU (SYCL USM) tensor from a raw device pointer.
++
++    torch._C._construct_storage_from_data_pointer takes a signed 64-bit
++    pointer; XPU USM device addresses arrive as unsigned values that can
++    exceed 2**63, so wrap them into the signed range first. Aliasing is
++    verified: writes through the returned tensor land in the original
++    allocation.
++    """
++    try:
++        signed_ptr = ptr if ptr < 2**63 else ptr - 2**64
++        storage = torch._C._construct_storage_from_data_pointer(
++            signed_ptr,
++            device,
++            total_bytes,
++        )
++        tensor = torch.empty(0, dtype=dtype, device=storage.device)
++        tensor.set_(storage, 0, shape, _contiguous_element_strides(shape))
++        return tensor
++    except Exception as exc:
++        raise RuntimeError(
++            "TorchXPU failed to construct a non-owning tensor from a device pointer"
++        ) from exc
++
++
+ def _copy_bytes_with_tensor(dst: int, src: int, num_bytes: int) -> None:
+     """Copy raw bytes between pointers using torch tensor semantics.
+ 
+@@ -347,7 +385,14 @@
+ 
+     global _use_pinned
+     if _use_pinned is None:
+-        _use_pinned = torch_dev.is_available()
++        _use_pinned = torch_dev.is_available() and not bool(
++            int(os.environ.get("LMCACHE_DISABLE_PINNED_MEMORY", "0"))
++        )
++        if torch_dev.is_available() and not _use_pinned:
++            logger.info(
++                "Pinned host allocations disabled via "
++                "LMCACHE_DISABLE_PINNED_MEMORY; using pageable memory."
++            )
+     try:
+         backing = torch.empty(
+             size + _PAGE_SIZE, dtype=torch.uint8, pin_memory=_use_pinned
