@@ -1,98 +1,81 @@
-<p align="center">
-  <img src="https://raw.githubusercontent.com/vllm-project/vllm/main/docs/assets/logos/vllm-logo-text-dark.png" alt="vLLM" width="30%">
-  <span style="font-size: 24px; font-weight: bold;">x</span>
-  <img src="./docs/assets/logos/gaudi-logo.png" alt="Intel-Gaudi" width="30%">
-</p>
+# vllm-arc
 
-<h2 align="center">
-vLLM Hardware Plugin for Intel® Gaudi®
-</h2>
+**Certified vLLM stack for `qwen3.8-27b-fp8` (dense hybrid-GDN + MTP) on dual Intel® Arc™ Pro B70 — TP2.**
 
-<p align="center">
-| <a href="https://vllm-gaudi.readthedocs.io/en/latest/index.html"><b>Documentation</b></a> | <a href="https://docs.habana.ai/en/latest/index.html"><b>Intel® Gaudi® Documentation</b></a> | <a href="https://docs.habana.ai/en/latest/PyTorch/Model_Optimization_PyTorch/Optimization_in_Training_Platform.html"><b>Optimizing Training Platform Guide</b></a> |
-</p>
+A fork of [vllm-project/vllm-gaudi](https://github.com/vllm-project/vllm-gaudi) at **v0.30.0** (package name `vllm_gaudi` preserved; the Arc/XPU work lives in `vllm_gaudi/xpu/`). Certified release: **`rel/v0.30.0-b70-cert`** — every gate GREEN with banked evidence (see [Repository model](#repository-model)).
 
-<p align="center">
-  <a href="https://scorecard.dev/viewer/?uri=github.com/vllm-project/vllm-gaudi"><img src="https://api.scorecard.dev/projects/github.com/vllm-project/vllm-gaudi/badge" alt="OpenSSF Scorecard"></a>
-</p>
+## What this fork adds
 
----
-*Latest News* 🔥
-- [2026/10] Version 0.30.0 is now available, built on [vLLM 0.30.0](https://github.com/vllm-project/vllm/releases/tag/v0.30.0) and fully compatible with [Intel® Gaudi® v1.24.2](https://docs.habana.ai/en/v1.24.2/Release_Notes/GAUDI_Release_Notes.html) with PyTorch 2.13.
+| Area | What | Where |
+|---|---|---|
+| Platform | Arc XPU platform: device detection, mem-info patch, GMU conditional relax | `vllm_gaudi/xpu/platform.py` |
+| Graphs | `FULL_DECODE_ONLY` XPU graphs (capture sizes 1–320), stream hygiene, first-request warmup interlock | `patches/`, `vllm_gaudi/xpu/patches/` |
+| Speculative decoding | MTP (multi-token prediction) — **k3 recommended**, k4 documented alternative; acceptance gate instrument | `tools/arc_spec_gate.py` |
+| KV cache | LMCache hybrid-KV connector: mamba/GDN boundary snap, TWO_HS transfer, lookup memo, pinned-memory safety law | `vllm_gaudi/xpu/patches/lmcache_hma_connector.py` |
+| Quantization | FP8 weights with a block-quant **W8A16** route (vs stock per-token W8A8) | `vllm_gaudi/xpu/patches/fp8_block_w8a16.py` |
+| Scheduler | Tail-split v4 for hybrid prefix-cache loads | `vllm_gaudi/xpu/patches/sched_tail_split.py` |
+| Structured output | XGrammar backend, compact-JSON posture | `tools/serve_arc_b70.sh` |
+| Distribution | Certified Docker image with `IMAGE_MANIFEST` (fork SHA, pinned wheels, vendored lmcache closure) | `Dockerfile`, `tools/build_image.sh` |
 
-  This release enables the plugin on upstream vLLM 0.30.0 and tracks upstream API changes across MoE, MLA, KV cache, quantization, and serving. It adds GLM-5.2-FP8 with DeepSeek Sparse Attention and Nemotron-H FP8 support, speeds up Qwen3.5/3.6 MoE token generation, improves Qwen3.5 GDN correctness with prefix caching, fixes RoPE accuracy for very long contexts, and adds RHEL 10.2 Dockerfiles. See the [release notes](docs/release_notes_v0.30.0.md) for details.
+## Certified performance (dual Arc Pro B70, TP2, qwen3.8-27b-fp8)
 
-- [2026/08] Version 0.26.0 is now available, built on [vLLM 0.26.0](https://github.com/vllm-project/vllm/releases/tag/v0.26.0) and fully compatible with [Intel® Gaudi® v1.24.1](https://docs.habana.ai/en/v1.24.1/Release_Notes/GAUDI_Release_Notes.html) with PyTorch 2.11.
+| Face | Value |
+|---|---|
+| agg4x256 steady throughput (greedy, MTP k3) | **299.9 tok/s** |
+| solo200 throughput (incl. TTFT, k3) | **84.5 tok/s** |
+| TTFT t1 8k / 16k / 32k | 3.4 s / 7.3 s / 15.6 s |
+| TTFT t1 64k | 40.9 s (concurrent-load conservative) |
+| Warm prefix re-hit (8k) | **740 ms** |
+| MTP value over no-spec (real-world sampled faces) | **1.6–2.1×** |
+| 8 h soak | 46 cycles, zero errors, integrity 46/46, zero golden drift |
 
-  This release enables the plugin on upstream vLLM 0.26.0 and realigns the Intel® Gaudi® platform with extensive upstream API drift across MoE/MLA, quantization, serving, attention, and the NIXL connector. It adds new model support for MiniMax-M3, the Gemma-4 family, the Kimi-K2.5 vision tower, and Qwen3-Coder-Next, improves MXFP4 gpt-oss serving and FP8/INC quantization stability, reduces graph compilation and warmup overhead, and strengthens security.
+Full methodology and numbers: [`docs/PERFORMANCE-arc.md`](docs/PERFORMANCE-arc.md).
 
-- [2026/07] Version 0.24.0 is now available, built on [vLLM 0.24.0](https://github.com/vllm-project/vllm/releases/tag/v0.24.0) and fully compatible with [Intel® Gaudi® v1.24.1](https://docs.habana.ai/en/v1.24.1/Release_Notes/GAUDI_Release_Notes.html) with PyTorch 2.11.
+## Quick start
 
-  This release enables the plugin on upstream vLLM 0.24.0 and adapts the Intel® Gaudi® platform to upstream changes, including the FusedMoE/MoERunner inversion, KV-connector and offloading refactors, and the Mamba/GDN rewrite. It also adds Qwen3-Next architecture support, improves FP8/INC quantization memory usage and stability, switches hybrid models to a TPC-native `causal_conv1d` update path, extends single-card model swapping to hybrid models, and strengthens security.
+```bash
+# 1. Build the certified image from the tag (wheel pins enforced by md5;
+#    the lmcache wheel is rebuildable from external_patches/lmcache)
+git checkout rel/v0.30.0-b70-cert
+tools/build_image.sh          # -> vllm-arc:v0.30.0-b70-cert
 
-  This patch release backports critical fixes and improvements including MxFP4 weight loading, Granite 4.0-h calibration, prefix caching for HPUMambaMixer2, OOM crash fixes, and SDL secure error handling improvements.
+# 2. Boot (privileged is required — pidfd IPC law)
+docker run -d --name arc-test --privileged --network host --ipc host \
+  --shm-size 64g \
+  -v /path/to/qwen3.8-27b-fp8:/models/target \
+  -e VLLM_ALLOW_LONG_MAX_MODEL_LEN=1 -e VLLM_WORKER_MULTIPROC_METHOD=spawn \
+  --entrypoint bash vllm-arc:v0.30.0-b70-cert -c "sleep infinity"
 
----
+# 3. Serve (recommended MTP depth k3)
+docker exec arc-test /opt/venv/bin/vllm serve --model /models/target \
+  --served-model-name qwen3.8-27b-fp8 --tensor-parallel-size 2 \
+  --quantization fp8 --kv-cache-dtype fp8_e4m3 \
+  --mamba-ssm-cache-dtype float16 --mamba-cache-mode=align \
+  --enable-prefix-caching --reasoning-parser qwen3 \
+  --compilation-config '{"cudagraph_mode":"FULL_DECODE_ONLY","cudagraph_capture_sizes":[1..320]}' \
+  --speculative-config '{"method":"mtp","num_speculative_tokens":3}' \
+  --port 8000
+```
 
-## About
+The complete validated line (all flags + the 24-var env chain) is in
+[`docs/CONFIGURATION-arc.md`](docs/CONFIGURATION-arc.md); the uniform boot
+interface with posture knobs is `tools/serve_arc_b70.sh`.
 
-The vLLM Hardware Plugin for Intel® Gaudi® integrates [Intel® Gaudi® AI accelerators](https://docs.habana.ai/en/latest/index.html) with [vLLM](https://docs.vllm.ai/en/latest/) to optimize large language model inference. It follows the [[RFC]: Hardware pluggable](https://github.com/vllm-project/vllm/issues/11162) and [[RFC]: Enhancing vLLM Plugin Architecture](https://github.com/vllm-project/vllm/issues/19161) principles, providing a modular interface for Intel® Gaudi® hardware. For more information, see the [Plugin System](https://vllm-gaudi.readthedocs.io/en/latest/dev_guide/plugin_system.html) document.
+## Documentation
 
-## Getting Started
+- [`docs/CONFIGURATION-arc.md`](docs/CONFIGURATION-arc.md) — how to run the certified posture
+- [`docs/PERFORMANCE-arc.md`](docs/PERFORMANCE-arc.md) — measured numbers (real-world temperature × MTP-depth campaign included)
+- [`docs/TESTING-arc.md`](docs/TESTING-arc.md) — 13 test suites, gates, validation record
+- [`docs/MIGRATION-arc.md`](docs/MIGRATION-arc.md) — swap an incumbent stack for this one (boot, verify, rollback)
+- [`docs/envs.md`](docs/envs.md) — complete env/knob control surface + naming map
 
-1. [Set up](https://docs.habana.ai/en/latest/Installation_Guide/index.html) your execution environment. Additionally, to achieve the best performance on HPU, follow the methods outlined in the [Optimizing Training Platform Guide](https://docs.habana.ai/en/latest/PyTorch/Model_Optimization_PyTorch/Optimization_in_Training_Platform.html).
+## Repository model
 
-2. Get the last verified vLLM commit. While vLLM Hardware Plugin for Intel® Gaudi® follows the latest vLLM commits, upstream API updates may introduce compatibility issues. The saved commit has been thoroughly validated.
+- **`main` is linear and protected**: changes land as squash commits from per-item lanes (`feat/arc-pNN-*`); direct pushes, force pushes, and deletions are blocked; PRs are required.
+- **Certified releases are annotated tags** (`rel/v0.30.0-b70-cert`) pointing at the certified `main` commit; the Docker image embeds the fork SHA in `/etc/vllm-arc/IMAGE_MANIFEST` for A/B verification.
+- **Evidence is in-tree**: every validation leg banks to `results/YYYY-MM-DD-<phase>-r<leg>-<slug>/` (VERDICT + raw outputs) — 60+ legs, P0 through P5.
+- The `feat/arc-*` branches are kept deliberately: squash-merging leaves the per-item development history nowhere else.
 
-    ```bash
-    git clone https://github.com/vllm-project/vllm-gaudi
-    cd vllm-gaudi
-    export VLLM_COMMIT_HASH=$(git show "origin/vllm/last-good-commit-for-vllm-gaudi:VLLM_STABLE_COMMIT" 2>/dev/null)
-    cd ..
-    ```
+## Upstream & license
 
-3. Install vLLM using `pip` or [build it from source](https://docs.vllm.ai/en/latest/getting_started/installation/gpu/index.html#build-wheel-from-source):
-
-    ```bash
-    # Build vLLM from source for empty platform, reusing existing torch installation
-    git clone https://github.com/vllm-project/vllm
-    cd vllm
-    git checkout $VLLM_COMMIT_HASH
-    pip install -r <(sed '/^torch/d' requirements/build/cuda.txt)
-    VLLM_TARGET_DEVICE=empty pip install --no-build-isolation -e .
-    cd ..
-    ```
-
-4. Install vLLM Hardware Plugin for Intel® Gaudi® from source:
-
-    ```bash
-    cd vllm-gaudi
-    pip install -e .
-    cd ..
-    ```
-
-5. Install torchaudio (required by some upstream vLLM models such as QWEN3_5). Use the CPU wheel with `--no-deps` to avoid pulling a conflicting CUDA torch. torchaudio has no release past 2.11.0, so install 2.11.0 instead of matching your PyTorch version:
-
-    ```bash
-    pip install --no-deps torchaudio==2.11.0 --extra-index-url https://download.pytorch.org/whl/cpu
-    ```
-
-    To see all the available installation methods, such as NIXL, see the [Installation](https://vllm-gaudi.readthedocs.io/en/latest/getting_started/installation.html) guide.
-
-## Distributed Executor Backend and Worker Start Method
-
-On HPU, multi-card serving uses vLLM's `mp`, the Python multiprocessing distributed executor backend, by default whenever `world_size > 1`, that is, `TP * PP * DP > 1`. When `world_size == 1`, vLLM uses the in-process `uni` backend.
-
-The worker start method is controlled by `VLLM_WORKER_MULTIPROC_METHOD`, with `fork` or `spawn` as the available options. Upstream vLLM defaults to `fork`; however, on HPU, the platform layer automatically overrides it to `spawn` because forking after HPU driver initialization leaves driver state in child processes and can cause hangs on exit. A warning is logged when the override is applied. To opt out, set `VLLM_WORKER_MULTIPROC_METHOD=fork` explicitly, although this is not recommended. The `uni`, `external_launcher`, and `ray` backends do not start workers via Python `multiprocessing`, so the value has no practical effect for them.
-
-For more information, see [docs/configuration/env_variables.md](docs/configuration/env_variables.md#distributed-executor-backend-on-hpu).
-
-## Contributing
-
-We welcome and value any contributions and collaborations.
-
-## Contact Us
-
-<!-- --8<-- [start:contact-us] -->
-- For technical questions and feature requests, please use GitHub [Issues](https://github.com/vllm-project/vllm-gaudi/issues).
-<!-- --8<-- [end:contact-us] -->
+Fork of [vllm-project/vllm-gaudi](https://github.com/vllm-project/vllm-gaudi) @ tag `v0.30.0` (the vLLM hardware plugin for Intel® Gaudi®). Upstream's README and docs for the base plugin: [vllm-gaudi docs](https://vllm-gaudi.readthedocs.io/en/latest/index.html). License: Apache-2.0 (see [LICENSE](LICENSE)).
