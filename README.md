@@ -34,10 +34,35 @@ Full methodology and numbers: [`docs/PERFORMANCE-arc.md`](docs/PERFORMANCE-arc.m
 ## Quick start
 
 ```bash
-# 1. Build the certified image from the tag (wheel pins enforced by md5;
-#    the lmcache wheel is rebuildable from external_patches/lmcache)
-git checkout rel/v0.30.0-b70-cert
-tools/build_image.sh          # -> vllm-arc:v0.30.0-b70-cert
+# 1. Build the image — two phases, validated end-to-end (r46v evidence).
+#    The build runs ON THE RIG (or an equally prepared Linux host): it
+#    needs the pinned-wheel stashes (/root/build/radiance_wheels,
+#    wheels-arc-vxk, wheels-arc-lmc — md5s enforced against
+#    external_patches/wheels.pins.md5 by tools/wheel_guard.sh), the
+#    rig-local base image (vllm-iexperimental:base-v0.26.0), and internet
+#    on the FIRST build only (torch+xpu from download.pytorch.org/whl/xpu,
+#    the rest from PyPI — the stack layers cache in docker after).
+#    Every patch ships in the archive itself (COPY src/ + pip install .)
+#    — proven by the r46u glue repro passing image-natively on a build
+#    from main; the lmcache/vxk wheels are rebuildable from
+#    external_patches/ if a stash is ever lost.
+#
+#    repo side (your checkout of this fork):
+RIG=10.20.3.65                                  # <- your build host
+SHA=$(git rev-parse main)
+git archive --format=tar -o /tmp/fork.tar main
+scp /tmp/fork.tar root@$RIG:/root/build/
+#    rig side (via ssh — same effect as running them on the host):
+ssh root@$RIG 'tar -xOf /root/build/fork.tar tools/build_image.sh > /root/build/build_image.sh'
+ssh root@$RIG bash /root/build/build_image.sh /root/build/fork.tar $SHA vllm-arc:v0.30.0-b70-p47
+#    -> wheel_guard PASSes (4/4 md5s), in-build gates run, IMAGE_MANIFEST
+#       records fork_sha. ~15 min cold; ~1 min when only the source
+#       changed (stack layers cached — layer-order law in the Dockerfile).
+#
+#    NOTE (r46u): build from main >= 38cf63f8. The certified tag
+#    rel/v0.30.0-b70-cert PREDATES the p41c glue-alias fix — building
+#    from it reproduces the glue-unavailable defect; this note retires
+#    when a re-certified tag is cut.
 
 # 2. Boot — the validated posture, annotated:
 #    --privileged   REQUIRED: with CCL_ZE_IPC_EXCHANGE=pidfd it keeps
@@ -56,7 +81,7 @@ docker run -d --name arc-test --privileged --network host --ipc host \
   -v ~/.cache/arc/inductor:/root/.inductor_cache \
   -e VLLM_ALLOW_LONG_MAX_MODEL_LEN=1 \
   -e VLLM_WORKER_MULTIPROC_METHOD=spawn \
-  --entrypoint bash vllm-arc:v0.30.0-b70-cert -c "sleep infinity"
+  --entrypoint bash vllm-arc:v0.30.0-b70-p47 -c "sleep infinity"
 
 # 3. Serve — the certified line as an annotated script (the rig pattern:
 #    script + docker cp + exec; logs land in /root/serve_full.log)
