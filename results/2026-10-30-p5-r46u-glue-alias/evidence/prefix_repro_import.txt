@@ -1,0 +1,36 @@
+r46u evidence — PRE-FIX repro (import-level, decisive), 2026-10-30
+==================================================================
+
+Image: vllm-arc:v0.30.0-b70-p46 (id 48b00dc4…), throwaway container with
+GPU-visible posture (--privileged --ipc host), entrypoint python.
+Script: register() (vllm_gaudi.xpu) -> import mamba_utils -> import
+mamba_hybrid -> inspect sys.modules / module attrs / wrap state.
+
+Output (digest; lines as captured in the session transcript — grep counts
+across the transcript confirm each line):
+
+    arc_p41_patch in sys.modules: False          <- 8 occurrences
+    glue attached to mamba_utils: True           <- 9 occurrences
+    [p41c] mamba_hybrid snap glue installed (pid=7)
+    INFO ... wheel hook mamba_hybrid <- patches.mamba_hybrid_snap_glue OK
+    mamba_hybrid import OK; MambaHybridModelState: True
+    wrap live: True                              <- 7 occurrences
+
+Interpretation (root cause):
+  * the r45 _WHEEL_HOOKS wiring installs BOTH patches correctly —
+    mamba_lmcache_glue._attach lands every glue symbol on
+    vllm.v1.worker.mamba_utils, and the p41c preprocess_state wrap goes
+    live on MambaHybridModelState;
+  * but NOTHING creates sys.modules["arc_p41_patch"]. That alias was an
+    artifact of the r30-cap sitecustomize era, which loaded the glue file
+    standalone AS arc_p41_patch. mamba_hybrid_snap_glue._glue() resolves
+    the glue ONLY through that name -> _glue() always raises -> every
+    engine step takes the degraded fallback (zero-snap) and warns.
+  * image-wide grep: the only file mentioning arc_p41_patch in the image
+    is mamba_hybrid_snap_glue.py itself (the looker) — no creator exists;
+    no sitecustomize/.pth registers it.
+
+Consequence: every boot on p45/p46-era wiring ran the p41c wrap DEGRADED
+(wrap live but glue unavailable at each call). The operator's console
+flood is the per-step logger.warning from _warn (never latched); only the
+stdout prints latched at 3.

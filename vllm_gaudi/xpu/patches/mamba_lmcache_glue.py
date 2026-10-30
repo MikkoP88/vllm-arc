@@ -391,12 +391,29 @@ def _arc_p41_preprocess_mamba(
 
 def _install(mod) -> None:
     """Attach the registry symbols and swap preprocess_mamba. Idempotent."""
+    # r46u fix: register the patched module under the historical
+    # ``arc_p41_patch`` alias. The r30-cap sitecustomize loaded this file
+    # standalone AS arc_p41_patch; the r45 _WHEEL_HOOKS wiring loads it as
+    # vllm_gaudi.xpu.patches.mamba_lmcache_glue and never created the alias —
+    # so mamba_hybrid_snap_glue._glue() found nothing, every boot since p45
+    # sank to the zero-snap posture, and each engine step logged
+    # glue-unavailable (2 workers x per-step = the log flood). Alias points at
+    # ``mod`` (the module the symbols below are attached to — the live
+    # instance), never at a fresh import of this file: a second module object
+    # would carry its own registry dicts and silently split the glue state.
+    import sys
+
+    sys.modules.setdefault("arc_p41_patch", mod)
     mod._LMC_BOUNDARY_REGISTRY = _LMC_BOUNDARY_REGISTRY
     mod._LMC_BOUNDARY_PER_REQ = _LMC_BOUNDARY_PER_REQ
     mod._LMC_BOUNDARY_GLOBAL_CAP = _LMC_BOUNDARY_GLOBAL_CAP
     mod._LMC_SEED_OVERRIDE = _LMC_SEED_OVERRIDE
     mod._lmc_snap_boundary = _lmc_snap_boundary
     mod._lmc_seed_write = _lmc_seed_write
+    # r46u: the p41c snap-glue handle also reads the fp16-repair flag off the
+    # glue module (mamba_hybrid_snap_glue._glue consumers: _LMC_SEED_OVERRIDE,
+    # _lmc_seed_write, _FP16_SEED_REPAIR, _lmc_snap_boundary — attach all four).
+    mod._FP16_SEED_REPAIR = _FP16_SEED_REPAIR
     if getattr(mod.preprocess_mamba, "_arc_p41", False):
         return
     _orig_cleanup = mod.cleanup_mamba_state_idx

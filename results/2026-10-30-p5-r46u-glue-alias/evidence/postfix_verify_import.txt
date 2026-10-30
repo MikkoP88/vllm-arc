@@ -1,0 +1,27 @@
+INFO 10-30 19:05:38 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+INFO 10-30 19:05:38 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+INFO 10-30 19:05:38 [__init__.py:54] - hpu -> vllm_gaudi:register
+INFO 10-30 19:05:38 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+INFO 10-30 19:05:48 [graph_safe_output.py:660] ArcXpuPlatform: XPU graph boundary hygiene installed (pid 1, XPUGraph capture_begin/capture_end/replay + graph context __exit__ wrapped).
+INFO 10-30 19:05:48 [graph_safe_output.py:786] ArcXpuPlatform: zombie stream-reroute guards installed (pid 1, set_stream substitution + wait_stream skip + Event.record reroute + synchronize tripwire).
+INFO 10-30 19:05:48 [graph_safe_output.py:920] ArcXpuPlatform: runner-entry hygiene installed (pid 1, GPUModelRunner.execute_model + sample_tokens wrapped).
+INFO 10-30 19:05:48 [graph_safe_output.py:966] ArcXpuPlatform: capture-stream fix installed (pid 1, captures ride torch.xpu.graph.default_capture_stream, EAGERLY INITED before capture #1 — the serving default never enters capture; champion 0.26.1 discipline, r9).
+INFO 10-30 19:05:48 [graph_safe_output.py:1107] ArcXpuPlatform: graph-safe output patch installed (pid 1, AsyncOutput/AsyncPoolingOutput __init__ + get_output wrapped).
+INFO 10-30 19:05:48 [platform.py:167] ArcXpuPlatform: wheel hook mamba_utils <- patches.mamba_lmcache_glue OK
+PASS  alias registered -> mamba_utils
+PASS  mod has _LMC_BOUNDARY_REGISTRY
+PASS  mod has _LMC_SEED_OVERRIDE
+PASS  mod has _lmc_snap_boundary
+PASS  mod has _lmc_seed_write
+PASS  mod has _FP16_SEED_REPAIR
+PASS  attached fn loaded from install dir (fixed file bind-mounted over it)
+     snap_boundary loaded from: /opt/venv/lib/python3.12/site-packages/vllm_gaudi/xpu/patches/mamba_lmcache_glue.py
+PASS  _glue primary resolves
+PASS  glue attrs complete
+PASS  _glue fallback resolves via mamba_utils
+[p41c] mamba_hybrid snap glue installed (pid=1)
+INFO 10-30 19:05:48 [platform.py:167] ArcXpuPlatform: wheel hook mamba_hybrid <- patches.mamba_hybrid_snap_glue OK
+PASS  MambaHybridModelState present
+PASS  p41c wrap live
+PASS  post-wrap _glue resolves
+R46U_VERIFY: ALL_GREEN

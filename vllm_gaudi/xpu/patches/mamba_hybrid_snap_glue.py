@@ -115,7 +115,10 @@ class _RowState:
 
 
 def _glue():
-    """The p41 glue module (arc_p41_patch), imported lazily."""
+    """The p41 glue: the legacy ``arc_p41_patch`` alias (r30-cap name,
+    re-registered by mamba_lmcache_glue._install since r46u) or — as a
+    fallback — the patched ``vllm.v1.worker.mamba_utils`` module itself
+    (the _WHEEL_HOOKS install attaches every glue symbol to it)."""
     import sys
 
     m = sys.modules.get("arc_p41_patch")
@@ -123,6 +126,10 @@ def _glue():
         import vllm.v1.worker.mamba_utils as _mu  # noqa: F401 (hook fires here)
 
         m = sys.modules.get("arc_p41_patch")
+    if m is None and hasattr(
+        sys.modules.get("vllm.v1.worker.mamba_utils"), "_lmc_snap_boundary"
+    ):
+        m = sys.modules["vllm.v1.worker.mamba_utils"]
     if m is None:
         raise RuntimeError("arc_p41_patch (p41 mamba glue) not installed")
     return m
@@ -165,12 +172,14 @@ def _install(mod) -> None:
     }
 
     def _warn(tag, msg):
-        """logger.warning + first-3 stdout prints (engine logs swallow
-        vllm_gaudi.* logger output — root not configured; r31 law)."""
-        logger.warning("arc-p41c %s: %s", tag, msg)
+        """First-3-per-tag logger.warning + stdout prints (engine logs
+        swallow vllm_gaudi.* logger output — root not configured; r31
+        law; r46u: latched — was every-step logger spam, flooding 2x/step
+        per worker while the glue was missing)."""
         n = state["warn"].get(tag, 0)
         if n < 3:
             state["warn"][tag] = n + 1
+            logger.warning("arc-p41c %s: %s", tag, msg)
             print(f"[p41c {tag}#{n + 1}] {msg}", flush=True)
 
     def preprocess_state(self, input_batch, block_tables, kv_cache_config, num_computed_tokens):

@@ -1,0 +1,21 @@
+r46u evidence — the defect as reported by the operator (console paste, 2026-10-30)
+==================================================================================
+
+Deploy: p46 image (vllm-arc:v0.30.0-b70-p46), container arc-test, model
+/models/swift-qwen3.8-27b (mounted at /models/target), interactive
+`docker exec -it` + bare `vllm serve` with the full 18-flag certified CLI
+(no serve env chain). The flood appeared immediately under load, from BOTH
+TP workers, repeated every engine step (operator paste contained the two
+lines below repeated ~10-14x each within seconds):
+
+(Worker_TP0 pid=1027) arc-p41c glue-unavailable: RuntimeError('arc_p41_patch (p41 mamba glue) not installed')
+(Worker_TP1 pid=1028) arc-p41c glue-unavailable: RuntimeError('arc_p41_patch (p41 mamba glue) not installed')
+
+Mechanism (from code): mamba_hybrid_snap_glue._warn() latched only its
+stdout print (first 3 per tag) — the logger.warning call fired on EVERY
+call. preprocess_state's wrapper calls _warn("glue-unavailable", ...) on
+every step because _glue() raises (see prefix_repro_import.txt), and the
+degraded fallback silently returns the original preprocess_state — i.e.
+the serve was running the ZERO-SNAP LMCache mamba posture (no boundary
+snapshots, no seed writes; joint lookups clamp mamba hits to 0), not just
+a noisy log.
