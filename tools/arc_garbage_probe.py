@@ -16,6 +16,14 @@ Valid probes carry the real-world sampling set (top_p 0.95, top_k 20,
 min_p 0.0, presence_penalty 0.0, repetition_penalty 1.0) per the owner
 directive; type-violation probes intentionally break fields.
 
+v2 (post-capture fix, k4 v4-run evidence): the chat template defaults
+thinking ON (enable_thinking undefined -> xhigh), so short max_tokens
+probes returned content=None with all tokens in reasoning — the v1
+probe misread that as failure. v2 pins {"enable_thinking": false} on
+every valid probe, and enforces the content-shape check only when the
+server answers 200 (a 400 within expect — e.g. huge_blob's oversized
+payload rejection — is correct robust behavior, not a failure).
+
 Usage: arc_garbage_probe.py           (exit 0 = GARBAGE_SUITE_PASS)
 """
 import hashlib
@@ -30,6 +38,7 @@ HEALTH = "http://127.0.0.1:8000/health"
 MODEL = "qwen3.8-27b-fp8"
 SAMPLING = {"top_p": 0.95, "top_k": 20, "min_p": 0.0,
             "presence_penalty": 0.0, "repetition_penalty": 1.0}
+CTK = {"chat_template_kwargs": {"enable_thinking": False}}
 MT = 32
 fails: list = []
 
@@ -67,7 +76,7 @@ def probe(name: str, body=None, raw=None, expect=(200, 400),
           want_content=False):
     st, resp = post(body, raw=raw)
     ok = st in expect and health_ok()
-    if ok and want_content:
+    if ok and want_content and st == 200:
         ch = (resp or {}).get("choices", [{}])[0]
         msg = ch.get("message", {}).get("content")
         ok = isinstance(msg, str) and len(msg) >= 0 and st == 200
@@ -93,36 +102,36 @@ def main() -> int:
     # -- well-formed-but-hostile CONTENT (engine must answer, stay sane) --
     rnd = bytes(range(256)) * 64  # 16 KB of all byte values
     probe("binary_mojibake", {"model": MODEL, "max_tokens": MT,
-          "temperature": 0.2, **SAMPLING,
+          "temperature": 0.2, **SAMPLING, **CTK,
           "messages": [{"role": "user",
                         "content": rnd.decode("latin-1")}]},
           want_content=True)
     probe("control_chars", {"model": MODEL, "max_tokens": MT,
-          "temperature": 0.2, **SAMPLING,
+          "temperature": 0.2, **SAMPLING, **CTK,
           "messages": [{"role": "user", "content": "".join(
               chr(c) for c in range(32)) + "\x7f"}]},
           want_content=True)
     big = " ".join("zqxj vkwf gbhp".split() * 40000)  # ~0.5 MB
     probe("huge_blob", {"model": MODEL, "max_tokens": MT,
-          "temperature": 0.2, **SAMPLING,
+          "temperature": 0.2, **SAMPLING, **CTK,
           "messages": [{"role": "user", "content": big}]},
           want_content=True)
     probe("nospace_100k", {"model": MODEL, "max_tokens": MT,
-          "temperature": 0.2, **SAMPLING,
+          "temperature": 0.2, **SAMPLING, **CTK,
           "messages": [{"role": "user", "content": "x" * 100000}]},
           want_content=True)
     probe("empty_content", {"model": MODEL, "max_tokens": MT,
-          "temperature": 0.2, **SAMPLING,
+          "temperature": 0.2, **SAMPLING, **CTK,
           "messages": [{"role": "user", "content": ""}]},
           want_content=True)
     probe("null_content", {"model": MODEL, "max_tokens": MT,
-          "temperature": 0.2, **SAMPLING,
+          "temperature": 0.2, **SAMPLING, **CTK,
           "messages": [{"role": "user", "content": None}]})
     probe("bad_role", {"model": MODEL, "max_tokens": MT,
-          "temperature": 0.2, **SAMPLING,
+          "temperature": 0.2, **SAMPLING, **CTK,
           "messages": [{"role": "garbage", "content": "hi"}]})
     probe("unicode_salad", {"model": MODEL, "max_tokens": MT,
-          "temperature": 0.2, **SAMPLING,
+          "temperature": 0.2, **SAMPLING, **CTK,
           "messages": [{"role": "user", "content":
           "нуll\\u200b🦠\\U0001F9EAᚠᛒᚲ профиль ™𝕏 ﷽ ٱل ٱْ"}]},
           want_content=True)
