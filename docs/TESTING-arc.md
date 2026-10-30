@@ -144,8 +144,8 @@ top_k 20 / min_p 0 / presence_penalty 1.5 / repetition_penalty 1.0),
 non-thinking. Acceptance deltas from pre/post `vllm:spec_decode`
 counter snapshots around every battery. Depths k3/k4 measured in both
 regimes (k5 measured in A, then dropped from recommendation and
-testing per owner directive — its alt-leg boot was cut by the rig
-watcher before starting). Output: the recommendation table in
+testing — its alt-leg boot was cut by the rig watcher before
+starting). Output: the recommendation table in
 [`PERFORMANCE-arc.md`](PERFORMANCE-arc.md) +
 [`CONFIGURATION-arc.md`](CONFIGURATION-arc.md). Pass = every battery
 completes 4/4 streams × all cells, zero call failures, health 200

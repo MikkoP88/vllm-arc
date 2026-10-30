@@ -77,7 +77,7 @@ real-world sampling sets + xhigh thinking):
 |---|---|---|
 | **3** | **recommended (canonical)** | real-world sampled serving: +5.8 % steady agg / +3.8 % solo over k4 across temps 0.2–1.0 xhigh thinking; ties k4 on the certified greedy face (±0.7 %) |
 | 4 | documented alternative | near-deterministic non-thinking workloads (acceptance ≥ ~82 %): steady solo 104.3 vs k3's 92.2 at t0.7/tp0.80/pp1.5 |
-| 5 | **dropped** (owner directive) | was certified r43 (greedy acceptance 89.2 %); under real-world sampling acceptance collapses to 33–42 % and its depth wastes — superseded evidence retained |
+| 5 | **dropped** | was certified r43 (greedy acceptance 89.2 %); under real-world sampling acceptance collapses to 33–42 % and its depth wastes — superseded evidence retained |
 | none (omit `--speculative-config`) | non-MTP baseline | 1.5–2.1× slower than MTP on every measured face — never recommended for this model |
 
 Mechanism (measured): speculative acceptance falls as temperature
@@ -89,7 +89,7 @@ rebuilds no image.
 
 ## Runtime environment (24 vars — export exactly this set)
 
-Runtime/system (14):
+Runtime/system (15):
 
 ```bash
 export PYTHONHASHSEED=0                # init determinism
@@ -151,8 +151,10 @@ may change and when:
 | `VLLM_COMPACT_GDN` | unset | auto-detected (runner → platform); not operator-set |
 
 Host-script layer (`tools/serve_arc_b70.sh`): `ARC_IMAGE`, `ARC_NAME`,
-`ARC_GRAPH` (0 eager / 1 graph — certified = 1), `ARC_SPEC` (certified
-= 1), `ARC_LMC`, `ARC_GMU` (0.8), `ARC_MNBT` (8192), `ARC_MAXSEQS` (64),
+`ARC_GRAPH` (0 eager / 1 graph — certified = 1), `ARC_SPEC` (MTP depth
+= `num_speculative_tokens`: 0 = off, default 3 = the recommendation,
+4 = the D-champion alternative; only 0/3/4/5 accepted — the legged
+depths), `ARC_LMC`, `ARC_GMU` (0.8), `ARC_MNBT` (8192), `ARC_MAXSEQS` (64),
 `ARC_PORT` (8000), `ARC_ALLOW_UNVALIDATED` (repro only).
 
 ## Posture laws (never change in production)

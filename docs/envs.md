@@ -1,8 +1,10 @@
 # vllm-arc environment reference (generated)
 
-Generated at P5 hardening (r45, 2026-10-30) from `vllm_gaudi/envs.py` arc-lane
-markers + the certified serve line (`r43_serve_k5.sh`, canonical k5 posture on
-image `vllm-arc:v0.30.0-b70-p45b`). Every entry cites its provenance
+Generated at P5 hardening (r45, 2026-10-30; serve-line identity updated
+at the r46t close-out) from `vllm_gaudi/envs.py` arc-lane markers + the
+certified serve line (`r43_serve_k5.sh`, spec depth 3 per the r46t
+recommendation — a serve-time CLI change — on image
+`vllm-arc:v0.30.0-b70-cert`). Every entry cites its provenance
 (no-unevidenced law, plan Appendix H #6). Audit of record:
 `results/2026-10-30-p5-r45-env-log-audit/`.
 
@@ -54,6 +56,12 @@ The certified serve line exports **none** of these — all ride code defaults
 (verified against `r43_serve_k5.sh`). The `envs.py` registry documents this
 surface (r45g law: registry documents, consumers read `os.environ` directly
 at the cited line — defaults must mirror each other).
+
+Module cites are shorthand, shared with the `envs.py` registry:
+`patches/<m>.py` = `vllm_gaudi/xpu/patches/<m>.py` (the root `patches/`
+tree holds the pNN patch-item docs, not the modules), `platform.py` =
+`vllm_gaudi/xpu/platform.py`, `hpu_model_runner.py` =
+`vllm_gaudi/v1/worker/hpu_model_runner.py`.
 
 **Default-ON patches** (active in the certified posture without any env;
 kill-switch to disable):

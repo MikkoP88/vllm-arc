@@ -3,7 +3,7 @@
 Pinned base + patches + build law for the internal lmcache wheel. Fork law:
 everything enters as FILES with provenance; no donor is a git source.
 
-**Framing (plan §6, owner-confirmed): C-base + D-deltas.** The base is
+**Framing (plan §6): C-base + D-deltas.** The base is
 line C's (0.5.5, closest to upstream, better warm-hit); the delta slots
 e01–e04 are line D's improvements rebased onto that base — the plan's own
 superiority move over either parent. The 2026-10-28 dual-donor check

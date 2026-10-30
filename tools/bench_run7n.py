@@ -12,13 +12,13 @@ r46t extension: --temperature T overrides the request temperature
 (default 0.0 = the original byte-exact behavior; the real-world
 temperature sweep runs 0.2/0.4/0.6/0.8/1.0). The prompt, lengths,
 threading and reporting are unchanged.
-r46t v3 (owner directive): all testing configurations carry the
+r46t v3: all testing configurations carry the
 real-world sampling set — top_p 0.95, top_k 20, min_p 0.0,
 presence_penalty 0.0, repetition_penalty 1.0. At temperature 0 these
 are inert (argmax survives top_k/top_p; penalties are no-ops), so the
 certified temp-0 faces stay comparable.
 
-r46t v4 (owner directive): all performance testing runs xhigh
+r46t v4: all performance testing runs xhigh
 thinking — --thinking xhigh flips chat_template_kwargs to
 {"enable_thinking": true, "reasoning_effort": "xhigh"} (the template's
 own knob; 'max'/'high' normalize to xhigh, thinking-on default is
@@ -26,7 +26,7 @@ xhigh). Default "off" keeps the certified enable_thinking=False face
 byte-exact. The non-MTP leg (serve without --speculative-config) runs
 this same battery for the no-spec baseline.
 
-r46t v5 (owner directive): second sampling profile — --sampling alt
+r46t v5: second sampling profile — --sampling alt
 selects the alt set (temperature 0.7 / top_p 0.80 / top_k 20 / min_p
 0.0 / presence_penalty 1.5 / repetition_penalty 1.0, non-thinking),
 run on MTP and non-MTP postures. Default keeps the v4 real-world set.

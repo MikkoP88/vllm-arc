@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: Apache-2.0
-"""arc_garbage_probe.py — garbage/corrupted-input hardening suite (r46t,
-owner directive: "run also garbage/corrupted testing so AI don't generate
-corrupted results").
+"""arc_garbage_probe.py — garbage/corrupted-input hardening suite (r46t):
+malformed or corrupted inputs must never corrupt the engine or its
+outputs.
 
 Sends malformed / adversarial / corrupt request payloads at the served
 model and asserts, after EVERY probe:
@@ -13,8 +13,8 @@ and at the end:
   4. repeating it byte-matches (engine state not corrupted by garbage).
 
 Valid probes carry the real-world sampling set (top_p 0.95, top_k 20,
-min_p 0.0, presence_penalty 0.0, repetition_penalty 1.0) per the owner
-directive; type-violation probes intentionally break fields.
+min_p 0.0, presence_penalty 0.0, repetition_penalty 1.0); type-violation
+probes intentionally break fields.
 
 v2 (post-capture fix, k4 v4-run evidence): the chat template defaults
 thinking ON (enable_thinking undefined -> xhigh), so short max_tokens

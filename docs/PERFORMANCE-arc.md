@@ -5,7 +5,7 @@ definitions and hardware in [`TESTING-arc.md`](TESTING-arc.md)). All
 certified faces: first-traffic fresh boot, timers off, XPU graphs on,
 TP2, greedy temp 0. **Recommended MTP depth = k3** (r46t campaign,
 below); the certified-greedy history at k4/k5 is retained row-labeled —
-k5 is dropped from the recommendation (owner directive), its evidence
+k5 is dropped from the recommendation; its evidence is
 superseded, not retracted.
 
 ## Headline faces (certified greedy battery, temp 0)
@@ -16,8 +16,10 @@ superseded, not retracted.
 | solo200 tokens/s (incl. TTFT) | 84.46 / 84.53 | 85.01 / 85.16 | 86.39–87.13 (×4) |
 | greedy acceptance | 85.6% | ~87% | 89.2% (pos-1 0.8919) |
 
-All three depths tie within ±0.7 % on the certified face — the depth
-choice is decided by the real-world faces below, where k3 wins.
+k3 and k4 tie within ±0.7 % on the certified face; k5 is faster there
+(+1.9–2.5 % agg, +1.5–2.4 % solo, on 89.2 % greedy acceptance) — but
+that greedy-era edge inverts under real-world sampling, and the faces
+below decide the depth: k3.
 
 | Face (posture-level) | Value |
 |---|---|

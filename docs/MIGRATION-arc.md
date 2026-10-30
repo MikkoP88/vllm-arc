@@ -43,8 +43,9 @@ docker run -d --name arc-test --privileged --network host --ipc host \
   -v /root/build/inductor_cache:/root/.inductor_cache \
   -e VLLM_ALLOW_LONG_MAX_MODEL_LEN=1 \
   -e VLLM_WORKER_MULTIPROC_METHOD=spawn \
-  --entrypoint bash vllm-arc:v0.30.0-b70-p45b -c "sleep infinity"
+  --entrypoint bash vllm-arc:v0.30.0-b70-cert -c "sleep infinity"
 docker cp /root/build/r42/r43_serve_k5.sh arc-test:/root/
+docker exec arc-test sed -i 's/"num_speculative_tokens":5/"num_speculative_tokens":3/' /root/r43_serve_k5.sh   # k3 (r46t recommendation)
 docker exec -d arc-test bash /root/r43_serve_k5.sh   # logs -> /root/serve_full.log
 # poll health (first-traffic law: batteries run on FIRST traffic after boot)
 curl -s -o /dev/null -w "%{http_code}" -m 5 http://127.0.0.1:8000/health
@@ -52,7 +53,7 @@ curl -s -o /dev/null -w "%{http_code}" -m 5 http://127.0.0.1:8000/health
 
 Boot takes ~10 min to health 200. Verify in `/root/serve_full.log`:
 7/7 wheel hooks install (zero `FAILED`), `fp8 reroute ACTIVE`,
-`kvfmt TWO_HS`, posture lines (mode=none, FULL_DECODE_ONLY [1..320], MTP k5,
+`kvfmt TWO_HS`, posture lines (mode=none, FULL_DECODE_ONLY [1..320], MTP k3,
 align). `--privileged` is REQUIRED (pidfd IPC law — r30 defect #1).
 
 ## 3. Post-boot verification (any migration or image bump)
@@ -92,8 +93,8 @@ to `results/`.
   script).
 - Verify interleave/BW matrix after any rig reboot.
 - Port 8000 is single-tenant: stop radiance-test before arc legs.
-- `--mamba-cache-mode=align` is pinned in the serve line (owner directive:
-  never ship its removal; App F posture-pin law).
+- `--mamba-cache-mode=align` is pinned in the serve line (posture-pin
+  law: never ship its removal).
 
 ## 6. Evidence
 
