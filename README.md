@@ -43,7 +43,6 @@ tools/build_image.sh          # -> vllm-arc:v0.30.0-b70-cert
 docker run -d --name arc-test --privileged --network host --ipc host \
   --shm-size 64g \
   -v /path/to/qwen3.8-27b-fp8:/models/target:ro \
-  -v /path/to/chat_template_qwen38_high.jinja:/root/chat_template_qwen38_high.jinja:ro \
   -v ~/.cache/arc/neo:/root/.neo_cache \
   -v ~/.cache/arc/triton:/root/.triton_cache \
   -v ~/.cache/arc/inductor:/root/.inductor_cache \
@@ -82,16 +81,20 @@ docker exec -d \
   --reasoning-parser qwen3 \
   --tool-call-parser qwen3_coder \
   --enable-auto-tool-choice \
-  --chat-template /root/chat_template_qwen38_high.jinja \
   --no-disable-hybrid-kv-cache-manager \
   --compilation-config '{"mode":"none","cudagraph_mode":"FULL_DECODE_ONLY","cudagraph_capture_sizes":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,20,25,30,35,40,45,48,50,55,60,64,65,70,75,80,85,90,95,96,100,105,110,112,115,120,125,128,130,135,140,145,150,155,160,165,170,175,180,185,190,192,195,200,205,210,215,220,224,225,230,235,240,245,250,255,256,260,265,270,275,280,285,290,295,300,305,310,315,320]}' \
   --speculative-config '{"method":"mtp","num_speculative_tokens":3}' \
   --port 8000
 ```
 
-This quick start is byte-equivalent to the certified line (verified
-against rig `/root/build/r42/r43_serve_k5.sh` — the annotated form with
-semantics per flag/env is
+# Optional — OpenAI reasoning_effort compatibility (adds high/max→xhigh
+# aliasing and none→thinking-off; default path is identical either way):
+#   boot:  add -v $(pwd)/assets/chat_template_qwen38_high.jinja:/root/chat_template_qwen38_high.jinja:ro
+#   serve: add --chat-template /root/chat_template_qwen38_high.jinja
+
+This quick start is the certified line (verified against rig
+`/root/build/r42/r43_serve_k5.sh`) minus the optional chat template
+above — the annotated form with semantics per flag/env is
 [`docs/CONFIGURATION-arc.md`](docs/CONFIGURATION-arc.md)); the uniform
 boot interface with posture knobs is `tools/serve_arc_b70.sh`
 (rig paths).
