@@ -23,15 +23,31 @@ code).
 
 ```bash
 docker run -d --name arc-test \
-  --privileged \
-  --device /dev/dri --ipc host --network host \
-  --shm-size 64m \
+  --privileged --network host --ipc host \
+  --shm-size 64g \
+  -v /models/qwen3.8-27b-fp8:/models/target:ro \
+  -v /root/build/v127_stage/chat_template_qwen38_high.jinja:/root/chat_template_qwen38_high.jinja:ro \
   -v /root/build/neo_cache:/root/.neo_cache \
   -v /root/build/triton_cache:/root/.triton_cache \
   -v /root/build/inductor_cache:/root/.inductor_cache \
-  -v /models/qwen3.8-27b-fp8:/models/target:ro \
+  -e VLLM_ALLOW_LONG_MAX_MODEL_LEN=1 \
+  -e VLLM_WORKER_MULTIPROC_METHOD=spawn \
   --entrypoint /bin/bash vllm-arc:v0.30.0-b70-p46 -c 'sleep infinity'
 ```
+
+These are the validated boot bytes (rig `r46t_campaign.sh:54-63`,
+`r42/r46_soak.sh:33-42`): `--shm-size 64g`, five mounts, and the two
+boot-layer vars of the 24-var chain below (`:ro` on model + template is
+the read-only posture law — the leg scripts omit it, the law is
+stricter). `--shm-size` is a tmpfs *ceiling*, not a reservation, and is
+moot under `--ipc host` (host `/dev/shm` is used); 64g guards the
+private-IPC fallback, where small values ENOSPC-crash TP2 IPC buffers.
+
+**Hardware floor**: the certified posture is validated on a rig-class
+host (dual B70, 377 G RAM). It does not fit materially smaller hosts —
+the LMCache CPU pool alone is set to 100 G
+(`LMCACHE_MAX_LOCAL_CPU_SIZE=100`) on top of ~27 G fp8 weights; smaller
+pools/lengths are unvalidated postures (no-unevidenced law).
 
 `--privileged` is required with `CCL_ZE_IPC_EXCHANGE=pidfd` (keeps
 oneCCL's ze_fd_manager off the opendir device walk that kills
@@ -61,12 +77,18 @@ non-privileged TP2 init — validated posture, env-inspected 2026-10-27).
   --enable-auto-tool-choice \
   --chat-template <chat_template_qwen38_high.jinja> \
   --no-disable-hybrid-kv-cache-manager \
-  --compilation-config '{"cudagraph_mode":"FULL_DECODE_ONLY","cudagraph_capture_sizes":[1..320]}' \
+  --compilation-config '{"mode":"none","cudagraph_mode":"FULL_DECODE_ONLY","cudagraph_capture_sizes":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,20,25,30,35,40,45,48,50,55,60,64,65,70,75,80,85,90,95,96,100,105,110,112,115,120,125,128,130,135,140,145,150,155,160,165,170,175,180,185,190,192,195,200,205,210,215,220,224,225,230,235,240,245,250,255,256,260,265,270,275,280,285,290,295,300,305,310,315,320]}' \
   --speculative-config '{"method":"mtp","num_speculative_tokens":3}' \
   --port 8000
 ```
 
-The full capture-size list is in `tools/serve_arc_b70.sh:105`.
+This block is the certified line verbatim (rig
+`/root/build/r42/r43_serve_k5.sh`, depth 3 per r46t) — byte-verified:
+every flag, `"mode":"none"` (no torch.compile), and the explicit
+85-entry capture list. `[1..320]` shorthand is **invalid JSON** and is
+never shipped anywhere; copy-paste this block as-is. `--kv-transfer-config`
+loads the LMCache connector — the certified posture runs LMCache **ON**
+(see [`envs.md`](envs.md) for the full env chain).
 
 ### MTP depth (num_speculative_tokens) — recommended 3
 
@@ -89,6 +111,11 @@ below the crossover. Spec depth is serve-time CLI only — changing it
 rebuilds no image.
 
 ## Runtime environment (24 vars — export exactly this set)
+
+Delivery split (validated bytes): 22 of these are exported in the serve
+environment (the canonical script's export block); the last two
+(`VLLM_ALLOW_LONG_MAX_MODEL_LEN`, `VLLM_WORKER_MULTIPROC_METHOD`) are
+delivered at `docker run` (`-e`, boot block above).
 
 Runtime/system (15):
 

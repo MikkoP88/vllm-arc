@@ -117,7 +117,7 @@ twin of the live `VLLM_COMPACT_GDN` above).
 In-line with best practice: `VLLM_ARC_*` engine-env namespace (**11 live
 vars** + 3 dropped at r45d, below), `NN-category/pNN-slug` patch dirs,
 `feat/arc-pNN-<slug>` branches, `vllm-arc:v0.30.0-b70[-pNN]` image tags,
-`ARC_*` **host-side script vars** (10, `tools/serve_arc_b70.sh` — a
+`ARC_*` **host-side script vars** (9, `tools/serve_arc_b70.sh` — a
 different layer from engine envs), kebab-case docs, and the evidence-dir
 convention `results/YYYY-MM-DD-<phase/item>-r<leg>-<slug>/` (internal
 only, never upstreamed). **`pNN` is TWO sequences** — patch dirs/branches
