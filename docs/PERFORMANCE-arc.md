@@ -4,30 +4,31 @@ Measured performance of the certified posture (standalone numbers; test
 definitions and hardware in [`TESTING-arc.md`](TESTING-arc.md)). All
 certified faces: first-traffic fresh boot, timers off, XPU graphs on,
 TP2, greedy temp 0. **Recommended MTP depth = k3** (r46t campaign,
-below); the certified-greedy history at k4/k5 is retained row-labeled —
-k5 is dropped from the recommendation (owner directive), its evidence
-superseded, not retracted.
+below); the certified-greedy face at k4 is retained for comparison.
+Deeper depths were measured, then dropped from the recommendation and
+testing (owner directive); their evidence is retained unmodified in
+the results dirs, superseded.
 
 ## Headline faces (certified greedy battery, temp 0)
 
-| Face | k3 (recommended, r46t) | k4 (r42) | k5 (dropped, r43) |
-|---|---|---|---|
-| agg4x256 steady tokens/s | 299.86 | 297.65 / 297.94 | 303.48 / 305.42 |
-| solo200 tokens/s (incl. TTFT) | 84.46 / 84.53 | 85.01 / 85.16 | 86.39–87.13 (×4) |
-| greedy acceptance | 85.6% | ~87% | 89.2% (pos-1 0.8919) |
+| Face | k3 (recommended, r46t) | k4 (r42) |
+|---|---|---|
+| agg4x256 steady tokens/s | 299.86 | 297.65 / 297.94 |
+| solo200 tokens/s (incl. TTFT) | 84.46 / 84.53 | 85.01 / 85.16 |
+| greedy acceptance | 85.6% | ~87% |
 
-All three depths tie within ±0.7 % on the certified face — the depth
+Both depths tie within ±0.7 % on the certified face — the depth
 choice is decided by the real-world faces below, where k3 wins.
 
 | Face (posture-level) | Value |
 |---|---|
-| TTFT t1 8k / 16k / 32k (ms) | 3987 / 7238 / 15534 (k5 leg r43); 3445 / 7252 / 15552 (k4 leg r42 — 8k steady face) |
+| TTFT t1 8k / 16k / 32k (ms) | 3987 / 7238 / 15534 (r43 leg); 3445 / 7252 / 15552 (k4 leg r42 — 8k steady face) |
 | **TTFT t1 64k (ms)** | **40,926** (concurrent-load run — conservative upper bound) |
 | prefill rate at 8k face | 2,308 tok/s (7,950 tok / 3.445 s) |
 | warm t2 8k / 16k / 32k (ms) | 848 / 675 / 1178 |
 | **warm-hit (prefix re-hit)** | **740 ms** (face limit 750 ms) |
 | survival flip (first request after boot) | HTTP 200, 6.09 s |
-| solo step time @ c1 (200 tokens / 2.30 s) | ~48.7 ms/step (k5 leg) |
+| solo step time @ c1 (200 tokens / 2.30 s) | ~48.7 ms/step (r43 leg) |
 | agg4x256 first run after boot (k3) | warmup cost on run #1 (93.7 vs 299.9 steady) — first-traffic face, gone by run #2 |
 
 Notes: the 8k t1 TTFT is first-cell-of-the-ladder (warmup-sensitive);
@@ -57,8 +58,7 @@ battery warmup, heaviest on k3):
 | 1.0 | 186.2 | 182.6 | 61.1 | 54.3 | 49.5 % / 43.2 % |
 | mean | **193.7** (steady 205.4) | 189.4 (steady 194.2) | **62.1** | 60.2 | — |
 
-\* run #1 = 137.2 (warmup), run #2 = 212.6. k5 measured 185.8 agg
-mean before being dropped (evidence retained in the results dir).
+\* run #1 = 137.2 (warmup), run #2 = 212.6.
 
 **B. alt sampling, non-thinking** (temperature 0.7 / top_p 0.80 /
 top_k 20 / min_p 0 / presence_penalty 1.5 / repetition_penalty 1.0):
@@ -78,11 +78,12 @@ solo 33.4. **MTP value on measured faces: k3 = 1.57× (xhigh t1.0) and
 2.05× (alt steady) aggregate over no-spec.**
 
 Mechanism (measured across the sweep): speculative acceptance falls as
-temperature rises, and falls faster with deeper drafts (k3 49.5 % vs
-k5 33.5 % at t1.0 xhigh; k3 85.6 % at greedy t0). Depth pays only at
+temperature rises, and falls faster with deeper drafts (49.5 % at
+depth 3 vs 43.2 % at depth 4 at t1.0 xhigh; 85.6 % at depth 3 for
+greedy t0). Depth pays only at
 high acceptance — real-world sampled thinking sits below the
-crossover, which is why k3 is the recommendation and k5's greedy-era
-win inverts under sampling.
+crossover, which is why k3 is the recommendation: the greedy-era
+advantage of deeper drafts inverts under sampling.
 
 
 
@@ -109,8 +110,8 @@ Raw cells: `results/2026-10-30-p4-r44-matrix-certified/cell-*.txt`.
 ## Speculative decoding detail (64k cell, r46)
 
 Acceptance figures split by sampling condition: the headline faces
-above (pos-1 0.8919, spec-gate counters) are **greedy (temperature 0)**
-— k5-leg values; k3's greedy acceptance is 85.6 % (r46t). Matrix-cell
+above are **greedy (temperature 0)** — k3 85.6 % / k4 ~87 %
+(spec-gate counters, r42/r46t). Matrix-cell
 and 64k-cell acceptance below are **server-default sampling**
 (`vllm bench serve` 0.30 does not force greedy — see
 TESTING-arc.md suite 5). TTFT/t1 faces are sampling-insensitive.
@@ -120,7 +121,7 @@ temperature: see the r46t table above.
 Acceptance 87.43%, mean length 5.37 tokens/step, 218 drafts / 1090
 draft tokens / 953 accepted. Per-position acceptance:
 96.79 / 96.79 / 96.79 / 96.33 / 50.46 (positions 0–4) — position 4 is
-the k5 draft tail; see the 12-cell table above for per-cell positions.
+the deepest draft position (draft tail); see the 12-cell table above for per-cell positions.
 
 ## Stability
 

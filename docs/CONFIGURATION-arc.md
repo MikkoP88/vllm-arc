@@ -77,12 +77,11 @@ real-world sampling sets + xhigh thinking):
 |---|---|---|
 | **3** | **recommended (canonical)** | real-world sampled serving: +5.8 % steady agg / +3.8 % solo over k4 across temps 0.2–1.0 xhigh thinking; ties k4 on the certified greedy face (±0.7 %) |
 | 4 | documented alternative | near-deterministic non-thinking workloads (acceptance ≥ ~82 %): steady solo 104.3 vs k3's 92.2 at t0.7/tp0.80/pp1.5 |
-| 5 | **dropped** (owner directive) | was certified r43 (greedy acceptance 89.2 %); under real-world sampling acceptance collapses to 33–42 % and its depth wastes — superseded evidence retained |
 | none (omit `--speculative-config`) | non-MTP baseline | 1.5–2.1× slower than MTP on every measured face — never recommended for this model |
 
 Mechanism (measured): speculative acceptance falls as temperature
 rises and falls faster with deeper drafts — at t1.0 xhigh thinking:
-k3 49.5 % / k4 43.2 % / k5 33.5 %; at greedy t0: k3 85.6 %. Depth only
+k3 49.5 % / k4 43.2 %; at greedy t0: k3 85.6 %. Depth only
 pays when acceptance is high; real-world sampled thinking sits well
 below the crossover. Spec depth is serve-time CLI only — changing it
 rebuilds no image.
