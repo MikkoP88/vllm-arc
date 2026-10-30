@@ -74,7 +74,7 @@ ssh root@$RIG bash /root/build/build_image.sh /root/build/fork.tar $SHA vllm-arc
 #    --shm-size 64g tmpfs ceiling, not a reservation (moot under
 #                   --ipc host; guards the private-IPC fallback)
 #    model :ro      the checkpoint is an input, never an output
-#    -e pair        the 2 boot-layer vars of the 24-var chain (22 in step 3)
+#    -e pair        the 2 boot-layer vars of the 25-var chain (23 in step 3)
 docker run -d --name arc-test --privileged --network host --ipc host \
   --shm-size 64g \
   -v /path/to/qwen3.8-27b-fp8:/models/target:ro \
@@ -89,7 +89,7 @@ docker run -d --name arc-test --privileged --network host --ipc host \
 #    script + docker cp + exec; logs land in /root/serve_full.log)
 cat > serve_k3.sh <<'EOF'
 #!/bin/bash
-# --- serve environment: 22 of the certified 24-var chain (2 set at boot) ---
+# --- serve environment: 23 of the certified 25-var chain (2 set at boot) ---
 export PYTHONHASHSEED=0                 # init determinism
 export ZE_AFFINITY_MASK=0,1             # one Arc Pro B70 per socket
 export LD_LIBRARY_PATH=/opt/venv/lib:/opt/venv/lib/python3.12/site-packages/torch/lib

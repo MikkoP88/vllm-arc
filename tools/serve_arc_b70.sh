@@ -107,8 +107,8 @@ if [ "$HAVE_IMG_ID" != "$WANT_IMG_ID" ]; then
   echo "ARC_CONTAINER_FRESH image=$ARC_IMAGE id=${WANT_IMG_ID:7:12} (recreated from $HAVE_SRC)"
   # Boot block = the validated bytes (rig r46t_campaign.sh:54-63 /
   # r42/r46_soak.sh:33-42): --privileged --network host --ipc host,
-  # --shm-size 64g, 5 mounts, and the 2 boot-layer -e vars of the 24-var
-  # chain (the other 22 are exported in the exec block below).
+  # --shm-size 64g, 5 mounts, and the 2 boot-layer -e vars of the 25-var
+  # chain (the other 23 are exported in the exec block below).
   docker run -d --name "$ARC_NAME" \
     --privileged --network host --ipc host \
     --shm-size 64g \

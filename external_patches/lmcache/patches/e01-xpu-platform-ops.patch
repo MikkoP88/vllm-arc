@@ -1,5 +1,5 @@
---- a/lmcache/v1/platform/torch_ops/mem_alloc.py
-+++ b/lmcache/v1/platform/torch_ops/mem_alloc.py
+--- a/lmcache/v1/platform/torch_ops/mem_alloc.py	2026-10-15 01:17:26.000000000 +0000
++++ b/lmcache/v1/platform/torch_ops/mem_alloc.py	2026-10-30 21:58:32.619296678 +0000
 @@ -58,7 +58,19 @@
  
      global _use_pinned
@@ -21,8 +21,8 @@
      try:
          backing = torch.empty(
              size + _PAGE_SIZE, dtype=torch.uint8, pin_memory=_use_pinned
---- a/lmcache/v1/platform/devices/xpu/device_ops.py
-+++ b/lmcache/v1/platform/devices/xpu/device_ops.py
+--- a/lmcache/v1/platform/devices/xpu/device_ops.py	2026-10-15 01:17:26.000000000 +0000
++++ b/lmcache/v1/platform/devices/xpu/device_ops.py	2026-10-30 21:58:59.419266782 +0000
 @@ -13,6 +13,9 @@
  # Standard
  from typing import ClassVar
@@ -33,7 +33,7 @@
  # First Party
  from lmcache.logging import init_logger
  from lmcache.v1.platform.base.device_ops import DeviceOps
-@@ -37,3 +40,58 @@
+@@ -37,3 +40,77 @@
              )
              return
          self.bind_native(sycl)
@@ -49,10 +49,29 @@
 +            "multi_layer_kv_transfer",
 +            "multi_layer_kv_transfer_unilateral",
 +            "single_layer_kv_transfer",
++            "single_layer_kv_transfer_sgl",
 +            "multi_layer_block_kv_transfer",
 +        ):
 +            if hasattr(torch_ops, _op):
 +                setattr(self, _op, getattr(torch_ops, _op))
++        # llm-scaler arc law (p40c): with LMCACHE_DISABLE_PINNED_MEMORY set
++        # (certified chain), the native alloc_pinned_ptr is sycl::malloc_host
++        # — the >16-32 GiB/process segfault class (100 GiB pool death,
++        # probed 2026-10-08; recaptured on the first 0.5.6 boot 2026-10-30:
++        # memory_management.py resolves device_ops.alloc_pinned_ptr for the
++        # CPU pool). Re-pin the pair to the torch baseline (mem_alloc honors
++        # the env: pin_memory=False pageable). All other native ops stay.
++        import os
++
++        if int(os.environ.get("LMCACHE_DISABLE_PINNED_MEMORY", "0")):
++            for _op in ("alloc_pinned_ptr", "free_pinned_ptr"):
++                if hasattr(torch_ops, _op):
++                    setattr(self, _op, getattr(torch_ops, _op))
++            logger.info(
++                "XpuDeviceOps: LMCACHE_DISABLE_PINNED_MEMORY set; "
++                "alloc/free_pinned_ptr re-pinned to the pageable torch "
++                "baseline (p40c law)."
++            )
 +
 +    def tensor_from_ptr(
 +        self,

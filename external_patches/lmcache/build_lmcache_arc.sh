@@ -55,6 +55,18 @@ echo "BASE_IDENTITY_OK (5 patched files pristine vs official wheel)"
 for p in "$KIT"/patches/*.patch; do
   patch -p1 --forward < "$p"
 done
+# Post-patch marker assertions (2026-10-30 lesson, E-LAW capture: the first
+# 0.5.6 wheel shipped a device_ops hunk missing the p40c pinned re-pin —
+# patch "succeeded" but an earlier revision of the hunk was in the file;
+# the p48 boot then died at the 100 GiB pool on sycl::malloc_host. Markers
+# prove each patch's semantic content landed in the tree being built.)
+grep -q "single_layer_kv_transfer_sgl" lmcache/v1/platform/devices/xpu/device_ops.py || { echo "FATAL: e01 marker missing (5-op transfer re-pin)"; exit 1; }
+grep -q "LMCACHE_DISABLE_PINNED_MEMORY" lmcache/v1/platform/devices/xpu/device_ops.py || { echo "FATAL: e01 marker missing (p40c pinned re-pin)"; exit 1; }
+grep -q "LMCACHE_DISABLE_PINNED_MEMORY" lmcache/v1/platform/torch_ops/mem_alloc.py || { echo "FATAL: e01 marker missing (mem_alloc pageable gate)"; exit 1; }
+grep -q "is_usage_tracking_enabled" lmcache/observability.py || { echo "FATAL: e04 marker missing (usage-tlm gate)"; exit 1; }
+grep -q "_lmc_pending_stores" lmcache/integration/vllm/vllm_v1_adapter.py || { echo "FATAL: adapter graft marker missing"; exit 1; }
+grep -q "_lookup_released" lmcache/v1/cache_engine.py || { echo "FATAL: e02e03 marker missing"; exit 1; }
+echo "PATCH_MARKERS_OK (6/6)"
 # version tag (PEP 440 local): 0.5.6 -> 0.5.6+arcN in the sdist's static
 # vcs file (setuptools_scm is inert inside the sdist).
 sed -i "s/__version__ = version = '0.5.6'/__version__ = version = '0.5.6+$ARC'/" lmcache/_version.py

@@ -12,7 +12,7 @@ complete control surface + naming map); test definitions in
 |---|---|
 | Image | `vllm-arc:v0.30.0-b70-cert2` (certified release, tag `rel/v0.30.0-b70-cert2` = cert + the r46u glue-alias fix) / `v0.30.0-b70-p47` (r46v build-validation image, same engine tree) / `v0.30.0-b70-p46` (r46t campaign) / `v0.30.0-b70-cert` (**superseded — predates r46u, never build from it**) |
 | Manifest | `/etc/vllm-arc/IMAGE_MANIFEST` inside the image — fork SHA, wheel pins, dependency closure (`lmcache_closure=`), build host |
-| Base | upstream vllm-gaudi v0.30.0 + pinned wheels (vllm 0.30.0+xpu, triton 3.7.2+xpu, vllm_xpu_kernels 0.1.14.1+arc3, lmcache 0.5.5+arc1) |
+| Base | upstream vllm-gaudi v0.30.0 + pinned wheels (vllm 0.30.0+xpu, triton 3.7.2+xpu, vllm_xpu_kernels 0.1.14.1+arc3, lmcache 0.5.6+arc1) |
 
 Verify before any leg: `docker run --rm --entrypoint bash <img> -c "cat
 /etc/vllm-arc/IMAGE_MANIFEST"` and check `fork_sha` matches the tree you
@@ -24,7 +24,7 @@ code).
 The certified deployment is **three steps in this order**: boot the
 container (Step 1), then serve with the environment chain and the CLI as
 **one unit** (Step 2), then health-check (in Step 2). The serve CLI is
-only certified with its 22-var environment exported first — Step 2
+only certified with its 25-var environment exported first — Step 2
 therefore ships env + CLI in a single script block, so the two can never
 be separated by following the guide top to bottom.
 
@@ -45,7 +45,7 @@ docker run -d --name arc-test \
 
 These are the validated boot bytes (rig `r46t_campaign.sh:54-63`,
 `r42/r46_soak.sh:33-42`): `--shm-size 64g`, four mounts, and the two
-boot-layer vars of the 24-var chain below (`:ro` on the model is the
+boot-layer vars of the 25-var chain below (`:ro` on the model is the
 read-only posture law — the leg scripts omit it, the law is stricter).
 The optional chat-template mount (below) is added to this block only if
 you use the template.
@@ -76,8 +76,8 @@ non-privileged TP2 init — validated posture, env-inspected 2026-10-27).
 The CLI below is the certified line (rig
 `/root/build/r42/r43_serve_k5.sh`, depth 3 per r46t) minus the optional
 chat template — every flag byte-verified. It is certified **only**
-together with these 22 exported vars (13 runtime/system + 9 LMCache —
-the other 2 of the 24-var chain are the `-e` pair in Step 1). Ship it as
+together with these 23 exported vars (13 runtime/system + 10 LMCache —
+the other 2 of the 25-var chain are the `-e` pair in Step 1). Ship it as
 one script inside the container — never a bare interactive
 `vllm serve`, which silently drops the graph law, the oneCCL block, and
 the whole LMCache set:
@@ -85,7 +85,7 @@ the whole LMCache set:
 ```bash
 # serve_k3.sh — run INSIDE the container (docker cp + exec below)
 #!/bin/bash
-# --- serve environment: 22 of the certified 24-var chain (2 set at boot) ---
+# --- serve environment: 23 of the certified 25-var chain (2 set at boot) ---
 export PYTHONHASHSEED=0                 # init determinism
 export ZE_AFFINITY_MASK=0,1             # one Arc Pro B70 per socket
 export LD_LIBRARY_PATH=/opt/venv/lib:/opt/venv/lib/python3.12/site-packages/torch/lib
@@ -99,7 +99,7 @@ export CCL_SYCL_ALLGATHERV_TMP_BUF=0
 export CCL_SYCL_ALLREDUCE_TMP_BUF=0
 export VLLM_XPU_ENABLE_XPU_GRAPH=1      # graph posture law
 export ARC_TRACE_FLIP=1                 # flip-payload interlock
-# --- LMCache certified set (9 — keep as a set) ---
+# --- LMCache certified set (10 — keep as a set) ---
 export LMCACHE_USE_EXPERIMENTAL_API=True
 export LMCACHE_MAX_LOCAL_CPU_SIZE=100
 export LMCACHE_LOCAL_CPU=True
@@ -109,6 +109,10 @@ export LMCACHE_SAVE_DECODE_CACHE=True
 export LMCACHE_MIN_RETRIEVE_TOKENS=1024
 export LMCACHE_LOG_LEVEL=INFO
 export LMCACHE_DISABLE_PINNED_MEMORY=1  # law: pinned USM >16-32 GiB/proc segfaults
+export LMCACHE_TRACK_USAGE=false        # P6.3: usage telemetry is default-ON;
+                                        # this rig serves offline (pairs with
+                                        # the e04 wheel patch gating the
+                                        # per-request usage-context creation)
 # --- the certified CLI: MTP k3 (recommended), LMCache ON, mode:none
 #     (no torch.compile) + decode-only graphs, explicit capture list ---
 exec /opt/venv/bin/vllm serve --model /models/target \
@@ -188,12 +192,12 @@ pays when acceptance is high; real-world sampled thinking sits well
 below the crossover. Spec depth is serve-time CLI only — changing it
 rebuilds no image.
 
-## The 24-var chain (reference)
+## The 25-var chain (reference)
 
-The step blocks above already carry all 24. This section is the
+The step blocks above already carry all 25. This section is the
 reference view: what each layer is and where it is delivered. Delivery
-split (validated bytes): **22 serve-time** (13 runtime/system + the
-LMCache 9 — the export block inside Step 2) and **2 boot-time**
+split (validated bytes): **23 serve-time** (13 runtime/system + the
+LMCache 10 — the export block inside Step 2) and **2 boot-time**
 (`VLLM_ALLOW_LONG_MAX_MODEL_LEN`, `VLLM_WORKER_MULTIPROC_METHOD` — the
 `-e` pair in Step 1's `docker run`).
 
@@ -215,7 +219,7 @@ export VLLM_XPU_ENABLE_XPU_GRAPH=1     # graph posture law
 export ARC_TRACE_FLIP=1                # flip-payload interlock
 ```
 
-Serve-time LMCache certified set (9 — keep as a set; in Step 2's block):
+Serve-time LMCache certified set (10 — keep as a set; in Step 2's block):
 
 ```bash
 export LMCACHE_USE_EXPERIMENTAL_API=True
@@ -227,6 +231,7 @@ export LMCACHE_SAVE_DECODE_CACHE=True
 export LMCACHE_MIN_RETRIEVE_TOKENS=1024
 export LMCACHE_LOG_LEVEL=INFO
 export LMCACHE_DISABLE_PINNED_MEMORY=1 # law: pinned USM >16-32 GiB/proc segfaults
+export LMCACHE_TRACK_USAGE=false       # P6.3: telemetry default-ON; offline rig
 ```
 
 Boot-time (2 — in Step 1's `docker run`):
