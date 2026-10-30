@@ -1,0 +1,18 @@
+=== arc_garbage_probe (r46t) — corrupt-input hardening ===
+[binary_mojibake] status=200 ok=False
+[control_chars] status=200 ok=False
+[huge_blob] status=400 ok=False
+[nospace_100k] status=200 ok=False
+[empty_content] status=200 ok=False
+[null_content] status=400 ok=True
+[bad_role] status=400 ok=True
+[unicode_salad] status=200 ok=False
+[no_messages] status=400 ok=True
+[empty_messages] status=400 ok=True
+[messages_string] status=400 ok=True
+[max_tokens_string] status=400 ok=True
+[temperature_string] status=400 ok=True
+[raw_truncated_json] status=400 ok=True
+[raw_wrong_content_type] status=400 ok=True
+[state_stability] 200:a817337ce107bcad:'HEALTH CHECK OK' == 200:a817337ce107bcad:'HEALTH CHECK OK' -> True
+=== GARBAGE_SUITE_FAIL: binary_mojibake,control_chars,huge_blob,nospace_100k,empty_content,unicode_salad (probes=15 fails=6) ===

@@ -1,0 +1,9 @@
+=== r46t v5 alt-sampling legs (p46, t0.7/top_p0.80/top_k20/min_p0/pp1.5/rp1.0, non-thinking) ===
+k3 alt | agg4x256#1 wall=6.00s aggregate=170.59 tok/s ok_streams=4/4 [256tok/5.9s 256tok/6.0s 256tok/6.0s 256tok/6.0s] agg4x256#2 wall=4.02s aggregate=254.86 tok/s ok_streams=4/4 [256tok/4.0s 256tok/4.0s 256tok/3.4s 256tok/3.4s] solo200 n=200 dt=2.60s tps=76.91 solo200 n=200 dt=2.17s tps=92.22 
+k3 garbage | === GARBAGE_SUITE_PASS (probes=15 fails=0) ===
+k4 alt | agg4x256#1 wall=4.32s aggregate=236.90 tok/s ok_streams=4/4 [256tok/4.3s 256tok/3.3s 256tok/3.4s 256tok/3.3s] agg4x256#2 wall=4.05s aggregate=252.62 tok/s ok_streams=4/4 [256tok/4.1s 256tok/3.5s 256tok/2.9s 256tok/3.0s] solo200 n=200 dt=2.35s tps=85.29 solo200 n=200 dt=1.92s tps=104.31 
+k4 garbage | === GARBAGE_SUITE_PASS (probes=15 fails=0) ===
+nospec alt | agg4x256#1 wall=14.14s aggregate=72.40 tok/s ok_streams=4/4 [256tok/13.7s 256tok/13.7s 256tok/13.7s 256tok/14.1s] agg4x256#2 wall=8.24s aggregate=124.22 tok/s ok_streams=4/4 [256tok/8.2s 256tok/8.2s 256tok/8.2s 256tok/8.2s] solo200 n=112 dt=3.37s tps=33.19 solo200 n=200 dt=5.95s tps=33.59 
+nospec garbage | === GARBAGE_SUITE_PASS (probes=15 fails=0) ===
+k3 t0 (certified face) | agg4x256#1 wall=10.93s aggregate=93.67 tok/s ok_streams=4/4 [256tok/10.9s 256tok/10.6s 256tok/10.5s 256tok/10.4s] agg4x256#2 wall=3.41s aggregate=299.86 tok/s ok_streams=4/4 [256tok/3.4s 256tok/3.4s 256tok/3.4s 256tok/3.4s] solo200 n=200 dt=2.37s tps=84.53 solo200 n=200 dt=2.37s tps=84.46 
+k3t0 garbage | === GARBAGE_SUITE_PASS (probes=15 fails=0) ===
