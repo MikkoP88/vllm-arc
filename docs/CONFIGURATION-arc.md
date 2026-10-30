@@ -43,11 +43,18 @@ stricter). `--shm-size` is a tmpfs *ceiling*, not a reservation, and is
 moot under `--ipc host` (host `/dev/shm` is used); 64g guards the
 private-IPC fallback, where small values ENOSPC-crash TP2 IPC buffers.
 
-**Hardware floor**: the certified posture is validated on a rig-class
-host (dual B70, 377 G RAM). It does not fit materially smaller hosts —
-the LMCache CPU pool alone is set to 100 G
-(`LMCACHE_MAX_LOCAL_CPU_SIZE=100`) on top of ~27 G fp8 weights; smaller
-pools/lengths are unvalidated postures (no-unevidenced law).
+**Hardware floor**: the hard floor is the **GPUs** — dual B70 (16 G
+each): ~27 G of fp8 weights split TP2 plus KV/mamba/graph pools at GMU
+0.8 nearly fill both. Host RAM is not gated by the cache:
+`LMCACHE_MAX_LOCAL_CPU_SIZE=100` is a single *virtual* reservation —
+one malloc wrapped by `torch.frombuffer`, first-touch physical pages,
+evicted (lr_u) at the cap (wheel-verified:
+`lmcache/v1/memory_management.py:593`; eager allocation is the pinned
+path, disabled by the p40d law). Smaller hosts fit by scaling that one
+env down — a ~100 G single mmap will not survive a small-RAM kernel's
+overcommit heuristic at boot. Such postures are mechanically sound but
+unvalidated; the certified legs ran on the rig class (dual B70, 377 G
+RAM).
 
 `--privileged` is required with `CCL_ZE_IPC_EXCHANGE=pidfd` (keeps
 oneCCL's ze_fd_manager off the opendir device walk that kills
