@@ -1,0 +1,9 @@
+=== r46 SOAK SUMMARY Fri Oct 30 02:52:06 PM UTC 2026 ===
+window_seconds=29156 (gate 28800) cycles=46
+error_blocks=0
+0 (gate 0)  [errors.log]
+integrity probes: PASS=46 FAIL=0
+0 (gate 0 fail)
+final golden: [golden] len=4096 match GOLDEN_PASS: 5/5 identical (zero drift) 
+final spec pos1: pos1=0.8919
+health end-state: 200

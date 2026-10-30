@@ -1,0 +1,41 @@
+Running mypy on 
+Success: no issues found in 5 source files
+Running mypy on tests
+tests/unit_tests/kv_offload/test_cpu_offloading.py:36: error: Module has no attribute "Context"  [attr-defined]
+tests/unit_tests/kv_offload/test_cpu_offloading.py:40: error: Module has no attribute "SUB"  [attr-defined]
+tests/unit_tests/kv_offload/test_cpu_offloading.py:41: error: Module has no attribute "SUBSCRIBE"  [attr-defined]
+tests/unit_tests/kv_offload/test_cpu_offloading.py:49: error: Module has no attribute "Poller"  [attr-defined]
+tests/unit_tests/kv_offload/test_cpu_offloading.py:50: error: Module has no attribute "POLLIN"  [attr-defined]
+tests/unit_tests/kv_offload/test_cpu_offloading.py:56: error: Module has no attribute "POLLIN"  [attr-defined]
+Found 6 errors in 1 file (checked 78 source files)
+Running mypy on vllm_gaudi/attention
+Success: no issues found in 6 source files
+Running mypy on vllm_gaudi/distributed
+Success: no issues found in 9 source files
+Running mypy on vllm_gaudi/ops
+Success: no issues found in 26 source files
+Running mypy on vllm_gaudi/v1
+vllm_gaudi/v1/worker/hpu_input_batch.py:105: error: Need type annotation for "num_tokens"  [var-annotated]
+vllm_gaudi/v1/worker/hpu_input_batch.py:106: error: Need type annotation for "num_tokens_no_spec"  [var-annotated]
+vllm_gaudi/v1/worker/hpu_input_batch.py:107: error: Need type annotation for "num_prompt_tokens"  [var-annotated]
+vllm_gaudi/v1/worker/hpu_input_batch.py:186: error: Need type annotation for "request_lora_mapping"  [var-annotated]
+vllm_gaudi/v1/worker/hpu_input_batch.py:220: error: Need type annotation for "logits_processing_needs_token_ids"  [var-annotated]
+vllm_gaudi/v1/worker/hpu_input_batch.py:402: error: Invalid index type "ndarray[Any, Any]" for "dict[int, set[str]]"; expected type "int"  [index]
+vllm_gaudi/v1/worker/hpu_input_batch.py:403: error: Invalid index type "ndarray[Any, Any]" for "dict[int, set[str]]"; expected type "int"  [index]
+vllm_gaudi/v1/worker/hpu_input_batch.py:404: error: No overload variant of "pop" of "dict" matches argument type "ndarray[Any, Any]"  [call-overload]
+vllm_gaudi/v1/worker/hpu_input_batch.py:404: note: Possible overload variants:
+vllm_gaudi/v1/worker/hpu_input_batch.py:404: note:     def pop(self, int, /) -> set[str]
+vllm_gaudi/v1/worker/hpu_input_batch.py:404: note:     def pop(self, int, set[str], /) -> set[str]
+vllm_gaudi/v1/worker/hpu_input_batch.py:404: note:     def [_T] pop(self, int, _T, /) -> set[str] | _T
+vllm_gaudi/v1/worker/hpu_input_batch.py:405: error: No overload variant of "pop" of "dict" matches argument type "ndarray[Any, Any]"  [call-overload]
+vllm_gaudi/v1/worker/hpu_input_batch.py:405: note: Possible overload variants:
+vllm_gaudi/v1/worker/hpu_input_batch.py:405: note:     def pop(self, int, /) -> Any
+vllm_gaudi/v1/worker/hpu_input_batch.py:405: note:     def pop(self, int, Any, /) -> Any
+vllm_gaudi/v1/worker/hpu_input_batch.py:405: note:     def [_T] pop(self, int, _T, /) -> Any | _T
+vllm_gaudi/v1/worker/hpu_model_runner.py:1488: error: Need type annotation for "arange_np"  [var-annotated]
+vllm_gaudi/v1/worker/hpu_model_runner.py:2753: error: List item 0 has incompatible type "ndarray[Any, Any]"; expected "int"  [list-item]
+vllm_gaudi/v1/worker/hpu_model_runner.py:3538: error: Argument "cumsum_dtype" to "_get_cumsum_and_arange" of "HPUModelRunner" has incompatible type "type[signedinteger[Any]]"; expected "dtype[Any] | None"  [arg-type]
+vllm_gaudi/v1/worker/hpu_model_runner.py:3556: error: Argument "cumsum_dtype" to "_get_cumsum_and_arange" of "HPUModelRunner" has incompatible type "type[signedinteger[Any]]"; expected "dtype[Any] | None"  [arg-type]
+vllm_gaudi/v1/worker/hpu_model_runner.py:3937: error: Need type annotation for "combined_ranks"  [var-annotated]
+vllm_gaudi/v1/worker/hpu_model_runner.py:4796: error: Incompatible types in assignment (expression has type "ndarray[Any, Any]", variable has type "int")  [assignment]
+Found 15 errors in 2 files (checked 19 source files)

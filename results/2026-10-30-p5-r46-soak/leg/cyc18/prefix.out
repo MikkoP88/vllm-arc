@@ -1,0 +1,6 @@
+=== bench_prefix (docs ~5k tok, orig=16 churn=112) ===
+cold: n=16 wall=13.4s ttft_med=0.75s ttft_mean=0.74s ttft_min=0.51s ttft_max=0.83s ptok_med=5202 cached_med=-1 cached_n=0/16 ttft_sum=11.8s
+warm: n=16 wall=13.4s ttft_med=0.75s ttft_mean=0.74s ttft_min=0.50s ttft_max=0.83s ptok_med=5202 cached_med=-1 cached_n=0/16 ttft_sum=11.8s
+churn: n=112 wall=283.5s ttft_med=2.47s ttft_mean=2.47s ttft_min=2.45s ttft_max=2.55s ptok_med=5697 cached_med=-1 cached_n=0/112 ttft_sum=277.1s
+rehit: n=16 wall=37.1s ttft_med=2.25s ttft_mean=2.26s ttft_min=2.20s ttft_max=2.36s ptok_med=5202 cached_med=-1 cached_n=0/16 ttft_sum=36.2s
+BENCH_PREFIX_DONE
