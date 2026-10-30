@@ -155,4 +155,4 @@ dirs to date; the naming convention is documented in
 | P4 certification battery + certified image + k5 adoption + 12-cell matrix | GREEN | `results/2026-10-30-p4-r42/r43/r44/` |
 | P5 env/doc/lint/Dockerfile audits + mypy delta=0 | GREEN | `results/2026-10-30-p5-r45-env-log-audit/`, rig leg `arc-p5-r46` |
 | 64k TTFT face | GREEN (40,926 ms, concurrent-load conservative) | rig leg `arc-p5-r46/ttft64k_t1.txt` |
-| r46 8 h soak | IN FLIGHT — result appended at close-out | `results/2026-10-30-p5-r46-soak/` |
+| r46 8 h soak | GREEN — 46 cycles, zero errors, integrity 46/46, golden 5/5 zero-drift, pos-1 0.8919 steady, health 200 end-state | `results/2026-10-30-p5-r46-soak/` |

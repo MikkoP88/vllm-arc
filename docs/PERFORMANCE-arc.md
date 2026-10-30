@@ -66,6 +66,9 @@ the k5 draft tail; see the 12-cell table above for per-cell positions.
 
 - run7n ×2 per leg agree within 1.5% (steady-state).
 - Prefix battery phases byte-identical (deterministic corpus, temp 0).
-- 8 h soak (r46): cycles of run7n → longctx → prefix/churn → integrity
-  probe; zero-error / zero-drift result banked at close-out in
-  `results/2026-10-30-p5-r46-soak/` (VERDICT + cycle log).
+- **8 h soak (r46) — GREEN**: 46 cycles over a 29,156 s window (each
+  cycle: run7n → longctx → prefix/churn → integrity probe), **zero
+  error blocks, integrity probes 46/46 PASS, final golden 5/5
+  byte-identical (zero drift), speculative pos-1 rate 0.8919 steady to
+  the last cycle, health 200 end-state**. Evidence:
+  `results/2026-10-30-p5-r46-soak/` (VERDICT + soak log + summary).
