@@ -31,6 +31,11 @@
 # Model flags are the D-champion surface for qwen3.8-27b-fp8 (rig
 # /root/serve_lmc_v133.sh, plan Appendix F): TP2, block 64, fp8 quant +
 # fp8_e4m3 KV, float16 mamba SSM cache, prefix caching, hybrid KV manager on.
+# Certified env = the 24-var chain: 22 exported in the exec block below
+# (13 runtime/system incl. ARC_TRACE_FLIP + 9 LMCACHE_*) + 2 at boot
+# (-e VLLM_ALLOW_LONG_MAX_MODEL_LEN / VLLM_WORKER_MULTIPROC_METHOD).
+# --compilation-config carries mode:none (no torch.compile) + the explicit
+# 85-entry capture list — [1..320] shorthand is INVALID JSON, never ship it.
 set -euo pipefail
 
 ARC_IMAGE=${ARC_IMAGE:-vllm-arc:v0.30.0-b70}
@@ -80,15 +85,20 @@ if [ "$HAVE_IMG_ID" != "$WANT_IMG_ID" ]; then
   [ -n "$HAVE_SRC" ] || HAVE_SRC=none
   docker rm -f "$ARC_NAME" >/dev/null 2>&1 || true
   echo "ARC_CONTAINER_FRESH image=$ARC_IMAGE id=${WANT_IMG_ID:7:12} (recreated from $HAVE_SRC)"
+  # Boot block = the validated bytes (rig r46t_campaign.sh:54-63 /
+  # r42/r46_soak.sh:33-42): --privileged --network host --ipc host,
+  # --shm-size 64g, 5 mounts, and the 2 boot-layer -e vars of the 24-var
+  # chain (the other 22 are exported in the exec block below).
   docker run -d --name "$ARC_NAME" \
-    --privileged \
-    --device /dev/dri --ipc host --network host \
-    --shm-size 64m \
+    --privileged --network host --ipc host \
+    --shm-size 64g \
+    -v /models/qwen3.8-27b-fp8:/models/target:ro \
+    -v "$RIG/v127_stage/chat_template_qwen38_high.jinja:/root/chat_template_qwen38_high.jinja:ro" \
     -v /root/build/neo_cache:/root/.neo_cache \
     -v /root/build/triton_cache:/root/.triton_cache \
     -v /root/build/inductor_cache:/root/.inductor_cache \
-    -v /models/qwen3.8-27b-fp8:/models/target:ro \
-    -v "$RIG/v127_stage/chat_template_qwen38_high.jinja:/root/chat_template_qwen38_high.jinja:ro" \
+    -e VLLM_ALLOW_LONG_MAX_MODEL_LEN=1 \
+    -e VLLM_WORKER_MULTIPROC_METHOD=spawn \
     --entrypoint /bin/bash "$ARC_IMAGE" -c 'sleep infinity'
 fi
 docker exec "$ARC_NAME" pkill -f "vllm serve" 2>/dev/null || true
@@ -107,7 +117,9 @@ if [ "$ARC_GRAPH" = 1 ]; then
   # graph legs. P1 posture = FULL_DECODE_ONLY pool identical to the
   # D-champion certified set (54/64-size discipline lands with p12/p32).
   GRAPH_ENV="export VLLM_XPU_ENABLE_XPU_GRAPH=1;"
-  COMPILATION_FLAG="--compilation-config '{\"cudagraph_mode\":\"FULL_DECODE_ONLY\",\"cudagraph_capture_sizes\":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,20,25,30,35,40,45,48,50,55,60,64,65,70,75,80,85,90,95,96,100,105,110,112,115,120,125,128,130,135,140,145,150,155,160,165,170,175,180,185,190,192,195,200,205,210,215,220,224,225,230,235,240,245,250,255,256,260,265,270,275,280,285,290,295,300,305,310,315,320]}'"
+  # "mode":"none" is part of the certified line (rig r43_serve_k5.sh /
+  # r46t active_serve3.sh): NO torch.compile — decode-only cudagraphs only.
+  COMPILATION_FLAG="--compilation-config '{\"mode\":\"none\",\"cudagraph_mode\":\"FULL_DECODE_ONLY\",\"cudagraph_capture_sizes\":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,20,25,30,35,40,45,48,50,55,60,64,65,70,75,80,85,90,95,96,100,105,110,112,115,120,125,128,130,135,140,145,150,155,160,165,170,175,180,185,190,192,195,200,205,210,215,220,224,225,230,235,240,245,250,255,256,260,265,270,275,280,285,290,295,300,305,310,315,320]}'"
 fi
 
 XG_FLAG=""
@@ -150,6 +162,7 @@ export CCL_SYCL_ALLGATHERV_SMALL_THRESHOLD=131072
 export CCL_SYCL_ALLGATHERV_SCALEOUT_THRESHOLD=1048576
 export CCL_SYCL_ALLGATHERV_TMP_BUF=0
 export CCL_SYCL_ALLREDUCE_TMP_BUF=0
+export ARC_TRACE_FLIP=1
 $LMC_ENV
 $GRAPH_ENV
 exec /opt/venv/bin/vllm serve --model /models/target \
