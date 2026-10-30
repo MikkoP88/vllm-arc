@@ -10,7 +10,7 @@ complete control surface + naming map); test definitions in
 
 | Item | Value |
 |---|---|
-| Image | `vllm-arc:v0.30.0-b70-p47` (current validation build — first carrying the r46u glue-alias fix; build+import-validated r46v, serve leg ran on the equivalent hot-patched p46) / `v0.30.0-b70-p46` (r46t campaign) / `v0.30.0-b70-cert` (certified release — **predates r46u**, do not build from its tag until re-cert) |
+| Image | `vllm-arc:v0.30.0-b70-cert2` (certified release, tag `rel/v0.30.0-b70-cert2` = cert + the r46u glue-alias fix) / `v0.30.0-b70-p47` (r46v build-validation image, same engine tree) / `v0.30.0-b70-p46` (r46t campaign) / `v0.30.0-b70-cert` (**superseded — predates r46u, never build from it**) |
 | Manifest | `/etc/vllm-arc/IMAGE_MANIFEST` inside the image — fork SHA, wheel pins, dependency closure (`lmcache_closure=`), build host |
 | Base | upstream vllm-gaudi v0.30.0 + pinned wheels (vllm 0.30.0+xpu, triton 3.7.2+xpu, vllm_xpu_kernels 0.1.14.1+arc3, lmcache 0.5.5+arc1) |
 
@@ -40,7 +40,7 @@ docker run -d --name arc-test \
   -v /root/build/inductor_cache:/root/.inductor_cache \
   -e VLLM_ALLOW_LONG_MAX_MODEL_LEN=1 \
   -e VLLM_WORKER_MULTIPROC_METHOD=spawn \
-  --entrypoint /bin/bash vllm-arc:v0.30.0-b70-p47 -c 'sleep infinity'
+  --entrypoint /bin/bash vllm-arc:v0.30.0-b70-cert2 -c 'sleep infinity'
 ```
 
 These are the validated boot bytes (rig `r46t_campaign.sh:54-63`,
