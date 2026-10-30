@@ -54,6 +54,7 @@ non-privileged TP2 init — validated posture, env-inspected 2026-10-27).
   --mamba-ssm-cache-dtype float16 \
   --mamba-cache-mode=align \
   --enable-prefix-caching \
+  --kv-transfer-config '{"kv_connector":"LMCacheConnectorV1","kv_role":"kv_both","kv_connector_extra_config":{"use_native":true,"lmcache.extra_config":{"mamba_pool_ratio":2}},"engine_id":"arc-p40"}' \
   --trust-remote-code \
   --reasoning-parser qwen3 \
   --tool-call-parser qwen3_coder \
@@ -154,8 +155,9 @@ Host-script layer (`tools/serve_arc_b70.sh`): `ARC_IMAGE`, `ARC_NAME`,
 `ARC_GRAPH` (0 eager / 1 graph — certified = 1), `ARC_SPEC` (MTP depth
 = `num_speculative_tokens`: 0 = off, default 3 = the recommendation,
 4 = the D-champion alternative; only 0/3/4/5 accepted — the legged
-depths), `ARC_LMC`, `ARC_GMU` (0.8), `ARC_MNBT` (8192), `ARC_MAXSEQS` (64),
-`ARC_PORT` (8000), `ARC_ALLOW_UNVALIDATED` (repro only).
+depths), `ARC_LMC` (1 = the certified LMCache connector + the 9-var
+`LMCACHE_*` chain — default; 0 = no LMCache), `ARC_GMU` (0.8),
+`ARC_MNBT` (8192), `ARC_MAXSEQS` (64), `ARC_PORT` (8000).
 
 ## Posture laws (never change in production)
 
