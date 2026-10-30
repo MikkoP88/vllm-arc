@@ -41,6 +41,7 @@ LMCache certified set (D champion verbatim, plan Appendix E — keep as a set):
 | `LMCACHE_MIN_RETRIEVE_TOKENS` | `1024` |
 | `LMCACHE_LOG_LEVEL` | `INFO` |
 | `LMCACHE_DISABLE_PINNED_MEMORY` | `1` (p40d law: pinned USM >16–32 GiB/process segfaults) |
+| `LMCACHE_TRACK_USAGE` | `false` (P6.3: LMCache usage telemetry is default-ON — `usage_telemetry/identity.py:25`; this rig serves offline. Pairs with the e04 wheel patch that gates the per-request usage-context creation, the source of the dual-engine "different metadata" ERROR ×2/boot) |
 
 Container flags (docker run, P1 boot interface):
 
