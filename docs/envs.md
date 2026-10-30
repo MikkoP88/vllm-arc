@@ -119,6 +119,7 @@ without rewriting"):
 | `ARC_TRACE_FLIP` | no `VLLM_ARC_` prefix | §7-cited p12b interlock name; certified line + every evidence leg since r18 uses it |
 | `VLLM_MAMBA_FP16_SEED_REPAIR` | `VLLM_` without `ARC` | upstream-style name — an asset for the upstream PR lane |
 | `LMC_BOUND*` (4) | donor v136 lineage names | ported verbatim for provenance (p41 dual-donor convergence evidence) |
+| `VLLM_ARC_R35_TAIL_SPLIT` | embeds leg number `r35` | named for the leg that banked tail-split **v4** (ab81fc11) after r34 A/B-falsified v3 (c4468339); `R35` ties the knob to its falsification evidence — same evidence-chain class as `ARC_TRACE_FLIP`; rename candidate `VLLM_ARC_TAIL_SPLIT` at the upstream lane |
 | `VLLM_ARC_LOOKUP_ELIDE` | name reads bool, value is int tokens | documented above; rename candidate `..._ELIDE_TOKENS` at the upstream lane |
 
 Regenerate: this file is a snapshot; on any envs.py or serve-line change,
