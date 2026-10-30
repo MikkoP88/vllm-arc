@@ -1,19 +1,22 @@
 # MIGRATION — W14 incumbent → vllm-arc certified stack (dual Arc Pro B70, TP2)
 
-Migration addendum banked at P5 hardening (r45, 2026-10-30) per the banking
-directive. Target: serve **qwen3.8-27b-fp8** (dense hybrid-GDN, MTP k5) on
-`vllm-arc:v0.30.0-b70-p45b`, replacing the W14 incumbent (`radiance-test`,
-flash-next k3) as the rig's serving stack. Everything below is rig-proven
-(r42–r44); evidence links at the end.
+Migration addendum banked at P5 close-out (2026-10-30) per the banking
+directive; identities re-pointed at the certified release image. Target:
+serve **qwen3.8-27b-fp8** (dense hybrid-GDN, **MTP k3 recommended** —
+r46t real-world campaign; k5 dropped) on
+`vllm-arc:v0.30.0-b70-cert`, replacing the W14 incumbent
+(`radiance-test`, flash-next k3) as the rig's serving stack. Everything
+below is rig-proven (r42–r46t); evidence links at the end.
 
 ## 1. Identities of record
 
 | item | value |
 |---|---|
-| image | `vllm-arc:v0.30.0-b70-p45b` (id `bf11aa9e1434`) |
-| fork SHA baked | `p45b-00af061a` (IMAGE_MANIFEST `fork_sha=`) |
-| canonical serve script | rig `/root/build/r42/r43_serve_k5.sh` (MTP k5) |
-| A/B fallback script | rig `/root/build/r42/r42_serve.sh` (MTP k4) |
+| image | `vllm-arc:v0.30.0-b70-cert` (id `sha256:1a5fed5e…`; content-identical to validated p46 by tree-exactness) |
+| fork SHA baked | `rel-fb273adc` (IMAGE_MANIFEST `fork_sha=`; annotated tag `rel/v0.30.0-b70-cert` on main) |
+| validation image | `vllm-arc:v0.30.0-b70-p46` (the image the r46 soak + r46t campaign ran on) |
+| canonical serve script | rig `/root/build/r42/r43_serve_k5.sh` with `"num_speculative_tokens":5` → `3` (MTP k3 recommended, r46t; the depth is serve-time CLI only) |
+| A/B fallback script | rig `/root/build/r42/r42_serve.sh` (MTP k4 — documented alternative for near-deterministic workloads) |
 | golden reference | rig `/root/build/p25/golden_ref.json` (md5 `e02cbb07…`; covers k4 AND k5 — r42/r43 proved byte-identical) |
 | regression matrix | rig `/root/build/matrix_arc/leg-2026-10-29-r44-certified/` (12 cells) |
 | container name | `arc-test` |
@@ -98,4 +101,6 @@ to `results/`.
 - r43 k5 adoption (canonical posture): `results/2026-10-30-p4-r43-k5-adoption/`
 - r44 12-cell matrix (regression baseline): `results/2026-10-30-p4-r44-matrix-certified/`
 - r45 env/log audit + this addendum: `results/2026-10-30-p5-r45-env-log-audit/`
+- r46 8 h soak + mypy parity + 64k face (P5 gate of record): `results/2026-10-30-p5-r46-soak/`
+- r46t real-world campaign (k3 recommendation, k5 dropped, garbage suite): `results/2026-10-30-p5-r46t-temps/`
 - env reference: `docs/envs.md`
