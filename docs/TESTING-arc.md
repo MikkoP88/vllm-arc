@@ -31,8 +31,13 @@ ON, MTP speculative decoding `num_speculative_tokens: 5`, XPU graphs ON
 
 Every battery runs **first-traffic** on a fresh boot (engine restart,
 health 200 before any request) with timers/profilers OFF unless a suite
-says otherwise. Tools are md5-pinned in the evidence dirs; they are
-host-side python scripts using only the OpenAI-compatible HTTP API.
+says otherwise. **Sampling**: every in-house bench tool (suites 1–4, 6–8)
+sends `temperature: 0` (greedy) in the request body — required for the
+byte-identical integrity/golden faces and kept uniform across throughput
+suites; the `vllm bench serve` cells (suites 5 and the 64k face) run at
+server-default sampling (see the note in suite 5). Tools are md5-pinned
+in the evidence dirs; they are host-side python scripts using only the
+OpenAI-compatible HTTP API.
 
 ### 1. Boot + survival flip
 First request after boot ("survival flip"): engine must return HTTP 200
@@ -61,7 +66,8 @@ warmup interlock, connector init).
   chars/token — reproducible byte-for-byte from the script.
 - 64k face measured with the vllm `bench serve` random dataset
   (`--random-input-len 65536 --random-output-len 512 --num-prompt 1
-  --ignore-eos`), matrix-cell compatible.
+  --ignore-eos`), matrix-cell compatible (same default-sampling note
+  as suite 5).
 
 ### 4. Warm-hit (prefix cache re-hit after churn)
 `bench_prefix.py`: external churn sequence, then re-issue a previously
@@ -76,6 +82,13 @@ input lengths {1024, 16384, 32768, 131072} × concurrency {1, 4, 16}.
 Captures TTFT / TPOT / ITL / request throughput / output token
 throughput / speculative acceptance (rate, mean length, per-position)
 per cell. 12/12 cells must complete with zero errors.
+**Sampling note**: `vllm bench serve` in v0.30 does not set
+`--temperature` by default (`temperature=None` in the cell config; the
+tool warns it no longer forces greedy) — matrix and 64k cells run at
+the server/model default sampling. TTFT faces are
+sampling-insensitive; matrix acceptance % are therefore
+default-sampling values (the greedy acceptance figures come from the
+temp-0 suites 2/8).
 
 ### 6. Output integrity (0-drift) — integrity suite
 5 canonical prompts (fixed seeds 101/202/303/404/505 + 11/22/33

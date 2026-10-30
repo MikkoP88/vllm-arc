@@ -51,6 +51,12 @@ Raw cells: `results/2026-10-30-p4-r44-matrix-certified/cell-*.txt`.
 
 ## Speculative decoding detail (64k cell, r46)
 
+Acceptance figures split by sampling condition: the headline faces
+above (pos-1 0.8919, spec-gate counters) are **greedy (temperature 0)**;
+matrix-cell and 64k-cell acceptance below are **server-default
+sampling** (`vllm bench serve` 0.30 does not force greedy — see
+TESTING-arc.md suite 5). TTFT/t1 faces are sampling-insensitive.
+
 Acceptance 87.43%, mean length 5.37 tokens/step, 218 drafts / 1090
 draft tokens / 953 accepted. Per-position acceptance:
 96.79 / 96.79 / 96.79 / 96.33 / 50.46 (positions 0–4) — position 4 is
