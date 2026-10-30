@@ -1,0 +1,41 @@
+r46u evidence — POST-FIX serve leg (the operator's container, 2026-10-30)
+========================================================================
+
+Container: arc-test (Up), image vllm-arc:v0.30.0-b70-p46, hot-patched
+with the two fixed files (docker cp; md5 parity host==container:
+mamba_lmcache_glue.py 631473074ec3ac3a4e2ef5c3226f534e,
+mamba_hybrid_snap_glue.py fcfd5db732ca318f8b24ff5a2f82e06c).
+Serve: /root/serve_cert.sh (relaunched 19:06:19Z) — the certified CLI on
+the operator's model mount (/models/target = swift-qwen3.8-27b) WITH the
+full 22-var serve env chain (the operator's earlier interactive serve had
+NONE of it: no VLLM_XPU_ENABLE_XPU_GRAPH, no LMCACHE_* set, no CCL block).
+
+Boot:
+    HEALTH=200 after 180s (19:09:45Z)   [warm neo/triton/inductor caches]
+    (APIServer pid=1732) INFO: Started server process [1732]
+    (APIServer pid=1732) INFO: Application startup complete.
+    graph/capture lines present (15 XPU-graph/capture matches — env chain live)
+
+Fix proof in the serve log:
+    glue-unavailable count: 0            (was: every step, both workers)
+    (Worker_TP0 pid=2247) [p41c] mamba_hybrid snap glue installed (pid=2247)
+    (Worker_TP0 pid=2247) [p41c] wrap live (pid=2247 bs=832 gids=3)
+    (Worker_TP1 pid=2248) [p41c] mamba_hybrid snap glue installed (pid=2248)
+    (Worker_TP1 pid=2248) [p41c] wrap live (pid=2248 bs=832 gids=3)
+    [p41c] "wrap live ... bs=832 gids=3" = the wrap's first LIVE call print —
+    _glue() resolved inside the engine (not merely at install time).
+    arc-p41c warn/ERR lines: 0
+
+End-to-end generation (greedy, 96 max_tokens, prompt engineered to cross
+block boundaries — carry/snap path exercised):
+    GEN_OK len=446   (coherent reasoning-format text, <think> block)
+    post-generation glue-unavailable count: 0
+    p41c lines unchanged (install + wrap-live once per worker, no spam)
+
+Posture deltas vs the certified legs (recorded, not silently assumed):
+  * model checkpoint: swift-qwen3.8-27b (operator's mount) — NOT the
+    certified qwen3.8-27b-fp8 checkpoint; unvalidated posture the operator
+    chose; served under name qwen3.8-27b-fp8.
+  * the p46 image carries the pre-r46u wiring; the two fixed files were
+    hot-patched in (docker cp). The in-repo fix ships with the next image
+    build; rel/v0.30.0-b70-cert tag PREDATES this fix (see VERDICT).
