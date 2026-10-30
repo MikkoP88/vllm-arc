@@ -1,0 +1,6 @@
+image id: sha256:60d79fd1c81ed3539255c82ab006f91289499dfc529a86f67fdffe34e1188adc vllm-arc:v0.30.0-b70-cert3
+BUILD done: vllm-arc:v0.30.0-b70-cert3 (fork fdca6f51)
+built=2026-10-30T22:09:12Z
+tag rel/v0.30.0-b70-cert3 -> commit fdca6f512316af66f6d6876758f814ee5915688e (annotated tag object b1f33cd4)
+source: git archive rel/v0.30.0-b70-cert3 -> /root/build/arc-cert3.tar (rig)
+wheel_guard: stage 4/9 ran under set -euxo pipefail — md5s enforced vs /etc/vllm-arc/pins.md5 (build aborts on mismatch; manifest lists all four md5s)

@@ -10,7 +10,7 @@ complete control surface + naming map); test definitions in
 
 | Item | Value |
 |---|---|
-| Image | `vllm-arc:v0.30.0-b70-cert2` (certified release, tag `rel/v0.30.0-b70-cert2` = cert + the r46u glue-alias fix) / `v0.30.0-b70-p47` (r46v build-validation image, same engine tree) / `v0.30.0-b70-p46` (r46t campaign) / `v0.30.0-b70-cert` (**superseded — predates r46u, never build from it**) |
+| Image | `vllm-arc:v0.30.0-b70-cert3` (**certified release**, tag `rel/v0.30.0-b70-cert3` = cert2 engine + lmcache 0.5.6+arc1 [P6.2] + P6.3 serve hygiene; gates `results/2026-10-31-p6-r47c-p48-056gates/`) / `v0.30.0-b70-cert2` (**superseded by cert3** — 0.5.5-era lmcache line, still valid) / `v0.30.0-b70-p48` (r47c gate image, same engine tree as cert3) / `v0.30.0-b70-p47` (r46v build-validation) / `v0.30.0-b70-p46` (r46t campaign) / `v0.30.0-b70-cert` (**superseded — predates r46u, never build from it**) |
 | Manifest | `/etc/vllm-arc/IMAGE_MANIFEST` inside the image — fork SHA, wheel pins, dependency closure (`lmcache_closure=`), build host |
 | Base | upstream vllm-gaudi v0.30.0 + pinned wheels (vllm 0.30.0+xpu, triton 3.7.2+xpu, vllm_xpu_kernels 0.1.14.1+arc3, lmcache 0.5.6+arc1) |
 
@@ -40,7 +40,7 @@ docker run -d --name arc-test \
   -v /root/build/inductor_cache:/root/.inductor_cache \
   -e VLLM_ALLOW_LONG_MAX_MODEL_LEN=1 \
   -e VLLM_WORKER_MULTIPROC_METHOD=spawn \
-  --entrypoint /bin/bash vllm-arc:v0.30.0-b70-cert2 -c 'sleep infinity'
+  --entrypoint /bin/bash vllm-arc:v0.30.0-b70-cert3 -c 'sleep infinity'
 ```
 
 These are the validated boot bytes (rig `r46t_campaign.sh:54-63`,
@@ -154,6 +154,18 @@ curl -s -o /dev/null -w "%{http_code}\n" -m 5 http://127.0.0.1:8000/health
 copy-paste the block as-is. `--kv-transfer-config` loads the LMCache
 connector — the certified posture runs LMCache **ON** (semantics of
 every var: [`envs.md`](envs.md)).
+
+**Reading the `External prefix cache hit rate: 0.0%` log line (P6.1
+metric truth):** a steady 0.0 % does **not** mean the external cache is
+dead. Root cause (r47a, `results/2026-10-30-p6-r47a-ext-hitrate/`):
+the local prefix cache absorbs all repeats in steady state, so the
+scheduler books every hit locally and never consults the external
+store (`scheduler.py:936`), and the logged rate is a cumulative
+average over requests that mostly had nothing external to find
+(`loggers.py:219`). External retrieval itself is proven end-to-end —
+the eviction probe (local cache forced small, real evictions driven)
+retrieved 13/15 chunks from the external store (+6656/8021 tokens).
+Verification tool for any future doubt: the r47a evict-probe leg.
 
 **Chat template — optional, ships in-repo**
 (`assets/chat_template_qwen38_high.jinja`, md5 `eb69f1c4…` =

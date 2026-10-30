@@ -1,28 +1,28 @@
 # MIGRATION — W14 incumbent → vllm-arc certified stack (dual Arc Pro B70, TP2)
 
 Migration addendum banked at P5 close-out (2026-10-30) per the banking
-directive; identities re-pointed at the certified release image. Target:
-serve **qwen3.8-27b-fp8** (dense hybrid-GDN, **MTP k3 recommended** —
-r46t real-world campaign; k5 dropped) on
-`vllm-arc:v0.30.0-b70-cert`, replacing the W14 incumbent
+directive; identities re-pointed at the certified release image at P6
+close-out (2026-10-31, cert3). Target: serve **qwen3.8-27b-fp8** (dense
+hybrid-GDN, **MTP k3 recommended** — r46t real-world campaign; k5
+dropped) on `vllm-arc:v0.30.0-b70-cert3`, replacing the W14 incumbent
 (`radiance-test`, flash-next k3) as the rig's serving stack. Everything
-below is rig-proven (r42–r46t); evidence links at the end.
+below is rig-proven (r42–r47c); evidence links at the end.
 
 ## 1. Identities of record
 
 | item | value |
 |---|---|
-| image | `vllm-arc:v0.30.0-b70-cert` (id `sha256:1a5fed5e…`; content-identical to validated p46 by tree-exactness) |
-| fork SHA baked | `rel-fb273adc` (IMAGE_MANIFEST `fork_sha=`; annotated tag `rel/v0.30.0-b70-cert` on main) |
-| validation image | `vllm-arc:v0.30.0-b70-p46` (the image the r46 soak + r46t campaign ran on) |
-| canonical serve script | rig `/root/build/r42/r43_serve_k5.sh` with `"num_speculative_tokens":5` → `3` (MTP k3 recommended, r46t; the depth is serve-time CLI only) |
-| A/B fallback script | rig `/root/build/r42/r42_serve.sh` (MTP k4 — documented alternative for near-deterministic workloads) |
+| image | `vllm-arc:v0.30.0-b70-cert3` (id `sha256:60d79fd1c81e…`; tag-built from `rel/v0.30.0-b70-cert3` — r47e) |
+| fork SHA baked | `fdca6f51` (IMAGE_MANIFEST `fork_sha=` == the annotated tag's commit; annotated tag `rel/v0.30.0-b70-cert3` on main) |
+| validation image | `vllm-arc:v0.30.0-b70-p48` (the r47c gate image — same `fork_sha` as cert3: 28/28 verify, certified 25-var boot, zero fork-added WARN/ERROR, perf ±5 % vs cert2 same-posture) |
+| canonical serve script | rig `/root/build/serve_arc_b70.sh` (the uniform boot interface; carries the **25-var chain** incl. `LMCACHE_TRACK_USAGE=false` — P6.3; run with `ARC_IMAGE=vllm-arc:v0.30.0-b70-cert3 ARC_GRAPH=1 ARC_SPEC=3`) |
+| A/B fallback | same script with `ARC_SPEC=4` (MTP k4 — documented alternative for near-deterministic workloads) |
 | golden reference | rig `/root/build/p25/golden_ref.json` (md5 `e02cbb07…`; covers k4 AND k5 — r42/r43 proved byte-identical) |
 | regression matrix | rig `/root/build/matrix_arc/leg-2026-10-29-r44-certified/` (12 cells) |
 | container name | `arc-test` |
 
 The image is **self-contained**: no cap `PYTHONPATH` overlay, no runtime pip
-installs (lmcache 0.5.5+arc1 closure vendored; in-build import gate +
+installs (lmcache 0.5.6+arc1 closure vendored; in-build import gate +
 `lmcache_closure=` manifest line — r42 Fix A). Wheel-module patches load via
 the in-image `_WHEEL_HOOKS` registry (r45 wiring + `_load_wheel_patch`
 standalone loader — r42 Fix B).
@@ -33,28 +33,23 @@ standalone loader — r42 Fix B).
 # on rig 10.20.3.65 (every ssh: export SSH_ASKPASS=/tmp/askpass.sh
 #                        SSH_ASKPASS_REQUIRE=force DISPLAY=:0)
 docker stop radiance-test                      # frees port 8000 + both GPUs
-docker rm -f arc-test 2>/dev/null
-docker run -d --name arc-test --privileged --network host --ipc host \
-  --shm-size 64g \
-  -v /models/qwen3.8-27b-fp8:/models/target \
-  -v /root/build/v127_stage/chat_template_qwen38_high.jinja:/root/chat_template_qwen38_high.jinja \
-  -v /root/build/neo_cache:/root/.neo_cache \
-  -v /root/build/triton_cache:/root/.triton_cache \
-  -v /root/build/inductor_cache:/root/.inductor_cache \
-  -e VLLM_ALLOW_LONG_MAX_MODEL_LEN=1 \
-  -e VLLM_WORKER_MULTIPROC_METHOD=spawn \
-  --entrypoint bash vllm-arc:v0.30.0-b70-cert -c "sleep infinity"
-docker cp /root/build/r42/r43_serve_k5.sh arc-test:/root/
-docker exec arc-test sed -i 's/"num_speculative_tokens":5/"num_speculative_tokens":3/' /root/r43_serve_k5.sh   # k3 (r46t recommendation)
-docker exec -d arc-test bash /root/r43_serve_k5.sh   # logs -> /root/serve_full.log
+ARC_IMAGE=vllm-arc:v0.30.0-b70-cert3 ARC_NAME=arc-test ARC_GRAPH=1 ARC_SPEC=3 \
+  bash /root/build/serve_arc_b70.sh            # boot + serve as one unit
+# logs land in the container at /root/serve_full.log (host: docker exec)
 # poll health (first-traffic law: batteries run on FIRST traffic after boot)
 curl -s -o /dev/null -w "%{http_code}" -m 5 http://127.0.0.1:8000/health
 ```
 
-Boot takes ~10 min to health 200. Verify in `/root/serve_full.log`:
-7/7 wheel hooks install (zero `FAILED`), `fp8 reroute ACTIVE`,
-`kvfmt TWO_HS`, posture lines (mode=none, FULL_DECODE_ONLY [1..320], MTP k3,
-align). `--privileged` is REQUIRED (pidfd IPC law — r30 defect #1).
+The script boots the certified container (`--privileged` REQUIRED —
+pidfd IPC law, r30 defect #1; `--network host --ipc host`, the model
+mount, cache mounts, and the 2 boot-layer `-e` vars) and execs the
+serve line with the full 25-var chain — env + CLI as one unit by
+construction. Boot takes ~5–10 min to health 200. Verify in
+`/root/serve_full.log`: wheel hooks install (zero `FAILED`, silent
+defer is DEBUG), `fp8 reroute ACTIVE`, `kvfmt TWO_HS`, the p40c re-pin
+line both workers (`alloc/free_pinned_ptr re-pinned to the pageable
+torch baseline`), `glue-unavailable 0`, `[p41c] wrap live`, posture
+lines (mode=none, FULL_DECODE_ONLY [1..320], MTP k3, align).
 
 ## 3. Post-boot verification (any migration or image bump)
 
@@ -65,7 +60,10 @@ align). `--privileged` is REQUIRED (pidfd IPC law — r30 defect #1).
 3. **golden** (`p25/p32_golden.py`): 5/5 shas byte-identical to
    `golden_ref.json` (0-drift law).
 4. **run7n ×2**: solo ≥ 79.74, agg#2 ≥ 274.41 (bars; certified class
-   86.4–87.1 / 303.5–305.4 at k5).
+   86.4–87.1 / 303.5–305.4 at k5) — **comparator law (r47c)**: these
+   bars are WARM-FLEET numbers; a fresh-boot first battery on the SAME
+   certified stack reads ~206/64.5. Gate a fresh boot against a
+   same-posture A/B, not the campaign table.
 5. **matrix 12 cells** (`r44_matrix.sh`): no face −5% vs
    `leg-2026-10-29-r44-certified` (regression block).
 6. **integrity/determinism** (`r42/r42_integrity.py`): 5/5 + 3/3.
@@ -104,4 +102,7 @@ to `results/`.
 - r45 env/log audit + this addendum: `results/2026-10-30-p5-r45-env-log-audit/`
 - r46 8 h soak + mypy parity + 64k face (P5 gate of record): `results/2026-10-30-p5-r46-soak/`
 - r46t real-world campaign (k3 recommendation, k5 dropped, garbage suite): `results/2026-10-30-p5-r46t-temps/`
+- r47a P6.1 external-hit-rate root cause (the 0.0 % metric is a steady-state artifact, not a broken cache): `results/2026-10-30-p6-r47a-ext-hitrate/`
+- r47c P6.2+P6.3 gates on p48 (lmcache 0.5.6+arc1, zero fork-added WARN/ERROR, same-posture A/B = the comparator law): `results/2026-10-31-p6-r47c-p48-056gates/`
+- r47e cert3 tag-built image (manifest A/B + image-native 28/28): `results/2026-10-31-p6-r47e-cert3/`
 - env reference: `docs/envs.md`
