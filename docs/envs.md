@@ -1,7 +1,7 @@
 # vllm-arc environment reference (generated)
 
 Generated at P5 hardening (r45, 2026-10-30) from `vllm_gaudi/envs.py` arc-lane
-markers + the certified serve line (`r43_serve_k5.sh`, certified posture on
+markers + the certified serve line (`r43_serve_k5.sh`, canonical k5 posture on
 image `vllm-arc:v0.30.0-b70-p45b`). Every entry cites its provenance
 (no-unevidenced law, plan Appendix H #6). Audit of record:
 `results/2026-10-30-p5-r45-env-log-audit/`.

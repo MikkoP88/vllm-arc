@@ -23,8 +23,8 @@ TP2, block size 64, FP8 weights with the block-quant W8A16 route (p44),
 FP8 e4m3 KV cache, float16 Mamba SSM cache, `--mamba-cache-mode=align`
 (posture-pinned; see laws below), prefix caching ON, hybrid KV manager
 ON, MTP speculative decoding `num_speculative_tokens: 3`
-(**recommended depth, r46t**; 4 is the documented alternative), XPU
-graphs ON
+(**recommended depth, r46t**; certified history also measured at 4 and
+5 — k5 dropped from the recommendation), XPU graphs ON
 (`VLLM_XPU_ENABLE_XPU_GRAPH=1`). The exact serve line is
 `tools/serve_arc_b70.sh` (posture knobs) and the certified env chain in
 [`CONFIGURATION-arc.md`](CONFIGURATION-arc.md).
@@ -106,8 +106,7 @@ p43).
 ### 7. Golden logit capture — `golden_run` (5 cells)
 5 fixed cells, logits captured and compared **byte-identical** (md5) to
 the banked golden reference — guards numerics across posture changes
-(e.g. the r43 draft-depth adoption left all 5 golden cells
-byte-identical).
+(e.g. k4→k5 adoption left all 5 golden cells byte-identical).
 
 ### 8. Speculative-decoding gate — `arc_spec_gate.py`
 Counters from `/metrics` (`vllm:spec_decode_*`): drafts, draft tokens,
@@ -144,9 +143,9 @@ repetition_penalty 1); **B** alt set (temperature 0.7 / top_p 0.80 /
 top_k 20 / min_p 0 / presence_penalty 1.5 / repetition_penalty 1.0),
 non-thinking. Acceptance deltas from pre/post `vllm:spec_decode`
 counter snapshots around every battery. Depths k3/k4 measured in both
-regimes (a deeper depth surveyed in regime A was dropped from
-recommendation and testing per owner directive — the rig watcher cut
-its alt-leg boot before it started). Output: the recommendation table in
+regimes (k5 measured in A, then dropped from recommendation and
+testing per owner directive — its alt-leg boot was cut by the rig
+watcher before starting). Output: the recommendation table in
 [`PERFORMANCE-arc.md`](PERFORMANCE-arc.md) +
 [`CONFIGURATION-arc.md`](CONFIGURATION-arc.md). Pass = every battery
 completes 4/4 streams × all cells, zero call failures, health 200
@@ -194,7 +193,7 @@ dirs to date; the naming convention is documented in
 | P1 platform + first serve | GREEN | `results/2026-10-27-p1-platform/` |
 | P2 spec/graph defects fixed (survival, capture, speculator) | GREEN | `results/2026-10-28-p2-*` (10 legs) |
 | P3 cache lane (connector, hybrid state, elide/memo, tail-split) | GREEN | `results/2026-10-29-p3-r30..r36/` |
-| P4 certification battery + certified image + draft-depth adoption + 12-cell matrix | GREEN | `results/2026-10-30-p4-r42/r43/r44/` |
+| P4 certification battery + certified image + k5 adoption + 12-cell matrix | GREEN | `results/2026-10-30-p4-r42/r43/r44/` |
 | P5 env/doc/lint/Dockerfile audits + mypy delta=0 | GREEN | `results/2026-10-30-p5-r45-env-log-audit/`, rig leg `arc-p5-r46` |
 | 64k TTFT face | GREEN (40,926 ms, concurrent-load conservative) | rig leg `arc-p5-r46/ttft64k_t1.txt` |
 | r46 8 h soak | GREEN — 46 cycles, zero errors, integrity 46/46, golden 5/5 zero-drift, pos-1 0.8919 steady, health 200 end-state | `results/2026-10-30-p5-r46-soak/` |
