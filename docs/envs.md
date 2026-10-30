@@ -104,26 +104,32 @@ closed at P2 — core 0.30 auto-enables async scheduling),
 `VLLM_ARC_YIELD_TOKENS` (p51 never built), `VLLM_ARC_COMPACT_GDN` (dead
 twin of the live `VLLM_COMPACT_GDN` above).
 
-## Naming map (r45g naming audit)
+## Naming map (r45g naming audit; completed r45h/r45i full sweep)
 
-In-line with best practice: `VLLM_ARC_*` engine-env namespace (15 vars),
-`NN-category/pNN-slug` patch dirs, `feat/arc-pNN-<slug>` branches,
-`vllm-arc:v0.30.0-b70[-pNN]` image tags, `ARC_*` **host-side script vars**
-(`tools/serve_arc_b70.sh` — a different layer from engine envs), kebab-case
-docs. Sanctioned deviations (kept for evidence-chain continuity; rename is
+In-line with best practice: `VLLM_ARC_*` engine-env namespace (**11 live
+vars** + 3 dropped at r45d, below), `NN-category/pNN-slug` patch dirs,
+`feat/arc-pNN-<slug>` branches, `vllm-arc:v0.30.0-b70[-pNN]` image tags,
+`ARC_*` **host-side script vars** (10, `tools/serve_arc_b70.sh` — a
+different layer from engine envs), kebab-case docs, and the evidence-dir
+convention `results/YYYY-MM-DD-<phase/item>-r<leg>-<slug>/` (internal
+only, never upstreamed). **`pNN` is TWO sequences** — patch dirs/branches
+carry PLAN-ITEM numbers (§5: p01..p61), image tags carry BUILD-sequence
+numbers (p44, p45b, p46, …); they coincide at p44/p45 and diverge after
+(image p46 exists with no item p46; item p60 branch has no image p60).
+Sanctioned deviations (kept for evidence-chain continuity; rename is
 an upstream-PR-lane item per §11.7 rule 8 — "format chosen to upstream
 without rewriting"):
 
 | name | deviation | why kept |
 |---|---|---|
-| `ARC_TRACE_FLIP` | no `VLLM_ARC_` prefix | §7-cited p12b interlock name; certified line + every evidence leg since r18 uses it |
+| `ARC_TRACE_FLIP` | engine env, no `VLLM_ARC_` prefix | §7-cited p12b interlock name; certified line + every evidence leg since r18 uses it |
+| `ARC_SNAP_PROBE` | engine diagnostic env, `ARC_` host-layer prefix | r31/r34/r35 leg telemetry (~12 read sites: `sched_tail_split.py:93`, `mamba_lmcache_glue.py`, `mamba_hybrid_snap_glue.py`, lmcint adapter); silent-off default, deliberately NOT in the envs.py registry (envs.py:156 header law: diagnostics documented here only); rename candidate `VLLM_ARC_SNAP_PROBE` at the upstream lane |
 | `VLLM_MAMBA_FP16_SEED_REPAIR` | `VLLM_` without `ARC` | upstream-style name — an asset for the upstream PR lane |
-| `LMC_BOUND*` (4) | donor v136 lineage names | ported verbatim for provenance (p41 dual-donor convergence evidence) |
-| `VLLM_ARC_R35_TAIL_SPLIT` | embeds leg number `r35` | named for the leg that banked tail-split **v4** (ab81fc11) after r34 A/B-falsified v3 (c4468339); `R35` ties the knob to its falsification evidence — same evidence-chain class as `ARC_TRACE_FLIP`; rename candidate `VLLM_ARC_TAIL_SPLIT` at the upstream lane |
+| `LMC_BOUND*` (4) | donor v136 lineage names; intra-family abbreviation split (`LMC_BOUNDARY_KEEP`/`_CAP` vs `LMC_BOUND_STATS`/`_MD5`) | ported verbatim for provenance (p41 dual-donor convergence evidence) — the BOUND/BOUNDARY split is the donor's own; unify only at the upstream lane |
+| `VLLM_ARC_XG_COMPACT` | donor-lineage name (C/D `V1227_XGCOMPACT` port) worn in the engine namespace, but consumed HOST-side only (`serve_arc_b70.sh:23`) | p06 provenance + certified-line spelling; upstream-lane candidate: fold into the host layer (`ARC_XG_COMPACT`) or spell out (`VLLM_ARC_XGRAMMAR_COMPACT`) |
+| `VLLM_ARC_R35_TAIL_SPLIT` | embeds leg number `r35` | named for the leg that banked tail-split **v4** (ab81fc11) after r34 A/B-falsified v3 (c4468339); `R35` ties the knob to its falsification evidence — same evidence-chain class as `ARC_TRACE_FLIP`; internal marker attrs `_arc_r35_tail_split`/`_arc_r35_probe` (`sched_tail_split.py:65/94`) share the stem (internal-only, never upstreamed); rename candidate `VLLM_ARC_TAIL_SPLIT` at the upstream lane |
 | `VLLM_ARC_LOOKUP_ELIDE` | name reads bool, value is int tokens | documented above; rename candidate `..._ELIDE_TOKENS` at the upstream lane |
-
-Regenerate: this file is a snapshot; on any envs.py or serve-line change,
-update alongside the leg's VERDICT (the audit leg re-runs the §A–E sweeps).
+| module prefix `lmc_` vs `lmcache_` | our own patch modules use both (`lmcache_hma_connector.py` vs `lmc_xpu_pinned_env.py`, `lmc_twohs_transfer.py`, `lmc_kvfmt_detector.py`) | historical per-patch coinage; `patches/lmcint/` dir is the donor kit name (kept for provenance); unify candidate `lmcache_*` at the upstream lane |
 
 Regenerate: this file is a snapshot; on any envs.py or serve-line change,
 update alongside the leg's VERDICT (the audit leg re-runs the §A–E sweeps).
