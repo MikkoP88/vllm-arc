@@ -70,8 +70,7 @@ def _install(mod=None) -> None:
         XPUFp8BlockScaledMMKernel = mod.XPUFp8BlockScaledMMKernel
     else:
         from vllm.model_executor.kernels.linear.scaled_mm.xpu import (
-            XPUFp8BlockScaledMMKernel,
-        )
+            XPUFp8BlockScaledMMKernel, )
 
     if getattr(XPUFp8BlockScaledMMKernel, "_arc_w8a16_block_patched", False):
         return  # idempotent: platform hooks run at config time AND per-worker
@@ -88,20 +87,14 @@ def _install(mod=None) -> None:
         # Reroute only the by-far-dominant case: dense block-fp8 linear with
         # an unquantized (fp16/bf16) activation — apply_input_quant=False
         # passthrough. Everything else keeps the stock W8A8 path.
-        if A.dtype in (torch.float16, torch.bfloat16) and not getattr(
-            self, "is_bmm", False
-        ):
-            return torch.ops._xpu_C.fp8_gemm_w8a16(
-                A, B.t(), Bs.t(), torch.Tensor()
-            )
+        if A.dtype in (torch.float16, torch.bfloat16) and not getattr(self, "is_bmm", False):
+            return torch.ops._xpu_C.fp8_gemm_w8a16(A, B.t(), Bs.t(), torch.Tensor())
         return stock_apply(self, A, B, As, Bs)
 
     XPUFp8BlockScaledMMKernel.apply_input_quant = False
     XPUFp8BlockScaledMMKernel.apply_block_scaled_mm = apply_block_scaled_mm
     XPUFp8BlockScaledMMKernel._arc_w8a16_block_patched = True
-    logger.info(
-        "ArcXpuPlatform: fp8 block linear reroute ACTIVE — "
-        "XPUFp8BlockScaledMMKernel.apply_input_quant=False, "
-        "apply_block_scaled_mm -> _xpu_C.fp8_gemm_w8a16 (stock fallback kept; "
-        "r40: 3-8x/GEMM decode Ms, relerr 4-5e-4)"
-    )
+    logger.info("ArcXpuPlatform: fp8 block linear reroute ACTIVE — "
+                "XPUFp8BlockScaledMMKernel.apply_input_quant=False, "
+                "apply_block_scaled_mm -> _xpu_C.fp8_gemm_w8a16 (stock fallback kept; "
+                "r40: 3-8x/GEMM decode Ms, relerr 4-5e-4)")

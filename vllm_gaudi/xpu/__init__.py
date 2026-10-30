@@ -51,9 +51,8 @@ def register():
         try:
             from vllm.logger import init_logger
 
-            init_logger("vllm.platforms.arc").warning(
-                "ArcXpuPlatform: wheel-hook install failed at register(): "
-                "%r", e)
+            init_logger("vllm.platforms.arc").warning("ArcXpuPlatform: wheel-hook install failed at register(): "
+                                                      "%r", e)
         except Exception:  # noqa: BLE001
             pass
 

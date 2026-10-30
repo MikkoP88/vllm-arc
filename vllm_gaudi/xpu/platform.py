@@ -51,15 +51,15 @@ _BMG_DEVICE_ID_MAX = 0xE2FF
 # from a deferred patch, p2r2 lesson); an install failure must never break
 # platform resolution.
 _XPU_PATCH_MODULES = (
-    "graph_safe_output",        # defect-b: graph-safe worker output copies
+    "graph_safe_output",  # defect-b: graph-safe worker output copies
     "speculator_full_capture",  # defect-a: PIECEWISE-family -> FULL coercion
-    "first_request_warmup",     # defect-b fix (lane W): warm the first eager
-                                # large TP AR before serving traffic (r16/r17)
-    "gdn_metadata_fastpath",    # p10: steady spec-decode GDN metadata builds
-                                # without blocking H2D (r19-r22a; <=5ms law)
-    "fp8_block_w8a16",          # p44: block-fp8 linear -> fp8_gemm_w8a16 with
-                                # fp16 activations, input quant skipped (r40:
-                                # 3-8x/GEMM decode Ms, fixed-cost W8A8 path)
+    "first_request_warmup",  # defect-b fix (lane W): warm the first eager
+    # large TP AR before serving traffic (r16/r17)
+    "gdn_metadata_fastpath",  # p10: steady spec-decode GDN metadata builds
+    # without blocking H2D (r19-r22a; <=5ms law)
+    "fp8_block_w8a16",  # p44: block-fp8 linear -> fp8_gemm_w8a16 with
+    # fp16 activations, input quant skipped (r40:
+    # 3-8x/GEMM decode Ms, fixed-cost W8A8 path)
 )
 
 
@@ -71,8 +71,7 @@ def _install_xpu_patches(site: str) -> None:
             module = import_module(f"vllm_gaudi.xpu.patches.{name}")
             module._install()
         except Exception as e:  # noqa: BLE001 — visibility law: leg logs must show it
-            logger.warning(
-                "ArcXpuPlatform: %s install failed at %s: %r", name, site, e)
+            logger.warning("ArcXpuPlatform: %s install failed at %s: %r", name, site, e)
 
 
 # Wheel-module exec hooks (P3 cache glues + p44 lane): patches that must
@@ -87,13 +86,13 @@ def _install_xpu_patches(site: str) -> None:
 # itself after the last target has fired.
 _WHEEL_HOOKS = (
     # (target module, patches submodule under vllm_gaudi.xpu.patches)
-    ("vllm.v1.worker.mamba_utils", "mamba_lmcache_glue"),          # p41
+    ("vllm.v1.worker.mamba_utils", "mamba_lmcache_glue"),  # p41
     ("vllm.v1.worker.gpu.model_states.mamba_hybrid", "mamba_hybrid_snap_glue"),  # p41c
     ("vllm.distributed.kv_transfer.kv_connector.v1.lmcache_connector", "lmcache_hma_connector"),  # p41b
     ("lmcache.v1.platform.xpu.device_ops", "lmc_xpu_pinned_env"),  # p40c
     ("lmcache.v1.gpu_connector.kv_format.detectors.vllm", "lmcint.lmc_kvfmt_detector"),  # r43
     ("lmcache.v1.platform.torch_ops", "lmcint.lmc_twohs_transfer"),  # r43
-    ("vllm.v1.core.sched.scheduler", "sched_tail_split"),          # r35
+    ("vllm.v1.core.sched.scheduler", "sched_tail_split"),  # r35
 )
 # gdn_metadata_fastpath and fp8_block_w8a16 are NOT here: they self-install
 # in-place (_XPU_PATCH_MODULES) — no exec-wrap needed.
@@ -125,8 +124,7 @@ def _load_wheel_patch(patch_name: str):
         return sys.modules[qualname]
     import vllm_gaudi.xpu.patches as _patches
 
-    path = os.path.join(os.path.dirname(_patches.__file__),
-                        *patch_name.split(".")) + ".py"
+    path = os.path.join(os.path.dirname(_patches.__file__), *patch_name.split(".")) + ".py"
     spec = spec_from_file_location(qualname, path)
     module = module_from_spec(spec)
     sys.modules[qualname] = module
@@ -166,13 +164,9 @@ class _WheelHookFinder:
             try:
                 patch = _load_wheel_patch(patch_name)
                 patch._install(module)
-                logger.info(
-                    "ArcXpuPlatform: wheel hook %s <- patches.%s OK",
-                    fullname.rsplit(".", 1)[-1], patch_name)
+                logger.info("ArcXpuPlatform: wheel hook %s <- patches.%s OK", fullname.rsplit(".", 1)[-1], patch_name)
             except Exception as e:  # noqa: BLE001 — visibility law
-                logger.warning(
-                    "ArcXpuPlatform: wheel hook %s <- patches.%s FAILED: %r",
-                    fullname, patch_name, e)
+                logger.warning("ArcXpuPlatform: wheel hook %s <- patches.%s FAILED: %r", fullname, patch_name, e)
 
         spec.loader.exec_module = exec_module
         return spec
@@ -293,11 +287,10 @@ class ArcXpuPlatform(XPUPlatform):
         if 0.0 < VLLM_ARC_GMU_RELAX <= 1.0 and cache_config.gpu_memory_utilization == 0.92:
             logger.info(
                 "ArcXpuPlatform: relaxing gpu_memory_utilization %.2f -> %.2f "
-                "(VLLM_ARC_GMU_RELAX; D-champion certified B70 posture).",
-                cache_config.gpu_memory_utilization, VLLM_ARC_GMU_RELAX)
+                "(VLLM_ARC_GMU_RELAX; D-champion certified B70 posture).", cache_config.gpu_memory_utilization,
+                VLLM_ARC_GMU_RELAX)
             cache_config.gpu_memory_utilization = VLLM_ARC_GMU_RELAX
-        logger.info("ArcXpuPlatform: Intel Arc Xe2 posture active (%s).",
-                         torch.xpu.get_device_name(0))
+        logger.info("ArcXpuPlatform: Intel Arc Xe2 posture active (%s).", torch.xpu.get_device_name(0))
         # Graph posture visibility (one line per phase, upstream lmcache
         # logging style): core honors VLLM_XPU_ENABLE_XPU_GRAPH above; log
         # the effective mode so every rig leg's serve log states its graph
@@ -309,10 +302,8 @@ class ArcXpuPlatform(XPUPlatform):
         logger.info(
             "ArcXpuPlatform: graph posture cudagraph_mode=%s "
             "capture_sizes=%s (VLLM_XPU_ENABLE_XPU_GRAPH=%s).",
-            getattr(compilation_config.cudagraph_mode, "name",
-                    compilation_config.cudagraph_mode),
-            tuple(compilation_config.cudagraph_capture_sizes)
-            if compilation_config.cudagraph_capture_sizes else None,
+            getattr(compilation_config.cudagraph_mode, "name", compilation_config.cudagraph_mode),
+            tuple(compilation_config.cudagraph_capture_sizes) if compilation_config.cudagraph_capture_sizes else None,
             VLLM_XPU_ENABLE_XPU_GRAPH)
 
     @classmethod

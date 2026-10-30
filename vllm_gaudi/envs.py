@@ -128,8 +128,8 @@ environment_variables: dict[str, Callable[[], Any]] = {
     # an explicit "1"/"true" or "0"/"false" pins it. Port of D champion's
     # IEXP_ASYNC=1 (0.26 stack) — revalidated on 0.30 by p50.
     "VLLM_ARC_ASYNC":
-    lambda: None if os.environ.get("VLLM_ARC_ASYNC") is None else
-    os.environ.get("VLLM_ARC_ASYNC").strip().lower() in ("1", "true"),
+    lambda: None
+    if os.environ.get("VLLM_ARC_ASYNC") is None else os.environ.get("VLLM_ARC_ASYNC").strip().lower() in ("1", "true"),
 
     # Scheduler yield threshold in scheduled tokens: once a step schedules
     # this many tokens, yield the engine loop to output processing (port of

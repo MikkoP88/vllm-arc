@@ -97,7 +97,7 @@ def _lmc_snap_boundary(
         flat = torch.empty(total, dtype=torch.uint8, device=pages[0].device)
         off = 0
         for pg in pages:
-            flat[off : off + pg.numel()].copy_(pg)
+            flat[off:off + pg.numel()].copy_(pg)
             off += pg.numel()
         cpu = flat.cpu()  # one D2H, synced after the materializing copies
         # llm-scaler telemetry: non-finite scan of the just-frozen boundary
@@ -112,7 +112,7 @@ def _lmc_snap_boundary(
                 for off2, nb2, dt2 in pinfo:
                     if dt2 == torch.uint8:
                         continue
-                    f2 = cpu[off2 : off2 + nb2].view(dt2).float()
+                    f2 = cpu[off2:off2 + nb2].view(dt2).float()
                     nf += int((~torch.isfinite(f2)).sum().item())
                     if f2.numel():
                         am = max(am, float(f2.abs().max().item()))
@@ -121,13 +121,22 @@ def _lmc_snap_boundary(
                     hh = _hl.md5(cpu.numpy().tobytes()).hexdigest()[:8]
                 logger.debug(
                     "LMCBOUND req=%s B=%d dest=%d %s/n%d/a%.2e/c%d",
-                    req_id, aligned_tokens, dest_block_idx, hh, nf, am, total,
+                    req_id,
+                    aligned_tokens,
+                    dest_block_idx,
+                    hh,
+                    nf,
+                    am,
+                    total,
                 )
                 if nf > 0:
                     logger.warning(
                         "LMCBOUND NONFINITE req=%s B=%d nf=%d am=%.2e "
                         "(v138c sanitize-carry REVAL trigger)",
-                        req_id, aligned_tokens, nf, am,
+                        req_id,
+                        aligned_tokens,
+                        nf,
+                        am,
                     )
             except Exception as e:  # noqa: BLE001
                 logger.warning("LMCBOUND ERR req=%s %s", req_id, repr(e)[:120])
@@ -155,9 +164,7 @@ def _lmc_snap_boundary(
                 break
             _LMC_BOUNDARY_REGISTRY.pop(oldest)
     except Exception as e:  # noqa: BLE001
-        logger.warning(
-            "LMC boundary snapshot failed req=%s: %s", req_id, repr(e)[:120]
-        )
+        logger.warning("LMC boundary snapshot failed req=%s: %s", req_id, repr(e)[:120])
 
 
 def _lmc_seed_write(
@@ -180,7 +187,10 @@ def _lmc_seed_write(
     if want_idx != prev_state_idx or prev_state_idx < 0:
         logger.warning(
             "LMC seed mismatch req=%s B=%d want_idx=%d prev=%d; dropping",
-            req_id, seed_tokens, want_idx, prev_state_idx,
+            req_id,
+            seed_tokens,
+            want_idx,
+            prev_state_idx,
         )
         return
     off = 0
@@ -190,16 +200,16 @@ def _lmc_seed_write(
         for layer_name in kv_cache_config.kv_cache_groups[gid].layer_names:
             for st in forward_context[layer_name].kv_cache:
                 pg = st[bid].reshape(-1).view(torch.uint8).reshape(-1)
-                pg.copy_(
-                    seed_bytes[off : off + pg.numel()].to(
-                        pg.device, non_blocking=False
-                    )
-                )
+                pg.copy_(seed_bytes[off:off + pg.numel()].to(pg.device, non_blocking=False))
                 off += pg.numel()
                 written += 1
     logger.debug(
         "LMC seed write req=%s B=%d page_idx=%d pages=%d bytes=%d",
-        req_id, seed_tokens, prev_state_idx, written, off,
+        req_id,
+        seed_tokens,
+        prev_state_idx,
+        written,
+        off,
     )
 
 
@@ -255,10 +265,7 @@ def _arc_p41_preprocess_mamba(
                 kv_cache_config,
                 forward_context,
                 mamba_state_copy_funcs,
-                [
-                    input_batch.block_table[gid].get_device_tensor(num_reqs)
-                    for gid in fused.ctx.mamba_group_ids
-                ],
+                [input_batch.block_table[gid].get_device_tensor(num_reqs) for gid in fused.ctx.mamba_group_ids],
             )
 
         fused.src_col.np[:num_reqs] = -1
@@ -288,10 +295,8 @@ def _arc_p41_preprocess_mamba(
             )
 
         num_scheduled_tokens = scheduler_output.num_scheduled_tokens[req_id]
-        num_blocks = (
-            _mu.cdiv(req_state.num_computed_tokens + num_scheduled_tokens, block_size)
-            + num_speculative_blocks
-        )
+        num_blocks = (_mu.cdiv(req_state.num_computed_tokens + num_scheduled_tokens, block_size) +
+                      num_speculative_blocks)
         curr_state_idx = num_blocks - 1 - num_speculative_blocks
         mamba_state_idx[req_id] = curr_state_idx
         if fused is not None:
@@ -303,25 +308,19 @@ def _arc_p41_preprocess_mamba(
             if _FP16_SEED_REPAIR:
                 try:
                     for gid in mamba_group_ids:
-                        _lname = kv_cache_config.kv_cache_groups[
-                            gid
-                        ].layer_names[0]
+                        _lname = kv_cache_config.kv_cache_groups[gid].layer_names[0]
                         _bids = req_state.block_ids[gid]
                         for _st in forward_context[_lname].kv_cache:
                             if _st.dtype == torch.float16:
                                 _pg = _st[_bids[prev_state_idx]]
-                                _pg.copy_(
-                                    torch.nan_to_num(
-                                        _pg,
-                                        nan=0.0,
-                                        posinf=65504.0,
-                                        neginf=-65504.0,
-                                    )
-                                )
+                                _pg.copy_(torch.nan_to_num(
+                                    _pg,
+                                    nan=0.0,
+                                    posinf=65504.0,
+                                    neginf=-65504.0,
+                                ))
                 except Exception as e:  # noqa: BLE001
-                    logger.warning(
-                        "v135 fp16 seed repair failed: %s", repr(e)[:120]
-                    )
+                    logger.warning("v135 fp16 seed repair failed: %s", repr(e)[:120])
             accept_token_bias = int(input_batch.num_accepted_tokens_cpu[i]) - 1
             if fused is not None:
                 assert accept_token_bias >= 0
@@ -350,9 +349,7 @@ def _arc_p41_preprocess_mamba(
             _lmc_b = (req_state.num_computed_tokens // block_size) * block_size
             _lmc_b_idx = req_state.num_computed_tokens // block_size - 1
             if _lmc_b_idx >= 0 and _lmc_b > 0:
-                boundary_rows.append(
-                    (req_id, _lmc_b, _lmc_b_idx, req_state)
-                )
+                boundary_rows.append((req_id, _lmc_b, _lmc_b_idx, req_state))
                 if os.environ.get("ARC_SNAP_PROBE"):  # r31 diagnostic
                     print(
                         f"[r31probe carry req={req_id} ncc="
@@ -425,16 +422,17 @@ def _install(mod) -> None:
         # Which specdec-path mamba_utils entry points actually run under
         # MTP k4 + align (the preprocess_mamba carry branch is dead there)?
         for _fname in (
-            "preprocess_mamba_all_specdec",
-            "postprocess_mamba_align_gpu",
-            "stage_postprocess_inputs_to_gpu",
-            "postprocess_mamba_all",
+                "preprocess_mamba_all_specdec",
+                "postprocess_mamba_align_gpu",
+                "stage_postprocess_inputs_to_gpu",
+                "postprocess_mamba_all",
         ):
             _orig = getattr(mod, _fname, None)
             if _orig is None:
                 continue
 
             def _mk(_name, _fn):
+
                 def _w(*a, **k):
                     _r = _fn(*a, **k)
                     _c = globals().setdefault("_arc_p41_probe_calls", {})
@@ -450,5 +448,7 @@ def _install(mod) -> None:
     logger.info(
         "arc-p41 mamba LMCache glue installed (registry caps %d/%d, "
         "fp16_seed_repair=%s)",
-        _LMC_BOUNDARY_PER_REQ, _LMC_BOUNDARY_GLOBAL_CAP, _FP16_SEED_REPAIR,
+        _LMC_BOUNDARY_PER_REQ,
+        _LMC_BOUNDARY_GLOBAL_CAP,
+        _FP16_SEED_REPAIR,
     )

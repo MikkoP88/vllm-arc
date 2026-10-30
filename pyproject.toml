@@ -46,11 +46,26 @@ column_limit = 120
 ignore_patterns = [
     "build/**",
     "examples/**",
+    # vllm-arc (r45c): banked leg evidence is frozen bytes (never reformatted);
+    # lmcint kit files are byte-pinned C-donor content (md5 provenance, p41b)
+    "results/**",
+    "vllm_gaudi/xpu/patches/lmcint/__init__.py",
+    "vllm_gaudi/xpu/patches/lmcint/utils.py",
+    "vllm_gaudi/xpu/patches/lmcint/vllm_v1_adapter.py",
 ]
 
 [tool.ruff]
 # Allow lines to be as long as 120.
-extend-exclude = ["vllm_gaudi/extension/**"]  # NOTE(kzawora): re-enable this once extension refactor is ready
+# NOTE(kzawora): re-enable this once extension refactor is ready
+# vllm-arc (r45c): frozen leg evidence + byte-pinned C-donor kit files (same
+# set as [tool.yapfignore]; donor bytes are never edited, md5 provenance p41b)
+extend-exclude = [
+    "vllm_gaudi/extension/**",
+    "results/**",
+    "vllm_gaudi/xpu/patches/lmcint/__init__.py",
+    "vllm_gaudi/xpu/patches/lmcint/utils.py",
+    "vllm_gaudi/xpu/patches/lmcint/vllm_v1_adapter.py",
+]
 line-length = 120
 
 [tool.ruff.lint]

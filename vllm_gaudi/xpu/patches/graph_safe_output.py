@@ -220,6 +220,7 @@ arc-p2-graph-20261028-*).
 
 from __future__ import annotations
 
+import contextlib
 import os
 
 import torch
@@ -291,8 +292,7 @@ def _capture_state() -> tuple[bool, Exception | None]:
     try:
         probe = getattr(torch.xpu, "is_current_stream_capturing", None)
         if probe is None:
-            return True, RuntimeError(
-                "torch.xpu.is_current_stream_capturing unavailable")
+            return True, RuntimeError("torch.xpu.is_current_stream_capturing unavailable")
         return bool(probe()), None
     except Exception as e:  # noqa: BLE001 — cannot prove not-capturing
         return True, e
@@ -352,8 +352,7 @@ def _replacement_for(dead) -> torch.xpu.Stream:
         _LIVE_REPLACEMENTS.pop(key, None)
         logger.warning(
             "ArcXpuPlatform: ARC_GRAPH_STORM cached replacement %s for dead "
-            "%s probes recording — evicted, creating fresh (ids: %s).",
-            live, dead, _stream_ids())
+            "%s probes recording — evicted, creating fresh (ids: %s).", live, dead, _stream_ids())
         live = None
     if live is None:
         live = torch.xpu.Stream()
@@ -386,9 +385,7 @@ def _dump_threads(marker: str) -> None:
         for tid, frame in frames.items():
             stack = traceback.format_stack(frame)[-10:]
             parts.append(f"[{names.get(tid, tid)}]\n" + "".join(stack))
-        logger.warning(
-            "ARC_GRAPH_ONSET_STACKS %s begin\n%s\nARC_GRAPH_ONSET_STACKS end",
-            marker, "\n".join(parts))
+        logger.warning("ARC_GRAPH_ONSET_STACKS %s begin\n%s\nARC_GRAPH_ONSET_STACKS end", marker, "\n".join(parts))
     except Exception as e:  # noqa: BLE001 — tracer must never disturb
         logger.warning("ARC_GRAPH_ONSET_STACKS %s dump failed %r", marker, e)
 
@@ -425,10 +422,8 @@ def _start_watchdog() -> None:
     state = {"own": False, "side": False, "logs": 0}
 
     def _run():
-        try:
+        with contextlib.suppress(Exception):  # noqa: BLE001 — tracer must never disturb
             _wrap_kernel_launch_tracer()  # r12b: before any compiled run
-        except Exception:  # noqa: BLE001 — tracer must never disturb
-            pass
         try:
             side = torch.xpu.graph.default_capture_stream
         except Exception:  # noqa: BLE001
@@ -448,8 +443,7 @@ def _start_watchdog() -> None:
                         "ArcXpuPlatform: ARC_GRAPH_ZOMBIE_ONSET this "
                         "thread's current (device default) stream now "
                         "RECORDING with no capture open at %s — reroute "
-                        "guards ARMED (ids: %s)",
-                        _time.strftime("%H:%M:%S"), _stream_ids())
+                        "guards ARMED (ids: %s)", _time.strftime("%H:%M:%S"), _stream_ids())
                     if _TRACE_FLIP:
                         _dump_threads("onset-default")
                 if side is not None and not state["side"]:
@@ -466,8 +460,7 @@ def _start_watchdog() -> None:
                         logger.warning(
                             "ArcXpuPlatform: ARC_GRAPH_ZOMBIE_ONSET side "
                             "capture stream now RECORDING with no capture "
-                            "open at %s (ids: %s)",
-                            _time.strftime("%H:%M:%S"), _stream_ids())
+                            "open at %s (ids: %s)", _time.strftime("%H:%M:%S"), _stream_ids())
                         if _TRACE_FLIP:
                             _dump_threads("onset-side")
             except Exception:  # noqa: BLE001 — watchdog must never disturb
@@ -504,9 +497,8 @@ def _wrap_kernel_launch_tracer() -> None:
         except Exception:  # noqa: BLE001
             return
         if rec:
-            logger.warning(
-                "ArcXpuPlatform: ARC_GRAPH_TRACE FLIP at %s — stream now "
-                "recording (captures_open=%d)", tag, _captures_open)
+            logger.warning("ArcXpuPlatform: ARC_GRAPH_TRACE FLIP at %s — stream now "
+                           "recording (captures_open=%d)", tag, _captures_open)
 
     try:
         from torch._inductor.runtime import triton_heuristics as _th
@@ -524,9 +516,7 @@ def _wrap_kernel_launch_tracer() -> None:
     except Exception as e:  # noqa: BLE001 — optional probe
         logger.warning("ArcXpuPlatform: tracer triton wrap skipped %r", e)
 
-    logger.info(
-        "ArcXpuPlatform: r12b kernel-launch tracer installed (%s).",
-        ", ".join(wrapped))
+    logger.info("ArcXpuPlatform: r12b kernel-launch tracer installed (%s).", ", ".join(wrapped))
     _TRACE_KERNELS_OK = bool(wrapped)
 
 
@@ -536,7 +526,7 @@ def _zombie_evidence() -> str:
     try:
         import time as _time
 
-        c = torch.full((4,), 123.456, device=torch.xpu.current_device())
+        c = torch.full((4, ), 123.456, device=torch.xpu.current_device())
         _time.sleep(1.0)
         with torch.xpu.stream(torch.xpu.Stream()):
             v = c.to("cpu")
@@ -567,14 +557,13 @@ def _dezombie(tag: str) -> bool:
             logger.warning(
                 "ArcXpuPlatform: graph stream hygiene (%s): current stream "
                 "%s was left recording with no capture open — swapped to a "
-                "fresh stream (post-swap capturing=%s, %s; ids: %s).",
-                tag, dead, _capture_state()[0], _zombie_evidence(),
-                _stream_ids())
+                "fresh stream (post-swap capturing=%s, %s; ids: %s).", tag, dead,
+                _capture_state()[0], _zombie_evidence(), _stream_ids())
         else:
             logger.warning(
                 "ArcXpuPlatform: graph stream hygiene (%s): zombie stream "
-                "swapped (post-swap capturing=%s).",
-                tag, _capture_state()[0])
+                "swapped (post-swap capturing=%s).", tag,
+                _capture_state()[0])
         if _capture_state()[0]:
             # Round 7: the swapped-to stream died too — cache race or a
             # mid-storm entry. Evict it and wait out the storm on fresh
@@ -588,8 +577,7 @@ def _dezombie(tag: str) -> bool:
             _wait_out_storm()
         return True
     except Exception as e:  # noqa: BLE001 — never mask the caller's path
-        logger.error(
-            "ArcXpuPlatform: graph stream hygiene (%s) FAILED: %r", tag, e)
+        logger.error("ArcXpuPlatform: graph stream hygiene (%s) FAILED: %r", tag, e)
         return False
 
 
@@ -602,9 +590,8 @@ def _hygiene(tag: str) -> None:
             if now != _TRACE_LAST:
                 _TRACE_LAST = now
                 _TRACE_LOGS += 1
-                logger.warning(
-                    "ArcXpuPlatform: ARC_GRAPH_TRACE state->%s at %s "
-                    "(captures_open=%d)", now, tag, _captures_open)
+                logger.warning("ArcXpuPlatform: ARC_GRAPH_TRACE state->%s at %s "
+                               "(captures_open=%d)", now, tag, _captures_open)
     _dezombie(tag)
 
 
@@ -718,8 +705,7 @@ def _wrap_stream_apis() -> None:
                         logger.warning(
                             "ArcXpuPlatform: ARC_GRAPH_SUBSTITUTE set_stream "
                             "target %s probes recording (no capture open) — "
-                            "rerouted to live %s (ids: %s).",
-                            s, live, _stream_ids())
+                            "rerouted to live %s (ids: %s).", s, live, _stream_ids())
             except Exception:  # noqa: BLE001 — never block a stream switch
                 pass
 
@@ -752,8 +738,7 @@ def _wrap_stream_apis() -> None:
                                 "ArcXpuPlatform: ARC_GRAPH_WAIT_REROUTE "
                                 "wait_stream caller %s probes recording (no "
                                 "capture open) — waiting from current %s "
-                                "instead (ids: %s).", self, live,
-                                _stream_ids())
+                                "instead (ids: %s).", self, live, _stream_ids())
                         return orig_wait(live, s)
             except Exception:  # noqa: BLE001 — fall through to upstream
                 pass
@@ -778,14 +763,13 @@ def _wrap_stream_apis() -> None:
 
     def _arc_xpu_sync(*args, **kwargs):
         global _SYNC_TRIP_LOGS
-        if (_zombie_ever and _captures_open == 0
-                and _capture_state()[0] and _SYNC_TRIP_LOGS < _LOG_BUDGET):
+        if (_zombie_ever and _captures_open == 0 and _capture_state()[0] and _SYNC_TRIP_LOGS < _LOG_BUDGET):
             _SYNC_TRIP_LOGS += 1
             logger.warning(
                 "ArcXpuPlatform: ARC_GRAPH_TRIPWIRE xpu.synchronize called "
                 "with zombie recording flag (device-wide barriers stay "
-                "illegal while a queue is abandoned; ids: %s). Caller:\n%s",
-                _stream_ids(), "".join(traceback.format_stack()[-6:]))
+                "illegal while a queue is abandoned; ids: %s). Caller:\n%s", _stream_ids(),
+                "".join(traceback.format_stack()[-6:]))
         return orig_sync(*args, **kwargs)
 
     torch.xpu.set_stream = _arc_set_stream
@@ -824,14 +808,14 @@ def _wait_out_storm(deadline_s: float = 15.0):
             logger.warning(
                 "ArcXpuPlatform: ARC_GRAPH_STORM_ENDED a fresh stream "
                 "survived after %.1fs — retrying the lost step on it "
-                "(ids: cur=%s).", _time.monotonic() - t0, s)
+                "(ids: cur=%s).",
+                _time.monotonic() - t0, s)
             return s
         last = s
         _time.sleep(0.2)
     logger.error(
         "ArcXpuPlatform: ARC_GRAPH_STORM_PERMANENT no fresh stream survived "
-        "%.1fs — every queue dies on this stack (last probe: %s).",
-        deadline_s, last)
+        "%.1fs — every queue dies on this stack (last probe: %s).", deadline_s, last)
     return None
 
 
@@ -888,9 +872,7 @@ def _wrap_runner_entry() -> bool:
                 # Raise-flavored flip: a mid-forward op errored with the
                 # recording-queue text. Same lost-step law — storm-wait,
                 # then retry.
-                if (attempt < 3 and _captures_open == 0
-                        and (_COMMAND_GRAPH_ERR in str(e)
-                             or "recording" in str(e))):
+                if (attempt < 3 and _captures_open == 0 and (_COMMAND_GRAPH_ERR in str(e) or "recording" in str(e))):
                     _note_zombie()
                     if _wait_out_storm() is None:
                         _poisoned_step = True
@@ -924,11 +906,10 @@ def _wrap_runner_entry() -> bool:
         if _poisoned_step:
             _poisoned_step = False
             _dezombie("sample_tokens-entry (poisoned forward)")
-            raise RuntimeError(
-                "ArcXpuPlatform: zombie graph stream flipped mid-forward "
-                "twice in one step — the outputs were enqueued on a dead "
-                "queue and are unreliable (integrity law: retry the "
-                "request)")
+            raise RuntimeError("ArcXpuPlatform: zombie graph stream flipped mid-forward "
+                               "twice in one step — the outputs were enqueued on a dead "
+                               "queue and are unreliable (integrity law: retry the "
+                               "request)")
         _hygiene("sample_tokens-entry")
         return orig_sample(self, *args, **kwargs)
 
@@ -1011,6 +992,7 @@ def _install() -> None:
     _orig_pooling_get = au.AsyncPoolingOutput.get_output
 
     def _graph_safe_init(orig_init):
+
         def __init__(self, *args, **kwargs):
             global _applied_logs, _deferred_logs, _probe_err_logs
             global _poisoned_step
@@ -1032,11 +1014,10 @@ def _install() -> None:
                 _dezombie("serve-time output dezombie")
                 if _poisoned_step:
                     _poisoned_step = False
-                    raise RuntimeError(
-                        "ArcXpuPlatform: zombie graph stream (recorder left "
-                        "open, no capture active) cleared at serve time; the "
-                        "in-flight request's outputs are unreliable "
-                        "(integrity law: retry the request)")
+                    raise RuntimeError("ArcXpuPlatform: zombie graph stream (recorder left "
+                                       "open, no capture active) cleared at serve time; the "
+                                       "in-flight request's outputs are unreliable "
+                                       "(integrity law: retry the request)")
             orig_init(self, *args, **kwargs)
             if capturing:
                 # Genuine capture window (or probe-doubt fail-safe): a device
@@ -1065,13 +1046,13 @@ def _install() -> None:
             # queue has been abandoned (drain-path deaths, round 2/3).
             if _applied_logs < _LOG_BUDGET:
                 _applied_logs += 1
-                logger.info(
-                    "ArcXpuPlatform: graph-safe output applied — reroute "
-                    "guards active, upstream copy event retained.")
+                logger.info("ArcXpuPlatform: graph-safe output applied — reroute "
+                            "guards active, upstream copy event retained.")
 
         return __init__
 
     def _graph_safe_get_output(orig_get_output):
+
         def get_output(self):
             global _healed_logs
             try:
@@ -1111,8 +1092,7 @@ def _install() -> None:
     au.AsyncOutput.__init__ = _graph_safe_init(_orig_async_output_init)
     au.AsyncPoolingOutput.__init__ = _graph_safe_init(_orig_pooling_init)
     au.AsyncOutput.get_output = _graph_safe_get_output(_orig_async_output_get)
-    au.AsyncPoolingOutput.get_output = _graph_safe_get_output(
-        _orig_pooling_get)
+    au.AsyncPoolingOutput.get_output = _graph_safe_get_output(_orig_pooling_get)
     # Boundary hygiene must be in place before any capture runs (worker init
     # captures follow the install hooks); idempotent per-process. The
     # stream-reroute guards (round 4) and the runner-entry save point
@@ -1125,5 +1105,4 @@ def _install() -> None:
     _INSTALLED = True
     logger.info(
         "ArcXpuPlatform: graph-safe output patch installed (pid %d, "
-        "AsyncOutput/AsyncPoolingOutput __init__ + get_output wrapped).",
-        os.getpid())
+        "AsyncOutput/AsyncPoolingOutput __init__ + get_output wrapped).", os.getpid())

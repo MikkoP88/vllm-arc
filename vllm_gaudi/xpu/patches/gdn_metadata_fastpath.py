@@ -106,12 +106,8 @@ def _fast_build(  # noqa: PLR0911, PLR0912, PLR0915
     query_start_loc = m.query_start_loc
     query_start_loc_cpu = m.query_start_loc_cpu
 
-    if (
-        not self.use_spec_decode
-        or not self.use_full_cuda_graph
-        or num_decode_draft_tokens_cpu is None
-        or num_accepted_tokens is None
-    ):
+    if (not self.use_spec_decode or not self.use_full_cuda_graph or num_decode_draft_tokens_cpu is None
+            or num_accepted_tokens is None):
         stats.record_fallback("shape")
         return self._arc_p10_orig_build(
             common_prefix_len,
@@ -125,12 +121,13 @@ def _fast_build(  # noqa: PLR0911, PLR0912, PLR0915
     # only, no GPU sync) ----
     spec_sequence_masks_cpu = num_decode_draft_tokens_cpu >= 0
     num_spec_decodes = int(spec_sequence_masks_cpu.sum())
-    if num_spec_decodes == 0 or int(
-        num_decode_draft_tokens_cpu[spec_sequence_masks_cpu].sum()
-    ) == 0:
+    if num_spec_decodes == 0 or int(num_decode_draft_tokens_cpu[spec_sequence_masks_cpu].sum()) == 0:
         stats.record_fallback("zero-spec")
         return self._arc_p10_orig_build(
-            common_prefix_len, m, num_accepted_tokens, num_decode_draft_tokens_cpu,
+            common_prefix_len,
+            m,
+            num_accepted_tokens,
+            num_decode_draft_tokens_cpu,
             fast_build,
         )
 
@@ -144,13 +141,19 @@ def _fast_build(  # noqa: PLR0911, PLR0912, PLR0915
         # the token-reordering branch — delegate, correctness over speed.
         stats.record_fallback("mixed")
         return self._arc_p10_orig_build(
-            common_prefix_len, m, num_accepted_tokens, num_decode_draft_tokens_cpu,
+            common_prefix_len,
+            m,
+            num_accepted_tokens,
+            num_decode_draft_tokens_cpu,
             fast_build,
         )
     if num_spec_decodes > self.decode_cudagraph_max_bs:
         stats.record_fallback("over-max-bs")
         return self._arc_p10_orig_build(
-            common_prefix_len, m, num_accepted_tokens, num_decode_draft_tokens_cpu,
+            common_prefix_len,
+            m,
+            num_accepted_tokens,
+            num_decode_draft_tokens_cpu,
             fast_build,
         )
 
@@ -158,7 +161,10 @@ def _fast_build(  # noqa: PLR0911, PLR0912, PLR0915
     if num_spec_decode_tokens > self.decode_cudagraph_max_bs:
         stats.record_fallback("over-max-tokens")
         return self._arc_p10_orig_build(
-            common_prefix_len, m, num_accepted_tokens, num_decode_draft_tokens_cpu,
+            common_prefix_len,
+            m,
+            num_accepted_tokens,
+            num_decode_draft_tokens_cpu,
             fast_build,
         )
 
@@ -173,7 +179,10 @@ def _fast_build(  # noqa: PLR0911, PLR0912, PLR0915
     if not bool(spec_sequence_masks_cpu[:num_spec_decodes].all()):
         stats.record_fallback("non-contiguous")
         return self._arc_p10_orig_build(
-            common_prefix_len, m, num_accepted_tokens, num_decode_draft_tokens_cpu,
+            common_prefix_len,
+            m,
+            num_accepted_tokens,
+            num_decode_draft_tokens_cpu,
             fast_build,
         )
 
@@ -183,7 +192,7 @@ def _fast_build(  # noqa: PLR0911, PLR0912, PLR0915
         self.kv_cache_spec,
         self.vllm_config.cache_config.mamba_cache_mode,
     )
-    spec_state_indices_tensor = block_table_tensor[:num_spec_decodes, : self.num_spec + 1]
+    spec_state_indices_tensor = block_table_tensor[:num_spec_decodes, :self.num_spec + 1]
     num_accepted = num_accepted_tokens[:num_spec_decodes]
 
     spec_token_size = min(num_spec_decodes * (self.num_spec + 1), int(query_start_loc_cpu[-1]))
@@ -197,7 +206,7 @@ def _fast_build(  # noqa: PLR0911, PLR0912, PLR0915
         self._arc_p10_arange = arange_buf
     spec_token_indx = arange_buf[:spec_token_size]
     non_spec_token_indx = self.non_spec_token_indx[:0]
-    spec_query_start_loc = query_start_loc[: num_spec_decodes + 1]
+    spec_query_start_loc = query_start_loc[:num_spec_decodes + 1]
 
     # ---- full-cudagraph static-buffer staging (core's, with every fill
     # scalar CPU-known: in this branch query_start_loc[num_spec_decodes]
@@ -205,9 +214,7 @@ def _fast_build(  # noqa: PLR0911, PLR0912, PLR0915
     # rows' lengths — so no 0-dim GPU tensor is passed to fill_ (which
     # would .item() and sync). ----
     batch_size = m.num_reqs
-    self.spec_state_indices_tensor[:num_spec_decodes].copy_(
-        spec_state_indices_tensor, non_blocking=True
-    )
+    self.spec_state_indices_tensor[:num_spec_decodes].copy_(spec_state_indices_tensor, non_blocking=True)
     spec_state_indices_tensor = self.spec_state_indices_tensor[:batch_size]
     spec_state_indices_tensor[num_spec_decodes:].fill_(NULL_BLOCK_ID)
 
@@ -215,16 +222,12 @@ def _fast_build(  # noqa: PLR0911, PLR0912, PLR0915
     spec_sequence_masks = self.spec_sequence_masks[:batch_size]
     spec_sequence_masks[num_spec_decodes:].fill_(False)
 
-    self.spec_token_indx[: spec_token_indx.size(0)].copy_(
-        spec_token_indx, non_blocking=True
-    )
-    spec_token_indx = self.spec_token_indx[: spec_token_indx.size(0)]
+    self.spec_token_indx[:spec_token_indx.size(0)].copy_(spec_token_indx, non_blocking=True)
+    spec_token_indx = self.spec_token_indx[:spec_token_indx.size(0)]
 
-    self.spec_query_start_loc[: num_spec_decodes + 1].copy_(
-        spec_query_start_loc, non_blocking=True
-    )
-    spec_query_start_loc = self.spec_query_start_loc[: batch_size + 1]
-    spec_query_start_loc[num_spec_decodes + 1 :].fill_(num_spec_decode_tokens)
+    self.spec_query_start_loc[:num_spec_decodes + 1].copy_(spec_query_start_loc, non_blocking=True)
+    spec_query_start_loc = self.spec_query_start_loc[:batch_size + 1]
+    spec_query_start_loc[num_spec_decodes + 1:].fill_(num_spec_decode_tokens)
 
     self.num_accepted_tokens[:num_spec_decodes].copy_(num_accepted, non_blocking=True)
     num_accepted_tokens = self.num_accepted_tokens[:batch_size]
@@ -280,8 +283,6 @@ def _install() -> bool:
     GDNAttentionMetadataBuilder._arc_p10_orig_build = GDNAttentionMetadataBuilder.build
     GDNAttentionMetadataBuilder.build = _fast_build
     _installed = True
-    logger.info(
-        "[arc-p10] gdn metadata fastpath installed "
-        "(steady spec-decode builds; stock build kept for prefill/mixed)"
-    )
+    logger.info("[arc-p10] gdn metadata fastpath installed "
+                "(steady spec-decode builds; stock build kept for prefill/mixed)")
     return True
