@@ -54,9 +54,12 @@ Container flags (docker run, P1 boot interface):
 | `VLLM_ARC_LOOKUP_ELIDE` | `true` | `patches/lmcache_hma_connector.py` (p42) | live |
 | `VLLM_ARC_GMU_RELAX` | `0.0` | `platform.py` (p05; 0.8 sanctioned on B70) | live |
 | `VLLM_ARC_XG_COMPACT` | `false` | `tools/serve_arc_b70.sh` (p06) | live |
-| `VLLM_ARC_ASYNC` | `None` (core 0.30 default) | — | inert (p50 closed at P2; drop at p61 — r45 F2) |
-| `VLLM_ARC_YIELD_TOKENS` | `4096` | — | inert (p51 never built; drop at p61 — r45 F1) |
-| `VLLM_ARC_COMPACT_GDN` | `false` | — | dead twin of live `VLLM_COMPACT_GDN`; drop at p61 (r45 F3) |
+
+Dropped at r45d (no-unevidenced law — declared, never consumed; audit r45
+findings F1–F3; re-add only with a consumer leg): `VLLM_ARC_ASYNC` (p50
+closed at P2 — core 0.30 auto-enables async scheduling), 
+`VLLM_ARC_YIELD_TOKENS` (p51 never built), `VLLM_ARC_COMPACT_GDN` (dead
+twin of the live `VLLM_COMPACT_GDN` below).
 
 Live non-ARC fork knobs (auto-detected, not operator-set):
 
