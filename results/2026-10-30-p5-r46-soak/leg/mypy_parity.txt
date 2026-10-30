@@ -1,0 +1,133 @@
+pydantic 2.13.5
+Running mypy on 
+Traceback (most recent call last):
+  File "/opt/venv/bin/mypy", line 6, in <module>
+    sys.exit(console_entry())
+             ^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/mypy/__main__.py", line 15, in console_entry
+    main()
+  File "mypy/main.py", line 103, in main
+  File "mypy/main.py", line 187, in run_build
+  File "mypy/build.py", line 193, in build
+  File "mypy/build.py", line 268, in _build
+  File "mypy/build.py", line 2950, in dispatch
+  File "mypy/build.py", line 3348, in process_graph
+  File "mypy/build.py", line 3475, in process_stale_scc
+  File "mypy/build.py", line 2507, in write_cache
+  File "mypy/build.py", line 1568, in write_cache
+  File "mypy/nodes.py", line 390, in serialize
+  File "mypy/nodes.py", line 4012, in serialize
+  File "mypy/nodes.py", line 3949, in serialize
+  File "mypy/nodes.py", line 3374, in serialize
+  File "mypy/types.py", line 671, in serialize
+  File "mypy/types.py", line 2428, in serialize
+  File "mypy/types.py", line 1451, in serialize
+  File "mypy/types.py", line 671, in serialize
+  File "mypy/types.py", line 3093, in serialize
+AssertionError: Internal error: unresolved placeholder type None
+Running mypy on tests
+Traceback (most recent call last):
+  File "/opt/venv/bin/mypy", line 6, in <module>
+    sys.exit(console_entry())
+             ^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/mypy/__main__.py", line 15, in console_entry
+    main()
+  File "mypy/main.py", line 103, in main
+  File "mypy/main.py", line 187, in run_build
+  File "mypy/build.py", line 193, in build
+  File "mypy/build.py", line 268, in _build
+  File "mypy/build.py", line 2950, in dispatch
+  File "mypy/build.py", line 3348, in process_graph
+  File "mypy/build.py", line 3475, in process_stale_scc
+  File "mypy/build.py", line 2507, in write_cache
+  File "mypy/build.py", line 1568, in write_cache
+  File "mypy/nodes.py", line 390, in serialize
+  File "mypy/nodes.py", line 4012, in serialize
+  File "mypy/nodes.py", line 3949, in serialize
+  File "mypy/nodes.py", line 3374, in serialize
+  File "mypy/types.py", line 671, in serialize
+  File "mypy/types.py", line 2428, in serialize
+  File "mypy/types.py", line 1451, in serialize
+  File "mypy/types.py", line 671, in serialize
+  File "mypy/types.py", line 3093, in serialize
+AssertionError: Internal error: unresolved placeholder type None
+Running mypy on vllm_gaudi/attention
+Success: no issues found in 6 source files
+Running mypy on vllm_gaudi/distributed
+Traceback (most recent call last):
+  File "/opt/venv/bin/mypy", line 6, in <module>
+    sys.exit(console_entry())
+             ^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/mypy/__main__.py", line 15, in console_entry
+    main()
+  File "mypy/main.py", line 103, in main
+  File "mypy/main.py", line 187, in run_build
+  File "mypy/build.py", line 193, in build
+  File "mypy/build.py", line 268, in _build
+  File "mypy/build.py", line 2950, in dispatch
+  File "mypy/build.py", line 3348, in process_graph
+  File "mypy/build.py", line 3475, in process_stale_scc
+  File "mypy/build.py", line 2507, in write_cache
+  File "mypy/build.py", line 1568, in write_cache
+  File "mypy/nodes.py", line 390, in serialize
+  File "mypy/nodes.py", line 4012, in serialize
+  File "mypy/nodes.py", line 3949, in serialize
+  File "mypy/nodes.py", line 3374, in serialize
+  File "mypy/types.py", line 671, in serialize
+  File "mypy/types.py", line 2428, in serialize
+  File "mypy/types.py", line 1451, in serialize
+  File "mypy/types.py", line 671, in serialize
+  File "mypy/types.py", line 3093, in serialize
+AssertionError: Internal error: unresolved placeholder type None
+Running mypy on vllm_gaudi/ops
+Traceback (most recent call last):
+  File "/opt/venv/bin/mypy", line 6, in <module>
+    sys.exit(console_entry())
+             ^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/mypy/__main__.py", line 15, in console_entry
+    main()
+  File "mypy/main.py", line 103, in main
+  File "mypy/main.py", line 187, in run_build
+  File "mypy/build.py", line 193, in build
+  File "mypy/build.py", line 268, in _build
+  File "mypy/build.py", line 2950, in dispatch
+  File "mypy/build.py", line 3348, in process_graph
+  File "mypy/build.py", line 3475, in process_stale_scc
+  File "mypy/build.py", line 2507, in write_cache
+  File "mypy/build.py", line 1568, in write_cache
+  File "mypy/nodes.py", line 390, in serialize
+  File "mypy/nodes.py", line 4012, in serialize
+  File "mypy/nodes.py", line 3949, in serialize
+  File "mypy/nodes.py", line 3374, in serialize
+  File "mypy/types.py", line 671, in serialize
+  File "mypy/types.py", line 2428, in serialize
+  File "mypy/types.py", line 1451, in serialize
+  File "mypy/types.py", line 671, in serialize
+  File "mypy/types.py", line 3093, in serialize
+AssertionError: Internal error: unresolved placeholder type None
+Running mypy on vllm_gaudi/v1
+Traceback (most recent call last):
+  File "/opt/venv/bin/mypy", line 6, in <module>
+    sys.exit(console_entry())
+             ^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/mypy/__main__.py", line 15, in console_entry
+    main()
+  File "mypy/main.py", line 103, in main
+  File "mypy/main.py", line 187, in run_build
+  File "mypy/build.py", line 193, in build
+  File "mypy/build.py", line 268, in _build
+  File "mypy/build.py", line 2950, in dispatch
+  File "mypy/build.py", line 3348, in process_graph
+  File "mypy/build.py", line 3475, in process_stale_scc
+  File "mypy/build.py", line 2507, in write_cache
+  File "mypy/build.py", line 1568, in write_cache
+  File "mypy/nodes.py", line 390, in serialize
+  File "mypy/nodes.py", line 4012, in serialize
+  File "mypy/nodes.py", line 3949, in serialize
+  File "mypy/nodes.py", line 3374, in serialize
+  File "mypy/types.py", line 671, in serialize
+  File "mypy/types.py", line 2428, in serialize
+  File "mypy/types.py", line 1451, in serialize
+  File "mypy/types.py", line 671, in serialize
+  File "mypy/types.py", line 3093, in serialize
+AssertionError: Internal error: unresolved placeholder type None

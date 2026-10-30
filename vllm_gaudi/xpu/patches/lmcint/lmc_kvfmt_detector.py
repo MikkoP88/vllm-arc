@@ -35,19 +35,10 @@ _ORIG_IS_STATIC = False
 
 def _arc_discover(self, kv_caches, layout_hints):
     try:
-        if (
-            isinstance(kv_caches, list)
-            and kv_caches
-            and isinstance(kv_caches[0], torch.Tensor)
-        ):
+        if (isinstance(kv_caches, list) and kv_caches and isinstance(kv_caches[0], torch.Tensor)):
             t = kv_caches[0]
-            if (
-                t.dim() == 5
-                and t.is_contiguous()
-                and int(t.shape[0]) >= 16
-                and int(t.shape[3]) == 2
-                and int(t.shape[4]) >= 128
-            ):
+            if (t.dim() == 5 and t.is_contiguous() and int(t.shape[0]) >= 16 and int(t.shape[3]) == 2
+                    and int(t.shape[4]) >= 128):
                 if int(t.shape[2]) == 1 and int(t.shape[1]) >= 256:
                     bs = int(t.shape[1])
                 elif int(t.shape[1]) == 1 and int(t.shape[2]) >= 256:
@@ -57,9 +48,7 @@ def _arc_discover(self, kv_caches, layout_hints):
                 if bs:
                     kv_caches = [
                         x.reshape(x.shape[0], bs, 1, 2, x.shape[4])
-                        if int(x.shape[2]) != 1 or int(x.shape[1]) != bs
-                        else x
-                        for x in kv_caches
+                        if int(x.shape[2]) != 1 or int(x.shape[1]) != bs else x for x in kv_caches
                     ]
                     print(
                         "[r43kvfmt] arc interleaved attn pool -> "

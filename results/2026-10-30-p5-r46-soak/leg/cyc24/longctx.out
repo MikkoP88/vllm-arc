@@ -1,0 +1,14 @@
+=== BENCH_LONGCTX start 10:49:00
+[small~600tok] t1 ttft=0.300s wall=0.35s prompt=600 cached=-1
+[small~600tok] t2 ttft=0.312s wall=0.36s prompt=609 cached=-1 (rehit depth -1/609)
+[small~600tok] engine prompt_tokens_total delta: t1=600 (excess 0)  t2=609 (excess 0)
+[mid~8ktok] t1 ttft=3.464s wall=3.52s prompt=7950 cached=-1
+[mid~8ktok] t2 ttft=0.867s wall=0.99s prompt=7959 cached=-1 (rehit depth -1/7959)
+[mid~8ktok] engine prompt_tokens_total delta: t1=7950 (excess 0)  t2=7959 (excess 0)
+[mid~16ktok] t1 ttft=7.263s wall=7.31s prompt=16237 cached=-1
+[mid~16ktok] t2 ttft=0.695s wall=0.91s prompt=16246 cached=-1 (rehit depth -1/16246)
+[mid~16ktok] engine prompt_tokens_total delta: t1=16237 (excess 0)  t2=16246 (excess 0)
+[long~32ktok] t1 ttft=15.564s wall=15.60s prompt=32081 cached=-1
+[long~32ktok] t2 ttft=1.231s wall=1.60s prompt=32090 cached=-1 (rehit depth -1/32090)
+[long~32ktok] engine prompt_tokens_total delta: t1=32081 (excess 0)  t2=32090 (excess 0)
+=== BENCH_LONGCTX done 10:49:31

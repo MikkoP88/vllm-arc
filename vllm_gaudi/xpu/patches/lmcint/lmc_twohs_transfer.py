@@ -114,23 +114,17 @@ def _arc_multi_layer_kv_transfer(
                 paged = paged.reshape(layer_shape)
         else:
             ptr = int(key_value_ptrs[layer_id].item())
-            paged = _TENSOR_FROM_PTR(
-                ptr, layer_shape, key_value.dtype, paged_memory_device
-            )
+            paged = _TENSOR_FROM_PTR(ptr, layer_shape, key_value.dtype, paged_memory_device)
         if h2d:
             src = key_value[:, layer_id, valid_mask_kv, :].transpose(0, 1)
-            paged[block_indices, block_offsets, :, :] = src.to(
-                paged_memory_device, non_blocking=False
-            )
+            paged[block_indices, block_offsets, :, :] = src.to(paged_memory_device, non_blocking=False)
         else:
-            gathered = paged[block_indices, block_offsets, :, :].to(
-                kv_device, non_blocking=False
-            )
+            gathered = paged[block_indices, block_offsets, :, :].to(kv_device, non_blocking=False)
             key_value[:, layer_id, valid_mask_kv, :] = gathered.transpose(0, 1)
 
 
 def _install(mod):
     global _ORIG, _TENSOR_FROM_PTR
     _ORIG = mod.multi_layer_kv_transfer
-    _TENSOR_FROM_PTR = getattr(mod, "_tensor_from_ptr")
+    _TENSOR_FROM_PTR = mod._tensor_from_ptr
     mod.multi_layer_kv_transfer = _arc_multi_layer_kv_transfer

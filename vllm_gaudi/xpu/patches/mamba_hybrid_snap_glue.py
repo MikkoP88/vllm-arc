@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 """mamba_hybrid_snap_glue.py — p41c fork patch (vllm_gaudi/xpu/patches/).
 
 p41c PROBLEM (r31, 2026-10-28): p41's v136 snap lives in the carry branch of
@@ -104,7 +105,7 @@ class _RowState:
     invisibly every step). D2H row-slice only runs at snap/seed events
     (once per 896-token boundary), never per step."""
 
-    __slots__ = ("block_ids",)
+    __slots__ = ("block_ids", )
 
     def __init__(self, block_tables, row, nblocks):
         self.block_ids = {
@@ -139,10 +140,7 @@ def _bmd5(fc, kv_cache_config, gids, row_state, blk):
         bid = row_state.block_ids[gid][blk]
         for lname in kv_cache_config.kv_cache_groups[gid].layer_names:
             for st in fc[lname].kv_cache:
-                h.update(
-                    st[bid].reshape(-1).view(torch.uint8)
-                    .detach().cpu().numpy().tobytes()
-                )
+                h.update(st[bid].reshape(-1).view(torch.uint8).detach().cpu().numpy().tobytes())
     return h.hexdigest()[:16]
 
 
@@ -175,15 +173,13 @@ def _install(mod) -> None:
             state["warn"][tag] = n + 1
             print(f"[p41c {tag}#{n + 1}] {msg}", flush=True)
 
-    def preprocess_state(self, input_batch, block_tables, kv_cache_config,
-                         num_computed_tokens):
+    def preprocess_state(self, input_batch, block_tables, kv_cache_config, num_computed_tokens):
         g = None
         try:
             g = _glue()
         except Exception as e:  # noqa: BLE001
             _warn("glue-unavailable", repr(e)[:160])
-            return orig(self, input_batch, block_tables, kv_cache_config,
-                        num_computed_tokens)
+            return orig(self, input_batch, block_tables, kv_cache_config, num_computed_tokens)
 
         try:
             fc = self.vllm_config.compilation_config.static_forward_context
@@ -192,8 +188,7 @@ def _install(mod) -> None:
             state.update(fc=fc, gids=gids, bs=bs)
         except Exception as e:  # noqa: BLE001
             _warn("ctx-resolve-failed", repr(e)[:160])
-            return orig(self, input_batch, block_tables, kv_cache_config,
-                        num_computed_tokens)
+            return orig(self, input_batch, block_tables, kv_cache_config, num_computed_tokens)
 
         n = input_batch.num_reqs
         # --- (0) r31 probe (root cause #2): pre-orig md5 of the boundary and
@@ -235,8 +230,7 @@ def _install(mod) -> None:
             ncc = int(input_batch.num_computed_tokens_np[i])
             prev = ncc // bs - 1  # carry-from block at the booked depth
             if prev < 0:
-                _warn("seed-dropped",
-                      f"req={req_id} ncc={ncc} B={seed[0]} (no carry-from block)")
+                _warn("seed-dropped", f"req={req_id} ncc={ncc} B={seed[0]} (no carry-from block)")
                 continue
             row_state = _RowState(block_tables, i, prev + 2)
             if seed[0] // bs - 1 != prev:
@@ -266,19 +260,21 @@ def _install(mod) -> None:
                 _warn("state-idx-fix-failed", f"req={req_id} {repr(e)[:120]}")
                 continue
             g._lmc_seed_write(
-                req_id, seed[0], prev, bs, row_state, kv_cache_config,
-                state["gids"], state["fc"], seed[1],
+                req_id,
+                seed[0],
+                prev,
+                bs,
+                row_state,
+                kv_cache_config,
+                state["gids"],
+                state["fc"],
+                seed[1],
             )
             if os.environ.get("ARC_SNAP_PROBE"):
                 import hashlib
 
-                _smd5 = hashlib.md5(
-                    seed[1].cpu().numpy().tobytes()
-                ).hexdigest()[:16]
-                _bids = {
-                    gid: row_state.block_ids[gid][prev:prev + 2]
-                    for gid in state["gids"]
-                }
+                _smd5 = hashlib.md5(seed[1].cpu().numpy().tobytes()).hexdigest()[:16]
+                _bids = {gid: row_state.block_ids[gid][prev:prev + 2] for gid in state["gids"]}
                 print(
                     f"[r31probe p41c-seedmd5 req={req_id} B={seed[0]} "
                     f"prev={prev} seed_bytes={_smd5} "
@@ -290,24 +286,21 @@ def _install(mod) -> None:
             if g._FP16_SEED_REPAIR:
                 try:
                     for gid in state["gids"]:
-                        lname = kv_cache_config.kv_cache_groups[
-                            gid
-                        ].layer_names[0]
+                        lname = kv_cache_config.kv_cache_groups[gid].layer_names[0]
                         bids = row_state.block_ids[gid]
                         for st in state["fc"][lname].kv_cache:
                             if st.dtype == torch.float16:
                                 pg = st[bids[prev]]
-                                pg.copy_(
-                                    torch.nan_to_num(
-                                        pg, nan=0.0,
-                                        posinf=65504.0, neginf=-65504.0,
-                                    )
-                                )
+                                pg.copy_(torch.nan_to_num(
+                                    pg,
+                                    nan=0.0,
+                                    posinf=65504.0,
+                                    neginf=-65504.0,
+                                ))
                 except Exception as e:  # noqa: BLE001
                     _warn("fp16-repair-failed", repr(e)[:160])
 
-        r = orig(self, input_batch, block_tables, kv_cache_config,
-                 num_computed_tokens)
+        r = orig(self, input_batch, block_tables, kv_cache_config, num_computed_tokens)
 
         # --- r31 probe: the fused kernel's actual copy decision for seed
         # rows (post-orig: state_idx advanced, src_col/src_off emitted).
@@ -323,15 +316,14 @@ def _install(mod) -> None:
                         flush=True,
                     )
                 except Exception as e:  # noqa: BLE001
-                    print(f"[r31probe p41c-postseed-ERR {repr(e)[:80]}]",
-                          flush=True)
+                    print(f"[r31probe p41c-postseed-ERR {repr(e)[:80]}]", flush=True)
 
         # --- (3)+(4) v136 store half: freeze the deepest COMPLETE boundary
         # per row, after the fused kernel (sync ordered behind its writes).
         try:
             last_b = state["last_b"]
             if len(last_b) > 8192:  # bounded leak: finished reqs never pop
-                for k in list(last_b)[: len(last_b) // 2]:
+                for k in list(last_b)[:len(last_b) // 2]:
                     del last_b[k]
             state["calls"] = state.get("calls", 0) + 1
             _probe = bool(os.environ.get("ARC_SNAP_PROBE")) and state["calls"] <= 12
@@ -372,8 +364,13 @@ def _install(mod) -> None:
                     continue
                 row_state = _RowState(block_tables, i, j + 2)
                 g._lmc_snap_boundary(
-                    req_id, b, j, row_state, kv_cache_config,
-                    state["gids"], state["fc"],
+                    req_id,
+                    b,
+                    j,
+                    row_state,
+                    kv_cache_config,
+                    state["gids"],
+                    state["fc"],
                 )
                 last_b[req_id] = b
                 if os.environ.get("ARC_SNAP_PROBE"):
@@ -398,8 +395,7 @@ def _install(mod) -> None:
                             flush=True,
                         )
                     except Exception as e:  # noqa: BLE001
-                        print(f"[r31probe p41c-snapmd5-ERR {repr(e)[:80]}]",
-                              flush=True)
+                        print(f"[r31probe p41c-snapmd5-ERR {repr(e)[:80]}]", flush=True)
         except Exception as e:  # noqa: BLE001
             _warn("snap-failed", repr(e)[:160])
         if not state["live"]:
@@ -413,5 +409,4 @@ def _install(mod) -> None:
 
     cls.preprocess_state = preprocess_state
     cls._arc_p41c = True
-    print(f"[p41c] mamba_hybrid snap glue installed (pid={os.getpid()})",
-          flush=True)
+    print(f"[p41c] mamba_hybrid snap glue installed (pid={os.getpid()})", flush=True)

@@ -8,7 +8,35 @@ TTFT), prompt "Count from 1 to 1000.", temperature 0,
 chat_template_kwargs enable_thinking=False, non-streaming.
 cert16s4 baselines: agg 181.81 / 244.88, solo 75.06 / 74.89.
 
-Usage: bench_run7n.py            (agg + solo, Run-7n exact)
+r46t extension: --temperature T overrides the request temperature
+(default 0.0 = the original byte-exact behavior; the real-world
+temperature sweep runs 0.2/0.4/0.6/0.8/1.0). The prompt, lengths,
+threading and reporting are unchanged.
+r46t v3 (owner directive): all testing configurations carry the
+real-world sampling set — top_p 0.95, top_k 20, min_p 0.0,
+presence_penalty 0.0, repetition_penalty 1.0. At temperature 0 these
+are inert (argmax survives top_k/top_p; penalties are no-ops), so the
+certified temp-0 faces stay comparable.
+
+r46t v4 (owner directive): all performance testing runs xhigh
+thinking — --thinking xhigh flips chat_template_kwargs to
+{"enable_thinking": true, "reasoning_effort": "xhigh"} (the template's
+own knob; 'max'/'high' normalize to xhigh, thinking-on default is
+xhigh). Default "off" keeps the certified enable_thinking=False face
+byte-exact. The non-MTP leg (serve without --speculative-config) runs
+this same battery for the no-spec baseline.
+
+r46t v5 (owner directive): second sampling profile — --sampling alt
+selects the alt set (temperature 0.7 / top_p 0.80 / top_k 20 / min_p
+0.0 / presence_penalty 1.5 / repetition_penalty 1.0, non-thinking),
+run on MTP and non-MTP postures. Default keeps the v4 real-world set.
+
+Usage: bench_run7n.py            (agg + solo, Run-7n exact, temp 0)
+       bench_run7n.py --temperature 0.4   (same battery at temp 0.4)
+       bench_run7n.py --temperature 1.0 --thinking xhigh
+                                (real-world face: temp 1.0, xhigh thinking)
+       bench_run7n.py --temperature 0.7 --sampling alt
+                                (alt set: t0.7/tp0.80/pp1.5, non-thinking)
        bench_run7n.py --extra8   (additionally agg 8x256 x2 for the
                                   8-stream axis seen in today's matrix)
 """
@@ -20,11 +48,21 @@ import urllib.request
 
 URL = "http://127.0.0.1:8000/v1/chat/completions"
 MODEL = "qwen3.8-27b-fp8"
+TEMP = 0.0
+THINKING = "off"
+USE_ALT = False
+SAMPLING = {"top_p": 0.95, "top_k": 20, "min_p": 0.0,
+            "presence_penalty": 0.0, "repetition_penalty": 1.0}
+SAMPLING_ALT = {"top_p": 0.80, "top_k": 20, "min_p": 0.0,
+                "presence_penalty": 1.5, "repetition_penalty": 1.0}
 
 
 def call(mt: int, out: list) -> None:
-    body = {"model": MODEL, "max_tokens": mt, "temperature": 0,
-            "chat_template_kwargs": {"enable_thinking": False},
+    ctk = ({"enable_thinking": False} if THINKING == "off" else
+           {"enable_thinking": True, "reasoning_effort": THINKING})
+    body = {"model": MODEL, "max_tokens": mt, "temperature": TEMP,
+            **(SAMPLING_ALT if USE_ALT else SAMPLING),
+            "chat_template_kwargs": ctk,
             "messages": [{"role": "user",
                           "content": "Count from 1 to 1000."}]}
     req = urllib.request.Request(
@@ -70,7 +108,18 @@ def solo() -> None:
 
 
 def main() -> int:
-    print("=== bench_run7n (cert16s4 methodology replica) ===", flush=True)
+    global TEMP, THINKING, USE_ALT
+    for i, a in enumerate(sys.argv):
+        if a == "--temperature" and i + 1 < len(sys.argv):
+            TEMP = float(sys.argv[i + 1])
+        if a == "--thinking" and i + 1 < len(sys.argv):
+            THINKING = sys.argv[i + 1]
+        if a == "--sampling" and i + 1 < len(sys.argv):
+            USE_ALT = sys.argv[i + 1] == "alt"
+    smp = SAMPLING_ALT if USE_ALT else SAMPLING
+    print(f"=== bench_run7n (cert16s4 methodology replica) "
+          f"temp={TEMP} thinking={THINKING} sampling={smp} ===",
+          flush=True)
     for run in (1, 2):
         agg(4, 256, run)
     solo()

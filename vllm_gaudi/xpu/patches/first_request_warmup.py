@@ -36,34 +36,30 @@ import time
 _installed = False
 _warmed = False
 
-_WARMUP_SMALL_CHARS = 640          # ~128 tokens: inside the clean region
-_WARMUP_MAXBATCH_FALLBACK = 8192   # max_num_batched_tokens default
+_WARMUP_SMALL_CHARS = 640  # ~128 tokens: inside the clean region
+_WARMUP_MAXBATCH_FALLBACK = 8192  # max_num_batched_tokens default
 
 
 def _max_batched_tokens(engine) -> int:  # noqa: ANN001 — engine is AsyncLLM
     try:
-        return int(engine.vllm_config.scheduler_config
-                   .max_num_batched_tokens)
+        return int(engine.vllm_config.scheduler_config.max_num_batched_tokens)
     except Exception:  # noqa: BLE001 — fallback is the 0.30 default
         return _WARMUP_MAXBATCH_FALLBACK
 
 
-async def _run_stage(engine, orig_generate, name: str, text: str,
-                     max_tokens: int) -> None:
+async def _run_stage(engine, orig_generate, name: str, text: str, max_tokens: int) -> None:
     from vllm import SamplingParams
 
-    params = SamplingParams(max_tokens=max_tokens, temperature=0.0,
-                            ignore_eos=True, detokenize=False)
+    params = SamplingParams(max_tokens=max_tokens, temperature=0.0, ignore_eos=True, detokenize=False)
     t0 = time.monotonic()
     n = 0
-    async for _ in orig_generate(engine, text, params,
-                                 f"arc-warmup-{name}"):
+    async for _ in orig_generate(engine, text, params, f"arc-warmup-{name}"):
         n += 1
     from vllm.logger import init_logger
     init_logger("vllm.platforms.arc").info(
         "ArcXpuPlatform: first-request warmup stage %s done in %.1fs "
-        "(%d outputs, %d prompt chars)", name, time.monotonic() - t0, n,
-        len(text))
+        "(%d outputs, %d prompt chars)", name,
+        time.monotonic() - t0, n, len(text))
 
 
 async def _run_warmup(engine, orig_generate) -> None:
@@ -108,21 +104,21 @@ def _install() -> None:
             try:
                 await _run_warmup(self, orig)
             except Exception as e:  # noqa: BLE001 — fail-loud law
-                log.error("ArcXpuPlatform: warmup FAILED after %.1fs — "
-                          "integrity law applies, refusing to serve on a "
-                          "cold engine: %r", time.monotonic() - t0, e)
+                log.error(
+                    "ArcXpuPlatform: warmup FAILED after %.1fs — "
+                    "integrity law applies, refusing to serve on a "
+                    "cold engine: %r",
+                    time.monotonic() - t0, e)
                 raise
             log.info("ArcXpuPlatform: warmup complete in %.1fs — engine "
-                     "hot, serving request %s", time.monotonic() - t0,
-                     request_id)
-        async for out in orig(self, prompt, sampling_params, request_id,
-                              **kw):
+                     "hot, serving request %s",
+                     time.monotonic() - t0, request_id)
+        async for out in orig(self, prompt, sampling_params, request_id, **kw):
             yield out
 
     generate._arc_warmup = True
     AsyncLLM.generate = generate
     _installed = True
     from vllm.logger import init_logger
-    init_logger("vllm.platforms.arc").info(
-        "ArcXpuPlatform: first-request warmup interlock installed "
-        "(defect-b lane W, r16 evidence)")
+    init_logger("vllm.platforms.arc").info("ArcXpuPlatform: first-request warmup interlock installed "
+                                           "(defect-b lane W, r16 evidence)")

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 """arc p40c — honor LMCACHE_DISABLE_PINNED_MEMORY under the native SYCL ops
 + arc p40d — KV-transfer ops on the torch baseline (C's XPU posture)
 (lmcache-side glue; installed via sitecustomize exec_module hook on
@@ -80,9 +81,7 @@ def _install(mod) -> None:
     if cls is None or getattr(cls, "_arc_p40c", False):
         return  # unexpected module shape or already patched — idempotent
 
-    drop_pinned = os.environ.get(
-        "LMCACHE_DISABLE_PINNED_MEMORY", "0"
-    ) in _TRUTHY
+    drop_pinned = os.environ.get("LMCACHE_DISABLE_PINNED_MEMORY", "0") in _TRUTHY
     drop_kv = os.environ.get("VLLM_ARC_LMC_TORCH_KV", "1") != "0"
     if not drop_pinned and not drop_kv:
         return  # nothing to do — native bindings stand

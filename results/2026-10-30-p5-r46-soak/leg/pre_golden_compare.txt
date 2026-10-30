@@ -1,0 +1,6 @@
+[golden] len=64 match
+[golden] len=256 match
+[golden] len=1024 match
+[golden] len=2048 match
+[golden] len=4096 match
+GOLDEN_PASS: 5/5 identical (zero drift)

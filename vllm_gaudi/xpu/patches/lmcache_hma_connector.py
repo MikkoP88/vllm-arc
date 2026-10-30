@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 """arc p41b — LMCacheConnectorV1 HMA + lmcache-0.5.5 compat port
 + arc p42 — lookup-elide / lookup-memo (D v139 extyield2 port)
 (vllm-side connector glue; installed via sitecustomize exec_module hook
@@ -100,6 +101,12 @@ from __future__ import annotations
 import importlib.util as _iu
 import os
 import sys
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:  # annotation-only names (stock connector idiom :25-29; zero runtime)
+    from vllm.distributed.kv_transfer.kv_connector.v1.lmcache_connector import (LMCacheKVEvents)
+    from vllm.v1.core.kv_cache_manager import KVCacheBlocks
+    from vllm.v1.request import Request
 
 _LMCINT = "vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration"
 _OVERRIDE_FILES = {
@@ -130,7 +137,6 @@ class _SrcOverrideFinder:
             sys.meta_path.insert(0, self)
         if spec is None or spec.loader is None:
             return None
-        orig_exec = spec.loader.exec_module
 
         def exec_module(module):
             # C-compat source INSTEAD of the stock file (the stock
@@ -174,9 +180,7 @@ def _install(mod) -> None:
 
         _arc_p41b = True
 
-        def get_num_new_matched_tokens(
-            self, request: "Request", num_computed_tokens: int
-        ) -> "tuple[int | None, bool]":
+        def get_num_new_matched_tokens(self, request: Request, num_computed_tokens: int) -> tuple[int | None, bool]:
             """
             Get number of new tokens that can be loaded from the
             external KV cache beyond the num_computed_tokens.
@@ -220,31 +224,20 @@ def _install(mod) -> None:
             # kv_producer corner: preserve inner behavior exactly (it
             # returns 0 immediately without lookups when producer reuse
             # is unsupported) — D's wrapper guards this before anything.
-            if eng.kv_role == "kv_producer" and not hasattr(
-                eng.lookup_client, "supports_producer_reuse"
-            ):
-                num_tokens = eng.get_num_new_matched_tokens(
-                    request, num_computed_tokens
-                )
+            if eng.kv_role == "kv_producer" and not hasattr(eng.lookup_client, "supports_producer_reuse"):
+                num_tokens = eng.get_num_new_matched_tokens(request, num_computed_tokens)
                 return num_tokens, False
 
             # inner bookkeeping the elided/replayed paths must keep
             eng._requests_priority[request.request_id] = request.priority
 
             try:
-                _elide_tok = int(
-                    os.environ.get("VLLM_ARC_LOOKUP_ELIDE", "0")
-                )
+                _elide_tok = int(os.environ.get("VLLM_ARC_LOOKUP_ELIDE", "0"))
             except ValueError:
                 _elide_tok = 0
-            if (
-                _elide_tok > 0
-                and num_computed_tokens > 0
-                and request.num_tokens - num_computed_tokens <= _elide_tok
-            ):
+            if (_elide_tok > 0 and num_computed_tokens > 0 and request.num_tokens - num_computed_tokens <= _elide_tok):
                 from vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.vllm_v1_adapter import (
-                    LoadSpec,
-                )
+                    LoadSpec, )
 
                 if _logger is not None:
                     _logger.info(
@@ -264,10 +257,7 @@ def _install(mod) -> None:
                 eng._lmc_async_pending.discard(request.request_id)
                 return 0, False
 
-            _memo_on = (
-                os.environ.get("VLLM_ARC_LOOKUP_MEMO", "1") != "0"
-                and getattr(eng, "async_loading", False)
-            )
+            _memo_on = (os.environ.get("VLLM_ARC_LOOKUP_MEMO", "1") != "0" and getattr(eng, "async_loading", False))
             _memo = None
             if _memo_on:
                 _memo = getattr(self, "_arc_p42_memo", None)
@@ -278,8 +268,7 @@ def _install(mod) -> None:
                 _hit = _memo.get(request.request_id)
                 if _hit is not None:
                     from vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.vllm_v1_adapter import (
-                        LoadSpec,
-                    )
+                        LoadSpec, )
 
                     _need = _hit - num_computed_tokens
                     if _hit >= request.num_tokens:
@@ -305,21 +294,13 @@ def _install(mod) -> None:
                     load_kv_async = True
                     return num_tokens, load_kv_async
 
-            num_tokens = eng.get_num_new_matched_tokens(
-                request, num_computed_tokens
-            )
+            num_tokens = eng.get_num_new_matched_tokens(request, num_computed_tokens)
             if _memo_on and _memo is not None and num_tokens is not None:
                 _memo[request.request_id] = num_tokens + num_computed_tokens
-            load_kv_async = (
-                num_tokens is not None
-                and num_tokens > 0
-                and request.request_id in eng._lmc_async_pending
-            )
+            load_kv_async = (num_tokens is not None and num_tokens > 0 and request.request_id in eng._lmc_async_pending)
             return num_tokens, load_kv_async
 
-        def update_state_after_alloc(
-            self, request: "Request", blocks: "KVCacheBlocks", num_external_tokens: int
-        ):
+        def update_state_after_alloc(self, request: Request, blocks: KVCacheBlocks, num_external_tokens: int):
             """
             Update KVConnector state after block allocation.
 
@@ -328,11 +309,9 @@ def _install(mod) -> None:
             live Request object has no block_ids; only the broadcast
             NewRequestData does).
             """
-            self._lmcache_engine.update_state_after_alloc(
-                request, num_external_tokens, blocks
-            )
+            self._lmcache_engine.update_state_after_alloc(request, num_external_tokens, blocks)
 
-        def get_kv_connector_kv_cache_events(self) -> "LMCacheKVEvents | None":
+        def get_kv_connector_kv_cache_events(self) -> LMCacheKVEvents | None:
             """
             Get the KV connector kv cache events collected during the last
             interval (guarded: lmcache 0.5.5 has no KV-events API).
@@ -354,8 +333,7 @@ def _install(mod) -> None:
                     block_size=e.block_size,
                     medium=e.medium,
                     lora_name=getattr(e, "lora_name", None),
-                )
-                for e in events
+                ) for e in events
             ]
 
             lmcache_kv_events = mod.LMCacheKVEvents(num_workers=1)
@@ -364,9 +342,9 @@ def _install(mod) -> None:
 
         def request_finished_all_groups(
             self,
-            request: "Request",
-            block_ids: "tuple[list[int], ...]",
-        ) -> "tuple[bool, dict | None]":
+            request: Request,
+            block_ids: tuple[list[int], ...],
+        ) -> tuple[bool, dict | None]:
             """
             HMA variant: block_ids is a per-kv-cache-group tuple. LMCache
             stores synchronously within the forward pass (wait_for_save), so

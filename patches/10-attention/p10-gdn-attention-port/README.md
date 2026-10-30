@@ -26,3 +26,9 @@ any defect found gets its own patch item. The target-attention defects that
 DID exist on this stack are tracked as p12 (defect-b capture-zombie family)
 and p32 (defect-a speculator piecewise boot death) — both fixed on this
 train.
+
+**Delivered on this item** (r23, results/2026-10-28-p2-p10-gdn-fastpath-r23):
+the GDN metadata fastpath — `vllm_gaudi/xpu/patches/gdn_metadata_fastpath.py`,
+0.49 ms vs the 7 ms CPU-serial budget. Knob
+`VLLM_ARC_GDN_FASTPATH_DISABLE` (default `""` = fastpath ACTIVE; any
+non-`0` value disables) at `:275`; see docs/envs.md.
