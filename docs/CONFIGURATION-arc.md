@@ -145,6 +145,23 @@ exec /opt/venv/bin/vllm serve --model /models/target \
   > /root/serve_full.log 2>&1
 ```
 
+Two compile-posture laws (p67, do not re-try blind — evidence
+`results/2026-10-31-p67-r67a-compile-ab/`):
+
+1. **`mode` stays `none`** — the 0.30 REVAL of the compile-off acceptance
+   law (Appendix H #1) FIRED: `mode=vllm_compile` ×
+   `cudagraph_mode=FULL_AND_PIECEWISE` collapses MTP mean acceptance
+   3.40/3.57 → 2.21/2.32 (−35 %) and decode t/s −39 %, with
+   prefill flat — nothing compensates (KV pool +5.3 % aside).
+2. **If a FULL_AND_PIECEWISE experiment is ever repeated**, the capture
+   ladder must top at `max_num_seqs × (num_spec+1)` = 64 × 4 = **256**
+   tokens: `gdn_attn.py:120` hard-caps captured tokens there for GDN
+   models, and the stock ladder's 320 headroom (kept above for k4) makes
+   the first piecewise capture boot-die with "GDN only supports
+   decode-only full CUDAGraph capture". The ladder above is correct for
+   the certified `mode:none` posture (FULL_DECODE_ONLY never builds the
+   offending piecewise captures; the real k3 verify shape is 256).
+
 Launch and health-check (the rig pattern; first boot ~10 min to 200 —
 model load + graph capture):
 

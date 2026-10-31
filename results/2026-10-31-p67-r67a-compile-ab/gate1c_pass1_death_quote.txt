@@ -1,0 +1,55 @@
+# gate1c (pass 1) boot death — quoted capture
+
+**Provenance (honest):** the pass-1 container `arc-test` was removed for the
+W14 restore BEFORE the full serve log was pulled — my process error, owned.
+What survives is the decisive excerpt, captured live via two ssh polls at
+~08:12-08:14 UTC (byte-exact as printed by `docker exec arc-test tail` /
+`grep` at the time), plus the on-image source verification done immediately
+after via `docker run --rm --entrypoint grep/sed vllm-arc:v0.30.0-b70-cert4`.
+gate1c.log in this directory contains the script's own output up to the
+launch banner (the script itself parked in wait_health and was killed).
+
+## What the dying boot printed (live poll)
+
+  (Worker_TP0 pid=938) Capturing CUDA graphs (PIECEWISE):   0%| 0/85
+  (Worker_TP0 pid=938) Capturing CUDA graphs (PIECEWISE):   1%| 1/85 [00:01<
+  (Worker_TP0 pid=938) INFO 10-31 08:07:02 [backends.py:393] Compiling a graph
+      for compile range (1, 8192) takes 104.88 s
+  (EngineCore pid=706) ERROR 10-31 08:10:06 [core.py:1366] RuntimeError: Worker
+      failed with error 'GDN only supports decode-only full CUDAGraph capture.
+      Make sure batch size (64) <= cudagraph capture sizes (256), and number of
+      tokens (320) <= cudagraph capture sizes (256).'
+  (APIServer pid=13) RuntimeError: Engine core initialization failed. ...
+  /usr/lib/python3.12/multiprocessing/resource_tracker.py:254: UserWarning:
+      resource_tracker: There appear to be 2 leaked shared_memory objects
+
+## Source verification (image vllm-arc:v0.30.0-b70-cert4)
+
+- `vllm/v1/attention/backends/gdn_attn.py:537` — the assert text
+  (`build_for_cudagraph_capture`): requires
+  `num_reqs <= decode_cudagraph_max_bs AND num_actual_tokens <= decode_cudagraph_max_bs`.
+- `vllm/v1/attention/backends/gdn_attn.py:120-128` —
+  `decode_cudagraph_max_bs = max_num_seqs * (num_spec + 1)` = 64 × 4 = **256**
+  for our k3 posture, then `min(..., max_cudagraph_capture_size)` if set —
+  i.e. 256 is a hard ceiling; declaring a LARGER max_cudagraph_capture_size
+  cannot raise it.
+- `vllm/config/compilation.py:1145` — `assert cudagraph_capture_sizes[-1] ==
+  max_cudagraph_capture_size` (last size must equal the declared max).
+
+## Root cause
+
+Stock serve ladder `cudagraph_capture_sizes` topped at **320** (k4 headroom).
+With `cudagraph_mode=FULL_AND_PIECEWISE`, the PIECEWISE capture list includes
+the ladder top → a synthetic (num_reqs=64, num_actual_tokens=320) capture →
+GDN decode-only guard rejects (320 > 256). Fix (gate1d): trim ladder to 256
+(the real k3 verify shape = 64 × 4) + declare
+`max_cudagraph_capture_size: 256`. Verified working: PIECEWISE 72/72 captured,
+boot to health ~460 s.
+
+## Working reference (W14, same model class)
+
+`/root/build/w14_serve_only.sh:11`:
+`--compilation-config "{\"cudagraph_mode\": \"FULL_AND_PIECEWISE\",
+\"cudagraph_capture_sizes\": [4,8,16,32,64], \"max_cudagraph_capture_size\": 64}"`
+— the same law at smaller scale: every captured size is decode-shaped; large
+prefill sizes run compiled-but-uncaptured.

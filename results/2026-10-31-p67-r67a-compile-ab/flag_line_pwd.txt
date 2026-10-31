@@ -1,0 +1,8 @@
+PROVENANCE: byte-exact tail of line 142 of /root/build/serve_arc_b70_p67pwd.sh
+(the gate1d sed product on the rig, verified live 2026-10-31; the full file is
+the stock serve_arc_b70.sh with exactly three substitutions — mode, cudagraph_mode,
+sizes-tail — see p67_gate1d.sh in this directory). Line ends:
+
+  ...,240,245,250,255,256],\"max_cudagraph_capture_size\":256}'"
+
+(stock line 142 ends: ...,255,256,260,265,270,275,280,285,290,295,300,305,310,315,320]}')
