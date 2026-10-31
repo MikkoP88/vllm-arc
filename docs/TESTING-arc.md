@@ -192,7 +192,7 @@ superseded evidence, v2 pins `enable_thinking: false` on valid probes.
 ## Evidence layout
 
 Each leg banks to `results/YYYY-MM-DD-<phase>-r<leg>-<slug>/` (VERDICT,
-raw bench outputs, hook audit, integrity shas, serve keylines) — 62+
+raw bench outputs, hook audit, integrity shas, serve keylines) — 77
 dirs to date; the naming convention is documented in
 [`envs.md`](envs.md) (naming map).
 

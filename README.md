@@ -2,7 +2,7 @@
 
 **Certified vLLM stack for `qwen3.8-27b-fp8` (dense hybrid-GDN + MTP) on dual Intel® Arc™ Pro B70 — TP2.**
 
-A fork of [vllm-project/vllm-gaudi](https://github.com/vllm-project/vllm-gaudi) at **v0.30.0** (package name `vllm_gaudi` preserved; the Arc/XPU work lives in `vllm_gaudi/xpu/`). Certified release: **`rel/v0.30.0-b70-cert4`** — every gate GREEN with banked evidence (cert4 = cert3 engine + P6.5 length-gated chunk-store deferral [opt-in long-context profile, default posture identical to cert3]; see [Repository model](#repository-model)). P6.6 (prefill performance) closed **analysis-only**: the anatomy is documented in PERFORMANCE-arc ("Prefill anatomy" — device-bound ~34–40 % MFU, MNBT/thr knobs A/B'd and documented, host glue empty), no engine change — cert4 remains current. P6.7 (prefill structural rungs) closed **evidence-only**: compile REVAL rejected (MTP acceptance −35 % under `vllm_compile`, gate per Appendix H law #1), direct-fp8 GEMM rung negative (r40: on-image fp8_gemm slower than the deployed w8a16), ESIMD FA-kernel re-scoped by the r67b op-class trace (dense varlen 20.3 %, allreduce ~30 %, GEMM 39.7 %) — again no engine change, cert4 remains current. P6.8 (publishing hygiene): intranet addresses scrubbed from the tracked tree, `tools/leak_sweep.sh` gate + plan §11 rule 9 — no engine change. P6.10 (comprehensive cert4 measurement): every current-record face re-measured natively on cert4 (r70 — throughput/TTFT/warm-prefix-with-cache-tier-attribution/acceptance/no-spec A/B/soak); docs rebuilt cert4-native-only, no engine change — cert4 remains current.
+A fork of [vllm-project/vllm-gaudi](https://github.com/vllm-project/vllm-gaudi) at **v0.30.0** (package name `vllm_gaudi` preserved; the Arc/XPU work lives in `vllm_gaudi/xpu/`). Certified release: **`rel/v0.30.0-b70-cert4`** — every gate GREEN with banked evidence (cert4 = cert3 engine + P6.5 length-gated chunk-store deferral [opt-in long-context profile, default posture identical to cert3]; see [Repository model](#repository-model)). P6.6 (prefill performance) closed **analysis-only**: the anatomy is documented in PERFORMANCE-arc ("Prefill anatomy" — device-bound ~34–40 % MFU, MNBT/thr knobs A/B'd and documented, host glue empty), no engine change — cert4 remains current. P6.7 (prefill structural rungs) closed **evidence-only**: compile REVAL rejected (MTP acceptance −35 % under `vllm_compile`, gate per Appendix H law #1), direct-fp8 GEMM rung negative (r40: on-image fp8_gemm slower than the deployed w8a16), ESIMD FA-kernel re-scoped by the r67b op-class trace (dense varlen 20.3 %, allreduce ~30 %, GEMM 39.7 %) — again no engine change, cert4 remains current. P6.8 (publishing hygiene): intranet addresses scrubbed from the tracked tree, `tools/leak_sweep.sh` gate + plan §11 rule 9 — no engine change. P6.9 (main currency): every main doc/README/guide always names the LATEST certified image (`tools/check_currency.sh` gate) and every squash-merge publishes to both remotes. P6.10 (comprehensive cert4 measurement): every current-record face re-measured natively on cert4 (r70 — throughput/TTFT/warm-prefix-with-cache-tier-attribution/acceptance/no-spec A/B/soak); docs rebuilt cert4-native-only, no engine change — cert4 remains current.
 
 ## What this fork adds
 
@@ -19,7 +19,7 @@ A fork of [vllm-project/vllm-gaudi](https://github.com/vllm-project/vllm-gaudi) 
 
 ## Certified performance (dual Arc Pro B70, TP2, qwen3.8-27b-fp8)
 
-Every value below is **measured natively on the certified image** `vllm-arc:v0.30.0-b70-cert4` (r70 comprehensive campaign + certification legs — methodology, face definitions, and per-face provenance in [`docs/PERFORMANCE-arc.md`](docs/PERFORMANCE-arc.md)):
+Every value below is **measured natively on the certified image** `vllm-arc:v0.30.0-b70-cert4` (r70 comprehensive campaign + certification legs — methodology, face definitions, the sampled/thinking sweep, cache-tier attribution, and per-face provenance in [`docs/PERFORMANCE-arc.md`](docs/PERFORMANCE-arc.md)):
 
 | Face | Value |
 |---|---|
@@ -29,9 +29,6 @@ Every value below is **measured natively on the certified image** `vllm-arc:v0.3
 | Warm prefix re-hit 8k / 16k / 32k | **0.99 / 1.08 / 1.11 s** (engine APC tier — LMCache external tier 0.0 % in the measured window) |
 | MTP k3 acceptance (greedy) | **85.9 %** (mean accepted length 3.58) |
 | MTP value over no-spec (cert4 A/B, by face) | **1.5–2.5×** |
-
-Sampled/thinking faces, the temperature sweep, cache-tier attribution,
-and stability detail: [`docs/PERFORMANCE-arc.md`](docs/PERFORMANCE-arc.md).
 
 ## Quick start
 
@@ -192,7 +189,7 @@ boot interface with posture knobs is `tools/serve_arc_b70.sh`
 
 - **`main` is linear and protected**: changes land as squash commits from per-item lanes (`feat/arc-pNN-*`); direct pushes, force pushes, and deletions are blocked; PRs are required.
 - **Certified releases are annotated tags** pointing at the certified `main` commit — current: `rel/v0.30.0-b70-cert4`; superseded: `rel/v0.30.0-b70-cert3` (identical default behavior, lacks the p65 deferral hunk), `rel/v0.30.0-b70-cert2` (0.5.5-era lmcache line — valid, older), `rel/v0.30.0-b70-cert` (predates the r46u glue-alias fix — never build from it). The Docker image embeds the fork SHA in `/etc/vllm-arc/IMAGE_MANIFEST` for A/B verification.
-- **Evidence is in-tree**: every validation leg banks to `results/YYYY-MM-DD-<phase>-r<leg>-<slug>/` (VERDICT + raw outputs) — 60+ legs, P0 through P6.
+- **Evidence is in-tree**: every validation leg banks to `results/YYYY-MM-DD-<phase>-r<leg>-<slug>/` (VERDICT + raw outputs) — 75+ legs across 77 dirs, P0 through P6.
 - **No secrets or real host addresses in-tree (publishing-hygiene law)**: tracked == pushable, so credentials, rig/host addresses, and private identities never enter tracked files; banked logs carry redacted host addresses (`results/REDACTION-2026-10-31.md` documents the one-time scrub). `tools/leak_sweep.sh` must exit 0 before every push.
 - The `feat/arc-*` branches are kept deliberately: squash-merging leaves the per-item development history nowhere else.
 
