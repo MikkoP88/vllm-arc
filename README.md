@@ -181,7 +181,7 @@ boot interface with posture knobs is `tools/serve_arc_b70.sh`
 ## Documentation
 
 - [`docs/CONFIGURATION-arc.md`](docs/CONFIGURATION-arc.md) — how to run the certified posture
-- [`docs/PERFORMANCE-arc.md`](docs/PERFORMANCE-arc.md) — measured numbers (real-world temperature × MTP-depth campaign included)
+- [`docs/PERFORMANCE-arc.md`](docs/PERFORMANCE-arc.md) — measured numbers: **current certified image (cert4) record first** (decode/prefill/TTFT + posture laws), then the depth-selection campaign and image history
 - [`docs/TESTING-arc.md`](docs/TESTING-arc.md) — 13 test suites, gates, validation record
 - [`docs/MIGRATION-arc.md`](docs/MIGRATION-arc.md) — swap an incumbent stack for this one (boot, verify, rollback)
 - [`docs/envs.md`](docs/envs.md) — complete env/knob control surface + naming map
