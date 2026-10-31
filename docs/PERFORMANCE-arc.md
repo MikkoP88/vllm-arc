@@ -8,7 +8,48 @@ below); the certified-greedy history at k4/k5 is retained row-labeled —
 k5 is dropped from the recommendation; its evidence is
 superseded, not retracted.
 
-## Headline faces (certified greedy battery, temp 0)
+## Current certified image — cert4 (tag `rel/v0.30.0-b70-cert4`, 2026-10-31): the numbers that matter
+
+**This section is the current record**; every section below it is
+history (depth-selection and image lineage — still valid evidence,
+earlier engines). Identity: tag commit `b5df28b5`; default posture =
+cert3's engine byte-identical (cert4 adds only the opt-in P6.5
+long-context deferral, inert without its envs); how to run: the 25-var
+chain in [`CONFIGURATION-arc.md`](CONFIGURATION-arc.md). Faces are
+labeled — **only same-face numbers compare** (thinking on/off and
+battery warmth are confounders; comparator law:
+`results/2026-10-31-p6-r47c-p48-056gates/VERDICT.md`).
+
+| Face (cert4, default posture) | Value | Evidence |
+|---|---|---|
+| greedy t0 agg4x256 steady (thinking=off battery) | **299.15–300.48 tok/s** (300.16 / 300.48 across boots) — family-exact vs the 299.9 family | `results/2026-10-31-p65-cert4/` |
+| greedy t0 solo200 (thinking=off) | **84.53–84.86 tok/s** (83.65 low cell) | same |
+| t1.0 xhigh battery | agg 190.62 / solo 56.90, 62.24 (family 186.2/61.1, +2.4 %/+1.9 %) | same |
+| MTP k3 acceptance (greedy t0) | 85.6 % per-token (r46t); mean accepted length **3.40–3.57 tok/step** on cert4 boots | r67 re-confirmed |
+| Prefill solo TTFT U8k / U32k / U64k | **3.74 s (2178 t/s) / 17.33 s (1878 t/s) / 39.19 s (1666 t/s)** — nolmc anatomy faces, re-confirmed on stock boots | r66a bars + r67 (`results/2026-10-31-p66-r66a-prefill-capture/`, `…-p67-r67a-compile-ab/`) |
+| Long-context opt-in profile (p65 trio, 12-bystander face) | U64k TTFT 51.16 s; bystander W_U64k p95/max **1580/1599 ms** (no-connector posture: 2027/2347) — enable only for ≥~48k-heavy traffic | `results/2026-10-31-p65-cert4/` |
+
+Posture laws in force on cert4 (do not re-litigate without new evidence):
+
+- **`mode: none`** — the 0.30 compile REVAL FIRED the Appendix H law #1
+  acceptance gate: `vllm_compile` collapses acceptance length
+  3.40/3.57 → 2.21/2.32 (−35 %), decode −39 %, prefill flat (p67).
+- **MNBT stays 8192** — 16384 A/B: U32k −9.7 % but U8k +9.9 % and KV pool
+  −18 %; documented, not adopted (p66). Never combine with the p65 trio.
+- Any `FULL_AND_PIECEWISE` repeat must cap the capture ladder at 256
+  (`max_num_seqs × (k+1)`; the `gdn_attn.py:120` law, p67).
+
+Decode-step anatomy, allreduce share, and the prefill op-class table
+(GEMM 39.7 % / AR ~30.4 % / FA 20.3 % / GDN 4.7 %): see "Prefill
+anatomy (p66)" and "Prefill structural rungs (p67)" below.
+
+## Image history — depth-selection faces (cert-era images; the k-depth decision record)
+
+Measured on the original-cert/cert2-era engines (r42 k4 leg, r43 k5
+leg, r46t k3 on the p46 image). The current-image reproduction of this
+family is the cert4 table above (299.15–300.48 / 84.53–84.86,
+family-exact — engine unchanged through cert2→cert4 default postures,
+within ±5 % on same-face A/Bs). Depth law unchanged: **k3**.
 
 | Face | k3 (recommended, r46t) | k4 (r42) | k5 (dropped, r43) |
 |---|---|---|---|
@@ -38,7 +79,7 @@ while the 8 h soak battery was cycling (conservative — a quiet-window
 run would be equal or faster). The 8k/16k/32k ladder and 64k face were
 measured on the certified image (r42/r43 legs and r46 leg respectively).
 
-## Real-world faces (r46t campaign — recommended posture k3)
+## Real-world faces (r46t campaign, p46 image — recommended posture k3; recommendation stands on cert4)
 
 Full methodology and evidence: `results/2026-10-30-p5-r46t-temps/`
 (VERDICT + raw batteries + acceptance counters). Two request regimes,
