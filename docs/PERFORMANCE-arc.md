@@ -295,7 +295,7 @@ high acceptance — real-world sampled thinking sits below the
 crossover, which is why k3 is the recommendation and k5's greedy-era
 win inverts under sampling.
 
-
+## 12-cell load matrix (r44 — cert-era image, the load-shape record)
 
 `vllm bench serve`, random dataset, output 512, ignore-eos, 12/12 cells
 zero-error. TTFT/TPOT/ITL in ms:
