@@ -11,6 +11,9 @@ changes no serve flags and no model numerics.
 |---|---|
 | `disable-acs.sh` | Dell PowerEdge 16th-Gen setpci practice: zeros the ACS Control register (`ECAP_ACS+0x6.w=0000`) on every ACS-capable device; logs old values; self-verifies at the end. Idempotent. Exact bytes of the deployed rig copy. |
 | `disable-acs.service` | systemd oneshot unit, `Before=docker.service`, `WantedBy=multi-user.target` — re-applies the script at every boot before any container starts. |
+| `d2d_probe.py` | D2D peer-copy microbench (p71): 256 MiB fp16 tensor, both directions, median/min/max GB/s + `torch.xpu.can_device_access_peer` when present. Verdict table in the file header. |
+| `b70_probe21_d2d.sh` | Host wrapper for the probe — extends the rig's `b70_probe*` family; captures xpu-smi discovery + sysfs link state + the timed copies in one transcript. Idle window only. |
+| `r71a_ccl_diag.sh` | CCL_LOG_LEVEL=2 diagnostic boot (p71 lane-1 confirm): certified serve line + exactly one inserted env; captures the oneCCL transport/IPC selection lines; W14 restored by trap. Idle window only. |
 
 ## Provenance (no-unevidenced-customization law)
 
@@ -57,21 +60,47 @@ lspci -vvv | grep ACSCtl          # every line must show all bits '-' (= 0000)
 journalctl -u disable-acs.service --no-pager -n 20   # per-device log + final verify
 ```
 
-## Open P2P items (measured at the next idle window — NEVER mid-leg)
+## Open P2P items (status after the 2026-10-31 p71 analysis — instruments
+## run at the next idle window, NEVER mid-leg)
 
-ACS being already off means, if the TP2 allreduce is still host-bounced, the
-cause is one of these (check in this order, one change at a time, E-law):
+Owner question: is the TP2 allreduce on the direct P2P path or
+host-bounced — and is each cause solvable? Analysis evidence:
+`results/2026-10-31-p71-r71-p2p-analysis/`.
 
-1. **Topology**: are both GPUs under the SAME root complex? `lspci -t`
-   (full tree; earlier `readlink` attempt returned empty). Cross-socket P2P
-   is possible but adds a UPI hop.
-2. **Direct measurement**: D2D peer-copy probe between legs (throwaway
-   container, both GPUs, ~256 MB tensor `xpu:0`→`xpu:1`):
-   **~10–12 GB/s = direct P2P; ≤5 GB/s = staged through host.**
-3. **oneCCL transport**: `CCL_LOG_LEVEL=2` boot log — which transport/IPC
-   mode each rank selected (the champion boot env's CCL_* block decides).
-4. **AR attribution leg** (already queued in the plan): per-AR timing vs
-   payload/link-rate tells bounced vs direct independent of probes.
+1. **IOMMU blocking P2P — RULED OUT (dead)**. Read-only host checks:
+   `/sys/kernel/iommu_groups/` and `/sys/class/iommu/` both empty, zero
+   DMAR/IOMMU lines in dmesg, no `intel_iommu=` anywhere on the kernel
+   cmdline → IOMMU is OFF on this rig; nothing at the IOMMU layer can
+   refuse a peer DMA. (ACS was likewise already fully disabled — the
+   insurance service above just keeps it that way.)
+2. **oneCCL config missing the P2P path — EMPTY so far (champion chain
+   already maximal)**. The image's oneCCL is **2022.0.0**; its env
+   surface was extracted from `libccl.so` (296 `CCL_*` names, evidence
+   file in the results dir). The frozen champion block already sets the
+   three knobs that matter: `CCL_TOPO_P2P_ACCESS=1`,
+   `CCL_ZE_IPC_EXCHANGE=pidfd`, `CCL_ATL_TRANSPORT=ofi` (log-confirmed),
+   and the bundled libfabric embeds the `ze` + `shm` providers. No
+   obvious unset knob remains — the runtime selection still needs
+   confirmation: **`r71a_ccl_diag.sh`** (CCL_LOG_LEVEL=2 boot, one-env
+   change, zero cost). If the log shows the ze/IPC path active, lane 1
+   closes as "already solved" and any further gain is algorithmic
+   (e.g. `CCL_ZE_BIDIR_ALGO` / `CCL_ATL_RMA` class knobs — those would
+   be posture changes needing their own evidence-gated A/B legs).
+3. **Driver/link reality — OPEN, the decisive instrument is the D2D
+   probe**. sysfs/lspci link attributes misreport on this stack (xe
+   leaves `current_link_speed` at 2.5 GT/s ×1 on every device incl.
+   parent bridges — flatly contradicted by the measured faces: U8k
+   prefill at 3.86 s is impossible over a 250 MB/s link).
+   **`b70_probe21_d2d.sh` + `d2d_probe.py`** measure the effective
+   GPU0↔GPU1 bandwidth: ~10–12 GB/s = direct P2P; ~5–6 = host-staged;
+   ≤1 = real degraded link (BIOS/config investigation).
+4. **Topology**: parent bridges are `b0:01.0` / `d9:01.0` (one per
+   socket) — cross-socket P2P adds a UPI hop; the D2D number bakes
+   that reality in, so no separate topology leg is needed unless the
+   probe shows bounce.
+5. **AR attribution leg** (queued in the plan from p67): per-AR timing
+   vs payload/link-rate — decides independently of probes whether the
+   ~30.4 % AR share is link-bound or algorithm/latency-bound.
 
 Expected magnitudes (AR model: prefill ≈ 0.66 MB/token, decode ≈ 5 MB/step
 at c8, 64 serialized hops): Gen3 P2P ≈ 9% of prefill wall, bounced ≈
