@@ -1,0 +1,45 @@
+# host_checks.txt — read-only host checks for the P2P lanes (2026-10-31,
+# during the r70 soak; every command read-only)
+
+## Kernel cmdline (no IOMMU directives at all)
+$ cat /proc/cmdline
+BOOT_IMAGE=/vmlinuz-6.17.0-1010-intel root=/dev/mapper/ubuntu--vg-ubuntu--lv ro
+
+## IOMMU state — OFF everywhere it can be observed
+$ ls /sys/kernel/iommu_groups/ | wc -l
+0
+$ ls /sys/class/iommu/          # empty
+$ dmesg | grep -ci dmar
+0
+$ dmesg | grep -i iommu | head  # no output
+
+## GPU placement (one card per socket; per-socket parent bridges)
+0000:b1:00.0 parent=0000:b0:01.0   (Intel bridge e2f0, socket-0 side)
+0000:da:00.0 parent=0000:d9:01.0   (Intel bridge e2f0, socket-1 side)
+
+## Link attributes — MISREPORT class (xe driver leaves defaults)
+sysfs, all four devices (both GPUs AND both parent bridges):
+  max=2.5 GT/s PCIe cur=2.5 GT/s PCIe width=1/1
+lspci -vv LnkCap/LnkSta on the same devices: "Port #0/#8, Speed
+2.5GT/s, Width x1" — same values, so it is not a sysfs-only artifact;
+the kernel's PCIe link attributes for these devices simply do not
+reflect the operational link.
+WHY THIS CANNOT BE THE REAL LINK: U8k prefill (8,158 tokens) completes
+in 3.86 s with TP2 allreduce every layer — at 250 MB/s (Gen1 x1) the
+per-layer activation exchange alone would exceed the whole measured
+TTFT by an order of magnitude. The r66/r67 device traces show ~GB/s
+class cross-device traffic. Conclusion: misreport; the D2D probe
+(b70_probe21_d2d.sh) is the decisive instrument.
+
+## xpu-smi (v2.0) — discovery works; no link-stats subcommand on this build
+$ xpu-smi discovery
+Device 0: Intel(R) Arc(TM) Pro B70 Graphics, state normal,
+  PCI BDF 0000:b1:00.0, DRM /dev/dri/card1
+(second device analogous)
+
+## Boot-log confirmation that the champion CCL env is applied (r70 logs)
+a/serve_full.log + b/serve_full.log, both ranks:
+  |CCL_WARN| value of CCL_ATL_TRANSPORT changed to be ofi (default:mpi)
+  |CCL_WARN| value of CCL_TOPO_P2P_ACCESS changed to be 1 (default:-1)
+  |CCL_WARN| value of CCL_TOPO_FABRIC_VERTEX_CONNECTION_CHECK changed to be 0 (default:1)
+  [parallel_state] world_size=2 ... backend=xccl

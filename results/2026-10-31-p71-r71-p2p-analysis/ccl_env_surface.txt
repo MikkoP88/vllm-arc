@@ -1,0 +1,64 @@
+# ccl_env_surface.txt — oneCCL 2022.0.0 env-var surface, extracted from
+# the certified image (no-unevidenced law: read off the image, not docs)
+# Method: docker run --rm --network none --cpus 1 (read-only, no GPU)
+#   grep -ahoE "CCL_[A-Z_]+" /opt/venv/lib/libccl.so | sort -u
+# NOTE the first-extraction trap: /opt/venv/lib/libccl.so.2.0 is a 142 KB
+# shim with only 12 CCL_ names; the real binary is libccl.so /
+# libccl.so.1 (210 MB, 296 unique CCL_* names). Also present:
+# libccl_legacy*.so (0 names), libccl_openmp*.so (3), libfabric.so.1
+# (472 KB, providers: ze/shm/tcp/sockets/verbs/psm tokens embedded).
+
+## Champion-chain vars — present in this build's parser (grep -c = 2 each):
+CCL_ZE_IPC_EXCHANGE, CCL_TOPO_P2P_ACCESS, CCL_ATL_TRANSPORT,
+CCL_ENABLE_SYCL_KERNELS
+
+## Full captured subset — P2P/IPC/ZE/ATL/SHM/FABRIC/TRANSPORT/TOPO filter:
+CCL_ALLGATHERV_TOPO_LARGE_SCALE      CCL_ZE_ENABLE
+CCL_ALLGATHERV_TOPO_READ             CCL_ZE_FINI_WA
+CCL_ALLTOALLV_TOPO_READ              CCL_ZE_H
+CCL_ATL_CACHE                        CCL_ZE_IPC_EXCHANGE
+CCL_ATL_EXTRA_EP                     CCL_ZE_LIBRARY_PATH
+CCL_ATL_HMEM                         CCL_ZE_LIST_DUMP
+CCL_ATL_MPI                          CCL_ZE_MAX_COMPUTE_QUEUES
+CCL_ATL_MPI_BF                       CCL_ZE_MAX_COPY_QUEUES
+CCL_ATL_MPI_FP                       CCL_ZE_MULTI_WORKERS
+CCL_ATL_OFI_MAJOR_VERSION            CCL_ZE_PTR_REGISTER_THRESHOLD
+CCL_ATL_OFI_MAX_RETRY_COUNT          CCL_ZE_PT
+CCL_ATL_OFI_MINOR_VERSION            CCL_ZE_QUEUE_INDEX_OFFSET
+CCL_ATL_RMA                          CCL_ZE_SERIALIZE
+CCL_ATL_SEND_PROXY                   CCL_ZE_SINGLE_LIST
+CCL_ATL_SHM                          CCL_ZE_TMP_BUF_SIZE
+CCL_ATL_SYNC_COLL                    CCL_ZE_TYPE
+CCL_ATL_TRANSPORT                    CCL_ZE_AUTO_TUNE_PORTS
+CCL_IPC_ALLGATHERV_WA                CCL_ZE_BARRIER
+CCL_REDUCE_SCATTER_TOPO_READ         CCL_ZE_BIDIR_ALGO
+CCL_TOPOH                           CCL_ZE_CACHE_GET_IPC_HANDLES
+CCL_TOPO_ALGO                        CCL_ZE_CACHE_GET_IPC_HANDLES_THRESHOLD
+CCL_TOPO_ALL_PORTS                   CCL_ZE_CACHE_OPEN_IPC_HANDLES
+CCL_TOPO_COLOR                       CCL_ZE_CACHE_OPEN_IPC_HANDLES_THRESHOLD
+CCL_TOPO_FABRIC_VERTEX_CONNECTION_CHECK   CCL_ZE_CLOSE_IPC_WA
+CCL_TOPO_P                           CCL_ZE_COPY_ENGINE
+CCL_TOPO_WA_FABRIC_VERTEX_CONNECTION_CHECK CCL_ZE_DEPS_SYNC
+CCL_ZE_BIDIR_ALGO (dup in cap-filter)      CCL_ZE_DEVICE_CACHE_*
+                                     CCL_ZE_DISABLE_FAMILY_CHECK
+                                     CCL_ZE_DISABLE_PORT_CHECK
+                                     CCL_ZE_DRM_BDF_SUPPORT
+                                     CCL_ZE_ENABLE_CCS_FALLBACK_FOR_COPY
+                                     CCL_ZE_ENABLE_OVERSUBSCRIPTION_*
+
+## Most-frequent names (full-list head, by occurrence count):
+90x CCL_SYCL* · 18x CCL_SEND/RECV/CCL_KERNEL_/CCL_ALLREDUCE_ ·
+15x CCL_SYCL_AUTO_USE_TMP_BUF · 10x CCL_LOG_LEVEL ·
+9x CCL_ZE_TMP_BUF_SIZE / CCL_ZE_CLOSE_IPC_WA /
+   CCL_ZE_CACHE_{GET,OPEN}_IPC_HANDLES{,_THRESHOLD} /
+   CCL_TOPO_FABRIC_VERTEX_CONNECTION_CHECK / CCL_ATL_TRANSPORT /
+   CCL_OFI_LIBRARY_PATH / CCL_SELECTION_MAX_COLL_SIZE ...
+
+## Interpretation
+The three P2P-path knobs the owner's directive names all exist in THIS
+build and are all already set by the frozen champion chain (values
+boot-log-confirmed applied). No unset P2P-path knob was found at the
+env level; the remaining lane-1 unknown is runtime selection — decided
+by the CCL_LOG_LEVEL=2 diagnostic boot (kit/r71a_ccl_diag.sh). Anything
+beyond that (CCL_ZE_BIDIR_ALGO, CCL_ATL_RMA, ...) is a posture CHANGE,
+not a missing enable, and needs its own evidence-gated A/B leg.
