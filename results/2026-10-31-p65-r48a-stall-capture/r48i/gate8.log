@@ -1,0 +1,66 @@
+56de9ee3c96c5d489288d10719d0219c  /root/build/p65/adapter_installed.py
+f07c955e5b634b3338efdfe0fe8d953a  /root/build/p65/adapter_p65.py
+=== [1] serve copy: threshold 2048 + DEFER env ===
+1
+1
+=== [2] boot + immediate in-container adapter patch ===
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert3 name=arc-test graph=1 spec=3 gmu=0.8 mnbt=8192 seqs=64 xgc=0 port=8000 00:55:42
+PATCH_MARKER=1
+HEALTH=OK after ~300s
+ENV_CHECK=LMC_DEFER_CHUNK_STORE=1
+long_prefill_token_threshold': 2048
+=== [3] capture v5.1 (U32k FRESH + C32k replay + U64k FRESH under live bys) ===
+=== warmup (first-traffic law; warms p12b interlock + first graphs)
+prompt sizes: U32k=31805 U64k=63784 U8k=7961 tok
+raw -> /root/build/p65/p65_tl_defer_v51.json (8447 chunks, 64 events)
+  text[warmup] 20ch: 'Counting from 1 to 1'
+  text[U32k] 157ch: 'Based on the notes provided, here are the details for **stage 4272**:\n\n*   **Note 55:** The measured'
+  text[C32k] 157ch: 'Based on the notes provided, here are the details for **stage 4272**:\n\n*   **Note 55:** The measured'
+  text[byst1] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[byst3] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[byst4] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[byst5] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[byst0] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[byst2] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[U64k] 150ch: 'Based on the notes provided, here are the measurements for **stage 4212**:\n\n1.  **Note 128:** The me'
+  text[bys23] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[bys21] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[bys20] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[bys22] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[bys24] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[bys25] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+
+=== long-stream faces (perf_counter, wave-relative)
+  U32k: TTFT=  23.47s total=  24.35s (start @ wave+  25.0s)
+  C32k: TTFT=   1.30s total=   2.20s (start @ wave+  55.0s)
+  U64k: TTFT=  53.29s total=  54.17s (start @ wave+  85.0s)
+
+=== bystander inter-chunk gaps (12 streams, greedy, k3)
+  baseline: n=2310 p50=   53.5ms p95=   54.8ms
+  window                 n    p50 ms    p95 ms    max ms #>2xb95  stall_s
+  W_base              2310      53.5      54.8     806.8      30    10.83
+  W_U32k_start         228     994.8    1295.8    1311.6     126   132.66
+  W_U32k_end           417      55.3      59.1      59.9       0     0.00
+  W_C32k_start(cached)   144      60.0      62.2     991.5       6     5.60
+  W_C32k_end           366      54.4      60.5     302.2       6     1.49
+  W_U64k_start         366    1184.8    1595.1    2295.8     234   305.33
+  W_U64k_end           414      55.4      64.5      66.5       0     0.00
+
+P65_CAPTURE: DONE
+prompt sizes: U32k=31805 U64k=63784 U8k=7961 tok
+  U32k: TTFT=  23.47s total=  24.35s (start @ wave+  25.0s)
+  C32k: TTFT=   1.30s total=   2.20s (start @ wave+  55.0s)
+  U64k: TTFT=  53.29s total=  54.17s (start @ wave+  85.0s)
+STORE_ROWS=0
+0
+=== [4] run7n t0 ===
+=== bench_run7n (cert16s4 methodology replica) temp=0.0 thinking=off sampling=top_p0.95/top_k20/min_p0/pp0/rp1.0 ===
+agg4x256#1 wall=3.84s aggregate=266.49 tok/s ok_streams=4/4 [256tok/3.8s 256tok/3.7s 256tok/3.8s 256tok/3.8s]
+agg4x256#2 wall=3.46s aggregate=296.24 tok/s ok_streams=4/4 [256tok/3.5s 256tok/3.4s 256tok/3.4s 256tok/3.5s]
+solo200 n=200 dt=2.37s tps=84.46
+solo200 n=200 dt=2.37s tps=84.46
+BENCH_RUN7N_DONE
+=== [5] drain 30s, then r48h (thr2048 + ARC_LMC=0, U32k only) ===
+1
+FATAL: serve launch failed
+Error response from daemon: container f7d09d09b513eedf266fd4f469881361eeabf8825ea9f7cd47162934352b4f21 is not running

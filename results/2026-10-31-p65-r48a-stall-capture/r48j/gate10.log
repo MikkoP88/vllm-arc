@@ -1,0 +1,48 @@
+=== [1] probe2 image (instrumented adapter baked in) ===
+b138b19607f82ef55562d294f5b7f679  /opt/venv/lib/python3.12/site-packages/lmcache/integration/vllm/vllm_v1_adapter.py
+DEFER_MARKER=4
+ROWLOG_MARKER=4
+=== [2] boot probe2 (thr2048 + DEFER env) ===
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert3-p65probe2 name=arc-test graph=1 spec=3 gmu=0.8 mnbt=8192 seqs=64 xgc=0 port=8000 01:32:25
+HEALTH=OK after ~285s
+ENV_CHECK=LMC_DEFER_CHUNK_STORE=1
+=== [3] capture v5.1 (U32k FRESH only, W2MT default) ===
+=== warmup (first-traffic law; warms p12b interlock + first graphs)
+prompt sizes: U32k=31805 U64k=63784 U8k=7961 tok
+raw -> /root/build/p65/p65_tl_defer3_v51.json (6158 chunks, 56 events)
+  text[warmup] 20ch: 'Counting from 1 to 1'
+  text[U32k] 157ch: 'Based on the notes provided, here are the details for **stage 4272**:\n\n*   **Note 55:** The measured'
+  text[byst0] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[byst2] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[byst1] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[byst3] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[byst4] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[byst5] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[bys23] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[bys24] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[bys25] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[bys20] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[bys21] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[bys22] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+
+=== long-stream faces (perf_counter, wave-relative)
+  U32k: TTFT=  23.54s total=  24.42s (start @ wave+  25.0s)
+
+=== bystander inter-chunk gaps (12 streams, greedy, k3)
+  baseline: n=2310 p50=   53.5ms p95=   54.9ms
+  window                 n    p50 ms    p95 ms    max ms #>2xb95  stall_s
+  W_base              2310      53.5      54.9    1026.8      24    10.38
+  W_U32k_start         234     919.6    1292.2    1315.0     126   135.41
+  W_U32k_end           418      55.3      59.0      60.4       0     0.00
+
+P65_CAPTURE: DONE
+prompt sizes: U32k=31805 U64k=63784 U8k=7961 tok
+  U32k: TTFT=  23.54s total=  24.42s (start @ wave+  25.0s)
+=== [4] the instrumented verdict ===
+ROWLOG_LINES=0
+0
+...
+STORE classes:
+    106 Stored 832 out of total
+     44 Stored 1664 out of total
+P65_LEG_R48J: DONE

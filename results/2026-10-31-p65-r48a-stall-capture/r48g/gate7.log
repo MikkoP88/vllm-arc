@@ -1,0 +1,60 @@
+=== [A1] serve copy: threshold 2048 (connector ON, certified otherwise) ===
+1
+=== [A2] boot A ===
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert3 name=arc-test graph=1 spec=3 gmu=0.8 mnbt=8192 seqs=64 xgc=0 port=8000 00:40:01
+HEALTH=OK after ~305s
+long_prefill_token_threshold': 2048
+=== [A3] capture v5 (U32k FRESH + C32k replay + U64k FRESH) ===
+=== warmup (first-traffic law; warms p12b interlock + first graphs)
+prompt sizes: U32k=31805 U64k=63784 U8k=7961 tok
+raw -> /root/build/p65/p65_tl_lpt_v5.json (6200 chunks, 64 events)
+  text[warmup] 20ch: 'Counting from 1 to 1'
+  text[U32k] 157ch: 'Based on the notes provided, here are the details for **stage 4272**:\n\n*   **Note 55:** The measured'
+  text[C32k] 157ch: 'Based on the notes provided, here are the details for **stage 4272**:\n\n*   **Note 55:** The measured'
+  text[byst0] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[byst3] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[byst2] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[byst4] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[byst5] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[byst1] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[bys23] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[bys25] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[bys20] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[bys21] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[bys22] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[bys24] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[U64k] 150ch: 'Based on the notes provided, here are the measurements for **stage 4212**:\n\n1.  **Note 128:** The me'
+
+=== long-stream faces (perf_counter, wave-relative)
+  U32k: TTFT=  22.78s total=  23.66s (start @ wave+  25.0s)
+  C32k: TTFT=   1.20s total=   2.10s (start @ wave+  55.0s)
+  U64k: TTFT=  49.91s total=  50.51s (start @ wave+  85.0s)
+
+=== bystander inter-chunk gaps (12 streams, greedy, k3)
+  baseline: n=2322 p50=   53.5ms p95=   55.0ms
+  window                 n    p50 ms    p95 ms    max ms #>2xb95  stall_s
+  W_base              2322      53.5      55.0     331.5      42    11.12
+  W_U32k_start         240     728.9    1290.6    1308.8     120   129.19
+  W_U32k_end           419      55.3      59.1      59.6       0     0.00
+  W_C32k_start(cached)   132      60.3      69.0     989.4       6     5.59
+  W_C32k_end           300      54.9     307.6     320.7      24     6.21
+  W_U64k_start           0        —         —         —       —        —
+  W_U64k_end             0        —         —         —       —        —
+
+P65_CAPTURE: DONE
+prompt sizes: U32k=31805 U64k=63784 U8k=7961 tok
+  U32k: TTFT=  22.78s total=  23.66s (start @ wave+  25.0s)
+  C32k: TTFT=   1.20s total=   2.10s (start @ wave+  55.0s)
+  U64k: TTFT=  49.91s total=  50.51s (start @ wave+  85.0s)
+=== [A4] run7n t0 (pre-fix baseline) ===
+=== bench_run7n (cert16s4 methodology replica) temp=0.0 thinking=off sampling=top_p0.95/top_k20/min_p0/pp0/rp1.0 ===
+agg4x256#1 wall=3.85s aggregate=266.01 tok/s ok_streams=4/4 [256tok/3.7s 256tok/3.8s 256tok/3.8s 256tok/3.8s]
+agg4x256#2 wall=3.45s aggregate=296.49 tok/s ok_streams=4/4 [256tok/3.4s 256tok/3.5s 256tok/3.4s 256tok/3.4s]
+solo200 n=200 dt=2.37s tps=84.39
+solo200 n=200 dt=2.37s tps=84.39
+BENCH_RUN7N_DONE
+=== [B1] boot B: threshold 2048 + ARC_LMC=0 ===
+1
+FATAL: serve launch failed
+OCI runtime exec failed: exec failed: unable to start container process: error executing setns process: exit status 1
+Error response from daemon: container c1ee28a16a765039becb8ff82c628468568ab9bee863c6d4247581300b37b06a is not running

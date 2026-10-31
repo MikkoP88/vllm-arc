@@ -1,0 +1,41 @@
+=== [1] rig-local serve copy with --long-prefill-token-threshold 2048 ===
+197:  --long-prefill-token-threshold 2048 \
+=== [2] boot cert3 + LPT2048 (k3 + graphs + 25-var chain) ===
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert3 name=arc-test graph=1 spec=3 gmu=0.8 mnbt=8192 seqs=64 xgc=0 port=8000 23:08:07
+HEALTH=OK after ~305s
+1
+long_prefill_token_threshold': 2048
+=== [3] stall-timeline capture (LPT2048 posture) ===
+=== warmup (first-traffic law; warms p12b interlock + first graphs)
+prompt sizes: U32k=31805 U64k=63784 U8k=7961 tok
+raw -> /root/build/p65/p65_timeline_lpt2048.json (6199 chunks, 51 events)
+
+=== long-stream faces (perf_counter, wave-relative)
+  U32k: TTFT=  76.89s total=  96.59s (start @ wave+  25.0s)
+  C32k: TTFT=  65.26s total=  66.95s (start @ wave+  55.0s)
+  U8k: TTFT=  50.27s total=  51.95s (start @ wave+  70.0s)
+  U64k: TTFT=  35.27s total=  37.04s (start @ wave+  85.0s)
+
+=== bystander inter-chunk gaps (12 streams, greedy, k3)
+  baseline: n=2310 p50=   53.5ms p95=   54.9ms
+  window                 n    p50 ms    p95 ms    max ms #>2xb95  stall_s
+  W_base              2310      53.5      54.9     791.9      24    10.52
+  W_U32k_start         306    1399.5    4829.2    4947.2     294   666.75
+  W_U32k_end           600      68.0     128.1     129.3     132     9.44
+  W_C32k_start(cached)   301    2916.9    4947.1    5350.7     283   721.58
+  W_C32k_end           625      67.8     126.7     129.1      96     6.78
+  W_U8k_start          242    2959.2    4947.2    5350.7     230   590.09
+  W_U8k_end            626      67.8     126.7     129.1      96     6.78
+  W_U64k_start         194     129.3    5350.2    5350.7     182   427.10
+  W_U64k_end           636      67.8     126.7     129.1      84     5.91
+
+P65_CAPTURE: DONE
+=== [4] run7n t0 throughput regression (fresh-boot face) ===
+=== bench_run7n (cert16s4 methodology replica) temp=0.0 thinking=off sampling=top_p0.95/top_k20/min_p0/pp0/rp1.0 ===
+agg4x256#1 wall=3.83s aggregate=267.45 tok/s ok_streams=4/4 [256tok/3.8s 256tok/3.7s 256tok/3.7s 256tok/3.8s]
+agg4x256#2 wall=3.41s aggregate=300.07 tok/s ok_streams=4/4 [256tok/3.4s 256tok/3.4s 256tok/3.4s 256tok/3.4s]
+solo200 n=200 dt=2.37s tps=84.45
+solo200 n=200 dt=2.37s tps=84.43
+BENCH_RUN7N_DONE
+=== [5] engine log ===
+P65_LEG_R48B: DONE

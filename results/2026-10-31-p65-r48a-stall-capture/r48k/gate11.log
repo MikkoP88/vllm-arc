@@ -1,0 +1,70 @@
+=== [1] probe3 image (lmcint deferral baked in) ===
+183ac90a4711a9638bfb108bb05eb4a9  /opt/venv/lib/python3.12/site-packages/vllm_gaudi/xpu/patches/lmcint/vllm_v1_adapter.py
+DEFER_MARKER=4
+=== [2] boot probe3 (thr2048 + DEFER env) ===
+1
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert3-p65probe3 name=arc-test graph=1 spec=3 gmu=0.8 mnbt=8192 seqs=64 xgc=0 port=8000 01:43:33
+HEALTH=OK after ~300s
+ENV_CHECK=LMC_DEFER_CHUNK_STORE=1
+SRC_OVERRIDE=9
+=== [3] capture v5.1 (U32k + U64k, W2MT=4000 — r48iv2 A/B) ===
+=== warmup (first-traffic law; warms p12b interlock + first graphs)
+prompt sizes: U32k=31805 U64k=63784 U8k=7961 tok
+raw -> /root/build/p65/p65_tl_defer4_v51.json (9926 chunks, 60 events)
+  text[warmup] 20ch: 'Counting from 1 to 1'
+  text[U32k] 153ch: 'Based on the notes provided, here are the measurements for **stage 4272**:\n\n1.  **Note 55**: The mea'
+  text[byst1] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[byst4] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[byst0] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[byst2] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[byst3] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[byst5] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[U64k] 150ch: 'Based on the notes provided, here are the measurements for **stage 4212**:\n\n1.  **Note 128:** The me'
+  text[bys20] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[bys24] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[bys25] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[bys21] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[bys22] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[bys23] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+
+=== long-stream faces (perf_counter, wave-relative)
+  U32k: TTFT=  27.06s total=  28.29s (start @ wave+  25.0s)
+  U64k: TTFT=  51.90s total=  53.50s (start @ wave+  85.0s)
+
+=== bystander inter-chunk gaps (12 streams, greedy, k3)
+  baseline: n=2310 p50=   53.4ms p95=   54.8ms
+  window                 n    p50 ms    p95 ms    max ms #>2xb95  stall_s
+  W_base              2310      53.4      54.8    1048.6      24    10.57
+  W_U32k_start         198    1012.7    2231.4    2237.1     132   158.44
+  W_U32k_end           414      55.3      59.1      62.0       0     0.00
+  W_U64k_start         294    1224.4    1597.6    2007.7     240   301.55
+  W_U64k_end           405      55.4      64.7      66.4       0     0.00
+
+P65_CAPTURE: DONE
+prompt sizes: U32k=31805 U64k=63784 U8k=7961 tok
+  U32k: TTFT=  27.06s total=  28.29s (start @ wave+  25.0s)
+  U64k: TTFT=  51.90s total=  53.50s (start @ wave+  85.0s)
+=== [4] the fix verdict ===
+DEFER_ROWS=64
+(EngineCore pid=698) [33;20m[2026-10-31 01:48:31,996] LMCache WARNING:[0m ARC_P65_DEFER req=arc-warmup-max-batch-abda6e44 in_len=1664 prompt_len=8197 num_saved=0 [3m(vllm_v1_adapter.py:406:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.vllm_v1_adapter)[0m
+(EngineCore pid=698) [33;20m[2026-10-31 01:48:32,000] LMCache WARNING:[0m ARC_P65_DEFER req=arc-warmup-max-batch-abda6e44 in_len=3328 prompt_len=8197 num_saved=0 [3m(vllm_v1_adapter.py:406:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.vllm_v1_adapter)[0m
+(EngineCore pid=698) [33;20m[2026-10-31 01:48:32,914] LMCache WARNING:[0m ARC_P65_DEFER req=arc-warmup-max-batch-abda6e44 in_len=4992 prompt_len=8197 num_saved=0 [3m(vllm_v1_adapter.py:406:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.vllm_v1_adapter)[0m
+(EngineCore pid=698) [33;20m[2026-10-31 01:48:33,889] LMCache WARNING:[0m ARC_P65_DEFER req=arc-warmup-max-batch-abda6e44 in_len=6656 prompt_len=8197 num_saved=0 [3m(vllm_v1_adapter.py:406:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.vllm_v1_adapter)[0m
+(EngineCore pid=698) [33;20m[2026-10-31 01:49:06,254] LMCache WARNING:[0m ARC_P65_DEFER req=chatcmpl-90b50705da345d62-95b4193c in_len=1664 prompt_len=31817 num_saved=0 [3m(vllm_v1_adapter.py:406:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.vllm_v1_adapter)[0m
+(EngineCore pid=698) [33;20m[2026-10-31 01:50:49,945] LMCache WARNING:[0m ARC_P65_DEFER req=chatcmpl-9d9651042cccec3c-a91dd4c7 in_len=59904 prompt_len=63796 num_saved=0 [3m(vllm_v1_adapter.py:406:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.vllm_v1_adapter)[0m
+(EngineCore pid=698) [33;20m[2026-10-31 01:50:51,504] LMCache WARNING:[0m ARC_P65_DEFER req=chatcmpl-9d9651042cccec3c-a91dd4c7 in_len=61568 prompt_len=63796 num_saved=0 [3m(vllm_v1_adapter.py:406:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.vllm_v1_adapter)[0m
+(EngineCore pid=698) [33;20m[2026-10-31 01:50:53,086] LMCache WARNING:[0m ARC_P65_DEFER req=chatcmpl-9d9651042cccec3c-a91dd4c7 in_len=62400 prompt_len=63796 num_saved=0 [3m(vllm_v1_adapter.py:406:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.vllm_v1_adapter)[0m
+STORE classes:
+    220 Stored 832 out of total
+      2 Stored 7488 out of total
+      2 Stored 63232 out of total
+      2 Stored 4992 out of total
+      2 Stored 31616 out of total
+=== [5] run7n t0 ===
+=== bench_run7n (cert16s4 methodology replica) temp=0.0 thinking=off sampling=top_p0.95/top_k20/min_p0/pp0/rp1.0 ===
+agg4x256#1 wall=3.85s aggregate=266.24 tok/s ok_streams=4/4 [256tok/3.8s 256tok/3.8s 256tok/3.8s 256tok/3.7s]
+agg4x256#2 wall=3.41s aggregate=300.55 tok/s ok_streams=4/4 [256tok/3.4s 256tok/3.4s 256tok/3.4s 256tok/3.4s]
+solo200 n=200 dt=2.37s tps=84.43
+solo200 n=200 dt=2.38s tps=83.99
+BENCH_RUN7N_DONE
+P65_LEG_R48K: DONE

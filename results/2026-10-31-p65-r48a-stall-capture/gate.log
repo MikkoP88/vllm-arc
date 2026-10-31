@@ -1,0 +1,27 @@
+=== [1] boot cert3 (k3 + graphs + 25-var chain) ===
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert3 name=arc-test graph=1 spec=3 gmu=0.8 mnbt=8192 seqs=64 xgc=0 port=8000 22:53:28
+HEALTH=OK after ~300s
+=== [2] stall-timeline capture (host-side python3) ===
+=== warmup (first-traffic law; warms p12b interlock + first graphs)
+prompt sizes: F1/F2=31842 tok, F3=7982 tok
+raw -> /root/build/p65/p65_timeline.json (3118 chunks, 30 events)
+
+=== long-stream faces (perf_counter, wave-relative)
+  L1_32k_uncached: TTFT=  17.82s total=  18.70s (start @ wave+  20.0s)
+  L2_32k_cached: TTFT=   1.09s total=   1.72s (start @ wave+  60.0s)
+  L3_8k_uncached: TTFT=   1.10s total=   1.77s (start @ wave+  85.0s)
+
+=== bystander inter-chunk gaps (6 streams, greedy, k3)
+  baseline: n=1849 p50=   53.1ms p95=   54.3ms
+  window                 n    p50 ms    p95 ms    max ms #>2xb95  stall_s
+  W_base              1849      53.1      54.3     786.4      24     9.02
+  W_F1_start           161      58.7    3991.3    4302.3      36   103.85
+  W_F2_start(cached)     0        —         —         —       —        —
+  W_F1_end             396      54.7      59.5     302.6       6     1.50
+  W_F2_end               0        —         —         —       —        —
+  W_F3_start             0        —         —         —       —        —
+
+P65_CAPTURE: DONE
+=== [3] engine log + keylines ===
+0
+P65_LEG: DONE

@@ -370,10 +370,44 @@ class ReqMeta:
             else input_token_len
         )
 
+        # arc p65 fork delta (2026-10-31): chunk-set store deferral. Under
+        # --long-prefill-token-threshold chunking, every intermediate
+        # prefill-chunk row carries its own save span, so the worker's
+        # wait_for_save snapshots + stores EVERY ~1-s scheduler step — the
+        # [vii-a] amplification measured in results/2026-10-31-p65-r48a-
+        # stall-capture (r48b/r48e/r48f: +24.6 s 64k-fresh TTFT, bystander
+        # gaps growing to ~5 s, ~5.5x per-token store-event density at
+        # thr2048). Deferral keeps the row (load specs and mamba addressing
+        # must ride it) but marks it non-saveable and leaves
+        # num_saved_tokens un-advanced, so the final-chunk row stores the
+        # whole span in ONE shot and the mamba boundary registry banks all
+        # materialized boundaries in a single sweep (the worker-side loops
+        # skip can_save=False rows; the ordering law — attn store only
+        # after its mamba store — is preserved on the final row).
+        # Prefill-chunk rows only (input_token_len < prompt_len): decode
+        # rows keep save_decode_cache semantics. Off by default.
+        # LMC_DEFER_MIN_TOKENS (default 0 = defer every chunked prefill):
+        # r48h proved the per-chunk events are ~free at 32k (LMC == nolmc,
+        # 22.78 vs 22.39 s) while r48k showed the whole-span one-shot store
+        # (~0.5 GB at ~0.24 GB/s contended) REGRESSES that face (+4.2 s);
+        # the win only exists where the event backlog compounds (64k:
+        # +24.6 s at 12 bys / +6.2 s at 6) — so gate deferral to prompts
+        # at least this long (certified chain sets 40960).
+        defer_chunk_store = (
+            os.environ.get("LMC_DEFER_CHUNK_STORE", "0") == "1"
+            and not skip_save
+            and tracker.disagg_spec is None
+            and input_token_len < tracker.prompt_len
+            and tracker.prompt_len
+            >= int(os.environ.get("LMC_DEFER_MIN_TOKENS", "0"))
+        )
+
         # If we need to save, update the number of saved tokens
-        if not skip_save:
+        if not skip_save and not defer_chunk_store:
             tracker.num_saved_tokens = num_tokens_to_save
-        save_spec = SaveSpec(skip_leading_tokens, not skip_save)
+        save_spec = SaveSpec(
+            skip_leading_tokens, not skip_save and not defer_chunk_store
+        )
 
         # Calculate the token ids and slot mappings for load and save
         token_ids = input_token_ids[:num_tokens_to_save]
