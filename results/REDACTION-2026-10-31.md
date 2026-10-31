@@ -105,3 +105,27 @@ addresses:
   "+6/+6 → expect 492" scratch figure was the author's arithmetic slip,
   not a file discrepancy). Post-pass grep: 0 raw rig, 0 raw client;
   `tools/leak_sweep.sh` clean.
+
+## Pass 3 (same day, evening) — r71 P2P legs evidence (p71, P6.11)
+
+The r71 idle-window legs banked into
+`results/2026-10-31-p71-r71-p2p-analysis/`. Same `perl -pi` law, applied
+before first commit; a THIRD substitution joins the set here — the rig's
+**hostname** (printed by oneCCL's `build_host_info` debug line and the
+engine's topology prints):
+
+- `10.20.3.<host>` → `10.20.3.REDACTED` and
+  `<hostname>` → `REDACTED-HOST` (hostname = 8 bytes → 13, +5 each).
+- `r71a_attempt1_invalid_numeric_level/serve_diag.log`: 1 rig address
+  (+6). 
+- `r71a_ccl_diag_lines.txt` (pre-gzip): 4 rig (+24) + 6 hostname
+  (+30) = +54 — verified 56,478,532 → 56,478,586.
+- `r71a_serve_diag.log` (pre-gzip): 5 rig (+30) + 12 hostname (+60) =
+  +90 — verified 56,586,510 → 56,586,600.
+- The two full logs are banked **gzipped** (byte-exact payload of the
+  redacted files; 687 KB / 708 KB); rig-raw md5s recorded in
+  `r71a_extracts.txt` for provenance. `r71b_d2d.txt`,
+  `r71a_extracts.txt`, `r71a_first_resp.json` contain no raw
+  addresses/hostnames (checked).
+- Post-pass grep: 0 raw rig, 0 raw hostname in the dir;
+  `tools/leak_sweep.sh` clean.
