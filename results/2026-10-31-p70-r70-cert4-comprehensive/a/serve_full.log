@@ -1,0 +1,1032 @@
+INFO 10-31 10:25:24 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+INFO 10-31 10:25:24 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+INFO 10-31 10:25:24 [__init__.py:54] - hpu -> vllm_gaudi:register
+INFO 10-31 10:25:24 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+INFO 10-31 10:25:25 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+INFO 10-31 10:25:25 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+INFO 10-31 10:25:25 [__init__.py:54] - hpu -> vllm_gaudi:register
+INFO 10-31 10:25:25 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+INFO 10-31 10:25:25 [__init__.py:272] Platform plugin arc is activated
+INFO 10-31 10:25:25 [__init__.py:272] Platform plugin arc is activated
+WARNING 10-31 10:25:38 [argparse_utils.py:276] With `vllm serve`, you should provide the model as a positional argument or in a config file instead of via the `--model` option. The `--model` option will be removed in a future version.
+(APIServer pid=13) INFO 10-31 10:25:38 [api_utils.py:347] 
+(APIServer pid=13) INFO 10-31 10:25:38 [api_utils.py:347]        █     █     █▄   ▄█
+(APIServer pid=13) INFO 10-31 10:25:38 [api_utils.py:347]  ▄▄ ▄█ █     █     █ ▀▄▀ █  version 0.30.0
+(APIServer pid=13) INFO 10-31 10:25:38 [api_utils.py:347]   █▄█▀ █     █     █     █  model   /models/target
+(APIServer pid=13) INFO 10-31 10:25:38 [api_utils.py:347]    ▀▀  ▀▀▀▀▀ ▀▀▀▀▀ ▀     ▀
+(APIServer pid=13) INFO 10-31 10:25:38 [api_utils.py:347] 
+(APIServer pid=13) INFO 10-31 10:25:38 [api_utils.py:286] non-default args: {'model_tag': '/models/target', 'chat_template': '/root/chat_template_qwen38_high.jinja', 'enable_auto_tool_choice': True, 'tool_call_parser': 'qwen3_coder', 'model': '/models/target', 'trust_remote_code': True, 'dtype': 'float16', 'max_model_len': 262144, 'quantization': 'fp8', 'served_model_name': ['qwen3.8-27b-fp8'], 'reasoning_parser': 'qwen3', 'tensor_parallel_size': 2, 'block_size': 64, 'gpu_memory_utilization': 0.8, 'kv_cache_dtype': 'fp8_e4m3', 'enable_prefix_caching': True, 'mamba_ssm_cache_dtype': 'float16', 'mamba_cache_mode': 'align', 'max_num_batched_tokens': 8192, 'max_num_seqs': 64, 'disable_hybrid_kv_cache_manager': False, 'speculative_config': {'method': 'mtp', 'num_speculative_tokens': 3}, 'kv_transfer_config': KVTransferConfig(kv_connector='LMCacheConnectorV1', engine_id='arc-p40', kv_buffer_device='xpu', kv_buffer_size=1000000000.0, kv_role='kv_both', kv_rank=None, kv_parallel_size=1, kv_ip='127.0.0.1', kv_port=14579, kv_connector_extra_config={'use_native': True, 'lmcache.extra_config': {'mamba_pool_ratio': 2}}, kv_connector_module_path=None, enable_permute_local_kv=False, kv_load_failure_policy='fail'), 'compilation_config': {'mode': <CompilationMode.NONE: 0>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': [], 'ir_enable_torch_wrap': None, 'splitting_ops': None, 'compile_mm_encoder': False, 'cudagraph_mm_encoder': False, 'encoder_cudagraph_token_budgets': [], 'encoder_cudagraph_max_vision_items_per_batch': 0, 'encoder_cudagraph_max_frames_per_batch': None, 'compile_sizes': None, 'compile_ranges_endpoints': None, 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.FULL_DECODE_ONLY: (2, 0)>, 'cudagraph_num_of_warmups': 0, 'cudagraph_capture_sizes': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 20, 25, 30, 35, 40, 45, 48, 50, 55, 60, 64, 65, 70, 75, 80, 85, 90, 95, 96, 100, 105, 110, 112, 115, 120, 125, 128, 130, 135, 140, 145, 150, 155, 160, 165, 170, 175, 180, 185, 190, 192, 195, 200, 205, 210, 215, 220, 224, 225, 230, 235, 240, 245, 250, 255, 256, 260, 265, 270, 275, 280, 285, 290, 295, 300, 305, 310, 315, 320], 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': None, 'pass_config': {}, 'max_cudagraph_capture_size': None, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': False}, 'local_cache_dir': None, 'fast_moe_cold_start': None, 'static_all_moe_layers': []}}
+(APIServer pid=13) WARNING 10-31 10:25:38 [envs.py:2248] Unknown vLLM environment variable detected: VLLM_QUANTIZE_Q40_LIB
+(APIServer pid=13) INFO 10-31 10:26:03 [model.py:692] Resolved architecture: Qwen3_5ForConditionalGeneration
+(APIServer pid=13) WARNING 10-31 10:26:03 [model.py:2364] Casting torch.bfloat16 to torch.float16.
+(APIServer pid=13) INFO 10-31 10:26:03 [model.py:2030] Using max model len 262144
+(APIServer pid=13) WARNING 10-31 10:26:05 [indexer_topk.py:29] Failed to import the DeepSelect extension (vllm._deepselect_C): No module named 'vllm._deepselect_C'
+(APIServer pid=13) INFO 10-31 10:26:05 [cache.py:343] Using fp8_e4m3 data type to store kv cache. It reduces the GPU memory footprint and boosts the performance. Meanwhile, it may cause accuracy drop without a proper scaling factor
+(APIServer pid=13) INFO 10-31 10:26:21 [model.py:692] Resolved architecture: Qwen3_5MTP
+(APIServer pid=13) WARNING 10-31 10:26:21 [model.py:2364] Casting torch.bfloat16 to torch.float16.
+(APIServer pid=13) INFO 10-31 10:26:21 [model.py:2030] Using max model len 262144
+(APIServer pid=13) INFO 10-31 10:26:21 [model.py:900] Disabled mm_prefix attention mode because multimodal inputs are configuration-disabled. Attention backends without mm_prefix support may now be selected.
+(APIServer pid=13) WARNING 10-31 10:26:21 [speculative.py:1361] Enabling num_speculative_tokens > 1 will run multiple times of forward on same MTP layer,which may result in lower acceptance rate
+(APIServer pid=13) INFO 10-31 10:26:21 [scheduler.py:288] Chunked prefill is enabled with max_num_batched_tokens=8192.
+(APIServer pid=13) WARNING 10-31 10:26:21 [config.py:819] Qwen3.5 model specifies mamba_ssm_dtype='float32' in its config, but --mamba-ssm-cache-dtype='float16' was passed. Using the user-specified value.
+(APIServer pid=13) WARNING 10-31 10:26:21 [vllm.py:1570] Inductor compilation was disabled by user settings, optimizations settings that are only active during inductor compilation will be ignored.
+(APIServer pid=13) INFO 10-31 10:26:21 [kernel.py:416] Final IR op priority after setting platform defaults: IrOpPriorityConfig(rms_norm=['vllm_c', 'native'], fused_add_rms_norm=['vllm_c', 'native'], gelu_and_mul_sparse=['native'])
+(APIServer pid=13) INFO 10-31 10:26:21 [platform.py:172] ArcXpuPlatform: wheel hook lmcache_connector <- patches.lmcache_hma_connector OK
+(APIServer pid=13) WARNING 10-31 10:26:21 [xpu.py:308] XPU Graph support is experimental and currently only supports single-GPU execution.
+(APIServer pid=13) INFO 10-31 10:26:21 [xpu.py:382] XPU platform: set server shutdown_timeout=5.
+(APIServer pid=13) INFO 10-31 10:26:21 [graph_safe_output.py:665] ArcXpuPlatform: XPU graph boundary hygiene installed (pid 13, XPUGraph capture_begin/capture_end/replay + graph context __exit__ wrapped).
+(APIServer pid=13) INFO 10-31 10:26:21 [graph_safe_output.py:791] ArcXpuPlatform: zombie stream-reroute guards installed (pid 13, set_stream substitution + wait_stream skip + Event.record reroute + synchronize tripwire).
+(APIServer pid=13) INFO 10-31 10:26:21 [graph_safe_output.py:925] ArcXpuPlatform: runner-entry hygiene installed (pid 13, GPUModelRunner.execute_model + sample_tokens wrapped).
+(APIServer pid=13) INFO 10-31 10:26:21 [graph_safe_output.py:971] ArcXpuPlatform: capture-stream fix installed (pid 13, captures ride torch.xpu.graph.default_capture_stream, EAGERLY INITED before capture #1 — the serving default never enters capture; champion 0.26.1 discipline, r9).
+(APIServer pid=13) INFO 10-31 10:26:21 [graph_safe_output.py:520] ArcXpuPlatform: r12b kernel-launch tracer installed (triton:CachingAutotuner.run).
+(APIServer pid=13) INFO 10-31 10:26:21 [graph_safe_output.py:1112] ArcXpuPlatform: graph-safe output patch installed (pid 13, AsyncOutput/AsyncPoolingOutput __init__ + get_output wrapped).
+(APIServer pid=13) INFO 10-31 10:26:21 [speculator_full_capture.py:117] ArcXpuPlatform: speculator FULL-capture patch installed (pid 13, SpeculatorCudaGraphManager.__init__ wrapped).
+(APIServer pid=13) INFO 10-31 10:26:21 [first_request_warmup.py:123] ArcXpuPlatform: first-request warmup interlock installed (defect-b lane W, r16 evidence)
+(APIServer pid=13) INFO 10-31 10:26:21 [gdn_metadata_fastpath.py:286] [arc-p10] gdn metadata fastpath installed (steady spec-decode builds; stock build kept for prefill/mixed)
+(APIServer pid=13) INFO 10-31 10:26:21 [fp8_block_w8a16.py:97] ArcXpuPlatform: fp8 block linear reroute ACTIVE — XPUFp8BlockScaledMMKernel.apply_input_quant=False, apply_block_scaled_mm -> _xpu_C.fp8_gemm_w8a16 (stock fallback kept; r40: 3-8x/GEMM decode Ms, relerr 4-5e-4)
+(APIServer pid=13) INFO 10-31 10:26:21 [platform.py:298] ArcXpuPlatform: Intel Arc Xe2 posture active (Intel(R) Graphics [0xe223]).
+(APIServer pid=13) INFO 10-31 10:26:21 [platform.py:307] ArcXpuPlatform: graph posture cudagraph_mode=FULL_DECODE_ONLY capture_sizes=(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 20, 25, 30, 35, 40, 45, 48, 50, 55, 60, 64, 65, 70, 75, 80, 85, 90, 95, 96, 100, 105, 110, 112, 115, 120, 125, 128, 130, 135, 140, 145, 150, 155, 160, 165, 170, 175, 180, 185, 190, 192, 195, 200, 205, 210, 215, 220, 224, 225, 230, 235, 240, 245, 250, 255, 256, 260, 265, 270, 275, 280, 285, 290, 295, 300, 305, 310, 315, 320) (VLLM_XPU_ENABLE_XPU_GRAPH=True).
+(APIServer pid=13) INFO 10-31 10:26:21 [vllm.py:2670] EC/KV consumer: accepting pre-computed-embedding inputs, which this role is sent by definition.
+(APIServer pid=13) INFO 10-31 10:26:21 [vllm.py:2674] EC/KV consumer: pre-computed-embedding inputs may omit the embedding tensor.
+(APIServer pid=13) INFO 10-31 10:26:21 [compilation.py:336] Enabled custom fusions: norm_quant, act_quant
+(APIServer pid=13) [transformers] The `use_fast` parameter is deprecated and will be removed in a future version. Use `backend="torchvision"` instead of `use_fast=True`, or `backend="pil"` instead of `use_fast=False`.
+INFO 10-31 10:26:39 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+INFO 10-31 10:26:39 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+INFO 10-31 10:26:39 [__init__.py:54] - hpu -> vllm_gaudi:register
+INFO 10-31 10:26:39 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+INFO 10-31 10:26:39 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+INFO 10-31 10:26:39 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+INFO 10-31 10:26:39 [__init__.py:54] - hpu -> vllm_gaudi:register
+INFO 10-31 10:26:39 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+INFO 10-31 10:26:39 [__init__.py:272] Platform plugin arc is activated
+INFO 10-31 10:26:39 [__init__.py:272] Platform plugin arc is activated
+(EngineCore pid=698) INFO 10-31 10:26:50 [core.py:123] Initializing a V1 LLM engine (v0.30.0) with config: model='/models/target', speculative_config=SpeculativeConfig(method='mtp', model='/models/target', num_spec_tokens=3), tokenizer='/models/target', skip_tokenizer_init=False, tokenizer_mode=auto, revision=None, tokenizer_revision=None, trust_remote_code=True, dtype=torch.float16, max_seq_len=262144, download_dir=None, load_format=auto, tensor_parallel_size=2, pipeline_parallel_size=1, data_parallel_size=1, decode_context_parallel_size=1, dcp_comm_backend=ag_rs, disable_custom_all_reduce=True, quantization=fp8, quantization_config=None, enforce_eager=False, enable_return_routed_experts=False, kv_cache_dtype=fp8_e4m3, device_config=xpu, structured_outputs_config=StructuredOutputsConfig(backend='auto', disable_any_whitespace=False, disable_additional_properties=False, reasoning_parser='qwen3', reasoning_parser_plugin='', enable_in_reasoning=False), observability_config=ObservabilityConfig(show_hidden_metrics_for_version=None, otlp_traces_endpoint=None, collect_detailed_traces=None, per_request_spec_decode_metrics='none', kv_cache_metrics=False, kv_cache_metrics_sample=0.01, cudagraph_metrics=False, enable_layerwise_nvtx_tracing=False, enable_mfu_metrics=False, enable_mm_processor_stats=False, enable_logging_iteration_details=False, jit_monitor_mode='warn', jit_monitor_verbose=False), seed=0, served_model_name=qwen3.8-27b-fp8, enable_prefix_caching=True, enable_chunked_prefill=True, pooler_config=None, compilation_config={'mode': <CompilationMode.NONE: 0>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': ['+quant_fp8', 'all', '+quant_fp8'], 'ir_enable_torch_wrap': False, 'splitting_ops': [], 'compile_mm_encoder': False, 'cudagraph_mm_encoder': False, 'encoder_cudagraph_token_budgets': [], 'encoder_cudagraph_max_vision_items_per_batch': 0, 'encoder_cudagraph_max_frames_per_batch': None, 'compile_sizes': [], 'compile_ranges_endpoints': [8192], 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.FULL_DECODE_ONLY: (2, 0)>, 'cudagraph_num_of_warmups': 1, 'cudagraph_capture_sizes': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 20, 25, 30, 35, 40, 45, 48, 50, 55, 60, 64, 65, 70, 75, 80, 85, 90, 95, 96, 100, 105, 110, 112, 115, 120, 125, 128, 130, 135, 140, 145, 150, 155, 160, 165, 170, 175, 180, 185, 190, 192, 195, 200, 205, 210, 215, 220, 224, 225, 230, 235, 240, 245, 250, 255, 256, 260, 265, 270, 275, 280, 285, 290, 295, 300, 305, 310, 315, 320], 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': False, 'pass_config': {'fuse_norm_quant': True, 'fuse_act_quant': True, 'fuse_attn_quant': False, 'enable_sp': False, 'fuse_gemm_comms': False, 'fuse_allreduce_rms': False, 'enable_qk_norm_rope_fusion': False, 'fuse_rope_kvcache_cat_mla': False, 'fuse_act_padding': False, 'fuse_qk_norm_rope_kvcache': False}, 'max_cudagraph_capture_size': 320, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': False}, 'local_cache_dir': None, 'fast_moe_cold_start': False, 'static_all_moe_layers': []}, kernel_config=KernelConfig(ir_op_priority=IrOpPriorityConfig(rms_norm=['vllm_c', 'native'], fused_add_rms_norm=['vllm_c', 'native'], gelu_and_mul_sparse=['native']), enable_flashinfer_autotune=True, enable_cutedsl_warmup=True, enable_jit_warmup=True, moe_backend='auto', sparse_indexer_topk_backend='auto', linear_backend='auto', linear_backend_per_quant=None)
+(EngineCore pid=698) INFO 10-31 10:26:50 [multiproc_executor.py:153] DP group leader: node_rank=0, node_rank_within_dp=0, master_addr=127.0.0.1, mq_connect_ip=10.20.3.REDACTED (local), world_size=2, local_world_size=2
+INFO 10-31 10:26:52 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+INFO 10-31 10:26:52 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+INFO 10-31 10:26:52 [__init__.py:54] - hpu -> vllm_gaudi:register
+INFO 10-31 10:26:52 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+INFO 10-31 10:26:53 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+INFO 10-31 10:26:53 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+INFO 10-31 10:26:53 [__init__.py:54] - hpu -> vllm_gaudi:register
+INFO 10-31 10:26:53 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+INFO 10-31 10:26:53 [__init__.py:272] Platform plugin arc is activated
+INFO 10-31 10:26:53 [__init__.py:272] Platform plugin arc is activated
+WARNING 10-31 10:27:03 [indexer_topk.py:29] Failed to import the DeepSelect extension (vllm._deepselect_C): No module named 'vllm._deepselect_C'
+INFO 10-31 10:27:04 [platform.py:172] ArcXpuPlatform: wheel hook mamba_utils <- patches.mamba_lmcache_glue OK
+INFO 10-31 10:27:05 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+INFO 10-31 10:27:05 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+INFO 10-31 10:27:05 [__init__.py:54] - hpu -> vllm_gaudi:register
+INFO 10-31 10:27:05 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+(Worker pid=930) INFO 10-31 10:27:05 [graph_safe_output.py:665] ArcXpuPlatform: XPU graph boundary hygiene installed (pid 930, XPUGraph capture_begin/capture_end/replay + graph context __exit__ wrapped).
+(Worker pid=930) INFO 10-31 10:27:05 [graph_safe_output.py:791] ArcXpuPlatform: zombie stream-reroute guards installed (pid 930, set_stream substitution + wait_stream skip + Event.record reroute + synchronize tripwire).
+(Worker pid=930) INFO 10-31 10:27:05 [graph_safe_output.py:925] ArcXpuPlatform: runner-entry hygiene installed (pid 930, GPUModelRunner.execute_model + sample_tokens wrapped).
+(Worker pid=930) INFO 10-31 10:27:05 [graph_safe_output.py:971] ArcXpuPlatform: capture-stream fix installed (pid 930, captures ride torch.xpu.graph.default_capture_stream, EAGERLY INITED before capture #1 — the serving default never enters capture; champion 0.26.1 discipline, r9).
+(Worker pid=930) INFO 10-31 10:27:05 [graph_safe_output.py:520] ArcXpuPlatform: r12b kernel-launch tracer installed (triton:CachingAutotuner.run).
+(Worker pid=930) INFO 10-31 10:27:05 [graph_safe_output.py:1112] ArcXpuPlatform: graph-safe output patch installed (pid 930, AsyncOutput/AsyncPoolingOutput __init__ + get_output wrapped).
+(Worker pid=930) INFO 10-31 10:27:05 [speculator_full_capture.py:117] ArcXpuPlatform: speculator FULL-capture patch installed (pid 930, SpeculatorCudaGraphManager.__init__ wrapped).
+(Worker pid=930) INFO 10-31 10:27:05 [first_request_warmup.py:123] ArcXpuPlatform: first-request warmup interlock installed (defect-b lane W, r16 evidence)
+(Worker pid=930) INFO 10-31 10:27:05 [gdn_metadata_fastpath.py:286] [arc-p10] gdn metadata fastpath installed (steady spec-decode builds; stock build kept for prefill/mixed)
+(Worker pid=930) INFO 10-31 10:27:05 [fp8_block_w8a16.py:97] ArcXpuPlatform: fp8 block linear reroute ACTIVE — XPUFp8BlockScaledMMKernel.apply_input_quant=False, apply_block_scaled_mm -> _xpu_C.fp8_gemm_w8a16 (stock fallback kept; r40: 3-8x/GEMM decode Ms, relerr 4-5e-4)
+INFO 10-31 10:27:06 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+INFO 10-31 10:27:06 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+INFO 10-31 10:27:06 [__init__.py:54] - hpu -> vllm_gaudi:register
+INFO 10-31 10:27:06 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+INFO 10-31 10:27:06 [__init__.py:272] Platform plugin arc is activated
+INFO 10-31 10:27:06 [__init__.py:272] Platform plugin arc is activated
+(Worker pid=930) INFO 10-31 10:27:06 [parallel_state.py:1827] world_size=2 rank=0 local_rank=0 distributed_init_method=file:///tmp/vllm_dist_fd473e492e0a42ef87c3602955b1d506 backend=xccl
+(APIServer pid=13) [transformers] Qwen3VL video processing does not apply the per-frame pixel cap the reference implementation (qwen-vl-utils) applies, so some videos cost far more tokens than they would there. In v5.22 the capped behavior will become the default and `cap_pixels_per_frame` will be removed. Pass `cap_pixels_per_frame=True` to adopt the reference behavior now, or `False` to keep the current behavior and silence this warning.
+WARNING 10-31 10:27:17 [indexer_topk.py:29] Failed to import the DeepSelect extension (vllm._deepselect_C): No module named 'vllm._deepselect_C'
+INFO 10-31 10:27:17 [platform.py:172] ArcXpuPlatform: wheel hook mamba_utils <- patches.mamba_lmcache_glue OK
+(APIServer pid=13) INFO 10-31 10:27:18 [base.py:261] Multi-modal warmup completed in 28.748s
+(Worker pid=1030) INFO 10-31 10:27:19 [graph_safe_output.py:665] ArcXpuPlatform: XPU graph boundary hygiene installed (pid 1030, XPUGraph capture_begin/capture_end/replay + graph context __exit__ wrapped).
+(Worker pid=1030) INFO 10-31 10:27:19 [graph_safe_output.py:791] ArcXpuPlatform: zombie stream-reroute guards installed (pid 1030, set_stream substitution + wait_stream skip + Event.record reroute + synchronize tripwire).
+(Worker pid=1030) INFO 10-31 10:27:19 [graph_safe_output.py:925] ArcXpuPlatform: runner-entry hygiene installed (pid 1030, GPUModelRunner.execute_model + sample_tokens wrapped).
+(Worker pid=1030) INFO 10-31 10:27:19 [graph_safe_output.py:971] ArcXpuPlatform: capture-stream fix installed (pid 1030, captures ride torch.xpu.graph.default_capture_stream, EAGERLY INITED before capture #1 — the serving default never enters capture; champion 0.26.1 discipline, r9).
+(Worker pid=1030) INFO 10-31 10:27:19 [graph_safe_output.py:520] ArcXpuPlatform: r12b kernel-launch tracer installed (triton:CachingAutotuner.run).
+(Worker pid=1030) INFO 10-31 10:27:19 [graph_safe_output.py:1112] ArcXpuPlatform: graph-safe output patch installed (pid 1030, AsyncOutput/AsyncPoolingOutput __init__ + get_output wrapped).
+(Worker pid=1030) INFO 10-31 10:27:19 [speculator_full_capture.py:117] ArcXpuPlatform: speculator FULL-capture patch installed (pid 1030, SpeculatorCudaGraphManager.__init__ wrapped).
+(Worker pid=1030) INFO 10-31 10:27:19 [first_request_warmup.py:123] ArcXpuPlatform: first-request warmup interlock installed (defect-b lane W, r16 evidence)
+(Worker pid=1030) INFO 10-31 10:27:19 [gdn_metadata_fastpath.py:286] [arc-p10] gdn metadata fastpath installed (steady spec-decode builds; stock build kept for prefill/mixed)
+(Worker pid=1030) INFO 10-31 10:27:19 [fp8_block_w8a16.py:97] ArcXpuPlatform: fp8 block linear reroute ACTIVE — XPUFp8BlockScaledMMKernel.apply_input_quant=False, apply_block_scaled_mm -> _xpu_C.fp8_gemm_w8a16 (stock fallback kept; r40: 3-8x/GEMM decode Ms, relerr 4-5e-4)
+(Worker pid=1030) INFO 10-31 10:27:19 [parallel_state.py:1827] world_size=2 rank=1 local_rank=1 distributed_init_method=file:///tmp/vllm_dist_fd473e492e0a42ef87c3602955b1d506 backend=xccl
+(Worker pid=930) INFO 10-31 10:27:19 [parallel_state.py:2267] rank 0 in world size 2 is assigned as DP rank 0, PP rank 0, PCP rank 0, TP rank 0, ETP rank 0, EP rank N/A, EPLB rank N/A
+2026:10:31-10:27:19: 1030 |CCL_WARN| value of CCL_ATL_TRANSPORT changed to be ofi (default:mpi)
+2026:10:31-10:27:19: 1030 |CCL_WARN| value of CCL_SYCL_ALLGATHERV_SCALEOUT_THRESHOLD changed to be 1048576 (default:1073741824)
+2026:10:31-10:27:19: 1030 |CCL_WARN| value of CCL_TOPO_P2P_ACCESS changed to be 1 (default:-1)
+2026:10:31-10:27:19: 1030 |CCL_WARN| value of CCL_TOPO_FABRIC_VERTEX_CONNECTION_CHECK changed to be 0 (default:1)
+2026:10:31-10:27:19:  930 |CCL_WARN| value of CCL_ATL_TRANSPORT changed to be ofi (default:mpi)
+2026:10:31-10:27:19: 1030 |CCL_WARN| could not get local_idx/count from environment variables, trying to get them from ATL
+2026:10:31-10:27:19:  930 |CCL_WARN| value of CCL_SYCL_ALLGATHERV_SCALEOUT_THRESHOLD changed to be 1048576 (default:1073741824)
+2026:10:31-10:27:19:  930 |CCL_WARN| value of CCL_TOPO_P2P_ACCESS changed to be 1 (default:-1)
+2026:10:31-10:27:19:  930 |CCL_WARN| value of CCL_TOPO_FABRIC_VERTEX_CONNECTION_CHECK changed to be 0 (default:1)
+2026:10:31-10:27:19:  930 |CCL_WARN| could not get local_idx/count from environment variables, trying to get them from ATL
+(Worker pid=930) INFO 10-31 10:27:20 [xpu_worker.py:169] Using V2 Model Runner
+(APIServer pid=13) INFO 10-31 10:27:21 [base.py:261] Readonly multi-modal warmup completed in 2.723s
+(Worker_TP0 pid=930) INFO 10-31 10:27:21 [model_runner.py:396] Loading model from scratch...
+(Worker_TP0 pid=930) INFO 10-31 10:27:22 [xpu.py:233] Using backend AttentionBackendEnum.FLASH_ATTN for vit attention
+(Worker_TP0 pid=930) INFO 10-31 10:27:22 [mm_encoder_attention.py:372] Using AttentionBackendEnum.FLASH_ATTN for MMEncoderAttention.
+(Worker_TP0 pid=930) INFO 10-31 10:27:22 [__init__.py:726] Selected XPUFp8BlockScaledMMKernel for Fp8LinearMethod
+(Worker_TP0 pid=930) INFO 10-31 10:27:22 [qwen_gdn_linear_attn.py:176] Using Triton/FLA GDN prefill kernel (requested=auto, head_k_dim=128).
+(Worker_TP0 pid=930) INFO 10-31 10:27:22 [qwen_gdn_linear_attn.py:528] GDN decode kernel: cuda
+(Worker_TP0 pid=930) INFO 10-31 10:27:22 [xpu.py:199] Using Flash Attention backend.
+(Worker_TP0 pid=930) INFO 10-31 10:27:22 [flash_attn.py:1116] Using FlashAttention version 2
+(Worker_TP0 pid=930) INFO 10-31 10:27:23 [weight_utils.py:895] Filesystem type for checkpoints: EXT4. Checkpoint size: 28.75 GiB. Available RAM: 362.18 GiB.
+(Worker_TP0 pid=930) INFO 10-31 10:27:23 [weight_utils.py:918] Auto-prefetch is disabled because the filesystem (EXT4) is not a recognized network FS (NFS/Lustre). If you want to force prefetching, start vLLM with --safetensors-load-strategy=prefetch.
+(Worker_TP0 pid=930) Loading safetensors checkpoint shards:   0% Completed | 0/66 [00:00<?, ?it/s]
+(Worker_TP0 pid=930) Loading safetensors checkpoint shards:   2% Completed | 1/66 [00:00<00:13,  4.68it/s]
+(Worker_TP0 pid=930) Loading safetensors checkpoint shards:   3% Completed | 2/66 [00:00<00:13,  4.84it/s]
+(Worker_TP0 pid=930) Loading safetensors checkpoint shards:   5% Completed | 3/66 [00:00<00:12,  4.90it/s]
+(Worker_TP0 pid=930) Loading safetensors checkpoint shards:   6% Completed | 4/66 [00:00<00:12,  5.00it/s]
+(Worker_TP0 pid=930) Loading safetensors checkpoint shards:   8% Completed | 5/66 [00:01<00:12,  4.86it/s]
+(Worker_TP0 pid=930) Loading safetensors checkpoint shards:   9% Completed | 6/66 [00:01<00:12,  4.82it/s]
+(Worker_TP0 pid=930) Loading safetensors checkpoint shards:  11% Completed | 7/66 [00:01<00:12,  4.66it/s]
+(Worker_TP0 pid=930) Loading safetensors checkpoint shards:  12% Completed | 8/66 [00:01<00:12,  4.57it/s]
+(Worker_TP0 pid=930) Loading safetensors checkpoint shards:  14% Completed | 9/66 [00:01<00:12,  4.48it/s]
+(Worker_TP0 pid=930) Loading safetensors checkpoint shards:  15% Completed | 10/66 [00:02<00:13,  4.29it/s]
+(Worker_TP0 pid=930) Loading safetensors checkpoint shards:  17% Completed | 11/66 [00:02<00:12,  4.24it/s]
+(Worker_TP0 pid=930) Loading safetensors checkpoint shards:  18% Completed | 12/66 [00:02<00:12,  4.28it/s]
+(Worker_TP0 pid=930) Loading safetensors checkpoint shards:  20% Completed | 13/66 [00:02<00:12,  4.31it/s]
+(Worker_TP0 pid=930) Loading safetensors checkpoint shards:  21% Completed | 14/66 [00:03<00:12,  4.31it/s]
+(Worker_TP0 pid=930) Loading safetensors checkpoint shards:  23% Completed | 15/66 [00:03<00:12,  4.21it/s]
+(Worker_TP0 pid=930) Loading safetensors checkpoint shards:  24% Completed | 16/66 [00:03<00:11,  4.30it/s]
+(Worker_TP0 pid=930) Loading safetensors checkpoint shards:  26% Completed | 17/66 [00:03<00:11,  4.28it/s]
+(Worker_TP0 pid=930) Loading safetensors checkpoint shards:  27% Completed | 18/66 [00:04<00:11,  4.29it/s]
+(Worker_TP0 pid=930) Loading safetensors checkpoint shards:  29% Completed | 19/66 [00:04<00:11,  4.27it/s]
+(Worker_TP0 pid=930) Loading safetensors checkpoint shards:  30% Completed | 20/66 [00:04<00:10,  4.29it/s]
+(Worker_TP0 pid=930) Loading safetensors checkpoint shards:  32% Completed | 21/66 [00:04<00:10,  4.30it/s]
+(Worker_TP0 pid=930) Loading safetensors checkpoint shards:  33% Completed | 22/66 [00:04<00:10,  4.31it/s]
+(Worker_TP0 pid=930) Loading safetensors checkpoint shards:  35% Completed | 23/66 [00:05<00:10,  4.25it/s]
+(Worker_TP0 pid=930) Loading safetensors checkpoint shards:  36% Completed | 24/66 [00:05<00:09,  4.34it/s]
+(Worker_TP0 pid=930) Loading safetensors checkpoint shards:  38% Completed | 25/66 [00:05<00:09,  4.31it/s]
+(Worker_TP0 pid=930) Loading safetensors checkpoint shards:  39% Completed | 26/66 [00:05<00:09,  4.24it/s]
+(Worker_TP0 pid=930) Loading safetensors checkpoint shards:  41% Completed | 27/66 [00:06<00:09,  4.23it/s]
+(Worker_TP0 pid=930) Loading safetensors checkpoint shards:  42% Completed | 28/66 [00:06<00:08,  4.31it/s]
+(Worker_TP0 pid=930) Loading safetensors checkpoint shards:  44% Completed | 29/66 [00:06<00:08,  4.21it/s]
+(Worker_TP0 pid=930) Loading safetensors checkpoint shards:  45% Completed | 30/66 [00:06<00:08,  4.27it/s]
+(Worker_TP0 pid=930) Loading safetensors checkpoint shards:  47% Completed | 31/66 [00:07<00:08,  4.17it/s]
+(Worker_TP0 pid=930) Loading safetensors checkpoint shards:  48% Completed | 32/66 [00:07<00:07,  4.30it/s]
+(Worker_TP0 pid=930) Loading safetensors checkpoint shards:  50% Completed | 33/66 [00:07<00:07,  4.40it/s]
+(Worker_TP0 pid=930) Loading safetensors checkpoint shards:  52% Completed | 34/66 [00:07<00:07,  4.27it/s]
+(Worker_TP0 pid=930) Loading safetensors checkpoint shards:  53% Completed | 35/66 [00:08<00:07,  4.28it/s]
+(Worker_TP0 pid=930) Loading safetensors checkpoint shards:  55% Completed | 36/66 [00:08<00:06,  4.45it/s]
+(Worker_TP0 pid=930) Loading safetensors checkpoint shards:  56% Completed | 37/66 [00:08<00:06,  4.43it/s]
+(Worker_TP0 pid=930) Loading safetensors checkpoint shards:  58% Completed | 38/66 [00:08<00:06,  4.32it/s]
+(Worker_TP0 pid=930) Loading safetensors checkpoint shards:  59% Completed | 39/66 [00:08<00:06,  4.31it/s]
+(Worker_TP0 pid=930) Loading safetensors checkpoint shards:  61% Completed | 40/66 [00:09<00:05,  4.37it/s]
+(Worker_TP0 pid=930) Loading safetensors checkpoint shards:  62% Completed | 41/66 [00:09<00:05,  4.21it/s]
+(Worker_TP0 pid=930) Loading safetensors checkpoint shards:  64% Completed | 42/66 [00:09<00:05,  4.17it/s]
+(Worker_TP0 pid=930) Loading safetensors checkpoint shards:  65% Completed | 43/66 [00:09<00:05,  4.17it/s]
+(Worker_TP0 pid=930) Loading safetensors checkpoint shards:  67% Completed | 44/66 [00:10<00:05,  4.28it/s]
+(Worker_TP0 pid=930) Loading safetensors checkpoint shards:  68% Completed | 45/66 [00:10<00:04,  4.26it/s]
+(Worker_TP0 pid=930) Loading safetensors checkpoint shards:  70% Completed | 46/66 [00:10<00:04,  4.25it/s]
+(Worker_TP0 pid=930) Loading safetensors checkpoint shards:  71% Completed | 47/66 [00:10<00:04,  4.20it/s]
+(Worker_TP0 pid=930) Loading safetensors checkpoint shards:  73% Completed | 48/66 [00:11<00:04,  4.28it/s]
+(Worker_TP0 pid=930) Loading safetensors checkpoint shards:  74% Completed | 49/66 [00:11<00:04,  4.20it/s]
+(Worker_TP0 pid=930) Loading safetensors checkpoint shards:  76% Completed | 50/66 [00:11<00:03,  4.25it/s]
+(Worker_TP0 pid=930) Loading safetensors checkpoint shards:  77% Completed | 51/66 [00:11<00:03,  4.22it/s]
+(Worker_TP0 pid=930) Loading safetensors checkpoint shards:  79% Completed | 52/66 [00:12<00:03,  4.29it/s]
+(Worker_TP0 pid=930) Loading safetensors checkpoint shards:  80% Completed | 53/66 [00:12<00:03,  4.21it/s]
+(Worker_TP0 pid=930) Loading safetensors checkpoint shards:  82% Completed | 54/66 [00:12<00:02,  4.21it/s]
+(Worker_TP0 pid=930) Loading safetensors checkpoint shards:  83% Completed | 55/66 [00:12<00:02,  4.21it/s]
+(Worker_TP0 pid=930) Loading safetensors checkpoint shards:  85% Completed | 56/66 [00:12<00:02,  4.31it/s]
+(Worker_TP0 pid=930) Loading safetensors checkpoint shards:  86% Completed | 57/66 [00:13<00:02,  4.26it/s]
+(Worker_TP0 pid=930) Loading safetensors checkpoint shards:  88% Completed | 58/66 [00:13<00:01,  4.22it/s]
+(Worker_TP0 pid=930) Loading safetensors checkpoint shards:  89% Completed | 59/66 [00:13<00:01,  4.14it/s]
+(Worker_TP0 pid=930) Loading safetensors checkpoint shards:  91% Completed | 60/66 [00:13<00:01,  4.28it/s]
+(Worker_TP0 pid=930) Loading safetensors checkpoint shards:  92% Completed | 61/66 [00:14<00:01,  4.14it/s]
+(Worker_TP0 pid=930) Loading safetensors checkpoint shards:  94% Completed | 62/66 [00:14<00:00,  4.09it/s]
+(Worker_TP0 pid=930) Loading safetensors checkpoint shards:  95% Completed | 63/66 [00:14<00:00,  4.02it/s]
+(Worker_TP0 pid=930) Loading safetensors checkpoint shards:  97% Completed | 64/66 [00:14<00:00,  4.15it/s]
+(Worker_TP0 pid=930) Loading safetensors checkpoint shards: 100% Completed | 66/66 [00:17<00:00,  1.26it/s]
+(Worker_TP0 pid=930) Loading safetensors checkpoint shards: 100% Completed | 66/66 [00:17<00:00,  3.72it/s]
+(Worker_TP0 pid=930) 
+(Worker_TP0 pid=930) INFO 10-31 10:27:41 [default_loader.py:430] Loading weights took 17.84 seconds
+(Worker_TP0 pid=930) WARNING 10-31 10:27:41 [kv_cache.py:147] Checkpoint does not provide a q scaling factor. Setting it to k_scale. This only matters for FP8 Attention backends (flash-attn or flashinfer).
+(Worker_TP0 pid=930) WARNING 10-31 10:27:41 [kv_cache.py:164] Using KV cache scaling factor 1.0 for fp8_e4m3. If this is unintended, verify that k/v_scale scaling factors are properly set in the checkpoint.
+(Worker_TP0 pid=930) INFO 10-31 10:27:41 [weight_utils.py:895] Filesystem type for checkpoints: EXT4. Checkpoint size: 28.75 GiB. Available RAM: 362.25 GiB.
+(Worker_TP0 pid=930) Loading safetensors checkpoint shards:   0% Completed | 0/66 [00:00<?, ?it/s]
+(Worker_TP0 pid=930) Loading safetensors checkpoint shards:  98% Completed | 65/66 [00:00<00:00, 216.37it/s]
+(Worker_TP0 pid=930) Loading safetensors checkpoint shards: 100% Completed | 66/66 [00:01<00:00, 61.44it/s]
+(Worker_TP0 pid=930)  
+(Worker_TP0 pid=930) INFO 10-31 10:27:42 [default_loader.py:430] Loading weights took 1.13 seconds
+(Worker_TP1 pid=1030) INFO 10-31 10:27:43 [model_runner.py:428] Model loading took 14.74 GiB memory and 22.279625 seconds
+(Worker_TP1 pid=1030) [p41c] mamba_hybrid snap glue installed (pid=1030)
+(Worker_TP1 pid=1030) INFO 10-31 10:27:43 [platform.py:172] ArcXpuPlatform: wheel hook mamba_hybrid <- patches.mamba_hybrid_snap_glue OK
+(Worker_TP0 pid=930) INFO 10-31 10:27:43 [model_runner.py:428] Model loading took 14.74 GiB memory and 22.305501 seconds
+(Worker_TP0 pid=930) [p41c] mamba_hybrid snap glue installed (pid=930)
+(Worker_TP0 pid=930) INFO 10-31 10:27:43 [platform.py:172] ArcXpuPlatform: wheel hook mamba_hybrid <- patches.mamba_hybrid_snap_glue OK
+(Worker_TP1 pid=1030) INFO 10-31 10:27:43 [interface.py:933] Setting attention block size to 832 tokens to ensure that attention page size is >= mamba page size.
+(Worker_TP1 pid=1030) INFO 10-31 10:27:43 [interface.py:957] Padding mamba page size by 0.48% to ensure that mamba page size and attention page size are exactly equal.
+(Worker_TP0 pid=930) INFO 10-31 10:27:43 [interface.py:933] Setting attention block size to 832 tokens to ensure that attention page size is >= mamba page size.
+(Worker_TP0 pid=930) INFO 10-31 10:27:43 [interface.py:957] Padding mamba page size by 0.48% to ensure that mamba page size and attention page size are exactly equal.
+(EngineCore pid=698) INFO 10-31 10:27:43 [torch_utils.py:287] Reducing Torch threads from 32 to 1 for serving. Set OMP_NUM_THREADS in the external environment to override.
+(EngineCore pid=698) INFO 10-31 10:27:43 [platform.py:172] ArcXpuPlatform: wheel hook lmcache_connector <- patches.lmcache_hma_connector OK
+(EngineCore pid=698) INFO 10-31 10:27:43 [utils.py:320] Using LBNHC KV cache layout.
+(Worker_TP0 pid=930) [transformers] The `use_fast` parameter is deprecated and will be removed in a future version. Use `backend="torchvision"` instead of `use_fast=True`, or `backend="pil"` instead of `use_fast=False`.
+(Worker_TP1 pid=1030) [transformers] The `use_fast` parameter is deprecated and will be removed in a future version. Use `backend="torchvision"` instead of `use_fast=True`, or `backend="pil"` instead of `use_fast=False`.
+(Worker_TP0 pid=930) INFO 10-31 10:27:53 [encoder_runner.py:131] Encoder cache will be initialized with a budget of 16384 tokens, and profiled with 1 image items of the maximum feature size.
+(Worker_TP1 pid=1030) /opt/venv/lib/python3.12/site-packages/torch/distributed/c10d_logger.py:83: FutureWarning: `torch.distributed.all_gather_into_tensor` is deprecated. Please use `torch.distributed.all_gather_single` instead.
+(Worker_TP1 pid=1030)   return func(*args, **kwargs)
+(Worker_TP0 pid=930) /opt/venv/lib/python3.12/site-packages/torch/distributed/c10d_logger.py:83: FutureWarning: `torch.distributed.all_gather_into_tensor` is deprecated. Please use `torch.distributed.all_gather_single` instead.
+(Worker_TP0 pid=930)   return func(*args, **kwargs)
+(Worker_TP1 pid=1030) /opt/venv/lib/python3.12/site-packages/torch/distributed/c10d_logger.py:83: FutureWarning: `torch.distributed.all_gather_into_tensor` is deprecated. Please use `torch.distributed.all_gather_single` instead.
+(Worker_TP1 pid=1030)   return func(*args, **kwargs)
+(Worker_TP0 pid=930) /opt/venv/lib/python3.12/site-packages/torch/distributed/c10d_logger.py:83: FutureWarning: `torch.distributed.all_gather_into_tensor` is deprecated. Please use `torch.distributed.all_gather_single` instead.
+(Worker_TP0 pid=930)   return func(*args, **kwargs)
+(Worker_TP0 pid=930) INFO 10-31 10:28:19 [gpu_worker.py:640] Available KV cache memory: 6.92 GiB
+(EngineCore pid=698) WARNING 10-31 10:28:19 [kv_cache_utils.py:1556] Add 3 padding layers, may waste at most 6.25% KV cache memory
+(EngineCore pid=698) WARNING 10-31 10:28:19 [kv_cache_utils.py:2206] Speculative decoding (method=mtp) is enabled but no KV cache group could be identified as the draft model's.
+(EngineCore pid=698) INFO 10-31 10:28:19 [kv_cache_utils.py:2395] XPU KV cache size: 405,491 tokens, Maximum concurrency for 262,144 tokens per request: 1.55x
+(Worker_TP0 pid=930) INFO 10-31 10:28:19 [platform.py:172] ArcXpuPlatform: wheel hook lmcache_connector <- patches.lmcache_hma_connector OK
+(Worker_TP0 pid=930) INFO 10-31 10:28:19 [factory.py:62] Creating v1 connector with name: LMCacheConnectorV1 and engine_id: arc-p40
+(Worker_TP0 pid=930) WARNING 10-31 10:28:19 [base.py:217] Initializing KVConnectorBase_V1. This API is experimental and subject to change in the future as we iterate the design.
+(Worker_TP0 pid=930) INFO 10-31 10:28:19 [lmcache_connector.py:97] Initializing native LMCache connector
+(Worker_TP1 pid=1030) INFO 10-31 10:28:19 [platform.py:172] ArcXpuPlatform: wheel hook lmcache_connector <- patches.lmcache_hma_connector OK
+(Worker_TP1 pid=1030) INFO 10-31 10:28:19 [factory.py:62] Creating v1 connector with name: LMCacheConnectorV1 and engine_id: arc-p40
+(Worker_TP1 pid=1030) WARNING 10-31 10:28:19 [base.py:217] Initializing KVConnectorBase_V1. This API is experimental and subject to change in the future as we iterate the design.
+(Worker_TP1 pid=1030) INFO 10-31 10:28:19 [lmcache_connector.py:97] Initializing native LMCache connector
+(Worker_TP1 pid=1030) INFO 10-31 10:28:19 [platform.py:172] ArcXpuPlatform: wheel hook torch_ops <- patches.lmcint.lmc_twohs_transfer OK
+(Worker_TP0 pid=930) INFO 10-31 10:28:19 [platform.py:172] ArcXpuPlatform: wheel hook torch_ops <- patches.lmcint.lmc_twohs_transfer OK
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:28:19,443] LMCache INFO:[0m torch_dev=<module 'torch.xpu' from '/opt/venv/lib/python3.12/site-packages/torch/xpu/__init__.py'>, torch_device_type=xpu [3m(_device_detect.py:311:lmcache.v1.platform._device_detect)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:28:19,443] LMCache INFO:[0m torch_dev=<module 'torch.xpu' from '/opt/venv/lib/python3.12/site-packages/torch/xpu/__init__.py'>, torch_device_type=xpu [3m(_device_detect.py:311:lmcache.v1.platform._device_detect)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:28:19,445] LMCache INFO:[0m XpuDeviceOps: LMCACHE_DISABLE_PINNED_MEMORY set; alloc/free_pinned_ptr re-pinned to the pageable torch baseline (p40c law). [3m(device_ops.py:73:lmcache.v1.platform.devices.xpu.device_ops)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:28:19,445] LMCache INFO:[0m XpuDeviceOps: LMCACHE_DISABLE_PINNED_MEMORY set; alloc/free_pinned_ptr re-pinned to the pageable torch baseline (p40c law). [3m(device_ops.py:73:lmcache.v1.platform.devices.xpu.device_ops)[0m
+(Worker_TP0 pid=930) INFO 10-31 10:28:19 [platform.py:172] ArcXpuPlatform: wheel hook vllm <- patches.lmcint.lmc_kvfmt_detector OK
+(Worker_TP1 pid=1030) INFO 10-31 10:28:19 [platform.py:172] ArcXpuPlatform: wheel hook vllm <- patches.lmcint.lmc_kvfmt_detector OK
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:28:19,668] LMCache INFO:[0m Discovered API module: env_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:28:19,669] LMCache INFO:[0m Discovered API module: env_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:28:19,694] LMCache INFO:[0m Discovered API module: loglevel_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:28:19,695] LMCache INFO:[0m Discovered API module: loglevel_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:28:19,695] LMCache INFO:[0m Discovered API module: metrics_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:28:19,696] LMCache INFO:[0m Discovered API module: metrics_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:28:19,698] LMCache INFO:[0m Discovered API module: periodic_thread_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:28:19,699] LMCache INFO:[0m Discovered API module: periodic_thread_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:28:19,700] LMCache INFO:[0m Discovered API module: run_script_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:28:19,700] LMCache INFO:[0m Discovered API module: run_script_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:28:19,701] LMCache INFO:[0m Discovered API module: thread_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:28:19,701] LMCache INFO:[0m Discovered API module: thread_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:28:19,709] LMCache INFO:[0m Discovered API module: backend_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:28:19,709] LMCache INFO:[0m Discovered API module: backend_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:28:19,710] LMCache INFO:[0m Discovered API module: bypass_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:28:19,710] LMCache INFO:[0m Discovered API module: bypass_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:28:19,717] LMCache INFO:[0m Discovered API module: cache_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:28:19,717] LMCache INFO:[0m Discovered API module: cache_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:28:19,728] LMCache INFO:[0m Discovered API module: chunk_statistics_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:28:19,728] LMCache INFO:[0m Discovered API module: chunk_statistics_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:28:19,730] LMCache INFO:[0m Discovered API module: conf_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:28:19,730] LMCache INFO:[0m Discovered API module: conf_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:28:19,732] LMCache INFO:[0m Discovered API module: freeze_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:28:19,732] LMCache INFO:[0m Discovered API module: freeze_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:28:19,733] LMCache INFO:[0m Discovered API module: hot_cache_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:28:19,733] LMCache INFO:[0m Discovered API module: hot_cache_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:28:19,734] LMCache INFO:[0m Discovered API module: inference_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:28:19,734] LMCache INFO:[0m Discovered API module: inference_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:28:19,739] LMCache INFO:[0m Discovered API module: load_fs_chunks_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:28:19,740] LMCache INFO:[0m Discovered API module: load_fs_chunks_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:28:19,742] LMCache INFO:[0m Discovered API module: lookup_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:28:19,742] LMCache INFO:[0m Discovered API module: lookup_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:28:19,743] LMCache INFO:[0m Discovered API module: version_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:28:19,743] LMCache INFO:[0m Discovered API module: version_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:28:19,757] LMCache INFO:[0m Discovered API module: key_stats_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:28:19,757] LMCache INFO:[0m Discovered API module: key_stats_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:28:19,760] LMCache INFO:[0m Discovered API module: worker_info_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:28:19,760] LMCache INFO:[0m Discovered API module: worker_info_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(Worker_TP0 pid=930) [utils@lmcint] src-override OK (pid=930)
+(Worker_TP1 pid=1030) [utils@lmcint] src-override OK (pid=1030)
+(Worker_TP0 pid=930) [vllm_v1_adapter@lmcint] src-override OK (pid=930)
+(Worker_TP1 pid=1030) [vllm_v1_adapter@lmcint] src-override OK (pid=1030)
+(Worker_TP0 pid=930) [lmcache_integration@lmcint] src-override OK (pid=930)
+(Worker_TP1 pid=1030) [lmcache_integration@lmcint] src-override OK (pid=1030)
+(Worker_TP0 pid=930) [33;20m[2026-10-31 10:28:19,788] LMCache WARNING:[0m No LMCache configuration file is set. Trying to read configurations from the environment variables. [3m(utils.py:48:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.utils)[0m
+(Worker_TP1 pid=1030) [33;20m[2026-10-31 10:28:19,788] LMCache WARNING:[0m No LMCache configuration file is set. Trying to read configurations from the environment variables. [3m(utils.py:48:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.utils)[0m
+(Worker_TP0 pid=930) [33;20m[2026-10-31 10:28:19,788] LMCache WARNING:[0m You can set the configuration file through the environment variable: LMCACHE_CONFIG_FILE [3m(utils.py:52:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.utils)[0m
+(Worker_TP1 pid=1030) [33;20m[2026-10-31 10:28:19,788] LMCache WARNING:[0m You can set the configuration file through the environment variable: LMCACHE_CONFIG_FILE [3m(utils.py:52:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.utils)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:28:19,789] LMCache INFO:[0m Overridden extra_config [3m(config_base.py:699:lmcache.v1.config_base)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:28:19,789] LMCache INFO:[0m Overridden extra_config [3m(config_base.py:699:lmcache.v1.config_base)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:28:19,789] LMCache INFO:[0m Updated config extra_config from vLLM extra config: {'mamba_pool_ratio': 2} [3m(vllm_v1_adapter.py:1119:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.vllm_v1_adapter)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:28:19,789] LMCache INFO:[0m Updated config extra_config from vLLM extra config: {'mamba_pool_ratio': 2} [3m(vllm_v1_adapter.py:1119:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.vllm_v1_adapter)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:28:19,789] LMCache INFO:[0m Hybrid model: forcing lmcache chunk_size 1024 -> 832 (mamba tokens_per_page) [3m(vllm_v1_adapter.py:1204:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.vllm_v1_adapter)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:28:19,789] LMCache INFO:[0m Hybrid model: forcing lmcache chunk_size 1024 -> 832 (mamba tokens_per_page) [3m(vllm_v1_adapter.py:1204:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.vllm_v1_adapter)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:28:19,789] LMCache INFO:[0m LMCache hybrid mode: attn layers=17 mamba layers=48 (fa_gidx=3 fa_gidxs=[3] mamba_gidxs=[0, 1, 2] page_bytes=851968 tpp=832) [3m(vllm_v1_adapter.py:1218:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.vllm_v1_adapter)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:28:19,789] LMCache INFO:[0m LMCache hybrid mode: attn layers=17 mamba layers=48 (fa_gidx=3 fa_gidxs=[3] mamba_gidxs=[0, 1, 2] page_bytes=851968 tpp=832) [3m(vllm_v1_adapter.py:1218:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.vllm_v1_adapter)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:28:19,789] LMCache INFO:[0m vllm_config.speculative_config: SpeculativeConfig(method='mtp', model='/models/target', num_spec_tokens=3) [3m(vllm_v1_adapter.py:541:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.vllm_v1_adapter)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:28:19,789] LMCache INFO:[0m vllm_config.speculative_config: SpeculativeConfig(method='mtp', model='/models/target', num_spec_tokens=3) [3m(vllm_v1_adapter.py:541:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.vllm_v1_adapter)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:28:19,789] LMCache INFO:[0m EAGLE detected 1 extra layer(s) [3m(vllm_v1_adapter.py:556:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.vllm_v1_adapter)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:28:19,789] LMCache INFO:[0m EAGLE detected 1 extra layer(s) [3m(vllm_v1_adapter.py:556:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.vllm_v1_adapter)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:28:19,790] LMCache INFO:[0m use mla: False, kv shape: (17, 2, 832, 2, 256), num_mtp_layers: 1 [3m(vllm_v1_adapter.py:634:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.vllm_v1_adapter)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:28:19,790] LMCache INFO:[0m use mla: False, kv shape: (17, 2, 832, 2, 256), num_mtp_layers: 1 [3m(vllm_v1_adapter.py:634:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.vllm_v1_adapter)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:28:19,792] LMCache INFO:[0m Creating LMCacheEngine instance vllm-instance [3m(cache_engine.py:2175:lmcache.v1.cache_engine)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:28:19,793] LMCache INFO:[0m NUMA mapping for instance vllm-instance: None [3m(cache_engine.py:2178:lmcache.v1.cache_engine)[0m
+(Worker_TP1 pid=1030) [33;20m[2026-10-31 10:28:19,793] LMCache WARNING:[0m Could not load 'builtin' from vLLM. Using builtin hash. This may cause inconsistencies in distributed caching. [3m(token_database.py:162:lmcache.v1.token_database)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:28:19,793] LMCache INFO:[0m Initialized NONE_HASH=5313149338359954478 from vLLM (>= PR#20511) [3m(token_database.py:100:lmcache.v1.token_database)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:28:19,793] LMCache INFO:[0m Creating LMCacheEngine instance vllm-instance [3m(cache_engine.py:2175:lmcache.v1.cache_engine)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:28:19,793] LMCache INFO:[0m Using hash algorithm: builtin [3m(token_database.py:110:lmcache.v1.token_database)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:28:19,793] LMCache INFO:[0m NUMA mapping for instance vllm-instance: None [3m(cache_engine.py:2178:lmcache.v1.cache_engine)[0m
+(Worker_TP0 pid=930) [33;20m[2026-10-31 10:28:19,793] LMCache WARNING:[0m Could not load 'builtin' from vLLM. Using builtin hash. This may cause inconsistencies in distributed caching. [3m(token_database.py:162:lmcache.v1.token_database)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:28:19,793] LMCache INFO:[0m Initialized NONE_HASH=5313149338359954478 from vLLM (>= PR#20511) [3m(token_database.py:100:lmcache.v1.token_database)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:28:19,793] LMCache INFO:[0m Using hash algorithm: builtin [3m(token_database.py:110:lmcache.v1.token_database)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:28:19,797] LMCache INFO:[0m Creating LMCacheEngine with config: {'chunk_size': 832, 'local_cpu': True, 'max_local_cpu_size': 100.0, 'local_cpu_use_hugepages': False, 'reserve_local_cpu_size': 0.0, 'local_disk': None, 'local_disk_path_sharding': 'by_gpu', 'max_local_disk_size': 0.0, 'remote_url': None, 'remote_serde': 'naive', 'use_layerwise': False, 'save_decode_cache': True, 'pre_caching_hash_algorithm': 'builtin', 'enable_blending': False, 'blend_recompute_ratios': None, 'blend_thresholds': None, 'blend_check_layers': None, 'blend_min_tokens': 256, 'blend_special_str': ' # # ', 'retrieve_locations': None, 'store_location': None, 'enable_p2p': False, 'p2p_host': None, 'p2p_init_ports': None, 'p2p_lookup_ports': None, 'mp_host': None, 'mp_port': 5555, 'enable_controller': False, 'lmcache_instance_id': 'lmcacheengineconfig_5b79ee5f7ff94275b1e2f8e2276d2578', 'controller_pull_url': None, 'controller_reply_url': None, 'lmcache_worker_ports': None, 'lmcache_worker_ids': None, 'lmcache_worker_heartbeat_delay_time': 10, 'lmcache_worker_heartbeat_time': None, 'enable_pd': False, 'pd_role': None, 'pd_buffer_size': None, 'pd_buffer_device': None, 'pd_peer_host': None, 'pd_peer_init_port': None, 'pd_peer_alloc_port': None, 'pd_peer_query_port': None, 'pd_proxy_host': None, 'pd_proxy_port': None, 'pd_allocation_timeout_sec': inf, 'pd_shutdown_timeout_sec': 5.0, 'pd_condition_poll_interval_sec': 0.005, 'pd_max_prefill_len': 0, 'pd_backend_mode': 'async', 'pd_skip_proxy_notification': False, 'pd_bidirectional': False, 'transfer_channel': None, 'nixl_backends': None, 'nixl_buffer_size': None, 'nixl_buffer_device': None, 'gds_path': None, 'gds_path_sharding': 'by_gpu', 'gds_buffer_size': None, 'maru_path': None, 'maru_pool_size': 4.0, 'use_gds': True, 'gds_backend': 'cufile', 'audit_actual_remote_url': None, 'internal_api_server_host': '127.0.0.1', 'extra_config': {'mamba_pool_ratio': 2}, 'save_unfull_chunk': False, 'blocking_timeout_secs': 10, 'external_lookup_client': None, 'py_enable_gc': True, 'cache_policy': 'LRU', 'numa_mode': None, 'enable_async_loading': False, 'internal_api_server_enabled': False, 'internal_api_server_port_start': 6999, 'priority_limit': None, 'internal_api_server_include_index_list': None, 'internal_api_server_socket_path_prefix': None, 'runtime_plugin_locations': None, 'storage_plugins': None, 'remote_storage_plugins': None, 'lookup_timeout_ms': 3000, 'min_retrieve_tokens': 1024, 'hit_miss_ratio': None, 'lookup_server_worker_ids': None, 'enable_scheduler_bypass_lookup': False, 'script_allowed_imports': None, 'run_script_api_enabled': False, 'enable_lazy_memory_allocator': False, 'lazy_memory_initial_ratio': 0.2, 'lazy_memory_expand_trigger_ratio': 0.5, 'lazy_memory_step_ratio': 0.1, 'lazy_memory_safe_size': 0.0, 'enable_chunk_statistics': False, 'chunk_statistics_auto_start_statistics': False, 'chunk_statistics_auto_exit_timeout_hours': 0.0, 'chunk_statistics_auto_exit_target_unique_chunks': 0, 'chunk_statistics_strategy': 'memory_bloom_filter', 'enable_kv_events': False, 'use_gpu_connector_v3': False, 'pin_timeout_sec': 300, 'pin_check_interval_sec': 30, 'remote_config_url': None, 'app_id': None, 'enable_hidden_state_cache': False, 'max_hidden_state_cpu_size': 2.0, 'hidden_state_layers': None, 'hidden_states_retrieve_mode': 'prefix_strict'} [3m(cache_engine.py:109:lmcache.v1.cache_engine)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:28:19,798] LMCache INFO:[0m LMCacheWorker is not initialized (related configs: enable_controller: False, role: vllm, worker_id: 0, worker_ids: [0, 1]). [3m(cache_engine.py:159:lmcache.v1.cache_engine)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:28:19,798] LMCache INFO:[0m KV events are disabled. [3m(cache_engine.py:188:lmcache.v1.cache_engine)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:28:19,798] LMCache INFO:[0m Creating LMCacheEngine with config: {'chunk_size': 832, 'local_cpu': True, 'max_local_cpu_size': 100.0, 'local_cpu_use_hugepages': False, 'reserve_local_cpu_size': 0.0, 'local_disk': None, 'local_disk_path_sharding': 'by_gpu', 'max_local_disk_size': 0.0, 'remote_url': None, 'remote_serde': 'naive', 'use_layerwise': False, 'save_decode_cache': True, 'pre_caching_hash_algorithm': 'builtin', 'enable_blending': False, 'blend_recompute_ratios': None, 'blend_thresholds': None, 'blend_check_layers': None, 'blend_min_tokens': 256, 'blend_special_str': ' # # ', 'retrieve_locations': None, 'store_location': None, 'enable_p2p': False, 'p2p_host': None, 'p2p_init_ports': None, 'p2p_lookup_ports': None, 'mp_host': None, 'mp_port': 5555, 'enable_controller': False, 'lmcache_instance_id': 'lmcacheengineconfig_863555a0855345eebbb18faa50ad9474', 'controller_pull_url': None, 'controller_reply_url': None, 'lmcache_worker_ports': None, 'lmcache_worker_ids': None, 'lmcache_worker_heartbeat_delay_time': 10, 'lmcache_worker_heartbeat_time': None, 'enable_pd': False, 'pd_role': None, 'pd_buffer_size': None, 'pd_buffer_device': None, 'pd_peer_host': None, 'pd_peer_init_port': None, 'pd_peer_alloc_port': None, 'pd_peer_query_port': None, 'pd_proxy_host': None, 'pd_proxy_port': None, 'pd_allocation_timeout_sec': inf, 'pd_shutdown_timeout_sec': 5.0, 'pd_condition_poll_interval_sec': 0.005, 'pd_max_prefill_len': 0, 'pd_backend_mode': 'async', 'pd_skip_proxy_notification': False, 'pd_bidirectional': False, 'transfer_channel': None, 'nixl_backends': None, 'nixl_buffer_size': None, 'nixl_buffer_device': None, 'gds_path': None, 'gds_path_sharding': 'by_gpu', 'gds_buffer_size': None, 'maru_path': None, 'maru_pool_size': 4.0, 'use_gds': True, 'gds_backend': 'cufile', 'audit_actual_remote_url': None, 'internal_api_server_host': '127.0.0.1', 'extra_config': {'mamba_pool_ratio': 2}, 'save_unfull_chunk': False, 'blocking_timeout_secs': 10, 'external_lookup_client': None, 'py_enable_gc': True, 'cache_policy': 'LRU', 'numa_mode': None, 'enable_async_loading': False, 'internal_api_server_enabled': False, 'internal_api_server_port_start': 6999, 'priority_limit': None, 'internal_api_server_include_index_list': None, 'internal_api_server_socket_path_prefix': None, 'runtime_plugin_locations': None, 'storage_plugins': None, 'remote_storage_plugins': None, 'lookup_timeout_ms': 3000, 'min_retrieve_tokens': 1024, 'hit_miss_ratio': None, 'lookup_server_worker_ids': None, 'enable_scheduler_bypass_lookup': False, 'script_allowed_imports': None, 'run_script_api_enabled': False, 'enable_lazy_memory_allocator': False, 'lazy_memory_initial_ratio': 0.2, 'lazy_memory_expand_trigger_ratio': 0.5, 'lazy_memory_step_ratio': 0.1, 'lazy_memory_safe_size': 0.0, 'enable_chunk_statistics': False, 'chunk_statistics_auto_start_statistics': False, 'chunk_statistics_auto_exit_timeout_hours': 0.0, 'chunk_statistics_auto_exit_target_unique_chunks': 0, 'chunk_statistics_strategy': 'memory_bloom_filter', 'enable_kv_events': False, 'use_gpu_connector_v3': False, 'pin_timeout_sec': 300, 'pin_check_interval_sec': 30, 'remote_config_url': None, 'app_id': None, 'enable_hidden_state_cache': False, 'max_hidden_state_cpu_size': 2.0, 'hidden_state_layers': None, 'hidden_states_retrieve_mode': 'prefix_strict'} [3m(cache_engine.py:109:lmcache.v1.cache_engine)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:28:19,798] LMCache INFO:[0m LMCacheWorker is not initialized (related configs: enable_controller: False, role: vllm, worker_id: 1, worker_ids: [0, 1]). [3m(cache_engine.py:159:lmcache.v1.cache_engine)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:28:19,798] LMCache INFO:[0m KV events are disabled. [3m(cache_engine.py:188:lmcache.v1.cache_engine)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:28:19,799] LMCache INFO:[0m PeriodicThread PinMonitor-thread entering main loop (interval=30.0s) [3m(periodic_thread.py:304:lmcache.v1.periodic_thread)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:28:19,799] LMCache INFO:[0m Started PeriodicThread: PinMonitor-thread (level=critical, interval=30.0s, init_wait=0.0s) [3m(periodic_thread.py:248:lmcache.v1.periodic_thread)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:28:19,799] LMCache INFO:[0m PeriodicThread PinMonitor-thread entering main loop (interval=30.0s) [3m(periodic_thread.py:304:lmcache.v1.periodic_thread)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:28:19,799] LMCache INFO:[0m PinMonitor started [3m(pin_monitor.py:223:lmcache.v1.pin_monitor)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:28:19,799] LMCache INFO:[0m Started PeriodicThread: PinMonitor-thread (level=critical, interval=30.0s, init_wait=0.0s) [3m(periodic_thread.py:248:lmcache.v1.periodic_thread)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:28:19,800] LMCache INFO:[0m PinMonitor started [3m(pin_monitor.py:223:lmcache.v1.pin_monitor)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:28:20,338] LMCache INFO:[0m Mamba engine CPU pool scaled 100 GB -> 50 GB (ratio=2, page_bytes=851968, tokens_per_page=832 layers=48) [3m(vllm_v1_adapter.py:1008:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.vllm_v1_adapter)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:28:20,339] LMCache INFO:[0m Creating LMCacheEngine instance vllm-instance-mamba [3m(cache_engine.py:2175:lmcache.v1.cache_engine)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:28:20,339] LMCache INFO:[0m NUMA mapping for instance vllm-instance-mamba: None [3m(cache_engine.py:2178:lmcache.v1.cache_engine)[0m
+(Worker_TP1 pid=1030) [33;20m[2026-10-31 10:28:20,339] LMCache WARNING:[0m Could not load 'builtin' from vLLM. Using builtin hash. This may cause inconsistencies in distributed caching. [3m(token_database.py:162:lmcache.v1.token_database)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:28:20,339] LMCache INFO:[0m Initialized NONE_HASH=5313149338359954478 from vLLM (>= PR#20511) [3m(token_database.py:100:lmcache.v1.token_database)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:28:20,339] LMCache INFO:[0m Using hash algorithm: builtin [3m(token_database.py:110:lmcache.v1.token_database)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:28:20,340] LMCache INFO:[0m Creating LMCacheEngine with config: {'chunk_size': 832, 'local_cpu': True, 'max_local_cpu_size': 50, 'local_cpu_use_hugepages': False, 'reserve_local_cpu_size': 0.0, 'local_disk': None, 'local_disk_path_sharding': 'by_gpu', 'max_local_disk_size': 0, 'remote_url': None, 'remote_serde': 'naive', 'use_layerwise': False, 'save_decode_cache': True, 'pre_caching_hash_algorithm': 'builtin', 'enable_blending': False, 'blend_recompute_ratios': None, 'blend_thresholds': None, 'blend_check_layers': None, 'blend_min_tokens': 256, 'blend_special_str': ' # # ', 'retrieve_locations': None, 'store_location': None, 'enable_p2p': False, 'p2p_host': None, 'p2p_init_ports': None, 'p2p_lookup_ports': None, 'mp_host': None, 'mp_port': 5555, 'enable_controller': False, 'lmcache_instance_id': 'lmcacheengineconfig_863555a0855345eebbb18faa50ad9474', 'controller_pull_url': None, 'controller_reply_url': None, 'lmcache_worker_ports': None, 'lmcache_worker_ids': None, 'lmcache_worker_heartbeat_delay_time': 10, 'lmcache_worker_heartbeat_time': None, 'enable_pd': False, 'pd_role': None, 'pd_buffer_size': None, 'pd_buffer_device': None, 'pd_peer_host': None, 'pd_peer_init_port': None, 'pd_peer_alloc_port': None, 'pd_peer_query_port': None, 'pd_proxy_host': None, 'pd_proxy_port': None, 'pd_allocation_timeout_sec': inf, 'pd_shutdown_timeout_sec': 5.0, 'pd_condition_poll_interval_sec': 0.005, 'pd_max_prefill_len': 0, 'pd_backend_mode': 'async', 'pd_skip_proxy_notification': False, 'pd_bidirectional': False, 'transfer_channel': None, 'nixl_backends': None, 'nixl_buffer_size': None, 'nixl_buffer_device': None, 'gds_path': None, 'gds_path_sharding': 'by_gpu', 'gds_buffer_size': None, 'maru_path': None, 'maru_pool_size': 4.0, 'use_gds': True, 'gds_backend': 'cufile', 'audit_actual_remote_url': None, 'internal_api_server_host': '127.0.0.1', 'extra_config': {'mamba_pool_ratio': 2}, 'save_unfull_chunk': False, 'blocking_timeout_secs': 10, 'external_lookup_client': None, 'py_enable_gc': True, 'cache_policy': 'LRU', 'numa_mode': None, 'enable_async_loading': False, 'internal_api_server_enabled': False, 'internal_api_server_port_start': 6999, 'priority_limit': None, 'internal_api_server_include_index_list': None, 'internal_api_server_socket_path_prefix': None, 'runtime_plugin_locations': None, 'storage_plugins': None, 'remote_storage_plugins': None, 'lookup_timeout_ms': 3000, 'min_retrieve_tokens': 1024, 'hit_miss_ratio': None, 'lookup_server_worker_ids': None, 'enable_scheduler_bypass_lookup': False, 'script_allowed_imports': None, 'run_script_api_enabled': False, 'enable_lazy_memory_allocator': False, 'lazy_memory_initial_ratio': 0.2, 'lazy_memory_expand_trigger_ratio': 0.5, 'lazy_memory_step_ratio': 0.1, 'lazy_memory_safe_size': 0.0, 'enable_chunk_statistics': False, 'chunk_statistics_auto_start_statistics': False, 'chunk_statistics_auto_exit_timeout_hours': 0.0, 'chunk_statistics_auto_exit_target_unique_chunks': 0, 'chunk_statistics_strategy': 'memory_bloom_filter', 'enable_kv_events': False, 'use_gpu_connector_v3': False, 'pin_timeout_sec': 300, 'pin_check_interval_sec': 30, 'remote_config_url': None, 'app_id': None, 'enable_hidden_state_cache': False, 'max_hidden_state_cpu_size': 2.0, 'hidden_state_layers': None, 'hidden_states_retrieve_mode': 'prefix_strict'} [3m(cache_engine.py:109:lmcache.v1.cache_engine)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:28:20,340] LMCache INFO:[0m LMCacheWorker is not initialized (related configs: enable_controller: False, role: vllm, worker_id: 1, worker_ids: [0, 1]). [3m(cache_engine.py:159:lmcache.v1.cache_engine)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:28:20,341] LMCache INFO:[0m KV events are disabled. [3m(cache_engine.py:188:lmcache.v1.cache_engine)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:28:20,343] LMCache INFO:[0m Mamba engine CPU pool scaled 100 GB -> 50 GB (ratio=2, page_bytes=851968, tokens_per_page=832 layers=48) [3m(vllm_v1_adapter.py:1008:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.vllm_v1_adapter)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:28:20,343] LMCache INFO:[0m Creating LMCacheEngine instance vllm-instance-mamba [3m(cache_engine.py:2175:lmcache.v1.cache_engine)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:28:20,343] LMCache INFO:[0m NUMA mapping for instance vllm-instance-mamba: None [3m(cache_engine.py:2178:lmcache.v1.cache_engine)[0m
+(Worker_TP0 pid=930) [33;20m[2026-10-31 10:28:20,343] LMCache WARNING:[0m Could not load 'builtin' from vLLM. Using builtin hash. This may cause inconsistencies in distributed caching. [3m(token_database.py:162:lmcache.v1.token_database)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:28:20,343] LMCache INFO:[0m Initialized NONE_HASH=5313149338359954478 from vLLM (>= PR#20511) [3m(token_database.py:100:lmcache.v1.token_database)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:28:20,343] LMCache INFO:[0m Using hash algorithm: builtin [3m(token_database.py:110:lmcache.v1.token_database)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:28:20,345] LMCache INFO:[0m Creating LMCacheEngine with config: {'chunk_size': 832, 'local_cpu': True, 'max_local_cpu_size': 50, 'local_cpu_use_hugepages': False, 'reserve_local_cpu_size': 0.0, 'local_disk': None, 'local_disk_path_sharding': 'by_gpu', 'max_local_disk_size': 0, 'remote_url': None, 'remote_serde': 'naive', 'use_layerwise': False, 'save_decode_cache': True, 'pre_caching_hash_algorithm': 'builtin', 'enable_blending': False, 'blend_recompute_ratios': None, 'blend_thresholds': None, 'blend_check_layers': None, 'blend_min_tokens': 256, 'blend_special_str': ' # # ', 'retrieve_locations': None, 'store_location': None, 'enable_p2p': False, 'p2p_host': None, 'p2p_init_ports': None, 'p2p_lookup_ports': None, 'mp_host': None, 'mp_port': 5555, 'enable_controller': False, 'lmcache_instance_id': 'lmcacheengineconfig_5b79ee5f7ff94275b1e2f8e2276d2578', 'controller_pull_url': None, 'controller_reply_url': None, 'lmcache_worker_ports': None, 'lmcache_worker_ids': None, 'lmcache_worker_heartbeat_delay_time': 10, 'lmcache_worker_heartbeat_time': None, 'enable_pd': False, 'pd_role': None, 'pd_buffer_size': None, 'pd_buffer_device': None, 'pd_peer_host': None, 'pd_peer_init_port': None, 'pd_peer_alloc_port': None, 'pd_peer_query_port': None, 'pd_proxy_host': None, 'pd_proxy_port': None, 'pd_allocation_timeout_sec': inf, 'pd_shutdown_timeout_sec': 5.0, 'pd_condition_poll_interval_sec': 0.005, 'pd_max_prefill_len': 0, 'pd_backend_mode': 'async', 'pd_skip_proxy_notification': False, 'pd_bidirectional': False, 'transfer_channel': None, 'nixl_backends': None, 'nixl_buffer_size': None, 'nixl_buffer_device': None, 'gds_path': None, 'gds_path_sharding': 'by_gpu', 'gds_buffer_size': None, 'maru_path': None, 'maru_pool_size': 4.0, 'use_gds': True, 'gds_backend': 'cufile', 'audit_actual_remote_url': None, 'internal_api_server_host': '127.0.0.1', 'extra_config': {'mamba_pool_ratio': 2}, 'save_unfull_chunk': False, 'blocking_timeout_secs': 10, 'external_lookup_client': None, 'py_enable_gc': True, 'cache_policy': 'LRU', 'numa_mode': None, 'enable_async_loading': False, 'internal_api_server_enabled': False, 'internal_api_server_port_start': 6999, 'priority_limit': None, 'internal_api_server_include_index_list': None, 'internal_api_server_socket_path_prefix': None, 'runtime_plugin_locations': None, 'storage_plugins': None, 'remote_storage_plugins': None, 'lookup_timeout_ms': 3000, 'min_retrieve_tokens': 1024, 'hit_miss_ratio': None, 'lookup_server_worker_ids': None, 'enable_scheduler_bypass_lookup': False, 'script_allowed_imports': None, 'run_script_api_enabled': False, 'enable_lazy_memory_allocator': False, 'lazy_memory_initial_ratio': 0.2, 'lazy_memory_expand_trigger_ratio': 0.5, 'lazy_memory_step_ratio': 0.1, 'lazy_memory_safe_size': 0.0, 'enable_chunk_statistics': False, 'chunk_statistics_auto_start_statistics': False, 'chunk_statistics_auto_exit_timeout_hours': 0.0, 'chunk_statistics_auto_exit_target_unique_chunks': 0, 'chunk_statistics_strategy': 'memory_bloom_filter', 'enable_kv_events': False, 'use_gpu_connector_v3': False, 'pin_timeout_sec': 300, 'pin_check_interval_sec': 30, 'remote_config_url': None, 'app_id': None, 'enable_hidden_state_cache': False, 'max_hidden_state_cpu_size': 2.0, 'hidden_state_layers': None, 'hidden_states_retrieve_mode': 'prefix_strict'} [3m(cache_engine.py:109:lmcache.v1.cache_engine)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:28:20,345] LMCache INFO:[0m LMCacheWorker is not initialized (related configs: enable_controller: False, role: vllm, worker_id: 0, worker_ids: [0, 1]). [3m(cache_engine.py:159:lmcache.v1.cache_engine)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:28:20,345] LMCache INFO:[0m KV events are disabled. [3m(cache_engine.py:188:lmcache.v1.cache_engine)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:28:20,874] LMCache INFO:[0m lmcache lookup server started [3m(lmcache_lookup_client.py:270:lmcache.v1.lookup_client.lmcache_lookup_client)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:28:20,874] LMCache INFO:[0m lmcache lookup server started [3m(lmcache_lookup_client.py:270:lmcache.v1.lookup_client.lmcache_lookup_client)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:28:20,877] LMCache INFO:[0m Internal API server disabled. internal_api_server_enabled=False, port_offset=2, port=7001, socket_path=None, include_index_list=None [3m(api_server.py:67:lmcache.v1.internal_api_server.api_server)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:28:20,877] LMCache INFO:[0m LMCache initialized for role KVConnectorRole.WORKER with version 0.5.6-NA, vllm version 0.30.0, lmcache cache_engine metadata: LMCacheMetadata(model_name='/models/target', world_size=2, local_world_size=2, worker_id=1, local_worker_id=1, kv_dtype=torch.uint8, kv_shape=(17, 2, 832, 2, 256), use_mla=False, role='vllm', served_model_name='qwen3.8-27b-fp8', chunk_size=832, kv_layer_groups_manager=None, engine_id='arc-p40', kv_connector_extra_config={'use_native': True, 'lmcache.extra_config': {'mamba_pool_ratio': 2}}) [3m(vllm_v1_adapter.py:1477:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.vllm_v1_adapter)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:28:20,881] LMCache INFO:[0m lmcache lookup server started [3m(lmcache_lookup_client.py:270:lmcache.v1.lookup_client.lmcache_lookup_client)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:28:20,882] LMCache INFO:[0m lmcache lookup server started [3m(lmcache_lookup_client.py:270:lmcache.v1.lookup_client.lmcache_lookup_client)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:28:20,884] LMCache INFO:[0m Internal API server disabled. internal_api_server_enabled=False, port_offset=1, port=7000, socket_path=None, include_index_list=None [3m(api_server.py:67:lmcache.v1.internal_api_server.api_server)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:28:20,884] LMCache INFO:[0m LMCache initialized for role KVConnectorRole.WORKER with version 0.5.6-NA, vllm version 0.30.0, lmcache cache_engine metadata: LMCacheMetadata(model_name='/models/target', world_size=2, local_world_size=2, worker_id=0, local_worker_id=0, kv_dtype=torch.uint8, kv_shape=(17, 2, 832, 2, 256), use_mla=False, role='vllm', served_model_name='qwen3.8-27b-fp8', chunk_size=832, kv_layer_groups_manager=None, engine_id='arc-p40', kv_connector_extra_config={'use_native': True, 'lmcache.extra_config': {'mamba_pool_ratio': 2}}) [3m(vllm_v1_adapter.py:1477:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.vllm_v1_adapter)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:28:20,966] LMCache INFO:[0m Registering KV caches [3m(vllm_v1_adapter.py:1578:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.vllm_v1_adapter)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:28:20,966] LMCache INFO:[0m Hybrid register_kv_caches: 17 attn tensors (engine expects 17 layers) [3m(vllm_v1_adapter.py:1599:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.vllm_v1_adapter)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:28:20,966] LMCache INFO:[0m Post initializing LMCacheEngine [3m(cache_engine.py:307:lmcache.v1.cache_engine)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:28:20,966] LMCache INFO:[0m Initialize storage manager on rank 1, use layerwise: False,save only first rank: False [3m(cache_engine.py:319:lmcache.v1.cache_engine)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:28:20,967] LMCache INFO:[0m Initializing LRUCachePolicy [3m(lru.py:22:lmcache.v1.storage_backend.cache_policy.lru)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:28:20,967] LMCache INFO:[0m NUMA mapping None [3m(local_cpu_backend.py:399:lmcache.v1.storage_backend.local_cpu_backend)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:28:20,967] LMCache INFO:[0m Pinned host allocations disabled via LMCACHE_DISABLE_PINNED_MEMORY; using pageable memory. [3m(mem_alloc.py:70:lmcache.v1.platform.torch_ops.mem_alloc)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:28:20,975] LMCache INFO:[0m Registering KV caches [3m(vllm_v1_adapter.py:1578:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.vllm_v1_adapter)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:28:20,976] LMCache INFO:[0m Hybrid register_kv_caches: 17 attn tensors (engine expects 17 layers) [3m(vllm_v1_adapter.py:1599:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.vllm_v1_adapter)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:28:20,976] LMCache INFO:[0m Post initializing LMCacheEngine [3m(cache_engine.py:307:lmcache.v1.cache_engine)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:28:20,976] LMCache INFO:[0m Initialize storage manager on rank 0, use layerwise: False,save only first rank: False [3m(cache_engine.py:319:lmcache.v1.cache_engine)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:28:20,977] LMCache INFO:[0m Initializing LRUCachePolicy [3m(lru.py:22:lmcache.v1.storage_backend.cache_policy.lru)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:28:20,977] LMCache INFO:[0m NUMA mapping None [3m(local_cpu_backend.py:399:lmcache.v1.storage_backend.local_cpu_backend)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:28:20,977] LMCache INFO:[0m Pinned host allocations disabled via LMCACHE_DISABLE_PINNED_MEMORY; using pageable memory. [3m(mem_alloc.py:70:lmcache.v1.platform.torch_ops.mem_alloc)[0m
+(Worker_TP1 pid=1030) [33;20m[2026-10-31 10:28:29,100] LMCache WARNING:[0m Controller message sender is not initialized [3m(local_cpu_backend.py:105:lmcache.v1.storage_backend.local_cpu_backend)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:28:29,101] LMCache INFO:[0m Created backend: LocalCPUBackend (LocalCPUBackend) [3m(storage_manager.py:1298:lmcache.v1.storage_backend.storage_manager)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:28:29,102] LMCache INFO:[0m Mamba dtype page override: spec page_size_bytes 851968 -> true 847872 (pool padded 851968, storage 7415529472 / 8704 blocks) [3m(vllm_v1_adapter.py:1665:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.vllm_v1_adapter)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:28:29,102] LMCache INFO:[0m Mamba pool: storage 7415529472 bytes, num_blocks 8704, page_bytes 851968 (spec page_size_bytes 847872, tpp 832) [3m(vllm_v1_adapter.py:1696:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.vllm_v1_adapter)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:28:29,102] LMCache INFO:[0m Post initializing LMCacheEngine [3m(cache_engine.py:307:lmcache.v1.cache_engine)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:28:29,102] LMCache INFO:[0m Initialize storage manager on rank 1, use layerwise: False,save only first rank: False [3m(cache_engine.py:319:lmcache.v1.cache_engine)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:28:29,103] LMCache INFO:[0m Initializing LRUCachePolicy [3m(lru.py:22:lmcache.v1.storage_backend.cache_policy.lru)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:28:29,104] LMCache INFO:[0m NUMA mapping None [3m(local_cpu_backend.py:399:lmcache.v1.storage_backend.local_cpu_backend)[0m
+(Worker_TP0 pid=930) [33;20m[2026-10-31 10:28:30,633] LMCache WARNING:[0m Controller message sender is not initialized [3m(local_cpu_backend.py:105:lmcache.v1.storage_backend.local_cpu_backend)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:28:30,634] LMCache INFO:[0m Created backend: LocalCPUBackend (LocalCPUBackend) [3m(storage_manager.py:1298:lmcache.v1.storage_backend.storage_manager)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:28:30,635] LMCache INFO:[0m Mamba dtype page override: spec page_size_bytes 851968 -> true 847872 (pool padded 851968, storage 7415529472 / 8704 blocks) [3m(vllm_v1_adapter.py:1665:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.vllm_v1_adapter)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:28:30,635] LMCache INFO:[0m Mamba pool: storage 7415529472 bytes, num_blocks 8704, page_bytes 851968 (spec page_size_bytes 847872, tpp 832) [3m(vllm_v1_adapter.py:1696:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.vllm_v1_adapter)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:28:30,636] LMCache INFO:[0m Post initializing LMCacheEngine [3m(cache_engine.py:307:lmcache.v1.cache_engine)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:28:30,636] LMCache INFO:[0m Initialize storage manager on rank 0, use layerwise: False,save only first rank: False [3m(cache_engine.py:319:lmcache.v1.cache_engine)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:28:30,637] LMCache INFO:[0m Initializing LRUCachePolicy [3m(lru.py:22:lmcache.v1.storage_backend.cache_policy.lru)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:28:30,637] LMCache INFO:[0m NUMA mapping None [3m(local_cpu_backend.py:399:lmcache.v1.storage_backend.local_cpu_backend)[0m
+(Worker_TP1 pid=1030) [33;20m[2026-10-31 10:28:33,006] LMCache WARNING:[0m Controller message sender is not initialized [3m(local_cpu_backend.py:105:lmcache.v1.storage_backend.local_cpu_backend)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:28:33,006] LMCache INFO:[0m Created backend: LocalCPUBackend (LocalCPUBackend) [3m(storage_manager.py:1298:lmcache.v1.storage_backend.storage_manager)[0m
+(Worker_TP0 pid=930) [33;20m[2026-10-31 10:28:35,575] LMCache WARNING:[0m Controller message sender is not initialized [3m(local_cpu_backend.py:105:lmcache.v1.storage_backend.local_cpu_backend)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:28:35,575] LMCache INFO:[0m Created backend: LocalCPUBackend (LocalCPUBackend) [3m(storage_manager.py:1298:lmcache.v1.storage_backend.storage_manager)[0m
+(Worker_TP1 pid=1030) INFO 10-31 10:28:35 [kernel_warmup.py:172] JIT kernel warmup starting.
+(Worker_TP0 pid=930) INFO 10-31 10:28:35 [kernel_warmup.py:172] JIT kernel warmup starting.
+(Worker_TP1 pid=1030) INFO 10-31 10:28:35 [kernel_warmup.py:185] JIT kernel warmup finished in 0.00s.
+(Worker_TP0 pid=930) INFO 10-31 10:28:35 [kernel_warmup.py:185] JIT kernel warmup finished in 0.00s.
+(Worker_TP1 pid=1030) INFO 10-31 10:28:35 [qwen_triton_warmup.py:294] Warming up Qwen GDN Triton kernels for model_type=qwen3_5_text.
+(Worker_TP0 pid=930) INFO 10-31 10:28:35 [qwen_triton_warmup.py:294] Warming up Qwen GDN Triton kernels for model_type=qwen3_5_text.
+(Worker_TP0 pid=930) INFO 10-31 10:28:39 [qwen_vl_triton_warmup.py:57] Warmed position embedding and vision rotary kernels on grids=[(1, 16, 16), (1, 16, 2), (1, 2, 16), (1, 2, 2)].
+(Worker_TP1 pid=1030) INFO 10-31 10:28:39 [qwen_vl_triton_warmup.py:57] Warmed position embedding and vision rotary kernels on grids=[(1, 16, 16), (1, 16, 2), (1, 2, 16), (1, 2, 2)].
+(Worker_TP0 pid=930) INFO 10-31 10:28:40 [qwen_vl_triton_warmup.py:98] Warmed M-RoPE Triton kernels.
+(Worker_TP1 pid=1030) INFO 10-31 10:28:40 [qwen_vl_triton_warmup.py:98] Warmed M-RoPE Triton kernels.
+(Worker_TP1 pid=1030) [p41c] wrap live (pid=1030 bs=832 gids=3)
+(Worker_TP0 pid=930) [p41c] wrap live (pid=930 bs=832 gids=3)
+(Worker_TP1 pid=1030) /opt/venv/lib/python3.12/site-packages/torch/distributed/c10d_logger.py:83: FutureWarning: `torch.distributed.all_gather_into_tensor` is deprecated. Please use `torch.distributed.all_gather_single` instead.
+(Worker_TP1 pid=1030)   return func(*args, **kwargs)
+(Worker_TP0 pid=930) /opt/venv/lib/python3.12/site-packages/torch/distributed/c10d_logger.py:83: FutureWarning: `torch.distributed.all_gather_into_tensor` is deprecated. Please use `torch.distributed.all_gather_single` instead.
+(Worker_TP0 pid=930)   return func(*args, **kwargs)
+(Worker_TP1 pid=1030) INFO 10-31 10:29:22 [graph_safe_output.py:1055] ArcXpuPlatform: graph-safe output applied — reroute guards active, upstream copy event retained.
+(Worker_TP0 pid=930) INFO 10-31 10:29:22 [graph_safe_output.py:1055] ArcXpuPlatform: graph-safe output applied — reroute guards active, upstream copy event retained.
+(Worker_TP1 pid=1030) INFO 10-31 10:29:27 [graph_safe_output.py:1055] ArcXpuPlatform: graph-safe output applied — reroute guards active, upstream copy event retained.
+(Worker_TP0 pid=930) INFO 10-31 10:29:27 [graph_safe_output.py:1055] ArcXpuPlatform: graph-safe output applied — reroute guards active, upstream copy event retained.
+(Worker_TP0 pid=930) INFO 10-31 10:29:28 [graph_safe_output.py:1055] ArcXpuPlatform: graph-safe output applied — reroute guards active, upstream copy event retained.
+(Worker_TP1 pid=1030) INFO 10-31 10:29:28 [graph_safe_output.py:1055] ArcXpuPlatform: graph-safe output applied — reroute guards active, upstream copy event retained.
+(Worker_TP1 pid=1030) /opt/venv/lib/python3.12/site-packages/torch/distributed/c10d_logger.py:83: FutureWarning: `torch.distributed.all_gather_into_tensor` is deprecated. Please use `torch.distributed.all_gather_single` instead.
+(Worker_TP1 pid=1030)   return func(*args, **kwargs)
+(Worker_TP0 pid=930) /opt/venv/lib/python3.12/site-packages/torch/distributed/c10d_logger.py:83: FutureWarning: `torch.distributed.all_gather_into_tensor` is deprecated. Please use `torch.distributed.all_gather_single` instead.
+(Worker_TP0 pid=930)   return func(*args, **kwargs)
+(EngineCore pid=698) INFO 10-31 10:29:36 [shm_broadcast.py:801] No available shared memory broadcast block found in 60 seconds. This typically happens when some processes are hanging or doing some time-consuming work (e.g. compilation, weight/kv cache quantization).
+(Worker_TP0 pid=930) Capturing CUDA graphs (FULL):   0%|          | 0/54 [00:00<?, ?it/s]Capturing CUDA graphs (FULL):   2%|▏         | 1/54 [00:01<01:41,  1.91s/it]Capturing CUDA graphs (FULL):   4%|▎         | 2/54 [00:02<00:47,  1.09it/s]Capturing CUDA graphs (FULL):   6%|▌         | 3/54 [00:02<00:30,  1.66it/s]Capturing CUDA graphs (FULL):   7%|▋         | 4/54 [00:02<00:22,  2.22it/s]Capturing CUDA graphs (FULL):   9%|▉         | 5/54 [00:02<00:18,  2.72it/s]Capturing CUDA graphs (FULL):  11%|█         | 6/54 [00:03<00:15,  3.14it/s]Capturing CUDA graphs (FULL):  13%|█▎        | 7/54 [00:03<00:13,  3.51it/s]Capturing CUDA graphs (FULL):  15%|█▍        | 8/54 [00:03<00:12,  3.76it/s]Capturing CUDA graphs (FULL):  17%|█▋        | 9/54 [00:03<00:11,  3.85it/s]Capturing CUDA graphs (FULL):  19%|█▊        | 10/54 [00:03<00:11,  3.90it/s]Capturing CUDA graphs (FULL):  20%|██        | 11/54 [00:04<00:10,  3.92it/s]Capturing CUDA graphs (FULL):  22%|██▏       | 12/54 [00:04<00:10,  3.95it/s]Capturing CUDA graphs (FULL):  24%|██▍       | 13/54 [00:04<00:10,  3.98it/s]Capturing CUDA graphs (FULL):  26%|██▌       | 14/54 [00:04<00:10,  3.99it/s]Capturing CUDA graphs (FULL):  28%|██▊       | 15/54 [00:05<00:09,  4.02it/s]Capturing CUDA graphs (FULL):  30%|██▉       | 16/54 [00:05<00:09,  4.03it/s]Capturing CUDA graphs (FULL):  31%|███▏      | 17/54 [00:05<00:09,  4.06it/s]Capturing CUDA graphs (FULL):  33%|███▎      | 18/54 [00:05<00:08,  4.06it/s]Capturing CUDA graphs (FULL):  35%|███▌      | 19/54 [00:06<00:08,  4.07it/s]Capturing CUDA graphs (FULL):  37%|███▋      | 20/54 [00:06<00:08,  4.04it/s]Capturing CUDA graphs (FULL):  39%|███▉      | 21/54 [00:06<00:08,  4.02it/s]Capturing CUDA graphs (FULL):  41%|████      | 22/54 [00:06<00:07,  4.00it/s]Capturing CUDA graphs (FULL):  43%|████▎     | 23/54 [00:07<00:07,  4.00it/s]Capturing CUDA graphs (FULL):  44%|████▍     | 24/54 [00:07<00:07,  3.98it/s]Capturing CUDA graphs (FULL):  46%|████▋     | 25/54 [00:07<00:07,  3.98it/s]Capturing CUDA graphs (FULL):  48%|████▊     | 26/54 [00:07<00:07,  3.97it/s]Capturing CUDA graphs (FULL):  50%|█████     | 27/54 [00:08<00:06,  3.97it/s]Capturing CUDA graphs (FULL):  52%|█████▏    | 28/54 [00:08<00:07,  3.35it/s]Capturing CUDA graphs (FULL):  54%|█████▎    | 29/54 [00:08<00:07,  3.54it/s]Capturing CUDA graphs (FULL):  56%|█████▌    | 30/54 [00:09<00:06,  3.68it/s]Capturing CUDA graphs (FULL):  57%|█████▋    | 31/54 [00:09<00:06,  3.79it/s]Capturing CUDA graphs (FULL):  59%|█████▉    | 32/54 [00:09<00:05,  3.87it/s]Capturing CUDA graphs (FULL):  61%|██████    | 33/54 [00:09<00:05,  3.93it/s]Capturing CUDA graphs (FULL):  63%|██████▎   | 34/54 [00:10<00:06,  3.31it/s]Capturing CUDA graphs (FULL):  65%|██████▍   | 35/54 [00:10<00:05,  3.50it/s]Capturing CUDA graphs (FULL):  67%|██████▋   | 36/54 [00:10<00:04,  3.66it/s]Capturing CUDA graphs (FULL):  69%|██████▊   | 37/54 [00:11<00:04,  3.68it/s]Capturing CUDA graphs (FULL):  70%|███████   | 38/54 [00:11<00:04,  3.80it/s]Capturing CUDA graphs (FULL):  72%|███████▏  | 39/54 [00:11<00:03,  3.87it/s]Capturing CUDA graphs (FULL):  74%|███████▍  | 40/54 [00:11<00:03,  3.92it/s]Capturing CUDA graphs (FULL):  76%|███████▌  | 41/54 [00:11<00:03,  3.95it/s](Worker_TP1 pid=1030) INFO 10-31 10:29:59 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=256 p50=0.50ms p90=0.66ms max=1.95ms fallbacks=12 {'zero-spec': 9, 'mixed': 3}
+(Worker_TP0 pid=930) INFO 10-31 10:29:59 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=256 p50=0.65ms p90=0.79ms max=1.19ms fallbacks=12 {'zero-spec': 9, 'mixed': 3}
+Capturing CUDA graphs (FULL):  78%|███████▊  | 42/54 [00:12<00:03,  3.96it/s]Capturing CUDA graphs (FULL):  80%|███████▉  | 43/54 [00:12<00:02,  3.99it/s]Capturing CUDA graphs (FULL):  81%|████████▏ | 44/54 [00:12<00:02,  3.99it/s]Capturing CUDA graphs (FULL):  83%|████████▎ | 45/54 [00:12<00:02,  4.01it/s]Capturing CUDA graphs (FULL):  85%|████████▌ | 46/54 [00:13<00:02,  3.64it/s]Capturing CUDA graphs (FULL):  87%|████████▋ | 47/54 [00:13<00:01,  3.77it/s]Capturing CUDA graphs (FULL):  89%|████████▉ | 48/54 [00:13<00:01,  3.67it/s]Capturing CUDA graphs (FULL):  91%|█████████ | 49/54 [00:14<00:01,  3.78it/s]Capturing CUDA graphs (FULL):  93%|█████████▎| 50/54 [00:14<00:01,  3.89it/s]Capturing CUDA graphs (FULL):  94%|█████████▍| 51/54 [00:14<00:00,  3.77it/s]Capturing CUDA graphs (FULL):  96%|█████████▋| 52/54 [00:14<00:00,  3.87it/s]Capturing CUDA graphs (FULL):  98%|█████████▊| 53/54 [00:15<00:00,  3.95it/s](Worker_TP1 pid=1030) INFO 10-31 10:30:02 [speculator.py:151] Capturing model for speculator...
+Capturing CUDA graphs (FULL): 100%|██████████| 54/54 [00:15<00:00,  4.07it/s]Capturing CUDA graphs (FULL): 100%|██████████| 54/54 [00:15<00:00,  3.52it/s]
+(Worker_TP0 pid=930) INFO 10-31 10:30:02 [speculator.py:151] Capturing model for speculator...
+(Worker_TP0 pid=930) Capturing prefill CUDA graphs (FULL):   0%|          | 0/54 [00:00<?, ?it/s]Capturing prefill CUDA graphs (FULL):   9%|▉         | 5/54 [00:00<00:01, 42.65it/s]Capturing prefill CUDA graphs (FULL):  19%|█▊        | 10/54 [00:00<00:01, 41.82it/s]Capturing prefill CUDA graphs (FULL):  28%|██▊       | 15/54 [00:00<00:02, 15.61it/s]Capturing prefill CUDA graphs (FULL):  37%|███▋      | 20/54 [00:00<00:01, 21.12it/s]Capturing prefill CUDA graphs (FULL):  46%|████▋     | 25/54 [00:01<00:01, 25.90it/s]Capturing prefill CUDA graphs (FULL):  54%|█████▎    | 29/54 [00:01<00:00, 28.62it/s](Worker_TP1 pid=1030) INFO 10-31 10:30:03 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=512 p50=0.49ms p90=0.65ms max=1.95ms fallbacks=12 {'zero-spec': 9, 'mixed': 3}
+(Worker_TP0 pid=930) INFO 10-31 10:30:03 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=512 p50=0.64ms p90=0.79ms max=1.37ms fallbacks=12 {'zero-spec': 9, 'mixed': 3}
+Capturing prefill CUDA graphs (FULL):  63%|██████▎   | 34/54 [00:01<00:00, 33.44it/s]Capturing prefill CUDA graphs (FULL):  74%|███████▍  | 40/54 [00:01<00:00, 38.94it/s]Capturing prefill CUDA graphs (FULL):  87%|████████▋ | 47/54 [00:01<00:00, 45.75it/s]Capturing prefill CUDA graphs (FULL): 100%|██████████| 54/54 [00:01<00:00, 51.11it/s]Capturing prefill CUDA graphs (FULL): 100%|██████████| 54/54 [00:01<00:00, 34.71it/s]
+(Worker_TP0 pid=930) Capturing decode CUDA graphs (FULL):   0%|          | 0/27 [00:00<?, ?it/s]Capturing decode CUDA graphs (FULL):  15%|█▍        | 4/27 [00:00<00:00, 33.21it/s]Capturing decode CUDA graphs (FULL):  30%|██▉       | 8/27 [00:00<00:00, 35.22it/s]Capturing decode CUDA graphs (FULL):  48%|████▊     | 13/27 [00:00<00:00, 38.29it/s]Capturing decode CUDA graphs (FULL):  67%|██████▋   | 18/27 [00:00<00:00, 41.78it/s]Capturing decode CUDA graphs (FULL):  85%|████████▌ | 23/27 [00:00<00:00, 43.95it/s]Capturing decode CUDA graphs (FULL): 100%|██████████| 27/27 [00:00<00:00, 42.21it/s]
+(Worker_TP0 pid=930) INFO 10-31 10:30:05 [model_runner.py:1066] Graph capturing finished in 19 secs, took 2.19 GiB
+(Worker_TP0 pid=930) INFO 10-31 10:30:05 [gpu_worker.py:888] Free memory on device (30.54/31.89 GiB) on startup. Desired GPU memory utilization is (0.8, 25.51 GiB). Actual usage is 17.13 GiB for consumed memory (weights + non-torch), 1.46 GiB for peak activation, and 2.19 GiB for CUDAGraph memory. Replace gpu_memory_utilization config with `--kv-cache-memory=4913859277` (4.58 GiB) to fit into requested memory, or `--kv-cache-memory=10316742144` (9.61 GiB) to fully utilize gpu memory. Current kv cache memory in use is 6.92 GiB.
+(Worker_TP0 pid=930) INFO 10-31 10:30:05 [jit_monitor.py:85] Kernel JIT monitor activated; monitored JIT compilations during inference will use mode=warn.
+(Worker_TP1 pid=1030) INFO 10-31 10:30:05 [model_runner.py:1066] Graph capturing finished in 19 secs, took 2.18 GiB
+(Worker_TP1 pid=1030) INFO 10-31 10:30:05 [gpu_worker.py:888] Free memory on device (30.92/31.89 GiB) on startup. Desired GPU memory utilization is (0.8, 25.51 GiB). Actual usage is 17.13 GiB for consumed memory (weights + non-torch), 1.46 GiB for peak activation, and 2.18 GiB for CUDAGraph memory. Replace gpu_memory_utilization config with `--kv-cache-memory=4930722509` (4.59 GiB) to fit into requested memory, or `--kv-cache-memory=10739371520` (10.0 GiB) to fully utilize gpu memory. Current kv cache memory in use is 6.92 GiB.
+(Worker_TP1 pid=1030) INFO 10-31 10:30:05 [jit_monitor.py:85] Kernel JIT monitor activated; monitored JIT compilations during inference will use mode=warn.
+(Worker_TP0 pid=930) INFO 10-31 10:30:05 [torch_utils.py:287] Reducing Torch threads from 32 to 1 for serving. Set OMP_NUM_THREADS in the external environment to override.
+(EngineCore pid=698) INFO 10-31 10:30:05 [core.py:379] init engine (profile, create kv cache, warmup model) took 141.91 s
+(EngineCore pid=698) INFO 10-31 10:30:06 [platform.py:172] ArcXpuPlatform: wheel hook scheduler <- patches.sched_tail_split OK
+(EngineCore pid=698) INFO 10-31 10:30:06 [kv_cache_utils.py:748] kv cache group sizes [832, 832, 832, 832]
+(EngineCore pid=698) INFO 10-31 10:30:06 [kv_cache_utils.py:749] kv lcm block sizes 832
+(EngineCore pid=698) INFO 10-31 10:30:06 [factory.py:62] Creating v1 connector with name: LMCacheConnectorV1 and engine_id: arc-p40
+(EngineCore pid=698) WARNING 10-31 10:30:06 [base.py:217] Initializing KVConnectorBase_V1. This API is experimental and subject to change in the future as we iterate the design.
+(EngineCore pid=698) INFO 10-31 10:30:06 [lmcache_connector.py:97] Initializing native LMCache connector
+(EngineCore pid=698) INFO 10-31 10:30:07 [platform.py:172] ArcXpuPlatform: wheel hook torch_ops <- patches.lmcint.lmc_twohs_transfer OK
+(EngineCore pid=698) [32;20m[2026-10-31 10:30:07,731] LMCache INFO:[0m torch_dev=<module 'torch.xpu' from '/opt/venv/lib/python3.12/site-packages/torch/xpu/__init__.py'>, torch_device_type=xpu [3m(_device_detect.py:311:lmcache.v1.platform._device_detect)[0m
+(EngineCore pid=698) [32;20m[2026-10-31 10:30:07,734] LMCache INFO:[0m XpuDeviceOps: LMCACHE_DISABLE_PINNED_MEMORY set; alloc/free_pinned_ptr re-pinned to the pageable torch baseline (p40c law). [3m(device_ops.py:73:lmcache.v1.platform.devices.xpu.device_ops)[0m
+(EngineCore pid=698) INFO 10-31 10:30:07 [platform.py:172] ArcXpuPlatform: wheel hook vllm <- patches.lmcint.lmc_kvfmt_detector OK
+(EngineCore pid=698) [32;20m[2026-10-31 10:30:07,982] LMCache INFO:[0m Discovered API module: env_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(EngineCore pid=698) [32;20m[2026-10-31 10:30:08,014] LMCache INFO:[0m Discovered API module: loglevel_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(EngineCore pid=698) [32;20m[2026-10-31 10:30:08,015] LMCache INFO:[0m Discovered API module: metrics_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(EngineCore pid=698) [32;20m[2026-10-31 10:30:08,018] LMCache INFO:[0m Discovered API module: periodic_thread_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(EngineCore pid=698) [32;20m[2026-10-31 10:30:08,019] LMCache INFO:[0m Discovered API module: run_script_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(EngineCore pid=698) [32;20m[2026-10-31 10:30:08,021] LMCache INFO:[0m Discovered API module: thread_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(EngineCore pid=698) [32;20m[2026-10-31 10:30:08,028] LMCache INFO:[0m Discovered API module: backend_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(EngineCore pid=698) [32;20m[2026-10-31 10:30:08,029] LMCache INFO:[0m Discovered API module: bypass_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(EngineCore pid=698) [32;20m[2026-10-31 10:30:08,036] LMCache INFO:[0m Discovered API module: cache_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(EngineCore pid=698) [32;20m[2026-10-31 10:30:08,047] LMCache INFO:[0m Discovered API module: chunk_statistics_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(EngineCore pid=698) [32;20m[2026-10-31 10:30:08,050] LMCache INFO:[0m Discovered API module: conf_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(EngineCore pid=698) [32;20m[2026-10-31 10:30:08,051] LMCache INFO:[0m Discovered API module: freeze_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(EngineCore pid=698) [32;20m[2026-10-31 10:30:08,052] LMCache INFO:[0m Discovered API module: hot_cache_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(EngineCore pid=698) [32;20m[2026-10-31 10:30:08,054] LMCache INFO:[0m Discovered API module: inference_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(EngineCore pid=698) [32;20m[2026-10-31 10:30:08,059] LMCache INFO:[0m Discovered API module: load_fs_chunks_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(EngineCore pid=698) [32;20m[2026-10-31 10:30:08,061] LMCache INFO:[0m Discovered API module: lookup_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(EngineCore pid=698) [32;20m[2026-10-31 10:30:08,062] LMCache INFO:[0m Discovered API module: version_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(EngineCore pid=698) [32;20m[2026-10-31 10:30:08,077] LMCache INFO:[0m Discovered API module: key_stats_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(EngineCore pid=698) [32;20m[2026-10-31 10:30:08,080] LMCache INFO:[0m Discovered API module: worker_info_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(EngineCore pid=698) [utils@lmcint] src-override OK (pid=698)
+(EngineCore pid=698) [vllm_v1_adapter@lmcint] src-override OK (pid=698)
+(EngineCore pid=698) [lmcache_integration@lmcint] src-override OK (pid=698)
+(EngineCore pid=698) [33;20m[2026-10-31 10:30:08,109] LMCache WARNING:[0m No LMCache configuration file is set. Trying to read configurations from the environment variables. [3m(utils.py:48:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.utils)[0m
+(EngineCore pid=698) [33;20m[2026-10-31 10:30:08,110] LMCache WARNING:[0m You can set the configuration file through the environment variable: LMCACHE_CONFIG_FILE [3m(utils.py:52:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.utils)[0m
+(EngineCore pid=698) [32;20m[2026-10-31 10:30:08,110] LMCache INFO:[0m Overridden extra_config [3m(config_base.py:699:lmcache.v1.config_base)[0m
+(EngineCore pid=698) [32;20m[2026-10-31 10:30:08,110] LMCache INFO:[0m Updated config extra_config from vLLM extra config: {'mamba_pool_ratio': 2} [3m(vllm_v1_adapter.py:1119:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.vllm_v1_adapter)[0m
+(EngineCore pid=698) [32;20m[2026-10-31 10:30:08,110] LMCache INFO:[0m Hybrid model: forcing lmcache chunk_size 1024 -> 832 (mamba tokens_per_page) [3m(vllm_v1_adapter.py:1204:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.vllm_v1_adapter)[0m
+(EngineCore pid=698) [32;20m[2026-10-31 10:30:08,110] LMCache INFO:[0m LMCache hybrid mode: attn layers=17 mamba layers=48 (fa_gidx=3 fa_gidxs=[3] mamba_gidxs=[0, 1, 2] page_bytes=851968 tpp=832) [3m(vllm_v1_adapter.py:1218:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.vllm_v1_adapter)[0m
+(EngineCore pid=698) [32;20m[2026-10-31 10:30:08,111] LMCache INFO:[0m Transport connecting to rank 0 with socket path /tmp/engine_arc-p40_service_lookup_lmcache_rpc_port_0 [3m(zmq_transport.py:53:lmcache.v1.rpc.zmq_transport)[0m
+(EngineCore pid=698) [32;20m[2026-10-31 10:30:08,111] LMCache INFO:[0m Transport connecting to rank 1 with socket path /tmp/engine_arc-p40_service_lookup_lmcache_rpc_port_1 [3m(zmq_transport.py:53:lmcache.v1.rpc.zmq_transport)[0m
+(EngineCore pid=698) [33;20m[2026-10-31 10:30:08,111] LMCache WARNING:[0m Could not load 'builtin' from vLLM. Using builtin hash. This may cause inconsistencies in distributed caching. [3m(token_database.py:162:lmcache.v1.token_database)[0m
+(EngineCore pid=698) [32;20m[2026-10-31 10:30:08,111] LMCache INFO:[0m Initialized NONE_HASH=5313149338359954478 from vLLM (>= PR#20511) [3m(token_database.py:100:lmcache.v1.token_database)[0m
+(EngineCore pid=698) [32;20m[2026-10-31 10:30:08,112] LMCache INFO:[0m Using hash algorithm: builtin [3m(token_database.py:110:lmcache.v1.token_database)[0m
+(EngineCore pid=698) [32;20m[2026-10-31 10:30:08,112] LMCache INFO:[0m Transport connecting to rank 0 with socket path /tmp/engine_arc-p40-mamba_service_lookup_lmcache_rpc_port_0 [3m(zmq_transport.py:53:lmcache.v1.rpc.zmq_transport)[0m
+(EngineCore pid=698) [32;20m[2026-10-31 10:30:08,112] LMCache INFO:[0m Transport connecting to rank 1 with socket path /tmp/engine_arc-p40-mamba_service_lookup_lmcache_rpc_port_1 [3m(zmq_transport.py:53:lmcache.v1.rpc.zmq_transport)[0m
+(EngineCore pid=698) [33;20m[2026-10-31 10:30:08,112] LMCache WARNING:[0m Could not load 'builtin' from vLLM. Using builtin hash. This may cause inconsistencies in distributed caching. [3m(token_database.py:162:lmcache.v1.token_database)[0m
+(EngineCore pid=698) [32;20m[2026-10-31 10:30:08,112] LMCache INFO:[0m Initialized NONE_HASH=5313149338359954478 from vLLM (>= PR#20511) [3m(token_database.py:100:lmcache.v1.token_database)[0m
+(EngineCore pid=698) [32;20m[2026-10-31 10:30:08,112] LMCache INFO:[0m Using hash algorithm: builtin [3m(token_database.py:110:lmcache.v1.token_database)[0m
+(EngineCore pid=698) [32;20m[2026-10-31 10:30:08,113] LMCache INFO:[0m Internal API server disabled. internal_api_server_enabled=False, port_offset=0, port=6999, socket_path=None, include_index_list=None [3m(api_server.py:67:lmcache.v1.internal_api_server.api_server)[0m
+(EngineCore pid=698) [32;20m[2026-10-31 10:30:08,113] LMCache INFO:[0m LMCache initialized for role KVConnectorRole.SCHEDULER with version 0.5.6-NA, vllm version 0.30.0, lmcache cache_engine metadata: None [3m(vllm_v1_adapter.py:1477:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.vllm_v1_adapter)[0m
+(EngineCore pid=698) [transformers] The `use_fast` parameter is deprecated and will be removed in a future version. Use `backend="torchvision"` instead of `use_fast=True`, or `backend="pil"` instead of `use_fast=False`.
+(EngineCore pid=698) WARNING 10-31 10:30:18 [vllm.py:1570] Inductor compilation was disabled by user settings, optimizations settings that are only active during inductor compilation will be ignored.
+(EngineCore pid=698) INFO 10-31 10:30:18 [kernel.py:416] Final IR op priority after setting platform defaults: IrOpPriorityConfig(rms_norm=['vllm_c', 'native'], fused_add_rms_norm=['vllm_c', 'native'], gelu_and_mul_sparse=['native'])
+(EngineCore pid=698) WARNING 10-31 10:30:18 [xpu.py:308] XPU Graph support is experimental and currently only supports single-GPU execution.
+(EngineCore pid=698) INFO 10-31 10:30:18 [graph_safe_output.py:665] ArcXpuPlatform: XPU graph boundary hygiene installed (pid 698, XPUGraph capture_begin/capture_end/replay + graph context __exit__ wrapped).
+(EngineCore pid=698) INFO 10-31 10:30:18 [graph_safe_output.py:791] ArcXpuPlatform: zombie stream-reroute guards installed (pid 698, set_stream substitution + wait_stream skip + Event.record reroute + synchronize tripwire).
+(EngineCore pid=698) INFO 10-31 10:30:18 [graph_safe_output.py:925] ArcXpuPlatform: runner-entry hygiene installed (pid 698, GPUModelRunner.execute_model + sample_tokens wrapped).
+(EngineCore pid=698) INFO 10-31 10:30:18 [graph_safe_output.py:971] ArcXpuPlatform: capture-stream fix installed (pid 698, captures ride torch.xpu.graph.default_capture_stream, EAGERLY INITED before capture #1 — the serving default never enters capture; champion 0.26.1 discipline, r9).
+(EngineCore pid=698) INFO 10-31 10:30:18 [graph_safe_output.py:520] ArcXpuPlatform: r12b kernel-launch tracer installed (triton:CachingAutotuner.run).
+(EngineCore pid=698) INFO 10-31 10:30:18 [graph_safe_output.py:1112] ArcXpuPlatform: graph-safe output patch installed (pid 698, AsyncOutput/AsyncPoolingOutput __init__ + get_output wrapped).
+(EngineCore pid=698) INFO 10-31 10:30:18 [speculator_full_capture.py:117] ArcXpuPlatform: speculator FULL-capture patch installed (pid 698, SpeculatorCudaGraphManager.__init__ wrapped).
+(EngineCore pid=698) INFO 10-31 10:30:18 [first_request_warmup.py:123] ArcXpuPlatform: first-request warmup interlock installed (defect-b lane W, r16 evidence)
+(EngineCore pid=698) INFO 10-31 10:30:18 [gdn_metadata_fastpath.py:286] [arc-p10] gdn metadata fastpath installed (steady spec-decode builds; stock build kept for prefill/mixed)
+(EngineCore pid=698) INFO 10-31 10:30:18 [fp8_block_w8a16.py:97] ArcXpuPlatform: fp8 block linear reroute ACTIVE — XPUFp8BlockScaledMMKernel.apply_input_quant=False, apply_block_scaled_mm -> _xpu_C.fp8_gemm_w8a16 (stock fallback kept; r40: 3-8x/GEMM decode Ms, relerr 4-5e-4)
+(EngineCore pid=698) INFO 10-31 10:30:18 [platform.py:298] ArcXpuPlatform: Intel Arc Xe2 posture active (Intel(R) Graphics [0xe223]).
+(EngineCore pid=698) INFO 10-31 10:30:18 [platform.py:307] ArcXpuPlatform: graph posture cudagraph_mode=FULL_DECODE_ONLY capture_sizes=(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 20, 25, 30, 35, 40, 45, 48, 50, 55, 60, 64, 65, 70, 75, 80, 85, 90, 95, 96, 100, 105, 110, 112, 115, 120, 125, 128, 130, 135, 140, 145, 150, 155, 160, 165, 170, 175, 180, 185, 190, 192, 195, 200, 205, 210, 215, 220, 224, 225, 230, 235, 240, 245, 250, 255, 256, 260, 265, 270, 275, 280, 285, 290, 295, 300, 305, 310, 315, 320) (VLLM_XPU_ENABLE_XPU_GRAPH=True).
+(EngineCore pid=698) INFO 10-31 10:30:18 [vllm.py:2674] EC/KV consumer: pre-computed-embedding inputs may omit the embedding tensor.
+(EngineCore pid=698) INFO 10-31 10:30:18 [compilation.py:336] Enabled custom fusions: norm_quant, act_quant
+(APIServer pid=13) INFO 10-31 10:30:18 [entry.py:135] Supported tasks: ['generate']
+(APIServer pid=13) INFO 10-31 10:30:18 [factories.py:76] Scale-out endpoints are disabled. Set --enable-scale-out to enable them.
+(APIServer pid=13) INFO 10-31 10:30:18 [parser_manager.py:36] "auto" tool choice has been enabled.
+(APIServer pid=13) INFO 10-31 10:30:18 [hf.py:642] Detected the chat template content format to be 'openai'. You can set `--chat-template-content-format` to override this.
+(APIServer pid=13) WARNING 10-31 10:30:18 [model.py:1772] Default vLLM sampling parameters have been overridden by the model's `generation_config.json`: `{'repetition_penalty': 1.0, 'temperature': 0.6, 'top_k': 20, 'top_p': 0.95, 'min_p': 0.0}`. If this is not intended, please relaunch vLLM instance with `--generation-config vllm`.
+(APIServer pid=13) INFO 10-31 10:30:18 [entry.py:139] Starting vLLM server on http://0.0.0.0:8000
+(APIServer pid=13) INFO 10-31 10:30:18 [launcher.py:61] Available routes are:
+(APIServer pid=13) INFO 10-31 10:30:18 [launcher.py:70] Route: /openapi.json, Methods: GET, HEAD
+(APIServer pid=13) INFO 10-31 10:30:18 [launcher.py:70] Route: /docs, Methods: GET, HEAD
+(APIServer pid=13) INFO 10-31 10:30:18 [launcher.py:70] Route: /docs/oauth2-redirect, Methods: GET, HEAD
+(APIServer pid=13) INFO 10-31 10:30:18 [launcher.py:70] Route: /redoc, Methods: GET, HEAD
+(APIServer pid=13) INFO 10-31 10:30:18 [launcher.py:70] Route: /load, Methods: GET
+(APIServer pid=13) INFO 10-31 10:30:18 [launcher.py:70] Route: /version, Methods: GET
+(APIServer pid=13) INFO 10-31 10:30:18 [launcher.py:70] Route: /health, Methods: GET
+(APIServer pid=13) INFO 10-31 10:30:18 [launcher.py:70] Route: /metrics, Methods: GET
+(APIServer pid=13) INFO 10-31 10:30:18 [launcher.py:70] Route: /tokenize, Methods: POST
+(APIServer pid=13) INFO 10-31 10:30:18 [launcher.py:70] Route: /detokenize, Methods: POST
+(APIServer pid=13) INFO 10-31 10:30:18 [launcher.py:70] Route: /v1/models, Methods: GET
+(APIServer pid=13) INFO 10-31 10:30:18 [launcher.py:70] Route: /ping, Methods: GET
+(APIServer pid=13) INFO 10-31 10:30:18 [launcher.py:70] Route: /ping, Methods: POST
+(APIServer pid=13) INFO 10-31 10:30:18 [launcher.py:70] Route: /invocations, Methods: POST
+(APIServer pid=13) INFO 10-31 10:30:18 [launcher.py:70] Route: /v1/chat/completions, Methods: POST
+(APIServer pid=13) INFO 10-31 10:30:18 [launcher.py:70] Route: /v1/chat/completions/batch, Methods: POST
+(APIServer pid=13) INFO 10-31 10:30:18 [launcher.py:70] Route: /v1/responses, Methods: POST
+(APIServer pid=13) INFO 10-31 10:30:18 [launcher.py:70] Route: /v1/responses/{response_id}, Methods: GET
+(APIServer pid=13) INFO 10-31 10:30:18 [launcher.py:70] Route: /v1/responses/{response_id}/cancel, Methods: POST
+(APIServer pid=13) INFO 10-31 10:30:18 [launcher.py:70] Route: /v1/completions, Methods: POST
+(APIServer pid=13) INFO 10-31 10:30:18 [launcher.py:70] Route: /v1/messages, Methods: POST
+(APIServer pid=13) INFO 10-31 10:30:18 [launcher.py:70] Route: /v1/messages/count_tokens, Methods: POST
+(APIServer pid=13) INFO 10-31 10:30:18 [launcher.py:70] Route: /generative_scoring, Methods: POST
+(APIServer pid=13) INFO 10-31 10:30:18 [launcher.py:70] Route: /scale_elastic_ep, Methods: POST
+(APIServer pid=13) INFO 10-31 10:30:18 [launcher.py:70] Route: /is_scaling_elastic_ep, Methods: POST
+(APIServer pid=13) INFO:     Started server process [13]
+(APIServer pid=13) INFO:     Waiting for application startup.
+(APIServer pid=13) INFO:     Application startup complete.
+(APIServer pid=13) INFO:     127.0.0.1:46112 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:46116 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:46130 - "GET /health HTTP/1.1" 200 OK
+(APIServer pid=13) INFO 10-31 10:30:22 [first_request_warmup.py:101] ArcXpuPlatform: first generate (request chatcmpl-9e0e41a30ddb1cb7) — running defect-b warmup interlock first
+(APIServer pid=13) INFO:     127.0.0.1:46134 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) WARNING 10-31 10:30:23 [input_processor.py:315] Passing raw prompts to InputProcessor is deprecated and will be removed in the future. You should instead pass the outputs of Renderer.render_cmpl() or Renderer.render_chat().
+(Worker_TP0 pid=930) WARNING 10-31 10:30:23 [jit_monitor.py:141] Triton kernel JIT compilation during inference: _compute_local_logits_stats_kernel. This causes a latency spike; consider extending warmup to cover this shape/config.
+(APIServer pid=13) INFO:     127.0.0.1:46136 - "GET /health HTTP/1.1" 200 OK
+(Worker_TP0 pid=930) WARNING 10-31 10:30:24 [jit_monitor.py:141] Triton kernel JIT compilation during inference: _rejection_kernel. This causes a latency spike; consider extending warmup to cover this shape/config.
+(Worker_TP0 pid=930) WARNING 10-31 10:30:24 [jit_monitor.py:141] Triton kernel JIT compilation during inference: _resample_kernel. This causes a latency spike; consider extending warmup to cover this shape/config.
+(APIServer pid=13) INFO 10-31 10:30:25 [first_request_warmup.py:59] ArcXpuPlatform: first-request warmup stage small done in 2.2s (2 outputs, 640 prompt chars)
+(APIServer pid=13) INFO:     10.100.8.REDACTED:37682 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     10.100.8.REDACTED:37664 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     10.100.8.REDACTED:37662 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     10.100.8.REDACTED:37668 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     10.100.8.REDACTED:37690 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     10.100.8.REDACTED:37680 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     10.100.8.REDACTED:37694 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=13) INFO 10-31 10:30:29 [loggers.py:315] Engine 000: Avg prompt throughput: 8.7 tokens/s, Avg generation throughput: 0.2 tokens/s, Running: 1 reqs, Waiting: 0 reqs, XPU KV cache usage: 4.9%, Prefix cache hit rate: 0.0%, External prefix cache hit rate: 0.0%
+(APIServer pid=13) INFO 10-31 10:30:29 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 1.00, Accepted throughput: 0.00 tokens/s, Drafted throughput: 0.27 tokens/s, Accepted: 0 tokens, Drafted: 3 tokens, Per-position acceptance rate: 0.000, 0.000, 0.000, Avg Draft acceptance rate: 0.0%
+(Worker_TP1 pid=1030) [r43kvfmt] arc interleaved attn pool -> NL_X_NB_BS_NH_TWO_HS (NB=512 BS=832 TWO=2 HS=512)
+(Worker_TP0 pid=930) [r43kvfmt] arc interleaved attn pool -> NL_X_NB_BS_NH_TWO_HS (NB=512 BS=832 TWO=2 HS=512)
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:30:29,524] LMCache INFO:[0m Engine KV Format: EngineKVFormat.NL_X_NB_BS_NH_TWO_HS NL x [NB, BS, NH, 2, HS] [3m(detection.py:69:lmcache.v1.gpu_connector.kv_format.detection)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:30:29,524] LMCache INFO:[0m Engine KV Format: EngineKVFormat.NL_X_NB_BS_NH_TWO_HS NL x [NB, BS, NH, 2, HS] [3m(detection.py:69:lmcache.v1.gpu_connector.kv_format.detection)[0m
+(Worker_TP1 pid=1030) [33;20m[2026-10-31 10:30:29,525] LMCache WARNING:[0m NL_X_NB_BS_NH_TWO_HS_Spec.__init__ is deprecated: NL_X_NB_BS_NH_TWO_HS is superseded by NL_X_NB_BS_NH_CS (raw 4-D content-size layout) [3m(utils.py:764:lmcache.utils)[0m
+(Worker_TP0 pid=930) [33;20m[2026-10-31 10:30:29,525] LMCache WARNING:[0m NL_X_NB_BS_NH_TWO_HS_Spec.__init__ is deprecated: NL_X_NB_BS_NH_TWO_HS is superseded by NL_X_NB_BS_NH_CS (raw 4-D content-size layout) [3m(utils.py:764:lmcache.utils)[0m
+(Worker_TP1 pid=1030) [r43xfer] TWO_HS interleaved branch live: NB=512 BS=832 L=17 H=512 nslots=832 dir=D2H
+(Worker_TP0 pid=930) [r43xfer] TWO_HS interleaved branch live: NB=512 BS=832 L=17 H=512 nslots=832 dir=D2H
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:30:29,964] LMCache INFO:[0m [req_id=unspecified] Stored 6656 out of total 6656 tokens. size: 0.1079 GB, cost 440.8373 ms, throughput: 0.2448 GB/s; offload_time: 440.6785 ms, put_time: 0.1050 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:30:29,974] LMCache INFO:[0m [req_id=unspecified] Stored 832 out of total 832 tokens. size: 0.0379 GB, cost 9.1448 ms, throughput: 4.1448 GB/s; offload_time: 9.0621 ms, put_time: 0.0386 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:30:30,023] LMCache INFO:[0m [req_id=unspecified] Stored 6656 out of total 6656 tokens. size: 0.1079 GB, cost 500.4542 ms, throughput: 0.2156 GB/s; offload_time: 500.2980 ms, put_time: 0.1028 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:30:30,033] LMCache INFO:[0m [req_id=unspecified] Stored 832 out of total 832 tokens. size: 0.0379 GB, cost 8.9323 ms, throughput: 4.2434 GB/s; offload_time: 8.8599 ms, put_time: 0.0335 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:30:30,094] LMCache INFO:[0m [req_id=unspecified] Stored 832 out of total 832 tokens. size: 0.0135 GB, cost 10.0292 ms, throughput: 1.3450 GB/s; offload_time: 9.9727 ms, put_time: 0.0274 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:30:30,094] LMCache INFO:[0m [req_id=unspecified] Stored 832 out of total 832 tokens. size: 0.0135 GB, cost 10.4872 ms, throughput: 1.2862 GB/s; offload_time: 10.4141 ms, put_time: 0.0352 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(APIServer pid=13) INFO 10-31 10:30:30 [first_request_warmup.py:59] ArcXpuPlatform: first-request warmup stage max-batch done in 4.9s (2 outputs, 44253 prompt chars)
+(APIServer pid=13) INFO 10-31 10:30:30 [first_request_warmup.py:113] ArcXpuPlatform: warmup complete in 7.1s — engine hot, serving request chatcmpl-9e0e41a30ddb1cb7
+(APIServer pid=13) INFO:     127.0.0.1:46132 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:46148 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:56386 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:56402 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:56416 - "GET /metrics HTTP/1.1" 200 OK
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:30:34,206] LMCache INFO:[0m [req_id=unspecified] Stored 4160 out of total 4160 tokens. size: 0.0674 GB, cost 49.2380 ms, throughput: 1.3698 GB/s; offload_time: 49.1372 ms, put_time: 0.0588 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:30:34,211] LMCache INFO:[0m [req_id=unspecified] Stored 4160 out of total 4160 tokens. size: 0.0674 GB, cost 53.9173 ms, throughput: 1.2509 GB/s; offload_time: 53.8117 ms, put_time: 0.0612 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:30:34,216] LMCache INFO:[0m [req_id=unspecified] Stored 832 out of total 832 tokens. size: 0.0379 GB, cost 9.0364 ms, throughput: 4.1945 GB/s; offload_time: 8.9718 ms, put_time: 0.0296 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:30:34,221] LMCache INFO:[0m [req_id=unspecified] Stored 832 out of total 832 tokens. size: 0.0379 GB, cost 9.2062 ms, throughput: 4.1171 GB/s; offload_time: 9.1406 ms, put_time: 0.0300 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:30:34,293] LMCache INFO:[0m [req_id=unspecified] Stored 832 out of total 832 tokens. size: 0.0135 GB, cost 10.3273 ms, throughput: 1.3061 GB/s; offload_time: 10.2602 ms, put_time: 0.0331 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:30:34,295] LMCache INFO:[0m [req_id=unspecified] Stored 832 out of total 832 tokens. size: 0.0135 GB, cost 11.3234 ms, throughput: 1.1912 GB/s; offload_time: 11.2474 ms, put_time: 0.0351 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(APIServer pid=13) INFO:     10.100.8.REDACTED:33222 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(Worker_TP0 pid=930) INFO 10-31 10:30:35 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=768 p50=0.51ms p90=0.73ms max=1.37ms fallbacks=39 {'zero-spec': 24, 'mixed': 15}
+(Worker_TP1 pid=1030) INFO 10-31 10:30:35 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=768 p50=0.51ms p90=0.73ms max=1.14ms fallbacks=39 {'zero-spec': 24, 'mixed': 15}
+(APIServer pid=13) INFO:     127.0.0.1:46164 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:46166 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:46184 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:46174 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO 10-31 10:30:39 [loggers.py:315] Engine 000: Avg prompt throughput: 1358.8 tokens/s, Avg generation throughput: 153.1 tokens/s, Running: 4 reqs, Waiting: 0 reqs, XPU KV cache usage: 10.2%, Prefix cache hit rate: 0.0%, External prefix cache hit rate: 0.0%
+(APIServer pid=13) INFO 10-31 10:30:39 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 3.46, Accepted throughput: 109.10 tokens/s, Drafted throughput: 133.20 tokens/s, Accepted: 1091 tokens, Drafted: 1332 tokens, Per-position acceptance rate: 0.917, 0.822, 0.718, Avg Draft acceptance rate: 81.9%
+(Worker_TP0 pid=930) INFO 10-31 10:30:39 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=1024 p50=0.49ms p90=0.59ms max=0.96ms fallbacks=42 {'zero-spec': 27, 'mixed': 15}
+(Worker_TP1 pid=1030) INFO 10-31 10:30:39 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=1024 p50=0.65ms p90=0.75ms max=0.97ms fallbacks=42 {'zero-spec': 27, 'mixed': 15}
+(APIServer pid=13) INFO:     127.0.0.1:56428 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:56430 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:56446 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:56454 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     10.20.3.REDACTED:41622 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     10.20.3.REDACTED:41664 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     10.20.3.REDACTED:41662 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     10.20.3.REDACTED:41652 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     10.20.3.REDACTED:41648 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     10.20.3.REDACTED:41634 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     10.20.3.REDACTED:41624 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:56466 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:47568 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:47572 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:47574 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:56464 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(Worker_TP0 pid=930) INFO 10-31 10:30:43 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=1280 p50=0.49ms p90=0.59ms max=0.64ms fallbacks=48 {'zero-spec': 33, 'mixed': 15}
+(Worker_TP1 pid=1030) INFO 10-31 10:30:43 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=1280 p50=0.65ms p90=0.75ms max=0.89ms fallbacks=48 {'zero-spec': 33, 'mixed': 15}
+(APIServer pid=13) INFO:     127.0.0.1:47582 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(Worker_TP1 pid=1030) INFO 10-31 10:30:47 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=1536 p50=0.64ms p90=0.68ms max=1.39ms fallbacks=54 {'zero-spec': 36, 'mixed': 18}
+(Worker_TP0 pid=930) INFO 10-31 10:30:47 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=1536 p50=0.49ms p90=0.58ms max=0.69ms fallbacks=54 {'zero-spec': 36, 'mixed': 18}
+(APIServer pid=13) INFO 10-31 10:30:49 [loggers.py:315] Engine 000: Avg prompt throughput: 13.8 tokens/s, Avg generation throughput: 193.9 tokens/s, Running: 4 reqs, Waiting: 0 reqs, XPU KV cache usage: 10.2%, Prefix cache hit rate: 0.0%, External prefix cache hit rate: 0.0%
+(APIServer pid=13) INFO 10-31 10:30:49 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 3.68, Accepted throughput: 141.38 tokens/s, Drafted throughput: 158.38 tokens/s, Accepted: 1414 tokens, Drafted: 1584 tokens, Per-position acceptance rate: 0.953, 0.896, 0.830, Avg Draft acceptance rate: 89.3%
+(APIServer pid=13) INFO:     127.0.0.1:47592 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:47594 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:47608 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:47606 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(Worker_TP1 pid=1030) INFO 10-31 10:30:51 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=1792 p50=0.48ms p90=0.59ms max=1.39ms fallbacks=57 {'zero-spec': 39, 'mixed': 18}
+(Worker_TP0 pid=930) INFO 10-31 10:30:51 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=1792 p50=0.49ms p90=0.59ms max=1.52ms fallbacks=57 {'zero-spec': 39, 'mixed': 18}
+(APIServer pid=13) INFO:     127.0.0.1:51120 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:51124 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:47618 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:47650 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:47634 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:47654 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:51148 - "GET /metrics HTTP/1.1" 200 OK
+(Worker_TP1 pid=1030) INFO 10-31 10:30:54 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=2048 p50=0.48ms p90=0.59ms max=0.63ms fallbacks=60 {'zero-spec': 42, 'mixed': 18}
+(Worker_TP0 pid=930) INFO 10-31 10:30:54 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=2048 p50=0.49ms p90=0.59ms max=1.52ms fallbacks=60 {'zero-spec': 42, 'mixed': 18}
+(APIServer pid=13) INFO:     127.0.0.1:51132 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:51150 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:51156 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:51158 - "GET /metrics HTTP/1.1" 200 OK
+(Worker_TP1 pid=1030) INFO 10-31 10:30:59 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=2304 p50=0.48ms p90=0.58ms max=0.69ms fallbacks=72 {'zero-spec': 48, 'mixed': 24}
+(Worker_TP0 pid=930) INFO 10-31 10:30:59 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=2304 p50=0.49ms p90=0.58ms max=0.64ms fallbacks=72 {'zero-spec': 48, 'mixed': 24}
+(APIServer pid=13) INFO 10-31 10:30:59 [loggers.py:315] Engine 000: Avg prompt throughput: 23.0 tokens/s, Avg generation throughput: 176.1 tokens/s, Running: 4 reqs, Waiting: 0 reqs, XPU KV cache usage: 10.2%, Prefix cache hit rate: 0.0%, External prefix cache hit rate: 0.0%
+(APIServer pid=13) INFO 10-31 10:30:59 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 3.49, Accepted throughput: 126.39 tokens/s, Drafted throughput: 152.09 tokens/s, Accepted: 1264 tokens, Drafted: 1521 tokens, Per-position acceptance rate: 0.927, 0.830, 0.736, Avg Draft acceptance rate: 83.1%
+(APIServer pid=13) INFO:     127.0.0.1:51172 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:51176 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:51190 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:51178 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:51206 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:51218 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:51234 - "POST /v1/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:38560 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:38568 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:38578 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:38582 - "POST /tokenize HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:38590 - "POST /tokenize HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:38594 - "POST /v1/completions HTTP/1.1" 200 OK
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:31:08,294] LMCache INFO:[0m [req_id=unspecified] Stored 6656 out of total 6656 tokens. size: 0.1079 GB, cost 77.7437 ms, throughput: 1.3880 GB/s; offload_time: 77.6102 ms, put_time: 0.0843 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:31:08,294] LMCache INFO:[0m [req_id=unspecified] Stored 6656 out of total 6656 tokens. size: 0.1079 GB, cost 78.4687 ms, throughput: 1.3752 GB/s; offload_time: 78.3410 ms, put_time: 0.0788 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:31:08,304] LMCache INFO:[0m [req_id=unspecified] Stored 832 out of total 832 tokens. size: 0.0379 GB, cost 9.2450 ms, throughput: 4.0998 GB/s; offload_time: 9.1835 ms, put_time: 0.0281 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:31:08,304] LMCache INFO:[0m [req_id=unspecified] Stored 832 out of total 832 tokens. size: 0.0379 GB, cost 9.0919 ms, throughput: 4.1689 GB/s; offload_time: 9.0275 ms, put_time: 0.0298 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:31:08,365] LMCache INFO:[0m [req_id=unspecified] Stored 832 out of total 832 tokens. size: 0.0135 GB, cost 10.1280 ms, throughput: 1.3318 GB/s; offload_time: 10.0668 ms, put_time: 0.0288 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:31:08,365] LMCache INFO:[0m [req_id=unspecified] Stored 832 out of total 832 tokens. size: 0.0135 GB, cost 10.2437 ms, throughput: 1.3168 GB/s; offload_time: 10.1836 ms, put_time: 0.0296 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(APIServer pid=13) INFO 10-31 10:31:09 [loggers.py:315] Engine 000: Avg prompt throughput: 816.6 tokens/s, Avg generation throughput: 53.9 tokens/s, Running: 0 reqs, Waiting: 0 reqs, XPU KV cache usage: 0.0%, Prefix cache hit rate: 0.0%, External prefix cache hit rate: 0.0%
+(APIServer pid=13) INFO 10-31 10:31:09 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 3.75, Accepted throughput: 40.10 tokens/s, Drafted throughput: 43.80 tokens/s, Accepted: 401 tokens, Drafted: 438 tokens, Per-position acceptance rate: 0.938, 0.925, 0.884, Avg Draft acceptance rate: 91.6%
+(APIServer pid=13) INFO:     127.0.0.1:38600 - "POST /tokenize HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:38614 - "POST /tokenize HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:54640 - "POST /v1/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:54654 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:54658 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:54674 - "GET /metrics HTTP/1.1" 200 OK
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:31:18,541] LMCache INFO:[0m [req_id=unspecified] Stored 7488 out of total 7488 tokens. size: 0.1214 GB, cost 86.8076 ms, throughput: 1.3985 GB/s; offload_time: 86.6887 ms, put_time: 0.0692 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:31:18,542] LMCache INFO:[0m [req_id=unspecified] Stored 7488 out of total 7488 tokens. size: 0.1214 GB, cost 87.8421 ms, throughput: 1.3820 GB/s; offload_time: 87.7276 ms, put_time: 0.0692 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:31:18,551] LMCache INFO:[0m [req_id=unspecified] Stored 832 out of total 832 tokens. size: 0.0379 GB, cost 9.2099 ms, throughput: 4.1155 GB/s; offload_time: 9.1490 ms, put_time: 0.0267 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:31:18,552] LMCache INFO:[0m [req_id=unspecified] Stored 832 out of total 832 tokens. size: 0.0379 GB, cost 9.0828 ms, throughput: 4.1730 GB/s; offload_time: 9.0180 ms, put_time: 0.0280 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(APIServer pid=13) INFO 10-31 10:31:19 [loggers.py:315] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 0.0 tokens/s, Running: 1 reqs, Waiting: 0 reqs, XPU KV cache usage: 7.4%, Prefix cache hit rate: 0.0%, External prefix cache hit rate: 0.0%
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:31:19,619] LMCache INFO:[0m [req_id=unspecified] Stored 7488 out of total 7488 tokens. size: 0.1214 GB, cost 86.6852 ms, throughput: 1.4005 GB/s; offload_time: 86.5766 ms, put_time: 0.0660 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:31:19,620] LMCache INFO:[0m [req_id=unspecified] Stored 7488 out of total 7488 tokens. size: 0.1214 GB, cost 87.7501 ms, throughput: 1.3835 GB/s; offload_time: 87.6391 ms, put_time: 0.0689 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:31:19,629] LMCache INFO:[0m [req_id=unspecified] Stored 832 out of total 832 tokens. size: 0.0379 GB, cost 9.2043 ms, throughput: 4.1180 GB/s; offload_time: 9.1400 ms, put_time: 0.0289 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:31:19,630] LMCache INFO:[0m [req_id=unspecified] Stored 832 out of total 832 tokens. size: 0.0379 GB, cost 9.0826 ms, throughput: 4.1731 GB/s; offload_time: 9.0198 ms, put_time: 0.0284 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:31:19,691] LMCache INFO:[0m [req_id=unspecified] Stored 832 out of total 832 tokens. size: 0.0135 GB, cost 9.9921 ms, throughput: 1.3499 GB/s; offload_time: 9.9161 ms, put_time: 0.0438 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:31:19,691] LMCache INFO:[0m [req_id=unspecified] Stored 832 out of total 832 tokens. size: 0.0135 GB, cost 10.2368 ms, throughput: 1.3177 GB/s; offload_time: 10.1623 ms, put_time: 0.0419 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(APIServer pid=13) INFO:     127.0.0.1:45076 - "POST /tokenize HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:45082 - "POST /tokenize HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:45098 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:45104 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:45106 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:45122 - "POST /v1/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO 10-31 10:31:29 [loggers.py:315] Engine 000: Avg prompt throughput: 1635.3 tokens/s, Avg generation throughput: 3.2 tokens/s, Running: 1 reqs, Waiting: 0 reqs, XPU KV cache usage: 6.7%, Prefix cache hit rate: 0.0%, External prefix cache hit rate: 0.0%
+(APIServer pid=13) INFO 10-31 10:31:29 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 4.00, Accepted throughput: 1.20 tokens/s, Drafted throughput: 1.20 tokens/s, Accepted: 24 tokens, Drafted: 24 tokens, Per-position acceptance rate: 1.000, 1.000, 1.000, Avg Draft acceptance rate: 100.0%
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:31:30,026] LMCache INFO:[0m [req_id=unspecified] Stored 7488 out of total 7488 tokens. size: 0.1214 GB, cost 87.5371 ms, throughput: 1.3868 GB/s; offload_time: 87.4217 ms, put_time: 0.0662 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:31:30,027] LMCache INFO:[0m [req_id=unspecified] Stored 7488 out of total 7488 tokens. size: 0.1214 GB, cost 88.2086 ms, throughput: 1.3763 GB/s; offload_time: 88.1013 ms, put_time: 0.0642 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:31:30,036] LMCache INFO:[0m [req_id=unspecified] Stored 832 out of total 832 tokens. size: 0.0379 GB, cost 9.2277 ms, throughput: 4.1075 GB/s; offload_time: 9.1652 ms, put_time: 0.0295 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:31:30,037] LMCache INFO:[0m [req_id=unspecified] Stored 832 out of total 832 tokens. size: 0.0379 GB, cost 9.0722 ms, throughput: 4.1779 GB/s; offload_time: 9.0090 ms, put_time: 0.0297 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(APIServer pid=13) INFO:     127.0.0.1:57012 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:57016 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:57030 - "GET /metrics HTTP/1.1" 200 OK
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:31:33,973] LMCache INFO:[0m [req_id=unspecified] Stored 7488 out of total 7488 tokens. size: 0.1214 GB, cost 87.4396 ms, throughput: 1.3884 GB/s; offload_time: 87.3180 ms, put_time: 0.0665 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:31:33,974] LMCache INFO:[0m [req_id=unspecified] Stored 7488 out of total 7488 tokens. size: 0.1214 GB, cost 88.4249 ms, throughput: 1.3729 GB/s; offload_time: 88.3056 ms, put_time: 0.0691 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:31:33,983] LMCache INFO:[0m [req_id=unspecified] Stored 832 out of total 832 tokens. size: 0.0379 GB, cost 9.1830 ms, throughput: 4.1275 GB/s; offload_time: 9.1199 ms, put_time: 0.0272 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:31:33,984] LMCache INFO:[0m [req_id=unspecified] Stored 832 out of total 832 tokens. size: 0.0379 GB, cost 9.0860 ms, throughput: 4.1716 GB/s; offload_time: 9.0214 ms, put_time: 0.0284 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:31:38,234] LMCache INFO:[0m [req_id=unspecified] Stored 7488 out of total 7488 tokens. size: 0.1214 GB, cost 88.3646 ms, throughput: 1.3738 GB/s; offload_time: 88.2465 ms, put_time: 0.0662 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:31:38,235] LMCache INFO:[0m [req_id=unspecified] Stored 7488 out of total 7488 tokens. size: 0.1214 GB, cost 89.1914 ms, throughput: 1.3611 GB/s; offload_time: 89.0774 ms, put_time: 0.0677 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:31:38,245] LMCache INFO:[0m [req_id=unspecified] Stored 832 out of total 832 tokens. size: 0.0379 GB, cost 9.2160 ms, throughput: 4.1127 GB/s; offload_time: 9.1487 ms, put_time: 0.0258 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:31:38,245] LMCache INFO:[0m [req_id=unspecified] Stored 832 out of total 832 tokens. size: 0.0379 GB, cost 9.1206 ms, throughput: 4.1558 GB/s; offload_time: 9.0551 ms, put_time: 0.0294 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(APIServer pid=13) INFO 10-31 10:31:39 [loggers.py:315] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 0.0 tokens/s, Running: 1 reqs, Waiting: 0 reqs, XPU KV cache usage: 11.2%, Prefix cache hit rate: 0.0%, External prefix cache hit rate: 0.0%
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:31:39,595] LMCache INFO:[0m [req_id=unspecified] Stored 7488 out of total 7488 tokens. size: 0.1214 GB, cost 87.1592 ms, throughput: 1.3928 GB/s; offload_time: 87.0391 ms, put_time: 0.0668 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:31:39,596] LMCache INFO:[0m [req_id=unspecified] Stored 7488 out of total 7488 tokens. size: 0.1214 GB, cost 88.1946 ms, throughput: 1.3765 GB/s; offload_time: 88.0774 ms, put_time: 0.0698 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:31:39,606] LMCache INFO:[0m [req_id=unspecified] Stored 832 out of total 832 tokens. size: 0.0379 GB, cost 9.1771 ms, throughput: 4.1302 GB/s; offload_time: 9.1122 ms, put_time: 0.0287 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:31:39,607] LMCache INFO:[0m [req_id=unspecified] Stored 832 out of total 832 tokens. size: 0.0379 GB, cost 9.0112 ms, throughput: 4.2062 GB/s; offload_time: 8.9443 ms, put_time: 0.0328 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:31:40,531] LMCache INFO:[0m [req_id=unspecified] Stored 1664 out of total 1664 tokens. size: 0.0270 GB, cost 20.4410 ms, throughput: 1.3198 GB/s; offload_time: 20.3549 ms, put_time: 0.0458 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:31:40,531] LMCache INFO:[0m [req_id=unspecified] Stored 1664 out of total 1664 tokens. size: 0.0270 GB, cost 20.4809 ms, throughput: 1.3172 GB/s; offload_time: 20.4007 ms, put_time: 0.0391 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:31:40,541] LMCache INFO:[0m [req_id=unspecified] Stored 832 out of total 832 tokens. size: 0.0379 GB, cost 9.1026 ms, throughput: 4.1640 GB/s; offload_time: 9.0405 ms, put_time: 0.0278 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:31:40,541] LMCache INFO:[0m [req_id=unspecified] Stored 832 out of total 832 tokens. size: 0.0379 GB, cost 9.1844 ms, throughput: 4.1269 GB/s; offload_time: 9.1278 ms, put_time: 0.0262 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:31:40,605] LMCache INFO:[0m [req_id=unspecified] Stored 832 out of total 832 tokens. size: 0.0135 GB, cost 10.3917 ms, throughput: 1.2980 GB/s; offload_time: 10.3345 ms, put_time: 0.0278 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:31:40,605] LMCache INFO:[0m [req_id=unspecified] Stored 832 out of total 832 tokens. size: 0.0135 GB, cost 10.4552 ms, throughput: 1.2902 GB/s; offload_time: 10.3933 ms, put_time: 0.0298 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(APIServer pid=13) INFO:     127.0.0.1:59388 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:59392 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:59396 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:59398 - "POST /tokenize HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:59410 - "POST /tokenize HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:59412 - "POST /v1/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO 10-31 10:31:49 [loggers.py:315] Engine 000: Avg prompt throughput: 3255.1 tokens/s, Avg generation throughput: 3.2 tokens/s, Running: 1 reqs, Waiting: 0 reqs, XPU KV cache usage: 6.7%, Prefix cache hit rate: 0.0%, External prefix cache hit rate: 0.0%
+(APIServer pid=13) INFO 10-31 10:31:49 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 2.27, Accepted throughput: 0.95 tokens/s, Drafted throughput: 2.25 tokens/s, Accepted: 19 tokens, Drafted: 45 tokens, Per-position acceptance rate: 0.667, 0.333, 0.267, Avg Draft acceptance rate: 42.2%
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:31:51,590] LMCache INFO:[0m [req_id=unspecified] Stored 7488 out of total 7488 tokens. size: 0.1214 GB, cost 87.2635 ms, throughput: 1.3912 GB/s; offload_time: 87.1100 ms, put_time: 0.0934 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:31:51,590] LMCache INFO:[0m [req_id=unspecified] Stored 7488 out of total 7488 tokens. size: 0.1214 GB, cost 87.9416 ms, throughput: 1.3804 GB/s; offload_time: 87.8058 ms, put_time: 0.0932 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:31:51,600] LMCache INFO:[0m [req_id=unspecified] Stored 832 out of total 832 tokens. size: 0.0379 GB, cost 9.2355 ms, throughput: 4.1041 GB/s; offload_time: 9.1661 ms, put_time: 0.0317 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:31:51,600] LMCache INFO:[0m [req_id=unspecified] Stored 832 out of total 832 tokens. size: 0.0379 GB, cost 9.0858 ms, throughput: 4.1717 GB/s; offload_time: 9.0184 ms, put_time: 0.0329 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(APIServer pid=13) INFO:     127.0.0.1:48080 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:48088 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:48090 - "GET /metrics HTTP/1.1" 200 OK
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:31:55,538] LMCache INFO:[0m [req_id=unspecified] Stored 7488 out of total 7488 tokens. size: 0.1214 GB, cost 87.7015 ms, throughput: 1.3842 GB/s; offload_time: 87.5805 ms, put_time: 0.0664 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:31:55,539] LMCache INFO:[0m [req_id=unspecified] Stored 7488 out of total 7488 tokens. size: 0.1214 GB, cost 88.8594 ms, throughput: 1.3662 GB/s; offload_time: 88.7434 ms, put_time: 0.0655 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:31:55,548] LMCache INFO:[0m [req_id=unspecified] Stored 832 out of total 832 tokens. size: 0.0379 GB, cost 9.2372 ms, throughput: 4.1033 GB/s; offload_time: 9.1782 ms, put_time: 0.0262 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:31:55,549] LMCache INFO:[0m [req_id=unspecified] Stored 832 out of total 832 tokens. size: 0.0379 GB, cost 9.0545 ms, throughput: 4.1861 GB/s; offload_time: 8.9952 ms, put_time: 0.0270 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(APIServer pid=13) INFO 10-31 10:31:59 [loggers.py:315] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 0.0 tokens/s, Running: 1 reqs, Waiting: 0 reqs, XPU KV cache usage: 10.8%, Prefix cache hit rate: 0.0%, External prefix cache hit rate: 0.0%
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:31:59,801] LMCache INFO:[0m [req_id=unspecified] Stored 7488 out of total 7488 tokens. size: 0.1214 GB, cost 87.4693 ms, throughput: 1.3879 GB/s; offload_time: 87.3515 ms, put_time: 0.0706 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:31:59,802] LMCache INFO:[0m [req_id=unspecified] Stored 7488 out of total 7488 tokens. size: 0.1214 GB, cost 88.3745 ms, throughput: 1.3737 GB/s; offload_time: 88.2512 ms, put_time: 0.0774 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:31:59,811] LMCache INFO:[0m [req_id=unspecified] Stored 832 out of total 832 tokens. size: 0.0379 GB, cost 9.2124 ms, throughput: 4.1143 GB/s; offload_time: 9.1498 ms, put_time: 0.0265 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:31:59,812] LMCache INFO:[0m [req_id=unspecified] Stored 832 out of total 832 tokens. size: 0.0379 GB, cost 9.0696 ms, throughput: 4.1792 GB/s; offload_time: 9.0054 ms, put_time: 0.0282 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(APIServer pid=13) INFO:     127.0.0.1:53380 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:53396 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:53400 - "GET /metrics HTTP/1.1" 200 OK
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:32:04,391] LMCache INFO:[0m [req_id=unspecified] Stored 7488 out of total 7488 tokens. size: 0.1214 GB, cost 88.6803 ms, throughput: 1.3690 GB/s; offload_time: 88.5556 ms, put_time: 0.0696 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:32:04,392] LMCache INFO:[0m [req_id=unspecified] Stored 7488 out of total 7488 tokens. size: 0.1214 GB, cost 90.0867 ms, throughput: 1.3476 GB/s; offload_time: 89.9669 ms, put_time: 0.0685 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:32:04,402] LMCache INFO:[0m [req_id=unspecified] Stored 832 out of total 832 tokens. size: 0.0379 GB, cost 9.2026 ms, throughput: 4.1187 GB/s; offload_time: 9.1392 ms, put_time: 0.0277 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:32:04,403] LMCache INFO:[0m [req_id=unspecified] Stored 832 out of total 832 tokens. size: 0.0379 GB, cost 9.0903 ms, throughput: 4.1696 GB/s; offload_time: 9.0289 ms, put_time: 0.0271 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:32:09,303] LMCache INFO:[0m [req_id=unspecified] Stored 7488 out of total 7488 tokens. size: 0.1214 GB, cost 87.6949 ms, throughput: 1.3843 GB/s; offload_time: 87.5735 ms, put_time: 0.0713 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:32:09,304] LMCache INFO:[0m [req_id=unspecified] Stored 7488 out of total 7488 tokens. size: 0.1214 GB, cost 88.2178 ms, throughput: 1.3761 GB/s; offload_time: 88.0993 ms, put_time: 0.0770 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:32:09,314] LMCache INFO:[0m [req_id=unspecified] Stored 832 out of total 832 tokens. size: 0.0379 GB, cost 9.2156 ms, throughput: 4.1129 GB/s; offload_time: 9.1489 ms, put_time: 0.0297 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:32:09,315] LMCache INFO:[0m [req_id=unspecified] Stored 832 out of total 832 tokens. size: 0.0379 GB, cost 9.0938 ms, throughput: 4.1680 GB/s; offload_time: 9.0309 ms, put_time: 0.0271 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(APIServer pid=13) INFO:     127.0.0.1:41462 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:41474 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:41490 - "GET /metrics HTTP/1.1" 200 OK
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:32:14,543] LMCache INFO:[0m [req_id=unspecified] Stored 7488 out of total 7488 tokens. size: 0.1214 GB, cost 87.9104 ms, throughput: 1.3809 GB/s; offload_time: 87.7885 ms, put_time: 0.0692 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:32:14,544] LMCache INFO:[0m [req_id=unspecified] Stored 7488 out of total 7488 tokens. size: 0.1214 GB, cost 89.0492 ms, throughput: 1.3633 GB/s; offload_time: 88.9304 ms, put_time: 0.0687 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:32:14,554] LMCache INFO:[0m [req_id=unspecified] Stored 832 out of total 832 tokens. size: 0.0379 GB, cost 9.1840 ms, throughput: 4.1271 GB/s; offload_time: 9.1206 ms, put_time: 0.0274 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:32:14,555] LMCache INFO:[0m [req_id=unspecified] Stored 832 out of total 832 tokens. size: 0.0379 GB, cost 9.0481 ms, throughput: 4.1891 GB/s; offload_time: 8.9849 ms, put_time: 0.0286 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:32:20,114] LMCache INFO:[0m [req_id=unspecified] Stored 7488 out of total 7488 tokens. size: 0.1214 GB, cost 89.3828 ms, throughput: 1.3582 GB/s; offload_time: 89.2577 ms, put_time: 0.0690 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:32:20,114] LMCache INFO:[0m [req_id=unspecified] Stored 7488 out of total 7488 tokens. size: 0.1214 GB, cost 90.0947 ms, throughput: 1.3475 GB/s; offload_time: 89.9813 ms, put_time: 0.0693 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:32:20,125] LMCache INFO:[0m [req_id=unspecified] Stored 832 out of total 832 tokens. size: 0.0379 GB, cost 9.2044 ms, throughput: 4.1179 GB/s; offload_time: 9.1420 ms, put_time: 0.0262 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:32:20,126] LMCache INFO:[0m [req_id=unspecified] Stored 832 out of total 832 tokens. size: 0.0379 GB, cost 9.0712 ms, throughput: 4.1784 GB/s; offload_time: 9.0012 ms, put_time: 0.0288 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(APIServer pid=13) INFO:     127.0.0.1:52908 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:52914 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:52918 - "GET /metrics HTTP/1.1" 200 OK
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:32:23,583] LMCache INFO:[0m [req_id=unspecified] Stored 7488 out of total 7488 tokens. size: 0.1214 GB, cost 87.9510 ms, throughput: 1.3803 GB/s; offload_time: 87.8182 ms, put_time: 0.0783 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:32:23,583] LMCache INFO:[0m [req_id=unspecified] Stored 7488 out of total 7488 tokens. size: 0.1214 GB, cost 88.8637 ms, throughput: 1.3661 GB/s; offload_time: 88.7452 ms, put_time: 0.0712 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:32:23,595] LMCache INFO:[0m [req_id=unspecified] Stored 832 out of total 832 tokens. size: 0.0379 GB, cost 9.2548 ms, throughput: 4.0955 GB/s; offload_time: 9.1852 ms, put_time: 0.0264 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:32:23,595] LMCache INFO:[0m [req_id=unspecified] Stored 832 out of total 832 tokens. size: 0.0379 GB, cost 9.0747 ms, throughput: 4.1768 GB/s; offload_time: 9.0123 ms, put_time: 0.0278 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:32:24,855] LMCache INFO:[0m [req_id=unspecified] Stored 4160 out of total 4160 tokens. size: 0.0674 GB, cost 49.9086 ms, throughput: 1.3513 GB/s; offload_time: 49.8165 ms, put_time: 0.0511 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:32:24,855] LMCache INFO:[0m [req_id=unspecified] Stored 4160 out of total 4160 tokens. size: 0.0674 GB, cost 50.3036 ms, throughput: 1.3407 GB/s; offload_time: 50.2103 ms, put_time: 0.0526 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:32:24,867] LMCache INFO:[0m [req_id=unspecified] Stored 832 out of total 832 tokens. size: 0.0379 GB, cost 9.2109 ms, throughput: 4.1150 GB/s; offload_time: 9.1462 ms, put_time: 0.0278 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:32:24,867] LMCache INFO:[0m [req_id=unspecified] Stored 832 out of total 832 tokens. size: 0.0379 GB, cost 9.0642 ms, throughput: 4.1816 GB/s; offload_time: 9.0022 ms, put_time: 0.0276 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:32:24,934] LMCache INFO:[0m [req_id=unspecified] Stored 832 out of total 832 tokens. size: 0.0135 GB, cost 10.8253 ms, throughput: 1.2460 GB/s; offload_time: 10.7613 ms, put_time: 0.0308 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:32:24,934] LMCache INFO:[0m [req_id=unspecified] Stored 832 out of total 832 tokens. size: 0.0135 GB, cost 11.1736 ms, throughput: 1.2072 GB/s; offload_time: 11.1079 ms, put_time: 0.0310 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP1 pid=1030) INFO 10-31 10:32:25 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=2560 p50=0.49ms p90=0.58ms max=0.74ms fallbacks=138 {'zero-spec': 114, 'mixed': 24}
+(Worker_TP0 pid=930) INFO 10-31 10:32:25 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=2560 p50=0.49ms p90=0.59ms max=0.76ms fallbacks=138 {'zero-spec': 114, 'mixed': 24}
+(APIServer pid=13) INFO:     127.0.0.1:52922 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:52936 - "POST /v1/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO 10-31 10:32:29 [loggers.py:315] Engine 000: Avg prompt throughput: 6530.7 tokens/s, Avg generation throughput: 4.0 tokens/s, Running: 0 reqs, Waiting: 0 reqs, XPU KV cache usage: 0.0%, Prefix cache hit rate: 0.0%, External prefix cache hit rate: 0.0%
+(APIServer pid=13) INFO 10-31 10:32:29 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 2.56, Accepted throughput: 0.62 tokens/s, Drafted throughput: 1.20 tokens/s, Accepted: 25 tokens, Drafted: 48 tokens, Per-position acceptance rate: 0.688, 0.562, 0.312, Avg Draft acceptance rate: 52.1%
+(APIServer pid=13) INFO:     127.0.0.1:52940 - "POST /tokenize HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:52944 - "POST /tokenize HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:52946 - "POST /v1/completions HTTP/1.1" 200 OK
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:32:32,127] LMCache INFO:[0m [req_id=unspecified] Stored 832 out of total 832 tokens. size: 0.0135 GB, cost 10.4137 ms, throughput: 1.2953 GB/s; offload_time: 10.2878 ms, put_time: 0.0947 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:32:32,127] LMCache INFO:[0m [req_id=unspecified] Stored 832 out of total 832 tokens. size: 0.0135 GB, cost 10.5678 ms, throughput: 1.2764 GB/s; offload_time: 10.4369 ms, put_time: 0.0946 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(APIServer pid=13) INFO:     127.0.0.1:45592 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:45596 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:45606 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:45616 - "POST /v1/completions HTTP/1.1" 200 OK
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:32:36,458] LMCache INFO:[0m [req_id=unspecified] Stored 832 out of total 832 tokens. size: 0.0135 GB, cost 10.2807 ms, throughput: 1.3120 GB/s; offload_time: 10.1598 ms, put_time: 0.0898 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:32:36,458] LMCache INFO:[0m [req_id=unspecified] Stored 832 out of total 832 tokens. size: 0.0135 GB, cost 10.4066 ms, throughput: 1.2962 GB/s; offload_time: 10.2782 ms, put_time: 0.0931 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(APIServer pid=13) INFO:     127.0.0.1:45628 - "POST /tokenize HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:45640 - "POST /tokenize HTTP/1.1" 200 OK
+(APIServer pid=13) INFO 10-31 10:32:39 [loggers.py:315] Engine 000: Avg prompt throughput: 300.4 tokens/s, Avg generation throughput: 6.4 tokens/s, Running: 0 reqs, Waiting: 0 reqs, XPU KV cache usage: 0.0%, Prefix cache hit rate: 8.7%, External prefix cache hit rate: 0.0%
+(APIServer pid=13) INFO 10-31 10:32:39 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 4.00, Accepted throughput: 4.80 tokens/s, Drafted throughput: 4.80 tokens/s, Accepted: 48 tokens, Drafted: 48 tokens, Per-position acceptance rate: 1.000, 1.000, 1.000, Avg Draft acceptance rate: 100.0%
+(APIServer pid=13) INFO:     127.0.0.1:45654 - "POST /v1/completions HTTP/1.1" 200 OK
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:32:40,997] LMCache INFO:[0m [req_id=unspecified] Stored 832 out of total 832 tokens. size: 0.0135 GB, cost 10.4958 ms, throughput: 1.2852 GB/s; offload_time: 10.3968 ms, put_time: 0.0645 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:32:40,997] LMCache INFO:[0m [req_id=unspecified] Stored 832 out of total 832 tokens. size: 0.0135 GB, cost 10.5077 ms, throughput: 1.2837 GB/s; offload_time: 10.4062 ms, put_time: 0.0687 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(APIServer pid=13) INFO:     127.0.0.1:46674 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:46684 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:46688 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:46690 - "POST /v1/completions HTTP/1.1" 200 OK
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:32:45,404] LMCache INFO:[0m [req_id=unspecified] Stored 832 out of total 832 tokens. size: 0.0135 GB, cost 10.4059 ms, throughput: 1.2963 GB/s; offload_time: 10.3080 ms, put_time: 0.0641 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:32:45,404] LMCache INFO:[0m [req_id=unspecified] Stored 832 out of total 832 tokens. size: 0.0135 GB, cost 10.4843 ms, throughput: 1.2866 GB/s; offload_time: 10.3896 ms, put_time: 0.0616 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(APIServer pid=13) INFO:     127.0.0.1:46700 - "POST /tokenize HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:46702 - "POST /tokenize HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:46710 - "POST /v1/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO 10-31 10:32:49 [loggers.py:315] Engine 000: Avg prompt throughput: 275.6 tokens/s, Avg generation throughput: 6.4 tokens/s, Running: 0 reqs, Waiting: 0 reqs, XPU KV cache usage: 0.0%, Prefix cache hit rate: 23.3%, External prefix cache hit rate: 0.0%
+(APIServer pid=13) INFO 10-31 10:32:49 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 4.00, Accepted throughput: 4.80 tokens/s, Drafted throughput: 4.80 tokens/s, Accepted: 48 tokens, Drafted: 48 tokens, Per-position acceptance rate: 1.000, 1.000, 1.000, Avg Draft acceptance rate: 100.0%
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:32:50,016] LMCache INFO:[0m [req_id=unspecified] Stored 832 out of total 832 tokens. size: 0.0135 GB, cost 10.6997 ms, throughput: 1.2607 GB/s; offload_time: 10.5951 ms, put_time: 0.0698 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:32:50,016] LMCache INFO:[0m [req_id=unspecified] Stored 832 out of total 832 tokens. size: 0.0135 GB, cost 10.7035 ms, throughput: 1.2602 GB/s; offload_time: 10.5981 ms, put_time: 0.0717 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(APIServer pid=13) INFO:     127.0.0.1:50616 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:50632 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:50642 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:50650 - "POST /v1/completions HTTP/1.1" 200 OK
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:32:54,697] LMCache INFO:[0m [req_id=unspecified] Stored 832 out of total 832 tokens. size: 0.0135 GB, cost 10.6552 ms, throughput: 1.2659 GB/s; offload_time: 10.5562 ms, put_time: 0.0635 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:32:54,697] LMCache INFO:[0m [req_id=unspecified] Stored 832 out of total 832 tokens. size: 0.0135 GB, cost 10.6652 ms, throughput: 1.2647 GB/s; offload_time: 10.5642 ms, put_time: 0.0683 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(APIServer pid=13) INFO:     127.0.0.1:50664 - "POST /tokenize HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:50670 - "POST /tokenize HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:50678 - "POST /v1/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO 10-31 10:32:59 [loggers.py:315] Engine 000: Avg prompt throughput: 187.4 tokens/s, Avg generation throughput: 6.4 tokens/s, Running: 0 reqs, Waiting: 0 reqs, XPU KV cache usage: 0.0%, Prefix cache hit rate: 42.5%, External prefix cache hit rate: 0.0%
+(APIServer pid=13) INFO 10-31 10:32:59 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 2.27, Accepted throughput: 3.80 tokens/s, Drafted throughput: 9.00 tokens/s, Accepted: 38 tokens, Drafted: 90 tokens, Per-position acceptance rate: 0.667, 0.333, 0.267, Avg Draft acceptance rate: 42.2%
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:33:01,246] LMCache INFO:[0m [req_id=unspecified] Stored 4992 out of total 4992 tokens. size: 0.0809 GB, cost 58.1979 ms, throughput: 1.3906 GB/s; offload_time: 58.0971 ms, put_time: 0.0587 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:33:01,246] LMCache INFO:[0m [req_id=unspecified] Stored 4992 out of total 4992 tokens. size: 0.0809 GB, cost 58.4448 ms, throughput: 1.3848 GB/s; offload_time: 58.3474 ms, put_time: 0.0591 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:33:01,256] LMCache INFO:[0m [req_id=unspecified] Stored 832 out of total 832 tokens. size: 0.0379 GB, cost 9.2126 ms, throughput: 4.1143 GB/s; offload_time: 9.1516 ms, put_time: 0.0270 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:33:01,256] LMCache INFO:[0m [req_id=unspecified] Stored 832 out of total 832 tokens. size: 0.0379 GB, cost 9.0662 ms, throughput: 4.1807 GB/s; offload_time: 9.0005 ms, put_time: 0.0289 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:33:01,316] LMCache INFO:[0m [req_id=unspecified] Stored 832 out of total 832 tokens. size: 0.0135 GB, cost 9.8394 ms, throughput: 1.3709 GB/s; offload_time: 9.7759 ms, put_time: 0.0305 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:33:01,316] LMCache INFO:[0m [req_id=unspecified] Stored 832 out of total 832 tokens. size: 0.0135 GB, cost 9.9603 ms, throughput: 1.3543 GB/s; offload_time: 9.9017 ms, put_time: 0.0285 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(APIServer pid=13) INFO:     127.0.0.1:38196 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:38204 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:38214 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:38224 - "POST /v1/completions HTTP/1.1" 200 OK
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:33:04,451] LMCache INFO:[0m [req_id=unspecified] Stored 832 out of total 832 tokens. size: 0.0135 GB, cost 10.2113 ms, throughput: 1.3210 GB/s; offload_time: 10.1133 ms, put_time: 0.0656 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:33:04,451] LMCache INFO:[0m [req_id=unspecified] Stored 832 out of total 832 tokens. size: 0.0135 GB, cost 10.3342 ms, throughput: 1.3053 GB/s; offload_time: 10.2337 ms, put_time: 0.0658 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP1 pid=1030) INFO 10-31 10:33:04 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=2816 p50=0.49ms p90=0.60ms max=0.85ms fallbacks=168 {'zero-spec': 144, 'mixed': 24}
+(Worker_TP0 pid=930) INFO 10-31 10:33:04 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=2816 p50=0.49ms p90=0.57ms max=0.76ms fallbacks=168 {'zero-spec': 144, 'mixed': 24}
+(APIServer pid=13) INFO:     127.0.0.1:38228 - "POST /v1/completions HTTP/1.1" 200 OK
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:33:07,580] LMCache INFO:[0m [req_id=unspecified] Stored 832 out of total 832 tokens. size: 0.0135 GB, cost 10.2413 ms, throughput: 1.3171 GB/s; offload_time: 10.1442 ms, put_time: 0.0637 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:33:07,580] LMCache INFO:[0m [req_id=unspecified] Stored 832 out of total 832 tokens. size: 0.0135 GB, cost 10.2636 ms, throughput: 1.3142 GB/s; offload_time: 10.1659 ms, put_time: 0.0659 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(APIServer pid=13) INFO 10-31 10:33:09 [loggers.py:315] Engine 000: Avg prompt throughput: 817.8 tokens/s, Avg generation throughput: 9.6 tokens/s, Running: 0 reqs, Waiting: 0 reqs, XPU KV cache usage: 0.0%, Prefix cache hit rate: 43.3%, External prefix cache hit rate: 0.0%
+(APIServer pid=13) INFO 10-31 10:33:09 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 4.00, Accepted throughput: 7.20 tokens/s, Drafted throughput: 7.20 tokens/s, Accepted: 72 tokens, Drafted: 72 tokens, Per-position acceptance rate: 1.000, 1.000, 1.000, Avg Draft acceptance rate: 100.0%
+(APIServer pid=13) INFO:     127.0.0.1:38230 - "POST /v1/completions HTTP/1.1" 200 OK
+(Worker_TP1 pid=1030) [32;20m[2026-10-31 10:33:10,711] LMCache INFO:[0m [req_id=unspecified] Stored 832 out of total 832 tokens. size: 0.0135 GB, cost 10.2838 ms, throughput: 1.3117 GB/s; offload_time: 10.1876 ms, put_time: 0.0640 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP0 pid=930) [32;20m[2026-10-31 10:33:10,711] LMCache INFO:[0m [req_id=unspecified] Stored 832 out of total 832 tokens. size: 0.0135 GB, cost 10.3451 ms, throughput: 1.3039 GB/s; offload_time: 10.2478 ms, put_time: 0.0626 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(APIServer pid=13) INFO:     127.0.0.1:38246 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:33626 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:33632 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:33636 - "GET /metrics HTTP/1.1" 200 OK
+(Worker_TP0 pid=930) WARNING 10-31 10:33:14 [jit_monitor.py:141] Triton kernel JIT compilation during inference: _topk_topp_kernel. This causes a latency spike; consider extending warmup to cover this shape/config.
+(Worker_TP1 pid=1030) INFO 10-31 10:33:16 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=3072 p50=0.48ms p90=0.61ms max=0.94ms fallbacks=180 {'zero-spec': 153, 'mixed': 27}
+(Worker_TP0 pid=930) INFO 10-31 10:33:16 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=3072 p50=0.49ms p90=0.58ms max=0.78ms fallbacks=180 {'zero-spec': 153, 'mixed': 27}
+(APIServer pid=13) INFO:     127.0.0.1:33614 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:33600 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:33592 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:33578 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO 10-31 10:33:19 [loggers.py:315] Engine 000: Avg prompt throughput: 156.6 tokens/s, Avg generation throughput: 107.6 tokens/s, Running: 4 reqs, Waiting: 0 reqs, XPU KV cache usage: 10.2%, Prefix cache hit rate: 44.1%, External prefix cache hit rate: 0.0%
+(APIServer pid=13) INFO 10-31 10:33:19 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 2.72, Accepted throughput: 67.89 tokens/s, Drafted throughput: 118.19 tokens/s, Accepted: 679 tokens, Drafted: 1182 tokens, Per-position acceptance rate: 0.784, 0.548, 0.391, Avg Draft acceptance rate: 57.4%
+(Worker_TP1 pid=1030) INFO 10-31 10:33:21 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=3328 p50=0.48ms p90=0.59ms max=0.94ms fallbacks=186 {'zero-spec': 156, 'mixed': 30}
+(Worker_TP0 pid=930) INFO 10-31 10:33:21 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=3328 p50=0.49ms p90=0.59ms max=0.78ms fallbacks=186 {'zero-spec': 156, 'mixed': 30}
+(APIServer pid=13) INFO:     127.0.0.1:33654 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:33638 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:39176 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:39186 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:33670 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:39188 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:33658 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(Worker_TP1 pid=1030) INFO 10-31 10:33:24 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=3584 p50=0.48ms p90=0.59ms max=0.72ms fallbacks=189 {'zero-spec': 159, 'mixed': 30}
+(Worker_TP0 pid=930) INFO 10-31 10:33:24 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=3584 p50=0.49ms p90=0.59ms max=0.67ms fallbacks=189 {'zero-spec': 159, 'mixed': 30}
+(APIServer pid=13) INFO:     127.0.0.1:39194 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(Worker_TP1 pid=1030) INFO 10-31 10:33:28 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=3840 p50=0.48ms p90=0.58ms max=0.65ms fallbacks=192 {'zero-spec': 162, 'mixed': 30}
+(Worker_TP0 pid=930) INFO 10-31 10:33:28 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=3840 p50=0.49ms p90=0.58ms max=0.62ms fallbacks=192 {'zero-spec': 162, 'mixed': 30}
+(APIServer pid=13) INFO 10-31 10:33:29 [loggers.py:315] Engine 000: Avg prompt throughput: 12.6 tokens/s, Avg generation throughput: 135.0 tokens/s, Running: 1 reqs, Waiting: 0 reqs, XPU KV cache usage: 2.5%, Prefix cache hit rate: 44.1%, External prefix cache hit rate: 0.0%
+(APIServer pid=13) INFO 10-31 10:33:29 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 2.69, Accepted throughput: 85.19 tokens/s, Drafted throughput: 150.88 tokens/s, Accepted: 852 tokens, Drafted: 1509 tokens, Per-position acceptance rate: 0.751, 0.541, 0.402, Avg Draft acceptance rate: 56.5%
+(APIServer pid=13) INFO:     127.0.0.1:39206 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:39210 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:39508 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:39512 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:39518 - "GET /metrics HTTP/1.1" 200 OK
+(Worker_TP1 pid=1030) INFO 10-31 10:33:35 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=4096 p50=0.48ms p90=0.53ms max=0.68ms fallbacks=201 {'zero-spec': 165, 'mixed': 36}
+(Worker_TP0 pid=930) INFO 10-31 10:33:35 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=4096 p50=0.49ms p90=0.53ms max=0.74ms fallbacks=201 {'zero-spec': 165, 'mixed': 36}
+(APIServer pid=13) INFO:     127.0.0.1:39500 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:39498 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:39482 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:39496 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO 10-31 10:33:39 [loggers.py:315] Engine 000: Avg prompt throughput: 50.4 tokens/s, Avg generation throughput: 124.9 tokens/s, Running: 4 reqs, Waiting: 0 reqs, XPU KV cache usage: 10.2%, Prefix cache hit rate: 44.0%, External prefix cache hit rate: 0.0%
+(APIServer pid=13) INFO 10-31 10:33:39 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 2.64, Accepted throughput: 77.40 tokens/s, Drafted throughput: 141.30 tokens/s, Accepted: 774 tokens, Drafted: 1413 tokens, Per-position acceptance rate: 0.735, 0.533, 0.376, Avg Draft acceptance rate: 54.8%
+(Worker_TP1 pid=1030) INFO 10-31 10:33:39 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=4352 p50=0.48ms p90=0.59ms max=0.68ms fallbacks=204 {'zero-spec': 168, 'mixed': 36}
+(Worker_TP0 pid=930) INFO 10-31 10:33:39 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=4352 p50=0.49ms p90=0.59ms max=0.74ms fallbacks=204 {'zero-spec': 168, 'mixed': 36}
+(APIServer pid=13) INFO:     127.0.0.1:39544 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:39532 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:39542 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:39558 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:58644 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:58648 - "GET /metrics HTTP/1.1" 200 OK
+(Worker_TP1 pid=1030) INFO 10-31 10:33:43 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=4608 p50=0.48ms p90=0.59ms max=0.65ms fallbacks=207 {'zero-spec': 171, 'mixed': 36}
+(Worker_TP0 pid=930) INFO 10-31 10:33:43 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=4608 p50=0.49ms p90=0.59ms max=1.14ms fallbacks=207 {'zero-spec': 171, 'mixed': 36}
+(APIServer pid=13) INFO:     127.0.0.1:58654 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:58638 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(Worker_TP1 pid=1030) INFO 10-31 10:33:47 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=4864 p50=0.48ms p90=0.58ms max=0.65ms fallbacks=210 {'zero-spec': 174, 'mixed': 36}
+(Worker_TP0 pid=930) INFO 10-31 10:33:47 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=4864 p50=0.49ms p90=0.58ms max=1.14ms fallbacks=210 {'zero-spec': 174, 'mixed': 36}
+(APIServer pid=13) INFO:     127.0.0.1:58668 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO 10-31 10:33:49 [loggers.py:315] Engine 000: Avg prompt throughput: 12.6 tokens/s, Avg generation throughput: 125.2 tokens/s, Running: 0 reqs, Waiting: 0 reqs, XPU KV cache usage: 0.0%, Prefix cache hit rate: 44.0%, External prefix cache hit rate: 0.0%
+(APIServer pid=13) INFO 10-31 10:33:49 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 2.71, Accepted throughput: 79.55 tokens/s, Drafted throughput: 139.41 tokens/s, Accepted: 796 tokens, Drafted: 1395 tokens, Per-position acceptance rate: 0.757, 0.572, 0.383, Avg Draft acceptance rate: 57.1%
+(APIServer pid=13) INFO:     127.0.0.1:58670 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:49542 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:49548 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:49556 - "GET /metrics HTTP/1.1" 200 OK
+(Worker_TP1 pid=1030) INFO 10-31 10:33:54 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=5120 p50=0.48ms p90=0.52ms max=0.64ms fallbacks=219 {'zero-spec': 177, 'mixed': 42}
+(Worker_TP0 pid=930) INFO 10-31 10:33:54 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=5120 p50=0.49ms p90=0.52ms max=0.68ms fallbacks=219 {'zero-spec': 177, 'mixed': 42}
+(APIServer pid=13) INFO:     127.0.0.1:49522 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:49538 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:49514 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:49524 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(Worker_TP1 pid=1030) INFO 10-31 10:33:58 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=5376 p50=0.48ms p90=0.59ms max=0.64ms fallbacks=225 {'zero-spec': 180, 'mixed': 45}
+(Worker_TP0 pid=930) INFO 10-31 10:33:58 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=5376 p50=0.49ms p90=0.59ms max=0.68ms fallbacks=225 {'zero-spec': 180, 'mixed': 45}
+(APIServer pid=13) INFO 10-31 10:33:59 [loggers.py:315] Engine 000: Avg prompt throughput: 50.4 tokens/s, Avg generation throughput: 132.7 tokens/s, Running: 4 reqs, Waiting: 0 reqs, XPU KV cache usage: 10.2%, Prefix cache hit rate: 43.9%, External prefix cache hit rate: 0.0%
+(APIServer pid=13) INFO 10-31 10:33:59 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 2.66, Accepted throughput: 82.49 tokens/s, Drafted throughput: 149.07 tokens/s, Accepted: 825 tokens, Drafted: 1491 tokens, Per-position acceptance rate: 0.763, 0.527, 0.370, Avg Draft acceptance rate: 55.3%
+(APIServer pid=13) INFO:     127.0.0.1:49562 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:49588 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(Worker_TP1 pid=1030) INFO 10-31 10:34:02 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=5632 p50=0.48ms p90=0.59ms max=0.65ms fallbacks=225 {'zero-spec': 180, 'mixed': 45}
+(Worker_TP0 pid=930) INFO 10-31 10:34:02 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=5632 p50=0.49ms p90=0.59ms max=0.70ms fallbacks=225 {'zero-spec': 180, 'mixed': 45}
+(APIServer pid=13) INFO:     127.0.0.1:49560 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:49572 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:52936 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:52948 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:52958 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     10.100.8.REDACTED:43526 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     10.100.8.REDACTED:43550 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     10.100.8.REDACTED:43530 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     10.100.8.REDACTED:43542 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:52920 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(Worker_TP0 pid=930) INFO 10-31 10:34:06 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=5888 p50=0.49ms p90=0.59ms max=0.70ms fallbacks=231 {'zero-spec': 186, 'mixed': 45}
+(Worker_TP1 pid=1030) INFO 10-31 10:34:06 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=5888 p50=0.48ms p90=0.60ms max=0.93ms fallbacks=231 {'zero-spec': 186, 'mixed': 45}
+(APIServer pid=13) INFO:     127.0.0.1:52966 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:52978 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO 10-31 10:34:09 [loggers.py:315] Engine 000: Avg prompt throughput: 12.6 tokens/s, Avg generation throughput: 112.1 tokens/s, Running: 0 reqs, Waiting: 0 reqs, XPU KV cache usage: 0.0%, Prefix cache hit rate: 43.9%, External prefix cache hit rate: 0.0%
+(APIServer pid=13) INFO 10-31 10:34:09 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 2.61, Accepted throughput: 69.50 tokens/s, Drafted throughput: 129.59 tokens/s, Accepted: 695 tokens, Drafted: 1296 tokens, Per-position acceptance rate: 0.715, 0.521, 0.373, Avg Draft acceptance rate: 53.6%
+(Worker_TP1 pid=1030) INFO 10-31 10:34:13 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=6144 p50=0.48ms p90=0.62ms max=0.93ms fallbacks=237 {'zero-spec': 189, 'mixed': 48}
+(Worker_TP0 pid=930) INFO 10-31 10:34:13 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=6144 p50=0.49ms p90=0.52ms max=0.82ms fallbacks=237 {'zero-spec': 189, 'mixed': 48}
+(APIServer pid=13) INFO:     127.0.0.1:42392 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:42398 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:42410 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:42364 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:42378 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(Worker_TP0 pid=930) INFO 10-31 10:34:17 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=6400 p50=0.49ms p90=0.59ms max=0.82ms fallbacks=237 {'zero-spec': 189, 'mixed': 48}
+(Worker_TP1 pid=1030) INFO 10-31 10:34:17 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=6400 p50=0.48ms p90=0.62ms max=0.70ms fallbacks=237 {'zero-spec': 189, 'mixed': 48}
+(APIServer pid=13) INFO:     127.0.0.1:42380 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:42382 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO 10-31 10:34:19 [loggers.py:315] Engine 000: Avg prompt throughput: 50.4 tokens/s, Avg generation throughput: 142.5 tokens/s, Running: 4 reqs, Waiting: 0 reqs, XPU KV cache usage: 10.2%, Prefix cache hit rate: 43.8%, External prefix cache hit rate: 0.0%
+(APIServer pid=13) INFO 10-31 10:34:19 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 2.58, Accepted throughput: 86.99 tokens/s, Drafted throughput: 165.58 tokens/s, Accepted: 870 tokens, Drafted: 1656 tokens, Per-position acceptance rate: 0.714, 0.505, 0.357, Avg Draft acceptance rate: 52.5%
+(Worker_TP0 pid=930) INFO 10-31 10:34:21 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=6656 p50=0.49ms p90=0.59ms max=0.72ms fallbacks=240 {'zero-spec': 192, 'mixed': 48}
+(Worker_TP1 pid=1030) INFO 10-31 10:34:21 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=6656 p50=0.48ms p90=0.62ms max=0.72ms fallbacks=240 {'zero-spec': 192, 'mixed': 48}
+(APIServer pid=13) INFO:     127.0.0.1:42414 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:42428 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:42432 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:42418 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:55366 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:55374 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:55380 - "GET /metrics HTTP/1.1" 200 OK
+(Worker_TP0 pid=930) INFO 10-31 10:34:24 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=6912 p50=0.49ms p90=0.59ms max=0.72ms fallbacks=243 {'zero-spec': 195, 'mixed': 48}
+(Worker_TP1 pid=1030) INFO 10-31 10:34:24 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=6912 p50=0.48ms p90=0.62ms max=0.72ms fallbacks=243 {'zero-spec': 195, 'mixed': 48}
+(APIServer pid=13) INFO:     127.0.0.1:55350 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(Worker_TP0 pid=930) INFO 10-31 10:34:28 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=7168 p50=0.49ms p90=0.52ms max=0.82ms fallbacks=246 {'zero-spec': 198, 'mixed': 48}
+(Worker_TP1 pid=1030) INFO 10-31 10:34:28 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=7168 p50=0.48ms p90=0.62ms max=0.66ms fallbacks=246 {'zero-spec': 198, 'mixed': 48}
+(APIServer pid=13) INFO:     127.0.0.1:55392 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:55394 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO 10-31 10:34:29 [loggers.py:315] Engine 000: Avg prompt throughput: 12.6 tokens/s, Avg generation throughput: 102.3 tokens/s, Running: 0 reqs, Waiting: 0 reqs, XPU KV cache usage: 0.0%, Prefix cache hit rate: 43.8%, External prefix cache hit rate: 0.0%
+(APIServer pid=13) INFO 10-31 10:34:29 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 2.44, Accepted throughput: 60.60 tokens/s, Drafted throughput: 126.59 tokens/s, Accepted: 606 tokens, Drafted: 1266 tokens, Per-position acceptance rate: 0.685, 0.457, 0.294, Avg Draft acceptance rate: 47.9%
+(APIServer pid=13) INFO:     127.0.0.1:44204 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:44212 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:44214 - "GET /metrics HTTP/1.1" 200 OK
+(Worker_TP1 pid=1030) INFO 10-31 10:34:35 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=7424 p50=0.48ms p90=0.62ms max=0.72ms fallbacks=252 {'zero-spec': 201, 'mixed': 51}
+(Worker_TP0 pid=930) INFO 10-31 10:34:35 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=7424 p50=0.49ms p90=0.58ms max=0.82ms fallbacks=252 {'zero-spec': 201, 'mixed': 51}
+(APIServer pid=13) INFO:     127.0.0.1:44180 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:44200 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:44184 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:44178 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO 10-31 10:34:39 [loggers.py:315] Engine 000: Avg prompt throughput: 50.4 tokens/s, Avg generation throughput: 140.7 tokens/s, Running: 4 reqs, Waiting: 0 reqs, XPU KV cache usage: 10.2%, Prefix cache hit rate: 43.7%, External prefix cache hit rate: 0.0%
+(APIServer pid=13) INFO 10-31 10:34:39 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 2.60, Accepted throughput: 86.39 tokens/s, Drafted throughput: 161.68 tokens/s, Accepted: 864 tokens, Drafted: 1617 tokens, Per-position acceptance rate: 0.712, 0.536, 0.354, Avg Draft acceptance rate: 53.4%
+(Worker_TP1 pid=1030) INFO 10-31 10:34:39 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=7680 p50=0.48ms p90=0.62ms max=0.72ms fallbacks=255 {'zero-spec': 204, 'mixed': 51}
+(Worker_TP0 pid=930) INFO 10-31 10:34:39 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=7680 p50=0.49ms p90=0.59ms max=0.74ms fallbacks=255 {'zero-spec': 204, 'mixed': 51}
+(APIServer pid=13) INFO:     127.0.0.1:44236 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:44240 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:44244 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:44220 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(Worker_TP0 pid=930) INFO 10-31 10:34:43 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=7936 p50=0.49ms p90=0.59ms max=0.63ms fallbacks=258 {'zero-spec': 207, 'mixed': 51}
+(Worker_TP1 pid=1030) INFO 10-31 10:34:43 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=7936 p50=0.48ms p90=0.62ms max=0.70ms fallbacks=258 {'zero-spec': 207, 'mixed': 51}
+(APIServer pid=13) INFO:     127.0.0.1:51626 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:51632 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:51648 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:51622 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(Worker_TP0 pid=930) INFO 10-31 10:34:46 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=8192 p50=0.49ms p90=0.58ms max=0.65ms fallbacks=261 {'zero-spec': 210, 'mixed': 51}
+(Worker_TP1 pid=1030) INFO 10-31 10:34:46 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=8192 p50=0.48ms p90=0.62ms max=1.04ms fallbacks=261 {'zero-spec': 210, 'mixed': 51}
+(APIServer pid=13) INFO 10-31 10:34:49 [loggers.py:315] Engine 000: Avg prompt throughput: 12.6 tokens/s, Avg generation throughput: 101.9 tokens/s, Running: 1 reqs, Waiting: 0 reqs, XPU KV cache usage: 2.5%, Prefix cache hit rate: 43.7%, External prefix cache hit rate: 0.0%
+(APIServer pid=13) INFO 10-31 10:34:49 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 2.30, Accepted throughput: 57.69 tokens/s, Drafted throughput: 133.48 tokens/s, Accepted: 577 tokens, Drafted: 1335 tokens, Per-position acceptance rate: 0.629, 0.407, 0.261, Avg Draft acceptance rate: 43.2%
+(APIServer pid=13) INFO:     127.0.0.1:51660 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:51666 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:38322 - "GET /metrics HTTP/1.1" 200 OK
+(Worker_TP1 pid=1030) INFO 10-31 10:34:54 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=8448 p50=0.48ms p90=0.62ms max=1.04ms fallbacks=270 {'zero-spec': 213, 'mixed': 57}
+(Worker_TP0 pid=930) INFO 10-31 10:34:54 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=8448 p50=0.49ms p90=0.52ms max=0.65ms fallbacks=270 {'zero-spec': 213, 'mixed': 57}
+(APIServer pid=13) INFO:     127.0.0.1:38332 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:38338 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:38306 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:38310 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:38314 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:38312 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(Worker_TP1 pid=1030) INFO 10-31 10:34:58 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=8704 p50=0.48ms p90=0.62ms max=0.71ms fallbacks=276 {'zero-spec': 216, 'mixed': 60}
+(Worker_TP0 pid=930) INFO 10-31 10:34:58 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=8704 p50=0.49ms p90=0.59ms max=0.64ms fallbacks=276 {'zero-spec': 216, 'mixed': 60}
+(APIServer pid=13) INFO 10-31 10:34:59 [loggers.py:315] Engine 000: Avg prompt throughput: 18.4 tokens/s, Avg generation throughput: 188.0 tokens/s, Running: 4 reqs, Waiting: 0 reqs, XPU KV cache usage: 10.2%, Prefix cache hit rate: 43.7%, External prefix cache hit rate: 0.0%
+(APIServer pid=13) INFO 10-31 10:34:59 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 3.79, Accepted throughput: 138.70 tokens/s, Drafted throughput: 149.10 tokens/s, Accepted: 1387 tokens, Drafted: 1491 tokens, Per-position acceptance rate: 0.954, 0.932, 0.905, Avg Draft acceptance rate: 93.0%
+(APIServer pid=13) INFO:     127.0.0.1:38358 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:38362 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:38354 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:38352 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(Worker_TP0 pid=930) INFO 10-31 10:35:02 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=8960 p50=0.49ms p90=0.59ms max=1.15ms fallbacks=279 {'zero-spec': 219, 'mixed': 60}
+(Worker_TP1 pid=1030) INFO 10-31 10:35:02 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=8960 p50=0.48ms p90=0.62ms max=1.03ms fallbacks=279 {'zero-spec': 219, 'mixed': 60}
+(APIServer pid=13) INFO:     127.0.0.1:38364 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:56420 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:56422 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:56432 - "GET /metrics HTTP/1.1" 200 OK
+(Worker_TP0 pid=930) INFO 10-31 10:35:05 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=9216 p50=0.49ms p90=0.52ms max=1.15ms fallbacks=282 {'zero-spec': 222, 'mixed': 60}
+(Worker_TP1 pid=1030) INFO 10-31 10:35:05 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=9216 p50=0.48ms p90=0.62ms max=1.03ms fallbacks=282 {'zero-spec': 222, 'mixed': 60}
+(APIServer pid=13) INFO:     127.0.0.1:56412 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:56434 - "GET /metrics HTTP/1.1" 200 OK

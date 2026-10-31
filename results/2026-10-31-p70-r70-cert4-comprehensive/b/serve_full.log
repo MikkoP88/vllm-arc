@@ -1,0 +1,587 @@
+INFO 10-31 10:35:22 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+INFO 10-31 10:35:22 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+INFO 10-31 10:35:22 [__init__.py:54] - hpu -> vllm_gaudi:register
+INFO 10-31 10:35:22 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+INFO 10-31 10:35:23 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+INFO 10-31 10:35:23 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+INFO 10-31 10:35:23 [__init__.py:54] - hpu -> vllm_gaudi:register
+INFO 10-31 10:35:23 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+INFO 10-31 10:35:23 [__init__.py:272] Platform plugin arc is activated
+INFO 10-31 10:35:23 [__init__.py:272] Platform plugin arc is activated
+WARNING 10-31 10:35:37 [argparse_utils.py:276] With `vllm serve`, you should provide the model as a positional argument or in a config file instead of via the `--model` option. The `--model` option will be removed in a future version.
+(APIServer pid=13) INFO 10-31 10:35:37 [api_utils.py:347] 
+(APIServer pid=13) INFO 10-31 10:35:37 [api_utils.py:347]        █     █     █▄   ▄█
+(APIServer pid=13) INFO 10-31 10:35:37 [api_utils.py:347]  ▄▄ ▄█ █     █     █ ▀▄▀ █  version 0.30.0
+(APIServer pid=13) INFO 10-31 10:35:37 [api_utils.py:347]   █▄█▀ █     █     █     █  model   /models/target
+(APIServer pid=13) INFO 10-31 10:35:37 [api_utils.py:347]    ▀▀  ▀▀▀▀▀ ▀▀▀▀▀ ▀     ▀
+(APIServer pid=13) INFO 10-31 10:35:37 [api_utils.py:347] 
+(APIServer pid=13) INFO 10-31 10:35:37 [api_utils.py:286] non-default args: {'model_tag': '/models/target', 'chat_template': '/root/chat_template_qwen38_high.jinja', 'enable_auto_tool_choice': True, 'tool_call_parser': 'qwen3_coder', 'model': '/models/target', 'trust_remote_code': True, 'dtype': 'float16', 'max_model_len': 262144, 'quantization': 'fp8', 'served_model_name': ['qwen3.8-27b-fp8'], 'reasoning_parser': 'qwen3', 'tensor_parallel_size': 2, 'block_size': 64, 'gpu_memory_utilization': 0.8, 'kv_cache_dtype': 'fp8_e4m3', 'enable_prefix_caching': True, 'mamba_ssm_cache_dtype': 'float16', 'mamba_cache_mode': 'align', 'max_num_batched_tokens': 8192, 'max_num_seqs': 64, 'disable_hybrid_kv_cache_manager': False, 'kv_transfer_config': KVTransferConfig(kv_connector='LMCacheConnectorV1', engine_id='arc-p40', kv_buffer_device='xpu', kv_buffer_size=1000000000.0, kv_role='kv_both', kv_rank=None, kv_parallel_size=1, kv_ip='127.0.0.1', kv_port=14579, kv_connector_extra_config={'use_native': True, 'lmcache.extra_config': {'mamba_pool_ratio': 2}}, kv_connector_module_path=None, enable_permute_local_kv=False, kv_load_failure_policy='fail'), 'compilation_config': {'mode': <CompilationMode.NONE: 0>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': [], 'ir_enable_torch_wrap': None, 'splitting_ops': None, 'compile_mm_encoder': False, 'cudagraph_mm_encoder': False, 'encoder_cudagraph_token_budgets': [], 'encoder_cudagraph_max_vision_items_per_batch': 0, 'encoder_cudagraph_max_frames_per_batch': None, 'compile_sizes': None, 'compile_ranges_endpoints': None, 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.FULL_DECODE_ONLY: (2, 0)>, 'cudagraph_num_of_warmups': 0, 'cudagraph_capture_sizes': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 20, 25, 30, 35, 40, 45, 48, 50, 55, 60, 64, 65, 70, 75, 80, 85, 90, 95, 96, 100, 105, 110, 112, 115, 120, 125, 128, 130, 135, 140, 145, 150, 155, 160, 165, 170, 175, 180, 185, 190, 192, 195, 200, 205, 210, 215, 220, 224, 225, 230, 235, 240, 245, 250, 255, 256, 260, 265, 270, 275, 280, 285, 290, 295, 300, 305, 310, 315, 320], 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': None, 'pass_config': {}, 'max_cudagraph_capture_size': None, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': False}, 'local_cache_dir': None, 'fast_moe_cold_start': None, 'static_all_moe_layers': []}}
+(APIServer pid=13) WARNING 10-31 10:35:37 [envs.py:2248] Unknown vLLM environment variable detected: VLLM_QUANTIZE_Q40_LIB
+(APIServer pid=13) INFO 10-31 10:36:03 [model.py:692] Resolved architecture: Qwen3_5ForConditionalGeneration
+(APIServer pid=13) WARNING 10-31 10:36:03 [model.py:2364] Casting torch.bfloat16 to torch.float16.
+(APIServer pid=13) INFO 10-31 10:36:03 [model.py:2030] Using max model len 262144
+(APIServer pid=13) WARNING 10-31 10:36:05 [indexer_topk.py:29] Failed to import the DeepSelect extension (vllm._deepselect_C): No module named 'vllm._deepselect_C'
+(APIServer pid=13) INFO 10-31 10:36:05 [cache.py:343] Using fp8_e4m3 data type to store kv cache. It reduces the GPU memory footprint and boosts the performance. Meanwhile, it may cause accuracy drop without a proper scaling factor
+(APIServer pid=13) INFO 10-31 10:36:05 [scheduler.py:288] Chunked prefill is enabled with max_num_batched_tokens=8192.
+(APIServer pid=13) WARNING 10-31 10:36:05 [config.py:819] Qwen3.5 model specifies mamba_ssm_dtype='float32' in its config, but --mamba-ssm-cache-dtype='float16' was passed. Using the user-specified value.
+(APIServer pid=13) WARNING 10-31 10:36:05 [vllm.py:1570] Inductor compilation was disabled by user settings, optimizations settings that are only active during inductor compilation will be ignored.
+(APIServer pid=13) INFO 10-31 10:36:05 [kernel.py:416] Final IR op priority after setting platform defaults: IrOpPriorityConfig(rms_norm=['vllm_c', 'native'], fused_add_rms_norm=['vllm_c', 'native'], gelu_and_mul_sparse=['native'])
+(APIServer pid=13) INFO 10-31 10:36:05 [platform.py:172] ArcXpuPlatform: wheel hook lmcache_connector <- patches.lmcache_hma_connector OK
+(APIServer pid=13) WARNING 10-31 10:36:05 [xpu.py:308] XPU Graph support is experimental and currently only supports single-GPU execution.
+(APIServer pid=13) INFO 10-31 10:36:05 [xpu.py:382] XPU platform: set server shutdown_timeout=5.
+(APIServer pid=13) INFO 10-31 10:36:05 [graph_safe_output.py:665] ArcXpuPlatform: XPU graph boundary hygiene installed (pid 13, XPUGraph capture_begin/capture_end/replay + graph context __exit__ wrapped).
+(APIServer pid=13) INFO 10-31 10:36:05 [graph_safe_output.py:791] ArcXpuPlatform: zombie stream-reroute guards installed (pid 13, set_stream substitution + wait_stream skip + Event.record reroute + synchronize tripwire).
+(APIServer pid=13) INFO 10-31 10:36:05 [graph_safe_output.py:925] ArcXpuPlatform: runner-entry hygiene installed (pid 13, GPUModelRunner.execute_model + sample_tokens wrapped).
+(APIServer pid=13) INFO 10-31 10:36:05 [graph_safe_output.py:971] ArcXpuPlatform: capture-stream fix installed (pid 13, captures ride torch.xpu.graph.default_capture_stream, EAGERLY INITED before capture #1 — the serving default never enters capture; champion 0.26.1 discipline, r9).
+(APIServer pid=13) INFO 10-31 10:36:05 [graph_safe_output.py:520] ArcXpuPlatform: r12b kernel-launch tracer installed (triton:CachingAutotuner.run).
+(APIServer pid=13) INFO 10-31 10:36:05 [graph_safe_output.py:1112] ArcXpuPlatform: graph-safe output patch installed (pid 13, AsyncOutput/AsyncPoolingOutput __init__ + get_output wrapped).
+(APIServer pid=13) INFO 10-31 10:36:05 [speculator_full_capture.py:117] ArcXpuPlatform: speculator FULL-capture patch installed (pid 13, SpeculatorCudaGraphManager.__init__ wrapped).
+(APIServer pid=13) INFO 10-31 10:36:05 [first_request_warmup.py:123] ArcXpuPlatform: first-request warmup interlock installed (defect-b lane W, r16 evidence)
+(APIServer pid=13) INFO 10-31 10:36:05 [gdn_metadata_fastpath.py:286] [arc-p10] gdn metadata fastpath installed (steady spec-decode builds; stock build kept for prefill/mixed)
+(APIServer pid=13) INFO 10-31 10:36:05 [fp8_block_w8a16.py:97] ArcXpuPlatform: fp8 block linear reroute ACTIVE — XPUFp8BlockScaledMMKernel.apply_input_quant=False, apply_block_scaled_mm -> _xpu_C.fp8_gemm_w8a16 (stock fallback kept; r40: 3-8x/GEMM decode Ms, relerr 4-5e-4)
+(APIServer pid=13) INFO 10-31 10:36:05 [platform.py:298] ArcXpuPlatform: Intel Arc Xe2 posture active (Intel(R) Graphics [0xe223]).
+(APIServer pid=13) INFO 10-31 10:36:05 [platform.py:307] ArcXpuPlatform: graph posture cudagraph_mode=FULL_DECODE_ONLY capture_sizes=(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 20, 25, 30, 35, 40, 45, 48, 50, 55, 60, 64, 65, 70, 75, 80, 85, 90, 95, 96, 100, 105, 110, 112, 115, 120, 125, 128, 130, 135, 140, 145, 150, 155, 160, 165, 170, 175, 180, 185, 190, 192, 195, 200, 205, 210, 215, 220, 224, 225, 230, 235, 240, 245, 250, 255, 256, 260, 265, 270, 275, 280, 285, 290, 295, 300, 305, 310, 315, 320) (VLLM_XPU_ENABLE_XPU_GRAPH=True).
+(APIServer pid=13) INFO 10-31 10:36:05 [vllm.py:2670] EC/KV consumer: accepting pre-computed-embedding inputs, which this role is sent by definition.
+(APIServer pid=13) INFO 10-31 10:36:05 [vllm.py:2674] EC/KV consumer: pre-computed-embedding inputs may omit the embedding tensor.
+(APIServer pid=13) INFO 10-31 10:36:06 [compilation.py:336] Enabled custom fusions: norm_quant, act_quant
+(APIServer pid=13) [transformers] The `use_fast` parameter is deprecated and will be removed in a future version. Use `backend="torchvision"` instead of `use_fast=True`, or `backend="pil"` instead of `use_fast=False`.
+INFO 10-31 10:36:23 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+INFO 10-31 10:36:23 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+INFO 10-31 10:36:23 [__init__.py:54] - hpu -> vllm_gaudi:register
+INFO 10-31 10:36:23 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+INFO 10-31 10:36:24 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+INFO 10-31 10:36:24 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+INFO 10-31 10:36:24 [__init__.py:54] - hpu -> vllm_gaudi:register
+INFO 10-31 10:36:24 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+INFO 10-31 10:36:24 [__init__.py:272] Platform plugin arc is activated
+INFO 10-31 10:36:24 [__init__.py:272] Platform plugin arc is activated
+(EngineCore pid=500) INFO 10-31 10:36:34 [core.py:123] Initializing a V1 LLM engine (v0.30.0) with config: model='/models/target', speculative_config=None, tokenizer='/models/target', skip_tokenizer_init=False, tokenizer_mode=auto, revision=None, tokenizer_revision=None, trust_remote_code=True, dtype=torch.float16, max_seq_len=262144, download_dir=None, load_format=auto, tensor_parallel_size=2, pipeline_parallel_size=1, data_parallel_size=1, decode_context_parallel_size=1, dcp_comm_backend=ag_rs, disable_custom_all_reduce=True, quantization=fp8, quantization_config=None, enforce_eager=False, enable_return_routed_experts=False, kv_cache_dtype=fp8_e4m3, device_config=xpu, structured_outputs_config=StructuredOutputsConfig(backend='auto', disable_any_whitespace=False, disable_additional_properties=False, reasoning_parser='qwen3', reasoning_parser_plugin='', enable_in_reasoning=False), observability_config=ObservabilityConfig(show_hidden_metrics_for_version=None, otlp_traces_endpoint=None, collect_detailed_traces=None, per_request_spec_decode_metrics='none', kv_cache_metrics=False, kv_cache_metrics_sample=0.01, cudagraph_metrics=False, enable_layerwise_nvtx_tracing=False, enable_mfu_metrics=False, enable_mm_processor_stats=False, enable_logging_iteration_details=False, jit_monitor_mode='warn', jit_monitor_verbose=False), seed=0, served_model_name=qwen3.8-27b-fp8, enable_prefix_caching=True, enable_chunked_prefill=True, pooler_config=None, compilation_config={'mode': <CompilationMode.NONE: 0>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': ['+quant_fp8', 'all', '+quant_fp8'], 'ir_enable_torch_wrap': False, 'splitting_ops': [], 'compile_mm_encoder': False, 'cudagraph_mm_encoder': False, 'encoder_cudagraph_token_budgets': [], 'encoder_cudagraph_max_vision_items_per_batch': 0, 'encoder_cudagraph_max_frames_per_batch': None, 'compile_sizes': [], 'compile_ranges_endpoints': [8192], 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.FULL_DECODE_ONLY: (2, 0)>, 'cudagraph_num_of_warmups': 1, 'cudagraph_capture_sizes': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 20, 25, 30, 35, 40, 45, 48, 50, 55, 60, 64, 65, 70, 75, 80, 85, 90, 95, 96, 100, 105, 110, 112, 115, 120, 125, 128, 130, 135, 140, 145, 150, 155, 160, 165, 170, 175, 180, 185, 190, 192, 195, 200, 205, 210, 215, 220, 224, 225, 230, 235, 240, 245, 250, 255, 256, 260, 265, 270, 275, 280, 285, 290, 295, 300, 305, 310, 315, 320], 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': False, 'pass_config': {'fuse_norm_quant': True, 'fuse_act_quant': True, 'fuse_attn_quant': False, 'enable_sp': False, 'fuse_gemm_comms': False, 'fuse_allreduce_rms': False, 'enable_qk_norm_rope_fusion': False, 'fuse_rope_kvcache_cat_mla': False, 'fuse_act_padding': False, 'fuse_qk_norm_rope_kvcache': False}, 'max_cudagraph_capture_size': 320, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': False}, 'local_cache_dir': None, 'fast_moe_cold_start': False, 'static_all_moe_layers': []}, kernel_config=KernelConfig(ir_op_priority=IrOpPriorityConfig(rms_norm=['vllm_c', 'native'], fused_add_rms_norm=['vllm_c', 'native'], gelu_and_mul_sparse=['native']), enable_flashinfer_autotune=True, enable_cutedsl_warmup=True, enable_jit_warmup=True, moe_backend='auto', sparse_indexer_topk_backend='auto', linear_backend='auto', linear_backend_per_quant=None)
+(EngineCore pid=500) INFO 10-31 10:36:34 [multiproc_executor.py:153] DP group leader: node_rank=0, node_rank_within_dp=0, master_addr=127.0.0.1, mq_connect_ip=10.20.3.REDACTED (local), world_size=2, local_world_size=2
+INFO 10-31 10:36:36 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+INFO 10-31 10:36:36 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+INFO 10-31 10:36:36 [__init__.py:54] - hpu -> vllm_gaudi:register
+INFO 10-31 10:36:36 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+INFO 10-31 10:36:36 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+INFO 10-31 10:36:36 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+INFO 10-31 10:36:36 [__init__.py:54] - hpu -> vllm_gaudi:register
+INFO 10-31 10:36:36 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+INFO 10-31 10:36:37 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+INFO 10-31 10:36:37 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+INFO 10-31 10:36:37 [__init__.py:54] - hpu -> vllm_gaudi:register
+INFO 10-31 10:36:37 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+INFO 10-31 10:36:37 [__init__.py:272] Platform plugin arc is activated
+INFO 10-31 10:36:37 [__init__.py:272] Platform plugin arc is activated
+INFO 10-31 10:36:37 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+INFO 10-31 10:36:37 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+INFO 10-31 10:36:37 [__init__.py:54] - hpu -> vllm_gaudi:register
+INFO 10-31 10:36:37 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+INFO 10-31 10:36:37 [__init__.py:272] Platform plugin arc is activated
+INFO 10-31 10:36:37 [__init__.py:272] Platform plugin arc is activated
+(APIServer pid=13) [transformers] Qwen3VL video processing does not apply the per-frame pixel cap the reference implementation (qwen-vl-utils) applies, so some videos cost far more tokens than they would there. In v5.22 the capped behavior will become the default and `cap_pixels_per_frame` will be removed. Pass `cap_pixels_per_frame=True` to adopt the reference behavior now, or `False` to keep the current behavior and silence this warning.
+WARNING 10-31 10:36:48 [indexer_topk.py:29] Failed to import the DeepSelect extension (vllm._deepselect_C): No module named 'vllm._deepselect_C'
+WARNING 10-31 10:36:48 [indexer_topk.py:29] Failed to import the DeepSelect extension (vllm._deepselect_C): No module named 'vllm._deepselect_C'
+INFO 10-31 10:36:48 [platform.py:172] ArcXpuPlatform: wheel hook mamba_utils <- patches.mamba_lmcache_glue OK
+INFO 10-31 10:36:48 [platform.py:172] ArcXpuPlatform: wheel hook mamba_utils <- patches.mamba_lmcache_glue OK
+(APIServer pid=13) INFO 10-31 10:36:50 [base.py:261] Multi-modal warmup completed in 28.996s
+(Worker pid=733) INFO 10-31 10:36:50 [graph_safe_output.py:665] ArcXpuPlatform: XPU graph boundary hygiene installed (pid 733, XPUGraph capture_begin/capture_end/replay + graph context __exit__ wrapped).
+(Worker pid=733) INFO 10-31 10:36:50 [graph_safe_output.py:791] ArcXpuPlatform: zombie stream-reroute guards installed (pid 733, set_stream substitution + wait_stream skip + Event.record reroute + synchronize tripwire).
+(Worker pid=733) INFO 10-31 10:36:50 [graph_safe_output.py:925] ArcXpuPlatform: runner-entry hygiene installed (pid 733, GPUModelRunner.execute_model + sample_tokens wrapped).
+(Worker pid=733) INFO 10-31 10:36:50 [graph_safe_output.py:971] ArcXpuPlatform: capture-stream fix installed (pid 733, captures ride torch.xpu.graph.default_capture_stream, EAGERLY INITED before capture #1 — the serving default never enters capture; champion 0.26.1 discipline, r9).
+(Worker pid=733) INFO 10-31 10:36:50 [graph_safe_output.py:520] ArcXpuPlatform: r12b kernel-launch tracer installed (triton:CachingAutotuner.run).
+(Worker pid=733) INFO 10-31 10:36:50 [graph_safe_output.py:1112] ArcXpuPlatform: graph-safe output patch installed (pid 733, AsyncOutput/AsyncPoolingOutput __init__ + get_output wrapped).
+(Worker pid=733) INFO 10-31 10:36:50 [speculator_full_capture.py:117] ArcXpuPlatform: speculator FULL-capture patch installed (pid 733, SpeculatorCudaGraphManager.__init__ wrapped).
+(Worker pid=732) INFO 10-31 10:36:50 [graph_safe_output.py:665] ArcXpuPlatform: XPU graph boundary hygiene installed (pid 732, XPUGraph capture_begin/capture_end/replay + graph context __exit__ wrapped).
+(Worker pid=732) INFO 10-31 10:36:50 [graph_safe_output.py:791] ArcXpuPlatform: zombie stream-reroute guards installed (pid 732, set_stream substitution + wait_stream skip + Event.record reroute + synchronize tripwire).
+(Worker pid=732) INFO 10-31 10:36:50 [graph_safe_output.py:925] ArcXpuPlatform: runner-entry hygiene installed (pid 732, GPUModelRunner.execute_model + sample_tokens wrapped).
+(Worker pid=732) INFO 10-31 10:36:50 [graph_safe_output.py:971] ArcXpuPlatform: capture-stream fix installed (pid 732, captures ride torch.xpu.graph.default_capture_stream, EAGERLY INITED before capture #1 — the serving default never enters capture; champion 0.26.1 discipline, r9).
+(Worker pid=732) INFO 10-31 10:36:50 [graph_safe_output.py:520] ArcXpuPlatform: r12b kernel-launch tracer installed (triton:CachingAutotuner.run).
+(Worker pid=732) INFO 10-31 10:36:50 [graph_safe_output.py:1112] ArcXpuPlatform: graph-safe output patch installed (pid 732, AsyncOutput/AsyncPoolingOutput __init__ + get_output wrapped).
+(Worker pid=732) INFO 10-31 10:36:50 [speculator_full_capture.py:117] ArcXpuPlatform: speculator FULL-capture patch installed (pid 732, SpeculatorCudaGraphManager.__init__ wrapped).
+(Worker pid=733) INFO 10-31 10:36:50 [first_request_warmup.py:123] ArcXpuPlatform: first-request warmup interlock installed (defect-b lane W, r16 evidence)
+(Worker pid=733) INFO 10-31 10:36:50 [gdn_metadata_fastpath.py:286] [arc-p10] gdn metadata fastpath installed (steady spec-decode builds; stock build kept for prefill/mixed)
+(Worker pid=733) INFO 10-31 10:36:50 [fp8_block_w8a16.py:97] ArcXpuPlatform: fp8 block linear reroute ACTIVE — XPUFp8BlockScaledMMKernel.apply_input_quant=False, apply_block_scaled_mm -> _xpu_C.fp8_gemm_w8a16 (stock fallback kept; r40: 3-8x/GEMM decode Ms, relerr 4-5e-4)
+(Worker pid=732) INFO 10-31 10:36:50 [first_request_warmup.py:123] ArcXpuPlatform: first-request warmup interlock installed (defect-b lane W, r16 evidence)
+(Worker pid=732) INFO 10-31 10:36:50 [gdn_metadata_fastpath.py:286] [arc-p10] gdn metadata fastpath installed (steady spec-decode builds; stock build kept for prefill/mixed)
+(Worker pid=732) INFO 10-31 10:36:50 [fp8_block_w8a16.py:97] ArcXpuPlatform: fp8 block linear reroute ACTIVE — XPUFp8BlockScaledMMKernel.apply_input_quant=False, apply_block_scaled_mm -> _xpu_C.fp8_gemm_w8a16 (stock fallback kept; r40: 3-8x/GEMM decode Ms, relerr 4-5e-4)
+(Worker pid=733) INFO 10-31 10:36:51 [parallel_state.py:1827] world_size=2 rank=1 local_rank=1 distributed_init_method=file:///tmp/vllm_dist_c58c280e916e4cf59b2ad5a9f20f99e3 backend=xccl
+(Worker pid=732) INFO 10-31 10:36:51 [parallel_state.py:1827] world_size=2 rank=0 local_rank=0 distributed_init_method=file:///tmp/vllm_dist_c58c280e916e4cf59b2ad5a9f20f99e3 backend=xccl
+(Worker pid=732) INFO 10-31 10:36:51 [parallel_state.py:2267] rank 0 in world size 2 is assigned as DP rank 0, PP rank 0, PCP rank 0, TP rank 0, ETP rank 0, EP rank N/A, EPLB rank N/A
+2026:10:31-10:36:51:  732 |CCL_WARN| value of CCL_ATL_TRANSPORT changed to be ofi (default:mpi)
+2026:10:31-10:36:51:  732 |CCL_WARN| value of CCL_SYCL_ALLGATHERV_SCALEOUT_THRESHOLD changed to be 1048576 (default:1073741824)
+2026:10:31-10:36:51:  732 |CCL_WARN| value of CCL_TOPO_P2P_ACCESS changed to be 1 (default:-1)
+2026:10:31-10:36:51:  732 |CCL_WARN| value of CCL_TOPO_FABRIC_VERTEX_CONNECTION_CHECK changed to be 0 (default:1)
+2026:10:31-10:36:51:  733 |CCL_WARN| value of CCL_ATL_TRANSPORT changed to be ofi (default:mpi)
+2026:10:31-10:36:51:  733 |CCL_WARN| value of CCL_SYCL_ALLGATHERV_SCALEOUT_THRESHOLD changed to be 1048576 (default:1073741824)
+2026:10:31-10:36:51:  733 |CCL_WARN| value of CCL_TOPO_P2P_ACCESS changed to be 1 (default:-1)
+2026:10:31-10:36:51:  733 |CCL_WARN| value of CCL_TOPO_FABRIC_VERTEX_CONNECTION_CHECK changed to be 0 (default:1)
+2026:10:31-10:36:51:  732 |CCL_WARN| could not get local_idx/count from environment variables, trying to get them from ATL
+2026:10:31-10:36:51:  733 |CCL_WARN| could not get local_idx/count from environment variables, trying to get them from ATL
+(Worker pid=732) INFO 10-31 10:36:52 [xpu_worker.py:169] Using V2 Model Runner
+(APIServer pid=13) INFO 10-31 10:36:52 [base.py:261] Readonly multi-modal warmup completed in 2.707s
+(Worker_TP0 pid=732) INFO 10-31 10:36:53 [model_runner.py:396] Loading model from scratch...
+(Worker_TP0 pid=732) INFO 10-31 10:36:54 [xpu.py:233] Using backend AttentionBackendEnum.FLASH_ATTN for vit attention
+(Worker_TP0 pid=732) INFO 10-31 10:36:54 [mm_encoder_attention.py:372] Using AttentionBackendEnum.FLASH_ATTN for MMEncoderAttention.
+(Worker_TP0 pid=732) INFO 10-31 10:36:54 [__init__.py:726] Selected XPUFp8BlockScaledMMKernel for Fp8LinearMethod
+(Worker_TP0 pid=732) INFO 10-31 10:36:54 [qwen_gdn_linear_attn.py:176] Using Triton/FLA GDN prefill kernel (requested=auto, head_k_dim=128).
+(Worker_TP0 pid=732) INFO 10-31 10:36:54 [qwen_gdn_linear_attn.py:528] GDN decode kernel: cuda
+(Worker_TP0 pid=732) INFO 10-31 10:36:54 [xpu.py:199] Using Flash Attention backend.
+(Worker_TP0 pid=732) INFO 10-31 10:36:54 [flash_attn.py:1116] Using FlashAttention version 2
+(Worker_TP0 pid=732) INFO 10-31 10:36:54 [weight_utils.py:895] Filesystem type for checkpoints: EXT4. Checkpoint size: 28.75 GiB. Available RAM: 362.70 GiB.
+(Worker_TP0 pid=732) INFO 10-31 10:36:54 [weight_utils.py:918] Auto-prefetch is disabled because the filesystem (EXT4) is not a recognized network FS (NFS/Lustre). If you want to force prefetching, start vLLM with --safetensors-load-strategy=prefetch.
+(Worker_TP0 pid=732) Loading safetensors checkpoint shards:   0% Completed | 0/66 [00:00<?, ?it/s]
+(Worker_TP0 pid=732) Loading safetensors checkpoint shards:   3% Completed | 2/66 [00:00<00:03, 18.16it/s]
+(Worker_TP0 pid=732) Loading safetensors checkpoint shards:   6% Completed | 4/66 [00:00<00:03, 18.23it/s]
+(Worker_TP0 pid=732) Loading safetensors checkpoint shards:   9% Completed | 6/66 [00:00<00:03, 18.37it/s]
+(Worker_TP0 pid=732) Loading safetensors checkpoint shards:  12% Completed | 8/66 [00:00<00:03, 18.42it/s]
+(Worker_TP0 pid=732) Loading safetensors checkpoint shards:  15% Completed | 10/66 [00:00<00:03, 18.31it/s]
+(Worker_TP0 pid=732) Loading safetensors checkpoint shards:  18% Completed | 12/66 [00:00<00:02, 18.19it/s]
+(Worker_TP0 pid=732) Loading safetensors checkpoint shards:  21% Completed | 14/66 [00:00<00:02, 18.38it/s]
+(Worker_TP0 pid=732) Loading safetensors checkpoint shards:  24% Completed | 16/66 [00:00<00:02, 18.29it/s]
+(Worker_TP0 pid=732) Loading safetensors checkpoint shards:  27% Completed | 18/66 [00:00<00:02, 18.33it/s]
+(Worker_TP0 pid=732) Loading safetensors checkpoint shards:  30% Completed | 20/66 [00:01<00:02, 18.50it/s]
+(Worker_TP0 pid=732) Loading safetensors checkpoint shards:  33% Completed | 22/66 [00:01<00:02, 18.58it/s]
+(Worker_TP0 pid=732) Loading safetensors checkpoint shards:  36% Completed | 24/66 [00:01<00:02, 18.61it/s]
+(Worker_TP0 pid=732) Loading safetensors checkpoint shards:  39% Completed | 26/66 [00:01<00:02, 18.55it/s]
+(Worker_TP0 pid=732) Loading safetensors checkpoint shards:  42% Completed | 28/66 [00:01<00:02, 18.37it/s]
+(Worker_TP0 pid=732) Loading safetensors checkpoint shards:  45% Completed | 30/66 [00:01<00:01, 18.31it/s]
+(Worker_TP0 pid=732) Loading safetensors checkpoint shards:  48% Completed | 32/66 [00:01<00:01, 18.34it/s]
+(Worker_TP0 pid=732) Loading safetensors checkpoint shards:  52% Completed | 34/66 [00:01<00:01, 18.13it/s]
+(Worker_TP0 pid=732) Loading safetensors checkpoint shards:  55% Completed | 36/66 [00:01<00:01, 18.19it/s]
+(Worker_TP0 pid=732) Loading safetensors checkpoint shards:  58% Completed | 38/66 [00:02<00:01, 18.18it/s]
+(Worker_TP0 pid=732) Loading safetensors checkpoint shards:  61% Completed | 40/66 [00:02<00:01, 18.20it/s]
+(Worker_TP0 pid=732) Loading safetensors checkpoint shards:  64% Completed | 42/66 [00:02<00:01, 18.21it/s]
+(Worker_TP0 pid=732) Loading safetensors checkpoint shards:  67% Completed | 44/66 [00:02<00:01, 18.17it/s]
+(Worker_TP0 pid=732) Loading safetensors checkpoint shards:  70% Completed | 46/66 [00:02<00:01, 18.07it/s]
+(Worker_TP0 pid=732) Loading safetensors checkpoint shards:  73% Completed | 48/66 [00:02<00:01, 17.98it/s]
+(Worker_TP0 pid=732) Loading safetensors checkpoint shards:  76% Completed | 50/66 [00:02<00:00, 18.39it/s]
+(Worker_TP0 pid=732) Loading safetensors checkpoint shards:  79% Completed | 52/66 [00:02<00:00, 18.64it/s]
+(Worker_TP0 pid=732) Loading safetensors checkpoint shards:  82% Completed | 54/66 [00:02<00:00, 18.76it/s]
+(Worker_TP0 pid=732) Loading safetensors checkpoint shards:  85% Completed | 56/66 [00:03<00:00, 18.76it/s]
+(Worker_TP0 pid=732) Loading safetensors checkpoint shards:  88% Completed | 58/66 [00:03<00:00, 18.54it/s]
+(Worker_TP0 pid=732) Loading safetensors checkpoint shards:  91% Completed | 60/66 [00:03<00:00, 18.61it/s]
+(Worker_TP0 pid=732) Loading safetensors checkpoint shards:  94% Completed | 62/66 [00:03<00:00, 18.60it/s]
+(Worker_TP0 pid=732) Loading safetensors checkpoint shards:  97% Completed | 64/66 [00:03<00:00, 18.34it/s]
+(Worker_TP0 pid=732) Loading safetensors checkpoint shards: 100% Completed | 66/66 [00:04<00:00,  5.62it/s]
+(Worker_TP0 pid=732) Loading safetensors checkpoint shards: 100% Completed | 66/66 [00:04<00:00, 14.94it/s]
+(Worker_TP0 pid=732) 
+(Worker_TP0 pid=732) INFO 10-31 10:36:59 [default_loader.py:430] Loading weights took 4.50 seconds
+(Worker_TP0 pid=732) WARNING 10-31 10:36:59 [kv_cache.py:147] Checkpoint does not provide a q scaling factor. Setting it to k_scale. This only matters for FP8 Attention backends (flash-attn or flashinfer).
+(Worker_TP0 pid=732) WARNING 10-31 10:36:59 [kv_cache.py:164] Using KV cache scaling factor 1.0 for fp8_e4m3. If this is unintended, verify that k/v_scale scaling factors are properly set in the checkpoint.
+(Worker_TP1 pid=733) INFO 10-31 10:37:00 [model_runner.py:428] Model loading took 14.43 GiB memory and 7.672118 seconds
+(Worker_TP1 pid=733) [p41c] mamba_hybrid snap glue installed (pid=733)
+(Worker_TP1 pid=733) INFO 10-31 10:37:00 [platform.py:172] ArcXpuPlatform: wheel hook mamba_hybrid <- patches.mamba_hybrid_snap_glue OK
+(Worker_TP0 pid=732) INFO 10-31 10:37:00 [model_runner.py:428] Model loading took 14.43 GiB memory and 7.720078 seconds
+(Worker_TP0 pid=732) [p41c] mamba_hybrid snap glue installed (pid=732)
+(Worker_TP0 pid=732) INFO 10-31 10:37:00 [platform.py:172] ArcXpuPlatform: wheel hook mamba_hybrid <- patches.mamba_hybrid_snap_glue OK
+(Worker_TP1 pid=733) INFO 10-31 10:37:00 [interface.py:933] Setting attention block size to 832 tokens to ensure that attention page size is >= mamba page size.
+(Worker_TP1 pid=733) INFO 10-31 10:37:00 [interface.py:957] Padding mamba page size by 4.26% to ensure that mamba page size and attention page size are exactly equal.
+(Worker_TP0 pid=732) INFO 10-31 10:37:00 [interface.py:933] Setting attention block size to 832 tokens to ensure that attention page size is >= mamba page size.
+(Worker_TP0 pid=732) INFO 10-31 10:37:00 [interface.py:957] Padding mamba page size by 4.26% to ensure that mamba page size and attention page size are exactly equal.
+(EngineCore pid=500) INFO 10-31 10:37:00 [torch_utils.py:287] Reducing Torch threads from 32 to 1 for serving. Set OMP_NUM_THREADS in the external environment to override.
+(EngineCore pid=500) INFO 10-31 10:37:00 [platform.py:172] ArcXpuPlatform: wheel hook lmcache_connector <- patches.lmcache_hma_connector OK
+(EngineCore pid=500) INFO 10-31 10:37:00 [utils.py:320] Using LBNHC KV cache layout.
+(Worker_TP1 pid=733) [transformers] The `use_fast` parameter is deprecated and will be removed in a future version. Use `backend="torchvision"` instead of `use_fast=True`, or `backend="pil"` instead of `use_fast=False`.
+(Worker_TP0 pid=732) [transformers] The `use_fast` parameter is deprecated and will be removed in a future version. Use `backend="torchvision"` instead of `use_fast=True`, or `backend="pil"` instead of `use_fast=False`.
+(Worker_TP0 pid=732) INFO 10-31 10:37:10 [encoder_runner.py:131] Encoder cache will be initialized with a budget of 16384 tokens, and profiled with 1 image items of the maximum feature size.
+(Worker_TP1 pid=733) /opt/venv/lib/python3.12/site-packages/torch/distributed/c10d_logger.py:83: FutureWarning: `torch.distributed.all_gather_into_tensor` is deprecated. Please use `torch.distributed.all_gather_single` instead.
+(Worker_TP1 pid=733)   return func(*args, **kwargs)
+(Worker_TP0 pid=732) /opt/venv/lib/python3.12/site-packages/torch/distributed/c10d_logger.py:83: FutureWarning: `torch.distributed.all_gather_into_tensor` is deprecated. Please use `torch.distributed.all_gather_single` instead.
+(Worker_TP0 pid=732)   return func(*args, **kwargs)
+(Worker_TP0 pid=732) INFO 10-31 10:37:30 [gpu_worker.py:640] Available KV cache memory: 7.76 GiB
+(EngineCore pid=500) INFO 10-31 10:37:30 [kv_cache_utils.py:2395] XPU KV cache size: 497,422 tokens, Maximum concurrency for 262,144 tokens per request: 1.90x
+(Worker_TP1 pid=733) INFO 10-31 10:37:30 [platform.py:172] ArcXpuPlatform: wheel hook lmcache_connector <- patches.lmcache_hma_connector OK
+(Worker_TP0 pid=732) INFO 10-31 10:37:30 [platform.py:172] ArcXpuPlatform: wheel hook lmcache_connector <- patches.lmcache_hma_connector OK
+(Worker_TP1 pid=733) INFO 10-31 10:37:30 [factory.py:62] Creating v1 connector with name: LMCacheConnectorV1 and engine_id: arc-p40
+(Worker_TP0 pid=732) INFO 10-31 10:37:30 [factory.py:62] Creating v1 connector with name: LMCacheConnectorV1 and engine_id: arc-p40
+(Worker_TP1 pid=733) WARNING 10-31 10:37:30 [base.py:217] Initializing KVConnectorBase_V1. This API is experimental and subject to change in the future as we iterate the design.
+(Worker_TP1 pid=733) INFO 10-31 10:37:30 [lmcache_connector.py:97] Initializing native LMCache connector
+(Worker_TP0 pid=732) WARNING 10-31 10:37:30 [base.py:217] Initializing KVConnectorBase_V1. This API is experimental and subject to change in the future as we iterate the design.
+(Worker_TP0 pid=732) INFO 10-31 10:37:30 [lmcache_connector.py:97] Initializing native LMCache connector
+(Worker_TP1 pid=733) INFO 10-31 10:37:31 [platform.py:172] ArcXpuPlatform: wheel hook torch_ops <- patches.lmcint.lmc_twohs_transfer OK
+(Worker_TP0 pid=732) INFO 10-31 10:37:31 [platform.py:172] ArcXpuPlatform: wheel hook torch_ops <- patches.lmcint.lmc_twohs_transfer OK
+(Worker_TP1 pid=733) [32;20m[2026-10-31 10:37:31,232] LMCache INFO:[0m torch_dev=<module 'torch.xpu' from '/opt/venv/lib/python3.12/site-packages/torch/xpu/__init__.py'>, torch_device_type=xpu [3m(_device_detect.py:311:lmcache.v1.platform._device_detect)[0m
+(Worker_TP0 pid=732) [32;20m[2026-10-31 10:37:31,232] LMCache INFO:[0m torch_dev=<module 'torch.xpu' from '/opt/venv/lib/python3.12/site-packages/torch/xpu/__init__.py'>, torch_device_type=xpu [3m(_device_detect.py:311:lmcache.v1.platform._device_detect)[0m
+(Worker_TP0 pid=732) [32;20m[2026-10-31 10:37:31,235] LMCache INFO:[0m XpuDeviceOps: LMCACHE_DISABLE_PINNED_MEMORY set; alloc/free_pinned_ptr re-pinned to the pageable torch baseline (p40c law). [3m(device_ops.py:73:lmcache.v1.platform.devices.xpu.device_ops)[0m
+(Worker_TP1 pid=733) [32;20m[2026-10-31 10:37:31,235] LMCache INFO:[0m XpuDeviceOps: LMCACHE_DISABLE_PINNED_MEMORY set; alloc/free_pinned_ptr re-pinned to the pageable torch baseline (p40c law). [3m(device_ops.py:73:lmcache.v1.platform.devices.xpu.device_ops)[0m
+(Worker_TP1 pid=733) INFO 10-31 10:37:31 [platform.py:172] ArcXpuPlatform: wheel hook vllm <- patches.lmcint.lmc_kvfmt_detector OK
+(Worker_TP0 pid=732) INFO 10-31 10:37:31 [platform.py:172] ArcXpuPlatform: wheel hook vllm <- patches.lmcint.lmc_kvfmt_detector OK
+(Worker_TP1 pid=733) [32;20m[2026-10-31 10:37:31,436] LMCache INFO:[0m Discovered API module: env_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(Worker_TP0 pid=732) [32;20m[2026-10-31 10:37:31,436] LMCache INFO:[0m Discovered API module: env_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(Worker_TP1 pid=733) [32;20m[2026-10-31 10:37:31,462] LMCache INFO:[0m Discovered API module: loglevel_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(Worker_TP1 pid=733) [32;20m[2026-10-31 10:37:31,463] LMCache INFO:[0m Discovered API module: metrics_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(Worker_TP0 pid=732) [32;20m[2026-10-31 10:37:31,463] LMCache INFO:[0m Discovered API module: loglevel_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(Worker_TP0 pid=732) [32;20m[2026-10-31 10:37:31,463] LMCache INFO:[0m Discovered API module: metrics_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(Worker_TP1 pid=733) [32;20m[2026-10-31 10:37:31,466] LMCache INFO:[0m Discovered API module: periodic_thread_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(Worker_TP0 pid=732) [32;20m[2026-10-31 10:37:31,467] LMCache INFO:[0m Discovered API module: periodic_thread_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(Worker_TP1 pid=733) [32;20m[2026-10-31 10:37:31,467] LMCache INFO:[0m Discovered API module: run_script_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(Worker_TP0 pid=732) [32;20m[2026-10-31 10:37:31,468] LMCache INFO:[0m Discovered API module: run_script_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(Worker_TP1 pid=733) [32;20m[2026-10-31 10:37:31,468] LMCache INFO:[0m Discovered API module: thread_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(Worker_TP0 pid=732) [32;20m[2026-10-31 10:37:31,469] LMCache INFO:[0m Discovered API module: thread_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(Worker_TP1 pid=733) [32;20m[2026-10-31 10:37:31,475] LMCache INFO:[0m Discovered API module: backend_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(Worker_TP0 pid=732) [32;20m[2026-10-31 10:37:31,476] LMCache INFO:[0m Discovered API module: backend_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(Worker_TP1 pid=733) [32;20m[2026-10-31 10:37:31,476] LMCache INFO:[0m Discovered API module: bypass_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(Worker_TP0 pid=732) [32;20m[2026-10-31 10:37:31,477] LMCache INFO:[0m Discovered API module: bypass_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(Worker_TP1 pid=733) [32;20m[2026-10-31 10:37:31,483] LMCache INFO:[0m Discovered API module: cache_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(Worker_TP0 pid=732) [32;20m[2026-10-31 10:37:31,484] LMCache INFO:[0m Discovered API module: cache_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(Worker_TP1 pid=733) [32;20m[2026-10-31 10:37:31,492] LMCache INFO:[0m Discovered API module: chunk_statistics_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(Worker_TP0 pid=732) [32;20m[2026-10-31 10:37:31,492] LMCache INFO:[0m Discovered API module: chunk_statistics_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(Worker_TP1 pid=733) [32;20m[2026-10-31 10:37:31,494] LMCache INFO:[0m Discovered API module: conf_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(Worker_TP0 pid=732) [32;20m[2026-10-31 10:37:31,495] LMCache INFO:[0m Discovered API module: conf_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(Worker_TP1 pid=733) [32;20m[2026-10-31 10:37:31,495] LMCache INFO:[0m Discovered API module: freeze_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(Worker_TP0 pid=732) [32;20m[2026-10-31 10:37:31,496] LMCache INFO:[0m Discovered API module: freeze_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(Worker_TP1 pid=733) [32;20m[2026-10-31 10:37:31,496] LMCache INFO:[0m Discovered API module: hot_cache_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(Worker_TP0 pid=732) [32;20m[2026-10-31 10:37:31,497] LMCache INFO:[0m Discovered API module: hot_cache_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(Worker_TP1 pid=733) [32;20m[2026-10-31 10:37:31,498] LMCache INFO:[0m Discovered API module: inference_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(Worker_TP0 pid=732) [32;20m[2026-10-31 10:37:31,498] LMCache INFO:[0m Discovered API module: inference_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(Worker_TP1 pid=733) [32;20m[2026-10-31 10:37:31,502] LMCache INFO:[0m Discovered API module: load_fs_chunks_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(Worker_TP0 pid=732) [32;20m[2026-10-31 10:37:31,503] LMCache INFO:[0m Discovered API module: load_fs_chunks_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(Worker_TP1 pid=733) [32;20m[2026-10-31 10:37:31,505] LMCache INFO:[0m Discovered API module: lookup_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(Worker_TP0 pid=732) [32;20m[2026-10-31 10:37:31,505] LMCache INFO:[0m Discovered API module: lookup_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(Worker_TP1 pid=733) [32;20m[2026-10-31 10:37:31,506] LMCache INFO:[0m Discovered API module: version_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(Worker_TP0 pid=732) [32;20m[2026-10-31 10:37:31,506] LMCache INFO:[0m Discovered API module: version_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(Worker_TP1 pid=733) [32;20m[2026-10-31 10:37:31,520] LMCache INFO:[0m Discovered API module: key_stats_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(Worker_TP0 pid=732) [32;20m[2026-10-31 10:37:31,520] LMCache INFO:[0m Discovered API module: key_stats_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(Worker_TP1 pid=733) [32;20m[2026-10-31 10:37:31,522] LMCache INFO:[0m Discovered API module: worker_info_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(Worker_TP0 pid=732) [32;20m[2026-10-31 10:37:31,523] LMCache INFO:[0m Discovered API module: worker_info_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(Worker_TP1 pid=733) [utils@lmcint] src-override OK (pid=733)
+(Worker_TP0 pid=732) [utils@lmcint] src-override OK (pid=732)
+(Worker_TP1 pid=733) [vllm_v1_adapter@lmcint] src-override OK (pid=733)
+(Worker_TP1 pid=733) [lmcache_integration@lmcint] src-override OK (pid=733)
+(Worker_TP1 pid=733) [33;20m[2026-10-31 10:37:31,550] LMCache WARNING:[0m No LMCache configuration file is set. Trying to read configurations from the environment variables. [3m(utils.py:48:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.utils)[0m
+(Worker_TP1 pid=733) [33;20m[2026-10-31 10:37:31,550] LMCache WARNING:[0m You can set the configuration file through the environment variable: LMCACHE_CONFIG_FILE [3m(utils.py:52:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.utils)[0m
+(Worker_TP0 pid=732) [vllm_v1_adapter@lmcint] src-override OK (pid=732)
+(Worker_TP0 pid=732) [lmcache_integration@lmcint] src-override OK (pid=732)
+(Worker_TP0 pid=732) [33;20m[2026-10-31 10:37:31,550] LMCache WARNING:[0m No LMCache configuration file is set. Trying to read configurations from the environment variables. [3m(utils.py:48:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.utils)[0m
+(Worker_TP0 pid=732) [33;20m[2026-10-31 10:37:31,550] LMCache WARNING:[0m You can set the configuration file through the environment variable: LMCACHE_CONFIG_FILE [3m(utils.py:52:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.utils)[0m
+(Worker_TP1 pid=733) [32;20m[2026-10-31 10:37:31,550] LMCache INFO:[0m Overridden extra_config [3m(config_base.py:699:lmcache.v1.config_base)[0m
+(Worker_TP1 pid=733) [32;20m[2026-10-31 10:37:31,550] LMCache INFO:[0m Updated config extra_config from vLLM extra config: {'mamba_pool_ratio': 2} [3m(vllm_v1_adapter.py:1119:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.vllm_v1_adapter)[0m
+(Worker_TP0 pid=732) [32;20m[2026-10-31 10:37:31,550] LMCache INFO:[0m Overridden extra_config [3m(config_base.py:699:lmcache.v1.config_base)[0m
+(Worker_TP1 pid=733) [32;20m[2026-10-31 10:37:31,551] LMCache INFO:[0m Hybrid model: forcing lmcache chunk_size 1024 -> 832 (mamba tokens_per_page) [3m(vllm_v1_adapter.py:1204:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.vllm_v1_adapter)[0m
+(Worker_TP0 pid=732) [32;20m[2026-10-31 10:37:31,551] LMCache INFO:[0m Updated config extra_config from vLLM extra config: {'mamba_pool_ratio': 2} [3m(vllm_v1_adapter.py:1119:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.vllm_v1_adapter)[0m
+(Worker_TP1 pid=733) [32;20m[2026-10-31 10:37:31,551] LMCache INFO:[0m LMCache hybrid mode: attn layers=16 mamba layers=48 (fa_gidx=3 fa_gidxs=[3] mamba_gidxs=[0, 1, 2] page_bytes=851968 tpp=832) [3m(vllm_v1_adapter.py:1218:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.vllm_v1_adapter)[0m
+(Worker_TP1 pid=733) [32;20m[2026-10-31 10:37:31,551] LMCache INFO:[0m use mla: False, kv shape: (16, 2, 832, 2, 256), num_mtp_layers: 0 [3m(vllm_v1_adapter.py:634:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.vllm_v1_adapter)[0m
+(Worker_TP0 pid=732) [32;20m[2026-10-31 10:37:31,551] LMCache INFO:[0m Hybrid model: forcing lmcache chunk_size 1024 -> 832 (mamba tokens_per_page) [3m(vllm_v1_adapter.py:1204:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.vllm_v1_adapter)[0m
+(Worker_TP0 pid=732) [32;20m[2026-10-31 10:37:31,551] LMCache INFO:[0m LMCache hybrid mode: attn layers=16 mamba layers=48 (fa_gidx=3 fa_gidxs=[3] mamba_gidxs=[0, 1, 2] page_bytes=851968 tpp=832) [3m(vllm_v1_adapter.py:1218:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.vllm_v1_adapter)[0m
+(Worker_TP0 pid=732) [32;20m[2026-10-31 10:37:31,551] LMCache INFO:[0m use mla: False, kv shape: (16, 2, 832, 2, 256), num_mtp_layers: 0 [3m(vllm_v1_adapter.py:634:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.vllm_v1_adapter)[0m
+(Worker_TP0 pid=732) [32;20m[2026-10-31 10:37:31,553] LMCache INFO:[0m Creating LMCacheEngine instance vllm-instance [3m(cache_engine.py:2175:lmcache.v1.cache_engine)[0m
+(Worker_TP1 pid=733) [32;20m[2026-10-31 10:37:31,553] LMCache INFO:[0m Creating LMCacheEngine instance vllm-instance [3m(cache_engine.py:2175:lmcache.v1.cache_engine)[0m
+(Worker_TP0 pid=732) [32;20m[2026-10-31 10:37:31,554] LMCache INFO:[0m NUMA mapping for instance vllm-instance: None [3m(cache_engine.py:2178:lmcache.v1.cache_engine)[0m
+(Worker_TP1 pid=733) [32;20m[2026-10-31 10:37:31,554] LMCache INFO:[0m NUMA mapping for instance vllm-instance: None [3m(cache_engine.py:2178:lmcache.v1.cache_engine)[0m
+(Worker_TP0 pid=732) [33;20m[2026-10-31 10:37:31,554] LMCache WARNING:[0m Could not load 'builtin' from vLLM. Using builtin hash. This may cause inconsistencies in distributed caching. [3m(token_database.py:162:lmcache.v1.token_database)[0m
+(Worker_TP1 pid=733) [33;20m[2026-10-31 10:37:31,554] LMCache WARNING:[0m Could not load 'builtin' from vLLM. Using builtin hash. This may cause inconsistencies in distributed caching. [3m(token_database.py:162:lmcache.v1.token_database)[0m
+(Worker_TP0 pid=732) [32;20m[2026-10-31 10:37:31,554] LMCache INFO:[0m Initialized NONE_HASH=5313149338359954478 from vLLM (>= PR#20511) [3m(token_database.py:100:lmcache.v1.token_database)[0m
+(Worker_TP1 pid=733) [32;20m[2026-10-31 10:37:31,554] LMCache INFO:[0m Initialized NONE_HASH=5313149338359954478 from vLLM (>= PR#20511) [3m(token_database.py:100:lmcache.v1.token_database)[0m
+(Worker_TP0 pid=732) [32;20m[2026-10-31 10:37:31,554] LMCache INFO:[0m Using hash algorithm: builtin [3m(token_database.py:110:lmcache.v1.token_database)[0m
+(Worker_TP1 pid=733) [32;20m[2026-10-31 10:37:31,554] LMCache INFO:[0m Using hash algorithm: builtin [3m(token_database.py:110:lmcache.v1.token_database)[0m
+(Worker_TP0 pid=732) [32;20m[2026-10-31 10:37:31,558] LMCache INFO:[0m Creating LMCacheEngine with config: {'chunk_size': 832, 'local_cpu': True, 'max_local_cpu_size': 100.0, 'local_cpu_use_hugepages': False, 'reserve_local_cpu_size': 0.0, 'local_disk': None, 'local_disk_path_sharding': 'by_gpu', 'max_local_disk_size': 0.0, 'remote_url': None, 'remote_serde': 'naive', 'use_layerwise': False, 'save_decode_cache': True, 'pre_caching_hash_algorithm': 'builtin', 'enable_blending': False, 'blend_recompute_ratios': None, 'blend_thresholds': None, 'blend_check_layers': None, 'blend_min_tokens': 256, 'blend_special_str': ' # # ', 'retrieve_locations': None, 'store_location': None, 'enable_p2p': False, 'p2p_host': None, 'p2p_init_ports': None, 'p2p_lookup_ports': None, 'mp_host': None, 'mp_port': 5555, 'enable_controller': False, 'lmcache_instance_id': 'lmcacheengineconfig_bd902897c52847e7acece9636d389d02', 'controller_pull_url': None, 'controller_reply_url': None, 'lmcache_worker_ports': None, 'lmcache_worker_ids': None, 'lmcache_worker_heartbeat_delay_time': 10, 'lmcache_worker_heartbeat_time': None, 'enable_pd': False, 'pd_role': None, 'pd_buffer_size': None, 'pd_buffer_device': None, 'pd_peer_host': None, 'pd_peer_init_port': None, 'pd_peer_alloc_port': None, 'pd_peer_query_port': None, 'pd_proxy_host': None, 'pd_proxy_port': None, 'pd_allocation_timeout_sec': inf, 'pd_shutdown_timeout_sec': 5.0, 'pd_condition_poll_interval_sec': 0.005, 'pd_max_prefill_len': 0, 'pd_backend_mode': 'async', 'pd_skip_proxy_notification': False, 'pd_bidirectional': False, 'transfer_channel': None, 'nixl_backends': None, 'nixl_buffer_size': None, 'nixl_buffer_device': None, 'gds_path': None, 'gds_path_sharding': 'by_gpu', 'gds_buffer_size': None, 'maru_path': None, 'maru_pool_size': 4.0, 'use_gds': True, 'gds_backend': 'cufile', 'audit_actual_remote_url': None, 'internal_api_server_host': '127.0.0.1', 'extra_config': {'mamba_pool_ratio': 2}, 'save_unfull_chunk': False, 'blocking_timeout_secs': 10, 'external_lookup_client': None, 'py_enable_gc': True, 'cache_policy': 'LRU', 'numa_mode': None, 'enable_async_loading': False, 'internal_api_server_enabled': False, 'internal_api_server_port_start': 6999, 'priority_limit': None, 'internal_api_server_include_index_list': None, 'internal_api_server_socket_path_prefix': None, 'runtime_plugin_locations': None, 'storage_plugins': None, 'remote_storage_plugins': None, 'lookup_timeout_ms': 3000, 'min_retrieve_tokens': 1024, 'hit_miss_ratio': None, 'lookup_server_worker_ids': None, 'enable_scheduler_bypass_lookup': False, 'script_allowed_imports': None, 'run_script_api_enabled': False, 'enable_lazy_memory_allocator': False, 'lazy_memory_initial_ratio': 0.2, 'lazy_memory_expand_trigger_ratio': 0.5, 'lazy_memory_step_ratio': 0.1, 'lazy_memory_safe_size': 0.0, 'enable_chunk_statistics': False, 'chunk_statistics_auto_start_statistics': False, 'chunk_statistics_auto_exit_timeout_hours': 0.0, 'chunk_statistics_auto_exit_target_unique_chunks': 0, 'chunk_statistics_strategy': 'memory_bloom_filter', 'enable_kv_events': False, 'use_gpu_connector_v3': False, 'pin_timeout_sec': 300, 'pin_check_interval_sec': 30, 'remote_config_url': None, 'app_id': None, 'enable_hidden_state_cache': False, 'max_hidden_state_cpu_size': 2.0, 'hidden_state_layers': None, 'hidden_states_retrieve_mode': 'prefix_strict'} [3m(cache_engine.py:109:lmcache.v1.cache_engine)[0m
+(Worker_TP0 pid=732) [32;20m[2026-10-31 10:37:31,559] LMCache INFO:[0m LMCacheWorker is not initialized (related configs: enable_controller: False, role: vllm, worker_id: 0, worker_ids: [0, 1]). [3m(cache_engine.py:159:lmcache.v1.cache_engine)[0m
+(Worker_TP0 pid=732) [32;20m[2026-10-31 10:37:31,559] LMCache INFO:[0m KV events are disabled. [3m(cache_engine.py:188:lmcache.v1.cache_engine)[0m
+(Worker_TP0 pid=732) [32;20m[2026-10-31 10:37:31,559] LMCache INFO:[0m PeriodicThread PinMonitor-thread entering main loop (interval=30.0s) [3m(periodic_thread.py:304:lmcache.v1.periodic_thread)[0m
+(Worker_TP0 pid=732) [32;20m[2026-10-31 10:37:31,559] LMCache INFO:[0m Started PeriodicThread: PinMonitor-thread (level=critical, interval=30.0s, init_wait=0.0s) [3m(periodic_thread.py:248:lmcache.v1.periodic_thread)[0m
+(Worker_TP0 pid=732) [32;20m[2026-10-31 10:37:31,560] LMCache INFO:[0m PinMonitor started [3m(pin_monitor.py:223:lmcache.v1.pin_monitor)[0m
+(Worker_TP1 pid=733) [32;20m[2026-10-31 10:37:31,559] LMCache INFO:[0m Creating LMCacheEngine with config: {'chunk_size': 832, 'local_cpu': True, 'max_local_cpu_size': 100.0, 'local_cpu_use_hugepages': False, 'reserve_local_cpu_size': 0.0, 'local_disk': None, 'local_disk_path_sharding': 'by_gpu', 'max_local_disk_size': 0.0, 'remote_url': None, 'remote_serde': 'naive', 'use_layerwise': False, 'save_decode_cache': True, 'pre_caching_hash_algorithm': 'builtin', 'enable_blending': False, 'blend_recompute_ratios': None, 'blend_thresholds': None, 'blend_check_layers': None, 'blend_min_tokens': 256, 'blend_special_str': ' # # ', 'retrieve_locations': None, 'store_location': None, 'enable_p2p': False, 'p2p_host': None, 'p2p_init_ports': None, 'p2p_lookup_ports': None, 'mp_host': None, 'mp_port': 5555, 'enable_controller': False, 'lmcache_instance_id': 'lmcacheengineconfig_caf92f26469447e198fa790a8a023ab4', 'controller_pull_url': None, 'controller_reply_url': None, 'lmcache_worker_ports': None, 'lmcache_worker_ids': None, 'lmcache_worker_heartbeat_delay_time': 10, 'lmcache_worker_heartbeat_time': None, 'enable_pd': False, 'pd_role': None, 'pd_buffer_size': None, 'pd_buffer_device': None, 'pd_peer_host': None, 'pd_peer_init_port': None, 'pd_peer_alloc_port': None, 'pd_peer_query_port': None, 'pd_proxy_host': None, 'pd_proxy_port': None, 'pd_allocation_timeout_sec': inf, 'pd_shutdown_timeout_sec': 5.0, 'pd_condition_poll_interval_sec': 0.005, 'pd_max_prefill_len': 0, 'pd_backend_mode': 'async', 'pd_skip_proxy_notification': False, 'pd_bidirectional': False, 'transfer_channel': None, 'nixl_backends': None, 'nixl_buffer_size': None, 'nixl_buffer_device': None, 'gds_path': None, 'gds_path_sharding': 'by_gpu', 'gds_buffer_size': None, 'maru_path': None, 'maru_pool_size': 4.0, 'use_gds': True, 'gds_backend': 'cufile', 'audit_actual_remote_url': None, 'internal_api_server_host': '127.0.0.1', 'extra_config': {'mamba_pool_ratio': 2}, 'save_unfull_chunk': False, 'blocking_timeout_secs': 10, 'external_lookup_client': None, 'py_enable_gc': True, 'cache_policy': 'LRU', 'numa_mode': None, 'enable_async_loading': False, 'internal_api_server_enabled': False, 'internal_api_server_port_start': 6999, 'priority_limit': None, 'internal_api_server_include_index_list': None, 'internal_api_server_socket_path_prefix': None, 'runtime_plugin_locations': None, 'storage_plugins': None, 'remote_storage_plugins': None, 'lookup_timeout_ms': 3000, 'min_retrieve_tokens': 1024, 'hit_miss_ratio': None, 'lookup_server_worker_ids': None, 'enable_scheduler_bypass_lookup': False, 'script_allowed_imports': None, 'run_script_api_enabled': False, 'enable_lazy_memory_allocator': False, 'lazy_memory_initial_ratio': 0.2, 'lazy_memory_expand_trigger_ratio': 0.5, 'lazy_memory_step_ratio': 0.1, 'lazy_memory_safe_size': 0.0, 'enable_chunk_statistics': False, 'chunk_statistics_auto_start_statistics': False, 'chunk_statistics_auto_exit_timeout_hours': 0.0, 'chunk_statistics_auto_exit_target_unique_chunks': 0, 'chunk_statistics_strategy': 'memory_bloom_filter', 'enable_kv_events': False, 'use_gpu_connector_v3': False, 'pin_timeout_sec': 300, 'pin_check_interval_sec': 30, 'remote_config_url': None, 'app_id': None, 'enable_hidden_state_cache': False, 'max_hidden_state_cpu_size': 2.0, 'hidden_state_layers': None, 'hidden_states_retrieve_mode': 'prefix_strict'} [3m(cache_engine.py:109:lmcache.v1.cache_engine)[0m
+(Worker_TP1 pid=733) [32;20m[2026-10-31 10:37:31,560] LMCache INFO:[0m LMCacheWorker is not initialized (related configs: enable_controller: False, role: vllm, worker_id: 1, worker_ids: [0, 1]). [3m(cache_engine.py:159:lmcache.v1.cache_engine)[0m
+(Worker_TP1 pid=733) [32;20m[2026-10-31 10:37:31,561] LMCache INFO:[0m KV events are disabled. [3m(cache_engine.py:188:lmcache.v1.cache_engine)[0m
+(Worker_TP1 pid=733) [32;20m[2026-10-31 10:37:31,561] LMCache INFO:[0m PeriodicThread PinMonitor-thread entering main loop (interval=30.0s) [3m(periodic_thread.py:304:lmcache.v1.periodic_thread)[0m
+(Worker_TP1 pid=733) [32;20m[2026-10-31 10:37:31,562] LMCache INFO:[0m Started PeriodicThread: PinMonitor-thread (level=critical, interval=30.0s, init_wait=0.0s) [3m(periodic_thread.py:248:lmcache.v1.periodic_thread)[0m
+(Worker_TP1 pid=733) [32;20m[2026-10-31 10:37:31,562] LMCache INFO:[0m PinMonitor started [3m(pin_monitor.py:223:lmcache.v1.pin_monitor)[0m
+(Worker_TP0 pid=732) [32;20m[2026-10-31 10:37:32,077] LMCache INFO:[0m Mamba engine CPU pool scaled 100 GB -> 50 GB (ratio=2, page_bytes=851968, tokens_per_page=832 layers=48) [3m(vllm_v1_adapter.py:1008:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.vllm_v1_adapter)[0m
+(Worker_TP0 pid=732) [32;20m[2026-10-31 10:37:32,077] LMCache INFO:[0m Creating LMCacheEngine instance vllm-instance-mamba [3m(cache_engine.py:2175:lmcache.v1.cache_engine)[0m
+(Worker_TP0 pid=732) [32;20m[2026-10-31 10:37:32,077] LMCache INFO:[0m NUMA mapping for instance vllm-instance-mamba: None [3m(cache_engine.py:2178:lmcache.v1.cache_engine)[0m
+(Worker_TP0 pid=732) [33;20m[2026-10-31 10:37:32,078] LMCache WARNING:[0m Could not load 'builtin' from vLLM. Using builtin hash. This may cause inconsistencies in distributed caching. [3m(token_database.py:162:lmcache.v1.token_database)[0m
+(Worker_TP0 pid=732) [32;20m[2026-10-31 10:37:32,078] LMCache INFO:[0m Initialized NONE_HASH=5313149338359954478 from vLLM (>= PR#20511) [3m(token_database.py:100:lmcache.v1.token_database)[0m
+(Worker_TP0 pid=732) [32;20m[2026-10-31 10:37:32,078] LMCache INFO:[0m Using hash algorithm: builtin [3m(token_database.py:110:lmcache.v1.token_database)[0m
+(Worker_TP0 pid=732) [32;20m[2026-10-31 10:37:32,079] LMCache INFO:[0m Creating LMCacheEngine with config: {'chunk_size': 832, 'local_cpu': True, 'max_local_cpu_size': 50, 'local_cpu_use_hugepages': False, 'reserve_local_cpu_size': 0.0, 'local_disk': None, 'local_disk_path_sharding': 'by_gpu', 'max_local_disk_size': 0, 'remote_url': None, 'remote_serde': 'naive', 'use_layerwise': False, 'save_decode_cache': True, 'pre_caching_hash_algorithm': 'builtin', 'enable_blending': False, 'blend_recompute_ratios': None, 'blend_thresholds': None, 'blend_check_layers': None, 'blend_min_tokens': 256, 'blend_special_str': ' # # ', 'retrieve_locations': None, 'store_location': None, 'enable_p2p': False, 'p2p_host': None, 'p2p_init_ports': None, 'p2p_lookup_ports': None, 'mp_host': None, 'mp_port': 5555, 'enable_controller': False, 'lmcache_instance_id': 'lmcacheengineconfig_bd902897c52847e7acece9636d389d02', 'controller_pull_url': None, 'controller_reply_url': None, 'lmcache_worker_ports': None, 'lmcache_worker_ids': None, 'lmcache_worker_heartbeat_delay_time': 10, 'lmcache_worker_heartbeat_time': None, 'enable_pd': False, 'pd_role': None, 'pd_buffer_size': None, 'pd_buffer_device': None, 'pd_peer_host': None, 'pd_peer_init_port': None, 'pd_peer_alloc_port': None, 'pd_peer_query_port': None, 'pd_proxy_host': None, 'pd_proxy_port': None, 'pd_allocation_timeout_sec': inf, 'pd_shutdown_timeout_sec': 5.0, 'pd_condition_poll_interval_sec': 0.005, 'pd_max_prefill_len': 0, 'pd_backend_mode': 'async', 'pd_skip_proxy_notification': False, 'pd_bidirectional': False, 'transfer_channel': None, 'nixl_backends': None, 'nixl_buffer_size': None, 'nixl_buffer_device': None, 'gds_path': None, 'gds_path_sharding': 'by_gpu', 'gds_buffer_size': None, 'maru_path': None, 'maru_pool_size': 4.0, 'use_gds': True, 'gds_backend': 'cufile', 'audit_actual_remote_url': None, 'internal_api_server_host': '127.0.0.1', 'extra_config': {'mamba_pool_ratio': 2}, 'save_unfull_chunk': False, 'blocking_timeout_secs': 10, 'external_lookup_client': None, 'py_enable_gc': True, 'cache_policy': 'LRU', 'numa_mode': None, 'enable_async_loading': False, 'internal_api_server_enabled': False, 'internal_api_server_port_start': 6999, 'priority_limit': None, 'internal_api_server_include_index_list': None, 'internal_api_server_socket_path_prefix': None, 'runtime_plugin_locations': None, 'storage_plugins': None, 'remote_storage_plugins': None, 'lookup_timeout_ms': 3000, 'min_retrieve_tokens': 1024, 'hit_miss_ratio': None, 'lookup_server_worker_ids': None, 'enable_scheduler_bypass_lookup': False, 'script_allowed_imports': None, 'run_script_api_enabled': False, 'enable_lazy_memory_allocator': False, 'lazy_memory_initial_ratio': 0.2, 'lazy_memory_expand_trigger_ratio': 0.5, 'lazy_memory_step_ratio': 0.1, 'lazy_memory_safe_size': 0.0, 'enable_chunk_statistics': False, 'chunk_statistics_auto_start_statistics': False, 'chunk_statistics_auto_exit_timeout_hours': 0.0, 'chunk_statistics_auto_exit_target_unique_chunks': 0, 'chunk_statistics_strategy': 'memory_bloom_filter', 'enable_kv_events': False, 'use_gpu_connector_v3': False, 'pin_timeout_sec': 300, 'pin_check_interval_sec': 30, 'remote_config_url': None, 'app_id': None, 'enable_hidden_state_cache': False, 'max_hidden_state_cpu_size': 2.0, 'hidden_state_layers': None, 'hidden_states_retrieve_mode': 'prefix_strict'} [3m(cache_engine.py:109:lmcache.v1.cache_engine)[0m
+(Worker_TP0 pid=732) [32;20m[2026-10-31 10:37:32,080] LMCache INFO:[0m LMCacheWorker is not initialized (related configs: enable_controller: False, role: vllm, worker_id: 0, worker_ids: [0, 1]). [3m(cache_engine.py:159:lmcache.v1.cache_engine)[0m
+(Worker_TP0 pid=732) [32;20m[2026-10-31 10:37:32,080] LMCache INFO:[0m KV events are disabled. [3m(cache_engine.py:188:lmcache.v1.cache_engine)[0m
+(Worker_TP1 pid=733) [32;20m[2026-10-31 10:37:32,082] LMCache INFO:[0m Mamba engine CPU pool scaled 100 GB -> 50 GB (ratio=2, page_bytes=851968, tokens_per_page=832 layers=48) [3m(vllm_v1_adapter.py:1008:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.vllm_v1_adapter)[0m
+(Worker_TP1 pid=733) [32;20m[2026-10-31 10:37:32,082] LMCache INFO:[0m Creating LMCacheEngine instance vllm-instance-mamba [3m(cache_engine.py:2175:lmcache.v1.cache_engine)[0m
+(Worker_TP1 pid=733) [32;20m[2026-10-31 10:37:32,082] LMCache INFO:[0m NUMA mapping for instance vllm-instance-mamba: None [3m(cache_engine.py:2178:lmcache.v1.cache_engine)[0m
+(Worker_TP1 pid=733) [33;20m[2026-10-31 10:37:32,082] LMCache WARNING:[0m Could not load 'builtin' from vLLM. Using builtin hash. This may cause inconsistencies in distributed caching. [3m(token_database.py:162:lmcache.v1.token_database)[0m
+(Worker_TP1 pid=733) [32;20m[2026-10-31 10:37:32,082] LMCache INFO:[0m Initialized NONE_HASH=5313149338359954478 from vLLM (>= PR#20511) [3m(token_database.py:100:lmcache.v1.token_database)[0m
+(Worker_TP1 pid=733) [32;20m[2026-10-31 10:37:32,082] LMCache INFO:[0m Using hash algorithm: builtin [3m(token_database.py:110:lmcache.v1.token_database)[0m
+(Worker_TP1 pid=733) [32;20m[2026-10-31 10:37:32,084] LMCache INFO:[0m Creating LMCacheEngine with config: {'chunk_size': 832, 'local_cpu': True, 'max_local_cpu_size': 50, 'local_cpu_use_hugepages': False, 'reserve_local_cpu_size': 0.0, 'local_disk': None, 'local_disk_path_sharding': 'by_gpu', 'max_local_disk_size': 0, 'remote_url': None, 'remote_serde': 'naive', 'use_layerwise': False, 'save_decode_cache': True, 'pre_caching_hash_algorithm': 'builtin', 'enable_blending': False, 'blend_recompute_ratios': None, 'blend_thresholds': None, 'blend_check_layers': None, 'blend_min_tokens': 256, 'blend_special_str': ' # # ', 'retrieve_locations': None, 'store_location': None, 'enable_p2p': False, 'p2p_host': None, 'p2p_init_ports': None, 'p2p_lookup_ports': None, 'mp_host': None, 'mp_port': 5555, 'enable_controller': False, 'lmcache_instance_id': 'lmcacheengineconfig_caf92f26469447e198fa790a8a023ab4', 'controller_pull_url': None, 'controller_reply_url': None, 'lmcache_worker_ports': None, 'lmcache_worker_ids': None, 'lmcache_worker_heartbeat_delay_time': 10, 'lmcache_worker_heartbeat_time': None, 'enable_pd': False, 'pd_role': None, 'pd_buffer_size': None, 'pd_buffer_device': None, 'pd_peer_host': None, 'pd_peer_init_port': None, 'pd_peer_alloc_port': None, 'pd_peer_query_port': None, 'pd_proxy_host': None, 'pd_proxy_port': None, 'pd_allocation_timeout_sec': inf, 'pd_shutdown_timeout_sec': 5.0, 'pd_condition_poll_interval_sec': 0.005, 'pd_max_prefill_len': 0, 'pd_backend_mode': 'async', 'pd_skip_proxy_notification': False, 'pd_bidirectional': False, 'transfer_channel': None, 'nixl_backends': None, 'nixl_buffer_size': None, 'nixl_buffer_device': None, 'gds_path': None, 'gds_path_sharding': 'by_gpu', 'gds_buffer_size': None, 'maru_path': None, 'maru_pool_size': 4.0, 'use_gds': True, 'gds_backend': 'cufile', 'audit_actual_remote_url': None, 'internal_api_server_host': '127.0.0.1', 'extra_config': {'mamba_pool_ratio': 2}, 'save_unfull_chunk': False, 'blocking_timeout_secs': 10, 'external_lookup_client': None, 'py_enable_gc': True, 'cache_policy': 'LRU', 'numa_mode': None, 'enable_async_loading': False, 'internal_api_server_enabled': False, 'internal_api_server_port_start': 6999, 'priority_limit': None, 'internal_api_server_include_index_list': None, 'internal_api_server_socket_path_prefix': None, 'runtime_plugin_locations': None, 'storage_plugins': None, 'remote_storage_plugins': None, 'lookup_timeout_ms': 3000, 'min_retrieve_tokens': 1024, 'hit_miss_ratio': None, 'lookup_server_worker_ids': None, 'enable_scheduler_bypass_lookup': False, 'script_allowed_imports': None, 'run_script_api_enabled': False, 'enable_lazy_memory_allocator': False, 'lazy_memory_initial_ratio': 0.2, 'lazy_memory_expand_trigger_ratio': 0.5, 'lazy_memory_step_ratio': 0.1, 'lazy_memory_safe_size': 0.0, 'enable_chunk_statistics': False, 'chunk_statistics_auto_start_statistics': False, 'chunk_statistics_auto_exit_timeout_hours': 0.0, 'chunk_statistics_auto_exit_target_unique_chunks': 0, 'chunk_statistics_strategy': 'memory_bloom_filter', 'enable_kv_events': False, 'use_gpu_connector_v3': False, 'pin_timeout_sec': 300, 'pin_check_interval_sec': 30, 'remote_config_url': None, 'app_id': None, 'enable_hidden_state_cache': False, 'max_hidden_state_cpu_size': 2.0, 'hidden_state_layers': None, 'hidden_states_retrieve_mode': 'prefix_strict'} [3m(cache_engine.py:109:lmcache.v1.cache_engine)[0m
+(Worker_TP1 pid=733) [32;20m[2026-10-31 10:37:32,084] LMCache INFO:[0m LMCacheWorker is not initialized (related configs: enable_controller: False, role: vllm, worker_id: 1, worker_ids: [0, 1]). [3m(cache_engine.py:159:lmcache.v1.cache_engine)[0m
+(Worker_TP1 pid=733) [32;20m[2026-10-31 10:37:32,084] LMCache INFO:[0m KV events are disabled. [3m(cache_engine.py:188:lmcache.v1.cache_engine)[0m
+(Worker_TP0 pid=732) [32;20m[2026-10-31 10:37:32,596] LMCache INFO:[0m lmcache lookup server started [3m(lmcache_lookup_client.py:270:lmcache.v1.lookup_client.lmcache_lookup_client)[0m
+(Worker_TP0 pid=732) [32;20m[2026-10-31 10:37:32,596] LMCache INFO:[0m lmcache lookup server started [3m(lmcache_lookup_client.py:270:lmcache.v1.lookup_client.lmcache_lookup_client)[0m
+(Worker_TP0 pid=732) [32;20m[2026-10-31 10:37:32,599] LMCache INFO:[0m Internal API server disabled. internal_api_server_enabled=False, port_offset=1, port=7000, socket_path=None, include_index_list=None [3m(api_server.py:67:lmcache.v1.internal_api_server.api_server)[0m
+(Worker_TP0 pid=732) [32;20m[2026-10-31 10:37:32,599] LMCache INFO:[0m LMCache initialized for role KVConnectorRole.WORKER with version 0.5.6-NA, vllm version 0.30.0, lmcache cache_engine metadata: LMCacheMetadata(model_name='/models/target', world_size=2, local_world_size=2, worker_id=0, local_worker_id=0, kv_dtype=torch.uint8, kv_shape=(16, 2, 832, 2, 256), use_mla=False, role='vllm', served_model_name='qwen3.8-27b-fp8', chunk_size=832, kv_layer_groups_manager=None, engine_id='arc-p40', kv_connector_extra_config={'use_native': True, 'lmcache.extra_config': {'mamba_pool_ratio': 2}}) [3m(vllm_v1_adapter.py:1477:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.vllm_v1_adapter)[0m
+(Worker_TP1 pid=733) [32;20m[2026-10-31 10:37:32,600] LMCache INFO:[0m lmcache lookup server started [3m(lmcache_lookup_client.py:270:lmcache.v1.lookup_client.lmcache_lookup_client)[0m
+(Worker_TP1 pid=733) [32;20m[2026-10-31 10:37:32,601] LMCache INFO:[0m lmcache lookup server started [3m(lmcache_lookup_client.py:270:lmcache.v1.lookup_client.lmcache_lookup_client)[0m
+(Worker_TP1 pid=733) [32;20m[2026-10-31 10:37:32,603] LMCache INFO:[0m Internal API server disabled. internal_api_server_enabled=False, port_offset=2, port=7001, socket_path=None, include_index_list=None [3m(api_server.py:67:lmcache.v1.internal_api_server.api_server)[0m
+(Worker_TP1 pid=733) [32;20m[2026-10-31 10:37:32,603] LMCache INFO:[0m LMCache initialized for role KVConnectorRole.WORKER with version 0.5.6-NA, vllm version 0.30.0, lmcache cache_engine metadata: LMCacheMetadata(model_name='/models/target', world_size=2, local_world_size=2, worker_id=1, local_worker_id=1, kv_dtype=torch.uint8, kv_shape=(16, 2, 832, 2, 256), use_mla=False, role='vllm', served_model_name='qwen3.8-27b-fp8', chunk_size=832, kv_layer_groups_manager=None, engine_id='arc-p40', kv_connector_extra_config={'use_native': True, 'lmcache.extra_config': {'mamba_pool_ratio': 2}}) [3m(vllm_v1_adapter.py:1477:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.vllm_v1_adapter)[0m
+(Worker_TP0 pid=732) [32;20m[2026-10-31 10:37:32,694] LMCache INFO:[0m Registering KV caches [3m(vllm_v1_adapter.py:1578:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.vllm_v1_adapter)[0m
+(Worker_TP0 pid=732) [32;20m[2026-10-31 10:37:32,695] LMCache INFO:[0m Hybrid register_kv_caches: 16 attn tensors (engine expects 16 layers) [3m(vllm_v1_adapter.py:1599:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.vllm_v1_adapter)[0m
+(Worker_TP0 pid=732) [32;20m[2026-10-31 10:37:32,695] LMCache INFO:[0m Post initializing LMCacheEngine [3m(cache_engine.py:307:lmcache.v1.cache_engine)[0m
+(Worker_TP0 pid=732) [32;20m[2026-10-31 10:37:32,695] LMCache INFO:[0m Initialize storage manager on rank 0, use layerwise: False,save only first rank: False [3m(cache_engine.py:319:lmcache.v1.cache_engine)[0m
+(Worker_TP1 pid=733) [32;20m[2026-10-31 10:37:32,695] LMCache INFO:[0m Registering KV caches [3m(vllm_v1_adapter.py:1578:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.vllm_v1_adapter)[0m
+(Worker_TP1 pid=733) [32;20m[2026-10-31 10:37:32,696] LMCache INFO:[0m Hybrid register_kv_caches: 16 attn tensors (engine expects 16 layers) [3m(vllm_v1_adapter.py:1599:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.vllm_v1_adapter)[0m
+(Worker_TP1 pid=733) [32;20m[2026-10-31 10:37:32,696] LMCache INFO:[0m Post initializing LMCacheEngine [3m(cache_engine.py:307:lmcache.v1.cache_engine)[0m
+(Worker_TP1 pid=733) [32;20m[2026-10-31 10:37:32,696] LMCache INFO:[0m Initialize storage manager on rank 1, use layerwise: False,save only first rank: False [3m(cache_engine.py:319:lmcache.v1.cache_engine)[0m
+(Worker_TP0 pid=732) [32;20m[2026-10-31 10:37:32,696] LMCache INFO:[0m Initializing LRUCachePolicy [3m(lru.py:22:lmcache.v1.storage_backend.cache_policy.lru)[0m
+(Worker_TP0 pid=732) [32;20m[2026-10-31 10:37:32,696] LMCache INFO:[0m NUMA mapping None [3m(local_cpu_backend.py:399:lmcache.v1.storage_backend.local_cpu_backend)[0m
+(Worker_TP0 pid=732) [32;20m[2026-10-31 10:37:32,696] LMCache INFO:[0m Pinned host allocations disabled via LMCACHE_DISABLE_PINNED_MEMORY; using pageable memory. [3m(mem_alloc.py:70:lmcache.v1.platform.torch_ops.mem_alloc)[0m
+(Worker_TP1 pid=733) [32;20m[2026-10-31 10:37:32,697] LMCache INFO:[0m Initializing LRUCachePolicy [3m(lru.py:22:lmcache.v1.storage_backend.cache_policy.lru)[0m
+(Worker_TP1 pid=733) [32;20m[2026-10-31 10:37:32,697] LMCache INFO:[0m NUMA mapping None [3m(local_cpu_backend.py:399:lmcache.v1.storage_backend.local_cpu_backend)[0m
+(Worker_TP1 pid=733) [32;20m[2026-10-31 10:37:32,698] LMCache INFO:[0m Pinned host allocations disabled via LMCACHE_DISABLE_PINNED_MEMORY; using pageable memory. [3m(mem_alloc.py:70:lmcache.v1.platform.torch_ops.mem_alloc)[0m
+(Worker_TP0 pid=732) [33;20m[2026-10-31 10:37:40,745] LMCache WARNING:[0m Controller message sender is not initialized [3m(local_cpu_backend.py:105:lmcache.v1.storage_backend.local_cpu_backend)[0m
+(Worker_TP0 pid=732) [32;20m[2026-10-31 10:37:40,745] LMCache INFO:[0m Created backend: LocalCPUBackend (LocalCPUBackend) [3m(storage_manager.py:1298:lmcache.v1.storage_backend.storage_manager)[0m
+(Worker_TP0 pid=732) [32;20m[2026-10-31 10:37:40,747] LMCache INFO:[0m Mamba dtype page override: spec page_size_bytes 851968 -> true 817152 (pool padded 851968, storage 8328839168 / 9776 blocks) [3m(vllm_v1_adapter.py:1665:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.vllm_v1_adapter)[0m
+(Worker_TP0 pid=732) [32;20m[2026-10-31 10:37:40,747] LMCache INFO:[0m Mamba pool: storage 8328839168 bytes, num_blocks 9776, page_bytes 851968 (spec page_size_bytes 817152, tpp 832) [3m(vllm_v1_adapter.py:1696:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.vllm_v1_adapter)[0m
+(Worker_TP0 pid=732) [32;20m[2026-10-31 10:37:40,747] LMCache INFO:[0m Post initializing LMCacheEngine [3m(cache_engine.py:307:lmcache.v1.cache_engine)[0m
+(Worker_TP0 pid=732) [32;20m[2026-10-31 10:37:40,748] LMCache INFO:[0m Initialize storage manager on rank 0, use layerwise: False,save only first rank: False [3m(cache_engine.py:319:lmcache.v1.cache_engine)[0m
+(Worker_TP0 pid=732) [32;20m[2026-10-31 10:37:40,749] LMCache INFO:[0m Initializing LRUCachePolicy [3m(lru.py:22:lmcache.v1.storage_backend.cache_policy.lru)[0m
+(Worker_TP0 pid=732) [32;20m[2026-10-31 10:37:40,749] LMCache INFO:[0m NUMA mapping None [3m(local_cpu_backend.py:399:lmcache.v1.storage_backend.local_cpu_backend)[0m
+(Worker_TP1 pid=733) [33;20m[2026-10-31 10:37:41,797] LMCache WARNING:[0m Controller message sender is not initialized [3m(local_cpu_backend.py:105:lmcache.v1.storage_backend.local_cpu_backend)[0m
+(Worker_TP1 pid=733) [32;20m[2026-10-31 10:37:41,798] LMCache INFO:[0m Created backend: LocalCPUBackend (LocalCPUBackend) [3m(storage_manager.py:1298:lmcache.v1.storage_backend.storage_manager)[0m
+(Worker_TP1 pid=733) [32;20m[2026-10-31 10:37:41,799] LMCache INFO:[0m Mamba dtype page override: spec page_size_bytes 851968 -> true 817152 (pool padded 851968, storage 8328839168 / 9776 blocks) [3m(vllm_v1_adapter.py:1665:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.vllm_v1_adapter)[0m
+(Worker_TP1 pid=733) [32;20m[2026-10-31 10:37:41,799] LMCache INFO:[0m Mamba pool: storage 8328839168 bytes, num_blocks 9776, page_bytes 851968 (spec page_size_bytes 817152, tpp 832) [3m(vllm_v1_adapter.py:1696:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.vllm_v1_adapter)[0m
+(Worker_TP1 pid=733) [32;20m[2026-10-31 10:37:41,799] LMCache INFO:[0m Post initializing LMCacheEngine [3m(cache_engine.py:307:lmcache.v1.cache_engine)[0m
+(Worker_TP1 pid=733) [32;20m[2026-10-31 10:37:41,799] LMCache INFO:[0m Initialize storage manager on rank 1, use layerwise: False,save only first rank: False [3m(cache_engine.py:319:lmcache.v1.cache_engine)[0m
+(Worker_TP1 pid=733) [32;20m[2026-10-31 10:37:41,801] LMCache INFO:[0m Initializing LRUCachePolicy [3m(lru.py:22:lmcache.v1.storage_backend.cache_policy.lru)[0m
+(Worker_TP1 pid=733) [32;20m[2026-10-31 10:37:41,801] LMCache INFO:[0m NUMA mapping None [3m(local_cpu_backend.py:399:lmcache.v1.storage_backend.local_cpu_backend)[0m
+(Worker_TP0 pid=732) [33;20m[2026-10-31 10:37:44,673] LMCache WARNING:[0m Controller message sender is not initialized [3m(local_cpu_backend.py:105:lmcache.v1.storage_backend.local_cpu_backend)[0m
+(Worker_TP0 pid=732) [32;20m[2026-10-31 10:37:44,674] LMCache INFO:[0m Created backend: LocalCPUBackend (LocalCPUBackend) [3m(storage_manager.py:1298:lmcache.v1.storage_backend.storage_manager)[0m
+(Worker_TP1 pid=733) [33;20m[2026-10-31 10:37:46,015] LMCache WARNING:[0m Controller message sender is not initialized [3m(local_cpu_backend.py:105:lmcache.v1.storage_backend.local_cpu_backend)[0m
+(Worker_TP1 pid=733) [32;20m[2026-10-31 10:37:46,015] LMCache INFO:[0m Created backend: LocalCPUBackend (LocalCPUBackend) [3m(storage_manager.py:1298:lmcache.v1.storage_backend.storage_manager)[0m
+(Worker_TP0 pid=732) INFO 10-31 10:37:46 [kernel_warmup.py:172] JIT kernel warmup starting.
+(Worker_TP0 pid=732) INFO 10-31 10:37:46 [kernel_warmup.py:185] JIT kernel warmup finished in 0.00s.
+(Worker_TP0 pid=732) INFO 10-31 10:37:46 [qwen_triton_warmup.py:294] Warming up Qwen GDN Triton kernels for model_type=qwen3_5_text.
+(Worker_TP1 pid=733) INFO 10-31 10:37:46 [kernel_warmup.py:172] JIT kernel warmup starting.
+(Worker_TP1 pid=733) INFO 10-31 10:37:46 [kernel_warmup.py:185] JIT kernel warmup finished in 0.00s.
+(Worker_TP1 pid=733) INFO 10-31 10:37:46 [qwen_triton_warmup.py:294] Warming up Qwen GDN Triton kernels for model_type=qwen3_5_text.
+(Worker_TP0 pid=732) INFO 10-31 10:37:50 [qwen_vl_triton_warmup.py:57] Warmed position embedding and vision rotary kernels on grids=[(1, 16, 16), (1, 16, 2), (1, 2, 16), (1, 2, 2)].
+(Worker_TP1 pid=733) INFO 10-31 10:37:50 [qwen_vl_triton_warmup.py:57] Warmed position embedding and vision rotary kernels on grids=[(1, 16, 16), (1, 16, 2), (1, 2, 16), (1, 2, 2)].
+(Worker_TP0 pid=732) INFO 10-31 10:37:50 [qwen_vl_triton_warmup.py:98] Warmed M-RoPE Triton kernels.
+(Worker_TP1 pid=733) INFO 10-31 10:37:51 [qwen_vl_triton_warmup.py:98] Warmed M-RoPE Triton kernels.
+(Worker_TP1 pid=733) [p41c] wrap live (pid=733 bs=832 gids=3)
+(Worker_TP0 pid=732) [p41c] wrap live (pid=732 bs=832 gids=3)
+(Worker_TP0 pid=732) /opt/venv/lib/python3.12/site-packages/torch/distributed/c10d_logger.py:83: FutureWarning: `torch.distributed.all_gather_into_tensor` is deprecated. Please use `torch.distributed.all_gather_single` instead.
+(Worker_TP0 pid=732)   return func(*args, **kwargs)
+(Worker_TP1 pid=733) /opt/venv/lib/python3.12/site-packages/torch/distributed/c10d_logger.py:83: FutureWarning: `torch.distributed.all_gather_into_tensor` is deprecated. Please use `torch.distributed.all_gather_single` instead.
+(Worker_TP1 pid=733)   return func(*args, **kwargs)
+(Worker_TP0 pid=732) INFO 10-31 10:38:34 [graph_safe_output.py:1055] ArcXpuPlatform: graph-safe output applied — reroute guards active, upstream copy event retained.
+(Worker_TP1 pid=733) INFO 10-31 10:38:34 [graph_safe_output.py:1055] ArcXpuPlatform: graph-safe output applied — reroute guards active, upstream copy event retained.
+(Worker_TP0 pid=732) INFO 10-31 10:38:36 [graph_safe_output.py:1055] ArcXpuPlatform: graph-safe output applied — reroute guards active, upstream copy event retained.
+(Worker_TP1 pid=733) INFO 10-31 10:38:36 [graph_safe_output.py:1055] ArcXpuPlatform: graph-safe output applied — reroute guards active, upstream copy event retained.
+(Worker_TP0 pid=732) INFO 10-31 10:38:39 [graph_safe_output.py:1055] ArcXpuPlatform: graph-safe output applied — reroute guards active, upstream copy event retained.
+(Worker_TP1 pid=733) INFO 10-31 10:38:39 [graph_safe_output.py:1055] ArcXpuPlatform: graph-safe output applied — reroute guards active, upstream copy event retained.
+(Worker_TP0 pid=732) /opt/venv/lib/python3.12/site-packages/torch/distributed/c10d_logger.py:83: FutureWarning: `torch.distributed.all_gather_into_tensor` is deprecated. Please use `torch.distributed.all_gather_single` instead.
+(Worker_TP0 pid=732)   return func(*args, **kwargs)
+(Worker_TP1 pid=733) /opt/venv/lib/python3.12/site-packages/torch/distributed/c10d_logger.py:83: FutureWarning: `torch.distributed.all_gather_into_tensor` is deprecated. Please use `torch.distributed.all_gather_single` instead.
+(Worker_TP1 pid=733)   return func(*args, **kwargs)
+(EngineCore pid=500) INFO 10-31 10:38:46 [shm_broadcast.py:801] No available shared memory broadcast block found in 60 seconds. This typically happens when some processes are hanging or doing some time-consuming work (e.g. compilation, weight/kv cache quantization).
+(Worker_TP0 pid=732) Capturing CUDA graphs (FULL):   0%|          | 0/27 [00:00<?, ?it/s]Capturing CUDA graphs (FULL):   4%|▎         | 1/27 [00:01<00:45,  1.74s/it]Capturing CUDA graphs (FULL):   7%|▋         | 2/27 [00:02<00:21,  1.14it/s]Capturing CUDA graphs (FULL):  11%|█         | 3/27 [00:02<00:15,  1.59it/s]Capturing CUDA graphs (FULL):  15%|█▍        | 4/27 [00:02<00:10,  2.11it/s]Capturing CUDA graphs (FULL):  19%|█▊        | 5/27 [00:02<00:09,  2.41it/s]Capturing CUDA graphs (FULL):  22%|██▏       | 6/27 [00:03<00:07,  2.82it/s]Capturing CUDA graphs (FULL):  26%|██▌       | 7/27 [00:03<00:06,  2.92it/s]Capturing CUDA graphs (FULL):  30%|██▉       | 8/27 [00:03<00:05,  3.26it/s]Capturing CUDA graphs (FULL):  33%|███▎      | 9/27 [00:03<00:05,  3.36it/s]Capturing CUDA graphs (FULL):  37%|███▋      | 10/27 [00:04<00:04,  3.60it/s]Capturing CUDA graphs (FULL):  41%|████      | 11/27 [00:04<00:04,  3.78it/s]Capturing CUDA graphs (FULL):  44%|████▍     | 12/27 [00:04<00:03,  3.94it/s]Capturing CUDA graphs (FULL):  48%|████▊     | 13/27 [00:04<00:03,  4.21it/s]Capturing CUDA graphs (FULL):  52%|█████▏    | 14/27 [00:05<00:02,  4.39it/s]Capturing CUDA graphs (FULL):  56%|█████▌    | 15/27 [00:05<00:02,  4.48it/s]Capturing CUDA graphs (FULL):  59%|█████▉    | 16/27 [00:05<00:02,  4.64it/s]Capturing CUDA graphs (FULL):  63%|██████▎   | 17/27 [00:05<00:02,  4.73it/s]Capturing CUDA graphs (FULL):  67%|██████▋   | 18/27 [00:05<00:01,  4.77it/s]Capturing CUDA graphs (FULL):  70%|███████   | 19/27 [00:06<00:01,  4.81it/s]Capturing CUDA graphs (FULL):  74%|███████▍  | 20/27 [00:06<00:01,  4.52it/s]Capturing CUDA graphs (FULL):  78%|███████▊  | 21/27 [00:06<00:01,  4.65it/s]Capturing CUDA graphs (FULL):  81%|████████▏ | 22/27 [00:06<00:01,  4.75it/s]Capturing CUDA graphs (FULL):  85%|████████▌ | 23/27 [00:06<00:00,  4.77it/s]Capturing CUDA graphs (FULL):  89%|████████▉ | 24/27 [00:07<00:00,  4.77it/s]Capturing CUDA graphs (FULL):  93%|█████████▎| 25/27 [00:07<00:00,  4.79it/s]Capturing CUDA graphs (FULL):  96%|█████████▋| 26/27 [00:07<00:00,  4.81it/s]Capturing CUDA graphs (FULL): 100%|██████████| 27/27 [00:07<00:00,  4.81it/s]Capturing CUDA graphs (FULL): 100%|██████████| 27/27 [00:07<00:00,  3.48it/s]
+(Worker_TP1 pid=733) INFO 10-31 10:39:06 [model_runner.py:1066] Graph capturing finished in 8 secs, took 0.08 GiB
+(Worker_TP1 pid=733) INFO 10-31 10:39:06 [gpu_worker.py:888] Free memory on device (30.92/31.89 GiB) on startup. Desired GPU memory utilization is (0.8, 25.51 GiB). Actual usage is 16.29 GiB for consumed memory (weights + non-torch), 1.46 GiB for peak activation, and 0.08 GiB for CUDAGraph memory. Replace gpu_memory_utilization config with `--kv-cache-memory=8095242957` (7.54 GiB) to fit into requested memory, or `--kv-cache-memory=13903891968` (12.95 GiB) to fully utilize gpu memory. Current kv cache memory in use is 7.76 GiB.
+(Worker_TP1 pid=733) INFO 10-31 10:39:06 [jit_monitor.py:85] Kernel JIT monitor activated; monitored JIT compilations during inference will use mode=warn.
+(Worker_TP0 pid=732) INFO 10-31 10:39:06 [model_runner.py:1066] Graph capturing finished in 9 secs, took 0.09 GiB
+(Worker_TP0 pid=732) INFO 10-31 10:39:06 [gpu_worker.py:888] Free memory on device (30.54/31.89 GiB) on startup. Desired GPU memory utilization is (0.8, 25.51 GiB). Actual usage is 16.29 GiB for consumed memory (weights + non-torch), 1.46 GiB for peak activation, and 0.09 GiB for CUDAGraph memory. Replace gpu_memory_utilization config with `--kv-cache-memory=8078387917` (7.52 GiB) to fit into requested memory, or `--kv-cache-memory=13481250304` (12.56 GiB) to fully utilize gpu memory. Current kv cache memory in use is 7.76 GiB.
+(Worker_TP0 pid=732) INFO 10-31 10:39:06 [jit_monitor.py:85] Kernel JIT monitor activated; monitored JIT compilations during inference will use mode=warn.
+(Worker_TP0 pid=732) INFO 10-31 10:39:06 [torch_utils.py:287] Reducing Torch threads from 32 to 1 for serving. Set OMP_NUM_THREADS in the external environment to override.
+(EngineCore pid=500) INFO 10-31 10:39:06 [core.py:379] init engine (profile, create kv cache, warmup model) took 125.80 s
+(EngineCore pid=500) INFO 10-31 10:39:07 [platform.py:172] ArcXpuPlatform: wheel hook scheduler <- patches.sched_tail_split OK
+(EngineCore pid=500) INFO 10-31 10:39:07 [kv_cache_utils.py:748] kv cache group sizes [832, 832, 832, 832]
+(EngineCore pid=500) INFO 10-31 10:39:07 [kv_cache_utils.py:749] kv lcm block sizes 832
+(EngineCore pid=500) INFO 10-31 10:39:07 [factory.py:62] Creating v1 connector with name: LMCacheConnectorV1 and engine_id: arc-p40
+(EngineCore pid=500) WARNING 10-31 10:39:07 [base.py:217] Initializing KVConnectorBase_V1. This API is experimental and subject to change in the future as we iterate the design.
+(EngineCore pid=500) INFO 10-31 10:39:07 [lmcache_connector.py:97] Initializing native LMCache connector
+(EngineCore pid=500) INFO 10-31 10:39:08 [platform.py:172] ArcXpuPlatform: wheel hook torch_ops <- patches.lmcint.lmc_twohs_transfer OK
+(EngineCore pid=500) [32;20m[2026-10-31 10:39:08,520] LMCache INFO:[0m torch_dev=<module 'torch.xpu' from '/opt/venv/lib/python3.12/site-packages/torch/xpu/__init__.py'>, torch_device_type=xpu [3m(_device_detect.py:311:lmcache.v1.platform._device_detect)[0m
+(EngineCore pid=500) [32;20m[2026-10-31 10:39:08,523] LMCache INFO:[0m XpuDeviceOps: LMCACHE_DISABLE_PINNED_MEMORY set; alloc/free_pinned_ptr re-pinned to the pageable torch baseline (p40c law). [3m(device_ops.py:73:lmcache.v1.platform.devices.xpu.device_ops)[0m
+(EngineCore pid=500) INFO 10-31 10:39:08 [platform.py:172] ArcXpuPlatform: wheel hook vllm <- patches.lmcint.lmc_kvfmt_detector OK
+(EngineCore pid=500) [32;20m[2026-10-31 10:39:08,729] LMCache INFO:[0m Discovered API module: env_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(EngineCore pid=500) [32;20m[2026-10-31 10:39:08,755] LMCache INFO:[0m Discovered API module: loglevel_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(EngineCore pid=500) [32;20m[2026-10-31 10:39:08,756] LMCache INFO:[0m Discovered API module: metrics_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(EngineCore pid=500) [32;20m[2026-10-31 10:39:08,759] LMCache INFO:[0m Discovered API module: periodic_thread_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(EngineCore pid=500) [32;20m[2026-10-31 10:39:08,760] LMCache INFO:[0m Discovered API module: run_script_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(EngineCore pid=500) [32;20m[2026-10-31 10:39:08,762] LMCache INFO:[0m Discovered API module: thread_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(EngineCore pid=500) [32;20m[2026-10-31 10:39:08,768] LMCache INFO:[0m Discovered API module: backend_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(EngineCore pid=500) [32;20m[2026-10-31 10:39:08,769] LMCache INFO:[0m Discovered API module: bypass_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(EngineCore pid=500) [32;20m[2026-10-31 10:39:08,776] LMCache INFO:[0m Discovered API module: cache_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(EngineCore pid=500) [32;20m[2026-10-31 10:39:08,784] LMCache INFO:[0m Discovered API module: chunk_statistics_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(EngineCore pid=500) [32;20m[2026-10-31 10:39:08,787] LMCache INFO:[0m Discovered API module: conf_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(EngineCore pid=500) [32;20m[2026-10-31 10:39:08,788] LMCache INFO:[0m Discovered API module: freeze_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(EngineCore pid=500) [32;20m[2026-10-31 10:39:08,789] LMCache INFO:[0m Discovered API module: hot_cache_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(EngineCore pid=500) [32;20m[2026-10-31 10:39:08,790] LMCache INFO:[0m Discovered API module: inference_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(EngineCore pid=500) [32;20m[2026-10-31 10:39:08,795] LMCache INFO:[0m Discovered API module: load_fs_chunks_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(EngineCore pid=500) [32;20m[2026-10-31 10:39:08,797] LMCache INFO:[0m Discovered API module: lookup_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(EngineCore pid=500) [32;20m[2026-10-31 10:39:08,798] LMCache INFO:[0m Discovered API module: version_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(EngineCore pid=500) [32;20m[2026-10-31 10:39:08,812] LMCache INFO:[0m Discovered API module: key_stats_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(EngineCore pid=500) [32;20m[2026-10-31 10:39:08,814] LMCache INFO:[0m Discovered API module: worker_info_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+(EngineCore pid=500) [utils@lmcint] src-override OK (pid=500)
+(EngineCore pid=500) [vllm_v1_adapter@lmcint] src-override OK (pid=500)
+(EngineCore pid=500) [lmcache_integration@lmcint] src-override OK (pid=500)
+(EngineCore pid=500) [33;20m[2026-10-31 10:39:08,841] LMCache WARNING:[0m No LMCache configuration file is set. Trying to read configurations from the environment variables. [3m(utils.py:48:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.utils)[0m
+(EngineCore pid=500) [33;20m[2026-10-31 10:39:08,842] LMCache WARNING:[0m You can set the configuration file through the environment variable: LMCACHE_CONFIG_FILE [3m(utils.py:52:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.utils)[0m
+(EngineCore pid=500) [32;20m[2026-10-31 10:39:08,842] LMCache INFO:[0m Overridden extra_config [3m(config_base.py:699:lmcache.v1.config_base)[0m
+(EngineCore pid=500) [32;20m[2026-10-31 10:39:08,842] LMCache INFO:[0m Updated config extra_config from vLLM extra config: {'mamba_pool_ratio': 2} [3m(vllm_v1_adapter.py:1119:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.vllm_v1_adapter)[0m
+(EngineCore pid=500) [32;20m[2026-10-31 10:39:08,842] LMCache INFO:[0m Hybrid model: forcing lmcache chunk_size 1024 -> 832 (mamba tokens_per_page) [3m(vllm_v1_adapter.py:1204:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.vllm_v1_adapter)[0m
+(EngineCore pid=500) [32;20m[2026-10-31 10:39:08,842] LMCache INFO:[0m LMCache hybrid mode: attn layers=16 mamba layers=48 (fa_gidx=3 fa_gidxs=[3] mamba_gidxs=[0, 1, 2] page_bytes=851968 tpp=832) [3m(vllm_v1_adapter.py:1218:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.vllm_v1_adapter)[0m
+(EngineCore pid=500) [32;20m[2026-10-31 10:39:08,843] LMCache INFO:[0m Transport connecting to rank 0 with socket path /tmp/engine_arc-p40_service_lookup_lmcache_rpc_port_0 [3m(zmq_transport.py:53:lmcache.v1.rpc.zmq_transport)[0m
+(EngineCore pid=500) [32;20m[2026-10-31 10:39:08,843] LMCache INFO:[0m Transport connecting to rank 1 with socket path /tmp/engine_arc-p40_service_lookup_lmcache_rpc_port_1 [3m(zmq_transport.py:53:lmcache.v1.rpc.zmq_transport)[0m
+(EngineCore pid=500) [33;20m[2026-10-31 10:39:08,843] LMCache WARNING:[0m Could not load 'builtin' from vLLM. Using builtin hash. This may cause inconsistencies in distributed caching. [3m(token_database.py:162:lmcache.v1.token_database)[0m
+(EngineCore pid=500) [32;20m[2026-10-31 10:39:08,843] LMCache INFO:[0m Initialized NONE_HASH=5313149338359954478 from vLLM (>= PR#20511) [3m(token_database.py:100:lmcache.v1.token_database)[0m
+(EngineCore pid=500) [32;20m[2026-10-31 10:39:08,844] LMCache INFO:[0m Using hash algorithm: builtin [3m(token_database.py:110:lmcache.v1.token_database)[0m
+(EngineCore pid=500) [32;20m[2026-10-31 10:39:08,844] LMCache INFO:[0m Transport connecting to rank 0 with socket path /tmp/engine_arc-p40-mamba_service_lookup_lmcache_rpc_port_0 [3m(zmq_transport.py:53:lmcache.v1.rpc.zmq_transport)[0m
+(EngineCore pid=500) [32;20m[2026-10-31 10:39:08,844] LMCache INFO:[0m Transport connecting to rank 1 with socket path /tmp/engine_arc-p40-mamba_service_lookup_lmcache_rpc_port_1 [3m(zmq_transport.py:53:lmcache.v1.rpc.zmq_transport)[0m
+(EngineCore pid=500) [33;20m[2026-10-31 10:39:08,844] LMCache WARNING:[0m Could not load 'builtin' from vLLM. Using builtin hash. This may cause inconsistencies in distributed caching. [3m(token_database.py:162:lmcache.v1.token_database)[0m
+(EngineCore pid=500) [32;20m[2026-10-31 10:39:08,844] LMCache INFO:[0m Initialized NONE_HASH=5313149338359954478 from vLLM (>= PR#20511) [3m(token_database.py:100:lmcache.v1.token_database)[0m
+(EngineCore pid=500) [32;20m[2026-10-31 10:39:08,844] LMCache INFO:[0m Using hash algorithm: builtin [3m(token_database.py:110:lmcache.v1.token_database)[0m
+(EngineCore pid=500) [32;20m[2026-10-31 10:39:08,845] LMCache INFO:[0m Internal API server disabled. internal_api_server_enabled=False, port_offset=0, port=6999, socket_path=None, include_index_list=None [3m(api_server.py:67:lmcache.v1.internal_api_server.api_server)[0m
+(EngineCore pid=500) [32;20m[2026-10-31 10:39:08,845] LMCache INFO:[0m LMCache initialized for role KVConnectorRole.SCHEDULER with version 0.5.6-NA, vllm version 0.30.0, lmcache cache_engine metadata: None [3m(vllm_v1_adapter.py:1477:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.vllm_v1_adapter)[0m
+(EngineCore pid=500) [transformers] The `use_fast` parameter is deprecated and will be removed in a future version. Use `backend="torchvision"` instead of `use_fast=True`, or `backend="pil"` instead of `use_fast=False`.
+(EngineCore pid=500) WARNING 10-31 10:39:18 [vllm.py:1570] Inductor compilation was disabled by user settings, optimizations settings that are only active during inductor compilation will be ignored.
+(EngineCore pid=500) INFO 10-31 10:39:18 [kernel.py:416] Final IR op priority after setting platform defaults: IrOpPriorityConfig(rms_norm=['vllm_c', 'native'], fused_add_rms_norm=['vllm_c', 'native'], gelu_and_mul_sparse=['native'])
+(EngineCore pid=500) WARNING 10-31 10:39:18 [xpu.py:308] XPU Graph support is experimental and currently only supports single-GPU execution.
+(EngineCore pid=500) INFO 10-31 10:39:18 [graph_safe_output.py:665] ArcXpuPlatform: XPU graph boundary hygiene installed (pid 500, XPUGraph capture_begin/capture_end/replay + graph context __exit__ wrapped).
+(EngineCore pid=500) INFO 10-31 10:39:18 [graph_safe_output.py:791] ArcXpuPlatform: zombie stream-reroute guards installed (pid 500, set_stream substitution + wait_stream skip + Event.record reroute + synchronize tripwire).
+(EngineCore pid=500) INFO 10-31 10:39:18 [graph_safe_output.py:925] ArcXpuPlatform: runner-entry hygiene installed (pid 500, GPUModelRunner.execute_model + sample_tokens wrapped).
+(EngineCore pid=500) INFO 10-31 10:39:18 [graph_safe_output.py:971] ArcXpuPlatform: capture-stream fix installed (pid 500, captures ride torch.xpu.graph.default_capture_stream, EAGERLY INITED before capture #1 — the serving default never enters capture; champion 0.26.1 discipline, r9).
+(EngineCore pid=500) INFO 10-31 10:39:18 [graph_safe_output.py:520] ArcXpuPlatform: r12b kernel-launch tracer installed (triton:CachingAutotuner.run).
+(EngineCore pid=500) INFO 10-31 10:39:18 [graph_safe_output.py:1112] ArcXpuPlatform: graph-safe output patch installed (pid 500, AsyncOutput/AsyncPoolingOutput __init__ + get_output wrapped).
+(EngineCore pid=500) INFO 10-31 10:39:18 [speculator_full_capture.py:117] ArcXpuPlatform: speculator FULL-capture patch installed (pid 500, SpeculatorCudaGraphManager.__init__ wrapped).
+(EngineCore pid=500) INFO 10-31 10:39:18 [first_request_warmup.py:123] ArcXpuPlatform: first-request warmup interlock installed (defect-b lane W, r16 evidence)
+(EngineCore pid=500) INFO 10-31 10:39:18 [gdn_metadata_fastpath.py:286] [arc-p10] gdn metadata fastpath installed (steady spec-decode builds; stock build kept for prefill/mixed)
+(EngineCore pid=500) INFO 10-31 10:39:18 [fp8_block_w8a16.py:97] ArcXpuPlatform: fp8 block linear reroute ACTIVE — XPUFp8BlockScaledMMKernel.apply_input_quant=False, apply_block_scaled_mm -> _xpu_C.fp8_gemm_w8a16 (stock fallback kept; r40: 3-8x/GEMM decode Ms, relerr 4-5e-4)
+(EngineCore pid=500) INFO 10-31 10:39:18 [platform.py:298] ArcXpuPlatform: Intel Arc Xe2 posture active (Intel(R) Graphics [0xe223]).
+(EngineCore pid=500) INFO 10-31 10:39:18 [platform.py:307] ArcXpuPlatform: graph posture cudagraph_mode=FULL_DECODE_ONLY capture_sizes=(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 20, 25, 30, 35, 40, 45, 48, 50, 55, 60, 64, 65, 70, 75, 80, 85, 90, 95, 96, 100, 105, 110, 112, 115, 120, 125, 128, 130, 135, 140, 145, 150, 155, 160, 165, 170, 175, 180, 185, 190, 192, 195, 200, 205, 210, 215, 220, 224, 225, 230, 235, 240, 245, 250, 255, 256, 260, 265, 270, 275, 280, 285, 290, 295, 300, 305, 310, 315, 320) (VLLM_XPU_ENABLE_XPU_GRAPH=True).
+(EngineCore pid=500) INFO 10-31 10:39:18 [vllm.py:2674] EC/KV consumer: pre-computed-embedding inputs may omit the embedding tensor.
+(EngineCore pid=500) INFO 10-31 10:39:18 [compilation.py:336] Enabled custom fusions: norm_quant, act_quant
+(APIServer pid=13) INFO 10-31 10:39:18 [entry.py:135] Supported tasks: ['generate']
+(APIServer pid=13) INFO 10-31 10:39:19 [factories.py:76] Scale-out endpoints are disabled. Set --enable-scale-out to enable them.
+(APIServer pid=13) INFO 10-31 10:39:19 [parser_manager.py:36] "auto" tool choice has been enabled.
+(APIServer pid=13) INFO 10-31 10:39:19 [hf.py:642] Detected the chat template content format to be 'openai'. You can set `--chat-template-content-format` to override this.
+(APIServer pid=13) WARNING 10-31 10:39:19 [model.py:1772] Default vLLM sampling parameters have been overridden by the model's `generation_config.json`: `{'repetition_penalty': 1.0, 'temperature': 0.6, 'top_k': 20, 'top_p': 0.95, 'min_p': 0.0}`. If this is not intended, please relaunch vLLM instance with `--generation-config vllm`.
+(APIServer pid=13) INFO 10-31 10:39:19 [entry.py:139] Starting vLLM server on http://0.0.0.0:8000
+(APIServer pid=13) INFO 10-31 10:39:19 [launcher.py:61] Available routes are:
+(APIServer pid=13) INFO 10-31 10:39:19 [launcher.py:70] Route: /openapi.json, Methods: GET, HEAD
+(APIServer pid=13) INFO 10-31 10:39:19 [launcher.py:70] Route: /docs, Methods: GET, HEAD
+(APIServer pid=13) INFO 10-31 10:39:19 [launcher.py:70] Route: /docs/oauth2-redirect, Methods: GET, HEAD
+(APIServer pid=13) INFO 10-31 10:39:19 [launcher.py:70] Route: /redoc, Methods: GET, HEAD
+(APIServer pid=13) INFO 10-31 10:39:19 [launcher.py:70] Route: /load, Methods: GET
+(APIServer pid=13) INFO 10-31 10:39:19 [launcher.py:70] Route: /version, Methods: GET
+(APIServer pid=13) INFO 10-31 10:39:19 [launcher.py:70] Route: /health, Methods: GET
+(APIServer pid=13) INFO 10-31 10:39:19 [launcher.py:70] Route: /metrics, Methods: GET
+(APIServer pid=13) INFO 10-31 10:39:19 [launcher.py:70] Route: /tokenize, Methods: POST
+(APIServer pid=13) INFO 10-31 10:39:19 [launcher.py:70] Route: /detokenize, Methods: POST
+(APIServer pid=13) INFO 10-31 10:39:19 [launcher.py:70] Route: /v1/models, Methods: GET
+(APIServer pid=13) INFO 10-31 10:39:19 [launcher.py:70] Route: /ping, Methods: GET
+(APIServer pid=13) INFO 10-31 10:39:19 [launcher.py:70] Route: /ping, Methods: POST
+(APIServer pid=13) INFO 10-31 10:39:19 [launcher.py:70] Route: /invocations, Methods: POST
+(APIServer pid=13) INFO 10-31 10:39:19 [launcher.py:70] Route: /v1/chat/completions, Methods: POST
+(APIServer pid=13) INFO 10-31 10:39:19 [launcher.py:70] Route: /v1/chat/completions/batch, Methods: POST
+(APIServer pid=13) INFO 10-31 10:39:19 [launcher.py:70] Route: /v1/responses, Methods: POST
+(APIServer pid=13) INFO 10-31 10:39:19 [launcher.py:70] Route: /v1/responses/{response_id}, Methods: GET
+(APIServer pid=13) INFO 10-31 10:39:19 [launcher.py:70] Route: /v1/responses/{response_id}/cancel, Methods: POST
+(APIServer pid=13) INFO 10-31 10:39:19 [launcher.py:70] Route: /v1/completions, Methods: POST
+(APIServer pid=13) INFO 10-31 10:39:19 [launcher.py:70] Route: /v1/messages, Methods: POST
+(APIServer pid=13) INFO 10-31 10:39:19 [launcher.py:70] Route: /v1/messages/count_tokens, Methods: POST
+(APIServer pid=13) INFO 10-31 10:39:19 [launcher.py:70] Route: /generative_scoring, Methods: POST
+(APIServer pid=13) INFO 10-31 10:39:19 [launcher.py:70] Route: /scale_elastic_ep, Methods: POST
+(APIServer pid=13) INFO 10-31 10:39:19 [launcher.py:70] Route: /is_scaling_elastic_ep, Methods: POST
+(APIServer pid=13) INFO:     Started server process [13]
+(APIServer pid=13) INFO:     Waiting for application startup.
+(APIServer pid=13) INFO:     Application startup complete.
+(APIServer pid=13) INFO:     127.0.0.1:53372 - "GET /health HTTP/1.1" 200 OK
+(APIServer pid=13) INFO 10-31 10:39:21 [first_request_warmup.py:101] ArcXpuPlatform: first generate (request chatcmpl-81d7a8920fe032f1) — running defect-b warmup interlock first
+(APIServer pid=13) WARNING 10-31 10:39:21 [input_processor.py:315] Passing raw prompts to InputProcessor is deprecated and will be removed in the future. You should instead pass the outputs of Renderer.render_cmpl() or Renderer.render_chat().
+(APIServer pid=13) INFO 10-31 10:39:21 [first_request_warmup.py:59] ArcXpuPlatform: first-request warmup stage small done in 0.4s (2 outputs, 640 prompt chars)
+(APIServer pid=13) INFO:     127.0.0.1:53948 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:53960 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:53962 - "GET /metrics HTTP/1.1" 200 OK
+(Worker_TP0 pid=732) [r43kvfmt] arc interleaved attn pool -> NL_X_NB_BS_NH_TWO_HS (NB=611 BS=832 TWO=2 HS=512)
+(Worker_TP1 pid=733) [r43kvfmt] arc interleaved attn pool -> NL_X_NB_BS_NH_TWO_HS (NB=611 BS=832 TWO=2 HS=512)
+(Worker_TP0 pid=732) [32;20m[2026-10-31 10:39:26,602] LMCache INFO:[0m Engine KV Format: EngineKVFormat.NL_X_NB_BS_NH_TWO_HS NL x [NB, BS, NH, 2, HS] [3m(detection.py:69:lmcache.v1.gpu_connector.kv_format.detection)[0m
+(Worker_TP1 pid=733) [32;20m[2026-10-31 10:39:26,602] LMCache INFO:[0m Engine KV Format: EngineKVFormat.NL_X_NB_BS_NH_TWO_HS NL x [NB, BS, NH, 2, HS] [3m(detection.py:69:lmcache.v1.gpu_connector.kv_format.detection)[0m
+(Worker_TP0 pid=732) [33;20m[2026-10-31 10:39:26,602] LMCache WARNING:[0m NL_X_NB_BS_NH_TWO_HS_Spec.__init__ is deprecated: NL_X_NB_BS_NH_TWO_HS is superseded by NL_X_NB_BS_NH_CS (raw 4-D content-size layout) [3m(utils.py:764:lmcache.utils)[0m
+(Worker_TP1 pid=733) [33;20m[2026-10-31 10:39:26,602] LMCache WARNING:[0m NL_X_NB_BS_NH_TWO_HS_Spec.__init__ is deprecated: NL_X_NB_BS_NH_TWO_HS is superseded by NL_X_NB_BS_NH_CS (raw 4-D content-size layout) [3m(utils.py:764:lmcache.utils)[0m
+(Worker_TP1 pid=733) [r43xfer] TWO_HS interleaved branch live: NB=611 BS=832 L=16 H=512 nslots=832 dir=D2H
+(Worker_TP0 pid=732) [r43xfer] TWO_HS interleaved branch live: NB=611 BS=832 L=16 H=512 nslots=832 dir=D2H
+(Worker_TP1 pid=733) [32;20m[2026-10-31 10:39:27,046] LMCache INFO:[0m [req_id=unspecified] Stored 7488 out of total 7488 tokens. size: 0.1143 GB, cost 445.1413 ms, throughput: 0.2567 GB/s; offload_time: 444.9838 ms, put_time: 0.1060 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP0 pid=732) [32;20m[2026-10-31 10:39:27,047] LMCache INFO:[0m [req_id=unspecified] Stored 7488 out of total 7488 tokens. size: 0.1143 GB, cost 445.9892 ms, throughput: 0.2562 GB/s; offload_time: 445.8198 ms, put_time: 0.1152 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP1 pid=733) [32;20m[2026-10-31 10:39:27,055] LMCache INFO:[0m [req_id=unspecified] Stored 832 out of total 832 tokens. size: 0.0365 GB, cost 8.8046 ms, throughput: 4.1490 GB/s; offload_time: 8.7309 ms, put_time: 0.0337 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(Worker_TP0 pid=732) [32;20m[2026-10-31 10:39:27,056] LMCache INFO:[0m [req_id=unspecified] Stored 832 out of total 832 tokens. size: 0.0365 GB, cost 8.8870 ms, throughput: 4.1105 GB/s; offload_time: 8.8141 ms, put_time: 0.0339 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
+(APIServer pid=13) INFO 10-31 10:39:27 [first_request_warmup.py:59] ArcXpuPlatform: first-request warmup stage max-batch done in 5.6s (2 outputs, 44253 prompt chars)
+(APIServer pid=13) INFO 10-31 10:39:27 [first_request_warmup.py:113] ArcXpuPlatform: warmup complete in 6.0s — engine hot, serving request chatcmpl-81d7a8920fe032f1
+(APIServer pid=13) INFO:     127.0.0.1:53386 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:53976 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO 10-31 10:39:29 [loggers.py:315] Engine 000: Avg prompt throughput: 751.4 tokens/s, Avg generation throughput: 23.3 tokens/s, Running: 4 reqs, Waiting: 0 reqs, XPU KV cache usage: 2.6%, Prefix cache hit rate: 0.0%, External prefix cache hit rate: 0.0%
+(APIServer pid=13) INFO:     127.0.0.1:53760 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:53764 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:53778 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:53980 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:53990 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:53998 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:54012 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO 10-31 10:39:39 [loggers.py:315] Engine 000: Avg prompt throughput: 9.2 tokens/s, Avg generation throughput: 127.5 tokens/s, Running: 4 reqs, Waiting: 0 reqs, XPU KV cache usage: 2.6%, Prefix cache hit rate: 0.0%, External prefix cache hit rate: 0.0%
+(APIServer pid=13) INFO:     127.0.0.1:53850 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:53790 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:53794 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:53806 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:53814 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:53868 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:53882 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:53856 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO 10-31 10:39:49 [loggers.py:315] Engine 000: Avg prompt throughput: 4.6 tokens/s, Avg generation throughput: 72.3 tokens/s, Running: 1 reqs, Waiting: 0 reqs, XPU KV cache usage: 0.7%, Prefix cache hit rate: 0.0%, External prefix cache hit rate: 0.0%
+(APIServer pid=13) INFO:     127.0.0.1:45326 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:53888 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:45368 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:45384 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO 10-31 10:39:59 [loggers.py:315] Engine 000: Avg prompt throughput: 25.2 tokens/s, Avg generation throughput: 61.3 tokens/s, Running: 4 reqs, Waiting: 0 reqs, XPU KV cache usage: 2.6%, Prefix cache hit rate: 0.0%, External prefix cache hit rate: 0.0%
+(APIServer pid=13) INFO:     127.0.0.1:60606 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:45328 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:45340 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:45346 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:45362 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:60662 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:60666 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO 10-31 10:40:09 [loggers.py:315] Engine 000: Avg prompt throughput: 25.2 tokens/s, Avg generation throughput: 126.8 tokens/s, Running: 4 reqs, Waiting: 0 reqs, XPU KV cache usage: 2.6%, Prefix cache hit rate: 0.0%, External prefix cache hit rate: 0.0%
+(APIServer pid=13) INFO:     127.0.0.1:60622 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:60628 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:60638 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:60650 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:58906 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:58918 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:58920 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:58898 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO 10-31 10:40:19 [loggers.py:315] Engine 000: Avg prompt throughput: 12.6 tokens/s, Avg generation throughput: 60.1 tokens/s, Running: 1 reqs, Waiting: 0 reqs, XPU KV cache usage: 0.7%, Prefix cache hit rate: 0.0%, External prefix cache hit rate: 0.0%
+(APIServer pid=13) INFO:     127.0.0.1:44090 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:58934 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:44124 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:44130 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     10.100.8.REDACTED:34478 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     10.100.8.REDACTED:34484 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     10.100.8.REDACTED:34486 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     10.100.8.REDACTED:34494 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     10.100.8.REDACTED:34492 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     10.100.8.REDACTED:34508 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     10.100.8.REDACTED:34510 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:44102 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO 10-31 10:40:29 [loggers.py:315] Engine 000: Avg prompt throughput: 9.2 tokens/s, Avg generation throughput: 76.6 tokens/s, Running: 3 reqs, Waiting: 0 reqs, XPU KV cache usage: 2.0%, Prefix cache hit rate: 0.0%, External prefix cache hit rate: 0.0%
+(APIServer pid=13) INFO:     127.0.0.1:44094 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:44116 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:44114 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:48246 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:48256 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:48272 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:48224 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO 10-31 10:40:39 [loggers.py:315] Engine 000: Avg prompt throughput: 9.2 tokens/s, Avg generation throughput: 112.5 tokens/s, Running: 3 reqs, Waiting: 0 reqs, XPU KV cache usage: 2.0%, Prefix cache hit rate: 0.0%, External prefix cache hit rate: 0.0%
+(APIServer pid=13) INFO:     127.0.0.1:48220 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:48238 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:48244 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     10.20.3.REDACTED:35222 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     10.20.3.REDACTED:35252 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     10.20.3.REDACTED:35248 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     10.20.3.REDACTED:35234 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     10.20.3.REDACTED:35268 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     10.20.3.REDACTED:35276 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     10.20.3.REDACTED:35292 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:48300 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:60934 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:60950 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:60958 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:48288 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO 10-31 10:40:49 [loggers.py:315] Engine 000: Avg prompt throughput: 4.6 tokens/s, Avg generation throughput: 40.4 tokens/s, Running: 1 reqs, Waiting: 0 reqs, XPU KV cache usage: 0.7%, Prefix cache hit rate: 0.0%, External prefix cache hit rate: 0.0%
+(APIServer pid=13) INFO:     127.0.0.1:60970 - "POST /v1/chat/completions HTTP/1.1" 200 OK

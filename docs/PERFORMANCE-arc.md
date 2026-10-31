@@ -1,43 +1,198 @@
 # Performance — vllm-arc, qwen3.8-27b-fp8 on dual Intel Arc Pro B70
 
 Measured performance of the certified posture (standalone numbers; test
-definitions and hardware in [`TESTING-arc.md`](TESTING-arc.md)). All
-certified faces: first-traffic fresh boot, timers off, XPU graphs on,
-TP2, greedy temp 0. **Recommended MTP depth = k3** (r46t campaign,
-below); the certified-greedy history at k4/k5 is retained row-labeled —
-k5 is dropped from the recommendation; its evidence is
-superseded, not retracted.
+definitions and hardware in [`TESTING-arc.md`](TESTING-arc.md)).
+**Read "Measurement methodology" first** — it defines every face, the
+protocol laws, the two prefix-cache tiers, and the provenance rule: the
+current record is cert4-native only; everything else is labeled
+history. All certified faces: first-traffic fresh boot, timers off, XPU
+graphs on, TP2, greedy temp 0. **Recommended MTP depth = k3** (r46t
+campaign, reproduced natively on cert4 by r70 — below); the
+certified-greedy history at k4/k5 is retained row-labeled — k5 is
+dropped from the recommendation; its evidence is superseded, not
+retracted.
 
-## Current certified image — cert4 (tag `rel/v0.30.0-b70-cert4`, 2026-10-31): the numbers that matter
+## Measurement methodology — how every number in this file is produced
 
-**This section is the current record**; every section below it is
-history (depth-selection and image lineage — still valid evidence,
-earlier engines). **cert4 is both the LATEST and the FASTEST certified
-image** — nothing validated beats it (see the note under "Real-world
-faces" below for the two rejected faster-on-paper postures). Identity: tag commit `b5df28b5`; default posture =
-cert3's engine byte-identical (cert4 adds only the opt-in P6.5
-long-context deferral, inert without its envs); how to run: the 25-var
-chain in [`CONFIGURATION-arc.md`](CONFIGURATION-arc.md). Faces are
-labeled — **only same-face numbers compare** (thinking on/off and
-battery warmth are confounders; comparator law:
-`results/2026-10-31-p6-r47c-p48-056gates/VERDICT.md`).
+**Provenance rule (owner law, 2026-10-31):** the current record cites
+**only faces measured natively on the current certified image**
+(`vllm-arc:v0.30.0-b70-cert4`). Numbers from earlier images (cert /
+cert2 / cert3 / p46) are history — labeled by image, never mixed into
+current-record tables.
 
-| Face (cert4, default posture) | Value | Evidence |
+### Rig, image, and posture identity
+
+| Layer | Identity |
+|---|---|
+| Hardware | dual Intel Arc Pro B70 (48 GB each), TP2, one card per socket (`ZE_AFFINITY_MASK=0,1`) |
+| Engine image | `vllm-arc:v0.30.0-b70-cert4` — tag `rel/v0.30.0-b70-cert4`, commit `b5df28b5`, image digest `0c25a4f747af`, `IMAGE_MANIFEST.fork_sha` verified at build (p65 Gate B) |
+| Wheels | md5-pinned at build (`tools/wheel_guard.sh`, 4 pins: vllm/triton/vxk/lmcache 0.5.6+arc1) |
+| Serve line | the certified 25-var env chain + CLI ([`CONFIGURATION-arc.md`](CONFIGURATION-arc.md)): MTP k3, `mode:none`, FULL_DECODE_ONLY graphs (85 capture sizes, 1–320), MNBT 8192, LMCacheConnectorV1 `kv_both` |
+| r70 campaign (the comprehensive cert4 measurement) | 3 fresh boots on the one image — greedy+sweep leg (a), no-spec leg (b), soak leg (c) — evidence `results/2026-10-31-p70-r70-cert4-comprehensive/` |
+
+### Face definitions (exact)
+
+| Face | Definition |
+|---|---|
+| agg4x256 | 4 concurrent chat requests, `max_tokens=256`, prompt "Count from 1 to 1000.", thinking off; throughput = Σtokens/wall across the 4-thread join. Two runs per battery; **run #1 after boot or an idle window is warmup-contaminated, run #2 is the steady face** |
+| solo200 | one chat request, `max_tokens=200`, same prompt; tps = tokens/wall **including TTFT** |
+| xhigh sweep | the agg/solo battery at temperature 0.2–1.0 with the real-world sampling set (top_p 0.95 / top_k 20 / min_p 0 / presence_penalty 0 / repetition_penalty 1.0) and `enable_thinking: true, reasoning_effort: "xhigh"` |
+| alt face | temperature 0.7 / top_p 0.80 / top_k 20 / presence_penalty 1.5, non-thinking (near-deterministic continuation regime) |
+| U-bars (U8k/U16k/U32k/U64k) | SOLO streaming completion on a uniform synthetic prompt, sized via `/tokenize` to the face target, per-face seed (fresh prompts every boot — prefix-cache hit must be ≈0 or the face is invalid), `max_tokens=32`; TTFT = send → first content chunk; prefill rate = prompt_tokens/TTFT |
+| warm t1/t2 | the U-bar request fired twice identically: t1 = cold (cached ≈ 0), t2 = the same request seconds later; plus 3× warm-hit re-fires (U8k) for a stable warm-hit number |
+| no-spec A/B | the same battery faces on a second fresh boot with `--speculative-config` removed; spec counters verified absent (`--expect-off`) before measuring |
+| soak | fresh boot; cycles of (agg battery + 24-prompt integrity probe + health check + counter snapshot) every ~5 min for the soak window |
+
+### Protocol laws (apply to every certified face)
+
+- **Fresh-boot, first-traffic**: every battery/probe runs on a freshly
+  booted engine; the first request after boot exercises the p12b warmup
+  interlock (the survival face) and is never scored.
+- **Timers off** (`ARC_TRACE_FLIP=1` interlock) and **XPU graphs on**
+  (`VLLM_XPU_ENABLE_XPU_GRAPH=1`, FULL_DECODE_ONLY) — standing rig laws.
+- **Same-face comparator law**: only same-face, same-session numbers
+  compare (thinking on/off and battery warmth are confounders —
+  `results/2026-10-31-p6-r47c-p48-056gates/VERDICT.md`). Cross-boot
+  same-face compares are reported as families (ranges), not point
+  deltas. Sampling params at temperature 0 are inert (argmax survives
+  top_k/top_p), so greedy faces stay comparable across batteries.
+
+### The two prefix-reuse tiers — which cache serves a warm hit
+
+The certified line runs two tiers at once:
+
+1. **Engine APC** (`--enable-prefix-caching`, block 64): GPU-resident
+   prefix blocks, hit-checked by the scheduler; engine telemetry =
+   "Prefix cache hit rate" in the serve log.
+2. **LMCacheConnectorV1** (`kv_both`; CPU 100 GiB local tier, 1024-tok
+   chunks): serves prefixes no longer GPU-resident (eviction recovery,
+   long-horizon cross-request reuse); engine telemetry = "External
+   prefix cache hit rate" + LMCache lookup/store log lines.
+
+**Measured attribution (r70)**: during the warm t2 faces the engine log
+shows prefix-cache hit rate climbing 41→46 % with **External prefix
+cache hit rate 0.0 %**, and the window holds 62 asynchronous LMCache
+*store* events (after the cold requests) and **zero retrievals** — a
+same-boot warm re-hit is served entirely by **engine APC**; LMCache's
+activity in that window is store-only. LMCache retrieval is the tier
+that matters on longer horizons — its faces are the p65/p48 long-context
+evidence, not the warm-hit face.
+
+### Acceptance telemetry (speculative decoding)
+
+Upstream-0.30 `/metrics` counters: drafts, draft tokens, accepted
+tokens, per-position acceptance. Definitions used throughout:
+**acceptance % = accepted/draft tokens**; **mean accepted length =
+accepted/drafts + 1** (the +1 bonus token). Windows are counter deltas
+snapshotted before/after each battery, so each face's acceptance covers
+that face's traffic only.
+
+## Current certified image — cert4 (`rel/v0.30.0-b70-cert4`): the current record
+
+**Every number below was measured natively on the cert4 image** — the
+r70 comprehensive campaign (2026-10-31, 3 fresh boots) plus the p65/r67
+certification legs; per-face evidence in the right column. **cert4 is
+both the LATEST and the FASTEST certified image** — nothing validated
+beats it (the two faster-on-paper postures are rejected: k5-depth
+owner-dropped — its greedy edge inverts under sampling; compile —
+Appendix H law #1 acceptance gate, p67). Identity: tag commit
+`b5df28b5`; default posture = cert3's engine byte-identical (the P6.5
+deferral is opt-in and inert without its envs); how to run: the 25-var
+chain in [`CONFIGURATION-arc.md`](CONFIGURATION-arc.md).
+
+### Throughput — greedy t0, thinking off (chat battery)
+
+| Face | cert4-native value | Boots | Evidence |
+|---|---|---|---|
+| agg4x256 steady | **294.7–300.5 tok/s** (r70 294.68/296.42 · p65 299.15/300.16 · r67 300.48) | 5 | `…-p70-r70-cert4-comprehensive/`, `…-p65-cert4/`, `…-p67-r67a-compile-ab/` |
+| solo200 | **83.7–84.9 tok/s** (r70 83.66–84.48 · p65 84.53–84.86 · r67 84.49) | 5 | same |
+| survival (first request after boot) | HTTP 200, 6.2–7.3 s (p12b interlock warmup included) | 3 | p70 |
+| first-battery warmup face | agg run #1 147–178 vs steady #2 ≈295+ — first-traffic cost, gone by run #2 | r70 | p70 |
+
+### Sampled / thinking faces (real-world regimes, cert4-native)
+
+| Face | agg steady (tok/s) | solo (tok/s) | acceptance (window) |
+|---|---|---|---|
+| xhigh t0.2 | 205.6 | 62.5–65.8 | 56.6 % |
+| xhigh t0.4 | 221.7 | 64.7–65.8 | 55.8 % |
+| xhigh t0.6 | 202.4 | 65.7–68.4 | 54.5 % |
+| xhigh t0.8 | 204.8 | 58.9–61.0 | 50.5 % |
+| xhigh t1.0 | 194.4 | 55.1–62.2 | 49.0 % |
+| alt (t0.7/tp0.80/pp1.5, non-thinking) | 264.0 (peak 280.9) | 72.5–73.1 | 87.7 % |
+
+The p46 campaign's k3 table (the depth decision) is reproduced on
+cert4 within ~1 pp acceptance / ±6 % throughput per cell — the **k3**
+law now stands on cert4-native data. The p65 t1.0-xhigh battery
+(190.62 / 56.90, 62.24) is the same face on an earlier cert4 boot —
+inside the family above. Full r46t→cert4 parity table (every face, Δ
+column, verdict): `results/2026-10-31-p70-r70-cert4-comprehensive/R46T_PARITY.md`
+— **no regression**.
+
+### Prefill / TTFT — solo U-bars, fresh prompts, greedy
+
+| Face | prompt tok | TTFT (cert4-native) | Family (r66a/r67 bars) | prefill rate |
+|---|---|---|---|---|
+| U8k | 8,158 | **3.86 s** | 3.74–3.86 s | 2,078–2,178 t/s |
+| U16k | 16,354 | **7.87 s** — first-ever 16k bar | — | 2,078 t/s |
+| U32k | 32,553 | **17.36 s** | 17.08–17.36 s | 1,875 t/s |
+| U64k | 65,303 | **40.26 s** | 39.19–40.26 s | 1,622–1,666 t/s |
+
+### Prefix reuse — warm faces with tier attribution
+
+| Face | cold t1 | warm t2 | served by |
+|---|---|---|---|
+| U8k | 3.87 s | **0.99 s** | engine APC (external tier 0.0 %, zero LMCache retrievals in window) |
+| U16k | 8.35 s | **1.08 s** | same |
+| U32k | 17.30 s | **1.11 s** | same |
+| U8k warm-hit re-fires (n=6, two probes) | — | **0.80–0.91 s** | same |
+
+The cert-era "warm-hit 740 ms / warm t2 848/675/1178 ms" cells used a
+different prompt corpus (prewarm-v7 battery) on the original-cert image
+— same mechanism (engine APC), different corpus, so those numbers stay
+in history and do not compare (comparator law).
+
+### Speculative decoding (MTP k3) — cert4-native
+
+| Condition | acceptance | mean accepted length |
 |---|---|---|
-| greedy t0 agg4x256 steady (thinking=off battery) | **299.15–300.48 tok/s** (300.16 / 300.48 across boots) — family-exact vs the 299.9 family | `results/2026-10-31-p65-cert4/` |
-| greedy t0 solo200 (thinking=off) | **84.53–84.86 tok/s** (83.65 low cell) | same |
-| t1.0 xhigh battery | agg 190.62 / solo 56.90, 62.24 (family 186.2/61.1, +2.4 %/+1.9 %) | same |
-| MTP k3 acceptance (greedy t0) | 85.6 % per-token (r46t); mean accepted length **3.40–3.57 tok/step** on cert4 boots | r67 re-confirmed |
-| Prefill solo TTFT U8k / U32k / U64k | **3.74 s (2178 t/s) / 17.33 s (1878 t/s) / 39.19 s (1666 t/s)** — nolmc anatomy faces, re-confirmed on stock boots | r66a bars + r67 (`results/2026-10-31-p66-r66a-prefill-capture/`, `…-p67-r67a-compile-ab/`) |
-| Long-context opt-in profile (p65 trio, 12-bystander face) | U64k TTFT 51.16 s; bystander W_U64k p95/max **1580/1599 ms** (no-connector posture: 2027/2347) — enable only for ≥~48k-heavy traffic | `results/2026-10-31-p65-cert4/` |
+| greedy t0, battery window (r70) | **85.9 %** | **3.58** |
+| spec-gate light-load windows | 83.1–83.7 % | 3.49–3.51 |
+| xhigh t0.2 → t1.0 (sweep) | 56.6 % → 49.0 % | — |
+| alt face | 87.7 % | — |
+| r67a compile posture (rejected) | — | 2.12–2.32 (−35 %, the gate that keeps `mode:none`) |
 
-Posture laws in force on cert4 (do not re-litigate without new evidence):
+**MTP value over no-spec — cert4-native A/B (fresh boot per side,
+r70 legs a/b):**
+
+| Face | MTP k3 | no-spec | ratio |
+|---|---|---|---|
+| agg greedy t0 | 296.4 | 126.5 | **2.34×** |
+| solo greedy t0 | 84.5 | 34.3 | **2.46×** |
+| agg xhigh t1.0 | 194.4 | 126.1 | **1.54×** |
+| solo xhigh t1.0 | 58.6 | 33.6 | 1.74× |
+| agg alt | 264.0 | 115.9 | **2.28×** |
+| solo alt | 72.8 | 33.6 | 2.16× |
+
+### Stability — cert4-native
+
+- r70 soak (4 h, battery+integrity cycles): in flight at this commit —
+  interim state clean (every cycle health 200, integrity bad=0, zero
+  errors); the close-out row with final counts is appended by the
+  follow-up commit (evidence: `results/2026-10-31-p70-r70-cert4-comprehensive/c/`).
+- Zero boot failures across the cert4 image family: r70 3 boots, p65
+  2 gate images, r66 7 probe boots, r67 compile-A/B boots.
+
+### Posture laws in force on cert4 (do not re-litigate without new evidence)
 
 - **`mode: none`** — the 0.30 compile REVAL FIRED the Appendix H law #1
   acceptance gate: `vllm_compile` collapses acceptance length
-  3.40/3.57 → 2.21/2.32 (−35 %), decode −39 %, prefill flat (p67).
-- **MNBT stays 8192** — 16384 A/B: U32k −9.7 % but U8k +9.9 % and KV pool
-  −18 %; documented, not adopted (p66). Never combine with the p65 trio.
+  3.40/3.57 → 2.21/2.32 (−35 %), decode −39 %, prefill flat (p67);
+  r70's accidental first launch re-replicated it exactly (182/52 t/s,
+  mean length 2.12 — see `a_invalid_compile_posture/` in the p70
+  evidence).
+- **MNBT stays 8192** — 16384 A/B: U32k −9.7 % but U8k +9.9 % and KV
+  pool −18 %; documented, not adopted (p66). Never combine with the
+  p65 trio.
 - Any `FULL_AND_PIECEWISE` repeat must cap the capture ladder at 256
   (`max_num_seqs × (k+1)`; the `gdn_attn.py:120` law, p67).
 
@@ -49,9 +204,10 @@ anatomy (p66)" and "Prefill structural rungs (p67)" below.
 
 Measured on the original-cert/cert2-era engines (r42 k4 leg, r43 k5
 leg, r46t k3 on the p46 image). The current-image reproduction of this
-family is the cert4 table above (299.15–300.48 / 84.53–84.86,
-family-exact — engine unchanged through cert2→cert4 default postures,
-within ±5 % on same-face A/Bs). Depth law unchanged: **k3**.
+family is the cert4 record above (294.7–300.5 / 83.7–84.9 across five
+cert4 boots; sweep acceptance within ~1 pp of the p46 campaign —
+engine unchanged through cert2→cert4 default postures). Depth law
+unchanged: **k3**.
 
 | Face | k3 (recommended, r46t) | k4 (r42) | k5 (dropped, r43) |
 |---|---|---|---|
@@ -83,13 +239,13 @@ measured on the certified image (r42/r43 legs and r46 leg respectively).
 
 ## Real-world faces — the k3 decision (r46t campaign)
 
-**Not a cert4 measurement** — this campaign ran on the p46 image
-(2026-10-30, the certified engine of that day). Its only job was depth
-selection under real-world sampling; it picked **k3**. cert4 is the
-same engine line (default postures unchanged cert2→cert3→cert4) and is
-the **fastest certified image** — it reproduces this campaign's greedy
-family exactly (299.9/84.5 → 299.15–300.48/84.53–84.86, family-exact;
-see the cert4 table above). The only faster-ever-measured posture
+**A p46-image campaign** (2026-10-30, the certified engine of that
+day). Its job was depth selection under real-world sampling; it picked
+**k3**. The r70 campaign re-measured the k3 sweep **natively on
+cert4** — acceptance within ~1 pp per cell, throughput ±6 % (see
+"Sampled / thinking faces" in the current record above), so the depth
+law now stands on cert4-native data. cert4 is the same engine line and
+the **fastest certified image**; the only faster-ever-measured posture
 (k5-depth, greedy face only) was dropped by owner directive — its edge
 inverts under real-world sampling.
 
