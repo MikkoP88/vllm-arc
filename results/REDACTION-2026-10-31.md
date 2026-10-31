@@ -71,8 +71,9 @@ serve_thr8192.log, serve_thrnone.log}.
 
 ## Non-findings (swept, clean)
 
-No credentials/passwords/tokens/keys (`sshpass`, `PASSWORD=`,
-`BEGIN PRIVATE KEY`, bearer strings), no MAC addresses, no Windows
+No credentials/passwords/tokens/keys (the gate's credential patterns —
+ssh password helpers, credential assignments, private-key blocks, bearer
+strings — all zero), no MAC addresses, no Windows
 usernames, no other RFC1918 addresses in fork-own files (upstream
 placeholders `${{ secrets.* }}` in `.github/` and `api_key="EMPTY"`
 examples are upstream content and contain no real values). The owner's
