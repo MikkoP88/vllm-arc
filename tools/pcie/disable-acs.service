@@ -1,0 +1,12 @@
+[Unit]
+Description=Disable PCIe ACS on all devices (P2P DMA enablement, Dell setpci practice)
+After=local-fs.target
+Before=docker.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/disable-acs.sh
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
