@@ -1,5 +1,5 @@
 # Raw site audit — vllm-xpu-kernels conv-state headers (2026-10-27)
-# Method: GitHub tag tarballs audited on rig 10.20.3.65 (/tmp/vxk_audit);
+# Method: GitHub tag tarballs audited on rig 10.20.3.REDACTED (/tmp/vxk_audit);
 # pattern = donor wedgefix-v88 law (states_id|init_state_id|save_state_id
 # * conv_states_stride_0 without static_cast<int64_t> prefix).
 # grep -nE "(states_id|init_state_id|save_state_id) \* conv_states_stride_0"

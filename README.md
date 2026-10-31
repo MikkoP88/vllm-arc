@@ -2,7 +2,7 @@
 
 **Certified vLLM stack for `qwen3.8-27b-fp8` (dense hybrid-GDN + MTP) on dual Intel® Arc™ Pro B70 — TP2.**
 
-A fork of [vllm-project/vllm-gaudi](https://github.com/vllm-project/vllm-gaudi) at **v0.30.0** (package name `vllm_gaudi` preserved; the Arc/XPU work lives in `vllm_gaudi/xpu/`). Certified release: **`rel/v0.30.0-b70-cert4`** — every gate GREEN with banked evidence (cert4 = cert3 engine + P6.5 length-gated chunk-store deferral [opt-in long-context profile, default posture identical to cert3]; see [Repository model](#repository-model)). P6.6 (prefill performance) closed **analysis-only**: the anatomy is documented in PERFORMANCE-arc ("Prefill anatomy" — device-bound ~34–40 % MFU, MNBT/thr knobs A/B'd and documented, host glue empty), no engine change — cert4 remains current. P6.7 (prefill structural rungs) closed **evidence-only**: compile REVAL rejected (MTP acceptance −35 % under `vllm_compile`, gate per Appendix H law #1), direct-fp8 GEMM rung negative (r40: on-image fp8_gemm slower than the deployed w8a16), ESIMD FA-kernel re-scoped by the r67b op-class trace (dense varlen 20.3 %, allreduce ~30 %, GEMM 39.7 %) — again no engine change, cert4 remains current.
+A fork of [vllm-project/vllm-gaudi](https://github.com/vllm-project/vllm-gaudi) at **v0.30.0** (package name `vllm_gaudi` preserved; the Arc/XPU work lives in `vllm_gaudi/xpu/`). Certified release: **`rel/v0.30.0-b70-cert4`** — every gate GREEN with banked evidence (cert4 = cert3 engine + P6.5 length-gated chunk-store deferral [opt-in long-context profile, default posture identical to cert3]; see [Repository model](#repository-model)). P6.6 (prefill performance) closed **analysis-only**: the anatomy is documented in PERFORMANCE-arc ("Prefill anatomy" — device-bound ~34–40 % MFU, MNBT/thr knobs A/B'd and documented, host glue empty), no engine change — cert4 remains current. P6.7 (prefill structural rungs) closed **evidence-only**: compile REVAL rejected (MTP acceptance −35 % under `vllm_compile`, gate per Appendix H law #1), direct-fp8 GEMM rung negative (r40: on-image fp8_gemm slower than the deployed w8a16), ESIMD FA-kernel re-scoped by the r67b op-class trace (dense varlen 20.3 %, allreduce ~30 %, GEMM 39.7 %) — again no engine change, cert4 remains current. P6.8 (publishing hygiene): intranet addresses scrubbed from the tracked tree, `tools/leak_sweep.sh` gate + plan §11 rule 9 — no engine change.
 
 ## What this fork adds
 
@@ -49,7 +49,12 @@ Full methodology and numbers: [`docs/PERFORMANCE-arc.md`](docs/PERFORMANCE-arc.m
 #    stash is ever lost.
 #
 #    repo side (your checkout of this fork):
-RIG=10.20.3.65                                  # <- your build host
+RIG=<build-host>                                # <- set: your rig/build host
+                                                 #    (never commit the real
+                                                 #    address — publishing-
+                                                 #    hygiene law, and run
+                                                 #    tools/leak_sweep.sh
+                                                 #    before pushing)
 SHA=$(git rev-parse rel/v0.30.0-b70-cert4)      # the certified commit
 git archive --format=tar -o /tmp/fork.tar rel/v0.30.0-b70-cert4
 scp /tmp/fork.tar root@$RIG:/root/build/
@@ -157,6 +162,13 @@ curl -s -o /dev/null -w "%{http_code}\n" -m 5 http://127.0.0.1:8000/health
 # none→thinking-off; default path identical either way; ships in-repo):
 #   boot:  add -v $(pwd)/assets/chat_template_qwen38_high.jinja:/root/chat_template_qwen38_high.jinja:ro
 #   serve: add --chat-template /root/chat_template_qwen38_high.jinja
+#
+# Optional — long-context serve profile (p65): for U32k/U64k-heavy faces,
+# the certified trio --long-prefill-token-threshold 2048 +
+# LMC_DEFER_CHUNK_STORE=1 + LMC_DEFER_MIN_TOKENS=40960 (U64k TTFT 51.16 s
+# with bystander p95/max 1580/1599 ms; WARNING: ungated use regresses
+# short-prefill r48k — see the cross-leg table before adopting):
+#   docs/CONFIGURATION-arc.md "Long-context serve profile (p65)".
 ```
 
 This quick start is the certified line (verified against rig
@@ -179,6 +191,7 @@ boot interface with posture knobs is `tools/serve_arc_b70.sh`
 - **`main` is linear and protected**: changes land as squash commits from per-item lanes (`feat/arc-pNN-*`); direct pushes, force pushes, and deletions are blocked; PRs are required.
 - **Certified releases are annotated tags** pointing at the certified `main` commit — current: `rel/v0.30.0-b70-cert4`; superseded: `rel/v0.30.0-b70-cert3` (identical default behavior, lacks the p65 deferral hunk), `rel/v0.30.0-b70-cert2` (0.5.5-era lmcache line — valid, older), `rel/v0.30.0-b70-cert` (predates the r46u glue-alias fix — never build from it). The Docker image embeds the fork SHA in `/etc/vllm-arc/IMAGE_MANIFEST` for A/B verification.
 - **Evidence is in-tree**: every validation leg banks to `results/YYYY-MM-DD-<phase>-r<leg>-<slug>/` (VERDICT + raw outputs) — 60+ legs, P0 through P6.
+- **No secrets or real host addresses in-tree (publishing-hygiene law)**: tracked == pushable, so credentials, rig/host addresses, and private identities never enter tracked files; banked logs carry redacted host addresses (`results/REDACTION-2026-10-31.md` documents the one-time scrub). `tools/leak_sweep.sh` must exit 0 before every push.
 - The `feat/arc-*` branches are kept deliberately: squash-merging leaves the per-item development history nowhere else.
 
 ## Upstream & license

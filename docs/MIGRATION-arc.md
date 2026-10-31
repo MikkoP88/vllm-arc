@@ -33,8 +33,10 @@ standalone loader — r42 Fix B).
 ## 2. Boot procedure (from W14-serving state)
 
 ```bash
-# on rig 10.20.3.65 (every ssh: export SSH_ASKPASS=/tmp/askpass.sh
-#                        SSH_ASKPASS_REQUIRE=force DISPLAY=:0)
+# on the rig host (address lives in the untracked local layer, never in
+#                  tracked files — publishing-hygiene law; every ssh:
+#                  export SSH_ASKPASS=/tmp/askpass.sh
+#                  SSH_ASKPASS_REQUIRE=force DISPLAY=:0)
 docker stop radiance-test                      # frees port 8000 + both GPUs
 ARC_IMAGE=vllm-arc:v0.30.0-b70-cert4 ARC_NAME=arc-test ARC_GRAPH=1 ARC_SPEC=3 \
   bash /root/build/serve_arc_b70.sh            # boot + serve as one unit

@@ -1,0 +1,5 @@
+# tools/leak_sweep.allow — path ERE <TAB> reason. Every entry must cite why
+# the hit is not a leak. Keep this list SHORT; entries are reviewed at audit.
+# Format: <path-ERE>\t<reason>
+^examples/data_parallel\.py$	upstream vllm-gaudi example placeholder IP (10.99.48.128) — not our infra, upstream file kept pristine
+^results/2026-10-30-p5-r45-env-log-audit/evidence\.txt$	owner git identity quoted by the r45 marker-free-commit verification — public via commit metadata by design; banked evidence bytes (law: results are immutable except the host-address exception)

@@ -1,7 +1,7 @@
 # p13 §6 contingency — vxk int64 wheel: BUILT + DEVICE-GATED CLEAN
 
 Date: 2026-10-27 (build 18:37–22:27 UTC gate window ~22:30–23:30 UTC)
-Rig: 10.20.3.65, GPUs drained (arc-test engine killed for the gate; W14
+Rig: 10.20.3.REDACTED, GPUs drained (arc-test engine killed for the gate; W14
 restore pending session end).
 
 ## Wheel
