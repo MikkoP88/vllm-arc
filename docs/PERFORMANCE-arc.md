@@ -12,7 +12,9 @@ superseded, not retracted.
 
 **This section is the current record**; every section below it is
 history (depth-selection and image lineage — still valid evidence,
-earlier engines). Identity: tag commit `b5df28b5`; default posture =
+earlier engines). **cert4 is both the LATEST and the FASTEST certified
+image** — nothing validated beats it (see the note under "Real-world
+faces" below for the two rejected faster-on-paper postures). Identity: tag commit `b5df28b5`; default posture =
 cert3's engine byte-identical (cert4 adds only the opt-in P6.5
 long-context deferral, inert without its envs); how to run: the 25-var
 chain in [`CONFIGURATION-arc.md`](CONFIGURATION-arc.md). Faces are
@@ -79,7 +81,17 @@ while the 8 h soak battery was cycling (conservative — a quiet-window
 run would be equal or faster). The 8k/16k/32k ladder and 64k face were
 measured on the certified image (r42/r43 legs and r46 leg respectively).
 
-## Real-world faces (r46t campaign, p46 image — recommended posture k3; recommendation stands on cert4)
+## Real-world faces — the k3 decision (r46t campaign)
+
+**Not a cert4 measurement** — this campaign ran on the p46 image
+(2026-10-30, the certified engine of that day). Its only job was depth
+selection under real-world sampling; it picked **k3**. cert4 is the
+same engine line (default postures unchanged cert2→cert3→cert4) and is
+the **fastest certified image** — it reproduces this campaign's greedy
+family exactly (299.9/84.5 → 299.15–300.48/84.53–84.86, family-exact;
+see the cert4 table above). The only faster-ever-measured posture
+(k5-depth, greedy face only) was dropped by owner directive — its edge
+inverts under real-world sampling.
 
 Full methodology and evidence: `results/2026-10-30-p5-r46t-temps/`
 (VERDICT + raw batteries + acceptance counters). Two request regimes,
