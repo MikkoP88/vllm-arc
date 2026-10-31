@@ -1,14 +1,13 @@
 # MIGRATION — W14 incumbent → vllm-arc certified stack (dual Arc Pro B70, TP2)
 
 Migration addendum banked at P5 close-out (2026-10-30) per the banking
-directive; identities re-pointed at the certified release image at P6
-close-out (2026-10-31, cert3) and again at P6.5 close-out (same day,
-cert4 — same default posture, adds the opt-in long-context profile).
-Target: serve **qwen3.8-27b-fp8** (dense
-hybrid-GDN, **MTP k3 recommended** — r46t real-world campaign; k5
-dropped) on `vllm-arc:v0.30.0-b70-cert4`, replacing the W14 incumbent
+directive; identities re-pointed at each certification close-out — most
+recently cert4 (P6.5, 2026-10-31; same default posture as cert3, adds
+the opt-in long-context profile). Target: serve **qwen3.8-27b-fp8**
+(dense hybrid-GDN, **MTP k3 recommended** — r46t real-world campaign) on
+`vllm-arc:v0.30.0-b70-cert4`, replacing the W14 incumbent
 (`radiance-test`, flash-next k3) as the rig's serving stack. Everything
-below is rig-proven (r42–r48l); evidence links at the end.
+below is rig-proven; the full phase-by-phase evidence table is §6.
 
 ## 1. Identities of record
 
@@ -16,9 +15,9 @@ below is rig-proven (r42–r48l); evidence links at the end.
 |---|---|
 | image | `vllm-arc:v0.30.0-b70-cert4` (tag-built from `rel/v0.30.0-b70-cert4` — cert4; default posture byte-identical to cert3, adds the P6.5 opt-in long-context profile) |
 | fork SHA baked | `b5df28b5` (IMAGE_MANIFEST `fork_sha=` == the annotated tag's commit; annotated tag `rel/v0.30.0-b70-cert4` on main) |
-| validation image | `vllm-arc:v0.30.0-b70-cert4` itself (28/28 p48_verify + 10/10 p65_verify image-native, certified default boot + run7n t0/t1.0 + zero fork-added WARN/ERROR + p65 face U32k/U64k — `results/2026-10-31-p65-cert4/`) |
+| validation image | `vllm-arc:v0.30.0-b70-cert4` itself (28/28 p48_verify + 10/10 p65_verify image-native — `results/2026-10-31-p65-cert4/`; plus the r70 comprehensive re-measurement — `results/2026-10-31-p70-r70-cert4-comprehensive/`) |
 | canonical serve script | rig `/root/build/serve_arc_b70.sh` (the uniform boot interface; carries the **25-var chain** incl. `LMCACHE_TRACK_USAGE=false` — P6.3; run with `ARC_IMAGE=vllm-arc:v0.30.0-b70-cert4 ARC_GRAPH=1 ARC_SPEC=3`) |
-| long-context profile | rig `/root/build/serve_arc_b70_defer2.sh` (the canonical 25-var chain + `--long-prefill-token-threshold 2048` + `LMC_DEFER_CHUNK_STORE=1` + `LMC_DEFER_MIN_TOKENS=40960` — P6.5; opt-in, see CONFIGURATION-arc "Long-context serve profile") |
+| long-context profile | rig `/root/build/serve_arc_b70_defer2.sh` (the canonical chain + `--long-prefill-token-threshold 2048` + `LMC_DEFER_CHUNK_STORE=1` + `LMC_DEFER_MIN_TOKENS=40960` — P6.5; opt-in, see CONFIGURATION-arc "Long-context serve profile") |
 | A/B fallback | same script with `ARC_SPEC=4` (MTP k4 — documented alternative for near-deterministic workloads) |
 | golden reference | rig `/root/build/p25/golden_ref.json` (md5 `e02cbb07…`; covers k4 AND k5 — r42/r43 proved byte-identical) |
 | regression matrix | rig `/root/build/matrix_arc/leg-2026-10-29-r44-certified/` (12 cells) |
@@ -64,11 +63,12 @@ lines (mode=none, FULL_DECODE_ONLY [1..320], MTP k3, align).
 2. **spec gate** (`arc_spec_gate.py`): pos1 ≥ 0.85 target (0.5 hard).
 3. **golden** (`p25/p32_golden.py`): 5/5 shas byte-identical to
    `golden_ref.json` (0-drift law).
-4. **run7n ×2**: solo ≥ 79.74, agg#2 ≥ 274.41 (bars; certified class
-   86.4–87.1 / 303.5–305.4 at k5) — **comparator law (r47c)**: these
-   bars are WARM-FLEET numbers; a fresh-boot first battery on the SAME
-   certified stack reads ~206/64.5. Gate a fresh boot against a
-   same-posture A/B, not the campaign table.
+4. **run7n ×2**: conservative floors solo ≥ 79.74, agg#2 ≥ 274.41;
+   certified steady family at k3 (cert4-native, 5 boots): solo
+   **83.7–84.9** / agg **294.7–300.5** — **comparator law (r47c)**:
+   a fresh-boot FIRST battery on the same stack reads lower (~206/64.5
+   warmup face); gate a fresh boot against a same-posture A/B, not the
+   campaign table.
 5. **matrix 12 cells** (`r44_matrix.sh`): no face −5% vs
    `leg-2026-10-29-r44-certified` (regression block).
 6. **integrity/determinism** (`r42/r42_integrity.py`): 5/5 + 3/3.
@@ -99,57 +99,26 @@ to `results/`.
 - `--mamba-cache-mode=align` is pinned in the serve line (posture-pin
   law: never ship its removal).
 
-## 6. Evidence
+## 6. Evidence table (phase ledger)
 
-- r42 certified-image boot + battery: `results/2026-10-30-p4-r42-certified-image/`
-- r43 k5 adoption (canonical posture): `results/2026-10-30-p4-r43-k5-adoption/`
-- r44 12-cell matrix (regression baseline): `results/2026-10-30-p4-r44-matrix-certified/`
-- r45 env/log audit + this addendum: `results/2026-10-30-p5-r45-env-log-audit/`
-- r46 8 h soak + mypy parity + 64k face (P5 gate of record): `results/2026-10-30-p5-r46-soak/`
-- r46t real-world campaign (k3 recommendation, k5 dropped, garbage suite): `results/2026-10-30-p5-r46t-temps/`
-- r47a P6.1 external-hit-rate root cause (the 0.0 % metric is a steady-state artifact, not a broken cache): `results/2026-10-30-p6-r47a-ext-hitrate/`
-- r47c P6.2+P6.3 gates on p48 (lmcache 0.5.6+arc1, zero fork-added WARN/ERROR, same-posture A/B = the comparator law): `results/2026-10-31-p6-r47c-p48-056gates/`
-- r47e cert3 tag-built image (manifest A/B + image-native 28/28): `results/2026-10-31-p6-r47e-cert3/`
-- r48a–r48l P6.5 stall attribution + length-gated chunk-store deferral (the wrong-file discovery, the attribution matrix, the fix legs): `results/2026-10-31-p65-r48a-stall-capture/`
-- cert4 gates (P6.5 close-out — candidate battery + p65 face on the shipped image): `results/2026-10-31-p65-cert4/`
-- p66 P6.6 prefill anatomy (r66a solo curve + device probe, r66b step
-  decomposition — prefill device-bound ~34–40 % MFU, host glue closed as
-  empty, the engine-map correction, r66c MNBT-16384 A/B — knob documented
-  not adopted; **analysis only, zero engine-code change: cert4 remains
-  the certified image, no cert5**):
-  `results/2026-10-31-p66-r66a-prefill-capture/`,
-  `results/2026-10-31-p66-r66b-step-decomposition/`,
-  `results/2026-10-31-p66-r66c-mnbt16k/`
-- p67 P6.7 prefill structural rungs (r67a compile REVAL — Appendix H law
-  #1 acceptance gate FIRED on 0.30: acceptance 3.4→2.2, decode −39 %,
-  prefill flat, mode stays NONE; plus the GDN capture-cap config law
-  `max_num_seqs×(k+1)`=256 under FULL_AND_PIECEWISE; r67b op-class XPU
-  trace — GEMM 39.7 % IS fp8_gemm_w8a16, allreduce ~30.4 %, dense FA
-  varlen 20.3 %, GDN 4.7 %, sparse machinery 0.1 %; rung C closed
-  negative on r40 evidence, rung B re-scoped to the dense varlen site as
-  a kernel project; **again zero engine-code change: cert4 remains the
-  certified image, no cert5**):
-  `results/2026-10-31-p67-r67a-compile-ab/`
-- p70 P6.10 comprehensive cert4-native measurement (owner directives
-  2026-10-31: current record must be measured on the latest certified
-  image + world-class methodology detail + the LMCache-vs-engine
-  attribution question + the r46t regression question): every
-  current-record face re-measured on cert4 (3 fresh boots; incident:
-  first launch accidentally ran the p67 compile posture — detected by
-  the r67a signature, killed, quarantined in `a_invalid_compile_posture/`,
-  serve line restored byte-identical to `tools/serve_arc_b70.sh`).
-  Answers banked: warm re-hits are served by **engine APC** (external
-  tier 0.0 %, 62 LMCache stores / 0 retrievals in the window —
-  LMCache's face is churn/eviction recovery); **r46t parity: no
-  regression** (`R46T_PARITY.md`, same-face deltas inside ±5 % with
-  most cells faster, acceptance ≤1.3 pp); record faces: agg
-  294.68/296.42 · solo 83.66–84.48 · U-bars 3.86/7.87 (first 16k
-  bar)/17.36/40.26 s · warm t2 0.99/1.08/1.11 s · acceptance 85.9 % /
-  3.58 · MTP-over-no-spec 2.34×/2.46× greedy, 1.54×/1.74× t1.0 xhigh,
-  2.28×/2.16× alt; docs rebuilt with a full measurement-methodology
-  section (identity table, face definitions, protocol laws, two-tier
-  cache model); leg c 4 h soak in flight at this commit (close-out
-  follow-up); **zero engine-code change: cert4 remains the certified
-  image, no cert5**):
-  `results/2026-10-31-p70-r70-cert4-comprehensive/`
-- env reference: `docs/envs.md`
+One row per phase/leg-group; the "what it proved" details live in
+PERFORMANCE-arc / TESTING-arc. All paths relative to `results/`.
+
+| Phase | Evidence | What it proved / banked |
+|---|---|---|
+| P4 r42 | `2026-10-30-p4-r42-certified-image/` | certified-image boot + battery; self-contained image (Fix A/B) |
+| P4 r43 | `2026-10-30-p4-r43-k5-adoption/` | k5 adoption (later demoted by r46t) |
+| P4 r44 | `2026-10-30-p4-r44-matrix-certified/` | 12-cell matrix — the regression baseline |
+| P5 r45 | `2026-10-30-p5-r45-env-log-audit/` | env/log audit + this addendum |
+| P5 r46 | `2026-10-30-p5-r46-soak/` | 8 h soak GREEN + mypy delta=0 + 64k face (P5 gate of record) |
+| P5 r46t | `2026-10-30-p5-r46t-temps/` | real-world campaign: **k3 recommended**, k5 dropped, garbage suite v2 |
+| P6.1 r47a | `2026-10-30-p6-r47a-ext-hitrate/` | external-hit-rate 0.0 % is a steady-state artifact, not a broken cache |
+| P6.2+6.3 r47c/p48 | `2026-10-31-p6-r47c-p48-056gates/` | lmcache 0.5.6+arc1 gates; zero fork-added WARN/ERROR; comparator law |
+| P6 r47e | `2026-10-31-p6-r47e-cert3/` | cert3 tag-built image (manifest A/B + image-native 28/28) |
+| P6.5 r48a–l | `2026-10-31-p65-r48a-stall-capture/` | stall attribution + length-gated chunk-store deferral (the p65 profile) |
+| P6.5 cert4 | `2026-10-31-p65-cert4/` | cert4 gates (candidate battery + p65 face on the shipped image) |
+| P6.6 p66 | `2026-10-31-p66-r66a-prefill-capture/`, `…r66b-step-decomposition/`, `…r66c-mnbt16k/` | prefill anatomy: device-bound ~34–40 % MFU, host glue empty, MNBT-16384 A/B not adopted — analysis only, no engine change |
+| P6.7 p67 | `2026-10-31-p67-r67a-compile-ab/` | compile REVAL rejected (acceptance −35 % gate); GDN capture-cap law; op-class trace — rungs closed/re-scoped, no engine change |
+| P6.10 p70 | `2026-10-31-p70-r70-cert4-comprehensive/` | every current-record face re-measured cert4-native (3 boots): tier attribution (warm re-hits = engine APC), r46t parity no-regression, no-spec A/B 1.5–2.5×; leg c soak close-out follows — no engine change, no cert5 |
+| P2P p71 | `2026-10-31-p71-r71-p2p-analysis/` | TP2 allreduce path solvability analysis (IOMMU dead, ACS verified off, oneCCL config surface extracted; D2D + CCL-diag legs queued) — analysis only |
+| env reference | `docs/envs.md` | complete control surface + naming map |
