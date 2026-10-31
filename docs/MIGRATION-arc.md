@@ -130,4 +130,26 @@ to `results/`.
   a kernel project; **again zero engine-code change: cert4 remains the
   certified image, no cert5**):
   `results/2026-10-31-p67-r67a-compile-ab/`
+- p70 P6.10 comprehensive cert4-native measurement (owner directives
+  2026-10-31: current record must be measured on the latest certified
+  image + world-class methodology detail + the LMCache-vs-engine
+  attribution question + the r46t regression question): every
+  current-record face re-measured on cert4 (3 fresh boots; incident:
+  first launch accidentally ran the p67 compile posture — detected by
+  the r67a signature, killed, quarantined in `a_invalid_compile_posture/`,
+  serve line restored byte-identical to `tools/serve_arc_b70.sh`).
+  Answers banked: warm re-hits are served by **engine APC** (external
+  tier 0.0 %, 62 LMCache stores / 0 retrievals in the window —
+  LMCache's face is churn/eviction recovery); **r46t parity: no
+  regression** (`R46T_PARITY.md`, same-face deltas inside ±5 % with
+  most cells faster, acceptance ≤1.3 pp); record faces: agg
+  294.68/296.42 · solo 83.66–84.48 · U-bars 3.86/7.87 (first 16k
+  bar)/17.36/40.26 s · warm t2 0.99/1.08/1.11 s · acceptance 85.9 % /
+  3.58 · MTP-over-no-spec 2.34×/2.46× greedy, 1.54×/1.74× t1.0 xhigh,
+  2.28×/2.16× alt; docs rebuilt with a full measurement-methodology
+  section (identity table, face definitions, protocol laws, two-tier
+  cache model); leg c 4 h soak in flight at this commit (close-out
+  follow-up); **zero engine-code change: cert4 remains the certified
+  image, no cert5**):
+  `results/2026-10-31-p70-r70-cert4-comprehensive/`
 - env reference: `docs/envs.md`

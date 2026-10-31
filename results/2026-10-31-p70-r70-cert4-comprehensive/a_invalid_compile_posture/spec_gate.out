@@ -1,0 +1,4 @@
+SPEC_GATE {"wall_s": 4.6, "streams_ok": "4/4", "drafts": 375, "draft_tokens": 1125, "accepted": 421, "pos": {"0": 0.4507, "1": 0.368, "2": 0.304, "3": 0.0}, "pos1": 0.4507, "acceptance": 0.3742, "mean_acceptance_length": 2.12, "hard": 0.5, "target": 0.85}
+SPEC_GATE log_window: (APIServer pid=13) INFO 10-31 10:21:17 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 2.16, Accepted throughput: 66.89 tokens/s, Drafted throughput: 173.38 tokens/s, Accepted: 669 tokens, Drafted: 1734 tokens, Per-position acceptance rate: 0.453, 0.381, 0.324, Avg Draft acceptance rate: 38.6%
+SPEC_GATE FAIL: pos1=0.4507 < 0.5 hard gate — wrong-logits family (D r1 mojibake signature)
+spec_gate_rc=2

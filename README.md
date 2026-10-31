@@ -2,7 +2,7 @@
 
 **Certified vLLM stack for `qwen3.8-27b-fp8` (dense hybrid-GDN + MTP) on dual Intel® Arc™ Pro B70 — TP2.**
 
-A fork of [vllm-project/vllm-gaudi](https://github.com/vllm-project/vllm-gaudi) at **v0.30.0** (package name `vllm_gaudi` preserved; the Arc/XPU work lives in `vllm_gaudi/xpu/`). Certified release: **`rel/v0.30.0-b70-cert4`** — every gate GREEN with banked evidence (cert4 = cert3 engine + P6.5 length-gated chunk-store deferral [opt-in long-context profile, default posture identical to cert3]; see [Repository model](#repository-model)). P6.6 (prefill performance) closed **analysis-only**: the anatomy is documented in PERFORMANCE-arc ("Prefill anatomy" — device-bound ~34–40 % MFU, MNBT/thr knobs A/B'd and documented, host glue empty), no engine change — cert4 remains current. P6.7 (prefill structural rungs) closed **evidence-only**: compile REVAL rejected (MTP acceptance −35 % under `vllm_compile`, gate per Appendix H law #1), direct-fp8 GEMM rung negative (r40: on-image fp8_gemm slower than the deployed w8a16), ESIMD FA-kernel re-scoped by the r67b op-class trace (dense varlen 20.3 %, allreduce ~30 %, GEMM 39.7 %) — again no engine change, cert4 remains current. P6.8 (publishing hygiene): intranet addresses scrubbed from the tracked tree, `tools/leak_sweep.sh` gate + plan §11 rule 9 — no engine change.
+A fork of [vllm-project/vllm-gaudi](https://github.com/vllm-project/vllm-gaudi) at **v0.30.0** (package name `vllm_gaudi` preserved; the Arc/XPU work lives in `vllm_gaudi/xpu/`). Certified release: **`rel/v0.30.0-b70-cert4`** — every gate GREEN with banked evidence (cert4 = cert3 engine + P6.5 length-gated chunk-store deferral [opt-in long-context profile, default posture identical to cert3]; see [Repository model](#repository-model)). P6.6 (prefill performance) closed **analysis-only**: the anatomy is documented in PERFORMANCE-arc ("Prefill anatomy" — device-bound ~34–40 % MFU, MNBT/thr knobs A/B'd and documented, host glue empty), no engine change — cert4 remains current. P6.7 (prefill structural rungs) closed **evidence-only**: compile REVAL rejected (MTP acceptance −35 % under `vllm_compile`, gate per Appendix H law #1), direct-fp8 GEMM rung negative (r40: on-image fp8_gemm slower than the deployed w8a16), ESIMD FA-kernel re-scoped by the r67b op-class trace (dense varlen 20.3 %, allreduce ~30 %, GEMM 39.7 %) — again no engine change, cert4 remains current. P6.8 (publishing hygiene): intranet addresses scrubbed from the tracked tree, `tools/leak_sweep.sh` gate + plan §11 rule 9 — no engine change. P6.10 (comprehensive cert4 measurement): every current-record face re-measured natively on cert4 (r70 — throughput/TTFT/warm-prefix-with-cache-tier-attribution/acceptance/no-spec A/B/soak); docs rebuilt cert4-native-only, no engine change — cert4 remains current.
 
 ## What this fork adds
 
@@ -19,17 +19,19 @@ A fork of [vllm-project/vllm-gaudi](https://github.com/vllm-project/vllm-gaudi) 
 
 ## Certified performance (dual Arc Pro B70, TP2, qwen3.8-27b-fp8)
 
+Every value below is **measured natively on the certified image** `vllm-arc:v0.30.0-b70-cert4` (r70 comprehensive campaign + certification legs — methodology, face definitions, and per-face provenance in [`docs/PERFORMANCE-arc.md`](docs/PERFORMANCE-arc.md)):
+
 | Face | Value |
 |---|---|
-| agg4x256 steady throughput (greedy, MTP k3) | **299.9 tok/s** |
-| solo200 throughput (incl. TTFT, k3) | **84.5 tok/s** |
-| TTFT t1 8k / 16k / 32k | 3.4 s / 7.3 s / 15.6 s |
-| TTFT t1 64k | 40.9 s (concurrent-load conservative) |
-| Warm prefix re-hit (8k) | **740 ms** |
-| MTP value over no-spec (real-world sampled faces) | **1.6–2.1×** |
-| 8 h soak | 46 cycles, zero errors, integrity 46/46, zero golden drift |
+| agg4x256 steady throughput (greedy, MTP k3) | **294.7–300.5 tok/s** (5 fresh boots) |
+| solo200 throughput (incl. TTFT, k3) | **83.7–84.9 tok/s** |
+| TTFT solo 8k / 16k / 32k / 64k (uniform-prompt faces) | 3.86 / 7.87 / 17.36 / 40.26 s |
+| Warm prefix re-hit 8k / 16k / 32k | **0.99 / 1.08 / 1.11 s** (engine APC tier — LMCache external tier 0.0 % in the measured window) |
+| MTP k3 acceptance (greedy) | **85.9 %** (mean accepted length 3.58) |
+| MTP value over no-spec (cert4 A/B, by face) | **1.5–2.5×** |
 
-Full methodology and numbers: [`docs/PERFORMANCE-arc.md`](docs/PERFORMANCE-arc.md).
+Sampled/thinking faces, the temperature sweep, cache-tier attribution,
+and stability detail: [`docs/PERFORMANCE-arc.md`](docs/PERFORMANCE-arc.md).
 
 ## Quick start
 

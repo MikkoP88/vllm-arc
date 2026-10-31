@@ -1,0 +1,12 @@
+[10:25:07] r70 campaign start (img=vllm-arc:v0.30.0-b70-cert4 soak=4h)
+[10:25:07] LEG A: stopping W14 incumbent; boot cert4 default k3
+[10:30:22] arc-r70a health 200 (spec=3)
+survival http=200 dt=7.33s
+[10:35:17] LEG A done
+[10:35:17] LEG B: boot cert4 no-spec (ARC_SPEC=0)
+[10:39:21] arc-r70b health 200 (spec=0)
+survival http=200 dt=6.17s
+[10:41:05] LEG B done
+[10:41:05] LEG C: boot cert4 default k3 — soak 4h
+[10:45:48] arc-r70c health 200 (spec=3)
+survival http=200 dt=7.24s
