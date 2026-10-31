@@ -6,7 +6,7 @@ A fork of [vllm-project/vllm-gaudi](https://github.com/vllm-project/vllm-gaudi) 
 
 - Certified release: **`rel/v0.30.0-b70-cert4`** — every gate GREEN with banked evidence. cert4 = cert3's engine + the P6.5 opt-in long-context profile (default posture identical to cert3).
 - **Project status: P0–P6.10 complete.** All phases closed with evidence — engine hardening (P2), cache lane (P3), certification battery (P4), audits + soak (P5), measurement/analysis phases P6.1–P6.10 (external-hit-rate truth, comparator law, telemetry off, publishing hygiene, main currency, and the comprehensive cert4-native re-measurement of every current-record face). Zero engine-code change since cert3's default posture: **cert4 is both the latest and the fastest certified image** — nothing validated beats it (rejected-on-evidence: k5 depth, torch.compile). Full phase ledger: [`docs/TESTING-arc.md`](docs/TESTING-arc.md) (validation record) and [`docs/MIGRATION-arc.md`](docs/MIGRATION-arc.md) (evidence table).
-- **Open improvement lanes** (all analysis-side, none certified yet): ESIMD dense-FA kernel project (r67b re-scope), TP2 allreduce path analysis (r71, `tools/pcie/README.md`).
+- **Open improvement lanes** (all analysis-side, none certified yet): ESIMD dense-FA kernel project (r67b re-scope). The TP2 allreduce path question is **closed** — r71 proved direct P2P (10.23 GB/s D2D; all collectives on the `topo sycl` device path; `tools/pcie/README.md`).
 
 ## What this fork adds
 
