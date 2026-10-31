@@ -1,0 +1,45 @@
+INFO 10-31 02:38:53 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+INFO 10-31 02:38:53 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+INFO 10-31 02:38:53 [__init__.py:54] - hpu -> vllm_gaudi:register
+INFO 10-31 02:38:53 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+INFO 10-31 02:39:06 [graph_safe_output.py:665] ArcXpuPlatform: XPU graph boundary hygiene installed (pid 7, XPUGraph capture_begin/capture_end/replay + graph context __exit__ wrapped).
+INFO 10-31 02:39:06 [graph_safe_output.py:791] ArcXpuPlatform: zombie stream-reroute guards installed (pid 7, set_stream substitution + wait_stream skip + Event.record reroute + synchronize tripwire).
+INFO 10-31 02:39:06 [graph_safe_output.py:925] ArcXpuPlatform: runner-entry hygiene installed (pid 7, GPUModelRunner.execute_model + sample_tokens wrapped).
+INFO 10-31 02:39:06 [graph_safe_output.py:971] ArcXpuPlatform: capture-stream fix installed (pid 7, captures ride torch.xpu.graph.default_capture_stream, EAGERLY INITED before capture #1 — the serving default never enters capture; champion 0.26.1 discipline, r9).
+INFO 10-31 02:39:06 [graph_safe_output.py:1112] ArcXpuPlatform: graph-safe output patch installed (pid 7, AsyncOutput/AsyncPoolingOutput __init__ + get_output wrapped).
+PASS  register() -> vllm_gaudi.xpu.platform.ArcXpuPlatform
+INFO 10-31 02:39:06 [platform.py:172] ArcXpuPlatform: wheel hook torch_ops <- patches.lmcint.lmc_twohs_transfer OK
+[32;20m[2026-10-31 02:39:06,483] LMCache INFO:[0m torch_dev=<module 'torch.xpu' from '/opt/venv/lib/python3.12/site-packages/torch/xpu/__init__.py'>, torch_device_type=xpu [3m(_device_detect.py:311:lmcache.v1.platform._device_detect)[0m
+PASS  lmcache version 0.5.6+arc1 (got 0.5.6+arc1)
+PASS  lmcache.xpu_ops native SYCL module imports
+PASS  e01 installed: 5-op transfer re-pin incl. single_layer_kv_transfer_sgl
+PASS  e01 installed: p40c env-gated pinned-pair re-pin present
+PASS  XpuDeviceOps instantiates on 0.5.6 layout
+PASS  ensure_native re-pin multi_layer_kv_transfer -> torch_ops object (p40d)
+PASS  ensure_native re-pin multi_layer_kv_transfer_unilateral -> torch_ops object (p40d)
+PASS  ensure_native re-pin single_layer_kv_transfer -> torch_ops object (p40d)
+PASS  ensure_native re-pin single_layer_kv_transfer_sgl -> torch_ops object (p40d)
+PASS  ensure_native re-pin multi_layer_block_kv_transfer -> torch_ops object (p40d)
+PASS  r43 twohs wrap live on torch_ops (ensure_native re-pins it at engine init)
+PASS  tensor_from_ptr override present (no base ValueError)
+PASS  is_usage_tracking_enabled()=False under LMCACHE_TRACK_USAGE=false
+INFO 10-31 02:39:06 [platform.py:172] ArcXpuPlatform: wheel hook mamba_utils <- patches.mamba_lmcache_glue OK
+PASS  alias registered -> mamba_utils
+PASS  mod has _LMC_BOUNDARY_REGISTRY
+PASS  mod has _LMC_SEED_OVERRIDE
+PASS  mod has _lmc_snap_boundary
+PASS  mod has _lmc_seed_write
+PASS  mod has _FP16_SEED_REPAIR
+PASS  attached fn loaded from install dir
+PASS  _glue primary resolves
+PASS  glue attrs complete
+[p41c] mamba_hybrid snap glue installed (pid=7)
+INFO 10-31 02:39:06 [platform.py:172] ArcXpuPlatform: wheel hook mamba_hybrid <- patches.mamba_hybrid_snap_glue OK
+PASS  MambaHybridModelState present
+PASS  p41c wrap live
+PASS  post-wrap _glue resolves
+PASS  lmc_xpu_pinned_env hook removed from _WHEEL_HOOKS (absorbed e01)
+PASS  r43 hooks still registered (torch_ops + detector)
+
+TOTAL 28 checks, 28 pass, 0 fail
+P48_VERIFY: ALL_GREEN

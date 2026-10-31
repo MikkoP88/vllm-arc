@@ -1,0 +1,11 @@
+PASS  ADP file exists: /opt/venv/lib/python3.12/site-packages/vllm_gaudi/xpu/patches/lmcint/vllm_v1_adapter.py
+PASS  src-override maps vendored adapter fullname -> lmcint file
+PASS  defer_chunk_store present in row builder
+PASS  length gate LMC_DEFER_MIN_TOKENS present
+PASS  deferral default OFF (env default '0')
+PASS  can_save gated on defer
+PASS  num_saved_tokens advance gated on defer
+PASS  worker loops guard can_save (3 sites)
+PASS  no probe instrumentation (ARC_P65_) in shipped file
+PASS  lmcint adapter compiles
+P65_CHECKS: 10/10 PASS

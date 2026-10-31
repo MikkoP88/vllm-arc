@@ -2,7 +2,7 @@
 
 **Certified vLLM stack for `qwen3.8-27b-fp8` (dense hybrid-GDN + MTP) on dual Intel® Arc™ Pro B70 — TP2.**
 
-A fork of [vllm-project/vllm-gaudi](https://github.com/vllm-project/vllm-gaudi) at **v0.30.0** (package name `vllm_gaudi` preserved; the Arc/XPU work lives in `vllm_gaudi/xpu/`). Certified release: **`rel/v0.30.0-b70-cert3`** — every gate GREEN with banked evidence (cert3 = cert2 engine + lmcache 0.5.6+arc1 + P6.3 serve hygiene; see [Repository model](#repository-model)).
+A fork of [vllm-project/vllm-gaudi](https://github.com/vllm-project/vllm-gaudi) at **v0.30.0** (package name `vllm_gaudi` preserved; the Arc/XPU work lives in `vllm_gaudi/xpu/`). Certified release: **`rel/v0.30.0-b70-cert4`** — every gate GREEN with banked evidence (cert4 = cert3 engine + P6.5 length-gated chunk-store deferral [opt-in long-context profile, default posture identical to cert3]; see [Repository model](#repository-model)).
 
 ## What this fork adds
 
@@ -50,24 +50,27 @@ Full methodology and numbers: [`docs/PERFORMANCE-arc.md`](docs/PERFORMANCE-arc.m
 #
 #    repo side (your checkout of this fork):
 RIG=10.20.3.65                                  # <- your build host
-SHA=$(git rev-parse rel/v0.30.0-b70-cert3)      # the certified commit
-git archive --format=tar -o /tmp/fork.tar rel/v0.30.0-b70-cert3
+SHA=$(git rev-parse rel/v0.30.0-b70-cert4)      # the certified commit
+git archive --format=tar -o /tmp/fork.tar rel/v0.30.0-b70-cert4
 scp /tmp/fork.tar root@$RIG:/root/build/
 #    rig side (via ssh — same effect as running them on the host):
 ssh root@$RIG 'tar -xOf /root/build/fork.tar tools/build_image.sh > /root/build/build_image.sh'
-ssh root@$RIG bash /root/build/build_image.sh /root/build/fork.tar $SHA vllm-arc:v0.30.0-b70-cert3
+ssh root@$RIG bash /root/build/build_image.sh /root/build/fork.tar $SHA vllm-arc:v0.30.0-b70-cert4
 #    -> wheel_guard PASSes (4/4 md5s), in-build gates run, IMAGE_MANIFEST
 #       records fork_sha == $SHA (verify: docker run --rm --entrypoint cat
-#       vllm-arc:v0.30.0-b70-cert3 /etc/vllm-arc/IMAGE_MANIFEST).
+#       vllm-arc:v0.30.0-b70-cert4 /etc/vllm-arc/IMAGE_MANIFEST).
 #       ~15 min cold; ~1 min when only the source changed (stack layers
 #       cached — layer-order law in the Dockerfile).
 #
-#    Tag lineage: cert3 = the certified release (cert2's engine + the
-#    P6.2 lmcache 0.5.6+arc1 wheel + the P6.3 serve-hygiene fixes;
-#    gates results/2026-10-31-p6-r47c-p48-056gates/). Superseded:
-#    rel/v0.30.0-b70-cert2 (0.5.5-era wheel — still valid, older
-#    lmcache line), rel/v0.30.0-b70-cert (predates r46u — never build
-#    from it).
+#    Tag lineage: cert4 = the certified release (cert3's engine + the
+#    P6.5 chunk-store deferral in the lmcint adapter — opt-in via
+#    LMC_DEFER_CHUNK_STORE=1 + LMC_DEFER_MIN_TOKENS=40960 under
+#    --long-prefill-token-threshold 2048; default posture identical to
+#    cert3; gates results/2026-10-31-p65-cert4/). Superseded:
+#    rel/v0.30.0-b70-cert3 (identical default behavior, lacks the
+#    deferral hunk), rel/v0.30.0-b70-cert2 (0.5.5-era wheel — still
+#    valid, older lmcache line), rel/v0.30.0-b70-cert (predates r46u —
+#    never build from it).
 
 # 2. Boot — the validated posture, annotated:
 #    --privileged   REQUIRED: with CCL_ZE_IPC_EXCHANGE=pidfd it keeps
@@ -86,7 +89,7 @@ docker run -d --name arc-test --privileged --network host --ipc host \
   -v ~/.cache/arc/inductor:/root/.inductor_cache \
   -e VLLM_ALLOW_LONG_MAX_MODEL_LEN=1 \
   -e VLLM_WORKER_MULTIPROC_METHOD=spawn \
-  --entrypoint bash vllm-arc:v0.30.0-b70-cert3 -c "sleep infinity"
+  --entrypoint bash vllm-arc:v0.30.0-b70-cert4 -c "sleep infinity"
 
 # 3. Serve — the certified line as an annotated script (the rig pattern:
 #    script + docker cp + exec; logs land in /root/serve_full.log)
@@ -174,7 +177,7 @@ boot interface with posture knobs is `tools/serve_arc_b70.sh`
 ## Repository model
 
 - **`main` is linear and protected**: changes land as squash commits from per-item lanes (`feat/arc-pNN-*`); direct pushes, force pushes, and deletions are blocked; PRs are required.
-- **Certified releases are annotated tags** pointing at the certified `main` commit — current: `rel/v0.30.0-b70-cert3`; superseded: `rel/v0.30.0-b70-cert2` (0.5.5-era lmcache line — valid, older), `rel/v0.30.0-b70-cert` (predates the r46u glue-alias fix — never build from it). The Docker image embeds the fork SHA in `/etc/vllm-arc/IMAGE_MANIFEST` for A/B verification.
+- **Certified releases are annotated tags** pointing at the certified `main` commit — current: `rel/v0.30.0-b70-cert4`; superseded: `rel/v0.30.0-b70-cert3` (identical default behavior, lacks the p65 deferral hunk), `rel/v0.30.0-b70-cert2` (0.5.5-era lmcache line — valid, older), `rel/v0.30.0-b70-cert` (predates the r46u glue-alias fix — never build from it). The Docker image embeds the fork SHA in `/etc/vllm-arc/IMAGE_MANIFEST` for A/B verification.
 - **Evidence is in-tree**: every validation leg banks to `results/YYYY-MM-DD-<phase>-r<leg>-<slug>/` (VERDICT + raw outputs) — 60+ legs, P0 through P6.
 - The `feat/arc-*` branches are kept deliberately: squash-merging leaves the per-item development history nowhere else.
 

@@ -10,7 +10,7 @@ complete control surface + naming map); test definitions in
 
 | Item | Value |
 |---|---|
-| Image | `vllm-arc:v0.30.0-b70-cert3` (**certified release**, tag `rel/v0.30.0-b70-cert3` = cert2 engine + lmcache 0.5.6+arc1 [P6.2] + P6.3 serve hygiene; gates `results/2026-10-31-p6-r47c-p48-056gates/`) / `v0.30.0-b70-cert2` (**superseded by cert3** — 0.5.5-era lmcache line, still valid) / `v0.30.0-b70-p48` (r47c gate image, same engine tree as cert3) / `v0.30.0-b70-p47` (r46v build-validation) / `v0.30.0-b70-p46` (r46t campaign) / `v0.30.0-b70-cert` (**superseded — predates r46u, never build from it**) |
+| Image | `vllm-arc:v0.30.0-b70-cert4` (**certified release**, tag `rel/v0.30.0-b70-cert4` = cert3 engine + P6.5 length-gated chunk-store deferral in the lmcint adapter [opt-in, default posture identical to cert3]; gates `results/2026-10-31-p65-cert4/`) / `v0.30.0-b70-cert3` (**superseded by cert4** — identical default behavior, lacks the deferral hunk; gates `results/2026-10-31-p6-r47c-p48-056gates/`) / `v0.30.0-b70-cert2` (0.5.5-era lmcache line, still valid) / `v0.30.0-b70-p48` (r47c gate image, same engine tree as cert3) / `v0.30.0-b70-p47` (r46v build-validation) / `v0.30.0-b70-p46` (r46t campaign) / `v0.30.0-b70-cert` (**superseded — predates r46u, never build from it**) |
 | Manifest | `/etc/vllm-arc/IMAGE_MANIFEST` inside the image — fork SHA, wheel pins, dependency closure (`lmcache_closure=`), build host |
 | Base | upstream vllm-gaudi v0.30.0 + pinned wheels (vllm 0.30.0+xpu, triton 3.7.2+xpu, vllm_xpu_kernels 0.1.14.1+arc3, lmcache 0.5.6+arc1) |
 
@@ -40,7 +40,7 @@ docker run -d --name arc-test \
   -v /root/build/inductor_cache:/root/.inductor_cache \
   -e VLLM_ALLOW_LONG_MAX_MODEL_LEN=1 \
   -e VLLM_WORKER_MULTIPROC_METHOD=spawn \
-  --entrypoint /bin/bash vllm-arc:v0.30.0-b70-cert3 -c 'sleep infinity'
+  --entrypoint /bin/bash vllm-arc:v0.30.0-b70-cert4 -c 'sleep infinity'
 ```
 
 These are the validated boot bytes (rig `r46t_campaign.sh:54-63`,
@@ -204,6 +204,59 @@ pays when acceptance is high; real-world sampled thinking sits well
 below the crossover. Spec depth is serve-time CLI only — changing it
 rebuilds no image.
 
+### Long-context serve profile (p65) — opt-in, for fleets serving ≥48k prompts
+
+**Default posture is unchanged** — the certified serve block above sets
+none of this; the deferral hunk is inert without the envs (cert4 gate:
+default-posture boot + run7n + WARN/ERROR audit byte-class-identical to
+cert3). Enable this profile only when long prompts (≥ ~48k tokens)
+arrive into a fleet with concurrent decoders.
+
+**The problem it fixes** (P6.5, `results/2026-10-31-p65-r48a-stall-capture/`):
+when a ~64k-token prompt is prefilled alongside ~12 decoding bystanders
+under `--long-prefill-token-threshold 2048`, every prefill chunk emits
+its own LMCache store event; the ~38 events × ~79 ms fixed overhead
+amplify into **+24.6 s** TTFT for the long stream (76.89 s vs 52.27 s
+with no connector) and bystander inter-token gap p95 **4829 ms** vs
+~2000 ms baseline. Attribution: ~70 % connector store path ([vii-a]),
+~25 % engine-side chunk cost ([viii], the P6.6 lane). At 32k the
+per-chunk events are ≈ free (LMC ≡ no-LMC, 22.78 vs 22.39 s) — the fix
+is a 64k-class phenomenon only.
+
+**The profile** (all three together; rig:
+`/root/build/serve_arc_b70_defer2.sh`):
+
+```bash
+# 1) engine CLI (with the certified line's other flags):
+--long-prefill-token-threshold 2048
+# 2) env, inside the LMC_ENV set (keeps the 25-var chain + 2):
+export LMC_DEFER_CHUNK_STORE=1
+export LMC_DEFER_MIN_TOKENS=40960
+```
+
+Semantics: intermediate prefill-chunk rows keep their row (loads and
+mamba addressing still ride it) but carry `can_save=False` and leave
+`num_saved_tokens` un-advanced, so the final chunk stores the whole
+span in **one** event. `LMC_DEFER_MIN_TOKENS` gates by prompt length —
+below it, per-chunk stores are kept (they are free at 32k, and the
+one-shot store would *regress* that face by +4.2 s: the ~0.5 GB
+contended store runs at ~0.24 GB/s). 40960 splits the two regimes.
+
+**Validated faces** (r48l + cert4, W2MT 4000, fresh boot):
+
+| Face | no-thr baseline | thr2048 no-defer | thr2048 + defer (this profile) |
+|---|---|---|---|
+| U64k TTFT | 41.61 s (12 bys disrupted, p95 4829 ms) | 56.10 s | **51.90–51.95 s** |
+| U64k bystander gap p95 / max | 2027 / 2347 ms (no-LMC) | 1969 / 2242 ms | **1585 / 1612–1997 ms** |
+| U32k TTFT | — | 22.88–23.15 s | **22.88–23.15 s** (gate: unchanged) |
+| run7n t0 agg / solo | 299.9 / 84.5 | 295–301 / 83.7–84.5 | **zero cost** |
+
+Store signature of the fix working: `1664`-class chunk stores = 0 for a
+64k prompt, replaced by one `63232` final; at 32k the ~20 `1664`-class
+stores are present as normal (the gate held). Do **not** lower
+`LMC_DEFER_MIN_TOKENS` below 40960 for mixed fleets — r48k measured the
+32k regression; raising it (e.g. 49152) only narrows coverage.
+
 ## The 25-var chain (reference)
 
 The step blocks above already carry all 25. This section is the
@@ -275,6 +328,8 @@ may change and when:
 | `VLLM_ARC_LOOKUP_ELIDE` | unset (**0 = OFF — int tokens, opt-in**) | diagnostic-only; forfeits real joint loads |
 | `VLLM_ARC_XG_COMPACT` | unset (`false`) | `=1` when you want compact-JSON xgrammar structured output (appends `--structured-outputs-config`) |
 | `VLLM_ARC_GMU_RELAX` | unset (`0`) | set `0.8` if boot aborts on headroom at higher utilization (relaxes only the engine default 0.92) |
+| `LMC_DEFER_CHUNK_STORE` | unset (`0` = OFF — certified default) | `=1` only in the long-context profile (above), together with `--long-prefill-token-threshold 2048` and the min-tokens gate |
+| `LMC_DEFER_MIN_TOKENS` | unset (`0` = defer every chunked prefill) | certified profile value **40960**; lowering it below ~40960 regresses 32k-class prompts (+4.2 s, r48k) |
 | `LMC_BOUNDARY_KEEP` / `LMC_BOUNDARY_CAP` | unset (8 / 48) | raise only with boundary-registry pressure evidence |
 | `LMC_BOUND_STATS` / `LMC_BOUND_MD5` | unset (logging ON) | `=0` to quiet boundary telemetry |
 | `ARC_SNAP_PROBE` | unset (silent) | diagnostics only (leg telemetry) |

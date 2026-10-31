@@ -1,0 +1,43 @@
+[32;20m[2026-10-31 02:39:11,758] LMCache INFO:[0m torch_dev=<module 'torch.xpu' from '/opt/venv/lib/python3.12/site-packages/torch/xpu/__init__.py'>, torch_device_type=xpu [3m(_device_detect.py:311:lmcache.v1.platform._device_detect)[0m
+[32;20m[2026-10-31 02:39:17,975] LMCache INFO:[0m Discovered API module: env_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+[32;20m[2026-10-31 02:39:18,000] LMCache INFO:[0m Discovered API module: loglevel_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+[32;20m[2026-10-31 02:39:18,001] LMCache INFO:[0m Discovered API module: metrics_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+[32;20m[2026-10-31 02:39:18,005] LMCache INFO:[0m Discovered API module: periodic_thread_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+[32;20m[2026-10-31 02:39:18,006] LMCache INFO:[0m Discovered API module: run_script_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+[32;20m[2026-10-31 02:39:18,007] LMCache INFO:[0m Discovered API module: thread_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+[32;20m[2026-10-31 02:39:18,014] LMCache INFO:[0m Discovered API module: backend_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+[32;20m[2026-10-31 02:39:18,015] LMCache INFO:[0m Discovered API module: bypass_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+[32;20m[2026-10-31 02:39:18,022] LMCache INFO:[0m Discovered API module: cache_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+[32;20m[2026-10-31 02:39:18,029] LMCache INFO:[0m Discovered API module: chunk_statistics_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+[32;20m[2026-10-31 02:39:18,031] LMCache INFO:[0m Discovered API module: conf_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+[32;20m[2026-10-31 02:39:18,032] LMCache INFO:[0m Discovered API module: freeze_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+[32;20m[2026-10-31 02:39:18,033] LMCache INFO:[0m Discovered API module: hot_cache_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+[32;20m[2026-10-31 02:39:18,034] LMCache INFO:[0m Discovered API module: inference_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+[32;20m[2026-10-31 02:39:18,039] LMCache INFO:[0m Discovered API module: load_fs_chunks_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+[32;20m[2026-10-31 02:39:18,040] LMCache INFO:[0m Discovered API module: lookup_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+[32;20m[2026-10-31 02:39:18,041] LMCache INFO:[0m Discovered API module: version_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+[32;20m[2026-10-31 02:39:18,056] LMCache INFO:[0m Discovered API module: key_stats_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+[32;20m[2026-10-31 02:39:18,059] LMCache INFO:[0m Discovered API module: worker_info_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+INFO 10-31 02:39:18 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+INFO 10-31 02:39:18 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+INFO 10-31 02:39:18 [__init__.py:54] - hpu -> vllm_gaudi:register
+INFO 10-31 02:39:18 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+INFO 10-31 02:39:18 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+INFO 10-31 02:39:18 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+INFO 10-31 02:39:18 [__init__.py:54] - hpu -> vllm_gaudi:register
+INFO 10-31 02:39:18 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+INFO 10-31 02:39:18 [__init__.py:272] Platform plugin arc is activated
+INFO 10-31 02:39:18 [__init__.py:272] Platform plugin arc is activated
+Traceback (most recent call last):
+  File "/tmp/p65_verify.py", line 15, in <module>
+    from vllm_gaudi.xpu.patches.lmcint import vllm_v1_adapter as adp  # noqa: E402
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/vllm_gaudi/xpu/patches/lmcint/__init__.py", line 4, in <module>
+    from . import vllm_v1_adapter
+  File "/opt/venv/lib/python3.12/site-packages/vllm_gaudi/xpu/patches/lmcint/vllm_v1_adapter.py", line 52, in <module>
+    from vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.utils import (
+  File "/opt/venv/lib/python3.12/site-packages/vllm/distributed/kv_transfer/kv_connector/v1/lmcache_integration/__init__.py", line 5, in <module>
+    from . import multi_process_adapter, vllm_v1_adapter
+  File "/opt/venv/lib/python3.12/site-packages/vllm/distributed/kv_transfer/kv_connector/v1/lmcache_integration/multi_process_adapter.py", line 12, in <module>
+    from lmcache.v1.multiprocess.custom_types import (
+ImportError: cannot import name 'CudaIPCWrapper' from 'lmcache.v1.multiprocess.custom_types' (/opt/venv/lib/python3.12/site-packages/lmcache/v1/multiprocess/custom_types.py)

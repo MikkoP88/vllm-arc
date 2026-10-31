@@ -2,20 +2,23 @@
 
 Migration addendum banked at P5 close-out (2026-10-30) per the banking
 directive; identities re-pointed at the certified release image at P6
-close-out (2026-10-31, cert3). Target: serve **qwen3.8-27b-fp8** (dense
+close-out (2026-10-31, cert3) and again at P6.5 close-out (same day,
+cert4 — same default posture, adds the opt-in long-context profile).
+Target: serve **qwen3.8-27b-fp8** (dense
 hybrid-GDN, **MTP k3 recommended** — r46t real-world campaign; k5
-dropped) on `vllm-arc:v0.30.0-b70-cert3`, replacing the W14 incumbent
+dropped) on `vllm-arc:v0.30.0-b70-cert4`, replacing the W14 incumbent
 (`radiance-test`, flash-next k3) as the rig's serving stack. Everything
-below is rig-proven (r42–r47c); evidence links at the end.
+below is rig-proven (r42–r48l); evidence links at the end.
 
 ## 1. Identities of record
 
 | item | value |
 |---|---|
-| image | `vllm-arc:v0.30.0-b70-cert3` (id `sha256:60d79fd1c81e…`; tag-built from `rel/v0.30.0-b70-cert3` — r47e) |
-| fork SHA baked | `fdca6f51` (IMAGE_MANIFEST `fork_sha=` == the annotated tag's commit; annotated tag `rel/v0.30.0-b70-cert3` on main) |
-| validation image | `vllm-arc:v0.30.0-b70-p48` (the r47c gate image — same `fork_sha` as cert3: 28/28 verify, certified 25-var boot, zero fork-added WARN/ERROR, perf ±5 % vs cert2 same-posture) |
-| canonical serve script | rig `/root/build/serve_arc_b70.sh` (the uniform boot interface; carries the **25-var chain** incl. `LMCACHE_TRACK_USAGE=false` — P6.3; run with `ARC_IMAGE=vllm-arc:v0.30.0-b70-cert3 ARC_GRAPH=1 ARC_SPEC=3`) |
+| image | `vllm-arc:v0.30.0-b70-cert4` (tag-built from `rel/v0.30.0-b70-cert4` — cert4; default posture byte-identical to cert3, adds the P6.5 opt-in long-context profile) |
+| fork SHA baked | `b5df28b5` (IMAGE_MANIFEST `fork_sha=` == the annotated tag's commit; annotated tag `rel/v0.30.0-b70-cert4` on main) |
+| validation image | `vllm-arc:v0.30.0-b70-cert4` itself (28/28 p48_verify + 10/10 p65_verify image-native, certified default boot + run7n t0/t1.0 + zero fork-added WARN/ERROR + p65 face U32k/U64k — `results/2026-10-31-p65-cert4/`) |
+| canonical serve script | rig `/root/build/serve_arc_b70.sh` (the uniform boot interface; carries the **25-var chain** incl. `LMCACHE_TRACK_USAGE=false` — P6.3; run with `ARC_IMAGE=vllm-arc:v0.30.0-b70-cert4 ARC_GRAPH=1 ARC_SPEC=3`) |
+| long-context profile | rig `/root/build/serve_arc_b70_defer2.sh` (the canonical 25-var chain + `--long-prefill-token-threshold 2048` + `LMC_DEFER_CHUNK_STORE=1` + `LMC_DEFER_MIN_TOKENS=40960` — P6.5; opt-in, see CONFIGURATION-arc "Long-context serve profile") |
 | A/B fallback | same script with `ARC_SPEC=4` (MTP k4 — documented alternative for near-deterministic workloads) |
 | golden reference | rig `/root/build/p25/golden_ref.json` (md5 `e02cbb07…`; covers k4 AND k5 — r42/r43 proved byte-identical) |
 | regression matrix | rig `/root/build/matrix_arc/leg-2026-10-29-r44-certified/` (12 cells) |
@@ -33,7 +36,7 @@ standalone loader — r42 Fix B).
 # on rig 10.20.3.65 (every ssh: export SSH_ASKPASS=/tmp/askpass.sh
 #                        SSH_ASKPASS_REQUIRE=force DISPLAY=:0)
 docker stop radiance-test                      # frees port 8000 + both GPUs
-ARC_IMAGE=vllm-arc:v0.30.0-b70-cert3 ARC_NAME=arc-test ARC_GRAPH=1 ARC_SPEC=3 \
+ARC_IMAGE=vllm-arc:v0.30.0-b70-cert4 ARC_NAME=arc-test ARC_GRAPH=1 ARC_SPEC=3 \
   bash /root/build/serve_arc_b70.sh            # boot + serve as one unit
 # logs land in the container at /root/serve_full.log (host: docker exec)
 # poll health (first-traffic law: batteries run on FIRST traffic after boot)
@@ -105,4 +108,6 @@ to `results/`.
 - r47a P6.1 external-hit-rate root cause (the 0.0 % metric is a steady-state artifact, not a broken cache): `results/2026-10-30-p6-r47a-ext-hitrate/`
 - r47c P6.2+P6.3 gates on p48 (lmcache 0.5.6+arc1, zero fork-added WARN/ERROR, same-posture A/B = the comparator law): `results/2026-10-31-p6-r47c-p48-056gates/`
 - r47e cert3 tag-built image (manifest A/B + image-native 28/28): `results/2026-10-31-p6-r47e-cert3/`
+- r48a–r48l P6.5 stall attribution + length-gated chunk-store deferral (the wrong-file discovery, the attribution matrix, the fix legs): `results/2026-10-31-p65-r48a-stall-capture/`
+- cert4 gates (P6.5 close-out — candidate battery + p65 face on the shipped image): `results/2026-10-31-p65-cert4/`
 - env reference: `docs/envs.md`

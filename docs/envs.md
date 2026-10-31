@@ -84,6 +84,8 @@ kill-switch to disable):
 | knob | default | semantics | consumer |
 |---|---|---|---|
 | `VLLM_ARC_LOOKUP_ELIDE` | `0` = OFF | **INT token count, not a bool** — skips both ZMQ lookups only when engine prefix held AND residual ≤ N tokens; r31 disposition: opt-in only (p40d/p41c made real joint loads exist; elide would forfeit them) | `patches/lmcache_hma_connector.py:235` |
+| `LMC_DEFER_CHUNK_STORE` | `"0"` = OFF | P6.5 chunk-set store deferral — under `--long-prefill-token-threshold`, intermediate prefill-chunk rows carry `can_save=False` and leave `num_saved_tokens` un-advanced; the final chunk stores the whole span in ONE event. Opt-in long-context profile only (with `LMC_DEFER_MIN_TOKENS=40960`); default posture byte-identical to cert3 | lmcint `vllm_v1_adapter.py` `from_request_tracker` (p65/r48l) |
+| `LMC_DEFER_MIN_TOKENS` | `"0"` = defer every chunked prefill | length gate: defer only prompts with `prompt_len >= N`. Certified value **40960** — per-chunk events are free at 32k (LMC ≡ no-LMC) while the ungated one-shot store regresses that face +4.2 s (r48k); the win only exists at 64k (+24.6 s attribution @12 bys) | lmcint `vllm_v1_adapter.py` `from_request_tracker` (p65/r48l) |
 | `VLLM_ARC_XG_COMPACT` | `false` | compact-JSON structured-output posture | `tools/serve_arc_b70.sh` (p06) |
 | `VLLM_ARC_GMU_RELAX` | `0.0` | GMU conditional-relax fraction (0.8 = sanctioned B70 posture, set via serve env) | `platform.py` (p05) |
 
