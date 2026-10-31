@@ -270,7 +270,7 @@ contended store runs at ~0.24 GB/s). 40960 splits the two regimes.
 | U64k TTFT | 41.61 s (12 bys disrupted, p95 4829 ms) | 56.10 s | **51.90–51.95 s** |
 | U64k bystander gap p95 / max | 2027 / 2347 ms (no-LMC) | 1969 / 2242 ms | **1585 / 1612–1997 ms** |
 | U32k TTFT | — | 22.88–23.15 s | **22.88–23.15 s** (gate: unchanged) |
-| run7n t0 agg / solo | 299.9 / 84.5 | 295–301 / 83.7–84.5 | **zero cost** |
+| run7n t0 agg / solo | 294.7–300.5 / 83.7–84.9 (cert4-native family, 5 boots) | same family under thr2048 | **zero cost** |
 
 Store signature of the fix working: `1664`-class chunk stores = 0 for a
 64k prompt, replaced by one `63232` final; at 32k the ~20 `1664`-class

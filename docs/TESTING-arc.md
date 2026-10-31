@@ -77,8 +77,14 @@ warmup interlock, connector init).
 ### 4. Warm-hit (prefix cache re-hit after churn)
 `bench_prefix.py`: external churn sequence, then re-issue a previously
 seen prompt; the response first-token latency must land ≤ 750 ms at the
-8k face. This exercises the LMCache connector + boundary snap + TWO_HS
-KV transfer path end-to-end.
+8k face (bar set on the cert-era image). This exercises the prefix
+reuse path end-to-end. **Tier note (r70)**: which tier serves a re-hit
+is now measured, not assumed — a clean same-boot re-request without
+eviction is served by **engine APC** (r70: external/LMCache tier 0.0 %
+in window, warm t2 = 0.99–1.11 s at 8k–32k, warm-hit re-fires 0.80–0.91
+s); the churn face here can push the prefix out of the GPU-resident
+pool and exercise the **LMCache connector** retrieval + boundary snap +
+TWO_HS path — a different, deeper face than the no-churn re-hit.
 
 ### 5. 12-cell load matrix — `arc_matrix.sh` (r44-certified)
 `vllm bench serve`, random dataset, `--random-output-len 512
@@ -119,11 +125,16 @@ Serve-log audit at HEALTHY + after first traffic: **18 hook installs,
 0 failed** (per-target table in `hook_audit.txt`), FP8 W8A16 reroute
 ACTIVE ×4, kvfmt detector loaded. Any FAILED hook = leg invalid.
 
-### 10. Soak (8 h) — r46
-Continuous cycles of: run7n → longctx → prefix/churn → integrity probe,
-for 8 hours. Pass = zero engine errors / tracebacks in the serve log,
+### 10. Soak — r46 (8 h, cert-era) and r70 (4 h, cert4-native)
+Continuous cycles of: run7n → longctx → prefix/churn → integrity probe
+(r46, 8 h) — pass = zero engine errors / tracebacks in the serve log,
 integrity 5/5 at every probe, health 200 throughout, hooks stable.
-Evidence: `results/2026-10-30-p5-r46-soak/`.
+Evidence: `results/2026-10-30-p5-r46-soak/`. The cert4-native soak
+(r70): cycles of run7n + 24-prompt integrity probe every ~5 min for 4 h
+on the certified image — evidence
+`results/2026-10-31-p70-r70-cert4-comprehensive/` (in flight at this
+commit; close-out row lands in PERFORMANCE-arc "Stability" with the
+follow-up commit).
 
 ### 11. CI parity (static)
 `ruff` (0.11.7) whole-tree pass, `yapf` (0.43.0) 0-hunk idempotence,
@@ -195,6 +206,7 @@ dirs to date; the naming convention is documented in
 | P3 cache lane (connector, hybrid state, elide/memo, tail-split) | GREEN | `results/2026-10-29-p3-r30..r36/` |
 | P4 certification battery + certified image + k5 adoption + 12-cell matrix | GREEN | `results/2026-10-30-p4-r42/r43/r44/` |
 | P5 env/doc/lint/Dockerfile audits + mypy delta=0 | GREEN | `results/2026-10-30-p5-r45-env-log-audit/`, rig leg `arc-p5-r46` |
-| 64k TTFT face | GREEN (40,926 ms, concurrent-load conservative) | rig leg `arc-p5-r46/ttft64k_t1.txt` |
+| 64k TTFT face | GREEN (40,926 ms, concurrent-load conservative — cert-era); cert4-native solo U64k: 39.19–40.26 s | rig leg `arc-p5-r46/ttft64k_t1.txt`; `results/2026-10-31-p70-r70-cert4-comprehensive/` |
 | r46 8 h soak | GREEN — 46 cycles, zero errors, integrity 46/46, golden 5/5 zero-drift, pos-1 0.8919 steady, health 200 end-state | `results/2026-10-30-p5-r46-soak/` |
 | r46t real-world campaign (temps × depths × thinking × garbage) | GREEN — k3 recommended; garbage v2 5/5 suites 15/15; MTP 1.57–2.05× over no-spec | `results/2026-10-30-p5-r46t-temps/` |
+| r70 comprehensive cert4 measurement (owner directive: current record cert4-native) | GREEN legs a+b (greedy/sweep/ladder/warm/alt + no-spec A/B + tier attribution + r46t parity); leg c soak in flight at this commit — close-out follows with `c/` evidence | `results/2026-10-31-p70-r70-cert4-comprehensive/` |

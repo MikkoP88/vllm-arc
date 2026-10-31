@@ -83,3 +83,25 @@ as banked bytes.
 
 Enforcement going forward: `tools/leak_sweep.sh` (exit 0 required
 before every push) + allowlist `tools/leak_sweep.allow`.
+
+## Pass 2 (same day, later) — r70 evidence mirror (p70, P6.10)
+
+The r70 comprehensive cert4 campaign banked
+`results/2026-10-31-p70-r70-cert4-comprehensive/` (legs a, b,
+a_invalid_compile_posture; leg c mirrored later, see Pass 3 if
+applicable). Same two substitutions, `perl -pi` (MSYS sed law), applied
+before first commit — the banked bytes never contained the raw
+addresses:
+
+- `10.20.3.<host>` → `10.20.3.REDACTED`: **40 occurrences** —
+  5 serve-log files × 8 each: `a/serve_full.log`,
+  `a/serve_pre_warm.log`, `a/serve_post_warm.log`,
+  `a_invalid_compile_posture/serve_pre_warm.log`, `b/serve_full.log`.
+- `10.100.8.<client>` → `10.100.8.REDACTED`: **42 occurrences** — same
+  5 files (12 / 8 / 8 / 7 / 7).
+- Byte-exactness verified by occurrence arithmetic: rig substitution
+  +6 bytes each (16−10), client +7 each (17−10) → 40×6+42×7 = **534**
+  total bytes, matching the measured size delta exactly (an earlier
+  "+6/+6 → expect 492" scratch figure was the author's arithmetic slip,
+  not a file discrepancy). Post-pass grep: 0 raw rig, 0 raw client;
+  `tools/leak_sweep.sh` clean.
