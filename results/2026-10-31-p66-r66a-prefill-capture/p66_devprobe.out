@@ -1,0 +1,35 @@
+DEVICE name=Intel(R) Graphics [0xe223] total_mem=31.9 GiB max_cus=256 eu_count=? cores=?
+XPUSMI_DISCOVERY_BEGIN
++-----------+--------------------------------------------------------------------------------------+
+| Device ID | Device Information                                                                   |
++-----------+--------------------------------------------------------------------------------------+
+| 0         | Device Name: Intel(R) Graphics [0xe223]                                              |
+|           | Vendor Name: Intel(R) Corporation                                                    |
+|           | SOC UUID: 00000000-0000-00b1-0000-0000e2238086                                       |
+|           | PCI BDF Address: 0000:b1:00.0                                                        |
+|           | DRM Device: /dev/dri/card1                                                           |
+|           | Function Type: physical                                                              |
++-----------+--------------------------------------------------------------------------------------+
+
+XPUSMI_DISCOVERY_END
+GEMM torch.float16 8192x8192x8192: 7.48 ms -> 147.0 TFLOPS (per card; TP2 fleet peak = 2x for the model)
+GEMM torch.float16 4096x4096x4096: 0.91 ms -> 150.4 TFLOPS (per card; TP2 fleet peak = 2x for the model)
+GEMM torch.float16 8192x4096x16384: 8.29 ms -> 132.6 TFLOPS (per card; TP2 fleet peak = 2x for the model)
+GEMM torch.bfloat16 8192x8192x8192: 8.09 ms -> 136.0 TFLOPS (per card; TP2 fleet peak = 2x for the model)
+GEMM torch.bfloat16 4096x4096x4096: 1.05 ms -> 130.4 TFLOPS (per card; TP2 fleet peak = 2x for the model)
+GEMM torch.bfloat16 8192x4096x16384: 8.34 ms -> 131.9 TFLOPS (per card; TP2 fleet peak = 2x for the model)
+fp8 pattern probe failed: "normal_kernel_xpu" not implemented for 'Float8_e4m3fn'
+MODEL_CONFIG_BEGIN
+{
+"image_token_id": 248056,
+"language_model_only": false,
+"model_type": "qwen3_5",
+"tie_word_embeddings": false,
+"transformers_version": "5.8.0.dev0",
+"video_token_id": 248057,
+"vision_end_token_id": 248054,
+"vision_start_token_id": 248053
+}
+MODEL_CONFIG_END
+DERIVED hidden=None layers=34 intermediate=17408
+P66_DEVPROBE: DONE

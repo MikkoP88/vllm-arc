@@ -1,0 +1,34 @@
+372a373,395
+>         # arc p65 fork delta (2026-10-31): chunk-set store deferral. Under
+>         # --long-prefill-token-threshold chunking, every intermediate
+>         # prefill-chunk row carries its own save span, so the worker's
+>         # wait_for_save snapshots + stores EVERY ~1-s scheduler step — the
+>         # [vii-a] amplification measured in results/2026-10-31-p65-r48a-
+>         # stall-capture (r48b/r48e/r48f: +24.6 s 64k-fresh TTFT, bystander
+>         # gaps growing to ~5 s, ~5.5x per-token store-event density at
+>         # thr2048). Deferral keeps the row (load specs and mamba addressing
+>         # must ride it) but marks it non-saveable and leaves
+>         # num_saved_tokens un-advanced, so the final-chunk row stores the
+>         # whole span in ONE shot and the mamba boundary registry banks all
+>         # materialized boundaries in a single sweep (the worker-side loops
+>         # skip can_save=False rows; the ordering law — attn store only
+>         # after its mamba store — is preserved on the final row).
+>         # Prefill-chunk rows only (input_token_len < prompt_len): decode
+>         # rows keep save_decode_cache semantics. Off by default.
+>         defer_chunk_store = (
+>             os.environ.get("LMC_DEFER_CHUNK_STORE", "0") == "1"
+>             and not skip_save
+>             and tracker.disagg_spec is None
+>             and input_token_len < tracker.prompt_len
+>         )
+> 
+374c397
+<         if not skip_save:
+---
+>         if not skip_save and not defer_chunk_store:
+376c399,401
+<         save_spec = SaveSpec(skip_leading_tokens, not skip_save)
+---
+>         save_spec = SaveSpec(
+>             skip_leading_tokens, not skip_save and not defer_chunk_store
+>         )

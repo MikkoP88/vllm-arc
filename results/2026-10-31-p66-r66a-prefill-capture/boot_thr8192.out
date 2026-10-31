@@ -1,0 +1,3 @@
+ARC_CONTAINER_FRESH image=vllm-arc:v0.30.0-b70-cert4 id=0c25a4f747af (recreated from none)
+ae7a06a5394c610059ea66f69c61096940dece4f9d50118eba6363a2041e8f3e
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert4 name=arc-test graph=1 spec=3 gmu=0.8 mnbt=8192 seqs=64 xgc=0 port=8000 04:04:44

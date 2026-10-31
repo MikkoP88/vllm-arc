@@ -1,4 +1,5 @@
-# external_patches/lmcache — lmcache-arc-0.5.5+arc1 (P3 / p40)
+# external_patches/lmcache — lmcache-arc-0.5.6+arc1 (P6.2 / p62; base moved
+off 0.5.5+arc1 = P3 / p40)
 
 Pinned base + patches + build law for the internal lmcache wheel. Fork law:
 everything enters as FILES with provenance; no donor is a git source.
@@ -23,7 +24,49 @@ Its contributions to our stack: the certified env set + kv-transfer form
 (serve line), the p41 re-anchor STRATEGY (below), and the REVAL ledger of
 9 runtime patches (below).
 
-## Base pin
+## P6.2 retarget to 0.5.6 (2026-10-30 — owner directive "lmcache-0.5.6
+implementation", plan §12 item 7 / §12.6 backlog ACTIVATED)
+
+The wheel base moved 0.5.5 → **upstream 0.5.6** (owner P6 directive). The
+0.5.5 sections below stand as the provenance record of the arc1 graft
+lineage; this section is the CURRENT truth for what the kit builds.
+
+**0.5.6 platform restructure (why e01 changed shape):** the flat
+`v1/platform/torch_ops.py` is gone — `v1/platform/torch_ops/` package
+(`mem_kernels`, `mem_alloc`, `mp_mem_kernels`, `_tensor_from_ptr`) +
+`v1/platform/devices/{cpu,cuda,xpu,musa,…}/device_ops.py` +
+`base/device_ops.py`; `setup.py` became policy-driven
+(`setup_extensions/build_profiles/sycl.py`, same `BUILD_WITH_SYCL` env).
+The SYCL `xpu_ops` module still exports the transfer kernels +
+`xpu_host_register` + `alloc_pinned_ptr` (no `tensor_from_ptr` — the
+base raises by default), so XPU python pointer-wrap still needs e01.
+
+**Current patch set** (all `patches/`; apply order = glob order, each on
+pristine 0.5.6 — verified 4/4 clean + py_compile on the rig 2026-10-30):
+
+| patch | replaces / lineage | content |
+|---|---|---|
+| `e01-xpu-platform-ops.patch` | `e01-xpu-torch-ops.patch` (deleted) | TWO parts on the new module layout: (i) `mem_alloc.py` honors `LMCACHE_DISABLE_PINNED_MEMORY` in the `_use_pinned` gate (+INFO when disabled); (ii) `devices/xpu/device_ops.py` `ensure_native` — **absorbs p40c + p40d wheel-side**: unconditional re-pin of the 5 KV-transfer ops (`multi_layer_kv_transfer{,_unilateral}`, `single_layer_kv_transfer{,_sgl}`, `multi_layer_block_kv_transfer`) to the fully-vectorized torch baseline (native SYCL kernels are MLA-shaped; GQA raises — p40d law), env-gated re-pin of `alloc_pinned_ptr`/`free_pinned_ptr` (p40c: native = `sycl::malloc_host`, the >16–32 GiB/proc segfault class) + the `tensor_from_ptr` signed-wrap override (ex-e01 `torch_ops.py` ptr path, unchanged semantics). The sitecustomize wrap `lmc_xpu_pinned_env.py` is now DEAD (its target module `lmcache.v1.platform.xpu.device_ops` no longer exists) — file deleted, registration removed from `platform.py` `_WHEEL_HOOKS`. |
+| `e02e03-cache-engine-c-delta.patch` | unchanged | applies clean on 0.5.6 (cache_engine.py byte-identical between 0.5.5/0.5.6; identity-guarded). |
+| `e-adapter-vllm-056-graft.patch` | `e-adapter-vllm-030-graft.patch` (deleted) | the arc1 adapter graft rebased onto the 0.5.6 adapter. Method (graft-truth law): start from **pristine 0.5.6 adapter**, apply the arc1 graft's semantic set (sync lookup replacing upstream async `lookup_cache`, v136 joint clamp, one-step store lag `_lmc_pending_stores`/`_lmc_flush_pending`, mamba page maps, v133 `get_finished`/`get_block_ids`, deleted `_probe_decoder_cache`/`shutdown`), then accept upstream's 0.5.6 delta where it does not collide: `lookup_unpin` after non-async retrieve, `mock_req` guard, degraded-mode `lookup_client is None` guard, %-style logging, layerwise `Retrieved` INFO line. Divergence from upstream 0.5.6 = 3615 diff lines (163,822 bytes). |
+| `e04-usage-tlm-gate.patch` | NEW (P6.3 telemetry law) | `observability.py:1965` `ContinuousUsageContext.GetOrCreate` runs even when usage tracking is disabled — LMCache telemetry is DEFAULT-ON (`usage_telemetry/identity.py:25`; opt-outs `LMCACHE_TRACK_USAGE=false` / `DO_NOT_TRACK=1`), and the ungated per-request GetOrCreate with dual-engine metadata is the source of the fork-log `different metadata` ERROR ×2 per boot. Patch gates creation+use behind `is_usage_tracking_enabled()`; the certified chain ALSO sets `LMCACHE_TRACK_USAGE=false` (docs + serve_arc_b70.sh). |
+
+**Kit survival audit (r43 wraps, 2026-10-30):** `lmc_twohs_transfer.py`
+(0.5.6 bilateral signature byte-identical; the NEW 0.5.6
+`has_interleaved_kv_blocks` branch is (NB,2,BS,HS) block-interleave ≠ our
+per-token (NB,BS,2,HS) — wrap stays NECESSARY) and `lmc_kvfmt_detector.py`
+(`VLLM_Detector.discover` still present) survive unchanged;
+`vllm_v1_adapter.py` (lmcint live adapter) rebased with the same 4 upstream
+guards as the graft. Composition order verified: the sitecustomize hook
+fires at `torch_ops` first import → e01's `getattr(torch_ops, op)` at
+`ensure_native` binds the WRAPPED function.
+
+**Identity reference:** OFFICIAL lmcache 0.5.6 cp312 wheel
+(md5 `1f96765db1d7b02ecdd3852794e400a1`, tree at rig /root/build/p56/wheel_tree)
+— all 5 patched files verified byte-identical sdist-vs-wheel; the build
+guard md5s every one of the 5 against it before patching.
+
+## Base pin (0.5.6 current; 0.5.5 historical)
 
 | artifact | md5 | source |
 |---|---|---|
@@ -37,7 +80,9 @@ for every file except exactly three (below) — i.e. C's certified lmcache =
 pristine 0.5.5 + 3-file delta + env set; C's caching strength lives in the
 env set + vllm-side glue, not in a forked lmcache.
 
-## Patches (e01–e04: D-lineage deltas, rebased onto the C base — extracted
+## Patches — HISTORICAL 0.5.5 set (superseded by the P6.2 table above;
+e01-xpu-torch-ops.patch and e-adapter-vllm-030-graft.patch are DELETED)
+(e01–e04: D-lineage deltas, rebased onto the C base — extracted
 from the C image tree where the rebase already exists, provenance per file)
 
 | patch | file | e-slot (plan §6) | provenance | content |
@@ -64,7 +109,7 @@ files/deltas as the byte-preserved reference (full evidence:
 |---|---|---|---|
 | `lmcache_hma_connector.py` (p41b) | `vllm.distributed.kv_transfer.kv_connector.v1.lmcache_connector` (exec_module, subclass-rebind) | C v1.2.35 file md5 `cee1a393…` (same reference D's resume13 byte-preserved; D adjudication: flag-flip REJECTED, HMA-on bar) | (a) SupportsHMA mixin + `request_finished_all_groups` (cures factory.py:58 HMA refusal); (b) v133 async-gate fix — real `load_kv_async` from `get_num_new_matched_tokens` + 3-arg `update_state_after_alloc` (hardcoded False made loads land a step late, "byte-perfect but useless"); (c) KV-events guard (0.5.5 has no get_kv_events). Knob `VLLM_ARC_LMC_HMA=0`. |
 | `lmcint/` kit (p41b) | `…v1.lmcache_integration{,.vllm_v1_adapter,.utils}` (source-override exec at import) | C image files, md5 `1f3e97d3`/`dcb23fbe`/`b5300ee0` — C's 0.5.5-compat patch of vllm-0.30's vendored integration | C's `__init__` drops `multi_process_adapter` ("requires lmcache main (CudaIPCWrapper)… NOT importable here" — cures the boot ImportError); the vendored adapter is the LIVE engine under `use_native:true` (mamba-hybrid: `MambaPageConnector`, `_init_mamba_engine`, per-group block_ids, late-imports p41's `_LMC_*` at its lines 1741/2049). |
-| `lmc_xpu_pinned_env.py` (p40c) | `lmcache.v1.platform.xpu.device_ops` (exec_module wrap) | C serve_lmc_v133.sh law (pinned USM >16–32 GiB/pro process segfaults, probed 2026-10-08 → pools pageable) | our built `lmcache.xpu_ops` exports native `alloc_pinned_ptr`/`free_pinned_ptr` that `bind_native` layers OVER the env-honoring torch baseline (C's 0.4.7 binary lacked the pair); with `LMCACHE_DISABLE_PINNED_MEMORY=1`, drop the two instance bindings post-bind → pageable baseline serves them, all other native ops stay native. Cured the 100 GiB `sycl::malloc_host` boot death. |
+| `lmc_xpu_pinned_env.py` (p40c) — **DELETED at P6.2** | `lmcache.v1.platform.xpu.device_ops` (exec_module wrap) — **module deleted by the 0.5.6 restructure** | C serve_lmc_v133.sh law (pinned USM >16–32 GiB/pro process segfaults, probed 2026-10-08 → pools pageable) | our built `lmcache.xpu_ops` exports native `alloc_pinned_ptr`/`free_pinned_ptr` that `bind_native` layers OVER the env-honoring torch baseline (C's 0.4.7 binary lacked the pair); with `LMCACHE_DISABLE_PINNED_MEMORY=1`, drop the two instance bindings post-bind → pageable baseline serves them, all other native ops stay native. Cured the 100 GiB `sycl::malloc_host` boot death. **P6.2: absorbed wheel-side into e01-xpu-platform-ops.patch (env-gated re-pin in `ensure_native`); registration removed from platform.py `_WHEEL_HOOKS`.** |
 
 Also discovered en route: lmcache-0.5.5 runtime deps `aiofile` + `redis`
 missed by the p40 `--no-deps` set (upstream Requires-Dist; eager import in

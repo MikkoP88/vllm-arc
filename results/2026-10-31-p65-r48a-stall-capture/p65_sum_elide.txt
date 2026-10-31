@@ -1,0 +1,18 @@
+=== warmup (first-traffic law; warms p12b interlock + first graphs)
+prompt sizes: U32k=31805 U64k=63784 U8k=7961 tok
+raw -> /root/build/p65/p65_tl_elide.json (6163 chunks, 45 events)
+
+=== long-stream faces (perf_counter, wave-relative)
+  U32k: TTFT=  18.05s total=  18.93s (start @ wave+  25.0s)
+  C32k: TTFT=   1.45s total=   2.15s (start @ wave+  55.0s)
+
+=== bystander inter-chunk gaps (12 streams, greedy, k3)
+  baseline: n=2316 p50=   53.4ms p95=   54.8ms
+  window                 n    p50 ms    p95 ms    max ms #>2xb95  stall_s
+  W_base              2316      53.4      54.8     806.6      18    10.37
+  W_U32k_start         144      58.9    3996.1    4302.1      36   104.14
+  W_U32k_end           415      55.3      59.0      59.9       0     0.00
+  W_C32k_start(cached)    32      58.0    1020.9    1022.9       6     5.79
+  W_C32k_end            20      56.7      60.4      60.4       0     0.00
+
+P65_CAPTURE: DONE

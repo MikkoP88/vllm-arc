@@ -1,0 +1,29 @@
+=== warmup (first-traffic law; warms p12b interlock + first graphs)
+prompt sizes: U32k=31805 U64k=63784 U8k=7961 tok
+raw -> /root/build/p65/cert4tag/p65_tl_cert4tag_v51.json (9911 chunks, 56 events)
+  text[warmup] 20ch: 'Counting from 1 to 1'
+  text[byst0] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[byst1] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[byst3] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[byst4] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[byst2] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[byst5] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[U64k] 150ch: 'Based on the notes provided, here are the measurements for **stage 4212**:\n\n1.  **Note 128:** The me'
+  text[bys21] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[bys23] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[bys24] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[bys20] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[bys25] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[bys22] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+
+=== long-stream faces (perf_counter, wave-relative)
+  U64k: TTFT=  51.16s total=  52.91s (start @ wave+  85.0s)
+
+=== bystander inter-chunk gaps (12 streams, greedy, k3)
+  baseline: n=6121 p50=   53.7ms p95=   55.7ms
+  window                 n    p50 ms    p95 ms    max ms #>2xb95  stall_s
+  W_base              6121      53.7      55.7     831.8      91    34.74
+  W_U64k_start         258    1274.2    1579.8    1598.7     246   297.60
+  W_U64k_end           408      55.3      64.6      66.0       0     0.00
+
+P65_CAPTURE: DONE

@@ -10,9 +10,9 @@ complete control surface + naming map); test definitions in
 
 | Item | Value |
 |---|---|
-| Image | `vllm-arc:v0.30.0-b70-cert2` (certified release, tag `rel/v0.30.0-b70-cert2` = cert + the r46u glue-alias fix) / `v0.30.0-b70-p47` (r46v build-validation image, same engine tree) / `v0.30.0-b70-p46` (r46t campaign) / `v0.30.0-b70-cert` (**superseded — predates r46u, never build from it**) |
+| Image | `vllm-arc:v0.30.0-b70-cert4` (**certified release**, tag `rel/v0.30.0-b70-cert4` = cert3 engine + P6.5 length-gated chunk-store deferral in the lmcint adapter [opt-in, default posture identical to cert3]; gates `results/2026-10-31-p65-cert4/`) / `v0.30.0-b70-cert3` (**superseded by cert4** — identical default behavior, lacks the deferral hunk; gates `results/2026-10-31-p6-r47c-p48-056gates/`) / `v0.30.0-b70-cert2` (0.5.5-era lmcache line, still valid) / `v0.30.0-b70-p48` (r47c gate image, same engine tree as cert3) / `v0.30.0-b70-p47` (r46v build-validation) / `v0.30.0-b70-p46` (r46t campaign) / `v0.30.0-b70-cert` (**superseded — predates r46u, never build from it**) |
 | Manifest | `/etc/vllm-arc/IMAGE_MANIFEST` inside the image — fork SHA, wheel pins, dependency closure (`lmcache_closure=`), build host |
-| Base | upstream vllm-gaudi v0.30.0 + pinned wheels (vllm 0.30.0+xpu, triton 3.7.2+xpu, vllm_xpu_kernels 0.1.14.1+arc3, lmcache 0.5.5+arc1) |
+| Base | upstream vllm-gaudi v0.30.0 + pinned wheels (vllm 0.30.0+xpu, triton 3.7.2+xpu, vllm_xpu_kernels 0.1.14.1+arc3, lmcache 0.5.6+arc1) |
 
 Verify before any leg: `docker run --rm --entrypoint bash <img> -c "cat
 /etc/vllm-arc/IMAGE_MANIFEST"` and check `fork_sha` matches the tree you
@@ -24,7 +24,7 @@ code).
 The certified deployment is **three steps in this order**: boot the
 container (Step 1), then serve with the environment chain and the CLI as
 **one unit** (Step 2), then health-check (in Step 2). The serve CLI is
-only certified with its 22-var environment exported first — Step 2
+only certified with its 25-var environment exported first — Step 2
 therefore ships env + CLI in a single script block, so the two can never
 be separated by following the guide top to bottom.
 
@@ -40,12 +40,12 @@ docker run -d --name arc-test \
   -v /root/build/inductor_cache:/root/.inductor_cache \
   -e VLLM_ALLOW_LONG_MAX_MODEL_LEN=1 \
   -e VLLM_WORKER_MULTIPROC_METHOD=spawn \
-  --entrypoint /bin/bash vllm-arc:v0.30.0-b70-cert2 -c 'sleep infinity'
+  --entrypoint /bin/bash vllm-arc:v0.30.0-b70-cert4 -c 'sleep infinity'
 ```
 
 These are the validated boot bytes (rig `r46t_campaign.sh:54-63`,
 `r42/r46_soak.sh:33-42`): `--shm-size 64g`, four mounts, and the two
-boot-layer vars of the 24-var chain below (`:ro` on the model is the
+boot-layer vars of the 25-var chain below (`:ro` on the model is the
 read-only posture law — the leg scripts omit it, the law is stricter).
 The optional chat-template mount (below) is added to this block only if
 you use the template.
@@ -54,9 +54,13 @@ you use the template.
 moot under `--ipc host` (host `/dev/shm` is used); 64g guards the
 private-IPC fallback, where small values ENOSPC-crash TP2 IPC buffers.
 
-**Hardware floor**: the hard floor is the **GPUs** — dual B70 (16 G
-each): ~27 G of fp8 weights split TP2 plus KV/mamba/graph pools at GMU
-0.8 nearly fill both. Host RAM is not gated by the cache:
+**Hardware floor**: the hard floor is the **GPUs** — dual B70
+(**31.9 GiB each, measured** — r66a devprobe: Intel [0xe223], 256 CUs
+per card; the older "16 G each" in this doc was wrong): ~27 G of fp8
+weights split TP2 (≈ 13.5 GiB/card) plus KV/mamba/graph pools inside the
+GMU-0.8 budget (0.8 × 31.9 ≈ 25.5 GiB/card) — the measured XPU KV pool
+is 405,491 tokens at MNBT 8192 (332,629 at 16384, r66c). Host RAM is not
+gated by the cache:
 `LMCACHE_MAX_LOCAL_CPU_SIZE=100` is a single *virtual* reservation —
 one malloc wrapped by `torch.frombuffer`, first-touch physical pages,
 evicted (lr_u) at the cap (wheel-verified:
@@ -76,8 +80,8 @@ non-privileged TP2 init — validated posture, env-inspected 2026-10-27).
 The CLI below is the certified line (rig
 `/root/build/r42/r43_serve_k5.sh`, depth 3 per r46t) minus the optional
 chat template — every flag byte-verified. It is certified **only**
-together with these 22 exported vars (13 runtime/system + 9 LMCache —
-the other 2 of the 24-var chain are the `-e` pair in Step 1). Ship it as
+together with these 23 exported vars (13 runtime/system + 10 LMCache —
+the other 2 of the 25-var chain are the `-e` pair in Step 1). Ship it as
 one script inside the container — never a bare interactive
 `vllm serve`, which silently drops the graph law, the oneCCL block, and
 the whole LMCache set:
@@ -85,7 +89,7 @@ the whole LMCache set:
 ```bash
 # serve_k3.sh — run INSIDE the container (docker cp + exec below)
 #!/bin/bash
-# --- serve environment: 22 of the certified 24-var chain (2 set at boot) ---
+# --- serve environment: 23 of the certified 25-var chain (2 set at boot) ---
 export PYTHONHASHSEED=0                 # init determinism
 export ZE_AFFINITY_MASK=0,1             # one Arc Pro B70 per socket
 export LD_LIBRARY_PATH=/opt/venv/lib:/opt/venv/lib/python3.12/site-packages/torch/lib
@@ -99,7 +103,7 @@ export CCL_SYCL_ALLGATHERV_TMP_BUF=0
 export CCL_SYCL_ALLREDUCE_TMP_BUF=0
 export VLLM_XPU_ENABLE_XPU_GRAPH=1      # graph posture law
 export ARC_TRACE_FLIP=1                 # flip-payload interlock
-# --- LMCache certified set (9 — keep as a set) ---
+# --- LMCache certified set (10 — keep as a set) ---
 export LMCACHE_USE_EXPERIMENTAL_API=True
 export LMCACHE_MAX_LOCAL_CPU_SIZE=100
 export LMCACHE_LOCAL_CPU=True
@@ -109,6 +113,10 @@ export LMCACHE_SAVE_DECODE_CACHE=True
 export LMCACHE_MIN_RETRIEVE_TOKENS=1024
 export LMCACHE_LOG_LEVEL=INFO
 export LMCACHE_DISABLE_PINNED_MEMORY=1  # law: pinned USM >16-32 GiB/proc segfaults
+export LMCACHE_TRACK_USAGE=false        # P6.3: usage telemetry is default-ON;
+                                        # this rig serves offline (pairs with
+                                        # the e04 wheel patch gating the
+                                        # per-request usage-context creation)
 # --- the certified CLI: MTP k3 (recommended), LMCache ON, mode:none
 #     (no torch.compile) + decode-only graphs, explicit capture list ---
 exec /opt/venv/bin/vllm serve --model /models/target \
@@ -137,6 +145,23 @@ exec /opt/venv/bin/vllm serve --model /models/target \
   > /root/serve_full.log 2>&1
 ```
 
+Two compile-posture laws (p67, do not re-try blind — evidence
+`results/2026-10-31-p67-r67a-compile-ab/`):
+
+1. **`mode` stays `none`** — the 0.30 REVAL of the compile-off acceptance
+   law (Appendix H #1) FIRED: `mode=vllm_compile` ×
+   `cudagraph_mode=FULL_AND_PIECEWISE` collapses MTP mean acceptance
+   3.40/3.57 → 2.21/2.32 (−35 %) and decode t/s −39 %, with
+   prefill flat — nothing compensates (KV pool +5.3 % aside).
+2. **If a FULL_AND_PIECEWISE experiment is ever repeated**, the capture
+   ladder must top at `max_num_seqs × (num_spec+1)` = 64 × 4 = **256**
+   tokens: `gdn_attn.py:120` hard-caps captured tokens there for GDN
+   models, and the stock ladder's 320 headroom (kept above for k4) makes
+   the first piecewise capture boot-die with "GDN only supports
+   decode-only full CUDAGraph capture". The ladder above is correct for
+   the certified `mode:none` posture (FULL_DECODE_ONLY never builds the
+   offending piecewise captures; the real k3 verify shape is 256).
+
 Launch and health-check (the rig pattern; first boot ~10 min to 200 —
 model load + graph capture):
 
@@ -150,6 +175,18 @@ curl -s -o /dev/null -w "%{http_code}\n" -m 5 http://127.0.0.1:8000/health
 copy-paste the block as-is. `--kv-transfer-config` loads the LMCache
 connector — the certified posture runs LMCache **ON** (semantics of
 every var: [`envs.md`](envs.md)).
+
+**Reading the `External prefix cache hit rate: 0.0%` log line (P6.1
+metric truth):** a steady 0.0 % does **not** mean the external cache is
+dead. Root cause (r47a, `results/2026-10-30-p6-r47a-ext-hitrate/`):
+the local prefix cache absorbs all repeats in steady state, so the
+scheduler books every hit locally and never consults the external
+store (`scheduler.py:936`), and the logged rate is a cumulative
+average over requests that mostly had nothing external to find
+(`loggers.py:219`). External retrieval itself is proven end-to-end —
+the eviction probe (local cache forced small, real evictions driven)
+retrieved 13/15 chunks from the external store (+6656/8021 tokens).
+Verification tool for any future doubt: the r47a evict-probe leg.
 
 **Chat template — optional, ships in-repo**
 (`assets/chat_template_qwen38_high.jinja`, md5 `eb69f1c4…` =
@@ -188,12 +225,65 @@ pays when acceptance is high; real-world sampled thinking sits well
 below the crossover. Spec depth is serve-time CLI only — changing it
 rebuilds no image.
 
-## The 24-var chain (reference)
+### Long-context serve profile (p65) — opt-in, for fleets serving ≥48k prompts
 
-The step blocks above already carry all 24. This section is the
+**Default posture is unchanged** — the certified serve block above sets
+none of this; the deferral hunk is inert without the envs (cert4 gate:
+default-posture boot + run7n + WARN/ERROR audit byte-class-identical to
+cert3). Enable this profile only when long prompts (≥ ~48k tokens)
+arrive into a fleet with concurrent decoders.
+
+**The problem it fixes** (P6.5, `results/2026-10-31-p65-r48a-stall-capture/`):
+when a ~64k-token prompt is prefilled alongside ~12 decoding bystanders
+under `--long-prefill-token-threshold 2048`, every prefill chunk emits
+its own LMCache store event; the ~38 events × ~79 ms fixed overhead
+amplify into **+24.6 s** TTFT for the long stream (76.89 s vs 52.27 s
+with no connector) and bystander inter-token gap p95 **4829 ms** vs
+~2000 ms baseline. Attribution: ~70 % connector store path ([vii-a]),
+~25 % engine-side chunk cost ([viii], the P6.6 lane). At 32k the
+per-chunk events are ≈ free (LMC ≡ no-LMC, 22.78 vs 22.39 s) — the fix
+is a 64k-class phenomenon only.
+
+**The profile** (all three together; rig:
+`/root/build/serve_arc_b70_defer2.sh`):
+
+```bash
+# 1) engine CLI (with the certified line's other flags):
+--long-prefill-token-threshold 2048
+# 2) env, inside the LMC_ENV set (keeps the 25-var chain + 2):
+export LMC_DEFER_CHUNK_STORE=1
+export LMC_DEFER_MIN_TOKENS=40960
+```
+
+Semantics: intermediate prefill-chunk rows keep their row (loads and
+mamba addressing still ride it) but carry `can_save=False` and leave
+`num_saved_tokens` un-advanced, so the final chunk stores the whole
+span in **one** event. `LMC_DEFER_MIN_TOKENS` gates by prompt length —
+below it, per-chunk stores are kept (they are free at 32k, and the
+one-shot store would *regress* that face by +4.2 s: the ~0.5 GB
+contended store runs at ~0.24 GB/s). 40960 splits the two regimes.
+
+**Validated faces** (r48l + cert4, W2MT 4000, fresh boot):
+
+| Face | no-thr baseline | thr2048 no-defer | thr2048 + defer (this profile) |
+|---|---|---|---|
+| U64k TTFT | 41.61 s (12 bys disrupted, p95 4829 ms) | 56.10 s | **51.90–51.95 s** |
+| U64k bystander gap p95 / max | 2027 / 2347 ms (no-LMC) | 1969 / 2242 ms | **1585 / 1612–1997 ms** |
+| U32k TTFT | — | 22.88–23.15 s | **22.88–23.15 s** (gate: unchanged) |
+| run7n t0 agg / solo | 299.9 / 84.5 | 295–301 / 83.7–84.5 | **zero cost** |
+
+Store signature of the fix working: `1664`-class chunk stores = 0 for a
+64k prompt, replaced by one `63232` final; at 32k the ~20 `1664`-class
+stores are present as normal (the gate held). Do **not** lower
+`LMC_DEFER_MIN_TOKENS` below 40960 for mixed fleets — r48k measured the
+32k regression; raising it (e.g. 49152) only narrows coverage.
+
+## The 25-var chain (reference)
+
+The step blocks above already carry all 25. This section is the
 reference view: what each layer is and where it is delivered. Delivery
-split (validated bytes): **22 serve-time** (13 runtime/system + the
-LMCache 9 — the export block inside Step 2) and **2 boot-time**
+split (validated bytes): **23 serve-time** (13 runtime/system + the
+LMCache 10 — the export block inside Step 2) and **2 boot-time**
 (`VLLM_ALLOW_LONG_MAX_MODEL_LEN`, `VLLM_WORKER_MULTIPROC_METHOD` — the
 `-e` pair in Step 1's `docker run`).
 
@@ -215,7 +305,7 @@ export VLLM_XPU_ENABLE_XPU_GRAPH=1     # graph posture law
 export ARC_TRACE_FLIP=1                # flip-payload interlock
 ```
 
-Serve-time LMCache certified set (9 — keep as a set; in Step 2's block):
+Serve-time LMCache certified set (10 — keep as a set; in Step 2's block):
 
 ```bash
 export LMCACHE_USE_EXPERIMENTAL_API=True
@@ -227,6 +317,7 @@ export LMCACHE_SAVE_DECODE_CACHE=True
 export LMCACHE_MIN_RETRIEVE_TOKENS=1024
 export LMCACHE_LOG_LEVEL=INFO
 export LMCACHE_DISABLE_PINNED_MEMORY=1 # law: pinned USM >16-32 GiB/proc segfaults
+export LMCACHE_TRACK_USAGE=false       # P6.3: telemetry default-ON; offline rig
 ```
 
 Boot-time (2 — in Step 1's `docker run`):
@@ -258,6 +349,8 @@ may change and when:
 | `VLLM_ARC_LOOKUP_ELIDE` | unset (**0 = OFF — int tokens, opt-in**) | diagnostic-only; forfeits real joint loads |
 | `VLLM_ARC_XG_COMPACT` | unset (`false`) | `=1` when you want compact-JSON xgrammar structured output (appends `--structured-outputs-config`) |
 | `VLLM_ARC_GMU_RELAX` | unset (`0`) | set `0.8` if boot aborts on headroom at higher utilization (relaxes only the engine default 0.92) |
+| `LMC_DEFER_CHUNK_STORE` | unset (`0` = OFF — certified default) | `=1` only in the long-context profile (above), together with `--long-prefill-token-threshold 2048` and the min-tokens gate |
+| `LMC_DEFER_MIN_TOKENS` | unset (`0` = defer every chunked prefill) | certified profile value **40960**; lowering it below ~40960 regresses 32k-class prompts (+4.2 s, r48k) |
 | `LMC_BOUNDARY_KEEP` / `LMC_BOUNDARY_CAP` | unset (8 / 48) | raise only with boundary-registry pressure evidence |
 | `LMC_BOUND_STATS` / `LMC_BOUND_MD5` | unset (logging ON) | `=0` to quiet boundary telemetry |
 | `ARC_SNAP_PROBE` | unset (silent) | diagnostics only (leg telemetry) |
@@ -269,7 +362,13 @@ Host-script layer (`tools/serve_arc_b70.sh`): `ARC_IMAGE`, `ARC_NAME`,
 4 = the D-champion alternative; only 0/3/4/5 accepted — the legged
 depths), `ARC_LMC` (1 = the certified LMCache connector + the 9-var
 `LMCACHE_*` chain — default; 0 = no LMCache), `ARC_GMU` (0.8),
-`ARC_MNBT` (8192), `ARC_MAXSEQS` (64), `ARC_PORT` (8000).
+`ARC_MNBT` (8192 — the certified default; r66c A/B'd 16384: long-face
+solo TTFT −4…−10 % but −18 % KV pool (405,491→332,629 tokens,
+concurrency 1.55x→1.27x) and U8k +10 % — a conditional long-prompt-only
+lever, **never** combined with `--long-prefill-token-threshold` (the
+threshold pins chunk size; only the KV loss would remain); see
+PERFORMANCE-arc "Prefill anatomy"), `ARC_MAXSEQS` (64), `ARC_PORT`
+(8000).
 
 ## Posture laws (never change in production)
 

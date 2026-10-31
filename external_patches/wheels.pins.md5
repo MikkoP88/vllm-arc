@@ -6,10 +6,15 @@
 # §6 contingency wheel (p13): int64 wedge fix, oneAPI 2026.0-built, device-gated
 # CLEAN 2026-10-27 (results/2026-10-27-p13-vxk-wheel/)
 a51df187aae8efa3871b0cb9b7d3f3c7  vllm_xpu_kernels-0.1.14.1+arc3-cp312-cp312-linux_x86_64.whl
-# P3 p40: internal lmcache wheel — upstream 0.5.5 sdist (PyPI, wheel-ref md5
-# ba1aa37fcbcdff058780431659fb3699) + C-image 3-file delta (e01/e02e03/
-# adapter) + upstream SYCL XPU build (BUILD_WITH_SYCL=1, omix 0.2.0-devel =
-# oneAPI 2026.0.0 = venv runtime generation, torch 2.13.0+xpu; xpu_ops
-# __CLANG_OFFLOAD_BUNDLE__sycl-spir64 verified) + deterministic +arc1 retag.
+# P6.2: internal lmcache wheel — upstream 0.5.6 sdist (PyPI, official-wheel
+# reference md5 1f96765db1d7b02ecdd3852794e400a1; all 5 patched files
+# byte-verified sdist-vs-wheel) + the 4-patch arc kit (e-adapter-vllm-056-
+# graft, e01-xpu-platform-ops [p40c/p40d absorbed wheel-side], e02e03,
+# e04-usage-tlm-gate) + upstream SYCL XPU build (BUILD_WITH_SYCL=1, omix
+# 0.2.0-devel = oneAPI 2026.0.0 = venv runtime generation, torch 2.13.0+xpu;
+# xpu_ops __CLANG_OFFLOAD_BUNDLE__sycl-spir64 verified; all 5 patched files
+# md5-differ from the official wheel = patches provably in) + deterministic
+# +arc1 retag. P3/p40 predecessor: lmcache-0.5.5+arc1 (md5 0d1020aba4d9f189
+# 1ea3ab21fa7cc676), superseded 2026-10-30 by the owner P6 directive.
 # Provenance + build law: external_patches/lmcache/README.md
-0d1020aba4d9f1891ea3ab21fa7cc676  lmcache-0.5.5+arc1-cp312-cp312-manylinux_2_35_x86_64.whl
+352295b4af1e2c58da8a2363b05a4f0c  lmcache-0.5.6+arc1-cp312-cp312-manylinux_2_35_x86_64.whl

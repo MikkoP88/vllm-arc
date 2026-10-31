@@ -4,11 +4,13 @@ Generated at P5 hardening (r45, 2026-10-30; serve-line identity updated
 at the r46t close-out) from `vllm_gaudi/envs.py` arc-lane markers + the
 certified serve line (`r43_serve_k5.sh`, spec depth 3 per the r46t
 recommendation — a serve-time CLI change — on image
-`vllm-arc:v0.30.0-b70-cert`). Every entry cites its provenance
-(no-unevidenced law, plan Appendix H #6). Audit of record:
+`vllm-arc:v0.30.0-b70-cert`; unchanged since — the chain is identical on
+the current certified image `vllm-arc:v0.30.0-b70-cert4`, where
+`LMCACHE_TRACK_USAGE=false` (P6.3) made it 25). Every entry cites its
+provenance (no-unevidenced law, plan Appendix H #6). Audit of record:
 `results/2026-10-30-p5-r45-env-log-audit/`.
 
-## Certified serve-line env chain (24 vars)
+## Certified serve-line env chain (25 vars: 13 runtime/system + 10 LMCache + 2 boot-layer)
 
 Runtime/system:
 
@@ -41,6 +43,7 @@ LMCache certified set (D champion verbatim, plan Appendix E — keep as a set):
 | `LMCACHE_MIN_RETRIEVE_TOKENS` | `1024` |
 | `LMCACHE_LOG_LEVEL` | `INFO` |
 | `LMCACHE_DISABLE_PINNED_MEMORY` | `1` (p40d law: pinned USM >16–32 GiB/process segfaults) |
+| `LMCACHE_TRACK_USAGE` | `false` (P6.3: LMCache usage telemetry is default-ON — `usage_telemetry/identity.py:25`; this rig serves offline. Pairs with the e04 wheel patch that gates the per-request usage-context creation, the source of the dual-engine "different metadata" ERROR ×2/boot) |
 
 Container flags (docker run, P1 boot interface):
 
@@ -83,6 +86,8 @@ kill-switch to disable):
 | knob | default | semantics | consumer |
 |---|---|---|---|
 | `VLLM_ARC_LOOKUP_ELIDE` | `0` = OFF | **INT token count, not a bool** — skips both ZMQ lookups only when engine prefix held AND residual ≤ N tokens; r31 disposition: opt-in only (p40d/p41c made real joint loads exist; elide would forfeit them) | `patches/lmcache_hma_connector.py:235` |
+| `LMC_DEFER_CHUNK_STORE` | `"0"` = OFF | P6.5 chunk-set store deferral — under `--long-prefill-token-threshold`, intermediate prefill-chunk rows carry `can_save=False` and leave `num_saved_tokens` un-advanced; the final chunk stores the whole span in ONE event. Opt-in long-context profile only (with `LMC_DEFER_MIN_TOKENS=40960`); default posture byte-identical to cert3 | lmcint `vllm_v1_adapter.py` `from_request_tracker` (p65/r48l) |
+| `LMC_DEFER_MIN_TOKENS` | `"0"` = defer every chunked prefill | length gate: defer only prompts with `prompt_len >= N`. Certified value **40960** — per-chunk events are free at 32k (LMC ≡ no-LMC) while the ungated one-shot store regresses that face +4.2 s (r48k); the win only exists at 64k (+24.6 s attribution @12 bys) | lmcint `vllm_v1_adapter.py` `from_request_tracker` (p65/r48l) |
 | `VLLM_ARC_XG_COMPACT` | `false` | compact-JSON structured-output posture | `tools/serve_arc_b70.sh` (p06) |
 | `VLLM_ARC_GMU_RELAX` | `0.0` | GMU conditional-relax fraction (0.8 = sanctioned B70 posture, set via serve env) | `platform.py` (p05) |
 

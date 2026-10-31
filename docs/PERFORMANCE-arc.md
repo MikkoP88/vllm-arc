@@ -8,7 +8,48 @@ below); the certified-greedy history at k4/k5 is retained row-labeled —
 k5 is dropped from the recommendation; its evidence is
 superseded, not retracted.
 
-## Headline faces (certified greedy battery, temp 0)
+## Current certified image — cert4 (tag `rel/v0.30.0-b70-cert4`, 2026-10-31): the numbers that matter
+
+**This section is the current record**; every section below it is
+history (depth-selection and image lineage — still valid evidence,
+earlier engines). Identity: tag commit `b5df28b5`; default posture =
+cert3's engine byte-identical (cert4 adds only the opt-in P6.5
+long-context deferral, inert without its envs); how to run: the 25-var
+chain in [`CONFIGURATION-arc.md`](CONFIGURATION-arc.md). Faces are
+labeled — **only same-face numbers compare** (thinking on/off and
+battery warmth are confounders; comparator law:
+`results/2026-10-31-p6-r47c-p48-056gates/VERDICT.md`).
+
+| Face (cert4, default posture) | Value | Evidence |
+|---|---|---|
+| greedy t0 agg4x256 steady (thinking=off battery) | **299.15–300.48 tok/s** (300.16 / 300.48 across boots) — family-exact vs the 299.9 family | `results/2026-10-31-p65-cert4/` |
+| greedy t0 solo200 (thinking=off) | **84.53–84.86 tok/s** (83.65 low cell) | same |
+| t1.0 xhigh battery | agg 190.62 / solo 56.90, 62.24 (family 186.2/61.1, +2.4 %/+1.9 %) | same |
+| MTP k3 acceptance (greedy t0) | 85.6 % per-token (r46t); mean accepted length **3.40–3.57 tok/step** on cert4 boots | r67 re-confirmed |
+| Prefill solo TTFT U8k / U32k / U64k | **3.74 s (2178 t/s) / 17.33 s (1878 t/s) / 39.19 s (1666 t/s)** — nolmc anatomy faces, re-confirmed on stock boots | r66a bars + r67 (`results/2026-10-31-p66-r66a-prefill-capture/`, `…-p67-r67a-compile-ab/`) |
+| Long-context opt-in profile (p65 trio, 12-bystander face) | U64k TTFT 51.16 s; bystander W_U64k p95/max **1580/1599 ms** (no-connector posture: 2027/2347) — enable only for ≥~48k-heavy traffic | `results/2026-10-31-p65-cert4/` |
+
+Posture laws in force on cert4 (do not re-litigate without new evidence):
+
+- **`mode: none`** — the 0.30 compile REVAL FIRED the Appendix H law #1
+  acceptance gate: `vllm_compile` collapses acceptance length
+  3.40/3.57 → 2.21/2.32 (−35 %), decode −39 %, prefill flat (p67).
+- **MNBT stays 8192** — 16384 A/B: U32k −9.7 % but U8k +9.9 % and KV pool
+  −18 %; documented, not adopted (p66). Never combine with the p65 trio.
+- Any `FULL_AND_PIECEWISE` repeat must cap the capture ladder at 256
+  (`max_num_seqs × (k+1)`; the `gdn_attn.py:120` law, p67).
+
+Decode-step anatomy, allreduce share, and the prefill op-class table
+(GEMM 39.7 % / AR ~30.4 % / FA 20.3 % / GDN 4.7 %): see "Prefill
+anatomy (p66)" and "Prefill structural rungs (p67)" below.
+
+## Image history — depth-selection faces (cert-era images; the k-depth decision record)
+
+Measured on the original-cert/cert2-era engines (r42 k4 leg, r43 k5
+leg, r46t k3 on the p46 image). The current-image reproduction of this
+family is the cert4 table above (299.15–300.48 / 84.53–84.86,
+family-exact — engine unchanged through cert2→cert4 default postures,
+within ±5 % on same-face A/Bs). Depth law unchanged: **k3**.
 
 | Face | k3 (recommended, r46t) | k4 (r42) | k5 (dropped, r43) |
 |---|---|---|---|
@@ -38,7 +79,7 @@ while the 8 h soak battery was cycling (conservative — a quiet-window
 run would be equal or faster). The 8k/16k/32k ladder and 64k face were
 measured on the certified image (r42/r43 legs and r46 leg respectively).
 
-## Real-world faces (r46t campaign — recommended posture k3)
+## Real-world faces (r46t campaign, p46 image — recommended posture k3; recommendation stands on cert4)
 
 Full methodology and evidence: `results/2026-10-30-p5-r46t-temps/`
 (VERDICT + raw batteries + acceptance counters). Two request regimes,
@@ -123,6 +164,104 @@ Acceptance 87.43%, mean length 5.37 tokens/step, 218 drafts / 1090
 draft tokens / 953 accepted. Per-position acceptance:
 96.79 / 96.79 / 96.79 / 96.33 / 50.46 (positions 0–4) — position 4 is
 the k5 draft tail; see the 12-cell table above for per-cell positions.
+
+## Prefill anatomy (p66 — analysis of record, 2026-10-31)
+
+Solo TTFT sweep, fresh boot each, nolmc, graph, k3, greedy, unique seeds
+(r66a; three faces × four boots — `--long-prefill-token-threshold`
+none/8192/4096/2048):
+
+| Face | prompt tok | thr=none | thr8192 | thr4096 | thr2048 | thr2048 Δ |
+|---|---|---|---|---|---|---|
+| U8k | 8158 | 3.74 s (2178 t/s) | 3.75 s | 4.04 s | 7.94 s | **+112%** |
+| U32k | 32553 | 17.34 s (1878 t/s) | 17.35 s | 18.24 s | 21.49 s | +23.9% |
+| U64k | 65303 | 39.20 s (1666 t/s) | 39.23 s | 42.38 s | 49.75 s | +26.9% |
+
+thr=none and thr8192 are the same path (≤ 0.03 s apart — at MNBT 8192
+the threshold IS the default chunked size). The rate falls with context
+(2178 → 1666 t/s, attention KV growth) even before any chunking effect.
+thr2048's cost is two mechanisms stacked: more chunk boundaries (8158 tok
+= 5 × 1664-token chunks instead of 2 × 7488) **and** small-M device
+inefficiency (U8k rate halves: 2178 → 1028 t/s).
+
+**Where the time goes (r66b, per-chunked-step decomposition on the live
+V2 runner)**: scheduler 0.3 ms, host prep ≤ 10 ms, TP2 allreduce ~28 ms,
+sampling ≤ 107 ms — and the rest is the **device execution of the chunk
+itself**, observed as a queue-drain wait inside the next step's
+mamba/GDN `preprocess_state` launch window (780–1018 ms of an ~0.9 s
+step at 1664-token chunks; XPU eager forward is async, so the enqueue
+looks flat at ~127 ms and the device time surfaces one step later).
+Prefill is **device-bound at ~34 % MFU** (1664-token chunks) to ~40 %
+(7488-token chunks, 2.2–2.4 tok/ms) against the measured 294 TFLOPS
+fleet fp16 GEMM ceiling (147–150 TFLOPS/card, 256 CUs, devprobe r66a).
+The gap is attention over growing KV + W8A16 dequant + non-GEMM ops +
+per-layer launch/dispatch — kernel territory, not host glue.
+
+**Improvement ladder, closed out**:
+
+- thr table (knob) — documented above; the p65 long-context profile
+  (`--long-prefill-token-threshold 2048` + deferral) is the one place
+  thr2048 is correct, for LMC-side reasons (see CONFIGURATION-arc).
+- **MNBT 16384 (knob) — A/B'd, NOT adopted** (r66c): U32k −9.7 %
+  (17.33→15.65 s), U64k −4.1 %, confirming the small-M diagnosis — but
+  U8k +9.9 % (3.74→4.11 s) and the KV pool pays 18 % (405,491→332,629
+  tokens; max concurrency 1.55x→1.27x) from the doubled prefill
+  activation workspace. Never combine with thr2048 (the threshold pins
+  chunk size — only the KV loss remains). Conditional long-prompt-only
+  lever; the certified default stays 8192.
+- **Host glue — closed as empty** (r66b): nothing material to cut.
+- **Structural (raise device MFU)** — the only remaining large lever
+  (prefill compile NONE→PIECEWISE, attention kernel work); deferred,
+  A/B-gated, out of P6.6 scope. → **P6.7 ran it; see the next section.**
+
+Evidence: `results/2026-10-31-p66-r66a-prefill-capture/` (curve + device
+probe), `results/2026-10-31-p66-r66b-step-decomposition/` (step
+decomposition + the engine-map correction + probe-instrumentation laws),
+`results/2026-10-31-p66-r66c-mnbt16k/` (MNBT A/B).
+
+## Prefill structural rungs (p67 — compile REVAL + op-class capture, 2026-10-31)
+
+Zero engine-code change; cert4 remains the certified image (no cert5).
+Evidence: `results/2026-10-31-p67-r67a-compile-ab/` (VERDICT.md,
+r67b_capture_analysis.md, P67_LADDER_VERDICT.md, raw rank traces).
+
+**Compile REVAL (r67a, Appendix H law #1 on 0.30) — REJECTED.**
+`mode=vllm_compile` × `cudagraph_mode=FULL_AND_PIECEWISE` (the only legal
+combo per the capture law), same-session A/B on the cert4 image: MTP mean
+acceptance **3.40/3.57 → 2.21/2.32 (−35 %)**, agg4x256 steady 300.48 →
+182.04 t/s and solo200 84.49 → 51.66 t/s (both −39 % — pure arithmetic of
+fewer accepted tokens per verify step), prefill faces FLAT (U8k 3.75 vs
+3.74 s, U32k 17.08 vs 17.33, U64k 39.20 vs 39.19). KV pool +5.3 %
+(426,874 tokens) does not compensate. Boot cost 460 s vs 265 s stock;
+3 fork-added jit_monitor WARNs (inference-time Triton JIT of spec kernels).
+`mode` stays NONE. Config law banked en route: with MTP k3 and
+max_num_seqs 64, every captured size must satisfy the GDN decode-only cap
+`max_num_seqs×(k+1)` = 256 tokens (`gdn_attn.py:120`) — capture ladders
+must top at 256 under FULL_AND_PIECEWISE (stock ladder headroom to 320
+boot-dies at the first piecewise capture).
+
+**Op-class device anatomy (r67b, torch-profiler XPU trace of the U32k
+face, rank0, 15.38 s kernel time, 71.9 % busy):**
+
+| Slice | Share | Verified launch site |
+|---|---|---|
+| GEMM | 39.7 % | `_xpu_C::fp8_gemm_w8a16` (the p44 W8A16 route — fastest on-image per r40) |
+| TP2 allreduce (ring+ReduceCopy+barrier) | ~30.4 % | `c10d::allreduce_` |
+| FA-layer attention (16 layers, DENSE) | 20.3 % | `_vllm_fa2_C::varlen_fwd` (~31 ms × 102) |
+| GDN chunk-scan (48 layers) | 4.7 % | `gdn::ChunkFwdO/tiled/WU/A/InverseOpt` ×336 |
+| norms + act + rope + elementwise | ~5 % | — |
+| indexer/gather (sparse machinery) | 0.1 % | — |
+
+Consequences: the radiance QSA-splitk whale does not exist on stock 0.30
+(the model runs dense FA — no sparse indexer); **direct-fp8 GEMM rung
+closed negative** (on-image `XPUFp8BlockScaledMMKernel`/`_xpu_C.fp8_gemm`
+exists but r40 measured it 2.2–2.4× slower than the deployed w8a16 at
+prefill Ms — the GEMM whale already runs the fastest on-image kernel);
+**ESIMD FA-kernel rung re-scoped** to the dense varlen site (GQA 24q/4kv,
+head_dim 256, fp16, paged fp8 KV PAGE 1664; est. 5–7 % compute MFU today;
+ceiling −8…−12 % U32k TTFT if 1.5–2×) — open as a kernel project; and the
+**TP2 allreduce family (~30 %) is the largest unattacked slice** (not in
+the owner's ladder; recorded as the top recommendation beyond it).
 
 ## Stability
 

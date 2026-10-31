@@ -1,0 +1,8 @@
+total 12396
+drwxr-xr-x 2 root root    4096 Oct 31 08:59 .
+drwx------ 1 root root    4096 Oct 31 08:58 ..
+-rw-r--r-- 1 root root     807 Oct 31 08:59 ainode01_13.async_llm.1793437168854990364.pt.trace.json.gz
+-rw-r--r-- 1 root root   20651 Oct 31 08:59 profiler_out_0.txt
+-rw-r--r-- 1 root root   20651 Oct 31 08:59 profiler_out_1.txt
+-rw-r--r-- 1 root root 6341609 Oct 31 08:59 rank0.1793437170405959737.pt.trace.json.gz
+-rw-r--r-- 1 root root 6286964 Oct 31 08:59 rank1.1793437170396532064.pt.trace.json.gz

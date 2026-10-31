@@ -1,0 +1,6 @@
+=== warmup (first-traffic law: p12b interlock + first graphs)
+warmup done (completion=None)
+  U8k: prompt=8158 cached=None TTFT=3.74s wall=4.08s -> 2178 tok/s prefill-rate
+  U32k: prompt=32553 cached=None TTFT=17.34s wall=17.97s -> 1878 tok/s prefill-rate
+  U64k: prompt=65303 cached=None TTFT=39.20s wall=39.78s -> 1666 tok/s prefill-rate
+P66_SOLO: DONE

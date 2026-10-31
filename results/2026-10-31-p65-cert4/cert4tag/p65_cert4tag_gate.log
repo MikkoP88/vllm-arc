@@ -1,0 +1,58 @@
+=== [1] IMAGE_MANIFEST: fork_sha must == b5df28b553ead3abfe03352dc8572a5ee20880f5 ===
+MANIFEST fork_sha=b5df28b553ead3abfe03352dc8572a5ee20880f5
+MANIFEST_OK
+=== [2] image-native verify: p48 (28) + p65 (10) ===
+TOTAL 28 checks, 28 pass, 0 fail
+P48_VERIFY: ALL_GREEN
+PASS  lmcint adapter compiles
+P65_CHECKS: 10/10 PASS
+=== [3] certified default boot (25-var, NO p65 envs) + run7n t0 ===
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert4 name=arc-test graph=1 spec=3 gmu=0.8 mnbt=8192 seqs=64 xgc=0 port=8000 03:16:46
+HEALTH=OK after ~310s
+DEFER_ENV_ABSENT=0
+0 (must be 0)
+agg4x256#1 wall=11.08s aggregate=92.44 tok/s ok_streams=4/4 [256tok/10.7s 256tok/10.6s 256tok/11.1s 256tok/10.7s]
+agg4x256#2 wall=3.42s aggregate=299.15 tok/s ok_streams=4/4 [256tok/3.4s 256tok/3.4s 256tok/3.4s 256tok/3.4s]
+solo200 n=200 dt=2.36s tps=84.86
+solo200 n=200 dt=2.37s tps=84.54
+=== [4] p65 face boot + U64k (fix face on the tag-built image) ===
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert4 name=arc-test graph=1 spec=3 gmu=0.8 mnbt=8192 seqs=64 xgc=0 port=8000 03:22:39
+HEALTH=OK after ~290s
+ENV_CHECK=LMC_DEFER_CHUNK_STORE=1
+LMC_DEFER_MIN_TOKENS=40960
+=== warmup (first-traffic law; warms p12b interlock + first graphs)
+prompt sizes: U32k=31805 U64k=63784 U8k=7961 tok
+raw -> /root/build/p65/cert4tag/p65_tl_cert4tag_v51.json (9911 chunks, 56 events)
+  text[warmup] 20ch: 'Counting from 1 to 1'
+  text[byst0] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[byst1] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[byst3] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[byst4] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[byst2] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[byst5] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[U64k] 150ch: 'Based on the notes provided, here are the measurements for **stage 4212**:\n\n1.  **Note 128:** The me'
+  text[bys21] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[bys23] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[bys24] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[bys20] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[bys25] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[bys22] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+
+=== long-stream faces (perf_counter, wave-relative)
+  U64k: TTFT=  51.16s total=  52.91s (start @ wave+  85.0s)
+
+=== bystander inter-chunk gaps (12 streams, greedy, k3)
+  baseline: n=6121 p50=   53.7ms p95=   55.7ms
+  window                 n    p50 ms    p95 ms    max ms #>2xb95  stall_s
+  W_base              6121      53.7      55.7     831.8      91    34.74
+  W_U64k_start         258    1274.2    1579.8    1598.7     246   297.60
+  W_U64k_end           408      55.3      64.6      66.0       0     0.00
+
+P65_CAPTURE: DONE
+prompt sizes: U32k=31805 U64k=63784 U8k=7961 tok
+  U64k: TTFT=  51.16s total=  52.91s (start @ wave+  85.0s)
+STORE classes:
+    178 Stored 832 out of total
+      8 Stored 1664 out of total
+      2 Stored 63232 out of total
+P65_CERT4_TAG_GATE: DONE

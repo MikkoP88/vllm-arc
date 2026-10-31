@@ -1,0 +1,33 @@
+=== warmup (first-traffic law; warms p12b interlock + first graphs)
+prompt sizes: U32k=31805 U64k=63784 U8k=7961 tok
+raw -> /root/build/p65/p65_tl_defer4_v51.json (9926 chunks, 60 events)
+  text[warmup] 20ch: 'Counting from 1 to 1'
+  text[U32k] 153ch: 'Based on the notes provided, here are the measurements for **stage 4272**:\n\n1.  **Note 55**: The mea'
+  text[byst1] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[byst4] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[byst0] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[byst2] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[byst3] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[byst5] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[U64k] 150ch: 'Based on the notes provided, here are the measurements for **stage 4212**:\n\n1.  **Note 128:** The me'
+  text[bys20] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[bys24] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[bys25] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[bys21] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[bys22] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[bys23] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+
+=== long-stream faces (perf_counter, wave-relative)
+  U32k: TTFT=  27.06s total=  28.29s (start @ wave+  25.0s)
+  U64k: TTFT=  51.90s total=  53.50s (start @ wave+  85.0s)
+
+=== bystander inter-chunk gaps (12 streams, greedy, k3)
+  baseline: n=2310 p50=   53.4ms p95=   54.8ms
+  window                 n    p50 ms    p95 ms    max ms #>2xb95  stall_s
+  W_base              2310      53.4      54.8    1048.6      24    10.57
+  W_U32k_start         198    1012.7    2231.4    2237.1     132   158.44
+  W_U32k_end           414      55.3      59.1      62.0       0     0.00
+  W_U64k_start         294    1224.4    1597.6    2007.7     240   301.55
+  W_U64k_end           405      55.4      64.7      66.4       0     0.00
+
+P65_CAPTURE: DONE

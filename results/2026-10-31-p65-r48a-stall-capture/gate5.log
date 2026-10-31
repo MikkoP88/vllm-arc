@@ -1,0 +1,34 @@
+=== [B1] serve copy: threshold 2048 (connector stays OFF via ARC_LMC=0) ===
+1
+=== [B2] boot (ARC_LMC=0) ===
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert3 name=arc-test graph=1 spec=3 gmu=0.8 mnbt=8192 seqs=64 xgc=0 port=8000 00:08:45
+0
+CONFIRMED: no connector in engine
+HEALTH=OK after ~285s
+=== [B3] capture (U32k + U64k; C32k meaningless without connector) ===
+=== warmup (first-traffic law; warms p12b interlock + first graphs)
+prompt sizes: U32k=31805 U64k=63784 U8k=7961 tok
+raw -> /root/build/p65/p65_tl_nolmc_lpt.json (6158 chunks, 45 events)
+
+=== long-stream faces (perf_counter, wave-relative)
+  U32k: TTFT=  52.27s total=  53.59s (start @ wave+  25.0s)
+  U64k: TTFT=   1.75s total=   3.17s (start @ wave+  85.0s)
+
+=== bystander inter-chunk gaps (12 streams, greedy, k3)
+  baseline: n=2040 p50=   53.3ms p95=   56.3ms
+  window                 n    p50 ms    p95 ms    max ms #>2xb95  stall_s
+  W_base              2040      53.3      56.3     977.1      42    26.40
+  W_U32k_start         450    1110.8    2026.9    2347.4     282   376.03
+  W_U32k_end           660      68.3      94.4      95.7       0     0.00
+  W_U64k_start         180     100.0    1480.1    1487.8      20    17.64
+  W_U64k_end           660      67.1     101.5     103.8       0     0.00
+
+P65_CAPTURE: DONE
+=== [B4] run7n t0 ===
+=== bench_run7n (cert16s4 methodology replica) temp=0.0 thinking=off sampling=top_p0.95/top_k20/min_p0/pp0/rp1.0 ===
+agg4x256#1 wall=3.75s aggregate=273.24 tok/s ok_streams=4/4 [256tok/3.7s 256tok/3.7s 256tok/3.7s 256tok/3.7s]
+agg4x256#2 wall=3.41s aggregate=300.06 tok/s ok_streams=4/4 [256tok/3.4s 256tok/3.4s 256tok/3.4s 256tok/3.4s]
+solo200 n=200 dt=2.37s tps=84.51
+solo200 n=200 dt=2.37s tps=84.46
+BENCH_RUN7N_DONE
+P65_LEG_R48E: DONE

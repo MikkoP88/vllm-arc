@@ -1,0 +1,6 @@
+=== bench_run7n (cert16s4 methodology replica) temp=1.0 thinking=xhigh sampling=top_p0.95/top_k20/min_p0/pp0/rp1.0 ===
+agg4x256#1 wall=8.22s aggregate=124.65 tok/s ok_streams=4/4 [256tok/7.9s 256tok/7.6s 256tok/7.8s 256tok/8.2s]
+agg4x256#2 wall=5.51s aggregate=185.97 tok/s ok_streams=4/4 [256tok/5.2s 256tok/5.2s 256tok/4.9s 256tok/5.5s]
+solo200 n=200 dt=6.26s tps=31.94
+solo200 n=200 dt=3.21s tps=62.33
+BENCH_RUN7N_DONE

@@ -16,7 +16,7 @@
 #               §10 P2 gate ("FULL graph + MTP boots and survives first
 #               request") is proven by the P2 spec legs, not assumed.
 #   ARC_LMC     0 no LMCache | 1 D-champion kv-transfer config (P3; default —
-#               the certified posture: LMCacheConnectorV1 + the 9-var
+#               the certified posture: LMCacheConnectorV1 + the 10-var
 #               LMCACHE_* chain, keep as a set)
 #   ARC_GMU     --gpu-memory-utilization (default 0.8, D-champion certified
 #               posture — V1227_GMU lineage, plan Appendix F)
@@ -31,9 +31,14 @@
 # Model flags are the D-champion surface for qwen3.8-27b-fp8 (rig
 # /root/serve_lmc_v133.sh, plan Appendix F): TP2, block 64, fp8 quant +
 # fp8_e4m3 KV, float16 mamba SSM cache, prefix caching, hybrid KV manager on.
-# Certified env = the 24-var chain: 22 exported in the exec block below
-# (13 runtime/system incl. ARC_TRACE_FLIP + 9 LMCACHE_*) + 2 at boot
+# Certified env = the 25-var chain: 23 exported in the exec block below
+# (13 runtime/system incl. ARC_TRACE_FLIP + 10 LMCACHE_*) + 2 at boot
 # (-e VLLM_ALLOW_LONG_MAX_MODEL_LEN / VLLM_WORKER_MULTIPROC_METHOD).
+# P6.3: LMCACHE_TRACK_USAGE=false joined the chain — LMCache usage
+# telemetry is DEFAULT-ON (usage_telemetry/identity.py:25), and the
+# ungated per-request usage-context creation also raised the dual-engine
+# "different metadata" ERROR ×2/boot (observability.py:1965; gated
+# wheel-side by e04-usage-tlm-gate.patch — env + patch together).
 # --compilation-config carries mode:none (no torch.compile) + the explicit
 # 85-entry capture list — [1..320] shorthand is INVALID JSON, never ship it.
 set -euo pipefail
@@ -102,8 +107,8 @@ if [ "$HAVE_IMG_ID" != "$WANT_IMG_ID" ]; then
   echo "ARC_CONTAINER_FRESH image=$ARC_IMAGE id=${WANT_IMG_ID:7:12} (recreated from $HAVE_SRC)"
   # Boot block = the validated bytes (rig r46t_campaign.sh:54-63 /
   # r42/r46_soak.sh:33-42): --privileged --network host --ipc host,
-  # --shm-size 64g, 5 mounts, and the 2 boot-layer -e vars of the 24-var
-  # chain (the other 22 are exported in the exec block below).
+  # --shm-size 64g, 5 mounts, and the 2 boot-layer -e vars of the 25-var
+  # chain (the other 23 are exported in the exec block below).
   docker run -d --name "$ARC_NAME" \
     --privileged --network host --ipc host \
     --shm-size 64g \
@@ -155,11 +160,13 @@ fi
 
 # LMCache (P3, certified posture): the D-champion kv-transfer config — exact
 # bytes of the certified line (rig /root/build/r42/r43_serve_k5.sh:53) — plus
-# the 9-var LMCACHE_* chain as one set (plan Appendix E; keep as a set).
+# the 10-var LMCACHE_* chain as one set (plan Appendix E; keep as a set).
+# P6.3 adds the 10th: LMCACHE_TRACK_USAGE=false (telemetry default-ON law,
+# header comment above).
 LMC_ENV=""
 LMC_FLAG=""
 if [ "$ARC_LMC" = 1 ]; then
-  LMC_ENV="export LMCACHE_USE_EXPERIMENTAL_API=True; export LMCACHE_MAX_LOCAL_CPU_SIZE=100; export LMCACHE_LOCAL_CPU=True; export LMCACHE_EVICT_POLICY=lr_u; export LMCACHE_CHUNK_SIZE=1024; export LMCACHE_SAVE_DECODE_CACHE=True; export LMCACHE_MIN_RETRIEVE_TOKENS=1024; export LMCACHE_LOG_LEVEL=INFO; export LMCACHE_DISABLE_PINNED_MEMORY=1;"
+  LMC_ENV="export LMCACHE_USE_EXPERIMENTAL_API=True; export LMCACHE_MAX_LOCAL_CPU_SIZE=100; export LMCACHE_LOCAL_CPU=True; export LMCACHE_EVICT_POLICY=lr_u; export LMCACHE_CHUNK_SIZE=1024; export LMCACHE_SAVE_DECODE_CACHE=True; export LMCACHE_MIN_RETRIEVE_TOKENS=1024; export LMCACHE_LOG_LEVEL=INFO; export LMCACHE_DISABLE_PINNED_MEMORY=1; export LMCACHE_TRACK_USAGE=false;"
   LMC_FLAG="--kv-transfer-config '{\"kv_connector\":\"LMCacheConnectorV1\",\"kv_role\":\"kv_both\",\"kv_connector_extra_config\":{\"use_native\":true,\"lmcache.extra_config\":{\"mamba_pool_ratio\":2}},\"engine_id\":\"arc-p40\"}'"
 fi
 
