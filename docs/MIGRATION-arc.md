@@ -110,4 +110,12 @@ to `results/`.
 - r47e cert3 tag-built image (manifest A/B + image-native 28/28): `results/2026-10-31-p6-r47e-cert3/`
 - r48a–r48l P6.5 stall attribution + length-gated chunk-store deferral (the wrong-file discovery, the attribution matrix, the fix legs): `results/2026-10-31-p65-r48a-stall-capture/`
 - cert4 gates (P6.5 close-out — candidate battery + p65 face on the shipped image): `results/2026-10-31-p65-cert4/`
+- p66 P6.6 prefill anatomy (r66a solo curve + device probe, r66b step
+  decomposition — prefill device-bound ~34–40 % MFU, host glue closed as
+  empty, the engine-map correction, r66c MNBT-16384 A/B — knob documented
+  not adopted; **analysis only, zero engine-code change: cert4 remains
+  the certified image, no cert5**):
+  `results/2026-10-31-p66-r66a-prefill-capture/`,
+  `results/2026-10-31-p66-r66b-step-decomposition/`,
+  `results/2026-10-31-p66-r66c-mnbt16k/`
 - env reference: `docs/envs.md`

@@ -2,7 +2,7 @@
 
 **Certified vLLM stack for `qwen3.8-27b-fp8` (dense hybrid-GDN + MTP) on dual Intel® Arc™ Pro B70 — TP2.**
 
-A fork of [vllm-project/vllm-gaudi](https://github.com/vllm-project/vllm-gaudi) at **v0.30.0** (package name `vllm_gaudi` preserved; the Arc/XPU work lives in `vllm_gaudi/xpu/`). Certified release: **`rel/v0.30.0-b70-cert4`** — every gate GREEN with banked evidence (cert4 = cert3 engine + P6.5 length-gated chunk-store deferral [opt-in long-context profile, default posture identical to cert3]; see [Repository model](#repository-model)).
+A fork of [vllm-project/vllm-gaudi](https://github.com/vllm-project/vllm-gaudi) at **v0.30.0** (package name `vllm_gaudi` preserved; the Arc/XPU work lives in `vllm_gaudi/xpu/`). Certified release: **`rel/v0.30.0-b70-cert4`** — every gate GREEN with banked evidence (cert4 = cert3 engine + P6.5 length-gated chunk-store deferral [opt-in long-context profile, default posture identical to cert3]; see [Repository model](#repository-model)). P6.6 (prefill performance) closed **analysis-only**: the anatomy is documented in PERFORMANCE-arc ("Prefill anatomy" — device-bound ~34–40 % MFU, MNBT/thr knobs A/B'd and documented, host glue empty), no engine change — cert4 remains current.
 
 ## What this fork adds
 
