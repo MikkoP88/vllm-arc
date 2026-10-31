@@ -171,12 +171,56 @@ per-layer launch/dispatch — kernel territory, not host glue.
 - **Host glue — closed as empty** (r66b): nothing material to cut.
 - **Structural (raise device MFU)** — the only remaining large lever
   (prefill compile NONE→PIECEWISE, attention kernel work); deferred,
-  A/B-gated, out of P6.6 scope.
+  A/B-gated, out of P6.6 scope. → **P6.7 ran it; see the next section.**
 
 Evidence: `results/2026-10-31-p66-r66a-prefill-capture/` (curve + device
 probe), `results/2026-10-31-p66-r66b-step-decomposition/` (step
 decomposition + the engine-map correction + probe-instrumentation laws),
 `results/2026-10-31-p66-r66c-mnbt16k/` (MNBT A/B).
+
+## Prefill structural rungs (p67 — compile REVAL + op-class capture, 2026-10-31)
+
+Zero engine-code change; cert4 remains the certified image (no cert5).
+Evidence: `results/2026-10-31-p67-r67a-compile-ab/` (VERDICT.md,
+r67b_capture_analysis.md, P67_LADDER_VERDICT.md, raw rank traces).
+
+**Compile REVAL (r67a, Appendix H law #1 on 0.30) — REJECTED.**
+`mode=vllm_compile` × `cudagraph_mode=FULL_AND_PIECEWISE` (the only legal
+combo per the capture law), same-session A/B on the cert4 image: MTP mean
+acceptance **3.40/3.57 → 2.21/2.32 (−35 %)**, agg4x256 steady 300.48 →
+182.04 t/s and solo200 84.49 → 51.66 t/s (both −39 % — pure arithmetic of
+fewer accepted tokens per verify step), prefill faces FLAT (U8k 3.75 vs
+3.74 s, U32k 17.08 vs 17.33, U64k 39.20 vs 39.19). KV pool +5.3 %
+(426,874 tokens) does not compensate. Boot cost 460 s vs 265 s stock;
+3 fork-added jit_monitor WARNs (inference-time Triton JIT of spec kernels).
+`mode` stays NONE. Config law banked en route: with MTP k3 and
+max_num_seqs 64, every captured size must satisfy the GDN decode-only cap
+`max_num_seqs×(k+1)` = 256 tokens (`gdn_attn.py:120`) — capture ladders
+must top at 256 under FULL_AND_PIECEWISE (stock ladder headroom to 320
+boot-dies at the first piecewise capture).
+
+**Op-class device anatomy (r67b, torch-profiler XPU trace of the U32k
+face, rank0, 15.38 s kernel time, 71.9 % busy):**
+
+| Slice | Share | Verified launch site |
+|---|---|---|
+| GEMM | 39.7 % | `_xpu_C::fp8_gemm_w8a16` (the p44 W8A16 route — fastest on-image per r40) |
+| TP2 allreduce (ring+ReduceCopy+barrier) | ~30.4 % | `c10d::allreduce_` |
+| FA-layer attention (16 layers, DENSE) | 20.3 % | `_vllm_fa2_C::varlen_fwd` (~31 ms × 102) |
+| GDN chunk-scan (48 layers) | 4.7 % | `gdn::ChunkFwdO/tiled/WU/A/InverseOpt` ×336 |
+| norms + act + rope + elementwise | ~5 % | — |
+| indexer/gather (sparse machinery) | 0.1 % | — |
+
+Consequences: the radiance QSA-splitk whale does not exist on stock 0.30
+(the model runs dense FA — no sparse indexer); **direct-fp8 GEMM rung
+closed negative** (on-image `XPUFp8BlockScaledMMKernel`/`_xpu_C.fp8_gemm`
+exists but r40 measured it 2.2–2.4× slower than the deployed w8a16 at
+prefill Ms — the GEMM whale already runs the fastest on-image kernel);
+**ESIMD FA-kernel rung re-scoped** to the dense varlen site (GQA 24q/4kv,
+head_dim 256, fp16, paged fp8 KV PAGE 1664; est. 5–7 % compute MFU today;
+ceiling −8…−12 % U32k TTFT if 1.5–2×) — open as a kernel project; and the
+**TP2 allreduce family (~30 %) is the largest unattacked slice** (not in
+the owner's ladder; recorded as the top recommendation beyond it).
 
 ## Stability
 

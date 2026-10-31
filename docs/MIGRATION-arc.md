@@ -118,4 +118,14 @@ to `results/`.
   `results/2026-10-31-p66-r66a-prefill-capture/`,
   `results/2026-10-31-p66-r66b-step-decomposition/`,
   `results/2026-10-31-p66-r66c-mnbt16k/`
+- p67 P6.7 prefill structural rungs (r67a compile REVAL — Appendix H law
+  #1 acceptance gate FIRED on 0.30: acceptance 3.4→2.2, decode −39 %,
+  prefill flat, mode stays NONE; plus the GDN capture-cap config law
+  `max_num_seqs×(k+1)`=256 under FULL_AND_PIECEWISE; r67b op-class XPU
+  trace — GEMM 39.7 % IS fp8_gemm_w8a16, allreduce ~30.4 %, dense FA
+  varlen 20.3 %, GDN 4.7 %, sparse machinery 0.1 %; rung C closed
+  negative on r40 evidence, rung B re-scoped to the dense varlen site as
+  a kernel project; **again zero engine-code change: cert4 remains the
+  certified image, no cert5**):
+  `results/2026-10-31-p67-r67a-compile-ab/`
 - env reference: `docs/envs.md`
