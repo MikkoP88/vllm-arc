@@ -1,0 +1,26 @@
+# acs_validation.txt — disable-acs host validation (owner directive 1:
+# "disable-acs has been implemented and tested but run validation on host")
+# Read-only validation on the rig, 2026-10-31 ~11:25 UTC (during r70 soak —
+# read-only commands only; the service itself last ran 10:40 UTC).
+
+$ systemctl is-active disable-acs.service
+active
+$ systemctl is-enabled disable-acs.service
+enabled
+$ journalctl -u disable-acs.service --no-pager | tail -4
+Oct 31 10:40:18 REDACTED-HOST disable-acs.sh[4178439]: ACS disabled on d9:02.0 (was 0000)
+Oct 31 10:40:18 REDACTED-HOST disable-acs.sh[4178439]: disable-acs: 18 ACS devices zeroed, 300 without ACS skipped
+Oct 31 10:40:19 REDACTED-HOST disable-acs.sh[4178439]: verify: all ACSCtl = 0000
+Oct 31 10:40:19 REDACTED-HOST systemd[1]: Finished disable-acs.service - Disable PCIe ACS on all devices (P2P DMA enablement, Dell setpci practice).
+
+# independent recount across the whole tree (bits still set must be 0):
+$ lspci -vvv | grep 'ACSCtl' | grep -c '+'
+0
+# (18 ACSCtl-capable devices total; all show every bit '-')
+
+VALIDATION: PASS — service active + enabled (re-applies each boot before
+docker), deployment run zeroed 18/18 ACS-capable devices with in-band
+self-verify, and an independent full-tree recount finds zero ACS control
+bits set. Idempotent by construction (second run would rewrite 0000 over
+0000). Bytes: tools/pcie/disable-acs.sh (md5-matched to the rig copy at
+/usr/local/sbin/disable-acs.sh, 1153 bytes).
