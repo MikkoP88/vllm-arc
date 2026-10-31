@@ -10,9 +10,21 @@ complete control surface + naming map); test definitions in
 
 | Item | Value |
 |---|---|
-| Image | `vllm-arc:v0.30.0-b70-cert4` (**certified release**, tag `rel/v0.30.0-b70-cert4` = cert3 engine + P6.5 length-gated chunk-store deferral in the lmcint adapter [opt-in, default posture identical to cert3]; gates `results/2026-10-31-p65-cert4/`) / `v0.30.0-b70-cert3` (**superseded by cert4** — identical default behavior, lacks the deferral hunk; gates `results/2026-10-31-p6-r47c-p48-056gates/`) / `v0.30.0-b70-cert2` (0.5.5-era lmcache line, still valid) / `v0.30.0-b70-p48` (r47c gate image, same engine tree as cert3) / `v0.30.0-b70-p47` (r46v build-validation) / `v0.30.0-b70-p46` (r46t campaign) / `v0.30.0-b70-cert` (**superseded — predates r46u, never build from it**) |
+| Image | `vllm-arc:v0.30.0-b70-cert4` — **the certified release**, tag `rel/v0.30.0-b70-cert4` (cert3 engine + the P6.5 length-gated chunk-store deferral in the lmcint adapter — opt-in, default posture identical to cert3; gates `results/2026-10-31-p65-cert4/`) |
 | Manifest | `/etc/vllm-arc/IMAGE_MANIFEST` inside the image — fork SHA, wheel pins, dependency closure (`lmcache_closure=`), build host |
 | Base | upstream vllm-gaudi v0.30.0 + pinned wheels (vllm 0.30.0+xpu, triton 3.7.2+xpu, vllm_xpu_kernels 0.1.14.1+arc3, lmcache 0.5.6+arc1) |
+
+Superseded images (never presented as current — the full lineage table
+with per-image evidence lives in PERFORMANCE-arc "Image lineage"):
+
+| Image | Status |
+|---|---|
+| `v0.30.0-b70-cert3` | superseded by cert4 — identical default behavior, lacks the deferral hunk (gates `results/2026-10-31-p6-r47c-p48-056gates/`) |
+| `v0.30.0-b70-cert2` | superseded — 0.5.5-era lmcache wheel line, still valid |
+| `v0.30.0-b70-p48` | r47c gate image (same engine tree as cert3) |
+| `v0.30.0-b70-p47` | r46v build-validation image |
+| `v0.30.0-b70-p46` | r46t depth-campaign image |
+| `v0.30.0-b70-cert` | **never build from it** — predates the r46u glue fix |
 
 Verify before any leg: `docker run --rm --entrypoint bash <img> -c "cat
 /etc/vllm-arc/IMAGE_MANIFEST"` and check `fork_sha` matches the tree you

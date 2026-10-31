@@ -2,7 +2,11 @@
 
 **Certified vLLM stack for `qwen3.8-27b-fp8` (dense hybrid-GDN + MTP) on dual Intel® Arc™ Pro B70 — TP2.**
 
-A fork of [vllm-project/vllm-gaudi](https://github.com/vllm-project/vllm-gaudi) at **v0.30.0** (package name `vllm_gaudi` preserved; the Arc/XPU work lives in `vllm_gaudi/xpu/`). Certified release: **`rel/v0.30.0-b70-cert4`** — every gate GREEN with banked evidence (cert4 = cert3 engine + P6.5 length-gated chunk-store deferral [opt-in long-context profile, default posture identical to cert3]; see [Repository model](#repository-model)). P6.6 (prefill performance) closed **analysis-only**: the anatomy is documented in PERFORMANCE-arc ("Prefill anatomy" — device-bound ~34–40 % MFU, MNBT/thr knobs A/B'd and documented, host glue empty), no engine change — cert4 remains current. P6.7 (prefill structural rungs) closed **evidence-only**: compile REVAL rejected (MTP acceptance −35 % under `vllm_compile`, gate per Appendix H law #1), direct-fp8 GEMM rung negative (r40: on-image fp8_gemm slower than the deployed w8a16), ESIMD FA-kernel re-scoped by the r67b op-class trace (dense varlen 20.3 %, allreduce ~30 %, GEMM 39.7 %) — again no engine change, cert4 remains current. P6.8 (publishing hygiene): intranet addresses scrubbed from the tracked tree, `tools/leak_sweep.sh` gate + plan §11 rule 9 — no engine change. P6.9 (main currency): every main doc/README/guide always names the LATEST certified image (`tools/check_currency.sh` gate) and every squash-merge publishes to both remotes. P6.10 (comprehensive cert4 measurement): every current-record face re-measured natively on cert4 (r70 — throughput/TTFT/warm-prefix-with-cache-tier-attribution/acceptance/no-spec A/B/soak); docs rebuilt cert4-native-only, no engine change — cert4 remains current.
+A fork of [vllm-project/vllm-gaudi](https://github.com/vllm-project/vllm-gaudi) at **v0.30.0** (package name `vllm_gaudi` preserved; the Arc/XPU work lives in `vllm_gaudi/xpu/`).
+
+- Certified release: **`rel/v0.30.0-b70-cert4`** — every gate GREEN with banked evidence. cert4 = cert3's engine + the P6.5 opt-in long-context profile (default posture identical to cert3).
+- **Project status: P0–P6.10 complete.** All phases closed with evidence — engine hardening (P2), cache lane (P3), certification battery (P4), audits + soak (P5), measurement/analysis phases P6.1–P6.10 (external-hit-rate truth, comparator law, telemetry off, publishing hygiene, main currency, and the comprehensive cert4-native re-measurement of every current-record face). Zero engine-code change since cert3's default posture: **cert4 is both the latest and the fastest certified image** — nothing validated beats it (rejected-on-evidence: k5 depth, torch.compile). Full phase ledger: [`docs/TESTING-arc.md`](docs/TESTING-arc.md) (validation record) and [`docs/MIGRATION-arc.md`](docs/MIGRATION-arc.md) (evidence table).
+- **Open improvement lanes** (all analysis-side, none certified yet): ESIMD dense-FA kernel project (r67b re-scope), TP2 allreduce path analysis (r71, `tools/pcie/README.md`).
 
 ## What this fork adds
 
@@ -19,7 +23,7 @@ A fork of [vllm-project/vllm-gaudi](https://github.com/vllm-project/vllm-gaudi) 
 
 ## Certified performance (dual Arc Pro B70, TP2, qwen3.8-27b-fp8)
 
-Every value below is **measured natively on the certified image** `vllm-arc:v0.30.0-b70-cert4` (r70 comprehensive campaign + certification legs — methodology, face definitions, the sampled/thinking sweep, cache-tier attribution, and per-face provenance in [`docs/PERFORMANCE-arc.md`](docs/PERFORMANCE-arc.md)):
+Every value below is **measured natively on the certified image** `vllm-arc:v0.30.0-b70-cert4` (r70 comprehensive campaign + certification legs — methodology, face definitions, the sampled/thinking sweep, cache-tier attribution, per-face provenance, and the pre-cert4 history in [`docs/PERFORMANCE-arc.md`](docs/PERFORMANCE-arc.md)):
 
 | Face | Value |
 |---|---|
@@ -33,21 +37,12 @@ Every value below is **measured natively on the certified image** `vllm-arc:v0.3
 ## Quick start
 
 ```bash
-# 1. Build the certified image from the certified tag — two phases,
-#    validated end-to-end (r46v/r46x evidence: the r46u glue repro passes
-#    image-natively on a tag-built image).
-#    The build runs ON THE RIG (or an equally prepared Linux host): it
-#    needs the pinned-wheel stashes (/root/build/radiance_wheels,
-#    wheels-arc-vxk, wheels-arc-lmc — md5s enforced against
-#    external_patches/wheels.pins.md5 by tools/wheel_guard.sh), the
-#    rig-local base image (vllm-iexperimental:base-v0.26.0), and internet
-#    on the FIRST build only (torch+xpu from download.pytorch.org/whl/xpu,
-#    the rest from PyPI — the stack layers cache in docker after).
-#    Every patch ships in the archive itself (COPY src/ + pip install .);
-#    the lmcache/vxk wheels are rebuildable from external_patches/ if a
-#    stash is ever lost.
-#
-#    repo side (your checkout of this fork):
+# 1. Build the certified image from the certified tag.
+#    Runs ON THE RIG (or an equally prepared Linux host): needs the pinned-wheel
+#    stashes, the rig-local base image, and internet on the FIRST build only
+#    (stack layers cache in docker after). Every patch ships in the archive
+#    (COPY src/ + pip install .); wheel pins enforced by tools/wheel_guard.sh.
+#    Full provenance + the wheel-stash inventory: docs/CONFIGURATION-arc.md.
 RIG=<build-host>                                # <- set: your rig/build host
                                                  #    (never commit the real
                                                  #    address — publishing-
@@ -57,34 +52,25 @@ RIG=<build-host>                                # <- set: your rig/build host
 SHA=$(git rev-parse rel/v0.30.0-b70-cert4)      # the certified commit
 git archive --format=tar -o /tmp/fork.tar rel/v0.30.0-b70-cert4
 scp /tmp/fork.tar root@$RIG:/root/build/
-#    rig side (via ssh — same effect as running them on the host):
 ssh root@$RIG 'tar -xOf /root/build/fork.tar tools/build_image.sh > /root/build/build_image.sh'
 ssh root@$RIG bash /root/build/build_image.sh /root/build/fork.tar $SHA vllm-arc:v0.30.0-b70-cert4
-#    -> wheel_guard PASSes (4/4 md5s), in-build gates run, IMAGE_MANIFEST
-#       records fork_sha == $SHA (verify: docker run --rm --entrypoint cat
-#       vllm-arc:v0.30.0-b70-cert4 /etc/vllm-arc/IMAGE_MANIFEST).
+#    -> wheel_guard PASSes (4/4 md5s), IMAGE_MANIFEST records fork_sha == $SHA
+#       (verify: docker run --rm --entrypoint cat
+#        vllm-arc:v0.30.0-b70-cert4 /etc/vllm-arc/IMAGE_MANIFEST)
 #       ~15 min cold; ~1 min when only the source changed (stack layers
 #       cached — layer-order law in the Dockerfile).
 #
-#    Tag lineage: cert4 = the certified release (cert3's engine + the
-#    P6.5 chunk-store deferral in the lmcint adapter — opt-in via
-#    LMC_DEFER_CHUNK_STORE=1 + LMC_DEFER_MIN_TOKENS=40960 under
-#    --long-prefill-token-threshold 2048; default posture identical to
-#    cert3; gates results/2026-10-31-p65-cert4/). Superseded:
-#    rel/v0.30.0-b70-cert3 (identical default behavior, lacks the
-#    deferral hunk), rel/v0.30.0-b70-cert2 (0.5.5-era wheel — still
-#    valid, older lmcache line), rel/v0.30.0-b70-cert (predates r46u —
+#    Tag lineage (full table: docs/PERFORMANCE-arc.md "Image lineage"):
+#    cert4 = current. Superseded: cert3 (identical default behavior, lacks
+#    the deferral hunk), cert2 (0.5.5-era wheel line), cert (predates r46u —
 #    never build from it).
 
-# 2. Boot — the validated posture, annotated:
-#    --privileged   REQUIRED: with CCL_ZE_IPC_EXCHANGE=pidfd it keeps
-#                   oneCCL's ze_fd_manager off the opendir device walk
-#                   that kills non-privileged TP2 init
-#    --ipc host     share host /dev/shm
-#    --shm-size 64g tmpfs ceiling, not a reservation (moot under
-#                   --ipc host; guards the private-IPC fallback)
-#    model :ro      the checkpoint is an input, never an output
-#    -e pair        the 2 boot-layer vars of the 25-var chain (23 in step 3)
+# 2. Boot — the validated posture (annotated semantics in
+#    docs/CONFIGURATION-arc.md Step 1; key points: --privileged REQUIRED
+#    with CCL_ZE_IPC_EXCHANGE=pidfd [TP2 init law]; --ipc host shares
+#    host /dev/shm; --shm-size 64g is a ceiling, not a reservation;
+#    model :ro — the checkpoint is an input; the -e pair are the 2
+#    boot-layer vars of the 25-var chain).
 docker run -d --name arc-test --privileged --network host --ipc host \
   --shm-size 64g \
   -v /path/to/qwen3.8-27b-fp8:/models/target:ro \
@@ -95,8 +81,10 @@ docker run -d --name arc-test --privileged --network host --ipc host \
   -e VLLM_WORKER_MULTIPROC_METHOD=spawn \
   --entrypoint bash vllm-arc:v0.30.0-b70-cert4 -c "sleep infinity"
 
-# 3. Serve — the certified line as an annotated script (the rig pattern:
-#    script + docker cp + exec; logs land in /root/serve_full.log)
+# 3. Serve — the certified line, byte-identical to
+#    docs/CONFIGURATION-arc.md Step 2 (that file is canonical; per-var
+#    semantics there + docs/envs.md). The rig pattern: script + docker cp
+#    + exec; logs land in /root/serve_full.log.
 cat > serve_k3.sh <<'EOF'
 #!/bin/bash
 # --- serve environment: 23 of the certified 25-var chain (2 set at boot) ---
@@ -156,40 +144,35 @@ docker exec -d arc-test bash /root/serve_k3.sh
 
 # 4. Health — first boot takes ~10 min to reach 200 (model load + graph capture)
 curl -s -o /dev/null -w "%{http_code}\n" -m 5 http://127.0.0.1:8000/health
-
-# Optional — OpenAI reasoning_effort compatibility (high/max→xhigh aliasing,
-# none→thinking-off; default path identical either way; ships in-repo):
-#   boot:  add -v $(pwd)/assets/chat_template_qwen38_high.jinja:/root/chat_template_qwen38_high.jinja:ro
-#   serve: add --chat-template /root/chat_template_qwen38_high.jinja
-#
-# Optional — long-context serve profile (p65): for U32k/U64k-heavy faces,
-# the certified trio --long-prefill-token-threshold 2048 +
-# LMC_DEFER_CHUNK_STORE=1 + LMC_DEFER_MIN_TOKENS=40960 (U64k TTFT 51.16 s
-# with bystander p95/max 1580/1599 ms; WARNING: ungated use regresses
-# short-prefill r48k — see the cross-leg table before adopting):
-#   docs/CONFIGURATION-arc.md "Long-context serve profile (p65)".
 ```
 
-This quick start is the certified line (verified against rig
-`/root/build/r42/r43_serve_k5.sh`) minus the optional chat template —
-semantics per flag/env, knobs, and posture laws in
-[`docs/CONFIGURATION-arc.md`](docs/CONFIGURATION-arc.md); the uniform
-boot interface with posture knobs is `tools/serve_arc_b70.sh`
-(rig paths).
+Optional postures (both documented in full in
+[`docs/CONFIGURATION-arc.md`](docs/CONFIGURATION-arc.md)):
+
+- **OpenAI `reasoning_effort` compatibility** — mount + pass
+  `assets/chat_template_qwen38_high.jinja` (high/max→xhigh aliasing,
+  none→thinking-off; default path identical either way).
+- **Long-context serve profile (p65)** — for U48k+-heavy fleets:
+  `--long-prefill-token-threshold 2048` + `LMC_DEFER_CHUNK_STORE=1` +
+  `LMC_DEFER_MIN_TOKENS=40960` (U64k TTFT 51.16 s, bystander p95/max
+  1580/1599 ms; WARNING: ungated use regresses short-prefill r48k).
+
+The uniform boot interface with posture knobs (rig paths) is
+`tools/serve_arc_b70.sh`.
 
 ## Documentation
 
-- [`docs/CONFIGURATION-arc.md`](docs/CONFIGURATION-arc.md) — how to run the certified posture
-- [`docs/PERFORMANCE-arc.md`](docs/PERFORMANCE-arc.md) — measured numbers: **current certified image (cert4) record first** (decode/prefill/TTFT + posture laws), then the depth-selection campaign and image history
+- [`docs/CONFIGURATION-arc.md`](docs/CONFIGURATION-arc.md) — how to run the certified posture (the canonical serve block, knob table, posture laws)
+- [`docs/PERFORMANCE-arc.md`](docs/PERFORMANCE-arc.md) — measured numbers: **current certified record (cert4-native) first**, then pre-cert4 history (image-labeled)
 - [`docs/TESTING-arc.md`](docs/TESTING-arc.md) — 13 test suites, gates, validation record
-- [`docs/MIGRATION-arc.md`](docs/MIGRATION-arc.md) — swap an incumbent stack for this one (boot, verify, rollback)
+- [`docs/MIGRATION-arc.md`](docs/MIGRATION-arc.md) — swap an incumbent stack for this one (boot, verify, rollback) + the evidence table
 - [`docs/envs.md`](docs/envs.md) — complete env/knob control surface + naming map
 
 ## Repository model
 
 - **`main` is linear and protected**: changes land as squash commits from per-item lanes (`feat/arc-pNN-*`); direct pushes, force pushes, and deletions are blocked; PRs are required.
 - **Certified releases are annotated tags** pointing at the certified `main` commit — current: `rel/v0.30.0-b70-cert4`; superseded: `rel/v0.30.0-b70-cert3` (identical default behavior, lacks the p65 deferral hunk), `rel/v0.30.0-b70-cert2` (0.5.5-era lmcache line — valid, older), `rel/v0.30.0-b70-cert` (predates the r46u glue-alias fix — never build from it). The Docker image embeds the fork SHA in `/etc/vllm-arc/IMAGE_MANIFEST` for A/B verification.
-- **Evidence is in-tree**: every validation leg banks to `results/YYYY-MM-DD-<phase>-r<leg>-<slug>/` (VERDICT + raw outputs) — 75+ legs across 77 dirs, P0 through P6.
+- **Evidence is in-tree**: every validation leg banks to `results/YYYY-MM-DD-<phase>-r<leg>-<slug>/` (VERDICT + raw outputs) — **78 evidence dirs, 74 VERDICTs of record**, P0 through P6.
 - **No secrets or real host addresses in-tree (publishing-hygiene law)**: tracked == pushable, so credentials, rig/host addresses, and private identities never enter tracked files; banked logs carry redacted host addresses (`results/REDACTION-2026-10-31.md` documents the one-time scrub). `tools/leak_sweep.sh` must exit 0 before every push.
 - The `feat/arc-*` branches are kept deliberately: squash-merging leaves the per-item development history nowhere else.
 

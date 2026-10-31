@@ -46,9 +46,10 @@ scripts using only the OpenAI-compatible HTTP API.
 
 ### 1. Boot + survival flip
 First request after boot ("survival flip"): engine must return HTTP 200
-and complete the first generation (measured 6.09 s end-to-end for the
-flip request). Catches first-traffic death classes (graph capture,
-warmup interlock, connector init).
+and complete the first generation (cert4-native: 6.2–7.3 s end-to-end
+for the flip request, r70; cert-era history value 6.09 s). Catches
+first-traffic death classes (graph capture, warmup interlock,
+connector init).
 
 ### 2. Throughput battery — `bench_run7n.py` (`tools/bench_run7n.py`)
 - **solo200**: single request, `max_tokens=200`, streaming off, tokens/s
@@ -192,9 +193,9 @@ superseded evidence, v2 pins `enable_thinking: false` on valid probes.
 ## Evidence layout
 
 Each leg banks to `results/YYYY-MM-DD-<phase>-r<leg>-<slug>/` (VERDICT,
-raw bench outputs, hook audit, integrity shas, serve keylines) — 77
-dirs to date; the naming convention is documented in
-[`envs.md`](envs.md) (naming map).
+raw bench outputs, hook audit, integrity shas, serve keylines) — 78
+dirs / 74 VERDICTs of record to date; the naming convention is
+documented in [`envs.md`](envs.md) (naming map).
 
 ## Validation record
 
