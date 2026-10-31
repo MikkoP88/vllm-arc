@@ -1,0 +1,51 @@
+# r71b_d2d.txt — D2D peer-copy probe transcript (the decisive P2P measurement)
+#
+# Run: 2026-10-31 ~14:57 UTC, idle window after the r70 leg C soak ended
+# (arc-r70c torn down by its EXIT trap; radiance-test stopped for the
+# probe, W14 restored by the r71a trap right after).
+# Command: bash /root/build/b70_probe21_d2d.sh  (rig copy md5
+# c8b23ab13c710ff01d78c08be507570c == tools/pcie/b70_probe21_d2d.sh ==
+# kit/ copy; probe payload 256 MiB fp16, N_WARM=3, N_REP=20, median).
+#
+# VERDICT: ~10.2 GB/s BOTH directions = DIRECT P2P (level-zero peer
+# copy). Verdict table (d2d_probe.py): ~10-12 GB/s direct P2P; ~5-6
+# host-staged/bounce; <=1 real degraded link. Peer access API confirms:
+# can_device_access_peer True both ways. The sysfs 2.5GT/s x1 attrs are
+# conclusively a MISREPORT (10.23 GB/s is impossible over Gen1 x1;
+# it is ~82% of the Gen3 x16 per-direction ceiling, with the cross-socket
+# topology [one B70 per socket] baked in).
+#
+# --- transcript (verbatim; a stray first-run tee error omitted — the
+# probe itself completed B70_PROBE21_D2D_DONE) ---
+
+=== xpu-smi discovery (BDF + DRM mapping for the record) ===
+
+  Device ID     Device Information
+  0             Device Name: Intel(R) Arc(TM) Pro B70 Graphics
+                Device State: normal
+                Vendor Name: Intel(R) Corporation
+                SOC UUID: 00000000-0000-00b1-0000-0000e2238086
+                PCI BDF Address: 0000:b1:00.0
+                DRM Device: /dev/dri/card1
+                Function Type: physical
+
+  1             Device Name: Intel(R) Arc(TM) Pro B70 Graphics
+                Device State: normal
+                Vendor Name: Intel(R) Corporation
+                SOC UUID: 00000000-0000-00da-0000-0000e2238086
+                PCI BDF Address: 0000:da:00.0
+                DRM Device: /dev/dri/card2
+                Function Type: physical
+
+=== sysfs link state (known xe misreport class — banked for the file) ===
+0000:b0:01.0 cur=2.5 GT/s PCIe width=1
+0000:b1:00.0 cur=2.5 GT/s PCIe width=1
+0000:d9:01.0 cur=2.5 GT/s PCIe width=1
+0000:da:00.0 cur=2.5 GT/s PCIe width=1
+=== D2D copies (torch -> level-zero; see verdict table in d2d_probe.py) ===
+devices=2 ['Intel(R) Graphics [0xe223]', 'Intel(R) Graphics [0xe223]']
+can_device_access_peer(0,1)=True (1,0)=True
+xpu:0 -> xpu:1  256 MiB  median  10.23 GB/s  min  10.23  max  10.22
+xpu:1 -> xpu:0  256 MiB  median  10.23 GB/s  min  10.23  max  10.21
+D2D_PROBE_DONE
+B70_PROBE21_D2D_DONE

@@ -4,8 +4,16 @@
 # Owner directive 2026-10-31: "oneCCL never selected the P2P path (most
 # common, pure config) — check: boot log with CCL_LOG_LEVEL=2".
 #
+# LEVEL LAW (attempt-1 evidence, 2026-10-31): this oneCCL build takes
+# ENUM NAMES, not numbers — `CCL_LOG_LEVEL=2` throws at env parse
+# (env_parser.hpp:100 enum_by_str: "unexpected value: 2, expected
+# values: error, warn, info, debug, trace") and kills both workers at
+# the first all_reduce. Evidence:
+# results/.../r71a_attempt1_invalid_numeric_level/serve_diag.log.
+# The diagnostic level is therefore `debug` (trace = per-op flood).
+#
 # ONE change vs the certified line (one-change law): a single
-# `export CCL_LOG_LEVEL=2` inserted before the frozen champion CCL
+# `export CCL_LOG_LEVEL=debug` inserted before the frozen champion CCL
 # block. No measurement faces run here — boot, health, one request,
 # capture the CCL diagnostic lines, teardown, W14 restored (trap).
 # IDLE WINDOW ONLY (never mid-leg / mid-soak).
@@ -34,13 +42,13 @@ w14_restore() {
 trap 'rc=$?; log "r71a exit rc=$rc"; w14_restore' EXIT
 
 cp "$SRC" "$D/r71a_serve.sh"
-perl -pi -e 's/^(export CCL_ENABLE_SYCL_KERNELS=1)$/export CCL_LOG_LEVEL=2\n$1/' "$D/r71a_serve.sh"
-inserts=$(grep -c '^export CCL_LOG_LEVEL=2$' "$D/r71a_serve.sh" || true)
+perl -pi -e 's/^(export CCL_ENABLE_SYCL_KERNELS=1)$/export CCL_LOG_LEVEL=debug\n$1/' "$D/r71a_serve.sh"
+inserts=$(grep -c '^export CCL_LOG_LEVEL=debug$' "$D/r71a_serve.sh" || true)
 if [ "$inserts" != "1" ]; then
   log "perl anchor MISS (inserts=$inserts) — aborting, certified line untouched"
   exit 2
 fi
-log "serve line prepared: exactly one CCL_LOG_LEVEL=2 insert (verified)"
+log "serve line prepared: exactly one CCL_LOG_LEVEL=debug insert (verified)"
 
 docker stop radiance-test >/dev/null 2>&1 || true
 ARC_IMAGE=$IMG ARC_NAME=arc-r71a ARC_SPEC=3 ARC_GRAPH=1 \

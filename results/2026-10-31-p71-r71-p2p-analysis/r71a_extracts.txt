@@ -1,0 +1,62 @@
+# r71a_extracts.txt — decisive lines from the CCL_LOG_LEVEL=debug boot
+# (2026-10-31 15:17–15:22 UTC, idle window; health 200 in ~5 min, one
+# request served, W14 restored by trap; serve line = certified
+# vllm-arc:v0.30.0-b70-cert4 chain + exactly one inserted env
+# `CCL_LOG_LEVEL=debug` — one-change law; script md5 1f2fe04368320f47
+# 2ceb478468813114 == tools/pcie/r71a_ccl_diag.sh == kit/).
+#
+# Full evidence: r71a_ccl_diag_lines.txt.gz (415,094 lines, redacted,
+# md5 ed159554c404cfcacd268c1ab26a6820; rig-raw md5 032546041daf
+# 296e98d28e2c037899d0) + r71a_serve_diag.log.gz (416,079 lines,
+# md5 80f62d5cd7ba3afacf891d9b837d3116; rig-raw ff7ed22a7e829114f
+# 10e7a5a5e1cb047). Host names/addresses redacted (REDACTED-HOST /
+# 10.20.3.REDACTED); timestamps/pids preserved verbatim.
+#
+# HEADLINE: every collective in the window selected the device-kernel
+# P2P path — 32,082 allreduce + 1,028 allgather calls, ALL
+# "algo topo sycl"; pidfd IPC exchange verified AND exercised; zero
+# host-staged provider selections. The champion oneCCL chain was never
+# on the host-bounce path.
+
+===[1] THE ALGORITHM SELECTION (the lane-1 verdict)===============
+# counts across the boot + one-request window (uniq -c over the log):
+  32082 |CCL_DEBUG| sycl_selection.cpp:270 can_use_sycl_kernels: selected algo: coll allreduce, algo topo sycl
+   1028 |CCL_DEBUG| sycl_selection.cpp:270 can_use_sycl_kernels: selected algo: coll allgather, algo topo sycl
+# (no other "selected algo" line exists in the log — zero host/offload
+#  algorithm selections for any collective)
+
+===[2] PIDFD IPC EXCHANGE — VERIFIED AND LIVE=====================
+(both ranks) |CCL_DEBUG| comm.cpp:640 init_ipc_exchange_mode: initialize ipc_exchange_mode
+(both ranks) |CCL_DEBUG| comm.cpp:646 init_ipc_exchange_mode: pidfd exchange mode is verified successfully
+             |CCL_DEBUG| sycl_coll_base.cpp:588 coll_init: |SCHED|: do_ipc_exchange: with sched
+             |CCL_DEBUG| ze_fd_manager.cpp:324 pidfd_open: pidfd_open: pid: 930, fd: 69
+             |CCL_DEBUG| ze_fd_manager.cpp:392 convert_fd_pidfd: pidfd_getfd: convert_from_fd: 69, handle: 66, fd: 70..74
+call counts: zeMemGetIpcHandle=292  zeMemOpenIpcHandle=280  pidfd_open=280
+             fill_remote_handle=2334  (get IPC handle: { peer: N, buf_idx: M, mem_type: buffer })
+
+===[3] LEVEL-ZERO PEER ACCESS CONSULTED===========================
+             |CCL_DEBUG| ze_call.cpp:26 do_call: call ze function: zeDeviceCanAccessPeer
+             |CCL_DEBUG| ze_call.cpp:26 do_call: call ze function: zeDeviceGetP2PProperties
+(both ranks) |CCL_DEBUG| topo_manager.cpp:1683 ze_base_init: p2p matrix:  [built twice — init + graph-capture context]
+(both ranks) |CCL_DEBUG| topo_manager.cpp:885 fill_ze_inter_colors: inserted rank 0 into new plane 0 / rank 1 into new plane 1
+
+===[4] ATL = ofi, INTRA-NODE PATH NOT SHM-STAGED==================
+(both ranks) |CCL_INFO| libfabric version: 2.4.0-impi
+(both ranks) |CCL_INFO| ze fabric ports: 0 were able to be detected
+             |CCL_DEBUG| atl_ofi_helper.cpp:98 atl_ofi_get_prov: select nic: ep_idx 0, local_proc_idx 1,
+               prov_idx 0, my_proc_idx 1, peer_proc_idx 0, msg_size <N>, has_shm 0
+               -> has_shm 0 on ALL 2,876 provider-selection lines (no shm
+                  host-staged provider anywhere)
+             |CCL_DEBUG| atl_ofi_open_nw_provs: name filter: skipping Docker iface tcp:docker0
+               (nw-provider scan only — docker0/veth/lo filtered; scale-out
+                side, not the intra-node data path)
+
+===[5] CONFIG APPLY (both ranks, unchanged vs default-level logs)===
+|CCL_WARN| value of CCL_ATL_TRANSPORT changed to be ofi (default:mpi)
+|CCL_WARN| value of CCL_TOPO_P2P_ACCESS changed to be 1 (default:-1)
+|CCL_WARN| value of CCL_TOPO_FABRIC_VERTEX_CONNECTION_CHECK changed to be 0 (default:1)
+
+===[6] WHAT WAS *NOT* SEEN (negative evidence)====================
+# no "ipc" or exchange-mode FAILURE lines; no host-copy/staged lines;
+# no shm=1; no fallback-to-mpi lines; ze fabric ports = 0 (no fabric —
+# the two B70s are PCIe peers only, as the D2D probe measured).

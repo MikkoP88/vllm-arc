@@ -298,10 +298,12 @@ prefill Ms — the GEMM whale already runs the fastest on-image kernel);
 **ESIMD FA-kernel rung re-scoped** to the dense varlen site (GQA 24q/4kv,
 head_dim 256, fp16, paged fp8 KV PAGE 1664; est. 5–7 % compute MFU today;
 ceiling −8…−12 % U32k TTFT if 1.5–2×) — open as a kernel project; and the
-**TP2 allreduce family (~30 %) is the largest unattacked slice** (the
-2026-10-31 P2P analysis — `results/2026-10-31-p71-r71-p2p-analysis/` +
-`tools/pcie/README.md` — measures whether its data path is direct P2P or
-host-bounced).
+**TP2 allreduce family (~30 %) is the largest unattacked slice** — the
+2026-10-31 P2P analysis (r71, `results/2026-10-31-p71-r71-p2p-analysis/`)
+proved the data path is **already direct P2P** (D2D 10.23 GB/s both
+directions; every collective `algo topo sycl` over pidfd ze-IPC handles,
+zero host-staged selections), so the slice is algorithmic/latency-bound,
+not link-bound — any gain there is a kernel/algorithm project.
 
 ## History — pre-cert4 images (labeled by image; never mixed into the record)
 
