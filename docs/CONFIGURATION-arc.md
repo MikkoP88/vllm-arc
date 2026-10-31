@@ -54,9 +54,13 @@ you use the template.
 moot under `--ipc host` (host `/dev/shm` is used); 64g guards the
 private-IPC fallback, where small values ENOSPC-crash TP2 IPC buffers.
 
-**Hardware floor**: the hard floor is the **GPUs** — dual B70 (16 G
-each): ~27 G of fp8 weights split TP2 plus KV/mamba/graph pools at GMU
-0.8 nearly fill both. Host RAM is not gated by the cache:
+**Hardware floor**: the hard floor is the **GPUs** — dual B70
+(**31.9 GiB each, measured** — r66a devprobe: Intel [0xe223], 256 CUs
+per card; the older "16 G each" in this doc was wrong): ~27 G of fp8
+weights split TP2 (≈ 13.5 GiB/card) plus KV/mamba/graph pools inside the
+GMU-0.8 budget (0.8 × 31.9 ≈ 25.5 GiB/card) — the measured XPU KV pool
+is 405,491 tokens at MNBT 8192 (332,629 at 16384, r66c). Host RAM is not
+gated by the cache:
 `LMCACHE_MAX_LOCAL_CPU_SIZE=100` is a single *virtual* reservation —
 one malloc wrapped by `torch.frombuffer`, first-touch physical pages,
 evicted (lr_u) at the cap (wheel-verified:
@@ -341,7 +345,13 @@ Host-script layer (`tools/serve_arc_b70.sh`): `ARC_IMAGE`, `ARC_NAME`,
 4 = the D-champion alternative; only 0/3/4/5 accepted — the legged
 depths), `ARC_LMC` (1 = the certified LMCache connector + the 9-var
 `LMCACHE_*` chain — default; 0 = no LMCache), `ARC_GMU` (0.8),
-`ARC_MNBT` (8192), `ARC_MAXSEQS` (64), `ARC_PORT` (8000).
+`ARC_MNBT` (8192 — the certified default; r66c A/B'd 16384: long-face
+solo TTFT −4…−10 % but −18 % KV pool (405,491→332,629 tokens,
+concurrency 1.55x→1.27x) and U8k +10 % — a conditional long-prompt-only
+lever, **never** combined with `--long-prefill-token-threshold` (the
+threshold pins chunk size; only the KV loss would remain); see
+PERFORMANCE-arc "Prefill anatomy"), `ARC_MAXSEQS` (64), `ARC_PORT`
+(8000).
 
 ## Posture laws (never change in production)
 

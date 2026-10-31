@@ -124,6 +124,60 @@ draft tokens / 953 accepted. Per-position acceptance:
 96.79 / 96.79 / 96.79 / 96.33 / 50.46 (positions 0–4) — position 4 is
 the k5 draft tail; see the 12-cell table above for per-cell positions.
 
+## Prefill anatomy (p66 — analysis of record, 2026-10-31)
+
+Solo TTFT sweep, fresh boot each, nolmc, graph, k3, greedy, unique seeds
+(r66a; three faces × four boots — `--long-prefill-token-threshold`
+none/8192/4096/2048):
+
+| Face | prompt tok | thr=none | thr8192 | thr4096 | thr2048 | thr2048 Δ |
+|---|---|---|---|---|---|---|
+| U8k | 8158 | 3.74 s (2178 t/s) | 3.75 s | 4.04 s | 7.94 s | **+112%** |
+| U32k | 32553 | 17.34 s (1878 t/s) | 17.35 s | 18.24 s | 21.49 s | +23.9% |
+| U64k | 65303 | 39.20 s (1666 t/s) | 39.23 s | 42.38 s | 49.75 s | +26.9% |
+
+thr=none and thr8192 are the same path (≤ 0.03 s apart — at MNBT 8192
+the threshold IS the default chunked size). The rate falls with context
+(2178 → 1666 t/s, attention KV growth) even before any chunking effect.
+thr2048's cost is two mechanisms stacked: more chunk boundaries (8158 tok
+= 5 × 1664-token chunks instead of 2 × 7488) **and** small-M device
+inefficiency (U8k rate halves: 2178 → 1028 t/s).
+
+**Where the time goes (r66b, per-chunked-step decomposition on the live
+V2 runner)**: scheduler 0.3 ms, host prep ≤ 10 ms, TP2 allreduce ~28 ms,
+sampling ≤ 107 ms — and the rest is the **device execution of the chunk
+itself**, observed as a queue-drain wait inside the next step's
+mamba/GDN `preprocess_state` launch window (780–1018 ms of an ~0.9 s
+step at 1664-token chunks; XPU eager forward is async, so the enqueue
+looks flat at ~127 ms and the device time surfaces one step later).
+Prefill is **device-bound at ~34 % MFU** (1664-token chunks) to ~40 %
+(7488-token chunks, 2.2–2.4 tok/ms) against the measured 294 TFLOPS
+fleet fp16 GEMM ceiling (147–150 TFLOPS/card, 256 CUs, devprobe r66a).
+The gap is attention over growing KV + W8A16 dequant + non-GEMM ops +
+per-layer launch/dispatch — kernel territory, not host glue.
+
+**Improvement ladder, closed out**:
+
+- thr table (knob) — documented above; the p65 long-context profile
+  (`--long-prefill-token-threshold 2048` + deferral) is the one place
+  thr2048 is correct, for LMC-side reasons (see CONFIGURATION-arc).
+- **MNBT 16384 (knob) — A/B'd, NOT adopted** (r66c): U32k −9.7 %
+  (17.33→15.65 s), U64k −4.1 %, confirming the small-M diagnosis — but
+  U8k +9.9 % (3.74→4.11 s) and the KV pool pays 18 % (405,491→332,629
+  tokens; max concurrency 1.55x→1.27x) from the doubled prefill
+  activation workspace. Never combine with thr2048 (the threshold pins
+  chunk size — only the KV loss remains). Conditional long-prompt-only
+  lever; the certified default stays 8192.
+- **Host glue — closed as empty** (r66b): nothing material to cut.
+- **Structural (raise device MFU)** — the only remaining large lever
+  (prefill compile NONE→PIECEWISE, attention kernel work); deferred,
+  A/B-gated, out of P6.6 scope.
+
+Evidence: `results/2026-10-31-p66-r66a-prefill-capture/` (curve + device
+probe), `results/2026-10-31-p66-r66b-step-decomposition/` (step
+decomposition + the engine-map correction + probe-instrumentation laws),
+`results/2026-10-31-p66-r66c-mnbt16k/` (MNBT A/B).
+
 ## Stability
 
 - run7n ×2 per leg agree within 1.5% (steady-state).

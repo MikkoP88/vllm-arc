@@ -1,0 +1,66 @@
+=== boot thr=none (nolmc, graph, k3) ===
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert4 name=arc-test graph=1 spec=3 gmu=0.8 mnbt=8192 seqs=64 xgc=0 port=8000 03:45:45
+LMC_OFF_CHECK=0
+0 (must be 0)
+HEALTH=OK after ~290s
+=== warmup (first-traffic law: p12b interlock + first graphs)
+warmup done (completion=None)
+  U8k: prompt=8158 cached=None TTFT=3.74s wall=4.08s -> 2178 tok/s prefill-rate
+  U32k: prompt=32553 cached=None TTFT=17.34s wall=17.97s -> 1878 tok/s prefill-rate
+  U64k: prompt=65303 cached=None TTFT=39.20s wall=39.78s -> 1666 tok/s prefill-rate
+P66_SOLO: DONE
+=== boot thr=2048 (nolmc, graph, k3) ===
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert4 name=arc-test graph=1 spec=3 gmu=0.8 mnbt=8192 seqs=64 xgc=0 port=8000 03:52:10
+LMC_OFF_CHECK=0
+0 (must be 0)
+HEALTH=OK after ~270s
+=== warmup (first-traffic law: p12b interlock + first graphs)
+warmup done (completion=None)
+  U8k: prompt=8158 cached=None TTFT=7.94s wall=8.29s -> 1028 tok/s prefill-rate
+  U32k: prompt=32553 cached=None TTFT=21.49s wall=22.08s -> 1515 tok/s prefill-rate
+  U64k: prompt=65303 cached=None TTFT=49.75s wall=50.20s -> 1312 tok/s prefill-rate
+P66_SOLO: DONE
+=== boot thr=4096 (nolmc, graph, k3) ===
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert4 name=arc-test graph=1 spec=3 gmu=0.8 mnbt=8192 seqs=64 xgc=0 port=8000 03:58:34
+LMC_OFF_CHECK=0
+0 (must be 0)
+HEALTH=OK after ~270s
+=== warmup (first-traffic law: p12b interlock + first graphs)
+warmup done (completion=None)
+  U8k: prompt=8158 cached=None TTFT=4.04s wall=4.37s -> 2018 tok/s prefill-rate
+  U32k: prompt=32553 cached=None TTFT=18.24s wall=18.83s -> 1785 tok/s prefill-rate
+  U64k: prompt=65303 cached=None TTFT=42.38s wall=42.92s -> 1541 tok/s prefill-rate
+P66_SOLO: DONE
+=== boot thr=8192 (nolmc, graph, k3) ===
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert4 name=arc-test graph=1 spec=3 gmu=0.8 mnbt=8192 seqs=64 xgc=0 port=8000 04:04:44
+LMC_OFF_CHECK=0
+0 (must be 0)
+HEALTH=OK after ~270s
+=== warmup (first-traffic law: p12b interlock + first graphs)
+warmup done (completion=None)
+  U8k: prompt=8158 cached=None TTFT=3.75s wall=4.08s -> 2175 tok/s prefill-rate
+  U32k: prompt=32553 cached=None TTFT=17.35s wall=17.95s -> 1876 tok/s prefill-rate
+  U64k: prompt=65303 cached=None TTFT=39.23s wall=39.77s -> 1665 tok/s prefill-rate
+P66_SOLO: DONE
+=== cross-threshold table ===
+-- thr=none:
+warmup done (completion=None)
+  U8k: prompt=8158 cached=None TTFT=3.74s wall=4.08s -> 2178 tok/s prefill-rate
+  U32k: prompt=32553 cached=None TTFT=17.34s wall=17.97s -> 1878 tok/s prefill-rate
+  U64k: prompt=65303 cached=None TTFT=39.20s wall=39.78s -> 1666 tok/s prefill-rate
+-- thr=2048:
+warmup done (completion=None)
+  U8k: prompt=8158 cached=None TTFT=7.94s wall=8.29s -> 1028 tok/s prefill-rate
+  U32k: prompt=32553 cached=None TTFT=21.49s wall=22.08s -> 1515 tok/s prefill-rate
+  U64k: prompt=65303 cached=None TTFT=49.75s wall=50.20s -> 1312 tok/s prefill-rate
+-- thr=4096:
+warmup done (completion=None)
+  U8k: prompt=8158 cached=None TTFT=4.04s wall=4.37s -> 2018 tok/s prefill-rate
+  U32k: prompt=32553 cached=None TTFT=18.24s wall=18.83s -> 1785 tok/s prefill-rate
+  U64k: prompt=65303 cached=None TTFT=42.38s wall=42.92s -> 1541 tok/s prefill-rate
+-- thr=8192:
+warmup done (completion=None)
+  U8k: prompt=8158 cached=None TTFT=3.75s wall=4.08s -> 2175 tok/s prefill-rate
+  U32k: prompt=32553 cached=None TTFT=17.35s wall=17.95s -> 1876 tok/s prefill-rate
+  U64k: prompt=65303 cached=None TTFT=39.23s wall=39.77s -> 1665 tok/s prefill-rate
+P66_GATE1: DONE

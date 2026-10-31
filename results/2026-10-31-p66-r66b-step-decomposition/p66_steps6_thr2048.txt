@@ -1,0 +1,631 @@
+ARC_P66_IMPORT_RUNNER pid=13 file=/opt/venv/lib/python3.12/site-packages/vllm/v1/worker/gpu/model_runner.py
+ARC_P66_IMPORT_CORE pid=13 file=/opt/venv/lib/python3.12/site-packages/vllm/v1/engine/core.py
+ARC_P66_IMPORT_CORE pid=698 file=/opt/venv/lib/python3.12/site-packages/vllm/v1/engine/core.py
+ARC_P66_IMPORT_RUNNER pid=930 file=/opt/venv/lib/python3.12/site-packages/vllm/v1/worker/gpu/model_runner.py
+ARC_P66_IMPORT_WORKER pid=930 file=/opt/venv/lib/python3.12/site-packages/vllm/v1/worker/gpu_worker.py
+ARC_P66_IMPORT_XWORKER pid=930 file=/opt/venv/lib/python3.12/site-packages/vllm/v1/worker/xpu_worker.py
+ARC_P66_IMPORT_CORE pid=930 file=/opt/venv/lib/python3.12/site-packages/vllm/v1/engine/core.py
+ARC_P66_IMPORT_RUNNER pid=1030 file=/opt/venv/lib/python3.12/site-packages/vllm/v1/worker/gpu/model_runner.py
+ARC_P66_IMPORT_WORKER pid=1030 file=/opt/venv/lib/python3.12/site-packages/vllm/v1/worker/gpu_worker.py
+ARC_P66_IMPORT_XWORKER pid=1030 file=/opt/venv/lib/python3.12/site-packages/vllm/v1/worker/xpu_worker.py
+ARC_P66_IMPORT_CORE pid=1030 file=/opt/venv/lib/python3.12/site-packages/vllm/v1/engine/core.py
+ARC_P66_EXEC pid=1030 tok=8192 dm=1 cg=NONE prep_ms=296.1 st_ms=0.0 disp_ms=0.0 pin_ms=-0.0 meta_ms=0.0 res_ms=281.6 fwd_ms=1193.2 post_ms=0.0 total_ms=1489.3 ar_n=128 ar_ms=61.5
+ARC_P66_EXEC pid=930 tok=8192 dm=1 cg=NONE prep_ms=321.6 st_ms=0.0 disp_ms=0.0 pin_ms=-0.0 meta_ms=0.0 res_ms=307.1 fwd_ms=1167.6 post_ms=0.0 total_ms=1489.2 ar_n=128 ar_ms=30.0
+ARC_P66_EXEC pid=1030 tok=195 dm=0 cg=NONE prep_ms=4215.4 st_ms=1137.1 disp_ms=0.2 pin_ms=0.0 meta_ms=444.0 res_ms=1.7 fwd_ms=1556.9 post_ms=0.0 total_ms=5772.3 ar_n=129 ar_ms=15.3
+ARC_P66_WRK_EXEC pid=1030 ms=5772.7
+ARC_P66_EXEC pid=930 tok=195 dm=0 cg=NONE prep_ms=4331.2 st_ms=1295.3 disp_ms=0.2 pin_ms=0.0 meta_ms=451.9 res_ms=1.7 fwd_ms=1666.1 post_ms=0.0 total_ms=5997.3 ar_n=129 ar_ms=17.6
+ARC_P66_WRK_EXEC pid=930 ms=5997.7
+ARC_P66_SAMPLE pid=1030 sample_ms=37904.3
+ARC_P66_WRK_SAMPLE pid=1030 ms=37904.5
+ARC_P66_SAMPLE pid=930 sample_ms=37877.3
+ARC_P66_WRK_SAMPLE pid=930 ms=37877.4
+ARC_P66_EXEC pid=930 tok=156 dm=0 cg=NONE prep_ms=183.6 st_ms=0.3 disp_ms=0.1 pin_ms=0.0 meta_ms=2.9 res_ms=1.6 fwd_ms=113.9 post_ms=0.0 total_ms=297.5 ar_n=129 ar_ms=14.8
+ARC_P66_WRK_EXEC pid=930 ms=297.7
+ARC_P66_EXEC pid=1030 tok=156 dm=0 cg=NONE prep_ms=183.6 st_ms=0.3 disp_ms=0.1 pin_ms=0.0 meta_ms=2.9 res_ms=1.6 fwd_ms=115.0 post_ms=0.0 total_ms=298.5 ar_n=129 ar_ms=14.8
+ARC_P66_WRK_EXEC pid=1030 ms=298.8
+ARC_P66_SAMPLE pid=930 sample_ms=2897.5
+ARC_P66_SAMPLE pid=1030 sample_ms=2896.3
+ARC_P66_WRK_SAMPLE pid=930 ms=2897.6
+ARC_P66_WRK_SAMPLE pid=1030 ms=2896.5
+ARC_P66_EXEC pid=1030 tok=5 dm=0 cg=NONE prep_ms=27.2 st_ms=0.2 disp_ms=0.1 pin_ms=0.0 meta_ms=24.2 res_ms=1.3 fwd_ms=235.1 post_ms=0.0 total_ms=262.3 ar_n=129 ar_ms=14.8
+ARC_P66_WRK_EXEC pid=1030 ms=262.6
+ARC_P66_EXEC pid=930 tok=5 dm=0 cg=NONE prep_ms=27.1 st_ms=0.2 disp_ms=0.1 pin_ms=0.0 meta_ms=24.1 res_ms=1.2 fwd_ms=235.7 post_ms=0.0 total_ms=262.8 ar_n=129 ar_ms=14.5
+ARC_P66_WRK_EXEC pid=930 ms=263.1
+ARC_P66_SAMPLE pid=1030 sample_ms=73.0
+ARC_P66_WRK_SAMPLE pid=1030 ms=73.1
+ARC_P66_SAMPLE pid=930 sample_ms=73.0
+ARC_P66_WRK_SAMPLE pid=930 ms=73.1
+ARC_P66_EXEC pid=1030 tok=2 dm=0 cg=NONE prep_ms=4.3 st_ms=0.2 disp_ms=0.1 pin_ms=0.0 meta_ms=1.8 res_ms=1.0 fwd_ms=104.1 post_ms=0.0 total_ms=108.4 ar_n=129 ar_ms=14.3
+ARC_P66_EXEC pid=930 tok=2 dm=0 cg=NONE prep_ms=4.3 st_ms=0.2 disp_ms=0.1 pin_ms=0.0 meta_ms=1.7 res_ms=0.9 fwd_ms=103.7 post_ms=0.0 total_ms=107.9 ar_n=129 ar_ms=14.2
+ARC_P66_WRK_EXEC pid=1030 ms=108.6
+ARC_P66_WRK_EXEC pid=930 ms=108.5
+ARC_P66_SAMPLE pid=1030 sample_ms=15.7
+ARC_P66_WRK_SAMPLE pid=1030 ms=15.8
+ARC_P66_SAMPLE pid=930 sample_ms=15.7
+ARC_P66_WRK_SAMPLE pid=930 ms=15.8
+ARC_P66_EXEC pid=930 tok=4 dm=0 cg=NONE prep_ms=4.1 st_ms=0.1 disp_ms=0.1 pin_ms=0.0 meta_ms=1.9 res_ms=0.7 fwd_ms=104.9 post_ms=0.0 total_ms=109.0 ar_n=129 ar_ms=14.3
+ARC_P66_WRK_EXEC pid=930 ms=109.2
+ARC_P66_EXEC pid=1030 tok=4 dm=0 cg=NONE prep_ms=4.2 st_ms=0.2 disp_ms=0.1 pin_ms=0.0 meta_ms=2.0 res_ms=0.7 fwd_ms=106.5 post_ms=0.0 total_ms=110.7 ar_n=129 ar_ms=14.4
+ARC_P66_WRK_EXEC pid=1030 ms=110.9
+ARC_P66_SAMPLE pid=1030 sample_ms=720.3
+ARC_P66_SAMPLE pid=930 sample_ms=721.8
+ARC_P66_WRK_SAMPLE pid=1030 ms=720.4
+ARC_P66_WRK_SAMPLE pid=930 ms=721.9
+ARC_P66_EXEC pid=930 tok=1 dm=0 cg=NONE prep_ms=4.0 st_ms=0.2 disp_ms=0.1 pin_ms=0.0 meta_ms=1.7 res_ms=0.8 fwd_ms=104.0 post_ms=0.0 total_ms=108.0 ar_n=129 ar_ms=14.5
+ARC_P66_WRK_EXEC pid=930 ms=108.2
+ARC_P66_EXEC pid=1030 tok=1 dm=0 cg=NONE prep_ms=4.1 st_ms=0.2 disp_ms=0.1 pin_ms=0.0 meta_ms=1.6 res_ms=0.8 fwd_ms=104.2 post_ms=0.0 total_ms=108.2 ar_n=129 ar_ms=14.5
+ARC_P66_WRK_EXEC pid=1030 ms=108.5
+ARC_P66_SAMPLE pid=930 sample_ms=16994.8
+ARC_P66_WRK_SAMPLE pid=930 ms=16994.9
+ARC_P66_WRK_EXEC pid=930 ms=0.3
+ARC_P66_SAMPLE pid=1030 sample_ms=17091.5
+ARC_P66_WRK_SAMPLE pid=1030 ms=17091.6
+ARC_P66_WRK_EXEC pid=1030 ms=0.3
+ARC_P66_IMPORT_RUNNER pid=698 file=/opt/venv/lib/python3.12/site-packages/vllm/v1/worker/gpu/model_runner.py
+ARC_P66_SCHED pid=698 tok=97 sched_ms=1.1 ts=1.2
+ARC_P66_STEP pid=698 wall=2.1 out=0 exec=1
+ARC_P66_SCHED pid=698 tok=4 sched_ms=0.4 ts=0.5
+ARC_P66_EXEC pid=930 tok=97 dm=0 cg=NONE prep_ms=137.1 st_ms=5.0 disp_ms=0.2 pin_ms=0.0 meta_ms=6.8 res_ms=122.3 fwd_ms=116.4 post_ms=0.0 total_ms=253.4 ar_n=129 ar_ms=14.7
+ARC_P66_WRK_EXEC pid=930 ms=253.8
+ARC_P66_EXEC pid=1030 tok=97 dm=0 cg=NONE prep_ms=136.8 st_ms=5.1 disp_ms=0.2 pin_ms=0.0 meta_ms=6.7 res_ms=122.1 fwd_ms=117.6 post_ms=0.0 total_ms=254.4 ar_n=129 ar_ms=15.1
+ARC_P66_WRK_EXEC pid=1030 ms=254.7
+ARC_P66_SAMPLE pid=930 sample_ms=9.1
+ARC_P66_WRK_SAMPLE pid=930 ms=9.2
+ARC_P66_SAMPLE pid=1030 sample_ms=8.9
+ARC_P66_WRK_SAMPLE pid=1030 ms=9.0
+ARC_P66_WAIT pid=698 tok=97 wait_ms=263.2 ts=264.3
+ARC_P66_STEP pid=698 wall=264.9 out=1 exec=1
+ARC_P66_SCHED pid=698 tok=0 sched_ms=0.1 ts=0.4
+ARC_P66_EXEC pid=930 tok=4 dm=0 cg=FULL prep_ms=4.9 st_ms=0.5 disp_ms=0.1 pin_ms=0.0 meta_ms=2.2 res_ms=0.8 fwd_ms=0.1 post_ms=0.0 total_ms=5.0 ar_n=1 ar_ms=0.1
+ARC_P66_WRK_EXEC pid=930 ms=5.2
+ARC_P66_EXEC pid=1030 tok=4 dm=0 cg=FULL prep_ms=4.5 st_ms=0.2 disp_ms=0.1 pin_ms=0.0 meta_ms=2.2 res_ms=0.7 fwd_ms=0.1 post_ms=0.0 total_ms=4.6 ar_n=1 ar_ms=0.1
+ARC_P66_WRK_EXEC pid=1030 ms=4.8
+ARC_P66_SAMPLE pid=1030 sample_ms=1904.0
+ARC_P66_WRK_SAMPLE pid=1030 ms=1904.1
+ARC_P66_WRK_EXEC pid=1030 ms=0.3
+ARC_P66_SAMPLE pid=930 sample_ms=1905.6
+ARC_P66_WRK_SAMPLE pid=930 ms=1905.7
+ARC_P66_WRK_EXEC pid=930 ms=0.6
+ARC_P66_WAIT pid=698 tok=4 wait_ms=1909.8 ts=1910.8
+ARC_P66_STEP pid=698 wall=1911.5 out=1 exec=0
+ARC_P66_SCHED pid=698 tok=0 sched_ms=0.1 ts=0.2
+ARC_P66_WRK_EXEC pid=1030 ms=0.2
+ARC_P66_WRK_EXEC pid=930 ms=0.2
+ARC_P66_WAIT pid=698 tok=0 wait_ms=0.2 ts=0.8
+ARC_P66_STEP pid=698 wall=1.1 out=1 exec=0
+ARC_P66_WAIT pid=698 tok=0 wait_ms=0.1 ts=0.3
+ARC_P66_STEP pid=698 wall=0.5 out=1 exec=0
+ARC_P66_SCHED pid=698 tok=1664 sched_ms=0.9 ts=0.9
+ARC_P66_STEP pid=698 wall=2.6 out=0 exec=1
+ARC_P66_SCHED pid=698 tok=1664 sched_ms=0.5 ts=0.6
+ARC_P66_EXEC pid=930 tok=1664 dm=0 cg=NONE prep_ms=21.7 st_ms=10.5 disp_ms=0.1 pin_ms=0.0 meta_ms=5.5 res_ms=3.6 fwd_ms=427.0 post_ms=0.0 total_ms=448.7 ar_n=129 ar_ms=30.5
+ARC_P66_EXEC pid=1030 tok=1664 dm=0 cg=NONE prep_ms=22.6 st_ms=5.5 disp_ms=0.1 pin_ms=0.0 meta_ms=3.4 res_ms=12.5 fwd_ms=426.9 post_ms=0.0 total_ms=449.6 ar_n=129 ar_ms=85.1
+ARC_P66_WRK_EXEC pid=930 ms=449.0
+ARC_P66_WRK_EXEC pid=1030 ms=449.9
+ARC_P66_SAMPLE pid=930 sample_ms=10.0
+ARC_P66_SAMPLE pid=1030 sample_ms=9.9
+ARC_P66_WRK_SAMPLE pid=930 ms=10.1
+ARC_P66_WRK_SAMPLE pid=1030 ms=10.1
+ARC_P66_WAIT pid=698 tok=1664 wait_ms=984.2 ts=985.2
+ARC_P66_STEP pid=698 wall=985.4 out=1 exec=1
+ARC_P66_SCHED pid=698 tok=1664 sched_ms=0.3 ts=0.5
+ARC_P66_EXEC pid=930 tok=1664 dm=0 cg=NONE prep_ms=792.3 st_ms=0.8 disp_ms=0.1 pin_ms=0.0 meta_ms=3.8 res_ms=1.9 fwd_ms=127.1 post_ms=0.0 total_ms=919.4 ar_n=129 ar_ms=27.5
+ARC_P66_EXEC pid=1030 tok=1664 dm=0 cg=NONE prep_ms=792.3 st_ms=0.7 disp_ms=0.1 pin_ms=0.0 meta_ms=3.8 res_ms=1.5 fwd_ms=127.1 post_ms=0.0 total_ms=919.4 ar_n=129 ar_ms=27.3
+ARC_P66_WRK_EXEC pid=930 ms=919.7
+ARC_P66_WRK_EXEC pid=1030 ms=919.7
+ARC_P66_SAMPLE pid=930 sample_ms=7.8
+ARC_P66_SAMPLE pid=1030 sample_ms=7.8
+ARC_P66_WRK_SAMPLE pid=930 ms=8.0
+ARC_P66_WRK_SAMPLE pid=1030 ms=8.0
+ARC_P66_WAIT pid=698 tok=1664 wait_ms=941.5 ts=942.3
+ARC_P66_STEP pid=698 wall=942.4 out=1 exec=1
+ARC_P66_SCHED pid=698 tok=1664 sched_ms=0.3 ts=0.4
+ARC_P66_EXEC pid=1030 tok=1664 dm=0 cg=NONE prep_ms=807.1 st_ms=0.7 disp_ms=0.1 pin_ms=0.0 meta_ms=3.7 res_ms=1.5 fwd_ms=128.1 post_ms=0.0 total_ms=935.2 ar_n=129 ar_ms=28.5
+ARC_P66_EXEC pid=930 tok=1664 dm=0 cg=NONE prep_ms=807.1 st_ms=0.7 disp_ms=0.1 pin_ms=0.0 meta_ms=3.8 res_ms=2.0 fwd_ms=128.2 post_ms=0.0 total_ms=935.3 ar_n=129 ar_ms=28.7
+ARC_P66_WRK_EXEC pid=1030 ms=935.5
+ARC_P66_WRK_EXEC pid=930 ms=935.5
+ARC_P66_SAMPLE pid=930 sample_ms=7.8
+ARC_P66_SAMPLE pid=1030 sample_ms=7.8
+ARC_P66_WRK_SAMPLE pid=930 ms=7.9
+ARC_P66_WRK_SAMPLE pid=1030 ms=7.9
+ARC_P66_WAIT pid=698 tok=1664 wait_ms=954.7 ts=955.5
+ARC_P66_STEP pid=698 wall=955.6 out=1 exec=1
+ARC_P66_SCHED pid=698 tok=1541 sched_ms=0.3 ts=0.4
+ARC_P66_EXEC pid=930 tok=1664 dm=0 cg=NONE prep_ms=819.5 st_ms=0.8 disp_ms=0.1 pin_ms=0.0 meta_ms=3.8 res_ms=1.6 fwd_ms=129.9 post_ms=0.0 total_ms=949.5 ar_n=129 ar_ms=28.9
+ARC_P66_EXEC pid=1030 tok=1664 dm=0 cg=NONE prep_ms=819.5 st_ms=0.7 disp_ms=0.1 pin_ms=0.0 meta_ms=3.8 res_ms=1.5 fwd_ms=130.0 post_ms=0.0 total_ms=949.5 ar_n=129 ar_ms=28.0
+ARC_P66_WRK_EXEC pid=930 ms=949.7
+ARC_P66_WRK_EXEC pid=1030 ms=949.9
+ARC_P66_SAMPLE pid=930 sample_ms=9.4
+ARC_P66_WRK_SAMPLE pid=930 ms=9.5
+ARC_P66_SAMPLE pid=1030 sample_ms=9.7
+ARC_P66_WRK_SAMPLE pid=1030 ms=9.8
+ARC_P66_WAIT pid=698 tok=1664 wait_ms=974.1 ts=974.8
+ARC_P66_STEP pid=698 wall=975.0 out=1 exec=1
+ARC_P66_SCHED pid=698 tok=4 sched_ms=0.2 ts=0.3
+ARC_P66_EXEC pid=930 tok=1541 dm=0 cg=NONE prep_ms=837.4 st_ms=0.8 disp_ms=0.1 pin_ms=0.0 meta_ms=3.8 res_ms=2.2 fwd_ms=130.7 post_ms=0.0 total_ms=968.1 ar_n=129 ar_ms=28.1
+ARC_P66_EXEC pid=1030 tok=1541 dm=0 cg=NONE prep_ms=837.0 st_ms=0.9 disp_ms=0.1 pin_ms=0.0 meta_ms=3.8 res_ms=1.5 fwd_ms=130.7 post_ms=0.0 total_ms=967.6 ar_n=129 ar_ms=27.7
+ARC_P66_WRK_EXEC pid=930 ms=968.4
+ARC_P66_WRK_EXEC pid=1030 ms=967.9
+ARC_P66_SAMPLE pid=930 sample_ms=105.9
+ARC_P66_SAMPLE pid=1030 sample_ms=105.9
+ARC_P66_WRK_SAMPLE pid=930 ms=106.0
+ARC_P66_WRK_SAMPLE pid=1030 ms=106.0
+ARC_P66_EXEC pid=1030 tok=4 dm=0 cg=FULL prep_ms=5.0 st_ms=0.2 disp_ms=0.1 pin_ms=0.0 meta_ms=2.3 res_ms=0.9 fwd_ms=0.1 post_ms=0.0 total_ms=5.1 ar_n=1 ar_ms=0.1
+ARC_P66_EXEC pid=930 tok=4 dm=0 cg=FULL prep_ms=5.0 st_ms=0.3 disp_ms=0.1 pin_ms=0.0 meta_ms=2.3 res_ms=0.9 fwd_ms=0.1 post_ms=0.0 total_ms=5.1 ar_n=1 ar_ms=0.1
+ARC_P66_WRK_EXEC pid=1030 ms=5.3
+ARC_P66_WRK_EXEC pid=930 ms=5.3
+ARC_P66_WAIT pid=698 tok=1541 wait_ms=947.1 ts=947.8
+ARC_P66_STEP pid=698 wall=948.1 out=1 exec=1
+ARC_P66_SCHED pid=698 tok=0 sched_ms=0.1 ts=0.2
+ARC_P66_SAMPLE pid=1030 sample_ms=460.2
+ARC_P66_SAMPLE pid=930 sample_ms=460.2
+ARC_P66_WRK_SAMPLE pid=1030 ms=460.3
+ARC_P66_WRK_SAMPLE pid=930 ms=460.3
+ARC_P66_WRK_EXEC pid=1030 ms=0.2
+ARC_P66_WRK_EXEC pid=930 ms=0.3
+ARC_P66_WAIT pid=698 tok=4 wait_ms=57.0 ts=57.5
+ARC_P66_STEP pid=698 wall=57.7 out=1 exec=0
+ARC_P66_SCHED pid=698 tok=0 sched_ms=0.1 ts=0.1
+ARC_P66_WAIT pid=698 tok=0 wait_ms=0.1 ts=0.3
+ARC_P66_STEP pid=698 wall=0.4 out=1 exec=0
+ARC_P66_WRK_EXEC pid=1030 ms=0.2
+ARC_P66_WRK_EXEC pid=930 ms=0.2
+ARC_P66_WAIT pid=698 tok=0 wait_ms=0.2 ts=0.3
+ARC_P66_STEP pid=698 wall=0.3 out=1 exec=0
+ARC_P66_SCHED pid=698 tok=8 sched_ms=0.3 ts=0.3
+ARC_P66_STEP pid=698 wall=0.5 out=0 exec=1
+ARC_P66_SCHED pid=698 tok=4 sched_ms=0.1 ts=0.1
+ARC_P66_EXEC pid=1030 tok=8 dm=0 cg=NONE prep_ms=6.7 st_ms=1.8 disp_ms=0.1 pin_ms=0.0 meta_ms=2.9 res_ms=0.8 fwd_ms=114.5 post_ms=0.0 total_ms=121.2 ar_n=129 ar_ms=14.1
+ARC_P66_WRK_EXEC pid=1030 ms=121.4
+ARC_P66_EXEC pid=930 tok=8 dm=0 cg=NONE prep_ms=6.7 st_ms=1.7 disp_ms=0.1 pin_ms=0.0 meta_ms=3.0 res_ms=0.8 fwd_ms=115.1 post_ms=0.0 total_ms=121.8 ar_n=129 ar_ms=14.2
+ARC_P66_WRK_EXEC pid=930 ms=121.9
+ARC_P66_SAMPLE pid=1030 sample_ms=6.8
+ARC_P66_WRK_SAMPLE pid=1030 ms=6.9
+ARC_P66_SAMPLE pid=930 sample_ms=6.9
+ARC_P66_WRK_SAMPLE pid=930 ms=7.0
+ARC_P66_WAIT pid=698 tok=8 wait_ms=129.2 ts=129.5
+ARC_P66_STEP pid=698 wall=129.7 out=1 exec=1
+ARC_P66_SCHED pid=698 tok=4 sched_ms=0.1 ts=0.2
+ARC_P66_EXEC pid=1030 tok=4 dm=0 cg=FULL prep_ms=4.0 st_ms=0.1 disp_ms=0.1 pin_ms=0.0 meta_ms=1.9 res_ms=0.7 fwd_ms=0.1 post_ms=0.0 total_ms=4.1 ar_n=1 ar_ms=0.1
+ARC_P66_WRK_EXEC pid=1030 ms=4.3
+ARC_P66_EXEC pid=930 tok=4 dm=0 cg=FULL prep_ms=4.3 st_ms=0.4 disp_ms=0.1 pin_ms=0.0 meta_ms=1.9 res_ms=0.7 fwd_ms=0.1 post_ms=0.0 total_ms=4.4 ar_n=1 ar_ms=0.1
+ARC_P66_WRK_EXEC pid=930 ms=4.5
+ARC_P66_SAMPLE pid=1030 sample_ms=3.1
+ARC_P66_WRK_SAMPLE pid=1030 ms=3.2
+ARC_P66_SAMPLE pid=930 sample_ms=3.0
+ARC_P66_WRK_SAMPLE pid=930 ms=3.0
+ARC_P66_EXEC pid=1030 tok=4 dm=0 cg=FULL prep_ms=4.0 st_ms=0.1 disp_ms=0.1 pin_ms=0.0 meta_ms=1.9 res_ms=0.7 fwd_ms=23.4 post_ms=0.0 total_ms=27.4 ar_n=1 ar_ms=0.1
+ARC_P66_EXEC pid=930 tok=4 dm=0 cg=FULL prep_ms=4.0 st_ms=0.2 disp_ms=0.1 pin_ms=0.0 meta_ms=1.9 res_ms=0.7 fwd_ms=22.6 post_ms=0.0 total_ms=26.6 ar_n=1 ar_ms=0.1
+ARC_P66_WRK_EXEC pid=1030 ms=27.6
+ARC_P66_WRK_EXEC pid=930 ms=26.8
+ARC_P66_WAIT pid=698 tok=4 wait_ms=35.8 ts=36.3
+ARC_P66_STEP pid=698 wall=36.4 out=1 exec=1
+ARC_P66_SCHED pid=698 tok=4 sched_ms=0.1 ts=0.2
+ARC_P66_SAMPLE pid=1030 sample_ms=10.8
+ARC_P66_SAMPLE pid=930 sample_ms=10.8
+ARC_P66_WRK_SAMPLE pid=1030 ms=10.8
+ARC_P66_WRK_SAMPLE pid=930 ms=10.9
+ARC_P66_EXEC pid=1030 tok=4 dm=0 cg=FULL prep_ms=3.9 st_ms=0.1 disp_ms=0.1 pin_ms=0.0 meta_ms=1.9 res_ms=0.7 fwd_ms=23.5 post_ms=0.0 total_ms=27.4 ar_n=1 ar_ms=0.1
+ARC_P66_EXEC pid=930 tok=4 dm=0 cg=FULL prep_ms=4.0 st_ms=0.2 disp_ms=0.1 pin_ms=0.0 meta_ms=1.9 res_ms=0.7 fwd_ms=23.4 post_ms=0.0 total_ms=27.4 ar_n=1 ar_ms=0.1
+ARC_P66_WRK_EXEC pid=1030 ms=27.6
+ARC_P66_WRK_EXEC pid=930 ms=27.6
+ARC_P66_WAIT pid=698 tok=4 wait_ms=38.0 ts=38.5
+ARC_P66_STEP pid=698 wall=38.6 out=1 exec=1
+ARC_P66_SCHED pid=698 tok=4 sched_ms=0.1 ts=0.2
+ARC_P66_SAMPLE pid=1030 sample_ms=10.8
+ARC_P66_SAMPLE pid=930 sample_ms=10.8
+ARC_P66_WRK_SAMPLE pid=1030 ms=10.9
+ARC_P66_WRK_SAMPLE pid=930 ms=10.9
+ARC_P66_EXEC pid=1030 tok=4 dm=0 cg=FULL prep_ms=3.9 st_ms=0.1 disp_ms=0.1 pin_ms=0.0 meta_ms=1.9 res_ms=0.7 fwd_ms=23.5 post_ms=0.0 total_ms=27.4 ar_n=1 ar_ms=0.1
+ARC_P66_EXEC pid=930 tok=4 dm=0 cg=FULL prep_ms=4.1 st_ms=0.2 disp_ms=0.1 pin_ms=0.0 meta_ms=2.0 res_ms=0.7 fwd_ms=23.3 post_ms=0.0 total_ms=27.4 ar_n=1 ar_ms=0.1
+ARC_P66_WRK_EXEC pid=1030 ms=27.6
+ARC_P66_WRK_EXEC pid=930 ms=27.6
+ARC_P66_WAIT pid=698 tok=4 wait_ms=38.0 ts=38.5
+ARC_P66_STEP pid=698 wall=38.6 out=1 exec=1
+ARC_P66_SCHED pid=698 tok=4 sched_ms=0.1 ts=0.2
+ARC_P66_SAMPLE pid=1030 sample_ms=10.8
+ARC_P66_SAMPLE pid=930 sample_ms=10.8
+ARC_P66_WRK_SAMPLE pid=1030 ms=10.9
+ARC_P66_WRK_SAMPLE pid=930 ms=10.9
+ARC_P66_EXEC pid=1030 tok=4 dm=0 cg=FULL prep_ms=3.9 st_ms=0.1 disp_ms=0.1 pin_ms=0.0 meta_ms=1.9 res_ms=0.7 fwd_ms=23.5 post_ms=0.0 total_ms=27.4 ar_n=1 ar_ms=0.1
+ARC_P66_EXEC pid=930 tok=4 dm=0 cg=FULL prep_ms=4.0 st_ms=0.2 disp_ms=0.1 pin_ms=0.0 meta_ms=1.9 res_ms=0.7 fwd_ms=23.4 post_ms=0.0 total_ms=27.4 ar_n=1 ar_ms=0.1
+ARC_P66_WRK_EXEC pid=1030 ms=27.6
+ARC_P66_WRK_EXEC pid=930 ms=27.6
+ARC_P66_WAIT pid=698 tok=4 wait_ms=37.9 ts=38.4
+ARC_P66_STEP pid=698 wall=38.6 out=1 exec=1
+ARC_P66_SCHED pid=698 tok=0 sched_ms=0.0 ts=0.1
+ARC_P66_SAMPLE pid=1030 sample_ms=10.8
+ARC_P66_SAMPLE pid=930 sample_ms=10.8
+ARC_P66_WRK_SAMPLE pid=1030 ms=10.8
+ARC_P66_WRK_SAMPLE pid=930 ms=10.9
+ARC_P66_WRK_EXEC pid=1030 ms=0.2
+ARC_P66_WRK_EXEC pid=930 ms=0.3
+ARC_P66_WAIT pid=698 tok=4 wait_ms=38.0 ts=38.4
+ARC_P66_STEP pid=698 wall=38.4 out=1 exec=0
+ARC_P66_WAIT pid=698 tok=0 wait_ms=0.1 ts=0.2
+ARC_P66_STEP pid=698 wall=0.3 out=1 exec=0
+ARC_P66_SCHED pid=698 tok=1664 sched_ms=0.7 ts=0.8
+ARC_P66_STEP pid=698 wall=5.6 out=0 exec=1
+ARC_P66_SCHED pid=698 tok=1664 sched_ms=0.5 ts=0.5
+ARC_P66_EXEC pid=930 tok=1664 dm=0 cg=NONE prep_ms=31.1 st_ms=25.2 disp_ms=0.1 pin_ms=0.0 meta_ms=3.4 res_ms=1.2 fwd_ms=127.4 post_ms=0.0 total_ms=158.5 ar_n=129 ar_ms=27.2
+ARC_P66_EXEC pid=1030 tok=1664 dm=0 cg=NONE prep_ms=31.0 st_ms=22.4 disp_ms=0.1 pin_ms=0.0 meta_ms=3.7 res_ms=3.4 fwd_ms=127.3 post_ms=0.0 total_ms=158.3 ar_n=129 ar_ms=29.4
+ARC_P66_WRK_EXEC pid=930 ms=158.8
+ARC_P66_WRK_EXEC pid=1030 ms=158.7
+ARC_P66_SAMPLE pid=930 sample_ms=7.8
+ARC_P66_SAMPLE pid=1030 sample_ms=7.8
+ARC_P66_WRK_SAMPLE pid=930 ms=7.9
+ARC_P66_WRK_SAMPLE pid=1030 ms=7.9
+ARC_P66_WAIT pid=698 tok=1664 wait_ms=692.0 ts=693.0
+ARC_P66_STEP pid=698 wall=693.2 out=1 exec=1
+ARC_P66_SCHED pid=698 tok=1664 sched_ms=0.2 ts=0.4
+ARC_P66_EXEC pid=930 tok=1664 dm=0 cg=NONE prep_ms=790.0 st_ms=0.7 disp_ms=0.1 pin_ms=0.0 meta_ms=3.9 res_ms=1.8 fwd_ms=127.6 post_ms=0.0 total_ms=917.6 ar_n=129 ar_ms=27.9
+ARC_P66_EXEC pid=1030 tok=1664 dm=0 cg=NONE prep_ms=789.9 st_ms=0.7 disp_ms=0.1 pin_ms=0.0 meta_ms=3.9 res_ms=1.5 fwd_ms=127.6 post_ms=0.0 total_ms=917.5 ar_n=129 ar_ms=27.4
+ARC_P66_WRK_EXEC pid=930 ms=917.8
+ARC_P66_WRK_EXEC pid=1030 ms=917.8
+ARC_P66_SAMPLE pid=930 sample_ms=7.9
+ARC_P66_WRK_SAMPLE pid=930 ms=8.0
+ARC_P66_SAMPLE pid=1030 sample_ms=8.0
+ARC_P66_WRK_SAMPLE pid=1030 ms=8.1
+ARC_P66_WAIT pid=698 tok=1664 wait_ms=946.1 ts=946.8
+ARC_P66_STEP pid=698 wall=947.0 out=1 exec=1
+ARC_P66_SCHED pid=698 tok=1664 sched_ms=0.3 ts=0.5
+ARC_P66_EXEC pid=930 tok=1664 dm=0 cg=NONE prep_ms=810.7 st_ms=0.8 disp_ms=0.1 pin_ms=0.0 meta_ms=3.8 res_ms=1.9 fwd_ms=127.5 post_ms=0.0 total_ms=938.2 ar_n=129 ar_ms=27.9
+ARC_P66_EXEC pid=1030 tok=1664 dm=0 cg=NONE prep_ms=810.6 st_ms=0.7 disp_ms=0.1 pin_ms=0.0 meta_ms=3.8 res_ms=1.5 fwd_ms=127.5 post_ms=0.0 total_ms=938.1 ar_n=129 ar_ms=27.4
+ARC_P66_WRK_EXEC pid=930 ms=938.4
+ARC_P66_WRK_EXEC pid=1030 ms=938.4
+ARC_P66_SAMPLE pid=930 sample_ms=7.7
+ARC_P66_SAMPLE pid=1030 sample_ms=7.8
+ARC_P66_WRK_SAMPLE pid=930 ms=7.8
+ARC_P66_WRK_SAMPLE pid=1030 ms=7.9
+ARC_P66_WAIT pid=698 tok=1664 wait_ms=964.2 ts=965.0
+ARC_P66_STEP pid=698 wall=965.1 out=1 exec=1
+ARC_P66_SCHED pid=698 tok=1664 sched_ms=0.3 ts=0.4
+ARC_P66_EXEC pid=930 tok=1664 dm=0 cg=NONE prep_ms=829.8 st_ms=0.7 disp_ms=0.1 pin_ms=0.0 meta_ms=3.8 res_ms=2.3 fwd_ms=127.4 post_ms=0.0 total_ms=957.3 ar_n=129 ar_ms=28.5
+ARC_P66_EXEC pid=1030 tok=1664 dm=0 cg=NONE prep_ms=829.9 st_ms=0.7 disp_ms=0.1 pin_ms=0.0 meta_ms=3.8 res_ms=1.5 fwd_ms=127.4 post_ms=0.0 total_ms=957.3 ar_n=129 ar_ms=27.3
+ARC_P66_WRK_EXEC pid=930 ms=957.6
+ARC_P66_WRK_EXEC pid=1030 ms=957.6
+ARC_P66_SAMPLE pid=930 sample_ms=7.8
+ARC_P66_SAMPLE pid=1030 sample_ms=7.8
+ARC_P66_WRK_SAMPLE pid=930 ms=7.9
+ARC_P66_WRK_SAMPLE pid=1030 ms=7.9
+ARC_P66_WAIT pid=698 tok=1664 wait_ms=984.0 ts=984.7
+ARC_P66_STEP pid=698 wall=984.8 out=1 exec=1
+ARC_P66_SCHED pid=698 tok=1664 sched_ms=0.3 ts=0.4
+ARC_P66_EXEC pid=930 tok=1664 dm=0 cg=NONE prep_ms=849.5 st_ms=0.8 disp_ms=0.1 pin_ms=0.0 meta_ms=3.8 res_ms=1.7 fwd_ms=127.8 post_ms=0.0 total_ms=977.3 ar_n=129 ar_ms=27.9
+ARC_P66_EXEC pid=1030 tok=1664 dm=0 cg=NONE prep_ms=849.5 st_ms=0.7 disp_ms=0.1 pin_ms=0.0 meta_ms=3.8 res_ms=1.5 fwd_ms=127.7 post_ms=0.0 total_ms=977.3 ar_n=129 ar_ms=27.7
+ARC_P66_WRK_EXEC pid=930 ms=977.6
+ARC_P66_WRK_EXEC pid=1030 ms=977.6
+ARC_P66_SAMPLE pid=930 sample_ms=7.8
+ARC_P66_WRK_SAMPLE pid=930 ms=7.9
+ARC_P66_SAMPLE pid=1030 sample_ms=8.0
+ARC_P66_WRK_SAMPLE pid=1030 ms=8.1
+ARC_P66_WAIT pid=698 tok=1664 wait_ms=996.4 ts=997.0
+ARC_P66_STEP pid=698 wall=997.2 out=1 exec=1
+ARC_P66_SCHED pid=698 tok=1664 sched_ms=0.3 ts=0.5
+ARC_P66_EXEC pid=930 tok=1664 dm=0 cg=NONE prep_ms=862.8 st_ms=0.8 disp_ms=0.1 pin_ms=0.0 meta_ms=3.8 res_ms=2.1 fwd_ms=127.8 post_ms=0.0 total_ms=990.6 ar_n=129 ar_ms=28.1
+ARC_P66_EXEC pid=1030 tok=1664 dm=0 cg=NONE prep_ms=862.6 st_ms=0.7 disp_ms=0.1 pin_ms=0.0 meta_ms=3.8 res_ms=1.5 fwd_ms=127.8 post_ms=0.0 total_ms=990.4 ar_n=129 ar_ms=27.6
+ARC_P66_WRK_EXEC pid=930 ms=990.9
+ARC_P66_WRK_EXEC pid=1030 ms=990.7
+ARC_P66_SAMPLE pid=1030 sample_ms=7.7
+ARC_P66_SAMPLE pid=930 sample_ms=7.7
+ARC_P66_WRK_SAMPLE pid=1030 ms=7.9
+ARC_P66_WRK_SAMPLE pid=930 ms=7.8
+ARC_P66_WAIT pid=698 tok=1664 wait_ms=1012.7 ts=1013.5
+ARC_P66_STEP pid=698 wall=1013.6 out=1 exec=1
+ARC_P66_SCHED pid=698 tok=1664 sched_ms=0.3 ts=0.4
+ARC_P66_EXEC pid=930 tok=1664 dm=0 cg=NONE prep_ms=878.3 st_ms=0.7 disp_ms=0.1 pin_ms=0.0 meta_ms=3.8 res_ms=2.8 fwd_ms=127.6 post_ms=0.0 total_ms=1005.9 ar_n=129 ar_ms=28.9
+ARC_P66_EXEC pid=1030 tok=1664 dm=0 cg=NONE prep_ms=878.3 st_ms=0.7 disp_ms=0.1 pin_ms=0.0 meta_ms=3.8 res_ms=1.5 fwd_ms=127.6 post_ms=0.0 total_ms=1005.9 ar_n=129 ar_ms=27.5
+ARC_P66_WRK_EXEC pid=930 ms=1006.2
+ARC_P66_WRK_EXEC pid=1030 ms=1006.2
+ARC_P66_SAMPLE pid=930 sample_ms=7.8
+ARC_P66_SAMPLE pid=1030 sample_ms=7.8
+ARC_P66_WRK_SAMPLE pid=930 ms=7.9
+ARC_P66_WRK_SAMPLE pid=1030 ms=7.9
+ARC_P66_WAIT pid=698 tok=1664 wait_ms=1039.3 ts=1040.0
+ARC_P66_STEP pid=698 wall=1040.2 out=1 exec=1
+ARC_P66_SCHED pid=698 tok=1664 sched_ms=0.3 ts=0.4
+ARC_P66_EXEC pid=930 tok=1664 dm=0 cg=NONE prep_ms=904.9 st_ms=0.7 disp_ms=0.1 pin_ms=0.0 meta_ms=3.8 res_ms=1.9 fwd_ms=127.6 post_ms=0.0 total_ms=1032.5 ar_n=129 ar_ms=27.6
+ARC_P66_EXEC pid=1030 tok=1664 dm=0 cg=NONE prep_ms=904.9 st_ms=0.7 disp_ms=0.1 pin_ms=0.0 meta_ms=3.8 res_ms=1.5 fwd_ms=127.6 post_ms=0.0 total_ms=1032.5 ar_n=129 ar_ms=27.6
+ARC_P66_WRK_EXEC pid=930 ms=1032.8
+ARC_P66_WRK_EXEC pid=1030 ms=1032.8
+ARC_P66_SAMPLE pid=930 sample_ms=7.8
+ARC_P66_SAMPLE pid=1030 sample_ms=7.8
+ARC_P66_WRK_SAMPLE pid=930 ms=7.9
+ARC_P66_WRK_SAMPLE pid=1030 ms=7.9
+ARC_P66_WAIT pid=698 tok=1664 wait_ms=1062.1 ts=1062.8
+ARC_P66_STEP pid=698 wall=1063.0 out=1 exec=1
+ARC_P66_SCHED pid=698 tok=1664 sched_ms=0.3 ts=0.4
+ARC_P66_EXEC pid=930 tok=1664 dm=0 cg=NONE prep_ms=930.1 st_ms=0.8 disp_ms=0.1 pin_ms=0.0 meta_ms=3.9 res_ms=1.8 fwd_ms=127.4 post_ms=0.0 total_ms=1057.4 ar_n=129 ar_ms=27.7
+ARC_P66_EXEC pid=1030 tok=1664 dm=0 cg=NONE prep_ms=930.0 st_ms=0.7 disp_ms=0.1 pin_ms=0.0 meta_ms=3.8 res_ms=1.5 fwd_ms=127.4 post_ms=0.0 total_ms=1057.4 ar_n=129 ar_ms=27.4
+ARC_P66_WRK_EXEC pid=930 ms=1057.7
+ARC_P66_WRK_EXEC pid=1030 ms=1057.7
+ARC_P66_SAMPLE pid=930 sample_ms=7.8
+ARC_P66_SAMPLE pid=1030 sample_ms=7.8
+ARC_P66_WRK_SAMPLE pid=930 ms=7.9
+ARC_P66_WRK_SAMPLE pid=1030 ms=7.9
+ARC_P66_WAIT pid=698 tok=1664 wait_ms=1081.3 ts=1082.1
+ARC_P66_STEP pid=698 wall=1082.2 out=1 exec=1
+ARC_P66_SCHED pid=698 tok=1664 sched_ms=0.3 ts=0.4
+ARC_P66_EXEC pid=930 tok=1664 dm=0 cg=NONE prep_ms=949.2 st_ms=0.8 disp_ms=0.1 pin_ms=0.0 meta_ms=3.8 res_ms=2.0 fwd_ms=127.6 post_ms=0.0 total_ms=1076.8 ar_n=129 ar_ms=27.9
+ARC_P66_EXEC pid=1030 tok=1664 dm=0 cg=NONE prep_ms=949.2 st_ms=0.7 disp_ms=0.1 pin_ms=0.0 meta_ms=3.8 res_ms=1.4 fwd_ms=127.6 post_ms=0.0 total_ms=1076.8 ar_n=129 ar_ms=27.4
+ARC_P66_WRK_EXEC pid=930 ms=1077.1
+ARC_P66_WRK_EXEC pid=1030 ms=1077.1
+ARC_P66_SAMPLE pid=930 sample_ms=7.8
+ARC_P66_SAMPLE pid=1030 sample_ms=7.8
+ARC_P66_WRK_SAMPLE pid=930 ms=7.9
+ARC_P66_WRK_SAMPLE pid=1030 ms=7.9
+ARC_P66_WAIT pid=698 tok=1664 wait_ms=1098.0 ts=1098.7
+ARC_P66_STEP pid=698 wall=1098.8 out=1 exec=1
+ARC_P66_SCHED pid=698 tok=1664 sched_ms=0.3 ts=0.4
+ARC_P66_EXEC pid=930 tok=1664 dm=0 cg=NONE prep_ms=964.6 st_ms=0.8 disp_ms=0.1 pin_ms=0.0 meta_ms=4.0 res_ms=1.5 fwd_ms=127.6 post_ms=0.0 total_ms=1092.2 ar_n=129 ar_ms=27.4
+ARC_P66_EXEC pid=1030 tok=1664 dm=0 cg=NONE prep_ms=964.6 st_ms=0.7 disp_ms=0.1 pin_ms=0.0 meta_ms=4.0 res_ms=1.5 fwd_ms=127.6 post_ms=0.0 total_ms=1092.2 ar_n=129 ar_ms=27.6
+ARC_P66_WRK_EXEC pid=1030 ms=1092.5
+ARC_P66_WRK_EXEC pid=930 ms=1092.5
+ARC_P66_SAMPLE pid=930 sample_ms=7.9
+ARC_P66_SAMPLE pid=1030 sample_ms=7.9
+ARC_P66_WRK_SAMPLE pid=930 ms=8.0
+ARC_P66_WRK_SAMPLE pid=1030 ms=8.0
+ARC_P66_WAIT pid=698 tok=1664 wait_ms=1125.7 ts=1126.5
+ARC_P66_STEP pid=698 wall=1126.6 out=1 exec=1
+ARC_P66_SCHED pid=698 tok=1664 sched_ms=0.3 ts=0.5
+ARC_P66_EXEC pid=1030 tok=1664 dm=0 cg=NONE prep_ms=989.8 st_ms=0.7 disp_ms=0.1 pin_ms=0.0 meta_ms=3.9 res_ms=1.5 fwd_ms=127.7 post_ms=0.0 total_ms=1117.5 ar_n=129 ar_ms=27.6
+ARC_P66_EXEC pid=930 tok=1664 dm=0 cg=NONE prep_ms=989.8 st_ms=0.8 disp_ms=0.1 pin_ms=0.0 meta_ms=3.8 res_ms=1.5 fwd_ms=127.7 post_ms=0.0 total_ms=1117.5 ar_n=129 ar_ms=27.4
+ARC_P66_WRK_EXEC pid=1030 ms=1117.8
+ARC_P66_WRK_EXEC pid=930 ms=1117.8
+ARC_P66_SAMPLE pid=1030 sample_ms=7.8
+ARC_P66_SAMPLE pid=930 sample_ms=7.8
+ARC_P66_WRK_SAMPLE pid=1030 ms=7.9
+ARC_P66_WRK_SAMPLE pid=930 ms=7.9
+ARC_P66_WAIT pid=698 tok=1664 wait_ms=1136.0 ts=1136.8
+ARC_P66_STEP pid=698 wall=1137.0 out=1 exec=1
+ARC_P66_SCHED pid=698 tok=1664 sched_ms=0.3 ts=0.4
+ARC_P66_EXEC pid=930 tok=1664 dm=0 cg=NONE prep_ms=1002.3 st_ms=0.8 disp_ms=0.1 pin_ms=0.0 meta_ms=3.8 res_ms=1.5 fwd_ms=127.6 post_ms=0.0 total_ms=1130.0 ar_n=129 ar_ms=27.3
+ARC_P66_EXEC pid=1030 tok=1664 dm=0 cg=NONE prep_ms=1002.4 st_ms=0.7 disp_ms=0.1 pin_ms=0.0 meta_ms=3.8 res_ms=1.5 fwd_ms=127.6 post_ms=0.0 total_ms=1130.0 ar_n=129 ar_ms=27.7
+ARC_P66_WRK_EXEC pid=930 ms=1130.3
+ARC_P66_WRK_EXEC pid=1030 ms=1130.3
+ARC_P66_SAMPLE pid=930 sample_ms=7.8
+ARC_P66_SAMPLE pid=1030 sample_ms=7.8
+ARC_P66_WRK_SAMPLE pid=930 ms=7.9
+ARC_P66_WRK_SAMPLE pid=1030 ms=7.9
+ARC_P66_WAIT pid=698 tok=1664 wait_ms=1155.9 ts=1156.6
+ARC_P66_STEP pid=698 wall=1156.8 out=1 exec=1
+ARC_P66_SCHED pid=698 tok=1664 sched_ms=0.3 ts=0.4
+ARC_P66_EXEC pid=930 tok=1664 dm=0 cg=NONE prep_ms=1022.0 st_ms=0.8 disp_ms=0.1 pin_ms=0.0 meta_ms=3.8 res_ms=1.5 fwd_ms=127.7 post_ms=0.0 total_ms=1149.7 ar_n=129 ar_ms=27.5
+ARC_P66_EXEC pid=1030 tok=1664 dm=0 cg=NONE prep_ms=1021.9 st_ms=0.7 disp_ms=0.1 pin_ms=0.0 meta_ms=3.9 res_ms=1.7 fwd_ms=127.7 post_ms=0.0 total_ms=1149.7 ar_n=129 ar_ms=27.6
+ARC_P66_WRK_EXEC pid=930 ms=1150.0
+ARC_P66_WRK_EXEC pid=1030 ms=1150.0
+ARC_P66_SAMPLE pid=930 sample_ms=7.8
+ARC_P66_SAMPLE pid=1030 sample_ms=7.8
+ARC_P66_WRK_SAMPLE pid=930 ms=7.9
+ARC_P66_WRK_SAMPLE pid=1030 ms=7.9
+ARC_P66_WAIT pid=698 tok=1664 wait_ms=1166.0 ts=1166.8
+ARC_P66_STEP pid=698 wall=1167.0 out=1 exec=1
+ARC_P66_SCHED pid=698 tok=1664 sched_ms=0.3 ts=0.4
+ARC_P66_EXEC pid=1030 tok=1664 dm=0 cg=NONE prep_ms=1031.8 st_ms=0.7 disp_ms=0.1 pin_ms=0.0 meta_ms=3.8 res_ms=1.5 fwd_ms=128.4 post_ms=0.0 total_ms=1160.2 ar_n=129 ar_ms=27.9
+ARC_P66_EXEC pid=930 tok=1664 dm=0 cg=NONE prep_ms=1031.8 st_ms=0.8 disp_ms=0.1 pin_ms=0.0 meta_ms=3.8 res_ms=1.5 fwd_ms=128.4 post_ms=0.0 total_ms=1160.2 ar_n=129 ar_ms=28.1
+ARC_P66_WRK_EXEC pid=1030 ms=1160.5
+ARC_P66_WRK_EXEC pid=930 ms=1160.5
+ARC_P66_SAMPLE pid=930 sample_ms=7.8
+ARC_P66_SAMPLE pid=1030 sample_ms=7.8
+ARC_P66_WRK_SAMPLE pid=930 ms=7.9
+ARC_P66_WRK_SAMPLE pid=1030 ms=7.9
+ARC_P66_WAIT pid=698 tok=1664 wait_ms=1180.1 ts=1180.9
+ARC_P66_STEP pid=698 wall=1181.0 out=1 exec=1
+ARC_P66_SCHED pid=698 tok=1664 sched_ms=0.3 ts=0.4
+ARC_P66_EXEC pid=1030 tok=1664 dm=0 cg=NONE prep_ms=1045.6 st_ms=0.7 disp_ms=0.1 pin_ms=0.0 meta_ms=3.9 res_ms=1.5 fwd_ms=127.9 post_ms=0.0 total_ms=1173.5 ar_n=129 ar_ms=27.5
+ARC_P66_EXEC pid=930 tok=1664 dm=0 cg=NONE prep_ms=1045.6 st_ms=0.8 disp_ms=0.1 pin_ms=0.0 meta_ms=3.8 res_ms=2.3 fwd_ms=127.9 post_ms=0.0 total_ms=1173.5 ar_n=129 ar_ms=28.4
+ARC_P66_WRK_EXEC pid=1030 ms=1173.8
+ARC_P66_WRK_EXEC pid=930 ms=1173.8
+ARC_P66_SAMPLE pid=1030 sample_ms=7.8
+ARC_P66_SAMPLE pid=930 sample_ms=7.8
+ARC_P66_WRK_SAMPLE pid=1030 ms=7.9
+ARC_P66_WRK_SAMPLE pid=930 ms=7.9
+ARC_P66_WAIT pid=698 tok=1664 wait_ms=1185.7 ts=1186.4
+ARC_P66_STEP pid=698 wall=1186.6 out=1 exec=1
+ARC_P66_SCHED pid=698 tok=1664 sched_ms=0.3 ts=0.4
+ARC_P66_EXEC pid=1030 tok=1664 dm=0 cg=NONE prep_ms=1051.3 st_ms=0.7 disp_ms=0.1 pin_ms=0.0 meta_ms=3.9 res_ms=1.5 fwd_ms=127.6 post_ms=0.0 total_ms=1178.9 ar_n=129 ar_ms=27.6
+ARC_P66_EXEC pid=930 tok=1664 dm=0 cg=NONE prep_ms=1051.3 st_ms=0.8 disp_ms=0.1 pin_ms=0.0 meta_ms=3.8 res_ms=1.5 fwd_ms=127.6 post_ms=0.0 total_ms=1178.9 ar_n=129 ar_ms=27.3
+ARC_P66_WRK_EXEC pid=1030 ms=1179.2
+ARC_P66_WRK_EXEC pid=930 ms=1179.2
+ARC_P66_SAMPLE pid=1030 sample_ms=7.9
+ARC_P66_SAMPLE pid=930 sample_ms=7.8
+ARC_P66_WRK_SAMPLE pid=1030 ms=8.0
+ARC_P66_WRK_SAMPLE pid=930 ms=7.9
+ARC_P66_WAIT pid=698 tok=1664 wait_ms=1209.6 ts=1210.4
+ARC_P66_STEP pid=698 wall=1210.5 out=1 exec=1
+ARC_P66_SCHED pid=698 tok=1664 sched_ms=0.3 ts=0.4
+ARC_P66_EXEC pid=930 tok=1664 dm=0 cg=NONE prep_ms=1074.9 st_ms=0.8 disp_ms=0.1 pin_ms=0.0 meta_ms=3.8 res_ms=1.7 fwd_ms=127.4 post_ms=0.0 total_ms=1202.3 ar_n=129 ar_ms=27.5
+ARC_P66_EXEC pid=1030 tok=1664 dm=0 cg=NONE prep_ms=1074.9 st_ms=0.7 disp_ms=0.1 pin_ms=0.0 meta_ms=3.8 res_ms=1.4 fwd_ms=127.4 post_ms=0.0 total_ms=1202.3 ar_n=129 ar_ms=27.4
+ARC_P66_WRK_EXEC pid=930 ms=1202.5
+ARC_P66_WRK_EXEC pid=1030 ms=1202.6
+ARC_P66_SAMPLE pid=1030 sample_ms=7.7
+ARC_P66_SAMPLE pid=930 sample_ms=7.7
+ARC_P66_WRK_SAMPLE pid=1030 ms=7.8
+ARC_P66_WRK_SAMPLE pid=930 ms=7.9
+ARC_P66_WAIT pid=698 tok=1664 wait_ms=1225.1 ts=1225.9
+ARC_P66_STEP pid=698 wall=1226.0 out=1 exec=1
+ARC_P66_SCHED pid=698 tok=937 sched_ms=0.3 ts=0.4
+ARC_P66_EXEC pid=930 tok=1664 dm=0 cg=NONE prep_ms=1091.9 st_ms=0.8 disp_ms=0.1 pin_ms=0.0 meta_ms=3.8 res_ms=3.0 fwd_ms=128.1 post_ms=0.0 total_ms=1220.1 ar_n=129 ar_ms=29.4
+ARC_P66_EXEC pid=1030 tok=1664 dm=0 cg=NONE prep_ms=1092.0 st_ms=0.7 disp_ms=0.1 pin_ms=0.0 meta_ms=3.9 res_ms=1.5 fwd_ms=128.1 post_ms=0.0 total_ms=1220.1 ar_n=129 ar_ms=27.6
+ARC_P66_WRK_EXEC pid=930 ms=1220.4
+ARC_P66_WRK_EXEC pid=1030 ms=1220.4
+ARC_P66_SAMPLE pid=1030 sample_ms=7.9
+ARC_P66_SAMPLE pid=930 sample_ms=7.9
+ARC_P66_WRK_SAMPLE pid=1030 ms=8.0
+ARC_P66_WRK_SAMPLE pid=930 ms=8.0
+ARC_P66_WAIT pid=698 tok=1664 wait_ms=1245.1 ts=1245.8
+ARC_P66_STEP pid=698 wall=1245.9 out=1 exec=1
+ARC_P66_SCHED pid=698 tok=4 sched_ms=0.2 ts=0.4
+ARC_P66_EXEC pid=930 tok=937 dm=0 cg=NONE prep_ms=1113.5 st_ms=0.8 disp_ms=0.1 pin_ms=0.0 meta_ms=3.8 res_ms=6.0 fwd_ms=145.7 post_ms=0.0 total_ms=1259.3 ar_n=129 ar_ms=39.5
+ARC_P66_EXEC pid=1030 tok=937 dm=0 cg=NONE prep_ms=1114.1 st_ms=0.7 disp_ms=0.1 pin_ms=0.0 meta_ms=7.0 res_ms=3.0 fwd_ms=145.1 post_ms=0.0 total_ms=1259.3 ar_n=129 ar_ms=29.0
+ARC_P66_WRK_EXEC pid=930 ms=1259.6
+ARC_P66_WRK_EXEC pid=1030 ms=1259.6
+ARC_P66_SAMPLE pid=930 sample_ms=27.8
+ARC_P66_SAMPLE pid=1030 sample_ms=27.9
+ARC_P66_WRK_SAMPLE pid=930 ms=28.0
+ARC_P66_WRK_SAMPLE pid=1030 ms=28.0
+ARC_P66_EXEC pid=1030 tok=4 dm=0 cg=FULL prep_ms=4.7 st_ms=0.2 disp_ms=0.1 pin_ms=0.0 meta_ms=2.2 res_ms=0.9 fwd_ms=0.1 post_ms=0.0 total_ms=4.8 ar_n=1 ar_ms=0.1
+ARC_P66_EXEC pid=930 tok=4 dm=0 cg=FULL prep_ms=4.8 st_ms=0.3 disp_ms=0.1 pin_ms=0.0 meta_ms=2.2 res_ms=0.9 fwd_ms=0.1 post_ms=0.0 total_ms=4.9 ar_n=1 ar_ms=0.1
+ARC_P66_WRK_EXEC pid=1030 ms=5.0
+ARC_P66_WRK_EXEC pid=930 ms=5.1
+ARC_P66_WAIT pid=698 tok=937 wait_ms=921.7 ts=922.5
+ARC_P66_STEP pid=698 wall=923.0 out=1 exec=1
+ARC_P66_SCHED pid=698 tok=4 sched_ms=0.2 ts=0.4
+ARC_P66_SAMPLE pid=1030 sample_ms=481.7
+ARC_P66_WRK_SAMPLE pid=1030 ms=481.8
+ARC_P66_SAMPLE pid=930 sample_ms=481.8
+ARC_P66_WRK_SAMPLE pid=930 ms=481.9
+ARC_P66_EXEC pid=1030 tok=4 dm=0 cg=FULL prep_ms=4.3 st_ms=0.2 disp_ms=0.1 pin_ms=0.0 meta_ms=1.9 res_ms=0.9 fwd_ms=26.8 post_ms=0.0 total_ms=31.1 ar_n=1 ar_ms=0.1
+ARC_P66_EXEC pid=930 tok=4 dm=0 cg=FULL prep_ms=4.9 st_ms=0.2 disp_ms=0.1 pin_ms=0.0 meta_ms=2.2 res_ms=1.0 fwd_ms=26.0 post_ms=0.0 total_ms=30.9 ar_n=1 ar_ms=0.2
+ARC_P66_WRK_EXEC pid=1030 ms=31.3
+ARC_P66_WRK_EXEC pid=930 ms=31.1
+ARC_P66_WAIT pid=698 tok=4 wait_ms=63.0 ts=63.7
+ARC_P66_STEP pid=698 wall=63.9 out=1 exec=1
+ARC_P66_SCHED pid=698 tok=4 sched_ms=0.2 ts=0.3
+ARC_P66_SAMPLE pid=1030 sample_ms=11.4
+ARC_P66_SAMPLE pid=930 sample_ms=11.4
+ARC_P66_WRK_SAMPLE pid=1030 ms=11.5
+ARC_P66_WRK_SAMPLE pid=930 ms=11.4
+ARC_P66_EXEC pid=1030 tok=4 dm=0 cg=FULL prep_ms=4.1 st_ms=0.1 disp_ms=0.1 pin_ms=0.0 meta_ms=1.9 res_ms=0.8 fwd_ms=26.7 post_ms=0.0 total_ms=30.8 ar_n=1 ar_ms=0.1
+ARC_P66_EXEC pid=930 tok=4 dm=0 cg=FULL prep_ms=4.2 st_ms=0.2 disp_ms=0.1 pin_ms=0.0 meta_ms=1.9 res_ms=0.8 fwd_ms=26.5 post_ms=0.0 total_ms=30.7 ar_n=1 ar_ms=0.1
+ARC_P66_WRK_EXEC pid=1030 ms=30.9
+ARC_P66_WRK_EXEC pid=930 ms=30.9
+ARC_P66_WAIT pid=698 tok=4 wait_ms=41.8 ts=42.4
+ARC_P66_STEP pid=698 wall=42.5 out=1 exec=1
+ARC_P66_SCHED pid=698 tok=4 sched_ms=0.1 ts=0.2
+ARC_P66_SAMPLE pid=1030 sample_ms=11.4
+ARC_P66_SAMPLE pid=930 sample_ms=11.4
+ARC_P66_WRK_SAMPLE pid=1030 ms=11.5
+ARC_P66_WRK_SAMPLE pid=930 ms=11.5
+ARC_P66_EXEC pid=1030 tok=4 dm=0 cg=FULL prep_ms=4.0 st_ms=0.1 disp_ms=0.1 pin_ms=0.0 meta_ms=1.9 res_ms=0.7 fwd_ms=26.8 post_ms=0.0 total_ms=30.8 ar_n=1 ar_ms=0.1
+ARC_P66_EXEC pid=930 tok=4 dm=0 cg=FULL prep_ms=4.1 st_ms=0.2 disp_ms=0.1 pin_ms=0.0 meta_ms=1.9 res_ms=0.7 fwd_ms=26.7 post_ms=0.0 total_ms=30.8 ar_n=1 ar_ms=0.1
+ARC_P66_WRK_EXEC pid=930 ms=30.9
+ARC_P66_WRK_EXEC pid=1030 ms=30.9
+ARC_P66_WAIT pid=698 tok=4 wait_ms=41.9 ts=42.4
+ARC_P66_STEP pid=698 wall=42.6 out=1 exec=1
+ARC_P66_SCHED pid=698 tok=4 sched_ms=0.1 ts=0.2
+ARC_P66_SAMPLE pid=1030 sample_ms=11.4
+ARC_P66_SAMPLE pid=930 sample_ms=11.4
+ARC_P66_WRK_SAMPLE pid=1030 ms=11.5
+ARC_P66_WRK_SAMPLE pid=930 ms=11.5
+ARC_P66_EXEC pid=1030 tok=4 dm=0 cg=FULL prep_ms=3.9 st_ms=0.1 disp_ms=0.1 pin_ms=0.0 meta_ms=1.9 res_ms=0.7 fwd_ms=26.9 post_ms=0.0 total_ms=30.8 ar_n=1 ar_ms=0.1
+ARC_P66_EXEC pid=930 tok=4 dm=0 cg=FULL prep_ms=4.0 st_ms=0.2 disp_ms=0.1 pin_ms=0.0 meta_ms=1.9 res_ms=0.7 fwd_ms=26.8 post_ms=0.0 total_ms=30.8 ar_n=1 ar_ms=0.1
+ARC_P66_WRK_EXEC pid=1030 ms=31.0
+ARC_P66_WRK_EXEC pid=930 ms=31.0
+ARC_P66_WAIT pid=698 tok=4 wait_ms=42.0 ts=42.4
+ARC_P66_STEP pid=698 wall=42.6 out=1 exec=1
+ARC_P66_SCHED pid=698 tok=4 sched_ms=0.1 ts=0.2
+ARC_P66_SAMPLE pid=1030 sample_ms=11.4
+ARC_P66_SAMPLE pid=930 sample_ms=11.4
+ARC_P66_WRK_SAMPLE pid=1030 ms=11.5
+ARC_P66_WRK_SAMPLE pid=930 ms=11.5
+ARC_P66_EXEC pid=1030 tok=4 dm=0 cg=FULL prep_ms=3.9 st_ms=0.1 disp_ms=0.1 pin_ms=0.0 meta_ms=1.9 res_ms=0.7 fwd_ms=26.9 post_ms=0.0 total_ms=30.7 ar_n=1 ar_ms=0.1
+ARC_P66_EXEC pid=930 tok=4 dm=0 cg=FULL prep_ms=4.0 st_ms=0.1 disp_ms=0.1 pin_ms=0.0 meta_ms=1.9 res_ms=0.7 fwd_ms=26.8 post_ms=0.0 total_ms=30.7 ar_n=1 ar_ms=0.1
+ARC_P66_WRK_EXEC pid=1030 ms=30.9
+ARC_P66_WRK_EXEC pid=930 ms=30.9
+ARC_P66_WAIT pid=698 tok=4 wait_ms=41.9 ts=42.4
+ARC_P66_STEP pid=698 wall=42.5 out=1 exec=1
+ARC_P66_SCHED pid=698 tok=4 sched_ms=0.1 ts=0.2
+ARC_P66_SAMPLE pid=1030 sample_ms=11.4
+ARC_P66_SAMPLE pid=930 sample_ms=11.4
+ARC_P66_WRK_SAMPLE pid=1030 ms=11.5
+ARC_P66_WRK_SAMPLE pid=930 ms=11.5
+ARC_P66_EXEC pid=1030 tok=4 dm=0 cg=FULL prep_ms=3.9 st_ms=0.1 disp_ms=0.1 pin_ms=0.0 meta_ms=1.9 res_ms=0.7 fwd_ms=26.9 post_ms=0.0 total_ms=30.8 ar_n=1 ar_ms=0.1
+ARC_P66_EXEC pid=930 tok=4 dm=0 cg=FULL prep_ms=4.0 st_ms=0.2 disp_ms=0.1 pin_ms=0.0 meta_ms=1.9 res_ms=0.7 fwd_ms=26.8 post_ms=0.0 total_ms=30.8 ar_n=1 ar_ms=0.1
+ARC_P66_WRK_EXEC pid=1030 ms=30.9
+ARC_P66_WRK_EXEC pid=930 ms=30.9
+ARC_P66_WAIT pid=698 tok=4 wait_ms=42.0 ts=42.4
+ARC_P66_STEP pid=698 wall=42.6 out=1 exec=1
+ARC_P66_SCHED pid=698 tok=4 sched_ms=0.1 ts=0.2
+ARC_P66_SAMPLE pid=1030 sample_ms=11.4
+ARC_P66_SAMPLE pid=930 sample_ms=11.4
+ARC_P66_WRK_SAMPLE pid=1030 ms=11.5
+ARC_P66_WRK_SAMPLE pid=930 ms=11.5
+ARC_P66_EXEC pid=1030 tok=4 dm=0 cg=FULL prep_ms=3.9 st_ms=0.1 disp_ms=0.1 pin_ms=0.0 meta_ms=1.9 res_ms=0.7 fwd_ms=26.9 post_ms=0.0 total_ms=30.8 ar_n=1 ar_ms=0.1
+ARC_P66_EXEC pid=930 tok=4 dm=0 cg=FULL prep_ms=4.0 st_ms=0.2 disp_ms=0.1 pin_ms=0.0 meta_ms=1.9 res_ms=0.7 fwd_ms=26.8 post_ms=0.0 total_ms=30.8 ar_n=1 ar_ms=0.1
+ARC_P66_WRK_EXEC pid=1030 ms=30.9
+ARC_P66_WRK_EXEC pid=930 ms=30.9
+ARC_P66_WAIT pid=698 tok=4 wait_ms=41.9 ts=42.3
+ARC_P66_STEP pid=698 wall=42.5 out=1 exec=1
+ARC_P66_SCHED pid=698 tok=4 sched_ms=0.1 ts=0.2
+ARC_P66_SAMPLE pid=1030 sample_ms=11.4
+ARC_P66_SAMPLE pid=930 sample_ms=11.4
+ARC_P66_WRK_SAMPLE pid=1030 ms=11.5
+ARC_P66_WRK_SAMPLE pid=930 ms=11.5
+ARC_P66_EXEC pid=1030 tok=4 dm=0 cg=FULL prep_ms=3.9 st_ms=0.1 disp_ms=0.1 pin_ms=0.0 meta_ms=1.9 res_ms=0.7 fwd_ms=26.9 post_ms=0.0 total_ms=30.8 ar_n=1 ar_ms=0.1
+ARC_P66_EXEC pid=930 tok=4 dm=0 cg=FULL prep_ms=3.9 st_ms=0.2 disp_ms=0.1 pin_ms=0.0 meta_ms=1.9 res_ms=0.7 fwd_ms=26.8 post_ms=0.0 total_ms=30.8 ar_n=1 ar_ms=0.1
+ARC_P66_WRK_EXEC pid=1030 ms=30.9
+ARC_P66_WRK_EXEC pid=930 ms=30.9
+ARC_P66_WAIT pid=698 tok=4 wait_ms=42.0 ts=42.5
+ARC_P66_STEP pid=698 wall=42.6 out=1 exec=1
+ARC_P66_SCHED pid=698 tok=4 sched_ms=0.1 ts=0.2
+ARC_P66_SAMPLE pid=1030 sample_ms=11.4
+ARC_P66_SAMPLE pid=930 sample_ms=11.4
+ARC_P66_WRK_SAMPLE pid=1030 ms=11.5
+ARC_P66_WRK_SAMPLE pid=930 ms=11.5
+ARC_P66_EXEC pid=1030 tok=4 dm=0 cg=FULL prep_ms=3.9 st_ms=0.1 disp_ms=0.1 pin_ms=0.0 meta_ms=1.9 res_ms=0.7 fwd_ms=26.9 post_ms=0.0 total_ms=30.8 ar_n=1 ar_ms=0.1
+ARC_P66_EXEC pid=930 tok=4 dm=0 cg=FULL prep_ms=4.0 st_ms=0.1 disp_ms=0.1 pin_ms=0.0 meta_ms=1.9 res_ms=0.7 fwd_ms=26.8 post_ms=0.0 total_ms=30.8 ar_n=1 ar_ms=0.1
+ARC_P66_WRK_EXEC pid=1030 ms=30.9
+ARC_P66_WRK_EXEC pid=930 ms=30.9
+ARC_P66_WAIT pid=698 tok=4 wait_ms=42.0 ts=42.4
+ARC_P66_STEP pid=698 wall=42.6 out=1 exec=1
+ARC_P66_SCHED pid=698 tok=4 sched_ms=0.1 ts=0.2
+ARC_P66_SAMPLE pid=1030 sample_ms=11.4
+ARC_P66_SAMPLE pid=930 sample_ms=11.4
+ARC_P66_WRK_SAMPLE pid=1030 ms=11.5
+ARC_P66_WRK_SAMPLE pid=930 ms=11.5
+ARC_P66_EXEC pid=1030 tok=4 dm=0 cg=FULL prep_ms=3.9 st_ms=0.1 disp_ms=0.1 pin_ms=0.0 meta_ms=1.9 res_ms=0.7 fwd_ms=26.8 post_ms=0.0 total_ms=30.7 ar_n=1 ar_ms=0.1
+ARC_P66_EXEC pid=930 tok=4 dm=0 cg=FULL prep_ms=4.0 st_ms=0.2 disp_ms=0.1 pin_ms=0.0 meta_ms=1.9 res_ms=0.7 fwd_ms=26.7 post_ms=0.0 total_ms=30.7 ar_n=1 ar_ms=0.1
+ARC_P66_WRK_EXEC pid=1030 ms=30.9
+ARC_P66_WRK_EXEC pid=930 ms=30.9
+ARC_P66_WAIT pid=698 tok=4 wait_ms=41.9 ts=42.3
+ARC_P66_STEP pid=698 wall=42.5 out=1 exec=1
+ARC_P66_SCHED pid=698 tok=4 sched_ms=0.1 ts=0.2
+ARC_P66_SAMPLE pid=1030 sample_ms=11.4
+ARC_P66_SAMPLE pid=930 sample_ms=11.4
+ARC_P66_WRK_SAMPLE pid=1030 ms=11.5
+ARC_P66_WRK_SAMPLE pid=930 ms=11.5
+ARC_P66_EXEC pid=1030 tok=4 dm=0 cg=FULL prep_ms=3.9 st_ms=0.1 disp_ms=0.1 pin_ms=0.0 meta_ms=1.9 res_ms=0.7 fwd_ms=26.9 post_ms=0.0 total_ms=30.8 ar_n=1 ar_ms=0.1
+ARC_P66_EXEC pid=930 tok=4 dm=0 cg=FULL prep_ms=4.0 st_ms=0.2 disp_ms=0.1 pin_ms=0.0 meta_ms=1.9 res_ms=0.7 fwd_ms=26.8 post_ms=0.0 total_ms=30.8 ar_n=1 ar_ms=0.1
+ARC_P66_WRK_EXEC pid=1030 ms=30.9
+ARC_P66_WRK_EXEC pid=930 ms=30.9
+ARC_P66_WAIT pid=698 tok=4 wait_ms=42.0 ts=42.4
+ARC_P66_STEP pid=698 wall=42.6 out=1 exec=1
+ARC_P66_SCHED pid=698 tok=4 sched_ms=0.1 ts=0.2
+ARC_P66_SAMPLE pid=1030 sample_ms=11.4
+ARC_P66_SAMPLE pid=930 sample_ms=11.4
+ARC_P66_WRK_SAMPLE pid=1030 ms=11.5
+ARC_P66_WRK_SAMPLE pid=930 ms=11.5
+ARC_P66_EXEC pid=1030 tok=4 dm=0 cg=FULL prep_ms=3.9 st_ms=0.1 disp_ms=0.1 pin_ms=0.0 meta_ms=1.9 res_ms=0.7 fwd_ms=26.8 post_ms=0.0 total_ms=30.7 ar_n=1 ar_ms=0.1
+ARC_P66_EXEC pid=930 tok=4 dm=0 cg=FULL prep_ms=4.0 st_ms=0.1 disp_ms=0.1 pin_ms=0.0 meta_ms=1.9 res_ms=0.7 fwd_ms=26.8 post_ms=0.0 total_ms=30.7 ar_n=1 ar_ms=0.1
+ARC_P66_WRK_EXEC pid=1030 ms=30.9
+ARC_P66_WRK_EXEC pid=930 ms=30.9
+ARC_P66_WAIT pid=698 tok=4 wait_ms=41.9 ts=42.4
+ARC_P66_STEP pid=698 wall=42.5 out=1 exec=1
+ARC_P66_SCHED pid=698 tok=4 sched_ms=0.1 ts=0.2
+ARC_P66_SAMPLE pid=1030 sample_ms=11.4
+ARC_P66_SAMPLE pid=930 sample_ms=11.4
+ARC_P66_WRK_SAMPLE pid=1030 ms=11.5
+ARC_P66_WRK_SAMPLE pid=930 ms=11.5
+ARC_P66_EXEC pid=1030 tok=4 dm=0 cg=FULL prep_ms=3.9 st_ms=0.1 disp_ms=0.1 pin_ms=0.0 meta_ms=1.8 res_ms=0.7 fwd_ms=26.8 post_ms=0.0 total_ms=30.7 ar_n=1 ar_ms=0.1
+ARC_P66_EXEC pid=930 tok=4 dm=0 cg=FULL prep_ms=3.9 st_ms=0.1 disp_ms=0.1 pin_ms=0.0 meta_ms=1.9 res_ms=0.7 fwd_ms=26.8 post_ms=0.0 total_ms=30.7 ar_n=1 ar_ms=0.1
+ARC_P66_WRK_EXEC pid=1030 ms=30.9
+ARC_P66_WRK_EXEC pid=930 ms=30.9
+ARC_P66_WAIT pid=698 tok=4 wait_ms=41.9 ts=42.4
+ARC_P66_STEP pid=698 wall=42.5 out=1 exec=1
+ARC_P66_SCHED pid=698 tok=0 sched_ms=0.0 ts=0.1
+ARC_P66_SAMPLE pid=1030 sample_ms=11.4
+ARC_P66_SAMPLE pid=930 sample_ms=11.4
+ARC_P66_WRK_SAMPLE pid=1030 ms=11.5
+ARC_P66_WRK_SAMPLE pid=930 ms=11.5
+ARC_P66_WRK_EXEC pid=1030 ms=0.2
+ARC_P66_WRK_EXEC pid=930 ms=0.2
+ARC_P66_WAIT pid=698 tok=4 wait_ms=42.1 ts=42.4
+ARC_P66_STEP pid=698 wall=42.6 out=1 exec=0
+ARC_P66_SCHED pid=698 tok=0 sched_ms=0.0 ts=0.1
+ARC_P66_WAIT pid=698 tok=0 wait_ms=0.1 ts=0.3
+ARC_P66_STEP pid=698 wall=0.4 out=1 exec=0
+ARC_P66_WRK_EXEC pid=1030 ms=0.2
+ARC_P66_WRK_EXEC pid=930 ms=0.2
+ARC_P66_WAIT pid=698 tok=0 wait_ms=0.2 ts=0.2
+ARC_P66_STEP pid=698 wall=0.3 out=1 exec=0
