@@ -1,0 +1,73 @@
+baseline external: queries=0.0 hits=0.0
+1-STORE (cold compute + store): wall=11.15s prompt=8021 completion=16 cached=None
+after STORE: queries=16315.0 (+16315.0) hits=0.0 (+0.0)
+2-EVICT: churning 64 distinct ~7.3k prompts (LRU-evict P)
+  churn[0]: wall=4.04s prompt=7365 completion=8 cached=None
+  churn[1]: wall=3.52s prompt=7365 completion=8 cached=None
+  churn[2]: wall=3.51s prompt=7365 completion=8 cached=None
+  churn[3]: wall=3.48s prompt=7365 completion=8 cached=None
+  churn[4]: wall=3.48s prompt=7365 completion=8 cached=None
+  churn[5]: wall=3.52s prompt=7365 completion=8 cached=None
+  churn[6]: wall=3.50s prompt=7365 completion=8 cached=None
+  churn[7]: wall=3.53s prompt=7365 completion=8 cached=None
+  churn[8]: wall=3.49s prompt=7365 completion=8 cached=None
+  churn[9]: wall=3.49s prompt=7365 completion=8 cached=None
+  churn[10]: wall=3.54s prompt=7426 completion=8 cached=None
+  churn[11]: wall=3.54s prompt=7426 completion=8 cached=None
+  churn[12]: wall=3.54s prompt=7426 completion=8 cached=None
+  churn[13]: wall=3.55s prompt=7426 completion=8 cached=None
+  churn[14]: wall=3.54s prompt=7426 completion=8 cached=None
+  churn[15]: wall=3.54s prompt=7426 completion=8 cached=None
+  churn[16]: wall=3.54s prompt=7426 completion=8 cached=None
+  churn[17]: wall=3.55s prompt=7426 completion=8 cached=None
+  churn[18]: wall=3.56s prompt=7426 completion=8 cached=None
+  churn[19]: wall=3.56s prompt=7426 completion=8 cached=None
+  churn[20]: wall=3.55s prompt=7426 completion=8 cached=None
+  churn[21]: wall=3.56s prompt=7426 completion=8 cached=None
+  churn[22]: wall=3.54s prompt=7426 completion=8 cached=None
+  churn[23]: wall=3.56s prompt=7426 completion=8 cached=None
+  churn[24]: wall=3.51s prompt=7426 completion=8 cached=None
+  churn[25]: wall=3.55s prompt=7426 completion=8 cached=None
+  churn[26]: wall=3.57s prompt=7426 completion=8 cached=None
+  churn[27]: wall=3.56s prompt=7426 completion=8 cached=None
+  churn[28]: wall=3.54s prompt=7426 completion=8 cached=None
+  churn[29]: wall=3.55s prompt=7426 completion=8 cached=None
+  churn[30]: wall=3.55s prompt=7426 completion=8 cached=None
+  churn[31]: wall=3.58s prompt=7426 completion=8 cached=None
+  churn[32]: wall=3.55s prompt=7426 completion=8 cached=None
+  churn[33]: wall=3.54s prompt=7426 completion=8 cached=None
+  churn[34]: wall=3.54s prompt=7426 completion=8 cached=None
+  churn[35]: wall=3.56s prompt=7426 completion=8 cached=None
+  churn[36]: wall=3.55s prompt=7426 completion=8 cached=None
+  churn[37]: wall=3.56s prompt=7426 completion=8 cached=None
+  churn[38]: wall=3.55s prompt=7426 completion=8 cached=None
+  churn[39]: wall=3.54s prompt=7426 completion=8 cached=None
+  churn[40]: wall=3.54s prompt=7426 completion=8 cached=None
+  churn[41]: wall=3.54s prompt=7426 completion=8 cached=None
+  churn[42]: wall=3.55s prompt=7426 completion=8 cached=None
+  churn[43]: wall=3.56s prompt=7426 completion=8 cached=None
+  churn[44]: wall=3.56s prompt=7426 completion=8 cached=None
+  churn[45]: wall=3.54s prompt=7426 completion=8 cached=None
+  churn[46]: wall=3.54s prompt=7426 completion=8 cached=None
+  churn[47]: wall=3.55s prompt=7426 completion=8 cached=None
+  churn[48]: wall=3.50s prompt=7426 completion=8 cached=None
+  churn[49]: wall=3.55s prompt=7426 completion=8 cached=None
+  churn[50]: wall=3.56s prompt=7426 completion=8 cached=None
+  churn[51]: wall=3.54s prompt=7426 completion=8 cached=None
+  churn[52]: wall=3.56s prompt=7426 completion=8 cached=None
+  churn[53]: wall=3.57s prompt=7426 completion=8 cached=None
+  churn[54]: wall=3.56s prompt=7426 completion=8 cached=None
+  churn[55]: wall=3.55s prompt=7426 completion=8 cached=None
+  churn[56]: wall=3.56s prompt=7426 completion=8 cached=None
+  churn[57]: wall=3.54s prompt=7426 completion=8 cached=None
+  churn[58]: wall=3.56s prompt=7426 completion=8 cached=None
+  churn[59]: wall=3.56s prompt=7426 completion=8 cached=None
+  churn[60]: wall=3.55s prompt=7426 completion=8 cached=None
+  churn[61]: wall=3.55s prompt=7426 completion=8 cached=None
+  churn[62]: wall=3.55s prompt=7426 completion=8 cached=None
+  churn[63]: wall=3.55s prompt=7426 completion=8 cached=None
+churn done in 227s
+after EVICT: queries=490969.0 (+474654.0) hits=0.0 (+0.0)
+3-RETRIEVE (identical P after eviction): wall=1.68s prompt=8021 completion=16 cached=None
+after RETRIEVE: queries=498990.0 (+8021.0) hits=6656.0 (+6656.0)
+VERDICT: EXTERNAL_RETRIEVAL_WORKS

@@ -1,0 +1,8 @@
+[arc-graph-trace2 06:45:00] pre-gates: image present, harness present
+[arc-graph-trace2 06:45:00] boot: serve qwen3.8-27b-fp8 TP2 (graph=1 spec=0 lmc=0)
+ARC_TRACE: passing ARC_TRACE_FLIP=1
+ARC_CONTAINER_FRESH image=vllm-arc:v0.30.0-b70-p12b id=efd14b88388c (recreated from 171654f579a6)
+64d09c2fbff9cbad99dfb27b73296d94b8e9b2332a1ede986d4f60e14a73dd4a
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-p12b name=arc-test graph=1 spec=0 gmu=0.8 mnbt=8192 seqs=64 xgc=0 port=8000 06:45:05
+[arc-graph-trace2 06:45:05] waiting for engine health (max 30 min)
+[arc-graph-trace2 FAIL] boot death — engine log (full copy: /root/build/legs/arc-graph-trace2-20261028-064500/serve_death.log):

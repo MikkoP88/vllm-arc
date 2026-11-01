@@ -1,0 +1,61 @@
+BUILD context staged: 421M, fork_sha=38cf63f89450315737dd5ac30ff231cfc52c2994
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 7.01kB done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/vllm-iexperimental:base-v0.26.0
+#2 DONE 0.0s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [oneapi-base 1/1] FROM docker.io/library/vllm-iexperimental:base-v0.26.0@sha256:96a857cfc0551c06a66cd3c374bfa2e876fd64b81196562848fe3c7ba0ce028b
+#4 resolve docker.io/library/vllm-iexperimental:base-v0.26.0@sha256:96a857cfc0551c06a66cd3c374bfa2e876fd64b81196562848fe3c7ba0ce028b 0.0s done
+#4 DONE 0.0s
+
+#5 [internal] load build context
+#5 transferring context: 413.81MB 3.8s done
+#5 DONE 3.8s
+
+#6 [vllm-arc 2/9] COPY pins.md5 /etc/vllm-arc/pins.md5
+#6 CACHED
+
+#7 [vllm-arc 4/9] RUN set -euxo pipefail;     bash /usr/local/bin/wheel_guard.sh /etc/vllm-arc/pins.md5 /wheels/arc;     pip uninstall -y vllm triton-xpu vllm-xpu-kernels lmcache;     pip install         /wheels/arc/vllm-0.30.0+xpu-cp38-abi3-manylinux_2_34_x86_64.whl         /wheels/arc/triton-3.7.2+xpu-py3-none-any.whl         "torch==2.13.0"         "torchvision==0.28.0+xpu"         /wheels/arc/vllm_xpu_kernels-0.1.14.1+arc3-cp312-cp312-linux_x86_64.whl         "xgrammar==0.2.8";     pip install --no-deps /wheels/arc/lmcache-0.5.5+arc1-*.whl;     pip install "msgspec" "numpy<=2.2.6" "numba" "nvtx"         "opentelemetry-api>=1.20.0,<=1.40.0" "opentelemetry-sdk>=1.20.0"         "opentelemetry-exporter-otlp>=1.20.0"         "opentelemetry-exporter-prometheus>=0.50b0,<=0.61b0"         "prometheus_client>=0.18.0,<=0.24.1" "psutil" "py-cpuinfo"
+#7 CACHED
+
+#8 [vllm-arc 6/9] COPY src/ /build/vllm-arc/
+#8 CACHED
+
+#9 [vllm-arc 1/9] COPY wheels/ /wheels/arc/
+#9 CACHED
+
+#10 [vllm-arc 7/9] RUN set -euxo pipefail;     pip install /build/vllm-arc;     pip freeze > /opt/vllm-arc-v0.30.0.constraints.txt;     pip check || true
+#10 CACHED
+
+#11 [vllm-arc 3/9] COPY tools/wheel_guard.sh /usr/local/bin/wheel_guard.sh
+#11 CACHED
+
+#12 [vllm-arc 5/9] RUN set -euxo pipefail; pip install "aiofile" "redis"
+#12 CACHED
+
+#13 [vllm-arc 8/9] RUN set -euxo pipefail;     python -c "import vllm, torch; assert vllm.__version__ == '0.30.0', vllm.__version__; assert torch.__version__.startswith('2.13.0'), torch.__version__";     python -c "import triton; assert triton.__version__.startswith('3.7.2'), triton.__version__";     python -c "import vllm_gaudi; print('PLUGIN_IMPORT_OK')";     python -c "from importlib.metadata import entry_points; eps = {e.name: e.value for e in entry_points(group='vllm.platform_plugins')}; assert eps.get('arc') == 'vllm_gaudi.xpu:register', eps; print('ARC_ENTRYPOINT_OK')";     python -c "import vllm; from vllm.platforms import current_platform; print('PLATFORM_RESOLVE_OK', type(current_platform).__name__)";     python -c "from vllm_gaudi.xpu.platform import ArcXpuPlatform, is_xe2_arch; print('ARC_PLATFORM_IMPORT_OK')";     python -c "import vllm_xpu_kernels; from importlib.metadata import version; v = version('vllm-xpu-kernels'); assert '+arc3' in v, v; print('VXK_ARC3_PIN_OK', v)";     python -c "import lmcache, lmcache.xpu_ops; from importlib.metadata import version; v = version('lmcache'); assert v == '0.5.5+arc1', v; print('LMCACHE_ARC1_PIN_OK', v)";     python -c "import aiofile, caio, redis; print('LMCACHE_RUNTIME_DEPS_OK')"
+#13 CACHED
+
+#14 [vllm-arc 9/9] RUN set -euxo pipefail;     { echo "image=vllm-arc:v0.30.0-b70";       echo "fork_sha=38cf63f89450315737dd5ac30ff231cfc52c2994";       echo "build_host=REDACTED-HOST";       echo "base_image=vllm-iexperimental:base-v0.26.0";       echo "vllm_core=0.30.0+xpu $(md5sum /wheels/arc/vllm-0.30.0+xpu-*.whl)";       echo "triton=3.7.2+xpu $(md5sum /wheels/arc/triton-3.7.2+xpu-*.whl)";       echo "vxk=0.1.14.1+arc3 (int64 wedge fix, §6) $(md5sum /wheels/arc/vllm_xpu_kernels-0.1.14.1+arc3-*.whl)";       echo "lmcache=0.5.5+arc1 (SYCL XPU build + C 3-file delta, external_patches/lmcache) $(md5sum /wheels/arc/lmcache-0.5.5+arc1-*.whl)";       echo "lmcache_closure=aiofile redis (Requires-Dist; gds_backend.py:19 module-level import, r42 fix)";       echo "stack_freeze=/etc/vllm-arc/venv-freeze.txt";       echo "dpcpp=none (esimd-build stage lands at P2, plan §8)";       echo "built=$(date -u +%Y-%m-%dT%H:%M:%SZ)";     } > /etc/vllm-arc/IMAGE_MANIFEST;     cp /opt/vllm-arc-v0.30.0.constraints.txt /etc/vllm-arc/venv-freeze.txt;     cat /etc/vllm-arc/IMAGE_MANIFEST
+#14 CACHED
+
+#15 exporting to image
+#15 exporting layers
+#15 exporting layers 612.3s done
+#15 exporting manifest sha256:58946af167a1de4a16e577ad1829c204bc0da505148f62cf963a0919db4580ba done
+#15 exporting config sha256:49ca1f1402ad7d8fdc97617685782db6511f24cdb1b3eb431d14453ef7df80cf done
+#15 exporting attestation manifest sha256:827e89003abb067011162b4ba29e46f2505a76075aa03fb3cbab907bf56ac476 done
+#15 exporting manifest list sha256:209cba3070e884959f29daca1db80e77b5826fcba54c22e3980babd896d7ed21 done
+#15 naming to docker.io/library/vllm-arc:v0.30.0-b70-p47 done
+#15 unpacking to docker.io/library/vllm-arc:v0.30.0-b70-p47
+#15 unpacking to docker.io/library/vllm-arc:v0.30.0-b70-p47 118.9s done
+#15 DONE 731.2s
+BUILD done: vllm-arc:v0.30.0-b70-p47 (fork 38cf63f89450315737dd5ac30ff231cfc52c2994)
