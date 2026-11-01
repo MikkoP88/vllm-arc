@@ -7,8 +7,10 @@ definitions and hardware in [`TESTING-arc.md`](TESTING-arc.md)).
 
 1. **Measurement methodology** — defines every face, the protocol laws,
    the two prefix-cache tiers, and the provenance rule. Read it first.
-2. **Current record** — cert4-native only (`vllm-arc:v0.30.0-b70-cert4`),
-   plus the current-era analyses (prefill anatomy, op-class trace).
+2. **Current record** — cert4-native only (`vllm-arc:v0.30.0-b70-cert4`;
+   byte-identical default posture on cert5, re-verified in-family at the
+   cert5 gates), plus the current-era analyses (prefill anatomy, op-class
+   trace).
 3. **History** — every pre-cert4 measurement, labeled by image, kept as
    the decision record (k-depth, load shape, soak). History numbers are
    never mixed into current-record tables (comparator law).
@@ -30,7 +32,7 @@ current-record tables.
 | Layer | Identity |
 |---|---|
 | Hardware | dual Intel Arc Pro B70 (48 GB each), TP2, one card per socket (`ZE_AFFINITY_MASK=0,1`) |
-| Engine image | `vllm-arc:v0.30.0-b70-cert4` — tag `rel/v0.30.0-b70-cert4`, commit `b5df28b5`, image digest `0c25a4f747af`, `IMAGE_MANIFEST.fork_sha` verified at build (p65 Gate B) |
+| Engine image | **current**: `vllm-arc:v0.30.0-b70-cert5` — tag `rel/v0.30.0-b70-cert5`, commit `3e268627`, image ID head `6413d8aeec8a`, `IMAGE_MANIFEST.fork_sha` verified at build (cert5 gate). Default posture byte-identical to the record image `vllm-arc:v0.30.0-b70-cert4` — tag `rel/v0.30.0-b70-cert4`, commit `b5df28b5`, digest `0c25a4f747af` (all record numbers below are cert4-native; cert5 re-verified the default-posture faces in-family: run7n t0 297.19/84.48, t1.0 189.41/62.35, integrity 5/5 + det 3/3, WARN class-set identical — `results/2026-11-01-p65-cert5/`) |
 | Wheels | md5-pinned at build (`tools/wheel_guard.sh`, 4 pins: vllm/triton/vxk/lmcache 0.5.6+arc1) |
 | Serve line | the certified 25-var env chain + CLI ([`CONFIGURATION-arc.md`](CONFIGURATION-arc.md)): MTP k3, `mode:none`, FULL_DECODE_ONLY graphs (85 capture sizes, 1–320), MNBT 8192, LMCacheConnectorV1 `kv_both` |
 | r70 campaign (the comprehensive cert4 measurement) | 3 fresh boots on the one image — greedy+sweep leg (a), no-spec leg (b), soak leg (c) — evidence `results/2026-10-31-p70-r70-cert4-comprehensive/` |
@@ -92,18 +94,24 @@ accepted/drafts + 1** (the +1 bonus token). Windows are counter deltas
 snapshotted before/after each battery, so each face's acceptance covers
 that face's traffic only.
 
-## Current certified image — cert4 (`rel/v0.30.0-b70-cert4`): the current record
+## Current certified image — cert5 (`rel/v0.30.0-b70-cert5`): current release; record measured cert4-native (identical default posture)
 
-**Every number below was measured natively on the cert4 image** — the
-r70 comprehensive campaign (2026-10-31, 3 fresh boots) plus the p65/r67
-certification legs; per-face evidence in the right column. **cert4 is
-both the LATEST and the FASTEST certified image** — nothing validated
-beats it (the two faster-on-paper postures are rejected: k5-depth
-owner-dropped — its greedy edge inverts under sampling; compile —
-Appendix H law #1 acceptance gate, p67). Identity: tag commit
-`b5df28b5`; default posture = cert3's engine byte-identical (the P6.5
-deferral is opt-in and inert without its envs); how to run: the 25-var
-chain in [`CONFIGURATION-arc.md`](CONFIGURATION-arc.md).
+**Current release = cert5** (tag commit `3e268627`; adds only the P6.13
+sliced-store hunk, `LMC_STORE_SLICE_TOKENS`, **default-OFF** — the
+default posture is cert4's engine byte-identical, proven at the cert5
+gates: SLICE_ENV_ABSENT=0, run7n both temperatures in-family, integrity
+5/5 + determinism 3/3, WARN class-set identical —
+`results/2026-11-01-p65-cert5/`). **Every record number below was
+measured natively on the cert4 image** — the r70 comprehensive campaign
+(2026-10-31, 3 fresh boots) plus the p65/r67 certification legs;
+per-face evidence in the right column. Nothing validated beats the
+certified default (the two faster-on-paper postures are rejected:
+k5-depth owner-dropped — its greedy edge inverts under sampling;
+compile — Appendix H law #1 acceptance gate, p67). The opt-in slice
+profile (experimental, P6.13) is NOT part of the certified default; its
+cert5-native face: U64k TTFT 50.77 s (cert4 51.95), W_U64k_start max
+1602 vs 1997 ms. How to run: the 25-var chain in
+[`CONFIGURATION-arc.md`](CONFIGURATION-arc.md).
 
 ### Throughput — greedy t0, thinking off (chat battery)
 
@@ -331,7 +339,8 @@ governs.
 | `v0.30.0-b70-cert2` | `rel/v0.30.0-b70-cert2` | 0.5.5-era lmcache wheel line | superseded — valid, older lmcache line |
 | `v0.30.0-b70-p46` / `-p47` / `-p48` | — (campaign tags) | r46t depth campaign; r46v build validation; r47c 0.5.6+arc1 gates | campaign lineage, not releases |
 | `v0.30.0-b70-cert3` | `rel/v0.30.0-b70-cert3` | P6 close-out engine (identical default behavior to cert4) | superseded by cert4 |
-| `v0.30.0-b70-cert4` | `rel/v0.30.0-b70-cert4` | cert3 engine + P6.5 opt-in long-context deferral | **current — the record above** |
+| `v0.30.0-b70-cert4` | `rel/v0.30.0-b70-cert4` | cert3 engine + P6.5 opt-in long-context deferral | superseded by cert5 — **the record above is cert4-native** (default posture byte-identical on cert5) |
+| `v0.30.0-b70-cert5` | `rel/v0.30.0-b70-cert5` | cert4 engine + P6.13 default-OFF sliced-store hunk (`LMC_STORE_SLICE_TOKENS`, experimental opt-in profile) | **current release** |
 
 ### Depth-selection faces (cert-era images — the k3/k4/k5 greedy record)
 
