@@ -1,0 +1,7 @@
+=== [1] image-native verify (throwaway GPU container) ===
+
+TOTAL 26 checks, 25 pass, 1 fail
+  FAIL: r43 twohs wrap composed into re-pin
+P48_VERIFY: FAILURES_PRESENT
+=== [2] certified serve boot from p48 (k3, graphs, 25-var chain) ===
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-p48 name=arc-test graph=1 spec=3 gmu=0.8 mnbt=8192 seqs=64 xgc=0 port=8000 21:50:52

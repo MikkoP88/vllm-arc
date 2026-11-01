@@ -1,0 +1,319 @@
+[06:38:51] === r46 soak start (8h gate) ===
+arc-test
+[06:38:52] recreating arc-test from vllm-arc:v0.30.0-b70-p46
+7432a0fa4f4373b4cf8f68acad0cd772501e4513fa0f383fcd72e7c0a7ba9488
+[06:38:52] serve launched; polling health (death-watch)
+[06:43:56] HEALTHY
+hooks OK: 18  FAILED: 0
+reroute ACTIVE: 4  kvfmt TWO_HS: 0
+[06:43:56] --- pre-soak: survival flip (FIRST traffic) ---
+large-first: HTTP 200
+[06:44:03] --- pre-soak: spec gate ---
+[06:44:07] --- pre-soak: golden compare vs banked ref ---
+[06:44:14] --- pre-soak: integrity ---
+[06:45:16] pre-soak battery done; starting 8h window
+[06:45:16] --- cycle 1 (t+0s of 28800s) ---
+[06:45:16] c1 run7n
+[06:45:28] c1 longctx
+[06:45:59] c1 prefix/churn
+[06:52:10] c1 integrity probe
+[06:53:51] c1 health=200; idle 180s
+[06:56:51] --- cycle 2 (t+695s of 28800s) ---
+[06:56:51] c2 run7n
+[06:57:03] c2 longctx
+[06:57:35] c2 prefix/churn
+[07:03:22] c2 integrity probe
+[07:04:23] c2 health=200; idle 180s
+[07:07:23] --- cycle 3 (t+1327s of 28800s) ---
+[07:07:23] c3 run7n
+[07:07:35] c3 longctx
+[07:08:07] c3 prefix/churn
+[07:13:56] c3 integrity probe
+[07:14:58] c3 health=200; idle 180s
+[07:17:58] --- cycle 4 (t+1962s of 28800s) ---
+[07:17:58] c4 run7n
+[07:18:09] c4 longctx
+[07:18:41] c4 prefix/churn
+[07:24:28] c4 integrity probe
+[07:25:29] c4 health=200; idle 180s
+[07:28:30] --- cycle 5 (t+2593s of 28800s) ---
+[07:28:30] c5 run7n
+[07:28:42] c5 longctx
+[07:29:13] c5 prefix/churn
+[07:35:00] c5 integrity probe
+[07:36:02] c5 health=200; idle 180s
+[07:39:02] --- cycle 6 (t+3226s of 28800s) ---
+[07:39:02] c6 run7n
+[07:39:14] c6 longctx
+[07:39:45] c6 prefix/churn
+[07:45:32] c6 integrity probe
+[07:46:33] c6 health=200; idle 180s
+[07:49:33] --- cycle 7 (t+3857s of 28800s) ---
+[07:49:33] c7 run7n
+[07:49:45] c7 longctx
+[07:50:17] c7 prefix/churn
+[07:56:04] c7 integrity probe
+[07:57:06] c7 health=200; idle 180s
+[08:00:06] --- cycle 8 (t+4490s of 28800s) ---
+[08:00:06] c8 run7n
+[08:00:18] c8 longctx
+[08:00:49] c8 prefix/churn
+[08:06:37] c8 integrity probe
+[08:07:39] c8 health=200; idle 180s
+[08:10:39] --- cycle 9 (t+5123s of 28800s) ---
+[08:10:39] c9 run7n
+[08:10:51] c9 longctx
+[08:11:22] c9 prefix/churn
+[08:17:09] c9 integrity probe
+[08:18:11] c9 health=200; idle 180s
+[08:21:11] --- cycle 10 (t+5755s of 28800s) ---
+[08:21:11] c10 run7n
+[08:21:23] c10 longctx
+[08:21:54] c10 prefix/churn
+[08:27:41] c10 integrity probe
+[08:28:43] c10 health=200; idle 180s
+[08:31:43] --- cycle 11 (t+6387s of 28800s) ---
+[08:31:43] c11 run7n
+[08:31:55] c11 longctx
+[08:32:26] c11 prefix/churn
+[08:38:14] c11 integrity probe
+[08:39:15] c11 health=200; idle 180s
+[08:42:15] --- cycle 12 (t+7019s of 28800s) ---
+[08:42:15] c12 run7n
+[08:42:27] c12 longctx
+[08:42:58] c12 prefix/churn
+[08:48:46] c12 integrity probe
+[08:49:48] c12 health=200; idle 180s
+[08:52:48] --- cycle 13 (t+7652s of 28800s) ---
+[08:52:48] c13 run7n
+[08:53:00] c13 longctx
+[08:53:31] c13 prefix/churn
+[08:59:19] c13 integrity probe
+[09:00:21] c13 health=200; idle 180s
+[09:03:21] --- cycle 14 (t+8285s of 28800s) ---
+[09:03:21] c14 run7n
+[09:03:33] c14 longctx
+[09:04:04] c14 prefix/churn
+[09:09:52] c14 integrity probe
+[09:10:53] c14 health=200; idle 180s
+[09:13:53] --- cycle 15 (t+8917s of 28800s) ---
+[09:13:53] c15 run7n
+[09:14:05] c15 longctx
+[09:14:37] c15 prefix/churn
+[09:20:25] c15 integrity probe
+[09:21:27] c15 health=200; idle 180s
+[09:24:27] --- cycle 16 (t+9551s of 28800s) ---
+[09:24:27] c16 run7n
+[09:24:39] c16 longctx
+[09:25:10] c16 prefix/churn
+[09:30:57] c16 integrity probe
+[09:31:59] c16 health=200; idle 180s
+[09:34:59] --- cycle 17 (t+10183s of 28800s) ---
+[09:34:59] c17 run7n
+[09:35:11] c17 longctx
+[09:35:42] c17 prefix/churn
+[09:41:30] c17 integrity probe
+[09:42:31] c17 health=200; idle 180s
+[09:45:31] --- cycle 18 (t+10815s of 28800s) ---
+[09:45:31] c18 run7n
+[09:45:43] c18 longctx
+[09:46:15] c18 prefix/churn
+[09:52:03] c18 integrity probe
+[09:53:04] c18 health=200; idle 180s
+[09:56:04] --- cycle 19 (t+11448s of 28800s) ---
+[09:56:04] c19 run7n
+[09:56:16] c19 longctx
+[09:56:47] c19 prefix/churn
+[10:02:35] c19 integrity probe
+[10:03:37] c19 health=200; idle 180s
+[10:06:37] --- cycle 20 (t+12081s of 28800s) ---
+[10:06:37] c20 run7n
+[10:06:49] c20 longctx
+[10:07:20] c20 prefix/churn
+[10:13:08] c20 integrity probe
+[10:14:10] c20 health=200; idle 180s
+[10:17:10] --- cycle 21 (t+12714s of 28800s) ---
+[10:17:10] c21 run7n
+[10:17:22] c21 longctx
+[10:17:53] c21 prefix/churn
+[10:23:40] c21 integrity probe
+[10:24:42] c21 health=200; idle 180s
+[10:27:42] --- cycle 22 (t+13346s of 28800s) ---
+[10:27:42] c22 run7n
+[10:27:54] c22 longctx
+[10:28:25] c22 prefix/churn
+[10:34:13] c22 integrity probe
+[10:35:14] c22 health=200; idle 180s
+[10:38:14] --- cycle 23 (t+13978s of 28800s) ---
+[10:38:14] c23 run7n
+[10:38:26] c23 longctx
+[10:38:57] c23 prefix/churn
+[10:44:46] c23 integrity probe
+[10:45:47] c23 health=200; idle 180s
+[10:48:47] --- cycle 24 (t+14611s of 28800s) ---
+[10:48:47] c24 run7n
+[10:48:59] c24 longctx
+[10:49:31] c24 prefix/churn
+[10:55:19] c24 integrity probe
+[10:56:20] c24 health=200; idle 180s
+[10:59:20] --- cycle 25 (t+15244s of 28800s) ---
+[10:59:20] c25 run7n
+[10:59:32] c25 longctx
+[11:00:03] c25 prefix/churn
+[11:05:50] c25 integrity probe
+[11:06:52] c25 health=200; idle 180s
+[11:09:52] --- cycle 26 (t+15876s of 28800s) ---
+[11:09:52] c26 run7n
+[11:10:04] c26 longctx
+[11:10:35] c26 prefix/churn
+[11:16:23] c26 integrity probe
+[11:17:25] c26 health=200; idle 180s
+[11:20:25] --- cycle 27 (t+16509s of 28800s) ---
+[11:20:25] c27 run7n
+[11:20:37] c27 longctx
+[11:21:08] c27 prefix/churn
+[11:26:56] c27 integrity probe
+[11:27:57] c27 health=200; idle 180s
+[11:30:57] --- cycle 28 (t+17141s of 28800s) ---
+[11:30:58] c28 run7n
+[11:31:09] c28 longctx
+[11:31:41] c28 prefix/churn
+[11:37:28] c28 integrity probe
+[11:38:30] c28 health=200; idle 180s
+[11:41:30] --- cycle 29 (t+17774s of 28800s) ---
+[11:41:30] c29 run7n
+[11:41:42] c29 longctx
+[11:42:13] c29 prefix/churn
+[11:48:01] c29 integrity probe
+[11:49:03] c29 health=200; idle 180s
+[11:52:03] --- cycle 30 (t+18407s of 28800s) ---
+[11:52:03] c30 run7n
+[11:52:15] c30 longctx
+[11:52:46] c30 prefix/churn
+[11:58:33] c30 integrity probe
+[11:59:35] c30 health=200; idle 180s
+[12:02:35] --- cycle 31 (t+19039s of 28800s) ---
+[12:02:35] c31 run7n
+[12:02:47] c31 longctx
+[12:03:18] c31 prefix/churn
+[12:09:06] c31 integrity probe
+[12:10:08] c31 health=200; idle 180s
+[12:13:08] --- cycle 32 (t+19672s of 28800s) ---
+[12:13:08] c32 run7n
+[12:13:20] c32 longctx
+[12:13:51] c32 prefix/churn
+[12:19:38] c32 integrity probe
+[12:20:40] c32 health=200; idle 180s
+[12:23:40] --- cycle 33 (t+20304s of 28800s) ---
+[12:23:40] c33 run7n
+[12:23:52] c33 longctx
+[12:24:23] c33 prefix/churn
+[12:30:11] c33 integrity probe
+[12:31:13] c33 health=200; idle 180s
+[12:34:13] --- cycle 34 (t+20937s of 28800s) ---
+[12:34:13] c34 run7n
+[12:34:25] c34 longctx
+[12:34:56] c34 prefix/churn
+[12:40:43] c34 integrity probe
+[12:41:44] c34 health=200; idle 180s
+[12:44:44] --- cycle 35 (t+21568s of 28800s) ---
+[12:44:44] c35 run7n
+[12:44:56] c35 longctx
+[12:45:27] c35 prefix/churn
+[12:51:15] c35 integrity probe
+[12:52:17] c35 health=200; idle 180s
+[12:55:17] --- cycle 36 (t+22201s of 28800s) ---
+[12:55:17] c36 run7n
+[12:55:29] c36 longctx
+[12:56:00] c36 prefix/churn
+[13:01:48] c36 integrity probe
+[13:02:50] c36 health=200; idle 180s
+[13:05:50] --- cycle 37 (t+22834s of 28800s) ---
+[13:05:50] c37 run7n
+[13:06:02] c37 longctx
+[13:06:33] c37 prefix/churn
+[13:12:20] c37 integrity probe
+[13:13:22] c37 health=200; idle 180s
+[13:16:22] --- cycle 38 (t+23466s of 28800s) ---
+[13:16:22] c38 run7n
+[13:16:34] c38 longctx
+[13:17:05] c38 prefix/churn
+[13:22:52] c38 integrity probe
+[13:23:54] c38 health=200; idle 180s
+[13:26:54] --- cycle 39 (t+24098s of 28800s) ---
+[13:26:54] c39 run7n
+[13:27:06] c39 longctx
+[13:27:37] c39 prefix/churn
+[13:33:24] c39 integrity probe
+[13:34:25] c39 health=200; idle 180s
+[13:37:25] --- cycle 40 (t+24729s of 28800s) ---
+[13:37:25] c40 run7n
+[13:37:37] c40 longctx
+[13:38:08] c40 prefix/churn
+[13:43:56] c40 integrity probe
+[13:44:57] c40 health=200; idle 180s
+[13:47:57] --- cycle 41 (t+25361s of 28800s) ---
+[13:47:57] c41 run7n
+[13:48:09] c41 longctx
+[13:48:40] c41 prefix/churn
+[13:54:27] c41 integrity probe
+[13:55:29] c41 health=200; idle 180s
+[13:58:29] --- cycle 42 (t+25993s of 28800s) ---
+[13:58:29] c42 run7n
+[13:58:41] c42 longctx
+[13:59:12] c42 prefix/churn
+[14:05:00] c42 integrity probe
+[14:06:02] c42 health=200; idle 180s
+[14:09:02] --- cycle 43 (t+26626s of 28800s) ---
+[14:09:02] c43 run7n
+[14:09:14] c43 longctx
+[14:09:45] c43 prefix/churn
+[14:15:33] c43 integrity probe
+[14:16:35] c43 health=200; idle 180s
+[14:19:35] --- cycle 44 (t+27259s of 28800s) ---
+[14:19:35] c44 run7n
+[14:19:47] c44 longctx
+[14:20:18] c44 prefix/churn
+[14:26:06] c44 integrity probe
+[14:27:08] c44 health=200; idle 180s
+[14:30:08] --- cycle 45 (t+27892s of 28800s) ---
+[14:30:08] c45 run7n
+[14:30:20] c45 longctx
+[14:30:51] c45 prefix/churn
+[14:36:39] c45 integrity probe
+[14:37:40] c45 health=200; idle 180s
+[14:40:40] --- cycle 46 (t+28524s of 28800s) ---
+[14:40:40] c46 run7n
+[14:40:52] c46 longctx
+[14:41:23] c46 prefix/churn
+[14:47:10] c46 integrity probe
+[14:48:12] c46 health=200; idle 180s
+[14:51:12] soak window closed: 29156s elapsed, 46 cycles
+[14:51:12] --- final: golden drift (vs banked ref) ---
+[14:51:19] --- final: spec gate ---
+[14:51:22] --- final: integrity ---
+=== r46 SOAK SUMMARY Fri Oct 30 02:52:06 PM UTC 2026 ===
+window_seconds=29156 (gate 28800) cycles=46
+error_blocks=0
+0 (gate 0)  [errors.log]
+integrity probes: PASS=46 FAIL=0
+0 (gate 0 fail)
+final golden: [golden] len=4096 match GOLDEN_PASS: 5/5 identical (zero drift) 
+final spec pos1: pos1=0.8919
+health end-state: 200
+[14:52:06] --- restoring W14 incumbent ---
+[14:53:00] w14 poll1: 000
+[14:53:30] w14 poll2: 000
+[14:54:00] w14 poll3: 000
+[14:54:30] w14 poll4: 000
+[14:55:00] w14 poll5: 000
+[14:55:30] w14 poll6: 000
+[14:56:00] w14 poll7: 000
+[14:56:30] w14 poll8: 000
+[14:57:00] w14 poll9: 000
+[14:57:30] w14 poll10: 000
+[14:58:00] w14 poll11: 000
+[14:58:30] w14 poll12: 000
+[14:59:00] w14 poll13: 000
+[14:59:30] W14 health 200 (poll 14)
+[14:59:30] === r46 soak driver done ===

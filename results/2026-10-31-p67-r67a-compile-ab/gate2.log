@@ -1,0 +1,31 @@
+1
+gpu_worker_xpu.py: 1-line activities patch ready
+serve prof variant written (flags + mount)
+1
+1
+=== [1] boot cert4 stock + profiler flags + activities mount ===
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert4 name=arc-test graph=1 spec=3 gmu=0.8 mnbt=8192 seqs=64 xgc=0 port=8000 08:54:22
+1
+activities CUDA->XPU: mounted, verified in-container
+HEALTH=OK after ~265s
+=== [2] warmup face U8k (decode/graph/JIT warm, not profiled) ===
+  U8k: prompt=8158 cached=None TTFT=3.74s wall=4.08s -> 2179 tok/s prefill-rate
+P66_SOLO: DONE
+=== [3] /start_profile + U32k face (profiled) + /stop_profile ===
+profiler started
+=== warmup (first-traffic law: p12b interlock + first graphs)
+warmup done (completion=None)
+  U32k: prompt=32553 cached=None TTFT=17.53s wall=18.11s -> 1857 tok/s prefill-rate
+P66_SOLO: DONE
+profiler stopped
+=== [4] wait trace flush ===
+poll1 gz=3
+total 12396
+drwxr-xr-x 2 root root    4096 Oct 31 08:59 .
+drwx------ 1 root root    4096 Oct 31 08:58 ..
+-rw-r--r-- 1 root root     807 Oct 31 08:59 REDACTED-HOST_13.async_llm.1793437168854990364.pt.trace.json.gz
+-rw-r--r-- 1 root root   20651 Oct 31 08:59 profiler_out_0.txt
+-rw-r--r-- 1 root root   20651 Oct 31 08:59 profiler_out_1.txt
+-rw-r--r-- 1 root root 6341609 Oct 31 08:59 rank0.1793437170405959737.pt.trace.json.gz
+-rw-r--r-- 1 root root 6286964 Oct 31 08:59 rank1.1793437170396532064.pt.trace.json.gz
+P67_GATE2: DONE

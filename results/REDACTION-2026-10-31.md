@@ -150,3 +150,46 @@ never contained the raw addresses:
   boot, survival, warm_rehit2) swept clean — 0 raw addresses, 0
   hostnames (rig hostname checked: 0) in the whole `c/` tree.
   Post-pass `tools/leak_sweep.sh` clean.
+  (Correction, Pass 5: the close-out's plain `git add` silently
+  skipped these three `.log` files — upstream `.gitignore` `*.log` —
+  so the close-out commit (and its pushes) held 121 of 124 files:
+  Pass 4's "banked" was true of the disk, not of git. No unredacted
+  bytes were ever pushed — the three logs were absent, not raw;
+  banked redacted by Pass 5 the same day.)
+
+## Pass 5 (2026-11-01) — referenced-but-unbanked log evidence (full-phase audit finding)
+
+The 2026-11-01 all-phase validation audit found that **plain
+`git add` silently drops `.log` files** (upstream `.gitignore:65
+*.log`): 65 evidence logs **referenced by name from banked
+write-ups** (each leg's own VERDICT/README "log: X.log (same dir)")
+had never entered git on any branch — invisible to every earlier
+sweep precisely because they were untracked (leak_sweep greps the
+tracked tree). Two more were missing from the banked p72 branch
+(the probe ALLPASS logs cited by PROBE.md). Fix: banked all 67
+(`git add -f`, byte-identical to the on-disk evidence, under the
+names as cited); the 37 carrying raw addresses/hostnames were
+redacted FIRST with the same `perl -pi` law, then byte-arithmetic
+verified:
+
+- **124 rig (+744) + 112 client (+784) + 8 hostname (+40) = +1,568
+  bytes**, per-file delta == token arithmetic ×37/37 (pre-sizes
+  snapshotted before mutation; 0 raw refs after).
+- The other 30 of 67 — incl. the Pass-4 c/ logs (already redacted)
+  and the two p72 probe logs — contained no address/hostname bytes
+  (checked before add).
+- Largest classes: p2-leg `serve_full.log`s (8 rig + 10–14 client
+  each, the uvicorn-access pattern), p3 r31/r32 capture logs,
+  p67 serve/prof logs, build logs carrying the rig hostname
+  (`build.log`, p47/cert2 builds, r67 gate2).
+- Exact per-file counts recoverable with
+  `git show <pass-5-commit> --stat -- results`. The audit also
+  classified the remaining ~40 ignored-unreferenced files as
+  quote-inline residue (the established non-banking practice for
+  raw captures whose key lines are already quoted in banked
+  write-ups) — left unbanked deliberately.
+
+**Law going forward (the root cause)**: `.log` evidence must be
+added with `git add -f` — a plain `git add <dir>` reports success
+while silently skipping every log; every evidence commit should
+diff `git status --ignored results/` against the intended list.

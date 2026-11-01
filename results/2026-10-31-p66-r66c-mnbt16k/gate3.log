@@ -1,0 +1,23 @@
+=== boot cert4 mnbt=16384 thr=none (nolmc) ===
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert4 name=arc-test graph=1 spec=3 gmu=0.8 mnbt=16384 seqs=64 xgc=0 port=8000 06:24:35
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert4 name=arc-test graph=1 spec=3 gmu=0.8 mnbt=16384 seqs=64 xgc=0 port=8000 06:24:35
+HEALTH=OK after ~275s
+=== warmup (first-traffic law: p12b interlock + first graphs)
+warmup done (completion=None)
+Traceback (most recent call last):
+  File "/root/build/p66/p66_solo_ttft.py", line 119, in <module>
+    main()
+  File "/root/build/p66/p66_solo_ttft.py", line 96, in main
+    target, seed = FACES[name]
+                   ~~~~~^^^^^^
+KeyError: 'U8k U32k U64k'
+=== boot cert4 mnbt=8192 thr=none (same-session A/B refresher) ===
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert4 name=arc-test graph=1 spec=3 gmu=0.8 mnbt=8192 seqs=64 xgc=0 port=8000 06:29:37
+HEALTH=OK after ~270s
+=== warmup (first-traffic law: p12b interlock + first graphs)
+warmup done (completion=None)
+  U8k: prompt=8158 cached=None TTFT=3.74s wall=4.07s -> 2181 tok/s prefill-rate
+  U32k: prompt=32553 cached=None TTFT=17.33s wall=17.92s -> 1878 tok/s prefill-rate
+  U64k: prompt=65303 cached=None TTFT=39.19s wall=39.73s -> 1666 tok/s prefill-rate
+P66_SOLO: DONE
+P66_GATE3: DONE

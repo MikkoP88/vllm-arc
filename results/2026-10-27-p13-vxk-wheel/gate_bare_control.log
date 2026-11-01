@@ -1,0 +1,21 @@
+resets_before=1
++ export LD_LIBRARY_PATH=/opt/venv/lib:/opt/venv/lib/python3.12/site-packages/torch/lib
++ LD_LIBRARY_PATH=/opt/venv/lib:/opt/venv/lib/python3.12/site-packages/torch/lib
++ /opt/venv/bin/pip install --force-reinstall --no-deps vllm-xpu-kernels==0.1.14.1
++ tail -2
+      Successfully uninstalled vllm-xpu-kernels-0.1.14.1
+Successfully installed vllm-xpu-kernels-0.1.14.1
++ /opt/venv/bin/pip show vllm-xpu-kernels
++ sed -n 1,2p
+Name: vllm-xpu-kernels
+Version: 0.1.14.1
++ cd /out
++ set +e
++ /opt/venv/bin/python /repro.py /caps/cap727.pt /out
++ rc=1
++ set -e
++ echo REPRO_EXIT=1
++ tee -a repro.log
+REPRO_EXIT=1
++ exit 1
+resets_after=2 exit=1

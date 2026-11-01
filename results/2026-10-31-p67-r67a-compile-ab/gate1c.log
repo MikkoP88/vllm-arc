@@ -1,0 +1,2 @@
+=== [1] boot cert4 PW combo (piecewise x FULL_AND_PIECEWISE, nolmc, 45-min wait: compile) ===
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert4 name=arc-test graph=1 spec=3 gmu=0.8 mnbt=8192 seqs=64 xgc=0 port=8000 08:02:32

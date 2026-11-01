@@ -1,0 +1,10 @@
+[v88] capture=cap727.pt layer=language_model.model.layers.0.linear_attn dtype=torch.float16 out=(684, 24, 128) NK=16 NV=48 HK=128 HV=128 tp=2 act=silu reorder=True ntok=684
+[v88] geometry: npf=2 ndec=0 nspec=1 qsl=[0, 167, 679] spec_rows=[2857, 2858, 2859, 2860, 3131] seed=capture
+[v88] pool: 8192 rows x 524288 el (8.00 GiB fp16 backing)
+[v88] conv_states (8192, 7, 5120) stride (524288, 5120, 1) | ssm (8192, 24, 128, 128) stride (524288, 16384, 128, 1)
+[LO] aim=[100, 200] rows_changed=[100, 200, 2857, 2858, 2859, 2860, 3131] (n=7, expect [100, 200, 2857, 2858, 2859, 2860, 3131]) wrote_conv=True wrote_ssm=True finite=True -> OK
+[LO] reference outputs saved to /out/ref100.pt
+[HI] RuntimeError: level_zero backend failed with error: 20 (UR_RESULT_ERROR_DEVICE_LOST)
+[HI] ==> DEVICE FAULT (the serve-wedge mechanism)
+[verdict] {'LO': True, 'HI': False} -> BUGGY WHEEL (int32 overflow reproduced)
+REPRO_EXIT=1

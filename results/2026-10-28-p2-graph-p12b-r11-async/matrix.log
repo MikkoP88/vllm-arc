@@ -1,0 +1,99 @@
+[arc-graph-async 05:47:18] pre-gates: image present, harness present
+[arc-graph-async 05:47:18] boot: serve qwen3.8-27b-fp8 TP2 (graph=1 spec=0 lmc=0)
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-p12b name=arc-test graph=1 spec=0 gmu=0.8 mnbt=8192 seqs=64 xgc=0 port=8000 05:47:21
+[arc-graph-async 05:47:21] waiting for engine health (max 30 min)
+[arc-graph-async 05:49:32] engine healthy
+[arc-graph-async 05:49:32] gates: platform + mem-info + posture + model identity
+INFO 10-28 05:49:40 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+INFO 10-28 05:49:40 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+INFO 10-28 05:49:40 [__init__.py:54] - hpu -> vllm_gaudi:register
+INFO 10-28 05:49:40 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+INFO 10-28 05:49:41 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+INFO 10-28 05:49:41 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+INFO 10-28 05:49:41 [__init__.py:54] - hpu -> vllm_gaudi:register
+INFO 10-28 05:49:41 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+WARNING 10-28 05:49:41 [__init__.py:56] ArcXpuPlatform: graph-safe output install failed at register() (expected mid-resolution; platform hooks retry): AttributeError("partially initialized module 'vllm.v1.worker.gpu.async_utils' has no attribute 'AsyncOutput' (most likely due to a circular import)")
+WARNING 10-28 05:49:41 [__init__.py:56] ArcXpuPlatform: graph-safe output install failed at register() (expected mid-resolution; platform hooks retry): AttributeError("partially initialized module 'vllm.v1.worker.gpu.async_utils' has no attribute 'AsyncOutput' (most likely due to a circular import)")
+INFO 10-28 05:49:41 [__init__.py:272] Platform plugin arc is activated
+WARNING 10-28 05:49:41 [__init__.py:56] ArcXpuPlatform: graph-safe output install failed at register() (expected mid-resolution; platform hooks retry): ImportError("cannot import name 'direct_register_custom_op' from partially initialized module 'vllm.utils.torch_utils' (most likely due to a circular import) (/opt/venv/lib/python3.12/site-packages/vllm/utils/torch_utils.py)")
+WARNING 10-28 05:49:41 [__init__.py:56] ArcXpuPlatform: graph-safe output install failed at register() (expected mid-resolution; platform hooks retry): ImportError("cannot import name 'direct_register_custom_op' from partially initialized module 'vllm.utils.torch_utils' (most likely due to a circular import) (/opt/venv/lib/python3.12/site-packages/vllm/utils/torch_utils.py)")
+INFO 10-28 05:49:41 [__init__.py:272] Platform plugin arc is activated
+PLATFORM=vllm_gaudi.xpu.platform.ArcXpuPlatform
+XE2=True
+MEMINFO free=5.60GiB total=31.89GiB nonzero=True
+DEVICE=Intel(R) Graphics [0xe223] count=2
+MODEL_ID ['Qwen3_5ForConditionalGeneration'] fp8
+[arc-graph-async 05:49:45] bench: k1k sanity (1024 ctx, c1/c4/c8 warm pass)
+  stream_FAIL URLError: <urlopen error [Errno 111] Connection refused>
+  stream_FAIL URLError: <urlopen error [Errno 111] Connection refused>
+  stream_FAIL URLError: <urlopen error [Errno 111] Connection refused>
+  stream_FAIL URLError: <urlopen error [Errno 111] Connection refused>
+  stream_FAIL URLError: <urlopen error [Errno 111] Connection refused>
+  stream_FAIL URLError: <urlopen error [Errno 111] Connection refused>
+  stream_FAIL URLError: <urlopen error [Errno 111] Connection refused>
+  stream_FAIL URLError: <urlopen error [Errno 111] Connection refused>
+  stream_FAIL URLError: <urlopen error [Errno 111] Connection refused>
+  stream_FAIL URLError: <urlopen error [Errno 111] Connection refused>
+  stream_FAIL URLError: <urlopen error [Errno 111] Connection refused>
+  stream_FAIL URLError: <urlopen error [Errno 111] Connection refused>
+  stream_FAIL URLError: <urlopen error [Errno 111] Connection refused>
+  stream_FAIL URLError: <urlopen error [Errno 111] Connection refused>
+CELL k16k-c16 FAIL ok=0/16
+  stream_FAIL URLError: <urlopen error [Errno 111] Connection refused>
+CELL k32k-c1 FAIL ok=0/1
+  stream_FAIL URLError: <urlopen error [Errno 111] Connection refused>
+CELL k64k-c1 FAIL ok=0/1
+=== PYMATRIX 1024 DONE ===
+[arc-graph-async 05:49:58] p31 gate: expect-off (non-spec leg posture purity)
+Traceback (most recent call last):
+  File "/usr/lib/python3.12/urllib/request.py", line 1344, in do_open
+    h.request(req.get_method(), req.selector, req.data, headers,
+  File "/usr/lib/python3.12/http/client.py", line 1365, in request
+    self._send_request(method, url, body, headers, encode_chunked)
+  File "/usr/lib/python3.12/http/client.py", line 1411, in _send_request
+    self.endheaders(body, encode_chunked=encode_chunked)
+  File "/usr/lib/python3.12/http/client.py", line 1360, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "/usr/lib/python3.12/http/client.py", line 1120, in _send_output
+    self.send(msg)
+  File "/usr/lib/python3.12/http/client.py", line 1064, in send
+    self.connect()
+  File "/usr/lib/python3.12/http/client.py", line 1030, in connect
+    self.sock = self._create_connection(
+                ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/socket.py", line 852, in create_connection
+    raise exceptions[0]
+  File "/usr/lib/python3.12/socket.py", line 837, in create_connection
+    sock.connect(sa)
+ConnectionRefusedError: [Errno 111] Connection refused
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/build/arc_spec_gate.py", line 218, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/root/build/arc_spec_gate.py", line 144, in main
+    m0 = fetch_metrics(args.url)
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/build/arc_spec_gate.py", line 64, in fetch_metrics
+    txt = urllib.request.urlopen(url + "/metrics", timeout=30).read().decode()
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 215, in urlopen
+    return opener.open(url, data, timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 515, in open
+    response = self._open(req, data)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 532, in _open
+    result = self._call_chain(self.handle_open, protocol, protocol +
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 492, in _call_chain
+    result = func(*args)
+             ^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 1373, in http_open
+    return self.do_open(http.client.HTTPConnection, req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 1347, in do_open
+    raise URLError(err)
+urllib.error.URLError: <urlopen error [Errno 111] Connection refused>

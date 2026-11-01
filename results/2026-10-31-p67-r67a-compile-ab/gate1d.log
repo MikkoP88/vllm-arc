@@ -1,0 +1,31 @@
+=== [1] boot cert4 PW combo v2 (sizes<=256 + max_cudagraph_capture_size=256) ===
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert4 name=arc-test graph=1 spec=3 gmu=0.8 mnbt=8192 seqs=64 xgc=0 port=8000 08:24:53
+HEALTH=OK after ~460s
+-- config assertions:
+compilation_config={'mode': <CompilationMode.VLLM_COMPILE: 3>
+'cudagraph_mode': <CUDAGraphMode.FULL_AND_PIECEWISE: (2
+'max_cudagraph_capture_size': 256
+-- speculator coercion: LIVE
+(EngineCore pid=788) INFO 10-31 08:30:12 [kv_cache_utils.py:2395] XPU KV cache size: 426,874 tokens, Maximum concurrency for 262,144 tokens per request: 1.63x
+Capturing CUDA graphs (PIECEWISE): 100%|██████████| 72/72
+=== [2] solo TTFT faces (bars 3.74/17.33/39.19) ===
+=== warmup (first-traffic law: p12b interlock + first graphs)
+warmup done (completion=None)
+  U8k: prompt=8158 cached=None TTFT=3.75s wall=4.40s -> 2178 tok/s prefill-rate
+  U32k: prompt=32553 cached=None TTFT=17.08s wall=18.35s -> 1906 tok/s prefill-rate
+  U64k: prompt=65303 cached=None TTFT=39.20s wall=40.29s -> 1666 tok/s prefill-rate
+P66_SOLO: DONE
+=== [3] run7n t0 (decode/acceptance + b2 survival) ===
+agg4x256#1 wall=5.81s aggregate=176.26 tok/s ok_streams=4/4 [256tok/5.7s 256tok/5.8s 256tok/5.5s 256tok/5.6s]
+agg4x256#2 wall=5.63s aggregate=182.04 tok/s ok_streams=4/4 [256tok/5.6s 256tok/5.4s 256tok/5.2s 256tok/5.4s]
+solo200 n=200 dt=3.90s tps=51.33
+solo200 n=200 dt=3.87s tps=51.66
+-- audit: 20 WARN/ERROR lines
+=== [4] stock nolmc refresher boot (run7n A/B ref) ===
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert4 name=arc-test graph=1 spec=3 gmu=0.8 mnbt=8192 seqs=64 xgc=0 port=8000 08:34:52
+HEALTH=OK after ~265s
+agg4x256#1 wall=10.60s aggregate=96.64 tok/s ok_streams=4/4 [256tok/10.6s 256tok/10.2s 256tok/10.2s 256tok/10.1s]
+agg4x256#2 wall=3.41s aggregate=300.48 tok/s ok_streams=4/4 [256tok/3.4s 256tok/3.4s 256tok/3.4s 256tok/3.4s]
+solo200 n=200 dt=2.37s tps=84.49
+solo200 n=200 dt=2.37s tps=84.49
+P67_GATE1D: DONE
