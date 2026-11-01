@@ -535,6 +535,56 @@ def need_gpu_interim_buffer(lmcache_config: LMCacheEngineConfig):
     return not lmcache_config.enable_pd
 
 
+def _lmc_slice_store_window(
+    token_ids, mask, slot_mapping, offset, budget, chunk_size
+):
+    """arc p73 fork delta (2026-11-01, plan P6.13): next store window of a
+    sliced pending attn span. The mask's True run is a contiguous tail
+    [f, n); `offset` is the window cursor (first call passes the row's
+    skip_leading == f). Returns ((tok, mask, slot, off), next_cursor,
+    done) with the SAME call shape a per-chunk row produces — cumulative
+    prefix, window-only mask, window-first offset — so lmcache store
+    semantics are unchanged. Non-final window edges are aligned DOWN to
+    lmcache chunk boundaries (the adapter's own truncation law); a final
+    window keeps the capture's own end (aligned or request end).
+    (None, None, True) when nothing is storeable. Evidence/predictions:
+    results/2026-11-01-p65-rung3-slice/DESIGN.md.
+    """
+    n = len(token_ids)
+    if torch.is_tensor(mask):
+        if n == 0 or not bool(mask.any()):
+            return None, None, True
+        f = int(mask.to(torch.uint8).argmax().item())
+        is_t = True
+    else:
+        if n == 0 or True not in mask:
+            return None, None, True
+        f = mask.index(True)
+        is_t = False
+    start = offset if offset is not None and offset > f else f
+    if start >= n:
+        return None, None, True
+    end = min(start + max(budget, chunk_size), n)
+    if end < n:
+        # Never split inside an lmcache chunk mid-span (the 2550-2556
+        # truncation law); progress is guaranteed (budget >= chunk).
+        end = max(
+            end // chunk_size * chunk_size,
+            min(start + chunk_size, n),
+        )
+    if is_t:
+        p_mask = torch.zeros(end, dtype=torch.bool)
+        p_mask[start:end] = True
+    else:
+        p_mask = [False] * start + [True] * (end - start)
+    return (
+        token_ids[:end],
+        p_mask,
+        slot_mapping[:end],
+        start,
+    ), end, end >= n
+
+
 def _calculate_mtp_layers(vllm_config, model_config):
     num_mtp_layers = 0
     if vllm_config is not None and vllm_config.speculative_config is not None:
@@ -2670,19 +2720,64 @@ class LMCacheConnectorV1Impl:
                 self._arc_attn_pool_view(t)
                 for t in self.kv_caches.values()
             ]
-        for kind, rid, token_ids, mask, slot, offset, cfg, _pmap in pending:
+        # arc p73 fork delta (2026-11-01, plan P6.13): sliced flush. A
+        # deferred one-shot final store (P6.5 rung 2) moves the whole
+        # context in ONE contended operation inside a single step — the
+        # measured big-store regime (~0.24 GB/s) puts ~4.3 s at 64k into
+        # the pre-first-token step, shared with every bystander stream
+        # (the M1 end-boundary max-gap + the M2 jam-then-break drain;
+        # results/2026-11-01-p65-end-stall-analysis/). LMC_STORE_SLICE_TOKENS
+        # (default 0 = off = byte-identical certified behavior) executes
+        # at most ~S tokens per flush; the remainder stays pending for
+        # the next wfs (fires every step). A slice failure drops the
+        # remainder — the clean-miss law is unchanged (unstored chunks
+        # recompute; chunks appear atomically per store call).
+        _slice_budget = int(os.environ.get("LMC_STORE_SLICE_TOKENS", "0") or 0)
+        for entry in pending:
+            kind, rid, token_ids, mask, slot, offset, cfg, _pmap = entry
             if kind != "a" or rid in failed:
                 continue
-            try:
-                self.lmcache_engine.store(
-                    token_ids,
-                    mask=mask,
-                    kvcaches=kvcaches,
-                    slot_mapping=slot,
-                    offset=offset,
-                    transfer_spec=None,
-                    request_configs=cfg,
+            piece = None
+            if _slice_budget > 0:
+                piece, _cursor, _done = _lmc_slice_store_window(
+                    token_ids, mask, slot, offset, _slice_budget,
+                    self._lmcache_chunk_size,
                 )
+            try:
+                if piece is None:
+                    self.lmcache_engine.store(
+                        token_ids,
+                        mask=mask,
+                        kvcaches=kvcaches,
+                        slot_mapping=slot,
+                        offset=offset,
+                        transfer_spec=None,
+                        request_configs=cfg,
+                    )
+                else:
+                    p_tok, p_mask, p_slot, p_off = piece
+                    self.lmcache_engine.store(
+                        p_tok,
+                        mask=p_mask,
+                        kvcaches=kvcaches,
+                        slot_mapping=p_slot,
+                        offset=p_off,
+                        transfer_spec=None,
+                        request_configs=cfg,
+                    )
+                    if not _done:
+                        self._lmc_pending_stores.append(
+                            (
+                                kind,
+                                rid,
+                                token_ids,
+                                mask,
+                                slot,
+                                _cursor,
+                                cfg,
+                                _pmap,
+                            )
+                        )
             except Exception:
                 logger.exception(
                     "Lagged attn store failed for req %s "

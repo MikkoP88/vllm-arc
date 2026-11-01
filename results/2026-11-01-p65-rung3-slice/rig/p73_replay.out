@@ -1,0 +1,5 @@
+REPLAY probe prompt=63784 tok (U64k seed)
+fresh  : TTFT=1.74s total=2.34s first='Based on the notes provided, here are the measurements for *'
+drain+2: TTFT=1.73s total=1.80s first='Based on the notes provided, here are'
+post+35: TTFT=1.74s total=1.80s first='Based on the notes provided, here are'
+REPLAY_INTEGRITY prefix_match=True (fresh=150 drain=37 post=37 chars)

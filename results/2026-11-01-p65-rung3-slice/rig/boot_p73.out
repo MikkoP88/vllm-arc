@@ -1,0 +1,3 @@
+ARC_CONTAINER_FRESH image=vllm-arc:v0.30.0-b70-cert4-p73probe id=1e192ddb56d5 (recreated from 0c25a4f747af)
+92e9cc7ed5ba2efb5c918dfc211b5bc8373dbbe918b8dbe30d011ed60c10e63b
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert4-p73probe name=arc-test graph=1 spec=3 gmu=0.8 mnbt=8192 seqs=64 xgc=0 port=8000 11:18:41

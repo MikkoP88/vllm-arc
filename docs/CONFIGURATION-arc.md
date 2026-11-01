@@ -290,6 +290,22 @@ stores are present as normal (the gate held). Do **not** lower
 `LMC_DEFER_MIN_TOKENS` below 40960 for mixed fleets — r48k measured the
 32k regression; raising it (e.g. 49152) only narrows coverage.
 
+**Experimental, NOT certified (P6.13, gated 2026-11-01):
+`LMC_STORE_SLICE_TOKENS=4096`** — spreads the deferred one-shot final-span
+store across ~19 bounded windows (aligned 3328 tok each at runtime chunk
+1664), one per step, re-using the exact per-chunk store call shape; default
+unset = byte-identical certified behavior. Gate
+(`results/2026-11-01-p65-rung3-slice/`): all safety faces green (integrity
+5/5 + determinism 3/3, run7n 300.48 / 84.4, U32k family unchanged, zero
+fork-added WARN/ERROR), mechanism landed exactly (`63232`-class = 0 all
+session; 38 = 2×19 windows; U64k TTFT 50.72 s / 48.79 s-cold vs the 52.25 s
+bar; full-hit + mid-drain replay integrity clean at 1.74/1.82 s). NOT
+adopted into the certified profile: the pre-registered ≤600 ms bystander
+max-gap bar was mechanically missed (1598 ms) and is recorded as mis-set
+(the r48e nolmc floor is 2347 ms with zero stores — chunk compute [viii]
+is the floor; the corrected claim, store-side contribution removed, is
+confirmed). Enabling it is an owner call on the corrected bar.
+
 ## The 25-var chain (reference)
 
 The step blocks above already carry all 25. This section is the
