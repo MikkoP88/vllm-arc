@@ -10,7 +10,7 @@ complete control surface + naming map); test definitions in
 
 | Item | Value |
 |---|---|
-| Image | `vllm-arc:v0.30.0-b70-cert4` — **the certified release**, tag `rel/v0.30.0-b70-cert4` (cert3 engine + the P6.5 length-gated chunk-store deferral in the lmcint adapter — opt-in, default posture identical to cert3; gates `results/2026-10-31-p65-cert4/`) |
+| Image | `vllm-arc:v0.30.0-b70-cert5` — **the certified release**, tag `rel/v0.30.0-b70-cert5` (cert4 engine + the P6.13 sliced final-span store in the lmcint adapter — `LMC_STORE_SLICE_TOKENS`, default-OFF, default posture identical to cert4; gates `results/2026-11-01-p65-cert5/`) |
 | Manifest | `/etc/vllm-arc/IMAGE_MANIFEST` inside the image — fork SHA, wheel pins, dependency closure (`lmcache_closure=`), build host |
 | Base | upstream vllm-gaudi v0.30.0 + pinned wheels (vllm 0.30.0+xpu, triton 3.7.2+xpu, vllm_xpu_kernels 0.1.14.1+arc3, lmcache 0.5.6+arc1) |
 
@@ -19,6 +19,7 @@ with per-image evidence lives in PERFORMANCE-arc "Image lineage"):
 
 | Image | Status |
 |---|---|
+| `v0.30.0-b70-cert4` | superseded by cert5 — identical default behavior, lacks the default-OFF slice hunk (gates `results/2026-10-31-p65-cert4/`) |
 | `v0.30.0-b70-cert3` | superseded by cert4 — identical default behavior, lacks the deferral hunk (gates `results/2026-10-31-p6-r47c-p48-056gates/`) |
 | `v0.30.0-b70-cert2` | superseded — 0.5.5-era lmcache wheel line, still valid |
 | `v0.30.0-b70-p48` | r47c gate image (same engine tree as cert3) |
@@ -52,7 +53,7 @@ docker run -d --name arc-test \
   -v /root/build/inductor_cache:/root/.inductor_cache \
   -e VLLM_ALLOW_LONG_MAX_MODEL_LEN=1 \
   -e VLLM_WORKER_MULTIPROC_METHOD=spawn \
-  --entrypoint /bin/bash vllm-arc:v0.30.0-b70-cert4 -c 'sleep infinity'
+  --entrypoint /bin/bash vllm-arc:v0.30.0-b70-cert5 -c 'sleep infinity'
 ```
 
 These are the validated boot bytes (rig `r46t_campaign.sh:54-63`,
@@ -305,6 +306,12 @@ max-gap bar was mechanically missed (1598 ms) and is recorded as mis-set
 (the r48e nolmc floor is 2347 ms with zero stores — chunk compute [viii]
 is the floor; the corrected claim, store-side contribution removed, is
 confirmed). Enabling it is an owner call on the corrected bar.
+**Reproducible on the certified image since cert5** (the hunk ships in
+`rel/v0.30.0-b70-cert5`, default-OFF): the cert5 release gate re-ran the
+slice face on the tag-built image — U64k TTFT **50.77 s** (cert4 same-face
+51.95), W_U64k_start max **1602 ms** vs cert4's 1997 (the one-shot tail
+gone), `63232`-class **0** / `3328`×38 exact, U32k unchanged
+(`results/2026-11-01-p65-cert5/`).
 
 ## The 25-var chain (reference)
 
@@ -379,6 +386,7 @@ may change and when:
 | `VLLM_ARC_GMU_RELAX` | unset (`0`) | set `0.8` if boot aborts on headroom at higher utilization (relaxes only the engine default 0.92) |
 | `LMC_DEFER_CHUNK_STORE` | unset (`0` = OFF — certified default) | `=1` only in the long-context profile (above), together with `--long-prefill-token-threshold 2048` and the min-tokens gate |
 | `LMC_DEFER_MIN_TOKENS` | unset (`0` = defer every chunked prefill) | certified profile value **40960**; lowering it below ~40960 regresses 32k-class prompts (+4.2 s, r48k) |
+| `LMC_STORE_SLICE_TOKENS` | unset (`0` = OFF — certified default, ships since cert5) | **experimental** `=4096` — slices the deferred one-shot final-span store into ~19 bounded windows; long-context profile section above |
 | `LMC_BOUNDARY_KEEP` / `LMC_BOUNDARY_CAP` | unset (8 / 48) | raise only with boundary-registry pressure evidence |
 | `LMC_BOUND_STATS` / `LMC_BOUND_MD5` | unset (logging ON) | `=0` to quiet boundary telemetry |
 | `ARC_SNAP_PROBE` | unset (silent) | diagnostics only (leg telemetry) |
