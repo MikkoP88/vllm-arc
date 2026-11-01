@@ -1,0 +1,24 @@
+=== [1] extract + patch + probe image ===
+PATCH_OK core.py
+PATCH_OK hpu_model_runner.py
+PATCHER: DONE
+2
+=== boot probe thr=2048 (nolmc) ===
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert4-p66probe name=arc-test graph=1 spec=3 gmu=0.8 mnbt=8192 seqs=64 xgc=0 port=8000 04:33:33
+HEALTH=OK after ~270s
+=== warmup (first-traffic law: p12b interlock + first graphs)
+warmup done (completion=None)
+  U32k: prompt=32553 cached=None TTFT=21.66s wall=22.25s -> 1503 tok/s prefill-rate
+P66_SOLO: DONE
+-- ARC_P66 summary thr=2048 (last face):
+0
+=== boot probe thr=none (nolmc) ===
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert4-p66probe name=arc-test graph=1 spec=3 gmu=0.8 mnbt=8192 seqs=64 xgc=0 port=8000 04:38:53
+HEALTH=OK after ~270s
+=== warmup (first-traffic law: p12b interlock + first graphs)
+warmup done (completion=None)
+  U32k: prompt=32553 cached=None TTFT=17.44s wall=18.07s -> 1867 tok/s prefill-rate
+P66_SOLO: DONE
+-- ARC_P66 summary thr=none (last face):
+0
+P66_GATE2: DONE

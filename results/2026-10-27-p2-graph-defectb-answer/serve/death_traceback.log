@@ -1,0 +1,46 @@
+(Worker_TP0 pid=780) ERROR 10-27 22:55:51 [multiproc_executor.py:991] Traceback (most recent call last):
+(Worker_TP0 pid=780) ERROR 10-27 22:55:51 [multiproc_executor.py:991]   File "/opt/venv/lib/python3.12/site-packages/vllm_gaudi/xpu/patches/graph_safe_output.py", line 208, in get_output
+(Worker_TP0 pid=780) ERROR 10-27 22:55:51 [multiproc_executor.py:991]     torch.xpu.synchronize()
+(Worker_TP0 pid=780) ERROR 10-27 22:55:51 [multiproc_executor.py:991]   File "/opt/venv/lib/python3.12/site-packages/torch/xpu/__init__.py", line 702, in synchronize
+(Worker_TP0 pid=780) ERROR 10-27 22:55:51 [multiproc_executor.py:991]     return torch._C._xpu_synchronize(device)
+(Worker_TP0 pid=780) ERROR 10-27 22:55:51 [multiproc_executor.py:991]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(Worker_TP0 pid=780) ERROR 10-27 22:55:51 [multiproc_executor.py:991] RuntimeError: wait cannot be called for a queue which is recording to a command graph.
+(Worker_TP0 pid=780) ERROR 10-27 22:55:51 [multiproc_executor.py:991] 
+(Worker_TP0 pid=780) ERROR 10-27 22:55:51 [multiproc_executor.py:991] The above exception was the direct cause of the following exception:
+(Worker_TP0 pid=780) ERROR 10-27 22:55:51 [multiproc_executor.py:991] 
+(Worker_TP0 pid=780) ERROR 10-27 22:55:51 [multiproc_executor.py:991] Traceback (most recent call last):
+(Worker_TP0 pid=780) ERROR 10-27 22:55:51 [multiproc_executor.py:991]   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/executor/multiproc_executor.py", line 989, in enqueue_output
+(Worker_TP0 pid=780) ERROR 10-27 22:55:51 [multiproc_executor.py:991]     output = output.get_output()
+(Worker_TP0 pid=780) ERROR 10-27 22:55:51 [multiproc_executor.py:991]              ^^^^^^^^^^^^^^^^^^^
+(Worker_TP0 pid=780) ERROR 10-27 22:55:51 [multiproc_executor.py:991]   File "/opt/venv/lib/python3.12/site-packages/vllm_gaudi/xpu/patches/graph_safe_output.py", line 217, in get_output
+(Worker_TP0 pid=780) ERROR 10-27 22:55:51 [multiproc_executor.py:991]     raise e from sync_err
+(Worker_TP0 pid=780) ERROR 10-27 22:55:51 [multiproc_executor.py:991]   File "/opt/venv/lib/python3.12/site-packages/vllm_gaudi/xpu/patches/graph_safe_output.py", line 192, in get_output
+(Worker_TP0 pid=780) ERROR 10-27 22:55:51 [multiproc_executor.py:991]     return orig_get_output(self)
+(Worker_TP0 pid=780) ERROR 10-27 22:55:51 [multiproc_executor.py:991]            ^^^^^^^^^^^^^^^^^^^^^
+(Worker_TP0 pid=780) ERROR 10-27 22:55:51 [multiproc_executor.py:991]   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/worker/gpu/async_utils.py", line 168, in get_output
+(Worker_TP0 pid=780) ERROR 10-27 22:55:51 [multiproc_executor.py:991]     self.copy_event.synchronize()
+(Worker_TP0 pid=780) ERROR 10-27 22:55:51 [multiproc_executor.py:991]   File "/opt/venv/lib/python3.12/site-packages/torch/xpu/streams.py", line 171, in synchronize
+(Worker_TP0 pid=780) ERROR 10-27 22:55:51 [multiproc_executor.py:991]     super().synchronize()
+(Worker_TP0 pid=780) ERROR 10-27 22:55:51 [multiproc_executor.py:991] RuntimeError: wait method cannot be used for an event associated with a command graph.
+(Worker_TP0 pid=780) Traceback (most recent call last):
+(Worker_TP0 pid=780)   File "/usr/lib/python3.12/multiprocessing/process.py", line 314, in _bootstrap
+(Worker_TP0 pid=780)     self.run()
+(Worker_TP0 pid=780)   File "/usr/lib/python3.12/multiprocessing/process.py", line 108, in run
+(Worker_TP0 pid=780)     self._target(*self._args, **self._kwargs)
+(Worker_TP0 pid=780)   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/executor/multiproc_executor.py", line 976, in worker_main
+(Worker_TP0 pid=780)     worker.shutdown()
+(Worker_TP0 pid=780)   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/executor/multiproc_executor.py", line 821, in shutdown
+(Worker_TP0 pid=780)     self.worker.shutdown()
+(Worker_TP0 pid=780)   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/worker/worker_base.py", line 244, in shutdown
+(Worker_TP0 pid=780)     self.worker.shutdown()
+(Worker_TP0 pid=780)   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/worker/xpu_worker.py", line 233, in shutdown
+(Worker_TP0 pid=780)     super().shutdown()
+(Worker_TP0 pid=780)   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/worker/gpu_worker.py", line 1500, in shutdown
+(Worker_TP0 pid=780)     model_runner.shutdown()
+(Worker_TP0 pid=780)   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/worker/gpu/model_runner.py", line 2241, in shutdown
+(Worker_TP0 pid=780)     torch.accelerator.synchronize()
+(Worker_TP0 pid=780)   File "/opt/venv/lib/python3.12/site-packages/torch/accelerator/__init__.py", line 270, in synchronize
+(Worker_TP0 pid=780)     torch._C._accelerator_synchronizeDevice(device_index)
+(Worker_TP0 pid=780) RuntimeError: wait cannot be called for a queue which is recording to a command graph.
+/usr/lib/python3.12/multiprocessing/resource_tracker.py:254: UserWarning: resource_tracker: There appear to be 3 leaked shared_memory objects to clean up at shutdown
+  warnings.warn('resource_tracker: There appear to be %d '

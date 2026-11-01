@@ -1,0 +1,60 @@
+W1028 11:15:14.132000 16334 torch/distributed/run.py:874] 
+W1028 11:15:14.132000 16334 torch/distributed/run.py:874] *****************************************
+W1028 11:15:14.132000 16334 torch/distributed/run.py:874] Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. 
+W1028 11:15:14.132000 16334 torch/distributed/run.py:874] *****************************************
+INFO 10-28 11:15:16 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+INFO 10-28 11:15:16 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+INFO 10-28 11:15:16 [__init__.py:54] - hpu -> vllm_gaudi:register
+INFO 10-28 11:15:16 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+INFO 10-28 11:15:16 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+INFO 10-28 11:15:16 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+INFO 10-28 11:15:16 [__init__.py:54] - hpu -> vllm_gaudi:register
+INFO 10-28 11:15:16 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+INFO 10-28 11:15:17 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+INFO 10-28 11:15:17 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+INFO 10-28 11:15:17 [__init__.py:54] - hpu -> vllm_gaudi:register
+INFO 10-28 11:15:17 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+WARNING 10-28 11:15:17 [__init__.py:56] ArcXpuPlatform: graph-safe output install failed at register() (expected mid-resolution; platform hooks retry): AttributeError("partially initialized module 'vllm.v1.worker.gpu.async_utils' has no attribute 'AsyncOutput' (most likely due to a circular import)")
+WARNING 10-28 11:15:17 [__init__.py:56] ArcXpuPlatform: graph-safe output install failed at register() (expected mid-resolution; platform hooks retry): AttributeError("partially initialized module 'vllm.v1.worker.gpu.async_utils' has no attribute 'AsyncOutput' (most likely due to a circular import)")
+INFO 10-28 11:15:17 [__init__.py:272] Platform plugin arc is activated
+WARNING 10-28 11:15:17 [__init__.py:56] ArcXpuPlatform: graph-safe output install failed at register() (expected mid-resolution; platform hooks retry): ImportError("cannot import name 'direct_register_custom_op' from partially initialized module 'vllm.utils.torch_utils' (most likely due to a circular import) (/opt/venv/lib/python3.12/site-packages/vllm/utils/torch_utils.py)")
+WARNING 10-28 11:15:17 [__init__.py:56] ArcXpuPlatform: graph-safe output install failed at register() (expected mid-resolution; platform hooks retry): ImportError("cannot import name 'direct_register_custom_op' from partially initialized module 'vllm.utils.torch_utils' (most likely due to a circular import) (/opt/venv/lib/python3.12/site-packages/vllm/utils/torch_utils.py)")
+INFO 10-28 11:15:17 [__init__.py:272] Platform plugin arc is activated
+INFO 10-28 11:15:17 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+INFO 10-28 11:15:17 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+INFO 10-28 11:15:17 [__init__.py:54] - hpu -> vllm_gaudi:register
+INFO 10-28 11:15:17 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+WARNING 10-28 11:15:17 [__init__.py:56] ArcXpuPlatform: graph-safe output install failed at register() (expected mid-resolution; platform hooks retry): AttributeError("partially initialized module 'vllm.v1.worker.gpu.async_utils' has no attribute 'AsyncOutput' (most likely due to a circular import)")
+WARNING 10-28 11:15:17 [__init__.py:56] ArcXpuPlatform: graph-safe output install failed at register() (expected mid-resolution; platform hooks retry): AttributeError("partially initialized module 'vllm.v1.worker.gpu.async_utils' has no attribute 'AsyncOutput' (most likely due to a circular import)")
+INFO 10-28 11:15:17 [__init__.py:272] Platform plugin arc is activated
+WARNING 10-28 11:15:17 [__init__.py:56] ArcXpuPlatform: graph-safe output install failed at register() (expected mid-resolution; platform hooks retry): ImportError("cannot import name 'direct_register_custom_op' from partially initialized module 'vllm.utils.torch_utils' (most likely due to a circular import) (/opt/venv/lib/python3.12/site-packages/vllm/utils/torch_utils.py)")
+WARNING 10-28 11:15:17 [__init__.py:56] ArcXpuPlatform: graph-safe output install failed at register() (expected mid-resolution; platform hooks retry): ImportError("cannot import name 'direct_register_custom_op' from partially initialized module 'vllm.utils.torch_utils' (most likely due to a circular import) (/opt/venv/lib/python3.12/site-packages/vllm/utils/torch_utils.py)")
+INFO 10-28 11:15:17 [__init__.py:272] Platform plugin arc is activated
+[r0] S0 baseline: clean
+2026:10:28-11:15:26:16401 |CCL_WARN| did not find MPI-launcher specific variables, switch to ATL/OFI, to force enable ATL/MPI set CCL_ATL_TRANSPORT=mpi
+2026:10:28-11:15:26:16401 |CCL_WARN| value of CCL_SYCL_ALLGATHERV_SCALEOUT_THRESHOLD changed to be 1048576 (default:1073741824)
+2026:10:28-11:15:26:16401 |CCL_WARN| value of CCL_TOPO_P2P_ACCESS changed to be 1 (default:-1)
+2026:10:28-11:15:26:16401 |CCL_WARN| value of CCL_TOPO_FABRIC_VERTEX_CONNECTION_CHECK changed to be 0 (default:1)
+2026:10:28-11:15:26:16401 |CCL_WARN| could not get local_idx/count from environment variables, trying to get them from ATL
+[r1] S0 baseline: clean
+2026:10:28-11:15:27:16402 |CCL_WARN| did not find MPI-launcher specific variables, switch to ATL/OFI, to force enable ATL/MPI set CCL_ATL_TRANSPORT=mpi
+2026:10:28-11:15:27:16402 |CCL_WARN| could not get local_idx/count from environment variables, trying to get them from ATL
+[r0] S1 eager allreduce: clean[r1] S1 eager allreduce: clean
+
+[r1] S2a completed graph + replays: clean
+[r0] S2a completed graph + replays: clean
+[r1] S2c capture-illegal as expected: RuntimeError: Graph nodes cannot depend on events from outside the graph.
+[r0] S2c capture-illegal as expected: RuntimeError: Graph nodes cannot depend on events from outside the graph.
+[r0] S3 eager allreduce AFTER completed graphs: clean[r1] S3 eager allreduce AFTER completed graphs: clean
+
+[r1] S4 gemms: clean
+[r0] S4 gemms: clean
+[r1] S5 real GDN op (captured kwargs): clean
+[r0] S5 real GDN op (captured kwargs): clean
+[r1] S6 final allreduce: clean[r0] S6 final allreduce: clean
+
+[r1] RESULT flips=NONE
+[r0] RESULT flips=NONE
+/opt/venv/lib/python3.12/site-packages/torch/distributed/c10d_logger.py:83: UserWarning: barrier(): using the device under current context. You can specify `device_id` in `init_process_group` to mute this warning.
+  return func(*args, **kwargs)
+TORCHRUN-EXIT=0

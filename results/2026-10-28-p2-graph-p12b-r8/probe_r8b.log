@@ -1,0 +1,43 @@
+r8b bare-torch probe (arc-test, torch 2.13.0+xpu / oneAPI 2026.0.0)
+script: /tmp/replay_probe.py (banked verbatim below)
+
+$ python /tmp/replay_probe.py a
+torch 2.13.0+xpu
+phase a | default: torch.xpu.Stream(device=xpu:0 sycl_queue=0x28902fa0) | side: torch.xpu.Stream(device=xpu:0 sycl_queue=0x28759300)
+fresh default                          capturing=False
+post-capture[a] (default)              capturing=False
+post-capture[a] (side)                 capturing=False
+replay #1 (on default): OK
+post-REPLAY-on-default (default)       capturing=False
+plain kernel on default: OK vals= [6.0, 6.0, 6.0, 6.0, 6.0, 6.0, 6.0, 6.0]
+replay #2: OK buf= [12.0, 12.0, 12.0, 12.0, 12.0, 12.0, 12.0, 12.0]
+post-replay-2 (default)                capturing=False
+done
+
+$ python /tmp/replay_probe.py b   (first run, before replay was added)
+torch 2.13.0+xpu
+phase b | default: torch.xpu.Stream(device=xpu:0 sycl_queue=0x3445e000) | side: torch.xpu.Stream(device=xpu:0 sycl_queue=0x342b4360)
+fresh default                          capturing=False
+post-capture[b] (default)              capturing=False
+post-capture[b] (side)                 capturing=False
+done
+
+$ python /tmp/replay_probe.py b   (with same-stream replay, r8's exact shape)
+torch 2.13.0+xpu
+phase b | default: torch.xpu.Stream(device=xpu:0 sycl_queue=0x17357fa0) | side: torch.xpu.Stream(device=xpu:0 sycl_queue=0x171ae300)
+fresh default                          capturing=False
+post-capture[b] (default)              capturing=False
+post-capture[b] (side)                 capturing=False
+phase-b replay (on default): OK
+post-b-replay (default)                capturing=False
+phase-b plain kernel: OK vals= [6.0, 6.0, 6.0, 6.0, 6.0, 6.0, 6.0, 6.0]
+done
+
+companion facts (same session, in-container):
+- torch.xpu.graph.default_capture_stream is None until the first graph()
+  context entry (lazy init inside graph.__init__, torch/xpu/graphs.py:167-183)
+- torch.cuda is dead stock (cuda available: False, "Torch not compiled with
+  CUDA enabled") — the serve-time bridge is
+  vllm/v1/worker/xpu_model_runner.py:60: torch.cuda.graph = partial(torch.xpu.graph),
+  torch.cuda.CUDAGraph = torch.xpu.XPUGraph (plus Stream/event/stream ctx
+  mappings) — single stream world, stream= kwarg honored
