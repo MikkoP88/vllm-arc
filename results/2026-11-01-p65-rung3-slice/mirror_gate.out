@@ -1,0 +1,13 @@
+PASS S1 windows tile [0,63232) contiguously
+PASS S1 total tokens stored
+PASS S1 window count == 19 (aligned 3328-tok windows)
+S1 windows: 0:3328 3328:6656 6656:9984 9984:13312 13312:16640 16640:19968 19968:23296 23296:26624 26624:29952 29952:33280 33280:36608 36608:39936 39936:43264 43264:46592 46592:49920 49920:53248 53248:56576 56576:59904 59904:63232
+PASS S2 single window
+PASS S3 skip-leading row
+PASS S4 cursor-resume
+PASS S5 budget<chunk => chunk window
+PASS S6 nothing storeable
+PASS S7 32k tiling
+PASS S7 32k coverage
+
+MIRROR GATE: ALL PASS

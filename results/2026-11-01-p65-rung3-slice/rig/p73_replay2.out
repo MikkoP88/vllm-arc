@@ -1,0 +1,5 @@
+REPLAY2 mid-drain probe prompt=63795 tok (novel seed 4040404)
+mid-drain : TTFT=1.82s total=2.00s first='Based on the notes provided, here are'
+fresh     : TTFT=48.79s total=50.20s first='Based on the notes provided, here are the entries where the '
+post+35   : TTFT=1.74s total=1.80s first='Based on the notes provided, here are'
+REPLAY2_INTEGRITY fresh_vs_drain=True fresh_vs_post=True (chars 159/37/37)
