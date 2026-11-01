@@ -132,10 +132,11 @@ Continuous cycles of: run7n → longctx → prefix/churn → integrity probe
 integrity 5/5 at every probe, health 200 throughout, hooks stable.
 Evidence: `results/2026-10-30-p5-r46-soak/`. The cert4-native soak
 (r70): cycles of run7n + 24-prompt integrity probe every ~5 min for 4 h
-on the certified image — evidence
-`results/2026-10-31-p70-r70-cert4-comprehensive/` (in flight at this
-commit; close-out row lands in PERFORMANCE-arc "Stability" with the
-follow-up commit).
+on the certified image — **GREEN: 56/56 cycles, battery 0 fail,
+integrity 56/56 bad=0, health 200 throughout, 0 ERROR/Traceback, no
+throughput drift** — evidence
+`results/2026-10-31-p70-r70-cert4-comprehensive/` (VERDICT §Leg C
+close-out + `c/` mirror; PERFORMANCE-arc "Stability" row).
 
 ### 11. CI parity (static)
 `ruff` (0.11.7) whole-tree pass, `yapf` (0.43.0) 0-hunk idempotence,
@@ -210,4 +211,4 @@ documented in [`envs.md`](envs.md) (naming map).
 | 64k TTFT face | GREEN (40,926 ms, concurrent-load conservative — cert-era); cert4-native solo U64k: 39.19–40.26 s | rig leg `arc-p5-r46/ttft64k_t1.txt`; `results/2026-10-31-p70-r70-cert4-comprehensive/` |
 | r46 8 h soak | GREEN — 46 cycles, zero errors, integrity 46/46, golden 5/5 zero-drift, pos-1 0.8919 steady, health 200 end-state | `results/2026-10-30-p5-r46-soak/` |
 | r46t real-world campaign (temps × depths × thinking × garbage) | GREEN — k3 recommended; garbage v2 5/5 suites 15/15; MTP 1.57–2.05× over no-spec | `results/2026-10-30-p5-r46t-temps/` |
-| r70 comprehensive cert4 measurement (owner directive: current record cert4-native) | GREEN legs a+b (greedy/sweep/ladder/warm/alt + no-spec A/B + tier attribution + r46t parity); leg c soak in flight at this commit — close-out follows with `c/` evidence | `results/2026-10-31-p70-r70-cert4-comprehensive/` |
+| r70 comprehensive cert4 measurement (owner directive: current record cert4-native) | GREEN legs a+b (greedy/sweep/ladder/warm/alt + no-spec A/B + tier attribution + r46t parity) + leg c soak GREEN (56/56 cycles, 0 battery/integrity/engine failures, no drift — `c/` mirror banked by the close-out commit) | `results/2026-10-31-p70-r70-cert4-comprehensive/` |

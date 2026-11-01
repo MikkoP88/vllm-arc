@@ -86,15 +86,46 @@ that window is store-only. (The completions API does not return
 breakdown absent is why the log-window + external-rate counters are the
 attribution evidence.)
 
-Soak close-out: **IN FLIGHT at commit time** — leg c started 10:45:48
-UTC (4 h window → ends ~14:50 UTC). Interim at 11:00 UTC: 4 cycles
-complete, health 200 every cycle, integrity probe P1_SOAK_PASS bad=0,
-zero ERROR/Traceback in the serve log, battery steady (agg 299.94,
-solo 84.4). Final counts (cycles / battery failures / integrity
-failures / final spec gate / full-engine ERROR+WARN audit + W14-restore
-confirmation) are banked by the follow-up close-out commit together
-with the mirrored `c/` evidence; this VERDICT is updated by that commit
-and never before the data exists (E-law).
+Soak close-out (follow-up commit, 2026-11-01 — counts from the banked
+`c/` mirror): **56/56 cycles, 10:46:16 → 14:46:01 UTC, 4 h window;
+battery failures 0 (agg ok_streams 4/4 ×112, solo ×112); integrity
+failures 0 (24-prompt probe every cycle); health 200 every cycle**;
+final spec gate on the soak boot: pos1 0.9258 (hard pass), acceptance
+0.837 vs 0.85 target (TARGET MISS, recorded — same face as every
+cert4 boot), mean acceptance length 3.51, rc=4
+(`c/spec_gate_final.out`, `c/soak_log.txt`, `c/soak_summary.txt`).
+
+Full-engine audit (`c/serve_full.log`, 9,444 lines): **0 ERROR,
+0 Traceback, 141 WARNING** = 98 LMCache pin_monitor (6 MemoryObj IDs
+× "Pin timeout detected" + "Force unpinned" sweeps; Worker_TP1 only;
+7 sweep instants 11:00:19–12:28:49, i.e. pins from the warm-v2 store
+window, self-resolved ~2.3 h before window end; zero impact on
+health/integrity/battery — every cycle after 12:28 is green) + 43
+boot-phase config warnings (10:41–10:45:50, the same boot-accepted
+set as legs a/b, all before cycle 1). The driver's `engine_warns=0`
+counts vllm-logger-format `' WARN '` lines — the pin_monitor class
+is a differently-formatted LMCache logger and does not appear in it.
+Observation, not a gate: the pin-timeout class shows up only in this
+leg's log (legs a/b are ~10-min boots, under the 300 s pin timeout +
+sweep cadence; r46's banked set has no full serve log to compare).
+No fix due: LMCache is store-only on this posture (tier attribution
+above) and the warnings self-resolve without service effect.
+
+Battery drift over 4 h (`c/cycle_*.out`, run7n replica ×2 per cycle):
+steady-state (55 cycles excl. cycle 2) **agg 260.53–301.25 tok/s
+(mean 283.12), solo 83.65–84.80 tok/s (mean 84.32)** — first cycle
+273.41/300.50 + 84.54/84.55 vs last cycle 265.82/300.07 + 84.61/84.58,
+no drift trend. The only dip is cycle 2 (agg 216.51/161.34, solo
+63.33/63.14) — attributed, not a defect: the warm-v2 tier-attribution
+probes (U32k cold prefill 17.3 s + U16k/U8k cold) ran on the soak
+boot in exactly that window, contending with the battery; all 4
+streams still completed (ok 4/4). W14 restored after the window:
+rig-side campaign line `[14:50:24] W14_RESTORED (radiance-test up)`
+(read live at close; the mirrored `c/` set carries the soak facts),
+`radiance-test` health 200 confirmed.
+
+**Leg C verdict: GREEN — cert4 holds a 4 h soak with zero battery,
+integrity, or engine failures and no throughput drift.**
 
 ## Outcome
 

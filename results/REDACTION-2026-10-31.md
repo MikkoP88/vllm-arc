@@ -129,3 +129,24 @@ engine's topology prints):
   addresses/hostnames (checked).
 - Post-pass grep: 0 raw rig, 0 raw hostname in the dir;
   `tools/leak_sweep.sh` clean.
+
+## Pass 4 (2026-11-01) — r70 leg c soak mirror (p70, P6.10 close-out)
+
+The 4 h soak leg's mirror
+`results/2026-10-31-p70-r70-cert4-comprehensive/c/` (124 files, 1.7 MB:
+56 cycle batteries, 56 integrity probes, soak_log/soak_summary, final
+spec gate, metrics, serve_full.log 9,444 lines, warm-v2 captures).
+Same `perl -pi` law, applied before first commit — the banked bytes
+never contained the raw addresses:
+
+- `serve_full.log`: 169 rig (+1,014) + 287 client (+2,009) = **+3,023**
+  bytes expected delta (prior session's byte-arithmetic verification;
+  token counts re-verified at close-out: 169/287).
+- `serve_pre_warm2.log`: 1 rig (+6) + 4 client (+28) = **+34**.
+- `serve_post_warm2.log`: 1 rig (+6) + 11 client (+77) = **+83**.
+- Total: 171 rig + 302 client occurrences = **+3,140 bytes**. Only
+  these 3 of 124 files carry address bytes; the other 121 (cycles,
+  integ probes, soak_log, soak_summary, spec_gate_final, metrics,
+  boot, survival, warm_rehit2) swept clean — 0 raw addresses, 0
+  hostnames (rig hostname checked: 0) in the whole `c/` tree.
+  Post-pass `tools/leak_sweep.sh` clean.

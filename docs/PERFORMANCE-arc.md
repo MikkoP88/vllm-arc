@@ -178,10 +178,20 @@ r70 legs a/b):**
 
 ### Stability — cert4-native
 
-- r70 soak (4 h, battery+integrity cycles): in flight at this commit —
-  interim state clean (every cycle health 200, integrity bad=0, zero
-  errors); the close-out row with final counts is appended by the
-  follow-up commit (evidence: `results/2026-10-31-p70-r70-cert4-comprehensive/c/`).
+- r70 soak (4 h, 56 cycles of battery+integrity+health, 10:46–14:46
+  UTC): **GREEN** — battery failures 0 (agg 4/4 streams ×112, solo
+  ×112), integrity 56/56 `bad=0`, health 200 every cycle, 0 ERROR /
+  0 Traceback in the full engine log (141 WARNINGs: 98 LMCache
+  pin_monitor self-resolving from the warm-v2 store window + 43
+  boot-accepted; neither class recurs in the driver's vllm-logger
+  warn counter — 0). Throughput drift none: steady-state agg
+  260.53–301.25 tok/s (mean 283.12), solo 83.65–84.80 (mean 84.32);
+  first-vs-last cycle 273.41/300.50 + 84.54/84.55 → 265.82/300.07 +
+  84.61/84.58; the single dip (cycle 2) is the warm-v2 probes
+  contending, streams still 4/4. Final spec gate on the soak boot:
+  pos1 0.9258 / acceptance 0.837 (target miss, recorded). W14
+  restored post-window. Evidence: `results/2026-10-31-p70-r70-cert4-comprehensive/c/`
+  (VERDICT §Leg C close-out).
 - Zero boot failures across the cert4 image family: r70 3 boots, p65
   2 gate images, r66 7 probe boots, r67 compile-A/B boots.
 - run7n ×2 per leg agree within 1.5 % (steady-state); prefix battery
