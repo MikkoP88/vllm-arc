@@ -21,11 +21,14 @@ reproduced natively on cert4 by r70 — both in this file).
 
 ## Measurement methodology — how every number in this file is produced
 
-**Provenance rule (owner law, 2026-10-31):** the current record cites
-**only faces measured natively on the current certified image**
-(`vllm-arc:v0.30.0-b70-cert4`). Numbers from earlier images (cert /
-cert2 / cert3 / p46) are history — labeled by image, never mixed into
-current-record tables.
+**Provenance rule (owner law, 2026-10-31; updated for the cert5
+release):** the current record cites **only faces measured natively on
+the certified image line** — the record image
+(`vllm-arc:v0.30.0-b70-cert4`) or the current release
+(`vllm-arc:v0.30.0-b70-cert5`, whose default posture is byte-identical
+and whose gates re-verified the default-posture faces in-family).
+Numbers from earlier images (cert / cert2 / cert3 / p46) are history —
+labeled by image, never mixed into current-record tables.
 
 ### Rig, image, and posture identity
 
