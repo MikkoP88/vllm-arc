@@ -5,7 +5,7 @@ at the r46t close-out) from `vllm_gaudi/envs.py` arc-lane markers + the
 certified serve line (`r43_serve_k5.sh`, spec depth 3 per the r46t
 recommendation — a serve-time CLI change — on image
 `vllm-arc:v0.30.0-b70-cert`; unchanged since — the chain is identical on
-the current certified image `vllm-arc:v0.30.0-b70-cert4`, where
+the current certified image `vllm-arc:v0.30.0-b70-cert5`, where
 `LMCACHE_TRACK_USAGE=false` (P6.3) made it 25). Every entry cites its
 provenance (no-unevidenced law, plan Appendix H #6). Audit of record:
 `results/2026-10-30-p5-r45-env-log-audit/`.
@@ -88,6 +88,7 @@ kill-switch to disable):
 | `VLLM_ARC_LOOKUP_ELIDE` | `0` = OFF | **INT token count, not a bool** — skips both ZMQ lookups only when engine prefix held AND residual ≤ N tokens; r31 disposition: opt-in only (p40d/p41c made real joint loads exist; elide would forfeit them) | `patches/lmcache_hma_connector.py:235` |
 | `LMC_DEFER_CHUNK_STORE` | `"0"` = OFF | P6.5 chunk-set store deferral — under `--long-prefill-token-threshold`, intermediate prefill-chunk rows carry `can_save=False` and leave `num_saved_tokens` un-advanced; the final chunk stores the whole span in ONE event. Opt-in long-context profile only (with `LMC_DEFER_MIN_TOKENS=40960`); default posture byte-identical to cert3 | lmcint `vllm_v1_adapter.py` `from_request_tracker` (p65/r48l) |
 | `LMC_DEFER_MIN_TOKENS` | `"0"` = defer every chunked prefill | length gate: defer only prompts with `prompt_len >= N`. Certified value **40960** — per-chunk events are free at 32k (LMC ≡ no-LMC) while the ungated one-shot store regresses that face +4.2 s (r48k); the win only exists at 64k (+24.6 s attribution @12 bys) | lmcint `vllm_v1_adapter.py` `from_request_tracker` (p65/r48l) |
+| `LMC_STORE_SLICE_TOKENS` | `"0"` = OFF (certified default; ships since cert5) | **experimental** — P6.13: slices the deferred one-shot final-span store into ~19 bounded windows (3328 tok runtime each), one per step, same chunk-row store call shape. `=4096` opt-in on top of the defer profile: U64k TTFT −1.2 s, `63232`-class → 0; NOT adopted into the certified profile (pre-registered max-gap bar mis-set — rung3 VERDICT §2) | lmcint `vllm_v1_adapter.py` `_lmc_flush_pending` (p73, cert5) |
 | `VLLM_ARC_XG_COMPACT` | `false` | compact-JSON structured-output posture | `tools/serve_arc_b70.sh` (p06) |
 | `VLLM_ARC_GMU_RELAX` | `0.0` | GMU conditional-relax fraction (0.8 = sanctioned B70 posture, set via serve env) | `platform.py` (p05) |
 
