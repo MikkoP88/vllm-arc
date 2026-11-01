@@ -73,10 +73,17 @@ profile is **NOT added to the certified long-context posture**.
    pre-registered adopt rule was not met; enabling it stays an owner call on
    the corrected bar (§2). Recorded in CONFIGURATION-arc's long-context
    profile as experimental.
-3. W14 restored post-window (this time the full recipe: container recreate
-   `+ plepatch.tgz hot-apply + chat_template_qwen38_high.jinja` — the
-   original container's writable layer carried both; a bare recreate is NOT
-   sufficient. Recorded in the plan §9 rig manual).
+3. W14 restored post-window — after a lived 5-attempt failure chain whose
+   root cause is now banked (plan §9 recreate law, corrected): the
+   incumbent's container is created by `w14_boot.sh fullres` (≈30 IEXP_*
+   container envs incl. `IEXP_EXPERT_OFFLOAD=1` + arena/pinned/heat
+   sidecar + a 15-file W13H staging chain); without that env chain the
+   whole MoE loads on GPU ("Available KV cache: −0.8 GiB" — identical
+   across three vllm_gaudi generations, proving the gate is env not
+   files). `w14_serve_only.sh` alone cannot recreate the container.
+   Final state: engine init 168.7 s, expert offload 299 slots/layer
+   (17.45 GiB arena, 8 pinned), model 24.74 GiB, KV +1.99 GiB, health
+   200, FRANCE probe correct (`/root/build/w14_boot_p73full.log`).
 
 **Predictions ledger:** TTFT band — confirmed (2-sample mean in band);
 histogram — exact (38 = 2×19); U32k family — exact; run7n — exact;
