@@ -1,0 +1,12 @@
+PASS  ADP file exists: /opt/venv/lib/python3.12/site-packages/vllm_gaudi/xpu/patches/lmcint/vllm_v1_adapter.py
+PASS  src-override maps vendored adapter fullname -> lmcint file
+PASS  P6.5 defer hunk intact (gate + default OFF)
+PASS  worker loops guard can_save (3 sites)
+PASS  module-level _lmc_slice_store_window present
+PASS  slice default OFF (env default '0')
+PASS  flush calls the slice helper
+PASS  slice store keeps the chunk-row call shape (mask+slot+offset)
+PASS  remainder re-queues into _lmc_pending_stores (cursor rides tuple)
+PASS  no probe instrumentation (ARC_P73_) in shipped file
+PASS  lmcint adapter compiles
+P73_CHECKS: 11/11 PASS

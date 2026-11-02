@@ -1,0 +1,7 @@
+SPEC_GATE call_FAIL HTTPError: HTTP Error 404: Not Found
+SPEC_GATE call_FAIL HTTPError: HTTP Error 404: Not Found
+SPEC_GATE call_FAIL HTTPError: HTTP Error 404: Not Found
+SPEC_GATE call_FAIL HTTPError: HTTP Error 404: Not Found
+SPEC_GATE {"wall_s": 0.02, "streams_ok": "0/4", "drafts": 0, "draft_tokens": 0, "accepted": 0, "pos": {"0": null, "1": null, "2": null, "3": null}, "pos1": 0.0, "acceptance": 0.0, "mean_acceptance_length": 0.0, "hard": 0.5, "target": 0.85}
+SPEC_GATE log_window: 
+SPEC_GATE FAIL: load incomplete (0/4)

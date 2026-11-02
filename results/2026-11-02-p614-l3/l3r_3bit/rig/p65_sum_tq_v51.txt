@@ -1,0 +1,33 @@
+=== warmup (first-traffic law; warms p12b interlock + first graphs)
+prompt sizes: U32k=31805 U64k=63784 U8k=7961 tok
+raw -> /root/build/p65/p614/l3r_3bit/p65_tl_tq_v51.json (9868 chunks, 60 events)
+  text[warmup] 20ch: 'Counting from 1 to 1'
+  text[U32k] 138ch: 'Based on the data provided, there is no specific information available.\n\n**Answer:**\n\n**\n\n\n\n\n\n\n\n\n\n.\n'
+  text[byst0] 240ch: 'Counting from 1 to 1000 is a straightforward task. Here is the list:\n\n1.  1\n  2  2222222222222222222'
+  text[byst1] 240ch: 'Counting from 1 to 1,000 is a straightforward task. Here is the list:\n\n1. 1\n222222222222222222222222'
+  text[byst2] 240ch: 'Counting from 1 to 1,000 is a straightforward task. Here is the list:\n\n1. 1\n222222222222222222222222'
+  text[byst3] 240ch: 'Counting from 1 to 1,000 is a straightforward task. Here is the list:\n\n1. 1\n222222222222222222222222'
+  text[byst4] 240ch: 'Counting from 1 to 1,000 is a straightforward task. Here is the list:\n\n1. 1\n222222222222222222222222'
+  text[byst5] 240ch: 'Counting from 1 to 1,000 is a straightforward task. Here is the list:\n\n1. 1\n222222222222222222222222'
+  text[U64k] 71ch: 'Based on the data provided, there is no specific information available.'
+  text[bys21] 240ch: 'Counting from 1 to 1000 is a straightforward task. Here is the list:\n\n1.  1\n  2  2222222222222222222'
+  text[bys20] 240ch: 'Counting from 1 to 1,000 is a straightforward task. Here is the list:\n\n1. 1\n222222222222222222222222'
+  text[bys23] 240ch: 'Counting from 1 to 1,000 is a straightforward task. Here is the list:\n\n1. 1\n222222222222222222222222'
+  text[bys22] 240ch: 'Counting from 1 to 1,000 is a straightforward task. Here is the list:\n\n1. 1\n222222222222222222222222'
+  text[bys25] 240ch: 'Counting from 1 to 1,000 is a straightforward task. Here is the list:\n\n1. 1\n222222222222222222222222'
+  text[bys24] 240ch: 'Counting from 1 to 1,000 is a straightforward task. Here is the list:\n\n1. 1\n222222222222222222222222'
+
+=== long-stream faces (perf_counter, wave-relative)
+  U32k: TTFT=  16.02s total=  17.14s (start @ wave+  25.0s)
+  U64k: TTFT=  35.74s total=  36.04s (start @ wave+  85.0s)
+
+=== bystander inter-chunk gaps (12 streams, greedy, k3)
+  baseline: n=2394 p50=   56.6ms p95=   57.3ms
+  window                 n    p50 ms    p95 ms    max ms #>2xb95  stall_s
+  W_base              2394      56.6      57.3      66.6       0     0.00
+  W_U32k_start         156      58.9    3188.6    3288.3      36    92.94
+  W_U32k_end           420      56.9      59.2      65.4       0     0.00
+  W_U64k_start         198      62.9    3728.6    3856.8      66   209.04
+  W_U64k_end           342      57.3      63.7      64.7       0     0.00
+
+P65_CAPTURE: DONE

@@ -1,0 +1,246 @@
+[
+    {
+        "Id": "07b2c4c2fb550fc0ed63878b754440e74162bf5e494312625f9b8f51fd62e66f",
+        "Created": "2026-11-02T15:31:56.201421521Z",
+        "Path": "/bin/bash",
+        "Args": [
+            "-c",
+            "sleep infinity"
+        ],
+        "State": {
+            "Status": "exited",
+            "Running": false,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 0,
+            "ExitCode": 137,
+            "Error": "",
+            "StartedAt": "2026-11-02T15:31:56.23730896Z",
+            "FinishedAt": "2026-11-02T15:38:43.479825683Z"
+        },
+        "Image": "sha256:b9f9af08da8e48b452c9703837b9ec8cc450864407660a5c142bc3d20cf8325b",
+        "ResolvConfPath": "/var/lib/docker/containers/07b2c4c2fb550fc0ed63878b754440e74162bf5e494312625f9b8f51fd62e66f/resolv.conf",
+        "HostnamePath": "/var/lib/docker/containers/07b2c4c2fb550fc0ed63878b754440e74162bf5e494312625f9b8f51fd62e66f/hostname",
+        "HostsPath": "/var/lib/docker/containers/07b2c4c2fb550fc0ed63878b754440e74162bf5e494312625f9b8f51fd62e66f/hosts",
+        "LogPath": "/var/lib/docker/containers/07b2c4c2fb550fc0ed63878b754440e74162bf5e494312625f9b8f51fd62e66f/07b2c4c2fb550fc0ed63878b754440e74162bf5e494312625f9b8f51fd62e66f-json.log",
+        "Name": "/arc-test",
+        "RestartCount": 0,
+        "Driver": "overlayfs",
+        "Platform": "linux",
+        "MountLabel": "",
+        "ProcessLabel": "",
+        "AppArmorProfile": "unconfined",
+        "ExecIDs": null,
+        "HostConfig": {
+            "Binds": [
+                "/models/qwen3.8-27b-fp8:/models/target:ro",
+                "/root/build/v127_stage/chat_template_qwen38_high.jinja:/root/chat_template_qwen38_high.jinja:ro",
+                "/root/build/neo_cache:/root/.neo_cache",
+                "/root/build/triton_cache:/root/.triton_cache",
+                "/root/build/inductor_cache:/root/.inductor_cache"
+            ],
+            "ContainerIDFile": "",
+            "LogConfig": {
+                "Type": "json-file",
+                "Config": {}
+            },
+            "NetworkMode": "host",
+            "PortBindings": {},
+            "RestartPolicy": {
+                "Name": "no",
+                "MaximumRetryCount": 0
+            },
+            "AutoRemove": false,
+            "VolumeDriver": "",
+            "VolumesFrom": null,
+            "ConsoleSize": [
+                0,
+                0
+            ],
+            "CapAdd": null,
+            "CapDrop": null,
+            "CgroupnsMode": "private",
+            "Dns": null,
+            "DnsOptions": [],
+            "DnsSearch": [],
+            "ExtraHosts": null,
+            "GroupAdd": null,
+            "IpcMode": "host",
+            "Cgroup": "",
+            "Links": null,
+            "OomScoreAdj": 0,
+            "PidMode": "",
+            "Privileged": true,
+            "PublishAllPorts": false,
+            "ReadonlyRootfs": false,
+            "SecurityOpt": [
+                "label=disable"
+            ],
+            "UTSMode": "",
+            "UsernsMode": "",
+            "ShmSize": 68719476736,
+            "Runtime": "runc",
+            "Isolation": "",
+            "CpuShares": 0,
+            "Memory": 0,
+            "NanoCpus": 0,
+            "CgroupParent": "",
+            "BlkioWeight": 0,
+            "BlkioWeightDevice": [],
+            "BlkioDeviceReadBps": [],
+            "BlkioDeviceWriteBps": [],
+            "BlkioDeviceReadIOps": [],
+            "BlkioDeviceWriteIOps": [],
+            "CpuPeriod": 0,
+            "CpuQuota": 0,
+            "CpuRealtimePeriod": 0,
+            "CpuRealtimeRuntime": 0,
+            "CpusetCpus": "",
+            "CpusetMems": "",
+            "Devices": [],
+            "DeviceCgroupRules": null,
+            "DeviceRequests": null,
+            "MemoryReservation": 0,
+            "MemorySwap": 0,
+            "MemorySwappiness": null,
+            "OomKillDisable": null,
+            "PidsLimit": null,
+            "Ulimits": [],
+            "CpuCount": 0,
+            "CpuPercent": 0,
+            "IOMaximumIOps": 0,
+            "IOMaximumBandwidth": 0,
+            "MaskedPaths": null,
+            "ReadonlyPaths": null
+        },
+        "Storage": {
+            "RootFS": {
+                "Snapshot": {
+                    "Name": "overlayfs"
+                }
+            }
+        },
+        "Mounts": [
+            {
+                "Type": "bind",
+                "Source": "/root/build/v127_stage/chat_template_qwen38_high.jinja",
+                "Destination": "/root/chat_template_qwen38_high.jinja",
+                "Mode": "ro",
+                "RW": false,
+                "Propagation": "rprivate"
+            },
+            {
+                "Type": "bind",
+                "Source": "/root/build/neo_cache",
+                "Destination": "/root/.neo_cache",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rprivate"
+            },
+            {
+                "Type": "bind",
+                "Source": "/root/build/triton_cache",
+                "Destination": "/root/.triton_cache",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rprivate"
+            },
+            {
+                "Type": "bind",
+                "Source": "/root/build/inductor_cache",
+                "Destination": "/root/.inductor_cache",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rprivate"
+            },
+            {
+                "Type": "bind",
+                "Source": "/models/qwen3.8-27b-fp8",
+                "Destination": "/models/target",
+                "Mode": "ro",
+                "RW": false,
+                "Propagation": "rprivate"
+            }
+        ],
+        "Config": {
+            "Hostname": "REDACTED-HOST",
+            "Domainname": "",
+            "User": "",
+            "AttachStdin": false,
+            "AttachStdout": false,
+            "AttachStderr": false,
+            "Tty": false,
+            "OpenStdin": false,
+            "StdinOnce": false,
+            "Env": [
+                "VLLM_ALLOW_LONG_MAX_MODEL_LEN=1",
+                "VLLM_WORKER_MULTIPROC_METHOD=spawn",
+                "PATH=/opt/venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+                "VIRTUAL_ENV=/opt/venv",
+                "PIP_EXTRA_INDEX_URL=https://download.pytorch.org/whl/xpu",
+                "PIP_DISABLE_PIP_VERSION_CHECK=1",
+                "PIP_NO_CACHE_DIR=1",
+                "VLLM_QUANTIZE_Q40_LIB=/opt/venv/lib/python3.12/site-packages/vllm_int4_for_multi_arc.so",
+                "PIP_CONSTRAINT="
+            ],
+            "Cmd": [
+                "-c",
+                "sleep infinity"
+            ],
+            "Image": "vllm-arc:v0.30.0-b70-p614c2",
+            "Volumes": null,
+            "WorkingDir": "/llm-scaler/vllm",
+            "Entrypoint": [
+                "/bin/bash"
+            ],
+            "Labels": {
+                "image.omix.version": "0.1.0",
+                "org.opencontainers.image.authors": "Intel Corporation",
+                "org.opencontainers.image.created": "2026-06-08T12:53:11+00:00",
+                "org.opencontainers.image.description": "Open Middleware X<sup>e</sup> is a set of highly optimized deep learning frameworks and tools for Intel GPUs to accelerate AI workloads.",
+                "org.opencontainers.image.documentation": "https://github.com/intel/containers",
+                "org.opencontainers.image.licenses": "MIT",
+                "org.opencontainers.image.revision": "ac12083301cbdbe06135882d401f7877b0b512db",
+                "org.opencontainers.image.source": "https://github.com/intel/containers",
+                "org.opencontainers.image.title": "Open Middleware X<sup>e</sup>",
+                "org.opencontainers.image.url": "https://www.intel.com",
+                "org.opencontainers.image.version": "20260608"
+            }
+        },
+        "NetworkSettings": {
+            "SandboxID": "",
+            "SandboxKey": "",
+            "Ports": {},
+            "Networks": {
+                "host": {
+                    "IPAMConfig": null,
+                    "Links": null,
+                    "Aliases": null,
+                    "DriverOpts": null,
+                    "GwPriority": 0,
+                    "NetworkID": "ee26baff58219ff9055a621858d28cd73d003640dd3440679576152424c5ad98",
+                    "EndpointID": "",
+                    "Gateway": "",
+                    "IPAddress": "",
+                    "MacAddress": "",
+                    "IPPrefixLen": 0,
+                    "IPv6Gateway": "",
+                    "GlobalIPv6Address": "",
+                    "GlobalIPv6PrefixLen": 0,
+                    "DNSNames": null
+                }
+            }
+        },
+        "ImageManifestDescriptor": {
+            "mediaType": "application/vnd.oci.image.manifest.v1+json",
+            "digest": "sha256:5c172e5344a3637b5da80b96e7e461deaafa251594f8f25eefee62b0b838fa20",
+            "size": 4696,
+            "platform": {
+                "architecture": "amd64",
+                "os": "linux"
+            }
+        }
+    }
+]
