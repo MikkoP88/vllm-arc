@@ -345,29 +345,67 @@ tier participating (first time under TQ — hit-rate max 5.9 / 6.2 /
 
 | Preset | KV capacity | U32k / U64k TTFT | t0 agg#2/solo | t1.0 xhigh agg | gap p95 U32k/U64k |
 |---|---|---|---|---|---|
-| `fp8_e4m3` (default) | 405,491 tok (1.55×) | 23.16 / 50.77 s | 297.19 / 84.48 | **189.41** | 1299 / 1569 ms |
+| `fp8_e4m3` (default)¹ | 405,491 tok (1.55×) | 23.16 / 50.77 s | 297.19 / 84.48 | **189.41** | 1299 / 1569 ms¹ |
 | `turboquant_k8v4` | 526,445 tok (2.01×) | **15.29 / 33.03 s** | 302.58 / 88.05 | **173.39 (−8.5 %)** | 3690 / 4385 ms |
 | `turboquant_4bit_nc` | 757,641 tok (2.89×) | 15.91 / 34.02 s | 300.06 / 86.31 | 93.05 (−51 %) | 3218 / 3785 ms |
 | `turboquant_k3v4_nc` | 853,220 tok (3.25×) | 15.48 / 33.78 s | 294.43 / 83.44 | 88.95 (−53 %) | 3736 / 4186 ms |
 | `turboquant_3bit_nc` | **975,329 tok (3.72×)** | 16.02 / 35.74 s | 302.77 / 86.25 | 89.58 (−53 %) | 3188 / 3729 ms |
 
+¹ fp8 comparator row as run in the A/B (thr2048-profile face —
+hence its 23.16/50.77 TTFT and 1.3/1.6 s gaps). P6.15 re-measured
+TRUE default-posture fp8: TTFT 17.25/39.77 s, gaps p95 **3986/5295 ms
+— the WORST bystander-stall face of the family** (the TQ rows above,
+at equal posture, IMPROVE bystander stalls; the old "TQ gaps ~2.5× vs
+fp8" reading was this profile mismatch). See "Bystander-stall tuning"
+below.
+
 **What improves (dtype-wide):** KV capacity 1.55× → 2.0–3.7× max
 concurrency at the same 6.92 GiB pool; U32k/U64k TTFT −30…−35 % (TQ
 prefill reads a narrower KV); t0 greedy throughput in-family or better
-(294–303 agg across presets).
+(294–303 agg across presets); at equal posture, bystander prefill
+stalls (see ¹).
 
 **TQ-inherent costs (unchanged by the fix — owner-call material, per
 preset):** the sampled t1.0 xhigh agg drops 8.5 % (k8v4) to ~53 %
 (sub-4-bit presets — ragged early-finish streams, solo pair ~77–86 +
-~26 tok/s); bystander prefill gaps rise to p95 ~3.2–3.7 s (U32k) /
-~3.7–4.6 s (U64k) vs fp8's ~1.3/1.6 s. Spec acceptance stays ≥ 0.86 on
-every preset; integrity/determinism hold.
+~26 tok/s). Spec acceptance stays ≥ 0.86 on every preset;
+integrity/determinism hold.
 
 **Dispositions:** `k8v4` = the quality-safest TQ face (within 9 % of
 fp8 on the worst quality face, best absolute TTFT); `3bit_nc` /
 `k3v4_nc` = max-capacity faces where the sampled-throughput cost is
-acceptable; `4bit_nc` = middle. The certified default stays
-`fp8_e4m3` — fastest sampled throughput, lowest bystander cost.
+acceptable; `4bit_nc` = middle (and the best bystander-stall face at
+default posture). The certified default stays `fp8_e4m3` — fastest
+sampled throughput, the quality reference face; NOT the lowest
+bystander cost (true-default fp8 has the highest — see below).
+
+### Bystander-stall tuning — chunk granularity (P6.15, 2026-11-02)
+
+A bystander inter-token gap = exactly ONE chunked-prefill engine step
+(decode does not piggyback into prefill steps on this stack; stall
+≈ tokens-per-chunk / prefill-rate). The dtype KV-page size quantizes
+the chunk ladder (TQ 1664 → 1664/3328/6656; fp8 832 → 1664/3328/7488);
+smaller chunks cut stall duration but add prefix re-reads, so stalls
+and TTFT trade off along a Pareto frontier — there is no free knob.
+All faces on the cert6 image, same p65-timeline harness, integrity
+5/5 + determinism 3/3, 0 ERROR / 0 Traceback
+(`results/2026-11-02-p615-stall-analysis/` + per-leg VERDICTs):
+
+| Face (opt-in) | Chunk | TTFT U32k / U64k | gap p95 U32k / U64k | KV capacity |
+|---|---|---|---|---|
+| fp8 default (certified) | 7488 | 17.25 / 39.77 s | 3986 / 5295 ms | 405,491 (1.53×) |
+| fp8 + `ARC_MNBT=4096` | 3328 | 19.49 / 42.83 s | 2030 / 2587 ms | 433,210 (1.65×) |
+| TQ4 (`turboquant_4bit_nc`) default | 6656 | 15.85 / 33.98 s | 3227 / 3780 ms | 757,641 (2.89×) |
+| TQ4 + `ARC_MNBT=4096` | 3328 | 17.59 / 37.03 s | 2003 / 2049 ms | 809,161 (3.09×) |
+| TQ4 + `ARC_MNBT=2048` | 1664 | 22.14 / 45.38 s | 1325 / 1286 ms | 821,283 (3.13×) |
+| TQ4 + thr2048 (p65 profile knob) | 1664 | 21.60 / 47.78 s | 1159 / 1329 ms | 757,641 (2.89×) |
+
+Guidance: stall-sensitive mixed fleets → **TQ4 + MNBT 4096** (stalls
+−38/−46 %, capacity +6.8 %, TTFT ≤ fp8-default); sub-1.5 s stalls →
+TQ4 + MNBT 2048 (largest TQ4 pool; dominates the equivalent thr2048
+face) at +14–40 % TTFT; fp8-fixed fleets → MNBT 4096 (stalls halved,
++6.8 % capacity, +8–13 % TTFT). Certified defaults unchanged — this
+menu is opt-in.
 
 Mechanism + fix detail, pre-fix failure capture, and the per-preset leg
 narratives: `results/2026-11-02-p614-{dbg,preflight,l1v1,l1v2,l2,l3}/`
