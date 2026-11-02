@@ -1,0 +1,54 @@
+WARNING 11-02 15:45:50 [argparse_utils.py:276] With `vllm serve`, you should provide the model as a positional argument or in a config file instead of via the `--model` option. The `--model` option will be removed in a future version.
+(APIServer pid=13) WARNING 11-02 15:45:50 [envs.py:2248] Unknown vLLM environment variable detected: VLLM_QUANTIZE_Q40_LIB
+(APIServer pid=13) WARNING 11-02 15:46:15 [model.py:2364] Casting torch.bfloat16 to torch.float16.
+(APIServer pid=13) WARNING 11-02 15:46:17 [indexer_topk.py:29] Failed to import the DeepSelect extension (vllm._deepselect_C): No module named 'vllm._deepselect_C'
+(APIServer pid=13) WARNING 11-02 15:46:33 [model.py:2364] Casting torch.bfloat16 to torch.float16.
+(APIServer pid=13) WARNING 11-02 15:46:33 [speculative.py:1361] Enabling num_speculative_tokens > 1 will run multiple times of forward on same MTP layer,which may result in lower acceptance rate
+(APIServer pid=13) WARNING 11-02 15:46:33 [arg_utils.py:2524] TurboQuant is not yet compatible with FlashAttention >= 3. Overriding flash_attn_version to 2. To silence this warning, pass --attention-config.flash_attn_version=2
+(APIServer pid=13) WARNING 11-02 15:46:33 [config.py:819] Qwen3.5 model specifies mamba_ssm_dtype='float32' in its config, but --mamba-ssm-cache-dtype='float16' was passed. Using the user-specified value.
+(APIServer pid=13) WARNING 11-02 15:46:33 [vllm.py:1570] Inductor compilation was disabled by user settings, optimizations settings that are only active during inductor compilation will be ignored.
+(APIServer pid=13) WARNING 11-02 15:46:33 [xpu.py:308] XPU Graph support is experimental and currently only supports single-GPU execution.
+WARNING 11-02 15:47:15 [indexer_topk.py:29] Failed to import the DeepSelect extension (vllm._deepselect_C): No module named 'vllm._deepselect_C'
+WARNING 11-02 15:47:28 [indexer_topk.py:29] Failed to import the DeepSelect extension (vllm._deepselect_C): No module named 'vllm._deepselect_C'
+(Worker_TP0 pid=930) WARNING 11-02 15:47:33 [rocm.py:42] Failed to import from amdsmi with ModuleNotFoundError("No module named 'amdsmi'")
+(Worker_TP0 pid=930) WARNING 11-02 15:47:33 [rocm.py:47] Failed to import from vllm._C with ModuleNotFoundError("No module named 'vllm._C'")
+(Worker_TP0 pid=930) WARNING 11-02 15:47:33 [rocm.py:53] Failed to import from vllm._C_stable_libtorch with ModuleNotFoundError("No module named 'vllm._C_stable_libtorch'")
+(Worker_TP0 pid=930) WARNING 11-02 15:47:33 [rocm.py:58] Failed to import from vllm._rocm_C with ModuleNotFoundError("No module named 'vllm._rocm_C'")
+(Worker_TP0 pid=930) WARNING 11-02 15:47:33 [flydsl_turboquant_decode.py:95] FlyDSL TQ decode launcher: unavailable (Torch not compiled with CUDA enabled). Falling back to SoA Triton decode.
+(Worker_TP1 pid=1030) WARNING 11-02 15:47:33 [rocm.py:42] Failed to import from amdsmi with ModuleNotFoundError("No module named 'amdsmi'")
+(Worker_TP1 pid=1030) WARNING 11-02 15:47:33 [rocm.py:47] Failed to import from vllm._C with ModuleNotFoundError("No module named 'vllm._C'")
+(Worker_TP1 pid=1030) WARNING 11-02 15:47:33 [rocm.py:53] Failed to import from vllm._C_stable_libtorch with ModuleNotFoundError("No module named 'vllm._C_stable_libtorch'")
+(Worker_TP1 pid=1030) WARNING 11-02 15:47:33 [rocm.py:58] Failed to import from vllm._rocm_C with ModuleNotFoundError("No module named 'vllm._rocm_C'")
+(EngineCore pid=698) WARNING 11-02 15:48:26 [kv_cache_utils.py:1556] Add 3 padding layers, may waste at most 6.25% KV cache memory
+(EngineCore pid=698) WARNING 11-02 15:48:26 [kv_cache_utils.py:2206] Speculative decoding (method=mtp) is enabled but no KV cache group could be identified as the draft model's.
+(Worker_TP0 pid=930) WARNING 11-02 15:48:26 [base.py:217] Initializing KVConnectorBase_V1. This API is experimental and subject to change in the future as we iterate the design.
+(Worker_TP1 pid=1030) WARNING 11-02 15:48:26 [base.py:217] Initializing KVConnectorBase_V1. This API is experimental and subject to change in the future as we iterate the design.
+(Worker_TP0 pid=930) [33;20m[2026-11-02 15:48:27,044] LMCache WARNING:[0m No LMCache configuration file is set. Trying to read configurations from the environment variables. [3m(utils.py:48:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.utils)[0m
+(Worker_TP0 pid=930) [33;20m[2026-11-02 15:48:27,045] LMCache WARNING:[0m You can set the configuration file through the environment variable: LMCACHE_CONFIG_FILE [3m(utils.py:52:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.utils)[0m
+(Worker_TP1 pid=1030) [33;20m[2026-11-02 15:48:27,048] LMCache WARNING:[0m No LMCache configuration file is set. Trying to read configurations from the environment variables. [3m(utils.py:48:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.utils)[0m
+(Worker_TP1 pid=1030) [33;20m[2026-11-02 15:48:27,049] LMCache WARNING:[0m You can set the configuration file through the environment variable: LMCACHE_CONFIG_FILE [3m(utils.py:52:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.utils)[0m
+(Worker_TP0 pid=930) [33;20m[2026-11-02 15:48:27,050] LMCache WARNING:[0m Could not load 'builtin' from vLLM. Using builtin hash. This may cause inconsistencies in distributed caching. [3m(token_database.py:162:lmcache.v1.token_database)[0m
+(Worker_TP1 pid=1030) [33;20m[2026-11-02 15:48:27,053] LMCache WARNING:[0m Could not load 'builtin' from vLLM. Using builtin hash. This may cause inconsistencies in distributed caching. [3m(token_database.py:162:lmcache.v1.token_database)[0m
+(Worker_TP0 pid=930) [33;20m[2026-11-02 15:48:27,607] LMCache WARNING:[0m Could not load 'builtin' from vLLM. Using builtin hash. This may cause inconsistencies in distributed caching. [3m(token_database.py:162:lmcache.v1.token_database)[0m
+(Worker_TP1 pid=1030) [33;20m[2026-11-02 15:48:27,608] LMCache WARNING:[0m Could not load 'builtin' from vLLM. Using builtin hash. This may cause inconsistencies in distributed caching. [3m(token_database.py:162:lmcache.v1.token_database)[0m
+(Worker_TP1 pid=1030) [33;20m[2026-11-02 15:48:36,543] LMCache WARNING:[0m Controller message sender is not initialized [3m(local_cpu_backend.py:105:lmcache.v1.storage_backend.local_cpu_backend)[0m
+(Worker_TP0 pid=930) [33;20m[2026-11-02 15:48:36,567] LMCache WARNING:[0m Controller message sender is not initialized [3m(local_cpu_backend.py:105:lmcache.v1.storage_backend.local_cpu_backend)[0m
+(Worker_TP0 pid=930) [33;20m[2026-11-02 15:48:50,415] LMCache WARNING:[0m Controller message sender is not initialized [3m(local_cpu_backend.py:105:lmcache.v1.storage_backend.local_cpu_backend)[0m
+(Worker_TP1 pid=1030) [33;20m[2026-11-02 15:48:50,650] LMCache WARNING:[0m Controller message sender is not initialized [3m(local_cpu_backend.py:105:lmcache.v1.storage_backend.local_cpu_backend)[0m
+(EngineCore pid=698) WARNING 11-02 15:50:32 [base.py:217] Initializing KVConnectorBase_V1. This API is experimental and subject to change in the future as we iterate the design.
+(EngineCore pid=698) [33;20m[2026-11-02 15:50:33,692] LMCache WARNING:[0m No LMCache configuration file is set. Trying to read configurations from the environment variables. [3m(utils.py:48:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.utils)[0m
+(EngineCore pid=698) [33;20m[2026-11-02 15:50:33,692] LMCache WARNING:[0m You can set the configuration file through the environment variable: LMCACHE_CONFIG_FILE [3m(utils.py:52:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.utils)[0m
+(EngineCore pid=698) [33;20m[2026-11-02 15:50:33,693] LMCache WARNING:[0m Could not load 'builtin' from vLLM. Using builtin hash. This may cause inconsistencies in distributed caching. [3m(token_database.py:162:lmcache.v1.token_database)[0m
+(EngineCore pid=698) [33;20m[2026-11-02 15:50:33,694] LMCache WARNING:[0m Could not load 'builtin' from vLLM. Using builtin hash. This may cause inconsistencies in distributed caching. [3m(token_database.py:162:lmcache.v1.token_database)[0m
+(EngineCore pid=698) WARNING 11-02 15:50:43 [vllm.py:1570] Inductor compilation was disabled by user settings, optimizations settings that are only active during inductor compilation will be ignored.
+(EngineCore pid=698) WARNING 11-02 15:50:43 [xpu.py:308] XPU Graph support is experimental and currently only supports single-GPU execution.
+(APIServer pid=13) WARNING 11-02 15:50:44 [model.py:1772] Default vLLM sampling parameters have been overridden by the model's `generation_config.json`: `{'repetition_penalty': 1.0, 'temperature': 0.6, 'top_k': 20, 'top_p': 0.95, 'min_p': 0.0}`. If this is not intended, please relaunch vLLM instance with `--generation-config vllm`.
+(APIServer pid=13) WARNING 11-02 15:50:46 [input_processor.py:315] Passing raw prompts to InputProcessor is deprecated and will be removed in the future. You should instead pass the outputs of Renderer.render_cmpl() or Renderer.render_chat().
+(Worker_TP0 pid=930) WARNING 11-02 15:50:46 [jit_monitor.py:141] Triton kernel JIT compilation during inference: _compute_local_logits_stats_kernel. This causes a latency spike; consider extending warmup to cover this shape/config.
+(Worker_TP0 pid=930) WARNING 11-02 15:50:47 [jit_monitor.py:141] Triton kernel JIT compilation during inference: _rejection_kernel. This causes a latency spike; consider extending warmup to cover this shape/config.
+(Worker_TP0 pid=930) WARNING 11-02 15:50:47 [jit_monitor.py:141] Triton kernel JIT compilation during inference: _resample_kernel. This causes a latency spike; consider extending warmup to cover this shape/config.
+(Worker_TP0 pid=930) WARNING 11-02 15:50:51 [jit_monitor.py:141] Triton kernel JIT compilation during inference: _tq_full_dequant_kv. This causes a latency spike; consider extending warmup to cover this shape/config.
+(Worker_TP0 pid=930) [33;20m[2026-11-02 15:50:52,915] LMCache WARNING:[0m NL_X_NB_BS_NH_TWO_HS_Spec.__init__ is deprecated: NL_X_NB_BS_NH_TWO_HS is superseded by NL_X_NB_BS_NH_CS (raw 4-D content-size layout) [3m(utils.py:764:lmcache.utils)[0m
+(Worker_TP1 pid=1030) [33;20m[2026-11-02 15:50:52,915] LMCache WARNING:[0m NL_X_NB_BS_NH_TWO_HS_Spec.__init__ is deprecated: NL_X_NB_BS_NH_TWO_HS is superseded by NL_X_NB_BS_NH_CS (raw 4-D content-size layout) [3m(utils.py:764:lmcache.utils)[0m
+(Worker_TP0 pid=930) WARNING 11-02 15:50:56 [jit_monitor.py:141] Triton kernel JIT compilation during inference: _tq_decode_stage1. This causes a latency spike; consider extending warmup to cover this shape/config.
+(Worker_TP0 pid=930) WARNING 11-02 15:51:12 [jit_monitor.py:141] Triton kernel JIT compilation during inference: _topk_topp_kernel. This causes a latency spike; consider extending warmup to cover this shape/config.

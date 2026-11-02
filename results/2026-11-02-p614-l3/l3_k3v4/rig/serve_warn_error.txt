@@ -1,0 +1,76 @@
+WARNING 11-02 15:22:42 [argparse_utils.py:276] With `vllm serve`, you should provide the model as a positional argument or in a config file instead of via the `--model` option. The `--model` option will be removed in a future version.
+(APIServer pid=13) WARNING 11-02 15:22:42 [envs.py:2248] Unknown vLLM environment variable detected: VLLM_QUANTIZE_Q40_LIB
+(APIServer pid=13) WARNING 11-02 15:23:07 [model.py:2364] Casting torch.bfloat16 to torch.float16.
+(APIServer pid=13) WARNING 11-02 15:23:09 [indexer_topk.py:29] Failed to import the DeepSelect extension (vllm._deepselect_C): No module named 'vllm._deepselect_C'
+(APIServer pid=13) WARNING 11-02 15:23:25 [model.py:2364] Casting torch.bfloat16 to torch.float16.
+(APIServer pid=13) WARNING 11-02 15:23:25 [speculative.py:1361] Enabling num_speculative_tokens > 1 will run multiple times of forward on same MTP layer,which may result in lower acceptance rate
+(APIServer pid=13) WARNING 11-02 15:23:25 [arg_utils.py:2524] TurboQuant is not yet compatible with FlashAttention >= 3. Overriding flash_attn_version to 2. To silence this warning, pass --attention-config.flash_attn_version=2
+(APIServer pid=13) WARNING 11-02 15:23:25 [config.py:819] Qwen3.5 model specifies mamba_ssm_dtype='float32' in its config, but --mamba-ssm-cache-dtype='float16' was passed. Using the user-specified value.
+(APIServer pid=13) WARNING 11-02 15:23:25 [vllm.py:1570] Inductor compilation was disabled by user settings, optimizations settings that are only active during inductor compilation will be ignored.
+(APIServer pid=13) WARNING 11-02 15:23:25 [xpu.py:308] XPU Graph support is experimental and currently only supports single-GPU execution.
+WARNING 11-02 15:24:13 [indexer_topk.py:29] Failed to import the DeepSelect extension (vllm._deepselect_C): No module named 'vllm._deepselect_C'
+WARNING 11-02 15:24:28 [indexer_topk.py:29] Failed to import the DeepSelect extension (vllm._deepselect_C): No module named 'vllm._deepselect_C'
+(Worker pid=930) ERROR 11-02 15:24:32 [multiproc_executor.py:944] WorkerProc failed to start.
+(Worker pid=930) ERROR 11-02 15:24:32 [multiproc_executor.py:944] Traceback (most recent call last):
+(Worker pid=930) ERROR 11-02 15:24:32 [multiproc_executor.py:944]   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/executor/multiproc_executor.py", line 911, in worker_main
+(Worker pid=930) ERROR 11-02 15:24:32 [multiproc_executor.py:944]     worker = WorkerProc(*args, **kwargs)
+(Worker pid=930) ERROR 11-02 15:24:32 [multiproc_executor.py:944]              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(Worker pid=930) ERROR 11-02 15:24:32 [multiproc_executor.py:944]   File "/opt/venv/lib/python3.12/site-packages/vllm/tracing/otel.py", line 178, in sync_wrapper
+(Worker pid=930) ERROR 11-02 15:24:32 [multiproc_executor.py:944]     return func(*args, **kwargs)
+(Worker pid=930) ERROR 11-02 15:24:32 [multiproc_executor.py:944]            ^^^^^^^^^^^^^^^^^^^^^
+(Worker pid=930) ERROR 11-02 15:24:32 [multiproc_executor.py:944]   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/executor/multiproc_executor.py", line 672, in __init__
+(Worker pid=930) ERROR 11-02 15:24:32 [multiproc_executor.py:944]     self.worker.init_device()
+(Worker pid=930) ERROR 11-02 15:24:32 [multiproc_executor.py:944]   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/worker/worker_base.py", line 355, in init_device
+(Worker pid=930) ERROR 11-02 15:24:32 [multiproc_executor.py:944]     self.worker.init_device()  # type: ignore
+(Worker pid=930) ERROR 11-02 15:24:32 [multiproc_executor.py:944]     ^^^^^^^^^^^^^^^^^^^^^^^^^
+(Worker pid=930) ERROR 11-02 15:24:32 [multiproc_executor.py:944]   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/worker/xpu_worker.py", line 180, in init_device
+(Worker pid=930) ERROR 11-02 15:24:32 [multiproc_executor.py:944]     self.requested_memory = request_memory(init_snapshot, self.cache_config)
+(Worker pid=930) ERROR 11-02 15:24:32 [multiproc_executor.py:944]                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(Worker pid=930) ERROR 11-02 15:24:32 [multiproc_executor.py:944]   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/worker/utils.py", line 544, in request_memory
+(Worker pid=930) ERROR 11-02 15:24:32 [multiproc_executor.py:944]     raise ValueError(
+(Worker pid=930) ERROR 11-02 15:24:32 [multiproc_executor.py:944] ValueError: Free memory on device xpu:0 (24.6/31.89 GiB) on startup is less than desired GPU memory utilization (0.8, 25.51 GiB). Decrease GPU memory utilization or reduce GPU memory used by other processes.
+(Worker pid=1030) ERROR 11-02 15:24:32 [multiproc_executor.py:944] WorkerProc failed to start.
+(Worker pid=1030) ERROR 11-02 15:24:32 [multiproc_executor.py:944] Traceback (most recent call last):
+(Worker pid=1030) ERROR 11-02 15:24:32 [multiproc_executor.py:944]   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/executor/multiproc_executor.py", line 911, in worker_main
+(Worker pid=1030) ERROR 11-02 15:24:32 [multiproc_executor.py:944]     worker = WorkerProc(*args, **kwargs)
+(Worker pid=1030) ERROR 11-02 15:24:32 [multiproc_executor.py:944]              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(Worker pid=1030) ERROR 11-02 15:24:32 [multiproc_executor.py:944]   File "/opt/venv/lib/python3.12/site-packages/vllm/tracing/otel.py", line 178, in sync_wrapper
+(Worker pid=1030) ERROR 11-02 15:24:32 [multiproc_executor.py:944]     return func(*args, **kwargs)
+(Worker pid=1030) ERROR 11-02 15:24:32 [multiproc_executor.py:944]            ^^^^^^^^^^^^^^^^^^^^^
+(Worker pid=1030) ERROR 11-02 15:24:32 [multiproc_executor.py:944]   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/executor/multiproc_executor.py", line 672, in __init__
+(Worker pid=1030) ERROR 11-02 15:24:32 [multiproc_executor.py:944]     self.worker.init_device()
+(Worker pid=1030) ERROR 11-02 15:24:32 [multiproc_executor.py:944]   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/worker/worker_base.py", line 355, in init_device
+(Worker pid=1030) ERROR 11-02 15:24:32 [multiproc_executor.py:944]     self.worker.init_device()  # type: ignore
+(Worker pid=1030) ERROR 11-02 15:24:32 [multiproc_executor.py:944]     ^^^^^^^^^^^^^^^^^^^^^^^^^
+(Worker pid=1030) ERROR 11-02 15:24:32 [multiproc_executor.py:944]   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/worker/xpu_worker.py", line 180, in init_device
+(Worker pid=1030) ERROR 11-02 15:24:32 [multiproc_executor.py:944]     self.requested_memory = request_memory(init_snapshot, self.cache_config)
+(Worker pid=1030) ERROR 11-02 15:24:32 [multiproc_executor.py:944]                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(Worker pid=1030) ERROR 11-02 15:24:32 [multiproc_executor.py:944]   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/worker/utils.py", line 544, in request_memory
+(Worker pid=1030) ERROR 11-02 15:24:32 [multiproc_executor.py:944]     raise ValueError(
+(Worker pid=1030) ERROR 11-02 15:24:32 [multiproc_executor.py:944] ValueError: Free memory on device xpu:1 (25.18/31.89 GiB) on startup is less than desired GPU memory utilization (0.8, 25.51 GiB). Decrease GPU memory utilization or reduce GPU memory used by other processes.
+(EngineCore pid=698) ERROR 11-02 15:24:35 [core.py:1366] EngineCore failed to start.
+(EngineCore pid=698) ERROR 11-02 15:24:35 [core.py:1366] Traceback (most recent call last):
+(EngineCore pid=698) ERROR 11-02 15:24:35 [core.py:1366]   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/engine/core.py", line 1328, in run_engine_core
+(EngineCore pid=698) ERROR 11-02 15:24:35 [core.py:1366]     engine_core = EngineCoreProc(*args, engine_index=dp_rank, **kwargs)
+(EngineCore pid=698) ERROR 11-02 15:24:35 [core.py:1366]                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(EngineCore pid=698) ERROR 11-02 15:24:35 [core.py:1366]   File "/opt/venv/lib/python3.12/site-packages/vllm/tracing/otel.py", line 178, in sync_wrapper
+(EngineCore pid=698) ERROR 11-02 15:24:35 [core.py:1366]     return func(*args, **kwargs)
+(EngineCore pid=698) ERROR 11-02 15:24:35 [core.py:1366]            ^^^^^^^^^^^^^^^^^^^^^
+(EngineCore pid=698) ERROR 11-02 15:24:35 [core.py:1366]   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/engine/core.py", line 1085, in __init__
+(EngineCore pid=698) ERROR 11-02 15:24:35 [core.py:1366]     super().__init__(
+(EngineCore pid=698) ERROR 11-02 15:24:35 [core.py:1366]   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/engine/core.py", line 134, in __init__
+(EngineCore pid=698) ERROR 11-02 15:24:35 [core.py:1366]     self.model_executor = executor_class(vllm_config)
+(EngineCore pid=698) ERROR 11-02 15:24:35 [core.py:1366]                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(EngineCore pid=698) ERROR 11-02 15:24:35 [core.py:1366]   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/executor/multiproc_executor.py", line 116, in __init__
+(EngineCore pid=698) ERROR 11-02 15:24:35 [core.py:1366]     super().__init__(vllm_config)
+(EngineCore pid=698) ERROR 11-02 15:24:35 [core.py:1366]   File "/opt/venv/lib/python3.12/site-packages/vllm/tracing/otel.py", line 178, in sync_wrapper
+(EngineCore pid=698) ERROR 11-02 15:24:35 [core.py:1366]     return func(*args, **kwargs)
+(EngineCore pid=698) ERROR 11-02 15:24:35 [core.py:1366]            ^^^^^^^^^^^^^^^^^^^^^
+(EngineCore pid=698) ERROR 11-02 15:24:35 [core.py:1366]   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/executor/abstract.py", line 110, in __init__
+(EngineCore pid=698) ERROR 11-02 15:24:35 [core.py:1366]     self._init_executor()
+(EngineCore pid=698) ERROR 11-02 15:24:35 [core.py:1366]   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/executor/multiproc_executor.py", line 214, in _init_executor
+(EngineCore pid=698) ERROR 11-02 15:24:35 [core.py:1366]     self.workers = WorkerProc.wait_for_ready(unready_workers)
+(EngineCore pid=698) ERROR 11-02 15:24:35 [core.py:1366]                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(EngineCore pid=698) ERROR 11-02 15:24:35 [core.py:1366]   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/executor/multiproc_executor.py", line 808, in wait_for_ready
+(EngineCore pid=698) ERROR 11-02 15:24:35 [core.py:1366]     raise e from None
+(EngineCore pid=698) ERROR 11-02 15:24:35 [core.py:1366] Exception: WorkerProc initialization failed due to an exception in a background process. See stack trace for root cause.

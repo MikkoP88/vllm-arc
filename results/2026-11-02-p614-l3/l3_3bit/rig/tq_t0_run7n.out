@@ -1,0 +1,16 @@
+=== bench_run7n (cert16s4 methodology replica) temp=0.0 thinking=off sampling=top_p0.95/top_k20/min_p0/pp0/rp1.0 ===
+call_FAIL HTTPError: HTTP Error 404: Not Found
+call_FAIL HTTPError: HTTP Error 404: Not Found
+call_FAIL HTTPError: HTTP Error 404: Not Found
+call_FAIL HTTPError: HTTP Error 404: Not Found
+agg4x256#1 wall=0.17s aggregate=0.00 tok/s ok_streams=0/4 [0tok/-1.0s 0tok/-1.0s 0tok/-1.0s 0tok/-1.0s]
+call_FAIL HTTPError: HTTP Error 404: Not Found
+call_FAIL HTTPError: HTTP Error 404: Not Found
+call_FAIL HTTPError: HTTP Error 404: Not Found
+call_FAIL HTTPError: HTTP Error 404: Not Found
+agg4x256#2 wall=0.02s aggregate=0.00 tok/s ok_streams=0/4 [0tok/-1.0s 0tok/-1.0s 0tok/-1.0s 0tok/-1.0s]
+call_FAIL HTTPError: HTTP Error 404: Not Found
+solo200 n=0 dt=0.02s tps=0.00
+call_FAIL HTTPError: HTTP Error 404: Not Found
+solo200 n=0 dt=0.00s tps=0.00
+BENCH_RUN7N_DONE

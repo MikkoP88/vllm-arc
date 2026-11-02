@@ -21,21 +21,23 @@ reproduced natively on cert4 by r70 — both in this file).
 
 ## Measurement methodology — how every number in this file is produced
 
-**Provenance rule (owner law, 2026-10-31; updated for the cert5
+**Provenance rule (owner law, 2026-10-31; updated for the cert6
 release):** the current record cites **only faces measured natively on
 the certified image line** — the record image
-(`vllm-arc:v0.30.0-b70-cert4`) or the current release
-(`vllm-arc:v0.30.0-b70-cert5`, whose default posture is byte-identical
-and whose gates re-verified the default-posture faces in-family).
-Numbers from earlier images (cert / cert2 / cert3 / p46) are history —
-labeled by image, never mixed into current-record tables.
+(`vllm-arc:v0.30.0-b70-cert4`), or a later release whose default
+posture is byte-identical and whose gates re-verified the
+default-posture faces in-family (`vllm-arc:v0.30.0-b70-cert5`,
+`vllm-arc:v0.30.0-b70-cert6`). The TurboQuant dtype faces (P6.14) are
+cert6-era opt-in faces and carry their own table below. Numbers from
+earlier images (cert / cert2 / cert3 / p46) are history — labeled by
+image, never mixed into current-record tables.
 
 ### Rig, image, and posture identity
 
 | Layer | Identity |
 |---|---|
 | Hardware | dual Intel Arc Pro B70 (48 GB each), TP2, one card per socket (`ZE_AFFINITY_MASK=0,1`) |
-| Engine image | **current**: `vllm-arc:v0.30.0-b70-cert5` — tag `rel/v0.30.0-b70-cert5`, commit `3e268627`, image ID head `6413d8aeec8a`, `IMAGE_MANIFEST.fork_sha` verified at build (cert5 gate). Default posture byte-identical to the record image `vllm-arc:v0.30.0-b70-cert4` — tag `rel/v0.30.0-b70-cert4`, commit `b5df28b5`, digest `0c25a4f747af` (all record numbers below are cert4-native; cert5 re-verified the default-posture faces in-family: run7n t0 297.19/84.48, t1.0 189.41/62.35, integrity 5/5 + det 3/3, WARN class-set identical — `results/2026-11-01-p65-cert5/`) |
+| Engine image | **current**: `vllm-arc:v0.30.0-b70-cert6` — tag `rel/v0.30.0-b70-cert6`, commit `986e97d6`, `IMAGE_MANIFEST.fork_sha` verified at build (cert6 gate, `results/2026-11-02-p614-cert6/`). Default posture byte-identical to the record image `vllm-arc:v0.30.0-b70-cert4` — tag `rel/v0.30.0-b70-cert4`, commit `b5df28b5`, digest `0c25a4f747af` (all default-record numbers below are cert4-native; cert5 and cert6 re-verified the default-posture faces in-family — cert5: run7n t0 297.19/84.48, t1.0 189.41/62.35, integrity 5/5 + det 3/3, WARN class-set identical, `results/2026-11-01-p65-cert5/`; cert6 adds the TurboQuant-aware lagged store, inert under `fp8_e4m3`). cert6 additionally validates the four opt-in `turboquant_*` kv-cache dtype faces (own table below; candidate-image legs `results/2026-11-02-p614-{l1v2,l3}/`) |
 | Wheels | md5-pinned at build (`tools/wheel_guard.sh`, 4 pins: vllm/triton/vxk/lmcache 0.5.6+arc1) |
 | Serve line | the certified 25-var env chain + CLI ([`CONFIGURATION-arc.md`](CONFIGURATION-arc.md)): MTP k3, `mode:none`, FULL_DECODE_ONLY graphs (85 capture sizes, 1–320), MNBT 8192, LMCacheConnectorV1 `kv_both` |
 | r70 campaign (the comprehensive cert4 measurement) | 3 fresh boots on the one image — greedy+sweep leg (a), no-spec leg (b), soak leg (c) — evidence `results/2026-10-31-p70-r70-cert4-comprehensive/` |
@@ -97,23 +99,23 @@ accepted/drafts + 1** (the +1 bonus token). Windows are counter deltas
 snapshotted before/after each battery, so each face's acceptance covers
 that face's traffic only.
 
-## Current certified image — cert5 (`rel/v0.30.0-b70-cert5`): current release; record measured cert4-native (identical default posture)
+## Current certified image — cert6 (`rel/v0.30.0-b70-cert6`): current release; record measured cert4-native (identical default posture)
 
-**Current release = cert5** (tag commit `3e268627`; adds only the P6.13
-sliced-store hunk, `LMC_STORE_SLICE_TOKENS`, **default-OFF** — the
-default posture is cert4's engine byte-identical, proven at the cert5
-gates: SLICE_ENV_ABSENT=0, run7n both temperatures in-family, integrity
-5/5 + determinism 3/3, WARN class-set identical —
-`results/2026-11-01-p65-cert5/`). **Every record number below was
-measured natively on the cert4 image** — the r70 comprehensive campaign
-(2026-10-31, 3 fresh boots) plus the p65/r67 certification legs;
-per-face evidence in the right column. Nothing validated beats the
+**Current release = cert6** (tag commit `986e97d6`; adds only the P6.14
+TurboQuant-aware lagged-store hunk over cert5's engine — inert under the
+default `fp8_e4m3` kv-cache dtype, so the default posture is cert4's
+engine byte-identical, proven at the cert6 gates:
+`results/2026-11-02-p614-cert6/`). **Every default-record number below
+was measured natively on the cert4 image** — the r70 comprehensive
+campaign (2026-10-31, 3 fresh boots) plus the p65/r67 certification
+legs; per-face evidence in the right column. Nothing validated beats the
 certified default (the two faster-on-paper postures are rejected:
 k5-depth owner-dropped — its greedy edge inverts under sampling;
 compile — Appendix H law #1 acceptance gate, p67). The opt-in slice
 profile (experimental, P6.13) is NOT part of the certified default; its
 cert5-native face: U64k TTFT 50.77 s (cert4 51.95), W_U64k_start max
-1602 vs 1997 ms. How to run: the 25-var chain in
+1602 vs 1997 ms. The opt-in TurboQuant dtype faces (P6.14) have their
+own table below. How to run: the 25-var chain in
 [`CONFIGURATION-arc.md`](CONFIGURATION-arc.md).
 
 ### Throughput — greedy t0, thinking off (chat battery)
@@ -326,6 +328,52 @@ directions; every collective `algo topo sycl` over pidfd ze-IPC handles,
 zero host-staged selections), so the slice is algorithmic/latency-bound,
 not link-bound — any gain there is a kernel/algorithm project.
 
+### TurboQuant KV-cache dtype faces (opt-in — P6.14, validated on cert6-line images)
+
+Swapping the single CLI knob `--kv-cache-dtype fp8_e4m3` → a
+`turboquant_*` preset (all else byte-identical — one-variable legs;
+P6.14 landed the TurboQuant-aware lagged KV store that makes the
+LMCache store path work under the packed TQ K|V layout). The matrix
+below is the candidate-image battery (`results/2026-11-02-p614-l3/`,
+`…-l1v2/`; image p614c2, engine identical to cert6) — the release gate
+re-proved the 4bit face on the tag-built cert6 image itself
+(`results/2026-11-02-p614-cert6/`). Every preset passed: 0 ERROR /
+0 Traceback, integrity 5/5 + determinism 3/3, spec gate ≥ target, flip
+survival, kit transfer live (`2+2 @slot` lines, both workers), external
+tier participating (first time under TQ — hit-rate max 5.9 / 6.2 /
+7.6 % through the integrity re-hits).
+
+| Preset | KV capacity | U32k / U64k TTFT | t0 agg#2/solo | t1.0 xhigh agg | gap p95 U32k/U64k |
+|---|---|---|---|---|---|
+| `fp8_e4m3` (default) | 405,491 tok (1.55×) | 23.16 / 50.77 s | 297.19 / 84.48 | **189.41** | 1299 / 1569 ms |
+| `turboquant_k8v4` | 526,445 tok (2.01×) | **15.29 / 33.03 s** | 302.58 / 88.05 | **173.39 (−8.5 %)** | 3690 / 4385 ms |
+| `turboquant_4bit_nc` | 757,641 tok (2.89×) | 15.91 / 34.02 s | 300.06 / 86.31 | 93.05 (−51 %) | 3218 / 3785 ms |
+| `turboquant_k3v4_nc` | 853,220 tok (3.25×) | 15.48 / 33.78 s | 294.43 / 83.44 | 88.95 (−53 %) | 3736 / 4186 ms |
+| `turboquant_3bit_nc` | **975,329 tok (3.72×)** | 16.02 / 35.74 s | 302.77 / 86.25 | 89.58 (−53 %) | 3188 / 3729 ms |
+
+**What improves (dtype-wide):** KV capacity 1.55× → 2.0–3.7× max
+concurrency at the same 6.92 GiB pool; U32k/U64k TTFT −30…−35 % (TQ
+prefill reads a narrower KV); t0 greedy throughput in-family or better
+(294–303 agg across presets).
+
+**TQ-inherent costs (unchanged by the fix — owner-call material, per
+preset):** the sampled t1.0 xhigh agg drops 8.5 % (k8v4) to ~53 %
+(sub-4-bit presets — ragged early-finish streams, solo pair ~77–86 +
+~26 tok/s); bystander prefill gaps rise to p95 ~3.2–3.7 s (U32k) /
+~3.7–4.6 s (U64k) vs fp8's ~1.3/1.6 s. Spec acceptance stays ≥ 0.86 on
+every preset; integrity/determinism hold.
+
+**Dispositions:** `k8v4` = the quality-safest TQ face (within 9 % of
+fp8 on the worst quality face, best absolute TTFT); `3bit_nc` /
+`k3v4_nc` = max-capacity faces where the sampled-throughput cost is
+acceptable; `4bit_nc` = middle. The certified default stays
+`fp8_e4m3` — fastest sampled throughput, lowest bystander cost.
+
+Mechanism + fix detail, pre-fix failure capture, and the per-preset leg
+narratives: `results/2026-11-02-p614-{dbg,preflight,l1v1,l1v2,l2,l3}/`
+VERDICTs. Config guidance: [`CONFIGURATION-arc.md`](CONFIGURATION-arc.md)
+"KV-cache dtype: TurboQuant presets".
+
 ## History — pre-cert4 images (labeled by image; never mixed into the record)
 
 Everything in this section predates cert4. It is retained because it is
@@ -342,8 +390,9 @@ governs.
 | `v0.30.0-b70-cert2` | `rel/v0.30.0-b70-cert2` | 0.5.5-era lmcache wheel line | superseded — valid, older lmcache line |
 | `v0.30.0-b70-p46` / `-p47` / `-p48` | — (campaign tags) | r46t depth campaign; r46v build validation; r47c 0.5.6+arc1 gates | campaign lineage, not releases |
 | `v0.30.0-b70-cert3` | `rel/v0.30.0-b70-cert3` | P6 close-out engine (identical default behavior to cert4) | superseded by cert4 |
-| `v0.30.0-b70-cert4` | `rel/v0.30.0-b70-cert4` | cert3 engine + P6.5 opt-in long-context deferral | superseded by cert5 — **the record above is cert4-native** (default posture byte-identical on cert5) |
-| `v0.30.0-b70-cert5` | `rel/v0.30.0-b70-cert5` | cert4 engine + P6.13 default-OFF sliced-store hunk (`LMC_STORE_SLICE_TOKENS`, experimental opt-in profile) | **current release** |
+| `v0.30.0-b70-cert4` | `rel/v0.30.0-b70-cert4` | cert3 engine + P6.5 opt-in long-context deferral | superseded by cert5 — **the default record above is cert4-native** (default posture byte-identical on cert5/cert6) |
+| `v0.30.0-b70-cert5` | `rel/v0.30.0-b70-cert5` | cert4 engine + P6.13 default-OFF sliced-store hunk (`LMC_STORE_SLICE_TOKENS`, experimental opt-in profile) | superseded by cert6 (identical default behavior, lacks the P6.14 TQ-aware store hunk) |
+| `v0.30.0-b70-cert6` | `rel/v0.30.0-b70-cert6` | cert5 engine + P6.14 TurboQuant-aware lagged store (inert under `fp8_e4m3`) + the four validated opt-in `turboquant_*` dtype faces | **current release** |
 
 ### Depth-selection faces (cert-era images — the k3/k4/k5 greedy record)
 

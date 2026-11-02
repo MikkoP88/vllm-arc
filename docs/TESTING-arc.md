@@ -194,8 +194,8 @@ superseded evidence, v2 pins `enable_thinking: false` on valid probes.
 ## Evidence layout
 
 Each leg banks to `results/YYYY-MM-DD-<phase>-r<leg>-<slug>/` (VERDICT,
-raw bench outputs, hook audit, integrity shas, serve keylines) — 78
-dirs / 74 VERDICTs of record to date; the naming convention is
+raw bench outputs, hook audit, integrity shas, serve keylines) — 89
+dirs / 84 VERDICTs of record to date; the naming convention is
 documented in [`envs.md`](envs.md) (naming map).
 
 ## Validation record
@@ -213,3 +213,4 @@ documented in [`envs.md`](envs.md) (naming map).
 | r46t real-world campaign (temps × depths × thinking × garbage) | GREEN — k3 recommended; garbage v2 5/5 suites 15/15; MTP 1.57–2.05× over no-spec | `results/2026-10-30-p5-r46t-temps/` |
 | r70 comprehensive cert4 measurement (owner directive: current record cert4-native) | GREEN legs a+b (greedy/sweep/ladder/warm/alt + no-spec A/B + tier attribution + r46t parity) + leg c soak GREEN (56/56 cycles, 0 battery/integrity/engine failures, no drift — `c/` mirror banked by the close-out commit) | `results/2026-10-31-p70-r70-cert4-comprehensive/` |
 | P6.13 cert5 release (owner directive 2026-11-01: cut the certified image) | GREEN single-flow on the tag-built image: manifest fork_sha == tag `3e268627`, p48 28/28 + p73 slice-hunk 11/11 image-native, SLICE_ENV_ABSENT=0 + flip 8.3 s, run7n t0 297.19/84.48-84.47 + t1.0 189.41/62.35-61.85 in-family, integrity 5/5 + det 3/3, WARN class-set identical to cert4 (44 == 44 lines, comm empty both ways), 0 ERROR/Traceback; slice face on the same image — U64k TTFT 50.77 s, W_U64k_start max 1602 ms, 63232-class 0 / 3328×38 exact | `results/2026-11-01-p65-cert5/` |
+| P6.14 TurboQuant lane (owner directive 2026-11-02: fix `turboquant_*` lagged store, validate all presets, certify) | GREEN — fix (TQ branch first in `_arc_attn_pool_view`, kernel-block→page merge, uint8 KV_2LTD init) validated per preset on the candidate image: 0 ERROR/Traceback, kit D2H live per slot (262/388/230/198), integrity 5/5 + det 3/3, spec ≥ target, KV 526k/757k/853k/975k (2.01/2.89/3.25/3.72×), U32k/U64k TTFT −30…−35 % vs fp8; default face inert (WARN class-set identical, all faces in-family); cert6 release gate single-flow GREEN on the tag-built image (default battery + slice face 3328×38 exact + TQ4 face: 0 errors, spec 0.9714/0.9381, KV 757,641, TTFT 15.85/33.98 s); patch-audit phase 4/4 PASS | `results/2026-11-02-p614-{dbg,preflight,l1v1,l1v2,l2,l3,cert6}/` |
