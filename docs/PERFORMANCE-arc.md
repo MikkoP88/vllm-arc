@@ -360,10 +360,12 @@ fp8" reading was this profile mismatch). See "Bystander-stall tuning"
 below.
 
 **What improves (dtype-wide):** KV capacity 1.55× → 2.0–3.7× max
-concurrency at the same 6.92 GiB pool; U32k/U64k TTFT −30…−35 % (TQ
-prefill reads a narrower KV); t0 greedy throughput in-family or better
-(294–303 agg across presets); at equal posture, bystander prefill
-stalls (see ¹).
+concurrency at the same 6.92 GiB pool; U32k/U64k TTFT −30…−35 % vs the
+thr2048-profile fp8 comparator (¹) — vs **true-default fp8 solo U-bars
+the gain is −10…−16 %** (P6.15b probes; the true-default fp8 solo
+prefill is the slowest of the family, 1623 t/s U64k); t0 greedy
+throughput in-family or better (294–303 agg across presets); at equal
+posture, bystander prefill stalls (see ¹).
 
 **TQ-inherent costs (unchanged by the fix — owner-call material, per
 preset):** the sampled t1.0 xhigh agg drops 8.5 % (k8v4) to ~53 %
@@ -399,18 +401,54 @@ All faces on the cert6 image, same p65-timeline harness, integrity
 | TQ4 + `ARC_MNBT=4096` | 3328 | 17.59 / 37.03 s | 2003 / 2049 ms | 809,161 (3.09×) |
 | TQ4 + `ARC_MNBT=2048` | 1664 | 22.14 / 45.38 s | 1325 / 1286 ms | 821,283 (3.13×) |
 | TQ4 + thr2048 (p65 profile knob) | 1664 | 21.60 / 47.78 s | 1159 / 1329 ms | 757,641 (2.89×) |
+| k8v4 (`turboquant_k8v4`) + `ARC_MNBT=4096` | 3456 | 17.41 / 37.58 s | 1936 / 2225 ms | 562,045 (2.14×) |
+| k3v4_nc (`turboquant_k3v4_nc`) + `ARC_MNBT=4096` | 3712 | **16.99 / 36.90 s** | 2011 / 2309 ms | 911,660 (3.48×) |
+| 3bit_nc (`turboquant_3bit_nc`) + `ARC_MNBT=4096` | 2176 | 19.41 / 42.09 s | 1932 / 1637 ms | **1,042,793 (3.98×)** |
 
 Guidance: stall-sensitive mixed fleets → **TQ4 + MNBT 4096** (stalls
 −38/−46 %, capacity +6.8 %, TTFT ≤ fp8-default); sub-1.5 s stalls →
 TQ4 + MNBT 2048 (largest TQ4 pool; dominates the equivalent thr2048
 face) at +14–40 % TTFT; fp8-fixed fleets → MNBT 4096 (stalls halved,
-+6.8 % capacity, +8–13 % TTFT). Certified defaults unchanged — this
-menu is opt-in.
++6.8 % capacity, +8–13 % TTFT). The 2026-11-03 all-presets completion
+set (B6–B8) generalizes the balanced face: **MNBT 4096 halves stalls on
+every preset** at TTFT ≤ fp8-default family (k3v4_nc is under family on
+both bars), with per-preset chunk = KV page × n; 3bit_nc + MNBT 4096 is
+the max-capacity near-low-stall face (3.98× KV, U64k gaps 1637 ms — the
+closest large-budget face to the 1.5 s bar) at its known dtype quality
+cost. Certified defaults unchanged — this menu is opt-in.
 
 Mechanism + fix detail, pre-fix failure capture, and the per-preset leg
 narratives: `results/2026-11-02-p614-{dbg,preflight,l1v1,l1v2,l2,l3}/`
 VERDICTs. Config guidance: [`CONFIGURATION-arc.md`](CONFIGURATION-arc.md)
 "KV-cache dtype: TurboQuant presets".
+
+### Solo vs concurrent — decode / prefill / TTFT per face (P6.15b probes, 2026-11-03)
+
+The comprehensive solo battery: 12 one-variable legs on the cert6 image,
+each face re-run with the fork's own harnesses (`bench_run7n_t5.py` t0
+battery + `p70_solo_ttft.py` U-bar ladder) so every number reads directly
+against the banked records — all faces land in-family with their older
+banks (fp8-def U-bar 17.34/40.24 s vs p70-cert4's 17.36/40.26; tq4-def
+t0 298.38 vs G7's 299.67). Full matrix:
+`results/2026-11-02-p615-probes/VERDICT.md`. Condensed:
+
+- **Decode is knob-free and dtype-light.** Chunk-size knobs (thr2048 /
+  MNBT 2048 / 4096) move solo decode <1.5 % vs the same dtype's default
+  (tq4 family 85.7–86.2 solo across 1664/3328/6656-token chunks); dtype
+  spread k8v4 88.3–88.6 > tq4/3bit 83.1–86.2 > fp8 84.4–84.5 >
+  k3v4_nc 80.5–83.3 tok/s solo; 4-way concurrent 285.9–302.4 agg.
+  Per-stream under 6-way load ≈ **70–73 tok/s clean-window** (one SSE
+  chunk = one engine step = 3.93–3.95 accepted MTP tokens; lifetime
+  45.9 tok/s for a stall-exposed bystander; engine-wide ≈ 440 tok/s) —
+  solo 84.5 vs concurrent ~73 = −13 % per-stream for 6× parallelism.
+- **Solo prefill is a chunk-size story per dtype** (U64k t/s): tq4
+  1664→1459, 3328→1791, 6656→1921; k8v4 3456→1716, 8064→1945; k3v4_nc
+  3712→1760, 7424→1945; 3bit_nc 2176→1549, 6528→1893; fp8 3328→1516,
+  7488→1623 — bigger chunks, fewer steps, less cumulative prefix
+  re-read (the B5 mechanism), monotone within every dtype.
+- **k8v4 is the decode+prefill sweet spot**: fastest decode AND fastest
+  default prefill (2097/1945 t/s), and P6.14's quality-safest preset;
+  its MNBT-4096 face keeps top decode (88.3–88.5) with stalls halved.
 
 ## History — pre-cert4 images (labeled by image; never mixed into the record)
 
