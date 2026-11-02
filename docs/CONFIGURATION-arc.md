@@ -10,7 +10,7 @@ complete control surface + naming map); test definitions in
 
 | Item | Value |
 |---|---|
-| Image | `vllm-arc:v0.30.0-b70-cert5` — **the certified release**, tag `rel/v0.30.0-b70-cert5` (cert4 engine + the P6.13 sliced final-span store in the lmcint adapter — `LMC_STORE_SLICE_TOKENS`, default-OFF, default posture identical to cert4; gates `results/2026-11-01-p65-cert5/`) |
+| Image | `vllm-arc:v0.30.0-b70-cert6` — **the certified release**, tag `rel/v0.30.0-b70-cert6` (cert5 engine + the P6.14 TurboQuant-aware lagged store in the lmcint adapter — all four `turboquant_*` kv-cache dtypes validated, default `fp8_e4m3` posture identical to cert5; gates `results/2026-11-02-p614-cert6/` + preset legs `results/2026-11-02-p614-{l1v2,l2,l3}/`) |
 | Manifest | `/etc/vllm-arc/IMAGE_MANIFEST` inside the image — fork SHA, wheel pins, dependency closure (`lmcache_closure=`), build host |
 | Base | upstream vllm-gaudi v0.30.0 + pinned wheels (vllm 0.30.0+xpu, triton 3.7.2+xpu, vllm_xpu_kernels 0.1.14.1+arc3, lmcache 0.5.6+arc1) |
 
@@ -19,6 +19,7 @@ with per-image evidence lives in PERFORMANCE-arc "Image lineage"):
 
 | Image | Status |
 |---|---|
+| `v0.30.0-b70-cert5` | superseded by cert6 — identical default behavior, lacks the P6.14 TQ-aware store hunk (gates `results/2026-11-01-p65-cert5/`) |
 | `v0.30.0-b70-cert4` | superseded by cert5 — identical default behavior, lacks the default-OFF slice hunk (gates `results/2026-10-31-p65-cert4/`) |
 | `v0.30.0-b70-cert3` | superseded by cert4 — identical default behavior, lacks the deferral hunk (gates `results/2026-10-31-p6-r47c-p48-056gates/`) |
 | `v0.30.0-b70-cert2` | superseded — 0.5.5-era lmcache wheel line, still valid |
@@ -53,7 +54,7 @@ docker run -d --name arc-test \
   -v /root/build/inductor_cache:/root/.inductor_cache \
   -e VLLM_ALLOW_LONG_MAX_MODEL_LEN=1 \
   -e VLLM_WORKER_MULTIPROC_METHOD=spawn \
-  --entrypoint /bin/bash vllm-arc:v0.30.0-b70-cert5 -c 'sleep infinity'
+  --entrypoint /bin/bash vllm-arc:v0.30.0-b70-cert6 -c 'sleep infinity'
 ```
 
 These are the validated boot bytes (rig `r46t_campaign.sh:54-63`,
@@ -311,7 +312,35 @@ confirmed). Enabling it is an owner call on the corrected bar.
 slice face on the tag-built image — U64k TTFT **50.77 s** (cert4 same-face
 51.95), W_U64k_start max **1602 ms** vs cert4's 1997 (the one-shot tail
 gone), `63232`-class **0** / `3328`×38 exact, U32k unchanged
-(`results/2026-11-01-p65-cert5/`).
+(`results/2026-11-01-p65-cert5/`). The cert6 release gate re-ran the same
+face in-family (U64k TTFT 51.66 s, `63232`-class 0, `3328` signature
+exact — `results/2026-11-02-p614-cert6/`).
+
+## KV-cache dtype: TurboQuant presets (validated since cert6, opt-in)
+
+The certified default stays `--kv-cache-dtype fp8_e4m3`. Since cert6 the
+engine's first-class TurboQuant KV dtypes are **validated end-to-end**
+(lagged KV store healthy, integrity 5/5, determinism 3/3, spec gate PASS
+on every preset): swap exactly that one flag to one of
+
+```bash
+  --kv-cache-dtype turboquant_k8v4       # 8-bit keys / 4-bit values
+  --kv-cache-dtype turboquant_4bit_nc    # 4-bit MSE keys + values, NC
+  --kv-cache-dtype turboquant_k3v4_nc    # 3-bit keys / 4-bit values, NC
+  --kv-cache-dtype turboquant_3bit_nc    # 3-bit keys + values, NC
+```
+
+Nothing else changes (the engine auto-forces FA2 under TQ and re-derives
+the attention block size; the lmcint adapter's TQ-aware pool view +
+uint8 KV_2LTD engine geometry follow the live spec — P6.14, commit
+`6f1a09d9` lineage; evidence `results/2026-11-02-p614-{l1v2,l3}/`).
+Per-preset capacity/TTFT/quality numbers and dispositions: the README
+KV-quant table + PERFORMANCE-arc "TurboQuant faces". Guidance:
+**k8v4 = quality-safest** (t1.0 xhigh within 9 % of fp8), **3bit_nc =
+max KV capacity** (3.72×) where the TQ-inherent sampled-throughput
+raggedness (~77+~26 tok/s solo pair) and bystander prefill gaps
+(~3.2–4.6 s p95) are acceptable — dtype-wide costs, unchanged by the
+fix and owner-call material per the A/B disposition.
 
 ## The 25-var chain (reference)
 
