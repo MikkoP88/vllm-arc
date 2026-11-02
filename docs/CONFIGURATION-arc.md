@@ -359,9 +359,18 @@ re-reads = longer TTFT — a measured Pareto frontier, no free knob
 | Fleet priority | Recommended face | Cost |
 |---|---|---|
 | Balanced (stalls −38/−46 %, KV +6.8 %) | `turboquant_4bit_nc` + `ARC_MNBT=4096` | TTFT +9–11 % vs TQ4 default; ≤ fp8-default |
+| Balanced, quality-safest preset (P6.15b) | `turboquant_k8v4` + `ARC_MNBT=4096` | stalls −51/−58 % vs fp8 default, TTFT at family, KV 2.14×; keeps the family's fastest decode (88.3–88.5 solo) |
+| Balanced, max capacity (P6.15b) | `turboquant_k3v4_nc` + `ARC_MNBT=4096` | stalls −49/−56 %, TTFT UNDER fp8-default family (16.99/36.90 s), KV 3.48×; sampled-throughput cost is the k3v4 dtype face |
 | Sub-1.5 s stalls (p95 ~1.3 s) | `turboquant_4bit_nc` + `ARC_MNBT=2048` | TTFT +14–40 % vs fp8/TQ4 defaults; largest TQ4 pool (3.13×) |
 | fp8 dtype fixed | `fp8_e4m3` + `ARC_MNBT=4096` | stalls −49/−51 %, KV +6.8 %, TTFT +8–13 % |
+| Max capacity near-low-stall (P6.15b) | `turboquant_3bit_nc` + `ARC_MNBT=4096` | KV 3.98× (largest pool), U64k gaps 1637 ms (closest large-budget face to 1.5 s); dtype quality cost per P6.14 |
 | Max TTFT / max throughput | certified defaults as-is | fp8 true-default bystander p95 3.99/5.30 s (worst stall face, best sampled throughput) |
+
+The 2026-11-03 completion set (B6–B8, `results/2026-11-02-p615-b{6,7,8}-*/`)
+generalizes the balanced row: **MNBT 4096 halves stalls on every preset**
+at TTFT ≤ fp8-default family; chunk = KV page × n (k8v4 3456, k3v4_nc
+3712, 3bit_nc 2176-token chunks). Solo decode/prefill/TTFT for every
+face: `results/2026-11-02-p615-probes/VERDICT.md`.
 
 Laws: never combine with the experimental slice profile unless
 re-validated; one knob at a time (the matrix is one-variable);

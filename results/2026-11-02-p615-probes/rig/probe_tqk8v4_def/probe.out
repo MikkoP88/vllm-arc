@@ -1,0 +1,34 @@
+FLIP_FIRST: stop 9.6s
+SOLO200 #1 (warmup): 200 tok / 2.45s
+SOLO200 #2: 200 tok / 2.46s = 81.36 tok/s
+SOLO200 #3: 200 tok / 2.46s = 81.32 tok/s
+AGG4x256 #1: wall=3.99s sum_per_stream_tps=279.32
+AGG4x256 #2: wall=3.58s sum_per_stream_tps=289.71
+Traceback (most recent call last):
+  File "/root/probe.py", line 90, in <module>
+    p = uniform_prompt(target)
+        ^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/probe.py", line 49, in uniform_prompt
+    if i % 64 == 0 and tok_count(txt) >= target:
+                       ^^^^^^^^^^^^^^
+  File "/root/probe.py", line 37, in tok_count
+    return len(json.load(urllib.request.urlopen(req, timeout=120))["tokens"])
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 215, in urlopen
+    return opener.open(url, data, timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 521, in open
+    response = meth(req, response)
+               ^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 630, in http_response
+    response = self.parent.error(
+               ^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 559, in error
+    return self._call_chain(*args)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 492, in _call_chain
+    result = func(*args)
+             ^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 639, in http_error_default
+    raise HTTPError(req.full_url, code, msg, hdrs, fp)
+urllib.error.HTTPError: HTTP Error 404: Not Found
