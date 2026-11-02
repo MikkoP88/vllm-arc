@@ -1,0 +1,43 @@
+/opt/venv/lib/python3.12/site-packages/torch/xpu/__init__.py:251: UserWarning: Can't initialize Level Zero Sysman
+  return _enum_zes_device_infos(visible_mask)
+/opt/venv/lib/python3.12/site-packages/torch/xpu/__init__.py:278: UserWarning: XPU device count is zero! (Triggered internally at /__w/pytorch/pytorch/c10/xpu/XPUFunctions.cpp:117.)
+  count = torch._C._xpu_getDeviceCount() if zes_count < 0 else zes_count
+[32;20m[2026-11-02 14:16:39,196] LMCache INFO:[0m torch_dev=StubCPUDevice(device_type=cpu), torch_device_type=cpu [3m(_device_detect.py:311:lmcache.v1.platform._device_detect)[0m
+[PASS] adapter parses
+[PASS] kit overrides installed (detector host: lmcache.v1.gpu_connector.kv_format.detectors.vllm)
+INFO 11-02 14:16:39 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+INFO 11-02 14:16:39 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+INFO 11-02 14:16:39 [__init__.py:54] - hpu -> vllm_gaudi:register
+INFO 11-02 14:16:39 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+/opt/venv/lib/python3.12/site-packages/torch/xpu/__init__.py:251: UserWarning: Can't initialize Level Zero Sysman
+  return _enum_zes_device_infos(visible_mask)
+[PASS] turboquant_4bit_nc view (slot=262) shape=(20, 1664, 1, 2, 262)
+[r43kvfmt] arc interleaved attn pool -> NL_X_NB_BS_NH_TWO_HS (NB=20 BS=1664 TWO=2 HS=262)
+[32;20m[2026-11-02 14:16:44,603] LMCache INFO:[0m Engine KV Format: EngineKVFormat.NL_X_NB_BS_NH_TWO_HS NL x [NB, BS, NH, 2, HS] [3m(detection.py:69:lmcache.v1.gpu_connector.kv_format.detection)[0m
+[PASS] turboquant_4bit_nc detect fmt=EngineKVFormat.NL_X_NB_BS_NH_TWO_HS
+[r43xfer] TWO_HS interleaved branch live: NB=20 BS=1664 L=17 H=262 nslots=2441 dir=D2H
+[PASS] turboquant_4bit_nc D2H rows byte-true (kernel-block merge) 
+[PASS] turboquant_4bit_nc H2D roundtrip byte-true 
+[PASS] turboquant_k8v4 view (slot=388) shape=(20, 1664, 1, 2, 388)
+[r43kvfmt] arc interleaved attn pool -> NL_X_NB_BS_NH_TWO_HS (NB=20 BS=1664 TWO=2 HS=388)
+[32;20m[2026-11-02 14:16:45,006] LMCache INFO:[0m Engine KV Format: EngineKVFormat.NL_X_NB_BS_NH_TWO_HS NL x [NB, BS, NH, 2, HS] [3m(detection.py:69:lmcache.v1.gpu_connector.kv_format.detection)[0m
+[PASS] turboquant_k8v4 detect fmt=EngineKVFormat.NL_X_NB_BS_NH_TWO_HS
+[PASS] turboquant_k8v4 D2H rows byte-true (kernel-block merge) 
+[PASS] turboquant_k8v4 H2D roundtrip byte-true 
+[PASS] turboquant_k3v4_nc view (slot=230) shape=(20, 1664, 1, 2, 230)
+[r43kvfmt] arc interleaved attn pool -> NL_X_NB_BS_NH_TWO_HS (NB=20 BS=1664 TWO=2 HS=230)
+[32;20m[2026-11-02 14:16:45,290] LMCache INFO:[0m Engine KV Format: EngineKVFormat.NL_X_NB_BS_NH_TWO_HS NL x [NB, BS, NH, 2, HS] [3m(detection.py:69:lmcache.v1.gpu_connector.kv_format.detection)[0m
+[PASS] turboquant_k3v4_nc detect fmt=EngineKVFormat.NL_X_NB_BS_NH_TWO_HS
+[PASS] turboquant_k3v4_nc D2H rows byte-true (kernel-block merge) 
+[PASS] turboquant_k3v4_nc H2D roundtrip byte-true 
+[PASS] turboquant_3bit_nc view (slot=198) shape=(20, 1664, 1, 2, 198)
+[r43kvfmt] arc interleaved attn pool -> NL_X_NB_BS_NH_TWO_HS (NB=20 BS=1664 TWO=2 HS=198)
+[32;20m[2026-11-02 14:16:45,513] LMCache INFO:[0m Engine KV Format: EngineKVFormat.NL_X_NB_BS_NH_TWO_HS NL x [NB, BS, NH, 2, HS] [3m(detection.py:69:lmcache.v1.gpu_connector.kv_format.detection)[0m
+[PASS] turboquant_3bit_nc detect fmt=EngineKVFormat.NL_X_NB_BS_NH_TWO_HS
+[PASS] turboquant_3bit_nc D2H rows byte-true (kernel-block merge) 
+[PASS] turboquant_3bit_nc H2D roundtrip byte-true 
+[PASS] fp8 pool first branch (tq_flag=False) 
+[PASS] fp8 pool first branch (tq_flag=True) 
+[PASS] non-LBNHC TQ pool refuses loudly 
+[PASS] non-page-tiling kernel count -> unmerged 128 face (loud detect fail) 
+PRE_FLIGHT_V2: OK

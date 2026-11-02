@@ -1,0 +1,10 @@
+(Worker_TP1 pid=1030) [p614dbg] init cache_dtype='turboquant_4bit_nc'
+(Worker_TP1 pid=1030) [p614dbg] fa-spec FullAttentionSpec kvq=7 tq=True scb=262 nhs=None hs=256 nkh=2 bs=1664 dt=torch.uint8
+(Worker_TP0 pid=930) [p614dbg] init cache_dtype='turboquant_4bit_nc'
+(Worker_TP0 pid=930) [p614dbg] fa-spec FullAttentionSpec kvq=7 tq=True scb=262 nhs=None hs=256 nkh=2 bs=1664 dt=torch.uint8
+(Worker_TP1 pid=1030) [p614dbg] view-in shape=(6500, 2, 128, 262) stride=(67072, 262, 524, 1) dtype=torch.uint8 tq_flag=True slot_bytes=262
+(Worker_TP0 pid=930) [p614dbg] view-in shape=(6500, 2, 128, 262) stride=(67072, 262, 524, 1) dtype=torch.uint8 tq_flag=True slot_bytes=262
+(EngineCore pid=698) [p614dbg] init cache_dtype='turboquant_4bit_nc'
+(EngineCore pid=698) [p614dbg] fa-spec FullAttentionSpec kvq=7 tq=True scb=262 nhs=None hs=256 nkh=2 bs=1664 dt=torch.uint8
+(Worker_TP0 pid=930) ValueError: unsupported kv_caches structure for EngineType.VLLM
+(Worker_TP1 pid=1030) ValueError: unsupported kv_caches structure for EngineType.VLLM

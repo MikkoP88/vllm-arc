@@ -1,0 +1,34 @@
+=== warmup (first-traffic law; warms p12b interlock + first graphs)
+STREAM_FAIL warmup: HTTPError: HTTP Error 404: Not Found
+tokenize_FAIL HTTPError: HTTP Error 404: Not Found
+tokenize_FAIL HTTPError: HTTP Error 404: Not Found
+tokenize_FAIL HTTPError: HTTP Error 404: Not Found
+prompt sizes: U32k=31995 U64k=63990 U8k=7992 tok
+STREAM_FAIL byst0: HTTPError: HTTP Error 404: Not Found
+STREAM_FAIL byst1: HTTPError: HTTP Error 404: Not Found
+STREAM_FAIL byst3: HTTPError: HTTP Error 404: Not Found
+STREAM_FAIL byst2: HTTPError: HTTP Error 404: Not Found
+STREAM_FAIL byst4: HTTPError: HTTP Error 404: Not Found
+STREAM_FAIL byst5: HTTPError: HTTP Error 404: Not Found
+STREAM_FAIL U32k: HTTPError: HTTP Error 404: Not Found
+STREAM_FAIL bys21: HTTPError: HTTP Error 404: Not Found
+STREAM_FAIL bys23: HTTPError: HTTP Error 404: Not Found
+STREAM_FAIL bys22: HTTPError: HTTP Error 404: Not Found
+STREAM_FAIL bys20: HTTPError: HTTP Error 404: Not Found
+STREAM_FAIL bys24: HTTPError: HTTP Error 404: Not Found
+STREAM_FAIL bys25: HTTPError: HTTP Error 404: Not Found
+STREAM_FAIL U64k: HTTPError: HTTP Error 404: Not Found
+raw -> /root/build/p65/p614/l3_3bit/p65_tl_tq_v51.json (0 chunks, 30 events)
+
+=== long-stream faces (perf_counter, wave-relative)
+  U32k: TTFT=    nans total=    nans (start @ wave+  25.0s)
+  U64k: TTFT=    nans total=    nans (start @ wave+  85.0s)
+
+=== bystander inter-chunk gaps (0 streams, greedy, k3)
+  baseline: n=0 p50=    nanms p95=    nanms
+  window                 n    p50 ms    p95 ms    max ms #>2xb95  stall_s
+  W_base                 0        —         —         —       —        —
+  W_U32k_start           0        —         —         —       —        —
+  W_U64k_start           0        —         —         —       —        —
+
+P65_CAPTURE: DONE

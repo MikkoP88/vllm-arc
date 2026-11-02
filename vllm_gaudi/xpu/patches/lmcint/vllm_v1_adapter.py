@@ -659,7 +659,34 @@ def _init_lmcache_engine(
         "LMCache v1 configuration is should be passed."
     )
 
-    kv_dtype = get_kv_cache_torch_dtype(cache_config.cache_dtype, model_config.dtype)
+    # arc p614 (2026-11-02): TurboQuant engine geometry. The attn pool is
+    # the packed uint8 LBNHC view (NB, H_kv, N, slot_bytes) and the
+    # adapter's pool view hands lmcache (NB, N, 1, TWO=2, HS=H_kv*slot//2)
+    # uint8 rows, so the memory objs must be KV_2LTD (2, L, T, hidden)
+    # uint8 with hidden = H_kv*slot//2 -- the 2-axis carries row halves,
+    # not K/V. Store/load stay symmetric => byte-true roundtrip of the
+    # packed representation under naive serde (the bytes stay opaque;
+    # lmcache's own turboquant L2 serde is NOT used). Slot math comes from
+    # the wheel's TurboQuantConfig (slot_size_aligned, even by
+    # construction). fp8/fp16 postures take the unchanged path below.
+    _tq_cache_dtype = cache_config.cache_dtype
+    _tq = isinstance(_tq_cache_dtype, str) and _tq_cache_dtype.startswith(
+        "turboquant_"
+    )
+    _tq_hidden = 0
+    if _tq:
+        from vllm.model_executor.layers.quantization.turboquant.config import (
+            TurboQuantConfig,
+        )
+
+        _tq_cfg = TurboQuantConfig.from_cache_dtype(
+            _tq_cache_dtype, model_config.get_head_size()
+        )
+        kv_dtype = torch.uint8
+    else:
+        kv_dtype = get_kv_cache_torch_dtype(
+            cache_config.cache_dtype, model_config.dtype
+        )
 
     use_mla = mla_enabled(model_config)
     if use_mla and (
@@ -680,7 +707,26 @@ def _init_lmcache_engine(
     chunk_size = lmcache_config.chunk_size
     num_kv_head = model_config.get_num_kv_heads(parallel_config)
     head_size = model_config.get_head_size()
-    kv_shape = (num_layer, 1 if use_mla else 2, chunk_size, num_kv_head, head_size)
+    if _tq:
+        # arc p614: per-token packed row = H_kv * slot bytes, split across
+        # the KV_2LTD 2-axis (row halves, not K/V); slot_size_aligned is
+        # even by construction so the split is exact for every preset.
+        _tq_row = num_kv_head * _tq_cfg.slot_size_aligned
+        if _tq_row % 2 != 0:
+            raise ValueError(
+                f"arc p614: TurboQuant per-token row {_tq_row} bytes does "
+                "not split across the KV_2LTD 2-axis"
+            )
+        _tq_hidden = _tq_row // 2
+        kv_shape = (num_layer, 2, chunk_size, 1, _tq_hidden)
+    else:
+        kv_shape = (
+            num_layer,
+            1 if use_mla else 2,
+            chunk_size,
+            num_kv_head,
+            head_size,
+        )
     logger.info(
         "use mla: %s, kv shape: %s, num_mtp_layers: %s",
         use_mla,
@@ -721,7 +767,9 @@ def _init_lmcache_engine(
         raise ValueError("layerwise MLA connector is not supported yet")
 
     # When use_mla is True, num_kv_head is 1
-    hidden_dim_size = num_kv_head * head_size
+    # arc p614: under TurboQuant the connector's hidden is the packed row
+    # half (matches the KV_2LTD objs and the pool view's HS axis).
+    hidden_dim_size = _tq_hidden if _tq else num_kv_head * head_size
     if lmcache_config.use_layerwise:
         if lmcache_config.enable_blending:
             # Use layerwise connector for blending
@@ -1174,6 +1222,24 @@ class LMCacheConnectorV1Impl:
 
         self.config = config
 
+        # arc p614 (2026-11-02): TurboQuant attention pools. Under any
+        # turboquant_* kv-cache dtype the attn pool per layer is a packed
+        # uint8 LBNHC view (NB, H_kv, N, slot_bytes) with NO leading K/V
+        # axis -- the r43 fp8 view below (shape[1] == 2) must not touch it,
+        # and lmcache's detector cannot map the untransformed pool (the
+        # 112-error storm of results/2026-11-02-p65-tq4-ab: every lagged
+        # attn store died with ValueError "unsupported kv_caches
+        # structure" in detect_format). The view branch keyed on this
+        # flag hands lmcache the SAME NL_X_NB_BS_NH_TWO_HS geometry the
+        # fp8 path uses; the spec-derived slot size cross-checks the
+        # pool that actually lands. fp8/fp16 postures never set it.
+        self._arc_tq_attn = False
+        self._arc_tq_slot_bytes = 0
+        self._arc_tq_page_tokens = 0
+        _cd = getattr(vllm_config.cache_config, "cache_dtype", None)
+        if isinstance(_cd, str) and _cd.startswith("turboquant_"):
+            self._arc_tq_attn = True
+
         # ---- Hybrid (full-attention + recurrent/mamba) detection ----
         # HMA gives this connector per-kv-cache-group block ids. The mamba
         # group needs its own byte-opaque LMCache engine; the attention
@@ -1234,6 +1300,22 @@ class LMCacheConnectorV1Impl:
                 elif isinstance(spec, (FullAttentionSpec, SlidingWindowSpec)):
                     attn_names.extend(group.layer_names)
                     fa_group_ids.append(g_idx)
+                    # arc p614: the spec's own geometry is the allocator's
+                    # source of truth (state_content_bytes = the preset's
+                    # slot_size_aligned; block_size = the manager PAGE in
+                    # tokens); cross-check the view against it and remember
+                    # the page size -- the per-layer pool view arrives in
+                    # 128-token KERNEL blocks (create_kv_cache_views
+                    # subdivision; dense pages per the block-stride assert)
+                    # and the view branch below merges them back to page
+                    # granularity for lmcache.
+                    if getattr(
+                        getattr(spec, "kv_quant_mode", None), "is_turboquant", False
+                    ):
+                        self._arc_tq_attn = True
+                        if spec.state_content_bytes is not None:
+                            self._arc_tq_slot_bytes = int(spec.state_content_bytes)
+                        self._arc_tq_page_tokens = int(spec.block_size)
             self._mamba_group_ids = mamba_group_ids
             self._mamba_layer_names = mamba_names
             if mamba_group_ids:
@@ -1602,8 +1684,69 @@ class LMCacheConnectorV1Impl:
     ####################
     # Worker side APIs
     ####################
-    @staticmethod
-    def _arc_attn_pool_view(t: torch.Tensor) -> torch.Tensor:
+    def _arc_attn_pool_view(self, t: torch.Tensor) -> torch.Tensor:
+        # arc p614 (2026-11-02): TurboQuant packed pool -- checked FIRST
+        # because @TP2 H_kv == 2, so the TQ pool (NB, H_kv=2, N, slot)
+        # also satisfies the r43 fp8 guard (shape[1] == 2) below and the
+        # fp8 branch would swallow it (the L1 debug-boot finding: the
+        # accidental view was byte-correct but 128-token-granular, and
+        # the kit detector's BS >= 256 bound rejected it -- the
+        # "unsupported kv_caches structure" storm of
+        # results/2026-11-02-p65-tq4-ab and the first p614c1 leg). Under
+        # any turboquant_* dtype the attn pool per layer is a uint8
+        # LBNHC view (NB, H_kv, N, slot_bytes): the packed [key|value]
+        # slot lives INSIDE the last axis and there is no K/V axis.
+        # LBNHC physical order is (B, N, H, C): permute(0,2,1,3) of the
+        # logical (B, H, N, C) pool IS the physical order, so the
+        # per-(block, token) row of H_kv*slot bytes is contiguous and
+        # the 5-D reshape is a zero-copy view (NB_pages, N, 1, TWO=2,
+        # HS=row//2) that reuses the SAME NL_X_NB_BS_NH_TWO_HS detector
+        # + torch-baseline transfer branch as the fp8 path (per-token
+        # contiguous row of TWO*HS elements; slot_size_aligned is even
+        # by construction, so the row always splits exactly; HS = row//2
+        # derived at runtime -- live head 256 / H_kv 2 per rank @TP2 ->
+        # slot 262 -> HS 262 for 4bit_nc; every preset clears the
+        # detector's HS >= 128 guard). The per-layer pool arrives as
+        # 128-token KERNEL blocks (create_kv_cache_views subdivides
+        # dense pages for the TQ kernel; live shape (6500, 2, 128, 262),
+        # strides (67072, 262, 524, 1) -- L1 debug boot 2026-11-02), and
+        # the kit detector's BS >= 256 bound rejects a 128-token block
+        # face, so merge the kernel blocks back to manager-PAGE
+        # granularity (13 x 128 = 1664 here) before handing lmcache the
+        # view -- a zero-copy reshape of the contiguous permuted tensor,
+        # and exactly the page geometry the engine's chunked KV_2LTD
+        # objs use. A non-contiguous permute (layout drift) refuses
+        # loudly rather than reshaping a silent copy. fp8/fp16 postures
+        # never enter (flag gate) and keep the untouched r43 branch.
+        if (
+            self._arc_tq_attn
+            and t.dim() == 4
+            and t.dtype == torch.uint8
+            and (
+                self._arc_tq_slot_bytes == 0
+                or int(t.shape[3]) == self._arc_tq_slot_bytes
+            )
+        ):
+            nb, h_kv, n, c = (int(x) for x in t.shape)
+            row = h_kv * c
+            if row % 2 == 0:
+                permuted = t.permute(0, 2, 1, 3)
+                if not permuted.is_contiguous():
+                    raise ValueError(
+                        "arc p614: TurboQuant pool is not LBNHC-contiguous "
+                        f"(shape {tuple(t.shape)}, strides {tuple(t.stride())})"
+                        " -- refusing to reshape a copy"
+                    )
+                page_n = self._arc_tq_page_tokens
+                if (
+                    page_n > n
+                    and page_n % n == 0
+                    and (nb * n) % page_n == 0
+                ):
+                    return permuted.reshape(
+                        nb * n // page_n, page_n, 1, 2, row // 2
+                    )
+                return permuted.reshape(nb, n, 1, 2, row // 2)
         # arc r43 (2026-10-29): this engine's hybrid FA-XPU pool is a single
         # stacked (num_blocks, 2=K/V, block_size, kv_heads*head_size) tensor
         # whose PHYSICAL order is (num_blocks, block_size tokens, K/V,
