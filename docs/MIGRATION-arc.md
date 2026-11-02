@@ -2,10 +2,11 @@
 
 Migration addendum banked at P5 close-out (2026-10-30) per the banking
 directive; identities re-pointed at each certification close-out — most
-recently cert5 (P6.13, 2026-11-01; same default posture as cert4, adds
-the default-OFF sliced-store hunk). Target: serve **qwen3.8-27b-fp8**
+recently cert6 (P6.14, 2026-11-02; same default posture as cert5, adds
+the TurboQuant-aware lagged-store hunk + validated `turboquant_*` dtype
+faces). Target: serve **qwen3.8-27b-fp8**
 (dense hybrid-GDN, **MTP k3 recommended** — r46t real-world campaign) on
-`vllm-arc:v0.30.0-b70-cert5`, replacing the W14 incumbent
+`vllm-arc:v0.30.0-b70-cert6`, replacing the W14 incumbent
 (`radiance-test`, flash-next k3) as the rig's serving stack. Everything
 below is rig-proven; the full phase-by-phase evidence table is §6.
 
@@ -13,10 +14,10 @@ below is rig-proven; the full phase-by-phase evidence table is §6.
 
 | item | value |
 |---|---|
-| image | `vllm-arc:v0.30.0-b70-cert5` (tag-built from `rel/v0.30.0-b70-cert5` — cert5; default posture byte-identical to cert4, adds the P6.13 default-OFF slice hunk `LMC_STORE_SLICE_TOKENS`) |
-| fork SHA baked | `3e268627` (IMAGE_MANIFEST `fork_sha=3e26862765c412bba23c3ffffe7e018c42645033` == the annotated tag's commit; annotated tag `rel/v0.30.0-b70-cert5` on main) |
-| validation image | `vllm-arc:v0.30.0-b70-cert5` itself (28/28 p48_verify + 11/11 p73_verify image-native, default-posture battery + slice face — `results/2026-11-01-p65-cert5/`; default faces first validated cert4-native `results/2026-10-31-p65-cert4/` + r70 comprehensive `results/2026-10-31-p70-r70-cert4-comprehensive/`) |
-| canonical serve script | rig `/root/build/serve_arc_b70.sh` (the uniform boot interface; carries the **25-var chain** incl. `LMCACHE_TRACK_USAGE=false` — P6.3; run with `ARC_IMAGE=vllm-arc:v0.30.0-b70-cert5 ARC_GRAPH=1 ARC_SPEC=3`) |
+| image | `vllm-arc:v0.30.0-b70-cert6` (tag-built from `rel/v0.30.0-b70-cert6` — cert6; default posture byte-identical to cert5, adds the P6.14 TQ-aware lagged-store hunk + the validated opt-in `turboquant_*` dtype faces) |
+| fork SHA baked | `986e97d6` (IMAGE_MANIFEST `fork_sha=986e97d6ac76df138347daa0bab2dc1546ea36e8` == the annotated tag's commit; annotated tag `rel/v0.30.0-b70-cert6` on main; image-native adapter md5 `33812d19…` == repo) |
+| validation image | `vllm-arc:v0.30.0-b70-cert6` itself (28/28 p48_verify + 11/11 p73_verify image-native, default-posture battery + slice face + TQ4 face — `results/2026-11-02-p614-cert6/`; candidate-image legs `results/2026-11-02-p614-{l1v2,l2,l3}/`; default faces first validated cert4-native `results/2026-10-31-p65-cert4/` + r70 comprehensive `results/2026-10-31-p70-r70-cert4-comprehensive/`) |
+| canonical serve script | rig `/root/build/serve_arc_b70.sh` (the uniform boot interface; carries the **25-var chain** incl. `LMCACHE_TRACK_USAGE=false` — P6.3; run with `ARC_IMAGE=vllm-arc:v0.30.0-b70-cert6 ARC_GRAPH=1 ARC_SPEC=3`) |
 | long-context profile | rig `/root/build/serve_arc_b70_defer2.sh` (the canonical chain + `--long-prefill-token-threshold 2048` + `LMC_DEFER_CHUNK_STORE=1` + `LMC_DEFER_MIN_TOKENS=40960` — P6.5; opt-in, see CONFIGURATION-arc "Long-context serve profile") |
 | A/B fallback | same script with `ARC_SPEC=4` (MTP k4 — documented alternative for near-deterministic workloads) |
 | golden reference | rig `/root/build/p25/golden_ref.json` (md5 `e02cbb07…`; covers k4 AND k5 — r42/r43 proved byte-identical) |
@@ -37,7 +38,7 @@ standalone loader — r42 Fix B).
 #                  export SSH_ASKPASS=/tmp/askpass.sh
 #                  SSH_ASKPASS_REQUIRE=force DISPLAY=:0)
 docker stop radiance-test                      # frees port 8000 + both GPUs
-ARC_IMAGE=vllm-arc:v0.30.0-b70-cert5 ARC_NAME=arc-test ARC_GRAPH=1 ARC_SPEC=3 \
+ARC_IMAGE=vllm-arc:v0.30.0-b70-cert6 ARC_NAME=arc-test ARC_GRAPH=1 ARC_SPEC=3 \
   bash /root/build/serve_arc_b70.sh            # boot + serve as one unit
 # logs land in the container at /root/serve_full.log (host: docker exec)
 # poll health (first-traffic law: batteries run on FIRST traffic after boot)
@@ -123,5 +124,6 @@ PERFORMANCE-arc / TESTING-arc. All paths relative to `results/`.
 | P2P p71 | `2026-10-31-p71-r71-p2p-analysis/` | TP2 allreduce path: **direct P2P confirmed** (r71b D2D 10.23 GB/s both directions; r71a all collectives `algo topo sycl`, pidfd IPC live, zero host-staged) — all lanes closed, no fix needed, AR gains are algorithmic |
 | P6.5 annex p73 | `2026-11-01-p65-end-stall-analysis/` | END-stall five-mechanism analysis (end CLEAN at 32k; M1 store tail / M2 backlog hangover / M4 admission aliasing) — analysis only |
 | P6.13 p73 | `2026-11-01-p65-rung3-slice/` | **sliced final-span store** (`LMC_STORE_SLICE_TOKENS`, default-OFF): rig A/B gate RUN + verdict — all safety/regression faces GREEN (integrity 5/5, run7n 300.48/84.4, families unchanged, 0 errors), mechanism landed exactly (63232-class = 0; 38 = 2×19 windows; U64k TTFT −1.5…−3.5 s); pre-registered ≤600 ms max-gap bar mechanically missed (1598) and recorded as mis-set (r48e nolmc floor 2347) — **code merged default-OFF, enabling profile experimental/uncertified** |
-| P6.13 cert5 | `2026-11-01-p65-cert5/` | **cert5 release gates** (tag-built image, single flow): manifest fork_sha == tag, p48 28/28 + p73 slice-hunk 11/11 image-native, SLICE_ENV_ABSENT=0, run7n t0 297.19/84.48 + t1.0 189.41/62.35 in-family, integrity 5/5 + det 3/3, WARN class-set identical to cert4, slice face on the SAME image — U64k TTFT 50.77 (cert4 51.95), W_U64k_start max 1602 vs 1997, 63232-class 0 / 3328×38 exact — **`rel/v0.30.0-b70-cert5` = current certified release** |
+| P6.13 cert5 | `2026-11-01-p65-cert5/` | **cert5 release gates** (tag-built image, single flow): manifest fork_sha == tag, p48 28/28 + p73 slice-hunk 11/11 image-native, SLICE_ENV_ABSENT=0, run7n t0 297.19/84.48 + t1.0 189.41/62.35 in-family, integrity 5/5 + det 3/3, WARN class-set identical to cert4, slice face on the SAME image — U64k TTFT 50.77 (cert4 51.95), W_U64k_start max 1602 vs 1997, 63232-class 0 / 3328×38 exact — superseded by cert6 |
+| P6.14 cert6 | `2026-11-02-p614-cert6/` (+ candidate legs `2026-11-02-p614-{l1v2,l2,l3}/`) | **cert6 release gates** (tag-built image, single flow): manifest fork_sha `986e97d6` == tag, p48 28/28 + p73 slice-hunk 11/11 image-native, SLICE_ENV_ABSENT=0, run7n t0 296.25/84.46 + t1.0 186.48/61.79 in-family, integrity 5/5 + det 3/3, WARN class-set identical to cert5 (44 == 44), slice face on the SAME image (3328×38 exact, 63232-class 0, W_U64k_start max 1604) + the first certified opt-in TQ face `turboquant_4bit_nc` on the same image (0 errors, kit D2H live @262, spec 0.9714/0.9381, KV 757,641 = 2.89×, U32k/U64k TTFT 15.85/33.98 s) — **`rel/v0.30.0-b70-cert6` = current certified release** |
 | env reference | `docs/envs.md` | complete control surface + naming map |
