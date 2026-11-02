@@ -338,9 +338,35 @@ Per-preset capacity/TTFT/quality numbers and dispositions: the README
 KV-quant table + PERFORMANCE-arc "TurboQuant faces". Guidance:
 **k8v4 = quality-safest** (t1.0 xhigh within 9 % of fp8), **3bit_nc =
 max KV capacity** (3.72×) where the TQ-inherent sampled-throughput
-raggedness (~77+~26 tok/s solo pair) and bystander prefill gaps
-(~3.2–4.6 s p95) are acceptable — dtype-wide costs, unchanged by the
-fix and owner-call material per the A/B disposition.
+raggedness (~77+~26 tok/s solo pair) is acceptable — dtype-wide cost,
+unchanged by the fix and owner-call material per the A/B disposition.
+(Bystander stalls are NOT a TQ cost at equal posture — see the next
+section: true-default fp8 is the worst stall face.)
+
+## Bystander-stall tuning (P6.15, opt-in — certified defaults unchanged)
+
+A bystander inter-token gap during another stream's long prefill =
+one chunked-prefill engine step (no decode piggyback on this stack).
+Stall duration ≈ tokens-per-chunk / prefill-rate, so the lever is
+chunk granularity, tuned by `ARC_MNBT` (`--max-num-batched-tokens`)
+or `--long-prefill-token-threshold`, floored to the dtype's KV-page
+multiple (TQ page 1664 → 1664/3328/6656-token chunks; fp8 page 832 →
+1664/3328/7488). Smaller chunks = shorter stalls but more prefix
+re-reads = longer TTFT — a measured Pareto frontier, no free knob
+(all legs on cert6, integrity 5/5 + det 3/3, 0 errors;
+`results/2026-11-02-p615-stall-analysis/`):
+
+| Fleet priority | Recommended face | Cost |
+|---|---|---|
+| Balanced (stalls −38/−46 %, KV +6.8 %) | `turboquant_4bit_nc` + `ARC_MNBT=4096` | TTFT +9–11 % vs TQ4 default; ≤ fp8-default |
+| Sub-1.5 s stalls (p95 ~1.3 s) | `turboquant_4bit_nc` + `ARC_MNBT=2048` | TTFT +14–40 % vs fp8/TQ4 defaults; largest TQ4 pool (3.13×) |
+| fp8 dtype fixed | `fp8_e4m3` + `ARC_MNBT=4096` | stalls −49/−51 %, KV +6.8 %, TTFT +8–13 % |
+| Max TTFT / max throughput | certified defaults as-is | fp8 true-default bystander p95 3.99/5.30 s (worst stall face, best sampled throughput) |
+
+Laws: never combine with the experimental slice profile unless
+re-validated; one knob at a time (the matrix is one-variable);
+`ARC_MNBT=2048` under fp8 floors to 1664-token chunks — the fp8
+thr2048 profile is the historical equivalent (r66a).
 
 ## The 25-var chain (reference)
 
