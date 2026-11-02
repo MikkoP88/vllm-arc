@@ -1,0 +1,10 @@
+[integrity] seed 101: PASS cold=55b6f6c79ebb rehit=55b6f6c79ebb chars=512/512
+[integrity] seed 202: PASS cold=014e59db1c89 rehit=014e59db1c89 chars=512/512
+[integrity] seed 303: PASS cold=50925371fcbe rehit=50925371fcbe chars=1280/1280
+[integrity] seed 404: FAIL cold=8ca1760ddbdd rehit=1f4de41ecd75 chars=1024/989
+[integrity] seed 505: FAIL cold=03a453f5ff14 rehit=84207fa6ed3a chars=512/512
+[determinism] seed 11: PASS a34fbdd62627
+[determinism] seed 22: PASS b738f9fd882c
+[determinism] seed 33: PASS f76460728263
+INTEGRITY 3/5 FAIL
+DETERMINISM 3/3 PASS
