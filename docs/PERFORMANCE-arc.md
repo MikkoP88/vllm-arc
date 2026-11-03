@@ -359,10 +359,25 @@ t1.0 xhigh reading (solo + concurrent per quantization, owner ask
 2026-11-03): fp8 is the only dtype whose sampled solo pair is CLEAN
 (61.73/61.79 — both legs uniform); every TQ preset shows the ragged pair
 (one leg 77–86 tok/s — ABOVE fp8's sampled solo — plus one degenerate
-~26 tok/s leg where sampled acceptance collapses mid-run under quantized
-KV), and the same raggedness appears in the 4-way agg streams
+~26 tok/s leg), and the same raggedness appears in the 4-way agg streams
 (256-tok legs spreading 3.7–11.5 s). Net: concurrent sampled throughput
 is the honest dtype comparator — k8v4 −8.5 %, sub-4-bit presets −51…−53 %.
+Mechanism (pinned by the P6.15c diagnostic, `results/2026-11-03-p615c-t10collapse/`):
+the collapse leg is NOT a stall and NOT mid-run — the engine step stays
+41.7 ms and **wall = drafts × 41.7 ms** in every request; a collapsed
+request is BORN collapsed (MTP draft acceptance dead from round 1,
+sticky for the request's lifetime — pos0 rejections on 169/181 rounds in
+the reproduced 26-tps request), so 200 tokens simply take 3.4× more
+verify rounds. Trigger = 4-bit-V KV noise breaking draft/target match on
+low-margin sampled-trajectory regions: fp8 KV immune at the same
+posture, greedy t0 immune on every dtype, healthy TQ legs 77–86 t/s.
+Per-request lottery observed at 10 % (1/10 full + 2/10 partial, this
+leg) to 50 % (banked solo pairs) — n small. Fix menu: no config/stall
+fix (nothing stalled; spec depth doesn't change wall); cool the sampling
+(acceptance recovers as temp falls — intermediate temps unmeasured) or
+stay on fp8 (immune) when uniform sampled latency matters;
+engine-side acceptance-aware gating is out of scope (upstream
+direction).
 
 ¹ fp8 comparator row as run in the A/B (thr2048-profile face —
 hence its 23.16/50.77 TTFT and 1.3/1.6 s gaps). P6.15 re-measured
@@ -383,8 +398,10 @@ posture, bystander prefill stalls (see ¹).
 **TQ-inherent costs (unchanged by the fix — owner-call material, per
 preset):** the sampled t1.0 xhigh agg drops 8.5 % (k8v4) to ~53 %
 (sub-4-bit presets — ragged early-finish streams, solo pair ~77–86 +
-~26 tok/s). Spec acceptance stays ≥ 0.86 on every preset;
-integrity/determinism hold.
+~26 tok/s). Leg-average spec acceptance stays ≥ 0.86 on every preset,
+but P6.15c shows it is per-request bimodal at t1.0 (healthy requests
+3.6–3.9 tok/round, collapsed ones 1.1–2.0 — the averages hide the
+lottery); integrity/determinism hold.
 
 **Dispositions:** `k8v4` = the quality-safest TQ face (within 9 % of
 fp8 on the worst quality face, best absolute TTFT); `3bit_nc` /
@@ -503,7 +520,11 @@ Findings:
   (3.7–11.5 s spreads) — concurrent agg is the honest comparator:
   k8v4 173.39 (−8.5 %), 4bit 93.05, k3v4 88.95, 3bit 89.58 (−51…−53 %).
   The good TQ leg (~77 tok/s) actually beats fp8's sampled solo — the
-  cost is the collapse leg, not a uniform slowdown.
+  cost is the collapse leg, not a uniform slowdown. P6.15c pins the
+  collapse: per-request acceptance death from round 1 (engine cadence
+  constant 41.7 ms, wall = drafts × cadence), 4-bit-V noise vs sampled
+  trajectory — see the TurboQuant t1.0 reading above and
+  `results/2026-11-03-p615c-t10collapse/`.
 - **Solo prefill is a chunk-size story per dtype** (U64k t/s): tq4
   1664→1459, 3328→1791, 6656→1921; k8v4 3456→1716, 8064→1945; k3v4_nc
   3712→1760, 7424→1945; 3bit_nc 2176→1549, 6528→1893; fp8 3328→1516,
