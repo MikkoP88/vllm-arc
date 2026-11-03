@@ -34,18 +34,20 @@ Every value below is **measured natively on the certified image line** `vllm-arc
 | MTP k3 acceptance (greedy) | **85.9 %** (mean accepted length 3.58) |
 | MTP value over no-spec (cert4 A/B, by face) | **1.5–2.5×** |
 
+This table is the **certified default posture (greedy)** record. Sampled regimes (t ≥ 0.2) have a second, opt-in record: `ARC_SPEC_METHOD=probabilistic` (P6.16) lifts t1.0-xhigh aggregates **+29 % (fp8) … +91 % (TQ 3-bit)** with uniform solo streams — greedy/t0 faces provably unchanged. Columns in the TurboQuant table below; full matrix: [`docs/PERFORMANCE-arc.md`](docs/PERFORMANCE-arc.md) "Draft-sampling posture".
+
 ### TurboQuant KV-cache dtypes (opt-in, P6.14 — validated on the cert6 image)
 
 Swapping only `--kv-cache-dtype fp8_e4m3` → a `turboquant_*` preset (one-variable legs,
-`results/2026-11-02-p614-l1v2/` + `-l3/`; integrity 5/5 + determinism 3/3 + spec gate PASS on every preset, lagged KV store now healthy — 0 store errors, kit transfer live, external tier participating):
+`results/2026-11-02-p614-l1v2/` + `-l3/`; integrity 5/5 + determinism 3/3 + spec gate PASS on every preset, lagged KV store now healthy — 0 store errors, kit transfer live, external tier participating). The t1.0 aggregate now carries **two postures** (P6.16): *greedy* = the certified default posture (TQ deltas vs fp8's 189.41); *probabilistic* = the opt-in `ARC_SPEC_METHOD=probabilistic` draft posture (`results/2026-11-03-p616b-probmatrix/`, one boot per dtype on cert6, posture flip only; deltas vs the same dtype's greedy):
 
-| Preset | KV capacity | U32k / U64k TTFT | t1.0 xhigh agg (vs fp8 189.41) | Standing |
-|---|---|---|---|---|
-| `fp8_e4m3` (default) | 405,491 tok (1.55×) | 23.16 / 50.77 s | 189.41 | **certified default — fastest sampled throughput** |
-| `turboquant_k8v4` | 526,445 tok (2.01×) | **15.29 / 33.03 s** | **173.39 (−8.5 %)** | **quality-safest TQ face** |
-| `turboquant_4bit_nc` | 757,641 tok (2.89×) | 15.91 / 34.02 s | 93.05 (−51 %) | middle |
-| `turboquant_k3v4_nc` | 853,220 tok (3.25×) | 15.48 / 33.78 s | 88.95 (−53 %) | capacity |
-| `turboquant_3bit_nc` | **975,329 tok (3.72×)** | 16.02 / 35.74 s | 89.58 (−53 %) | **max capacity** |
+| Preset | KV capacity | U32k / U64k TTFT | t1.0 agg — greedy (default) | t1.0 agg — probabilistic (opt-in, P6.16) | Standing |
+|---|---|---|---|---|---|
+| `fp8_e4m3` (default) | 405,491 tok (1.55×) | 23.16 / 50.77 s | 189.41 | **241.10 (+29 %)** | **certified default — fastest agg in both postures; sampled-collapse-immune** |
+| `turboquant_k8v4` | 526,445 tok (2.01×) | **15.29 / 33.03 s** | **173.39 (−8.5 %)** | 172.95 (EV-neutral) | **quality-safest TQ face** |
+| `turboquant_4bit_nc` | 757,641 tok (2.89×) | 15.91 / 34.02 s | 93.05 (−51 %) | **134.42 (+44 %)** | middle |
+| `turboquant_k3v4_nc` | 853,220 tok (3.25×) | 15.48 / 33.78 s | 88.95 (−53 %) | **137.11 (+54 %)** | capacity |
+| `turboquant_3bit_nc` | **975,329 tok (3.72×)** | 16.02 / 35.74 s | 89.58 (−53 %) | **171.32 (+91 %)** | **max capacity** |
 
 Known TQ-inherent costs (dtype-wide, unchanged by the store fix — owner-call material): ragged
 sampled-throughput solo streams (~77 + ~26 tok/s pair) — **the opt-in P6.16 draft posture

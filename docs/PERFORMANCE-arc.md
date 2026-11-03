@@ -9,15 +9,20 @@ definitions and hardware in [`TESTING-arc.md`](TESTING-arc.md)).
    the two prefix-cache tiers, and the provenance rule. Read it first.
 2. **Current record** — cert4-native only (`vllm-arc:v0.30.0-b70-cert4`;
    byte-identical default posture on cert5, re-verified in-family at the
-   cert5 gates), plus the current-era analyses (prefill anatomy, op-class
-   trace).
+   cert5 gates), plus the opt-in posture sections with their own tables
+   (TurboQuant dtypes P6.14; draft-sampling posture
+   `ARC_SPEC_METHOD=probabilistic` P6.16) and the current-era analyses
+   (prefill anatomy, op-class trace).
 3. **History** — every pre-cert4 measurement, labeled by image, kept as
    the decision record (k-depth, load shape, soak). History numbers are
    never mixed into current-record tables (comparator law).
 
 All certified faces: first-traffic fresh boot, timers off, XPU graphs
-on, TP2, greedy temp 0. **Recommended MTP depth = k3** (r46t campaign,
-reproduced natively on cert4 by r70 — both in this file).
+on, TP2, greedy temp 0. Opt-in-posture faces (TQ dtypes, probabilistic
+drafting) run the same protocol laws with exactly one flipped variable;
+their tables are labeled by posture. **Recommended MTP depth = k3**
+(r46t campaign, reproduced natively on cert4 by r70 — both in this
+file).
 
 ## Measurement methodology — how every number in this file is produced
 
