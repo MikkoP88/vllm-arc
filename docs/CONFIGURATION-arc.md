@@ -343,6 +343,45 @@ unchanged by the fix and owner-call material per the A/B disposition.
 (Bystander stalls are NOT a TQ cost at equal posture — see the next
 section: true-default fp8 is the worst stall face.)
 
+## Draft-sampling posture (P6.16, opt-in — `ARC_SPEC_METHOD`)
+
+The certified default is **greedy MTP drafting** (argmax drafts) —
+byte-identical to every prior certified posture. For **sampled serving
+(temperature ≥ ~0.5)** the recommended opt-in is **probabilistic
+drafting**: MTP drafts sampled from the draft distribution + the
+rejection-ratio verify (the mathematically-correct target sampler;
+greedy drafts + sampled verify is biased at temperature). At t0 the two
+are provably identical (plain-argmax drafts + accept-iff-argmax verify)
+— measured in-band on every dtype.
+
+Enable it with one env on the uniform boot interface (no image change,
+no CLI edit):
+
+```bash
+ARC_SPEC_METHOD=probabilistic ARC_IMAGE=vllm-arc:v0.30.0-b70-cert6 \
+  ARC_GRAPH=1 ARC_SPEC=3 bash /root/build/serve_arc_b70.sh
+# appends "draft_sample_method":"probabilistic" to --speculative-config
+```
+
+Measured effect (t1.0-xhigh, vs the greedy default; full matrix in
+PERFORMANCE-arc "Draft-sampling posture"):
+
+| dtype | agg | solo pair |
+|---|---|---|
+| fp8 (default dtype) | **+29 %** (186.48 → 241.10) | 61.73/61.79 → **67.46/64.10** (beats its greedy bank) |
+| k8v4 | EV-neutral | ragged → uniform |
+| tq4 / k3v4 / 3bit | **+44 / +54 / +91 %** | ~77+~26 ragged → uniform mid-50s–60s |
+
+Menu: **probabilistic for sampled serving on any dtype (fp8 included
+— it is the biggest agg win AND immune to the residual)**.
+Worst-case-latency-sensitive fleets on TQ dtypes: rare divergent-
+trajectory requests can still collapse ~26 tok/s (true draft/target
+divergence — no config fix); use fp8 or cooler sampling there. Only
+`probabilistic` is validated — any other value (and unset) falls back
+to the default greedy posture (byte-identical, hook-proven:
+`results/2026-11-03-p616c-spechook/`; posture evidence
+`results/2026-11-03-p616{a,b}-*/`).
+
 ## Bystander-stall tuning (P6.15, opt-in — certified defaults unchanged)
 
 A bystander inter-token gap during another stream's long prefill =
@@ -460,9 +499,12 @@ Host-script layer (`tools/serve_arc_b70.sh`): `ARC_IMAGE`, `ARC_NAME`,
 `ARC_GRAPH` (0 eager / 1 graph — certified = 1), `ARC_SPEC` (MTP depth
 = `num_speculative_tokens`: 0 = off, default 3 = the recommendation,
 4 = the D-champion alternative; only 0/3/4/5 accepted — the legged
-depths), `ARC_LMC` (1 = the certified LMCache connector + the 9-var
-`LMCACHE_*` chain — default; 0 = no LMCache), `ARC_GMU` (0.8),
-`ARC_MNBT` (8192 — the certified default; r66c A/B'd 16384: long-face
+depths), `ARC_SPEC_METHOD` (draft-sampling posture, P6.16: unset =
+greedy = certified byte-identical; `probabilistic` = the opt-in
+sampled-serving posture — section above), `ARC_LMC` (1 = the certified
+LMCache connector + the 9-var `LMCACHE_*` chain — default; 0 = no
+LMCache), `ARC_GMU` (0.8), `ARC_MNBT` (8192 — the certified default;
+r66c A/B'd 16384: long-face
 solo TTFT −4…−10 % but −18 % KV pool (405,491→332,629 tokens,
 concurrency 1.55x→1.27x) and U8k +10 % — a conditional long-prompt-only
 lever, **never** combined with `--long-prefill-token-threshold` (the

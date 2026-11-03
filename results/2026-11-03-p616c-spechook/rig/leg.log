@@ -1,0 +1,75 @@
+=================== P616C STAGE 0: FLAG PROBE =================
+8 /root/build/p65/p616/p616c/hook_block.sh
+SPEC_FLAG=[--speculative-config '{"method":"mtp","num_speculative_tokens":3}']
+SPEC_FLAG=[--speculative-config '{"method":"mtp","num_speculative_tokens":3}']
+SPEC_FLAG=[--speculative-config '{"method":"mtp","num_speculative_tokens":3,"draft_sample_method":"probabilistic"}']
+SPEC_FLAG=[]
+PROBE GATES: unset_vs_junk=IDENTICAL unset_is_certified_bytes=1 prob_appends_validated=1 specoff_empty=1
+=================== P616C BOOT A: DEFAULT PATH (unset) =================
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert6 name=arc-test graph=1 spec=3 gmu=0.8 mnbt=8192 seqs=64 xgc=0 port=8000 09:41:38
+HEALTH=OK after ~295s
+(EngineCore pid=698) INFO 11-03 09:44:24 [kv_cache_utils.py:2395] XPU KV cache size: 405,491 tokens, Maximum concurrency for 262,144 tokens per request: 1.55x
+spec-method NOT in log (expected, default path)
+FLIP_FIRST: stop 8.4s
+T10_WARMUP: length 50 0.8s
+agg4x256#1 wall=3.74s aggregate=273.98 tok/s ok_streams=4/4 [256tok/3.7s 256tok/3.7s 256tok/3.6s 256tok/3.7s]
+agg4x256#2 wall=3.45s aggregate=296.69 tok/s ok_streams=4/4 [256tok/3.4s 256tok/3.5s 256tok/3.4s 256tok/3.4s]
+solo200 n=200 dt=2.37s tps=84.47
+solo200 n=200 dt=2.37s tps=84.44
+agg4x256#1 wall=8.45s aggregate=121.15 tok/s ok_streams=4/4 [256tok/8.5s 256tok/7.8s 256tok/8.1s 256tok/7.7s]
+agg4x256#2 wall=5.54s aggregate=184.86 tok/s ok_streams=4/4 [256tok/5.5s 256tok/5.4s 256tok/5.3s 256tok/5.0s]
+solo200 n=200 dt=3.24s tps=61.79
+solo200 n=200 dt=3.27s tps=61.07
+SPEC_GATE {"wall_s": 2.95, "streams_ok": "4/4", "drafts": 231, "draft_tokens": 693, "accepted": 572, "pos": {"0": 0.9221, "1": 0.8268, "2": 0.7273, "3": 0.0}, "pos1": 0.9221, "acceptance": 0.8254, "mean_acceptance_length": 3.48, "hard": 0.5, "target": 0.85}
+SPEC_GATE log_window: (APIServer pid=13) INFO 11-03 09:47:07 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 2.25, Accepted throughput: 87.29 tokens/s, Drafted throughput: 209.67 tokens/s, Accepted: 873 tokens, Drafted: 2097 tokens, Per-position acceptance rate: 0.624, 0.382, 0.243, Avg Draft acceptance rate: 41.6%
+SPEC_GATE PASS: pos1=0.9221 >= 0.5 hard, acceptance=0.8254 vs 0.85 target (TARGET MISS — recorded, --strict-target for certification)
+[integrity] seed 101: PASS cold=873c1a7d4813 rehit=873c1a7d4813 chars=916/916
+[integrity] seed 202: PASS cold=a43423a2dffb rehit=a43423a2dffb chars=922/922
+[integrity] seed 303: PASS cold=725780f72fa8 rehit=725780f72fa8 chars=922/922
+[integrity] seed 404: PASS cold=3035cc42e47d rehit=3035cc42e47d chars=922/922
+[integrity] seed 505: PASS cold=3272828b5966 rehit=3272828b5966 chars=928/928
+[determinism] seed 11: PASS 630f74c0ce54
+[determinism] seed 22: PASS fc7c414ef0ce
+[determinism] seed 33: PASS 74704cbaa5a2
+INTEGRITY 5/5 PASS
+DETERMINISM 3/3 PASS
+  U8k: prompt=8158 cached=None TTFT=3.78s wall=4.10s -> 2161 tok/s prefill-rate
+  U16k: prompt=16354 cached=None TTFT=7.94s wall=8.27s -> 2059 tok/s prefill-rate
+  U32k: prompt=32553 cached=None TTFT=17.47s wall=18.09s -> 1864 tok/s prefill-rate
+  U64k: prompt=65303 cached=None TTFT=40.51s wall=41.03s -> 1612 tok/s prefill-rate
+0
+BOOT bootA GATES: ERROR=0 Traceback=0 integrity_5of5=1 det_3of3=1
+=================== P616C BOOT B: OPT-IN PATH (probabilistic) =================
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert6 name=arc-test graph=1 spec=3 gmu=0.8 mnbt=8192 seqs=64 xgc=0 port=8000 09:50:51
+HEALTH=OK after ~285s
+draft_sample_method': 'probabilistic
+FLIP_FIRST: stop 9.1s
+T10_WARMUP: length 50 0.7s
+agg4x256#1 wall=3.85s aggregate=266.06 tok/s ok_streams=4/4 [256tok/3.8s 256tok/3.8s 256tok/3.8s 256tok/3.7s]
+agg4x256#2 wall=3.45s aggregate=297.12 tok/s ok_streams=4/4 [256tok/3.4s 256tok/3.4s 256tok/3.4s 256tok/3.4s]
+solo200 n=200 dt=2.37s tps=84.42
+solo200 n=200 dt=2.37s tps=84.54
+agg4x256#1 wall=7.15s aggregate=143.24 tok/s ok_streams=4/4 [256tok/7.0s 256tok/6.9s 256tok/6.8s 256tok/7.1s]
+agg4x256#2 wall=4.51s aggregate=226.87 tok/s ok_streams=4/4 [256tok/4.4s 256tok/4.5s 256tok/4.2s 256tok/4.5s]
+solo200 n=200 dt=2.93s tps=68.14
+solo200 n=200 dt=3.12s tps=64.14
+SPEC_GATE {"wall_s": 2.98, "streams_ok": "4/4", "drafts": 232, "draft_tokens": 696, "accepted": 572, "pos": {"0": 0.9181, "1": 0.8233, "2": 0.7241, "3": 0.0}, "pos1": 0.9181, "acceptance": 0.8218, "mean_acceptance_length": 3.47, "hard": 0.5, "target": 0.85}
+SPEC_GATE log_window: (APIServer pid=13) INFO 11-03 09:56:11 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 2.79, Accepted throughput: 93.58 tokens/s, Drafted throughput: 156.57 tokens/s, Accepted: 936 tokens, Drafted: 1566 tokens, Per-position acceptance rate: 0.782, 0.579, 0.433, Avg Draft acceptance rate: 59.8%
+SPEC_GATE PASS: pos1=0.9181 >= 0.5 hard, acceptance=0.8218 vs 0.85 target (TARGET MISS — recorded, --strict-target for certification)
+[integrity] seed 101: PASS cold=873c1a7d4813 rehit=873c1a7d4813 chars=916/916
+[integrity] seed 202: PASS cold=a43423a2dffb rehit=a43423a2dffb chars=922/922
+[integrity] seed 303: PASS cold=725780f72fa8 rehit=725780f72fa8 chars=922/922
+[integrity] seed 404: PASS cold=3035cc42e47d rehit=3035cc42e47d chars=922/922
+[integrity] seed 505: PASS cold=3272828b5966 rehit=3272828b5966 chars=928/928
+[determinism] seed 11: PASS 630f74c0ce54
+[determinism] seed 22: PASS fc7c414ef0ce
+[determinism] seed 33: PASS 74704cbaa5a2
+INTEGRITY 5/5 PASS
+DETERMINISM 3/3 PASS
+  U8k: prompt=8158 cached=None TTFT=3.75s wall=4.08s -> 2175 tok/s prefill-rate
+  U16k: prompt=16354 cached=None TTFT=7.88s wall=8.20s -> 2075 tok/s prefill-rate
+  U32k: prompt=32553 cached=None TTFT=17.34s wall=17.96s -> 1877 tok/s prefill-rate
+  U64k: prompt=65303 cached=None TTFT=42.18s wall=43.67s -> 1548 tok/s prefill-rate
+1
+BOOT bootB GATES: ERROR=0 Traceback=0 integrity_5of5=1 det_3of3=1
+P616C: DONE (W14 restored by trap)
