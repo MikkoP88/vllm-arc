@@ -273,10 +273,14 @@ class ArcXpuPlatform(XPUPlatform):
         # (deterministic repetition attractors, cold-included,
         # LMC-independent) while fp8_e4m3 runs clean. Refuse at boot on
         # every entry point rather than serve corrupted generations.
-        kv_cache_dtype = vllm_config.cache_config.kv_cache_dtype
-        if isinstance(kv_cache_dtype, str) and kv_cache_dtype.startswith("turboquant"):
+        # CacheConfig's pydantic field is `cache_dtype` (config/cache.py:111,
+        # typed as the CacheDType Literal); `--kv-cache-dtype` is only the
+        # CLI flag name. (First cert7 build read the flag name and died on
+        # AttributeError before ever reaching this raise — G0 caught it.)
+        cache_dtype = vllm_config.cache_config.cache_dtype
+        if isinstance(cache_dtype, str) and cache_dtype.startswith("turboquant"):
             raise ValueError(
-                f"ArcXpuPlatform: kv_cache_dtype '{kv_cache_dtype}' is "
+                f"ArcXpuPlatform: kv_cache_dtype '{cache_dtype}' is "
                 "deprecated on vllm-arc: TurboQuant presets quantize "
                 "values to 4-bit-class precision and produce degenerate "
                 "generations on this model (P6.18 campaign, 2026-11-03). "
