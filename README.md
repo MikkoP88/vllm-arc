@@ -141,10 +141,11 @@ export LMCACHE_MIN_RETRIEVE_TOKENS=1024
 export LMCACHE_LOG_LEVEL=INFO
 export LMCACHE_DISABLE_PINNED_MEMORY=1  # law: pinned USM >16-32 GiB/proc segfaults
 export LMCACHE_TRACK_USAGE=false        # P6.3: LMCache telemetry is default-ON; rig serves offline
-# --- the recommended CLI: MTP k3 + probabilistic drafting (P6.16), LMCache
-#     ON, mode:none (no torch.compile) + decode-only graphs, explicit capture
-#     list. Drop the "draft_sample_method" key for the certified greedy
-#     default (byte-identical at t0). ---
+# --- the recommended CLI: MTP k3 + probabilistic drafting (P6.16 — the CLI
+#     form of ARC_SPEC_METHOD=probabilistic on the boot interface; identical
+#     runtime bytes), LMCache ON, mode:none (no torch.compile) + decode-only
+#     graphs, explicit capture list. Drop the "draft_sample_method" key for
+#     the certified greedy default (byte-identical at t0). ---
 exec /opt/venv/bin/vllm serve --model /models/target \
   --served-model-name qwen3.8-27b-fp8 \
   --tensor-parallel-size 2 \
