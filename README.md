@@ -41,6 +41,12 @@ Full 5-dtype matrix in the TurboQuant table below and [`docs/PERFORMANCE-arc.md`
 
 ### TurboQuant KV-cache dtypes (opt-in, P6.14)
 
+> **CORRUPTION WARNING (opened 2026-11-03, P6.18 fix campaign in progress):**
+> corrupted generations reported under `turboquant_k8v4`; all `turboquant_*`
+> presets are under re-validation (a store/load roundtrip defect is the
+> leading suspect — the certified default `fp8_e4m3` is NOT affected). Do
+> not serve any `turboquant_*` dtype until the fixed certified image ships.
+
 Beyond the default `fp8_e4m3`, four quantized KV presets trade aggregate
 throughput for cache capacity (2.0–3.7× more tokens resident). The swap is
 one variable — `--kv-cache-dtype` only; every preset validated on the
