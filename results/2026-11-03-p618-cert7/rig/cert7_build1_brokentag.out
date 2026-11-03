@@ -1,0 +1,702 @@
+BUILD context staged: 485M, fork_sha=848dd7ef6fadb531a05cb6c33d12ea79eb0c73de
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 7.13kB done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/vllm-iexperimental:base-v0.26.0
+#2 DONE 0.0s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [oneapi-base 1/1] FROM docker.io/library/vllm-iexperimental:base-v0.26.0@sha256:96a857cfc0551c06a66cd3c374bfa2e876fd64b81196562848fe3c7ba0ce028b
+#4 resolve docker.io/library/vllm-iexperimental:base-v0.26.0@sha256:96a857cfc0551c06a66cd3c374bfa2e876fd64b81196562848fe3c7ba0ce028b 0.0s done
+#4 DONE 0.0s
+
+#5 [internal] load build context
+#5 transferring context: 498.89MB 4.9s done
+#5 DONE 4.9s
+
+#6 [vllm-arc 1/9] COPY wheels/ /wheels/arc/
+#6 CACHED
+
+#7 [vllm-arc 2/9] COPY pins.md5 /etc/vllm-arc/pins.md5
+#7 DONE 0.4s
+
+#8 [vllm-arc 3/9] COPY tools/wheel_guard.sh /usr/local/bin/wheel_guard.sh
+#8 DONE 0.0s
+
+#9 [vllm-arc 4/9] RUN set -euxo pipefail;     bash /usr/local/bin/wheel_guard.sh /etc/vllm-arc/pins.md5 /wheels/arc;     pip uninstall -y vllm triton-xpu vllm-xpu-kernels lmcache;     pip install         /wheels/arc/vllm-0.30.0+xpu-cp38-abi3-manylinux_2_34_x86_64.whl         /wheels/arc/triton-3.7.2+xpu-py3-none-any.whl         "torch==2.13.0"         "torchvision==0.28.0+xpu"         /wheels/arc/vllm_xpu_kernels-0.1.14.1+arc3-cp312-cp312-linux_x86_64.whl         "xgrammar==0.2.8";     pip install --no-deps /wheels/arc/lmcache-0.5.6+arc1-*.whl;     pip install "msgspec" "numpy<=2.2.6" "numba" "nvtx"         "opentelemetry-api>=1.20.0,<=1.40.0" "opentelemetry-sdk>=1.20.0"         "opentelemetry-exporter-otlp>=1.20.0"         "opentelemetry-exporter-prometheus>=0.50b0,<=0.61b0"         "prometheus_client>=0.18.0,<=0.24.1" "psutil" "py-cpuinfo"
+#9 0.310 + bash /usr/local/bin/wheel_guard.sh /etc/vllm-arc/pins.md5 /wheels/arc
+#9 1.274 WHEEL_GUARD OK (4 pins verified)
+#9 1.275 + pip uninstall -y vllm triton-xpu vllm-xpu-kernels lmcache
+#9 1.773 Found existing installation: vllm 0.26.1.dev0+g568afb3a1.d20261018.xpu
+#9 1.984 Uninstalling vllm-0.26.1.dev0+g568afb3a1.d20261018.xpu:
+#9 3.952   Successfully uninstalled vllm-0.26.1.dev0+g568afb3a1.d20261018.xpu
+#9 4.097 Found existing installation: triton-xpu 3.7.1
+#9 4.123 Uninstalling triton-xpu-3.7.1:
+#9 7.617   Successfully uninstalled triton-xpu-3.7.1
+#9 7.750 Found existing installation: vllm-xpu-kernels 0.1.11.2.dev0+ga692986.d20261018
+#9 7.753 Uninstalling vllm-xpu-kernels-0.1.11.2.dev0+ga692986.d20261018:
+#9 9.811   Successfully uninstalled vllm-xpu-kernels-0.1.11.2.dev0+ga692986.d20261018
+#9 9.914 Found existing installation: lmcache 0.4.7
+#9 9.969 Uninstalling lmcache-0.4.7:
+#9 10.59   Successfully uninstalled lmcache-0.4.7
+#9 10.67 + pip install /wheels/arc/vllm-0.30.0+xpu-cp38-abi3-manylinux_2_34_x86_64.whl /wheels/arc/triton-3.7.2+xpu-py3-none-any.whl torch==2.13.0 torchvision==0.28.0+xpu /wheels/arc/vllm_xpu_kernels-0.1.14.1+arc3-cp312-cp312-linux_x86_64.whl xgrammar==0.2.8
+#9 11.12 Looking in indexes: https://pypi.org/simple, https://download.pytorch.org/whl/xpu
+#9 11.13 Processing /wheels/arc/vllm-0.30.0+xpu-cp38-abi3-manylinux_2_34_x86_64.whl
+#9 11.26 Processing /wheels/arc/triton-3.7.2+xpu-py3-none-any.whl
+#9 11.26 Processing /wheels/arc/vllm_xpu_kernels-0.1.14.1+arc3-cp312-cp312-linux_x86_64.whl
+#9 12.75 Collecting torch==2.13.0
+#9 13.04   Downloading torch-2.13.0%2Bxpu-cp312-cp312-manylinux_2_28_x86_64.whl.metadata (39 kB)
+#9 13.24 Collecting torchvision==0.28.0+xpu
+#9 13.38   Downloading torchvision-0.28.0%2Bxpu-cp312-cp312-manylinux_2_28_x86_64.whl.metadata (5.6 kB)
+#9 13.39 Requirement already satisfied: xgrammar==0.2.8 in /opt/venv/lib/python3.12/site-packages (0.2.8)
+#9 13.39 Requirement already satisfied: regex in /opt/venv/lib/python3.12/site-packages (from vllm==0.30.0+xpu) (2026.9.29)
+#9 13.39 Requirement already satisfied: cachetools in /opt/venv/lib/python3.12/site-packages (from vllm==0.30.0+xpu) (7.2.1)
+#9 13.39 Requirement already satisfied: psutil in /opt/venv/lib/python3.12/site-packages (from vllm==0.30.0+xpu) (7.2.2)
+#9 13.39 Requirement already satisfied: sentencepiece in /opt/venv/lib/python3.12/site-packages (from vllm==0.30.0+xpu) (0.2.2)
+#9 13.39 Requirement already satisfied: numpy in /opt/venv/lib/python3.12/site-packages (from vllm==0.30.0+xpu) (2.2.6)
+#9 13.39 Requirement already satisfied: requests>=2.26.0 in /opt/venv/lib/python3.12/site-packages (from vllm==0.30.0+xpu) (2.34.2)
+#9 13.40 Requirement already satisfied: tqdm in /opt/venv/lib/python3.12/site-packages (from vllm==0.30.0+xpu) (4.70.1)
+#9 13.40 Requirement already satisfied: blake3 in /opt/venv/lib/python3.12/site-packages (from vllm==0.30.0+xpu) (1.0.9)
+#9 13.40 Requirement already satisfied: py-cpuinfo in /opt/venv/lib/python3.12/site-packages (from vllm==0.30.0+xpu) (9.0.0)
+#9 13.83 Collecting transformers>=5.10.4 (from vllm==0.30.0+xpu)
+#9 13.97   Downloading transformers-5.22.1-py3-none-any.whl.metadata (31 kB)
+#9 14.05 Requirement already satisfied: huggingface_hub>=1.31.0 in /opt/venv/lib/python3.12/site-packages (from vllm==0.30.0+xpu) (1.33.0)
+#9 14.05 Requirement already satisfied: tokenizers>=0.21.1 in /opt/venv/lib/python3.12/site-packages (from vllm==0.30.0+xpu) (0.22.2)
+#9 14.05 Requirement already satisfied: safetensors>=0.6.2 in /opt/venv/lib/python3.12/site-packages (from vllm==0.30.0+xpu) (0.8.0)
+#9 14.05 Requirement already satisfied: protobuf!=6.30.*,!=6.31.*,!=6.32.*,!=6.33.0.*,!=6.33.1.*,!=6.33.2.*,!=6.33.3.*,!=6.33.4.*,>=5.29.6 in /opt/venv/lib/python3.12/site-packages (from vllm==0.30.0+xpu) (6.33.6)
+#9 14.05 Requirement already satisfied: fastapi<0.137.0,>=0.133.0 in /opt/venv/lib/python3.12/site-packages (from fastapi[standard]<0.137.0,>=0.133.0->vllm==0.30.0+xpu) (0.136.3)
+#9 14.05 Requirement already satisfied: starlette>=1.0.1 in /opt/venv/lib/python3.12/site-packages (from vllm==0.30.0+xpu) (1.6.0)
+#9 14.05 Requirement already satisfied: aiohttp>=3.13.3 in /opt/venv/lib/python3.12/site-packages (from vllm==0.30.0+xpu) (3.14.3)
+#9 14.05 Requirement already satisfied: openai>=2.25.0 in /opt/venv/lib/python3.12/site-packages (from vllm==0.30.0+xpu) (3.35.1)
+#9 14.05 Requirement already satisfied: pydantic>=2.12.0 in /opt/venv/lib/python3.12/site-packages (from vllm==0.30.0+xpu) (2.13.5)
+#9 14.05 Requirement already satisfied: prometheus_client>=0.18.0 in /opt/venv/lib/python3.12/site-packages (from vllm==0.30.0+xpu) (0.24.1)
+#9 14.05 Requirement already satisfied: pillow in /opt/venv/lib/python3.12/site-packages (from vllm==0.30.0+xpu) (12.3.0)
+#9 14.05 Requirement already satisfied: prometheus-fastapi-instrumentator>=8.0.0 in /opt/venv/lib/python3.12/site-packages (from vllm==0.30.0+xpu) (8.1.0)
+#9 14.05 Requirement already satisfied: tiktoken>=0.6.0 in /opt/venv/lib/python3.12/site-packages (from vllm==0.30.0+xpu) (0.14.0)
+#9 14.05 Requirement already satisfied: lm-format-enforcer==0.11.3 in /opt/venv/lib/python3.12/site-packages (from vllm==0.30.0+xpu) (0.11.3)
+#9 14.05 Requirement already satisfied: llguidance<1.8.0,>=1.7.0 in /opt/venv/lib/python3.12/site-packages (from vllm==0.30.0+xpu) (1.7.6)
+#9 14.05 Requirement already satisfied: outlines_core==0.2.14 in /opt/venv/lib/python3.12/site-packages (from vllm==0.30.0+xpu) (0.2.14)
+#9 14.06 Requirement already satisfied: lark==1.2.2 in /opt/venv/lib/python3.12/site-packages (from vllm==0.30.0+xpu) (1.2.2)
+#9 14.06 Requirement already satisfied: typing_extensions>=4.10 in /opt/venv/lib/python3.12/site-packages (from vllm==0.30.0+xpu) (4.16.0)
+#9 14.06 Requirement already satisfied: filelock>=3.16.1 in /opt/venv/lib/python3.12/site-packages (from vllm==0.30.0+xpu) (3.32.3)
+#9 14.06 Requirement already satisfied: partial-json-parser in /opt/venv/lib/python3.12/site-packages (from vllm==0.30.0+xpu) (0.2.1.1.post7)
+#9 14.06 Requirement already satisfied: jsonschema>=4.23.0 in /opt/venv/lib/python3.12/site-packages (from vllm==0.30.0+xpu) (4.26.0)
+#9 14.06 Requirement already satisfied: pyzmq>=25.0.0 in /opt/venv/lib/python3.12/site-packages (from vllm==0.30.0+xpu) (27.2.0)
+#9 14.06 Requirement already satisfied: msgspec in /opt/venv/lib/python3.12/site-packages (from vllm==0.30.0+xpu) (0.21.1)
+#9 14.06 Requirement already satisfied: mistral_common>=1.11.6 in /opt/venv/lib/python3.12/site-packages (from mistral_common[image]>=1.11.6->vllm==0.30.0+xpu) (1.12.0)
+#9 14.06 Requirement already satisfied: opencv-python-headless>=4.13.0 in /opt/venv/lib/python3.12/site-packages (from vllm==0.30.0+xpu) (5.0.0.93)
+#9 14.06 Requirement already satisfied: pyyaml in /opt/venv/lib/python3.12/site-packages (from vllm==0.30.0+xpu) (6.0.3)
+#9 14.06 Requirement already satisfied: six>=1.16.0 in /opt/venv/lib/python3.12/site-packages (from vllm==0.30.0+xpu) (1.17.0)
+#9 14.06 Requirement already satisfied: setuptools<81.0.0,>=77.0.3 in /opt/venv/lib/python3.12/site-packages (from vllm==0.30.0+xpu) (78.1.0)
+#9 14.06 Requirement already satisfied: einops in /opt/venv/lib/python3.12/site-packages (from vllm==0.30.0+xpu) (0.8.2)
+#9 14.06 Requirement already satisfied: compressed-tensors==0.17.0 in /opt/venv/lib/python3.12/site-packages (from vllm==0.30.0+xpu) (0.17.0)
+#9 14.06 Requirement already satisfied: depyf==0.20.0 in /opt/venv/lib/python3.12/site-packages (from vllm==0.30.0+xpu) (0.20.0)
+#9 14.06 Requirement already satisfied: cloudpickle in /opt/venv/lib/python3.12/site-packages (from vllm==0.30.0+xpu) (3.1.2)
+#9 14.06 Requirement already satisfied: watchfiles in /opt/venv/lib/python3.12/site-packages (from vllm==0.30.0+xpu) (1.3.0)
+#9 14.06 Requirement already satisfied: python-json-logger in /opt/venv/lib/python3.12/site-packages (from vllm==0.30.0+xpu) (4.2.0)
+#9 14.06 Requirement already satisfied: ninja in /opt/venv/lib/python3.12/site-packages (from vllm==0.30.0+xpu) (1.13.2)
+#9 14.06 Requirement already satisfied: pybase64 in /opt/venv/lib/python3.12/site-packages (from vllm==0.30.0+xpu) (1.5.1)
+#9 14.06 Requirement already satisfied: cbor2 in /opt/venv/lib/python3.12/site-packages (from vllm==0.30.0+xpu) (6.1.5)
+#9 14.06 Requirement already satisfied: ijson in /opt/venv/lib/python3.12/site-packages (from vllm==0.30.0+xpu) (3.6.0)
+#9 14.07 Requirement already satisfied: setproctitle in /opt/venv/lib/python3.12/site-packages (from vllm==0.30.0+xpu) (1.3.8)
+#9 14.07 Requirement already satisfied: openai-harmony>=0.0.3 in /opt/venv/lib/python3.12/site-packages (from vllm==0.30.0+xpu) (0.0.8)
+#9 14.07 Requirement already satisfied: anthropic>=0.71.0 in /opt/venv/lib/python3.12/site-packages (from vllm==0.30.0+xpu) (1.15.0)
+#9 14.07 Requirement already satisfied: model-hosting-container-standards<1.0.0,>=0.1.14 in /opt/venv/lib/python3.12/site-packages (from vllm==0.30.0+xpu) (0.1.16)
+#9 14.07 Requirement already satisfied: mcp<3.0.0,>=2.0.0 in /opt/venv/lib/python3.12/site-packages (from vllm==0.30.0+xpu) (2.3.0)
+#9 14.07 Requirement already satisfied: opentelemetry-sdk>=1.27.0 in /opt/venv/lib/python3.12/site-packages (from vllm==0.30.0+xpu) (1.40.0)
+#9 14.07 Requirement already satisfied: opentelemetry-api>=1.27.0 in /opt/venv/lib/python3.12/site-packages (from vllm==0.30.0+xpu) (1.40.0)
+#9 14.07 Requirement already satisfied: opentelemetry-exporter-otlp>=1.27.0 in /opt/venv/lib/python3.12/site-packages (from vllm==0.30.0+xpu) (1.40.0)
+#9 14.07 Requirement already satisfied: opentelemetry-semantic-conventions-ai>=0.4.1 in /opt/venv/lib/python3.12/site-packages (from vllm==0.30.0+xpu) (0.5.1)
+#9 14.07 Requirement already satisfied: ray>=2.9 in /opt/venv/lib/python3.12/site-packages (from vllm==0.30.0+xpu) (2.59.0)
+#9 14.07 Requirement already satisfied: cmake>=3.26.1 in /opt/venv/lib/python3.12/site-packages (from vllm==0.30.0+xpu) (4.4.4)
+#9 14.07 Requirement already satisfied: packaging>=24.2 in /opt/venv/lib/python3.12/site-packages (from vllm==0.30.0+xpu) (26.3)
+#9 14.07 Requirement already satisfied: setuptools-scm>=8 in /opt/venv/lib/python3.12/site-packages (from vllm==0.30.0+xpu) (10.3.4)
+#9 14.07 Requirement already satisfied: setuptools-rust>=1.9.0 in /opt/venv/lib/python3.12/site-packages (from vllm==0.30.0+xpu) (1.13.0)
+#9 14.07 Requirement already satisfied: wheel in /opt/venv/lib/python3.12/site-packages (from vllm==0.30.0+xpu) (0.48.0)
+#9 14.07 Requirement already satisfied: jinja2>=3.1.6 in /opt/venv/lib/python3.12/site-packages (from vllm==0.30.0+xpu) (3.1.6)
+#9 14.07 Requirement already satisfied: datasets in /opt/venv/lib/python3.12/site-packages (from vllm==0.30.0+xpu) (5.1.0)
+#9 14.07 Requirement already satisfied: numba==0.65.0 in /opt/venv/lib/python3.12/site-packages (from vllm==0.30.0+xpu) (0.65.0)
+#9 14.07 Requirement already satisfied: torchaudio in /opt/venv/lib/python3.12/site-packages (from vllm==0.30.0+xpu) (2.11.0+xpu)
+#9 14.07 Requirement already satisfied: torchcodec>=0.14 in /opt/venv/lib/python3.12/site-packages (from vllm==0.30.0+xpu) (0.17.0+cpu)
+#9 14.53 Collecting auto_round_lib==0.15.0 (from vllm==0.30.0+xpu)
+#9 14.55   Downloading auto_round_lib-0.15.0-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (12 kB)
+#9 14.73 Collecting triton-xpu==3.7.2 (from triton==3.7.2+xpu)
+#9 14.87   Downloading triton_xpu-3.7.2-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (1.1 kB)
+#9 14.88 Requirement already satisfied: apache-tvm-ffi>=0.1.11 in /opt/venv/lib/python3.12/site-packages (from xgrammar==0.2.8) (0.1.15)
+#9 14.89 Requirement already satisfied: sympy>=1.13.3 in /opt/venv/lib/python3.12/site-packages (from torch==2.13.0) (1.14.0)
+#9 14.89 Requirement already satisfied: networkx>=2.5.1 in /opt/venv/lib/python3.12/site-packages (from torch==2.13.0) (3.6.1)
+#9 14.89 Requirement already satisfied: fsspec>=0.8.5 in /opt/venv/lib/python3.12/site-packages (from torch==2.13.0) (2026.7.0)
+#9 15.54 Collecting intel-cmplr-lib-rt==2026.0.0 (from torch==2.13.0)
+#9 15.55   Downloading intel_cmplr_lib_rt-2026.0.0-py2.py3-none-manylinux_2_28_x86_64.whl.metadata (1.2 kB)
+#9 16.08 Collecting intel-cmplr-lib-ur==2026.0.0 (from torch==2.13.0)
+#9 16.19   Downloading intel_cmplr_lib_ur-2026.0.0-py2.py3-none-manylinux_2_28_x86_64.whl.metadata (1.2 kB)
+#9 16.84 Collecting intel-cmplr-lic-rt==2026.0.0 (from torch==2.13.0)
+#9 16.95   Downloading intel_cmplr_lic_rt-2026.0.0-py2.py3-none-manylinux_2_28_x86_64.whl.metadata (1.2 kB)
+#9 17.35 Collecting intel-sycl-rt==2026.0.0 (from torch==2.13.0)
+#9 17.46   Downloading intel_sycl_rt-2026.0.0-py2.py3-none-manylinux_2_28_x86_64.whl.metadata (1.4 kB)
+#9 17.74 Collecting oneccl-devel==2022.0.0 (from torch==2.13.0)
+#9 17.87   Downloading oneccl_devel-2022.0.0-py2.py3-none-manylinux_2_28_x86_64.whl.metadata (890 bytes)
+#9 18.14 Collecting oneccl==2022.0.0 (from torch==2.13.0)
+#9 18.15   Downloading oneccl-2022.0.0-py2.py3-none-manylinux_2_28_x86_64.whl.metadata (946 bytes)
+#9 18.56 Collecting impi-rt==2021.18.0 (from torch==2.13.0)
+#9 18.66   Downloading impi_rt-2021.18.0-py2.py3-none-manylinux_2_28_x86_64.whl.metadata (918 bytes)
+#9 19.18 Collecting onemkl-license==2026.0.0 (from torch==2.13.0)
+#9 19.20   Downloading onemkl_license-2026.0.0-py2.py3-none-manylinux_2_28_x86_64.whl.metadata (1.6 kB)
+#9 19.48 Collecting onemkl-sycl-blas==2026.0.0 (from torch==2.13.0)
+#9 19.59   Downloading onemkl_sycl_blas-2026.0.0-py2.py3-none-manylinux_2_28_x86_64.whl.metadata (1.7 kB)
+#9 19.79 Collecting onemkl-sycl-dft==2026.0.0 (from torch==2.13.0)
+#9 19.80   Downloading onemkl_sycl_dft-2026.0.0-py2.py3-none-manylinux_2_28_x86_64.whl.metadata (1.7 kB)
+#9 20.10 Collecting onemkl-sycl-lapack==2026.0.0 (from torch==2.13.0)
+#9 20.21   Downloading onemkl_sycl_lapack-2026.0.0-py2.py3-none-manylinux_2_28_x86_64.whl.metadata (1.8 kB)
+#9 20.49 Collecting onemkl-sycl-rng==2026.0.0 (from torch==2.13.0)
+#9 20.50   Downloading onemkl_sycl_rng-2026.0.0-py2.py3-none-manylinux_2_28_x86_64.whl.metadata (1.7 kB)
+#9 21.02 Collecting onemkl-sycl-sparse==2026.0.0 (from torch==2.13.0)
+#9 21.04   Downloading onemkl_sycl_sparse-2026.0.0-py2.py3-none-manylinux_2_28_x86_64.whl.metadata (1.8 kB)
+#9 21.69 Collecting dpcpp-cpp-rt==2026.0.0 (from torch==2.13.0)
+#9 21.70   Downloading dpcpp_cpp_rt-2026.0.0-py2.py3-none-manylinux_2_28_x86_64.whl.metadata (1.3 kB)
+#9 22.34 Collecting intel-opencl-rt==2026.0.0 (from torch==2.13.0)
+#9 22.35   Downloading intel_opencl_rt-2026.0.0-py2.py3-none-manylinux_2_28_x86_64.whl.metadata (1.2 kB)
+#9 22.76 Collecting mkl==2026.0.0 (from torch==2.13.0)
+#9 22.77   Downloading mkl-2026.0.0-py2.py3-none-manylinux_2_28_x86_64.whl.metadata (1.7 kB)
+#9 23.21 Collecting intel-openmp==2026.0.0 (from torch==2.13.0)
+#9 23.22   Downloading intel_openmp-2026.0.0-py2.py3-none-manylinux_2_28_x86_64.whl.metadata (1.2 kB)
+#9 23.64 Collecting tbb==2023.0.0 (from torch==2.13.0)
+#9 23.76   Downloading tbb-2023.0.0-py2.py3-none-manylinux_2_28_x86_64.whl.metadata (1.0 kB)
+#9 24.03 Collecting tcmlib==1.5.0 (from torch==2.13.0)
+#9 24.04   Downloading tcmlib-1.5.0-py2.py3-none-manylinux_2_28_x86_64.whl.metadata (962 bytes)
+#9 24.22 Collecting umf==1.1.0 (from torch==2.13.0)
+#9 24.24   Downloading umf-1.1.0-py2.py3-none-manylinux_2_28_x86_64.whl.metadata (1.0 kB)
+#9 24.64 Collecting intel-pti==0.17.0 (from torch==2.13.0)
+#9 24.66   Downloading intel_pti-0.17.0-py2.py3-none-manylinux_2_28_x86_64.whl.metadata (884 bytes)
+#9 24.93 Collecting pyzes==0.1.1 (from torch==2.13.0)
+#9 24.94   Downloading pyzes-0.1.1-py3-none-any.whl.metadata (8.5 kB)
+#9 24.97 Requirement already satisfied: loguru in /opt/venv/lib/python3.12/site-packages (from compressed-tensors==0.17.0->vllm==0.30.0+xpu) (0.7.3)
+#9 24.97 Requirement already satisfied: astor in /opt/venv/lib/python3.12/site-packages (from depyf==0.20.0->vllm==0.30.0+xpu) (0.8.1)
+#9 24.97 Requirement already satisfied: dill in /opt/venv/lib/python3.12/site-packages (from depyf==0.20.0->vllm==0.30.0+xpu) (0.4.1)
+#9 24.99 Requirement already satisfied: interegular>=0.3.2 in /opt/venv/lib/python3.12/site-packages (from lm-format-enforcer==0.11.3->vllm==0.30.0+xpu) (0.3.3)
+#9 24.99 Requirement already satisfied: llvmlite<0.48,>=0.47.0dev0 in /opt/venv/lib/python3.12/site-packages (from numba==0.65.0->vllm==0.30.0+xpu) (0.47.0)
+#9 25.01 Requirement already satisfied: pyelftools in /opt/venv/lib/python3.12/site-packages (from triton-xpu==3.7.2->triton==3.7.2+xpu) (0.32)
+#9 25.02 Requirement already satisfied: typing-inspection>=0.4.2 in /opt/venv/lib/python3.12/site-packages (from fastapi<0.137.0,>=0.133.0->fastapi[standard]<0.137.0,>=0.133.0->vllm==0.30.0+xpu) (0.4.4)
+#9 25.02 Requirement already satisfied: annotated-doc>=0.0.2 in /opt/venv/lib/python3.12/site-packages (from fastapi<0.137.0,>=0.133.0->fastapi[standard]<0.137.0,>=0.133.0->vllm==0.30.0+xpu) (0.0.5)
+#9 25.02 Requirement already satisfied: fastapi-cli>=0.0.8 in /opt/venv/lib/python3.12/site-packages (from fastapi-cli[standard]>=0.0.8; extra == "standard"->fastapi[standard]<0.137.0,>=0.133.0->vllm==0.30.0+xpu) (0.0.32)
+#9 25.02 Requirement already satisfied: fastar>=0.9.0 in /opt/venv/lib/python3.12/site-packages (from fastapi[standard]<0.137.0,>=0.133.0->vllm==0.30.0+xpu) (0.12.0)
+#9 25.02 Requirement already satisfied: httpx<1.0.0,>=0.23.0 in /opt/venv/lib/python3.12/site-packages (from fastapi[standard]<0.137.0,>=0.133.0->vllm==0.30.0+xpu) (0.28.1)
+#9 25.02 Requirement already satisfied: python-multipart>=0.0.18 in /opt/venv/lib/python3.12/site-packages (from fastapi[standard]<0.137.0,>=0.133.0->vllm==0.30.0+xpu) (0.0.32)
+#9 25.02 Requirement already satisfied: email-validator>=2.0.0 in /opt/venv/lib/python3.12/site-packages (from fastapi[standard]<0.137.0,>=0.133.0->vllm==0.30.0+xpu) (2.3.0)
+#9 25.02 Requirement already satisfied: uvicorn>=0.12.0 in /opt/venv/lib/python3.12/site-packages (from uvicorn[standard]>=0.12.0; extra == "standard"->fastapi[standard]<0.137.0,>=0.133.0->vllm==0.30.0+xpu) (0.52.4)
+#9 25.02 Requirement already satisfied: pydantic-settings>=2.0.0 in /opt/venv/lib/python3.12/site-packages (from fastapi[standard]<0.137.0,>=0.133.0->vllm==0.30.0+xpu) (2.16.0)
+#9 25.03 Requirement already satisfied: pydantic-extra-types>=2.0.0 in /opt/venv/lib/python3.12/site-packages (from fastapi[standard]<0.137.0,>=0.133.0->vllm==0.30.0+xpu) (2.11.1)
+#9 25.03 Requirement already satisfied: anyio in /opt/venv/lib/python3.12/site-packages (from httpx<1.0.0,>=0.23.0->fastapi[standard]<0.137.0,>=0.133.0->vllm==0.30.0+xpu) (4.15.1)
+#9 25.03 Requirement already satisfied: certifi in /opt/venv/lib/python3.12/site-packages (from httpx<1.0.0,>=0.23.0->fastapi[standard]<0.137.0,>=0.133.0->vllm==0.30.0+xpu) (2026.7.22)
+#9 25.03 Requirement already satisfied: httpcore==1.* in /opt/venv/lib/python3.12/site-packages (from httpx<1.0.0,>=0.23.0->fastapi[standard]<0.137.0,>=0.133.0->vllm==0.30.0+xpu) (1.0.9)
+#9 25.03 Requirement already satisfied: idna in /opt/venv/lib/python3.12/site-packages (from httpx<1.0.0,>=0.23.0->fastapi[standard]<0.137.0,>=0.133.0->vllm==0.30.0+xpu) (3.19)
+#9 25.03 Requirement already satisfied: h11>=0.16 in /opt/venv/lib/python3.12/site-packages (from httpcore==1.*->httpx<1.0.0,>=0.23.0->fastapi[standard]<0.137.0,>=0.133.0->vllm==0.30.0+xpu) (0.16.0)
+#9 25.04 Requirement already satisfied: httpx2>=2.10.0 in /opt/venv/lib/python3.12/site-packages (from mcp<3.0.0,>=2.0.0->vllm==0.30.0+xpu) (2.14.0)
+#9 25.04 Requirement already satisfied: mcp-types==2.3.0 in /opt/venv/lib/python3.12/site-packages (from mcp<3.0.0,>=2.0.0->vllm==0.30.0+xpu) (2.3.0)
+#9 25.04 Requirement already satisfied: pyjwt>=2.10.1 in /opt/venv/lib/python3.12/site-packages (from pyjwt[crypto]>=2.10.1->mcp<3.0.0,>=2.0.0->vllm==0.30.0+xpu) (2.15.1)
+#9 25.04 Requirement already satisfied: sse-starlette>=3.0.0 in /opt/venv/lib/python3.12/site-packages (from mcp<3.0.0,>=2.0.0->vllm==0.30.0+xpu) (3.5.0)
+#9 25.05 Requirement already satisfied: jmespath in /opt/venv/lib/python3.12/site-packages (from model-hosting-container-standards<1.0.0,>=0.1.14->vllm==0.30.0+xpu) (1.1.0)
+#9 25.05 Requirement already satisfied: supervisor>=4.2.0 in /opt/venv/lib/python3.12/site-packages (from model-hosting-container-standards<1.0.0,>=0.1.14->vllm==0.30.0+xpu) (4.3.0)
+#9 25.06 Requirement already satisfied: aiohappyeyeballs>=2.5.0 in /opt/venv/lib/python3.12/site-packages (from aiohttp>=3.13.3->vllm==0.30.0+xpu) (2.7.1)
+#9 25.06 Requirement already satisfied: aiosignal>=1.4.0 in /opt/venv/lib/python3.12/site-packages (from aiohttp>=3.13.3->vllm==0.30.0+xpu) (1.4.0)
+#9 25.06 Requirement already satisfied: attrs>=17.3.0 in /opt/venv/lib/python3.12/site-packages (from aiohttp>=3.13.3->vllm==0.30.0+xpu) (26.1.0)
+#9 25.06 Requirement already satisfied: frozenlist>=1.1.1 in /opt/venv/lib/python3.12/site-packages (from aiohttp>=3.13.3->vllm==0.30.0+xpu) (1.8.0)
+#9 25.06 Requirement already satisfied: multidict<7.0,>=4.5 in /opt/venv/lib/python3.12/site-packages (from aiohttp>=3.13.3->vllm==0.30.0+xpu) (6.7.1)
+#9 25.06 Requirement already satisfied: propcache>=0.2.0 in /opt/venv/lib/python3.12/site-packages (from aiohttp>=3.13.3->vllm==0.30.0+xpu) (0.5.2)
+#9 25.06 Requirement already satisfied: yarl<2.0,>=1.17.0 in /opt/venv/lib/python3.12/site-packages (from aiohttp>=3.13.3->vllm==0.30.0+xpu) (1.24.5)
+#9 25.08 Requirement already satisfied: docstring-parser<1,>=0.15 in /opt/venv/lib/python3.12/site-packages (from anthropic>=0.71.0->vllm==0.30.0+xpu) (0.18.0)
+#9 25.08 Requirement already satisfied: jiter<1,>=0.4.0 in /opt/venv/lib/python3.12/site-packages (from anthropic>=0.71.0->vllm==0.30.0+xpu) (0.17.0)
+#9 25.08 Requirement already satisfied: sniffio<2,>=1 in /opt/venv/lib/python3.12/site-packages (from anthropic>=0.71.0->vllm==0.30.0+xpu) (1.3.1)
+#9 25.09 Requirement already satisfied: httpcore2==2.14.0 in /opt/venv/lib/python3.12/site-packages (from httpx2>=2.10.0->mcp<3.0.0,>=2.0.0->vllm==0.30.0+xpu) (2.14.0)
+#9 25.09 Requirement already satisfied: truststore>=0.10 in /opt/venv/lib/python3.12/site-packages (from httpx2>=2.10.0->mcp<3.0.0,>=2.0.0->vllm==0.30.0+xpu) (0.10.5)
+#9 25.10 Requirement already satisfied: importlib-metadata<8.8.0,>=6.0 in /opt/venv/lib/python3.12/site-packages (from opentelemetry-api>=1.27.0->vllm==0.30.0+xpu) (8.7.1)
+#9 25.10 Requirement already satisfied: zipp>=3.20 in /opt/venv/lib/python3.12/site-packages (from importlib-metadata<8.8.0,>=6.0->opentelemetry-api>=1.27.0->vllm==0.30.0+xpu) (4.1.0)
+#9 25.10 Requirement already satisfied: annotated-types>=0.6.0 in /opt/venv/lib/python3.12/site-packages (from pydantic>=2.12.0->vllm==0.30.0+xpu) (0.8.0)
+#9 25.10 Requirement already satisfied: pydantic-core==2.46.5 in /opt/venv/lib/python3.12/site-packages (from pydantic>=2.12.0->vllm==0.30.0+xpu) (2.46.5)
+#9 25.12 Requirement already satisfied: dnspython>=2.0.0 in /opt/venv/lib/python3.12/site-packages (from email-validator>=2.0.0->fastapi[standard]<0.137.0,>=0.133.0->vllm==0.30.0+xpu) (2.9.0)
+#9 25.13 Requirement already satisfied: typer>=0.16.0 in /opt/venv/lib/python3.12/site-packages (from fastapi-cli>=0.0.8->fastapi-cli[standard]>=0.0.8; extra == "standard"->fastapi[standard]<0.137.0,>=0.133.0->vllm==0.30.0+xpu) (0.27.3)
+#9 25.13 Requirement already satisfied: rich-toolkit>=0.14.8 in /opt/venv/lib/python3.12/site-packages (from fastapi-cli>=0.0.8->fastapi-cli[standard]>=0.0.8; extra == "standard"->fastapi[standard]<0.137.0,>=0.133.0->vllm==0.30.0+xpu) (0.20.6)
+#9 25.13 Requirement already satisfied: fastapi-cloud-cli>=0.1.1 in /opt/venv/lib/python3.12/site-packages (from fastapi-cli[standard]>=0.0.8; extra == "standard"->fastapi[standard]<0.137.0,>=0.133.0->vllm==0.30.0+xpu) (0.26.0)
+#9 25.14 Requirement already satisfied: rignore>=0.5.1 in /opt/venv/lib/python3.12/site-packages (from fastapi-cloud-cli>=0.1.1->fastapi-cli[standard]>=0.0.8; extra == "standard"->fastapi[standard]<0.137.0,>=0.133.0->vllm==0.30.0+xpu) (0.8.1)
+#9 25.14 Requirement already satisfied: sentry-sdk>=2.20.0 in /opt/venv/lib/python3.12/site-packages (from fastapi-cloud-cli>=0.1.1->fastapi-cli[standard]>=0.0.8; extra == "standard"->fastapi[standard]<0.137.0,>=0.133.0->vllm==0.30.0+xpu) (2.72.0)
+#9 25.14 Requirement already satisfied: detect-installer>=0.1.0 in /opt/venv/lib/python3.12/site-packages (from fastapi-cloud-cli>=0.1.1->fastapi-cli[standard]>=0.0.8; extra == "standard"->fastapi[standard]<0.137.0,>=0.133.0->vllm==0.30.0+xpu) (0.2.1)
+#9 25.14 Requirement already satisfied: agent-detector>=1.1.0 in /opt/venv/lib/python3.12/site-packages (from fastapi-cloud-cli>=0.1.1->fastapi-cli[standard]>=0.0.8; extra == "standard"->fastapi[standard]<0.137.0,>=0.133.0->vllm==0.30.0+xpu) (2.0.0)
+#9 25.16 Requirement already satisfied: click<9.0.0,>=8.4.2 in /opt/venv/lib/python3.12/site-packages (from huggingface_hub>=1.31.0->vllm==0.30.0+xpu) (8.5.0)
+#9 25.16 Requirement already satisfied: hf-xet<2.0.0,>=1.6.0 in /opt/venv/lib/python3.12/site-packages (from huggingface_hub>=1.31.0->vllm==0.30.0+xpu) (1.7.0)
+#9 25.18 Requirement already satisfied: MarkupSafe>=2.0 in /opt/venv/lib/python3.12/site-packages (from jinja2>=3.1.6->vllm==0.30.0+xpu) (3.0.3)
+#9 25.19 Requirement already satisfied: jsonschema-specifications>=2023.03.6 in /opt/venv/lib/python3.12/site-packages (from jsonschema>=4.23.0->vllm==0.30.0+xpu) (2025.9.1)
+#9 25.19 Requirement already satisfied: referencing>=0.28.4 in /opt/venv/lib/python3.12/site-packages (from jsonschema>=4.23.0->vllm==0.30.0+xpu) (0.37.0)
+#9 25.19 Requirement already satisfied: rpds-py>=0.25.0 in /opt/venv/lib/python3.12/site-packages (from jsonschema>=4.23.0->vllm==0.30.0+xpu) (2026.9.1)
+#9 25.22 Requirement already satisfied: opentelemetry-exporter-otlp-proto-grpc==1.40.0 in /opt/venv/lib/python3.12/site-packages (from opentelemetry-exporter-otlp>=1.27.0->vllm==0.30.0+xpu) (1.40.0)
+#9 25.22 Requirement already satisfied: opentelemetry-exporter-otlp-proto-http==1.40.0 in /opt/venv/lib/python3.12/site-packages (from opentelemetry-exporter-otlp>=1.27.0->vllm==0.30.0+xpu) (1.40.0)
+#9 25.22 Requirement already satisfied: googleapis-common-protos~=1.57 in /opt/venv/lib/python3.12/site-packages (from opentelemetry-exporter-otlp-proto-grpc==1.40.0->opentelemetry-exporter-otlp>=1.27.0->vllm==0.30.0+xpu) (1.75.3)
+#9 25.22 Requirement already satisfied: grpcio<2.0.0,>=1.63.2 in /opt/venv/lib/python3.12/site-packages (from opentelemetry-exporter-otlp-proto-grpc==1.40.0->opentelemetry-exporter-otlp>=1.27.0->vllm==0.30.0+xpu) (1.83.1)
+#9 25.22 Requirement already satisfied: opentelemetry-exporter-otlp-proto-common==1.40.0 in /opt/venv/lib/python3.12/site-packages (from opentelemetry-exporter-otlp-proto-grpc==1.40.0->opentelemetry-exporter-otlp>=1.27.0->vllm==0.30.0+xpu) (1.40.0)
+#9 25.22 Requirement already satisfied: opentelemetry-proto==1.40.0 in /opt/venv/lib/python3.12/site-packages (from opentelemetry-exporter-otlp-proto-grpc==1.40.0->opentelemetry-exporter-otlp>=1.27.0->vllm==0.30.0+xpu) (1.40.0)
+#9 25.24 Requirement already satisfied: opentelemetry-semantic-conventions==0.61b0 in /opt/venv/lib/python3.12/site-packages (from opentelemetry-sdk>=1.27.0->vllm==0.30.0+xpu) (0.61b0)
+#9 25.25 Requirement already satisfied: charset_normalizer<4,>=2 in /opt/venv/lib/python3.12/site-packages (from requests>=2.26.0->vllm==0.30.0+xpu) (3.5.1)
+#9 25.25 Requirement already satisfied: urllib3<3,>=1.26 in /opt/venv/lib/python3.12/site-packages (from requests>=2.26.0->vllm==0.30.0+xpu) (2.7.0)
+#9 25.29 Requirement already satisfied: pycountry>=23 in /opt/venv/lib/python3.12/site-packages (from pydantic-extra-types[pycountry]>=2.10.5->mistral_common>=1.11.6->mistral_common[image]>=1.11.6->vllm==0.30.0+xpu) (26.2.16)
+#9 25.30 Requirement already satisfied: python-dotenv>=1.2.2 in /opt/venv/lib/python3.12/site-packages (from pydantic-settings>=2.0.0->fastapi[standard]<0.137.0,>=0.133.0->vllm==0.30.0+xpu) (1.2.4)
+#9 25.31 Requirement already satisfied: cryptography>=3.4.0 in /opt/venv/lib/python3.12/site-packages (from pyjwt[crypto]>=2.10.1->mcp<3.0.0,>=2.0.0->vllm==0.30.0+xpu) (50.0.2)
+#9 25.32 Requirement already satisfied: cffi>=2.0.0 in /opt/venv/lib/python3.12/site-packages (from cryptography>=3.4.0->pyjwt[crypto]>=2.10.1->mcp<3.0.0,>=2.0.0->vllm==0.30.0+xpu) (2.1.1)
+#9 25.32 Requirement already satisfied: pycparser in /opt/venv/lib/python3.12/site-packages (from cffi>=2.0.0->cryptography>=3.4.0->pyjwt[crypto]>=2.10.1->mcp<3.0.0,>=2.0.0->vllm==0.30.0+xpu) (3.11)
+#9 25.34 Requirement already satisfied: msgpack<2.0.0,>=1.0.0 in /opt/venv/lib/python3.12/site-packages (from ray>=2.9->vllm==0.30.0+xpu) (1.2.3)
+#9 25.36 Requirement already satisfied: rich>=13.7.1 in /opt/venv/lib/python3.12/site-packages (from rich-toolkit>=0.14.8->fastapi-cli>=0.0.8->fastapi-cli[standard]>=0.0.8; extra == "standard"->fastapi[standard]<0.137.0,>=0.133.0->vllm==0.30.0+xpu) (15.0.0)
+#9 25.37 Requirement already satisfied: markdown-it-py>=2.2.0 in /opt/venv/lib/python3.12/site-packages (from rich>=13.7.1->rich-toolkit>=0.14.8->fastapi-cli>=0.0.8->fastapi-cli[standard]>=0.0.8; extra == "standard"->fastapi[standard]<0.137.0,>=0.133.0->vllm==0.30.0+xpu) (4.2.0)
+#9 25.37 Requirement already satisfied: pygments<3.0.0,>=2.13.0 in /opt/venv/lib/python3.12/site-packages (from rich>=13.7.1->rich-toolkit>=0.14.8->fastapi-cli>=0.0.8->fastapi-cli[standard]>=0.0.8; extra == "standard"->fastapi[standard]<0.137.0,>=0.133.0->vllm==0.30.0+xpu) (2.21.0)
+#9 25.38 Requirement already satisfied: mdurl~=0.1 in /opt/venv/lib/python3.12/site-packages (from markdown-it-py>=2.2.0->rich>=13.7.1->rich-toolkit>=0.14.8->fastapi-cli>=0.0.8->fastapi-cli[standard]>=0.0.8; extra == "standard"->fastapi[standard]<0.137.0,>=0.133.0->vllm==0.30.0+xpu) (0.1.2)
+#9 25.40 Requirement already satisfied: semantic_version<3,>=2.8.2 in /opt/venv/lib/python3.12/site-packages (from setuptools-rust>=1.9.0->vllm==0.30.0+xpu) (2.10.0)
+#9 25.41 Requirement already satisfied: vcs-versioning<3,>=2.5.0.dev0 in /opt/venv/lib/python3.12/site-packages (from setuptools-scm>=8->vllm==0.30.0+xpu) (2.6.0)
+#9 25.43 Requirement already satisfied: mpmath<1.4,>=1.1.0 in /opt/venv/lib/python3.12/site-packages (from sympy>=1.13.3->torch==2.13.0) (1.3.0)
+#9 25.81 Collecting tokenizers>=0.21.1 (from vllm==0.30.0+xpu)
+#9 25.82   Downloading tokenizers-0.23.3-cp310-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (9.8 kB)
+#9 25.85 Requirement already satisfied: shellingham>=1.3.0 in /opt/venv/lib/python3.12/site-packages (from typer>=0.16.0->fastapi-cli>=0.0.8->fastapi-cli[standard]>=0.0.8; extra == "standard"->fastapi[standard]<0.137.0,>=0.133.0->vllm==0.30.0+xpu) (1.5.4)
+#9 25.87 Requirement already satisfied: httptools>=0.8.0 in /opt/venv/lib/python3.12/site-packages (from uvicorn[standard]>=0.12.0; extra == "standard"->fastapi[standard]<0.137.0,>=0.133.0->vllm==0.30.0+xpu) (0.8.0)
+#9 25.87 Requirement already satisfied: uvloop>=0.15.1 in /opt/venv/lib/python3.12/site-packages (from uvicorn[standard]>=0.12.0; extra == "standard"->fastapi[standard]<0.137.0,>=0.133.0->vllm==0.30.0+xpu) (0.23.0)
+#9 25.87 Requirement already satisfied: websockets>=13.0 in /opt/venv/lib/python3.12/site-packages (from uvicorn[standard]>=0.12.0; extra == "standard"->fastapi[standard]<0.137.0,>=0.133.0->vllm==0.30.0+xpu) (17.2)
+#9 25.91 Requirement already satisfied: pyarrow>=24.0.0 in /opt/venv/lib/python3.12/site-packages (from datasets->vllm==0.30.0+xpu) (26.0.0)
+#9 25.91 Requirement already satisfied: pandas in /opt/venv/lib/python3.12/site-packages (from datasets->vllm==0.30.0+xpu) (3.0.6)
+#9 25.91 Requirement already satisfied: xxhash in /opt/venv/lib/python3.12/site-packages (from datasets->vllm==0.30.0+xpu) (4.0.1)
+#9 25.91 Requirement already satisfied: multiprocess<0.70.20 in /opt/venv/lib/python3.12/site-packages (from datasets->vllm==0.30.0+xpu) (0.70.19)
+#9 25.97 Requirement already satisfied: python-dateutil>=2.8.2 in /opt/venv/lib/python3.12/site-packages (from pandas->datasets->vllm==0.30.0+xpu) (2.9.0.post0)
+#9 26.23 Downloading torch-2.13.0%2Bxpu-cp312-cp312-manylinux_2_28_x86_64.whl (819.5 MB)
+#9 33.42    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 819.5/819.5 MB 121.5 MB/s  0:00:07
+#9 33.61 Downloading torchvision-0.28.0%2Bxpu-cp312-cp312-manylinux_2_28_x86_64.whl (1.8 MB)
+#9 33.63    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.8/1.8 MB 138.5 MB/s  0:00:00
+#9 34.06 Downloading auto_round_lib-0.15.0-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (12.9 MB)
+#9 35.24    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 12.9/12.9 MB 10.9 MB/s  0:00:01
+#9 35.26 Downloading dpcpp_cpp_rt-2026.0.0-py2.py3-none-manylinux_2_28_x86_64.whl (28 kB)
+#9 35.27 Downloading impi_rt-2021.18.0-py2.py3-none-manylinux_2_28_x86_64.whl (126.6 MB)
+#9 45.11    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 126.6/126.6 MB 12.8 MB/s  0:00:09
+#9 45.13 Downloading intel_cmplr_lib_rt-2026.0.0-py2.py3-none-manylinux_2_28_x86_64.whl (45.4 MB)
+#9 48.02    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 45.4/45.4 MB 15.6 MB/s  0:00:02
+#9 48.14 Downloading intel_cmplr_lib_ur-2026.0.0-py2.py3-none-manylinux_2_28_x86_64.whl (31.6 MB)
+#9 50.28    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 31.6/31.6 MB 14.7 MB/s  0:00:02
+#9 50.29 Downloading umf-1.1.0-py2.py3-none-manylinux_2_28_x86_64.whl (424 kB)
+#9 50.40 Downloading intel_cmplr_lic_rt-2026.0.0-py2.py3-none-manylinux_2_28_x86_64.whl (18 kB)
+#9 50.41 Downloading intel_opencl_rt-2026.0.0-py2.py3-none-manylinux_2_28_x86_64.whl (209.2 MB)
+#9 66.55    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 209.2/209.2 MB 13.0 MB/s  0:00:16
+#9 66.68 Downloading tbb-2023.0.0-py2.py3-none-manylinux_2_28_x86_64.whl (6.8 MB)
+#9 67.14    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 6.8/6.8 MB 14.2 MB/s  0:00:00
+#9 67.16 Downloading tcmlib-1.5.0-py2.py3-none-manylinux_2_28_x86_64.whl (2.8 MB)
+#9 67.18    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.8/2.8 MB 118.2 MB/s  0:00:00
+#9 67.31 Downloading intel_openmp-2026.0.0-py2.py3-none-manylinux_2_28_x86_64.whl (57.3 MB)
+#9 71.60    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 57.3/57.3 MB 13.3 MB/s  0:00:04
+#9 71.62 Downloading intel_pti-0.17.0-py2.py3-none-manylinux_2_28_x86_64.whl (1.2 MB)
+#9 71.62    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.2/1.2 MB 270.9 MB/s  0:00:00
+#9 71.64 Downloading intel_sycl_rt-2026.0.0-py2.py3-none-manylinux_2_28_x86_64.whl (156.0 MB)
+#9 88.00    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 156.0/156.0 MB 9.5 MB/s  0:00:16
+#9 88.12 Downloading mkl-2026.0.0-py2.py3-none-manylinux_2_28_x86_64.whl (224.0 MB)
+#9 106.6    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 224.0/224.0 MB 12.1 MB/s  0:00:18
+#9 106.6 Downloading oneccl-2022.0.0-py2.py3-none-manylinux_2_28_x86_64.whl (80.2 MB)
+#9 111.6    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 80.2/80.2 MB 16.1 MB/s  0:00:04
+#9 111.6 Downloading oneccl_devel-2022.0.0-py2.py3-none-manylinux_2_28_x86_64.whl (25.1 MB)
+#9 113.6    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 25.1/25.1 MB 12.6 MB/s  0:00:01
+#9 113.6 Downloading onemkl_license-2026.0.0-py2.py3-none-manylinux_2_28_x86_64.whl (58 kB)
+#9 113.7 Downloading onemkl_sycl_blas-2026.0.0-py2.py3-none-manylinux_2_28_x86_64.whl (20.7 MB)
+#9 115.9    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 20.7/20.7 MB 9.6 MB/s  0:00:02
+#9 116.0 Downloading onemkl_sycl_dft-2026.0.0-py2.py3-none-manylinux_2_28_x86_64.whl (6.7 MB)
+#9 116.5    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 6.7/6.7 MB 12.5 MB/s  0:00:00
+#9 116.5 Downloading onemkl_sycl_lapack-2026.0.0-py2.py3-none-manylinux_2_28_x86_64.whl (8.4 MB)
+#9 116.9    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 8.4/8.4 MB 19.5 MB/s  0:00:00
+#9 117.1 Downloading onemkl_sycl_rng-2026.0.0-py2.py3-none-manylinux_2_28_x86_64.whl (23.6 MB)
+#9 118.3    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 23.6/23.6 MB 19.2 MB/s  0:00:01
+#9 118.4 Downloading onemkl_sycl_sparse-2026.0.0-py2.py3-none-manylinux_2_28_x86_64.whl (21.6 MB)
+#9 120.4    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 21.6/21.6 MB 11.0 MB/s  0:00:01
+#9 120.5 Downloading pyzes-0.1.1-py3-none-any.whl (25 kB)
+#9 120.6 Downloading triton_xpu-3.7.2-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (519.1 MB)
+#9 124.9    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 519.1/519.1 MB 121.4 MB/s  0:00:04
+#9 124.9 Downloading transformers-5.22.1-py3-none-any.whl (13.1 MB)
+#9 125.0    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 13.1/13.1 MB 138.9 MB/s  0:00:00
+#9 125.0 Downloading tokenizers-0.23.3-cp310-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (3.4 MB)
+#9 125.0    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 3.4/3.4 MB 202.9 MB/s  0:00:00
+#9 130.3 Installing collected packages: tcmlib, onemkl-license, intel-pti, intel-cmplr-lic-rt, intel-cmplr-lib-rt, impi-rt, vllm-xpu-kernels, umf, triton-xpu, tbb, pyzes, triton, intel-opencl-rt, intel-cmplr-lib-ur, intel-sycl-rt, intel-openmp, tokenizers, oneccl, mkl, dpcpp-cpp-rt, transformers, onemkl-sycl-rng, onemkl-sycl-dft, onemkl-sycl-blas, oneccl-devel, onemkl-sycl-sparse, onemkl-sycl-lapack, torch, torchvision, auto_round_lib, vllm
+#9 130.3   Attempting uninstall: tcmlib
+#9 130.3     Found existing installation: tcmlib 1.4.1
+#9 130.3     Uninstalling tcmlib-1.4.1:
+#9 131.9       Successfully uninstalled tcmlib-1.4.1
+#9 132.0   Attempting uninstall: onemkl-license
+#9 132.0     Found existing installation: onemkl-license 2025.3.1
+#9 132.0     Uninstalling onemkl-license-2025.3.1:
+#9 132.0       Successfully uninstalled onemkl-license-2025.3.1
+#9 132.0   Attempting uninstall: intel-pti
+#9 132.0     Found existing installation: intel-pti 0.16.0
+#9 132.0     Uninstalling intel-pti-0.16.0:
+#9 132.4       Successfully uninstalled intel-pti-0.16.0
+#9 132.4   Attempting uninstall: intel-cmplr-lic-rt
+#9 132.4     Found existing installation: intel-cmplr-lic-rt 2025.3.2
+#9 132.4     Uninstalling intel-cmplr-lic-rt-2025.3.2:
+#9 132.4       Successfully uninstalled intel-cmplr-lic-rt-2025.3.2
+#9 132.4   Attempting uninstall: intel-cmplr-lib-rt
+#9 132.4     Found existing installation: intel-cmplr-lib-rt 2025.3.2
+#9 132.4     Uninstalling intel-cmplr-lib-rt-2025.3.2:
+#9 133.1       Successfully uninstalled intel-cmplr-lib-rt-2025.3.2
+#9 133.8   Attempting uninstall: impi-rt
+#9 133.9     Found existing installation: impi-rt 2021.17.2
+#9 133.9     Uninstalling impi-rt-2021.17.2:
+#9 134.6       Successfully uninstalled impi-rt-2021.17.2
+#9 142.6   Attempting uninstall: umf
+#9 142.6     Found existing installation: umf 1.0.3
+#9 142.6     Uninstalling umf-1.0.3:
+#9 143.0       Successfully uninstalled umf-1.0.3
+#9 151.5   Attempting uninstall: tbb
+#9 151.5     Found existing installation: tbb 2022.3.1
+#9 151.5     Uninstalling tbb-2022.3.1:
+#9 151.9       Successfully uninstalled tbb-2022.3.1
+#9 152.1   Attempting uninstall: intel-opencl-rt
+#9 152.1     Found existing installation: intel-opencl-rt 2025.3.2
+#9 152.1     Uninstalling intel-opencl-rt-2025.3.2:
+#9 153.8       Successfully uninstalled intel-opencl-rt-2025.3.2
+#9 157.0   Attempting uninstall: intel-cmplr-lib-ur
+#9 157.0     Found existing installation: intel-cmplr-lib-ur 2025.3.2
+#9 157.0     Uninstalling intel-cmplr-lib-ur-2025.3.2:
+#9 157.5       Successfully uninstalled intel-cmplr-lib-ur-2025.3.2
+#9 158.1   Attempting uninstall: intel-sycl-rt
+#9 158.1     Found existing installation: intel-sycl-rt 2025.3.2
+#9 158.1     Uninstalling intel-sycl-rt-2025.3.2:
+#9 159.7       Successfully uninstalled intel-sycl-rt-2025.3.2
+#9 162.3   Attempting uninstall: intel-openmp
+#9 162.3     Found existing installation: intel-openmp 2025.3.2
+#9 162.3     Uninstalling intel-openmp-2025.3.2:
+#9 163.3       Successfully uninstalled intel-openmp-2025.3.2
+#9 164.2   Attempting uninstall: tokenizers
+#9 164.2     Found existing installation: tokenizers 0.22.2
+#9 164.2     Uninstalling tokenizers-0.22.2:
+#9 164.2       Successfully uninstalled tokenizers-0.22.2
+#9 166.0   Attempting uninstall: mkl
+#9 166.0     Found existing installation: mkl 2025.3.1
+#9 166.0     Uninstalling mkl-2025.3.1:
+#9 168.2       Successfully uninstalled mkl-2025.3.1
+#9 171.8   Attempting uninstall: dpcpp-cpp-rt
+#9 171.8     Found existing installation: dpcpp-cpp-rt 2025.3.2
+#9 171.8     Uninstalling dpcpp-cpp-rt-2025.3.2:
+#9 171.8       Successfully uninstalled dpcpp-cpp-rt-2025.3.2
+#9 171.8   Attempting uninstall: transformers
+#9 171.8     Found existing installation: transformers 5.8.0
+#9 172.0     Uninstalling transformers-5.8.0:
+#9 174.4       Successfully uninstalled transformers-5.8.0
+#9 183.9   Attempting uninstall: onemkl-sycl-rng
+#9 183.9     Found existing installation: onemkl-sycl-rng 2025.3.1
+#9 183.9     Uninstalling onemkl-sycl-rng-2025.3.1:
+#9 184.6       Successfully uninstalled onemkl-sycl-rng-2025.3.1
+#9 184.8   Attempting uninstall: onemkl-sycl-dft
+#9 184.8     Found existing installation: onemkl-sycl-dft 2025.3.1
+#9 184.8     Uninstalling onemkl-sycl-dft-2025.3.1:
+#9 185.3       Successfully uninstalled onemkl-sycl-dft-2025.3.1
+#9 185.4   Attempting uninstall: onemkl-sycl-blas
+#9 185.4     Found existing installation: onemkl-sycl-blas 2025.3.1
+#9 185.4     Uninstalling onemkl-sycl-blas-2025.3.1:
+#9 185.9       Successfully uninstalled onemkl-sycl-blas-2025.3.1
+#9 186.8   Attempting uninstall: onemkl-sycl-sparse
+#9 186.8     Found existing installation: onemkl-sycl-sparse 2025.3.1
+#9 186.8     Uninstalling onemkl-sycl-sparse-2025.3.1:
+#9 187.3       Successfully uninstalled onemkl-sycl-sparse-2025.3.1
+#9 187.6   Attempting uninstall: onemkl-sycl-lapack
+#9 187.6     Found existing installation: onemkl-sycl-lapack 2025.3.1
+#9 187.6     Uninstalling onemkl-sycl-lapack-2025.3.1:
+#9 188.1       Successfully uninstalled onemkl-sycl-lapack-2025.3.1
+#9 188.2   Attempting uninstall: torch
+#9 188.2     Found existing installation: torch 2.12.0+xpu
+#9 188.7     Uninstalling torch-2.12.0+xpu:
+#9 196.9       Successfully uninstalled torch-2.12.0+xpu
+#9 213.4   Attempting uninstall: torchvision
+#9 213.4     Found existing installation: torchvision 0.27.0+xpu
+#9 213.5     Uninstalling torchvision-0.27.0+xpu:
+#9 213.6       Successfully uninstalled torchvision-0.27.0+xpu
+#9 214.2   Attempting uninstall: auto_round_lib
+#9 214.2     Found existing installation: auto-round-lib 0.14.1
+#9 214.2     Uninstalling auto-round-lib-0.14.1:
+#9 214.2       Successfully uninstalled auto-round-lib-0.14.1
+#9 222.4 
+#9 222.4 ERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.
+#9 222.4 kvweave 0.1.0 requires torch==2.12.0+xpu, but you have torch 2.13.0+xpu which is incompatible.
+#9 222.4 Successfully installed auto_round_lib-0.15.0 dpcpp-cpp-rt-2026.0.0 impi-rt-2021.18.0 intel-cmplr-lib-rt-2026.0.0 intel-cmplr-lib-ur-2026.0.0 intel-cmplr-lic-rt-2026.0.0 intel-opencl-rt-2026.0.0 intel-openmp-2026.0.0 intel-pti-0.17.0 intel-sycl-rt-2026.0.0 mkl-2026.0.0 oneccl-2022.0.0 oneccl-devel-2022.0.0 onemkl-license-2026.0.0 onemkl-sycl-blas-2026.0.0 onemkl-sycl-dft-2026.0.0 onemkl-sycl-lapack-2026.0.0 onemkl-sycl-rng-2026.0.0 onemkl-sycl-sparse-2026.0.0 pyzes-0.1.1 tbb-2023.0.0 tcmlib-1.5.0 tokenizers-0.23.3 torch-2.13.0+xpu torchvision-0.28.0+xpu transformers-5.22.1 triton-3.7.2+xpu triton-xpu-3.7.2 umf-1.1.0 vllm-0.30.0+xpu vllm-xpu-kernels-0.1.14.1+arc3
+#9 222.7 + pip install --no-deps /wheels/arc/lmcache-0.5.6+arc1-cp312-cp312-manylinux_2_35_x86_64.whl
+#9 223.1 Looking in indexes: https://pypi.org/simple, https://download.pytorch.org/whl/xpu
+#9 223.1 Processing /wheels/arc/lmcache-0.5.6+arc1-cp312-cp312-manylinux_2_35_x86_64.whl
+#9 223.2 Installing collected packages: lmcache
+#9 225.6 Successfully installed lmcache-0.5.6+arc1
+#9 225.7 + pip install msgspec 'numpy<=2.2.6' numba nvtx 'opentelemetry-api>=1.20.0,<=1.40.0' 'opentelemetry-sdk>=1.20.0' 'opentelemetry-exporter-otlp>=1.20.0' 'opentelemetry-exporter-prometheus>=0.50b0,<=0.61b0' 'prometheus_client>=0.18.0,<=0.24.1' psutil py-cpuinfo
+#9 226.1 Looking in indexes: https://pypi.org/simple, https://download.pytorch.org/whl/xpu
+#9 226.1 Requirement already satisfied: msgspec in /opt/venv/lib/python3.12/site-packages (0.21.1)
+#9 226.1 Requirement already satisfied: numpy<=2.2.6 in /opt/venv/lib/python3.12/site-packages (2.2.6)
+#9 226.1 Requirement already satisfied: numba in /opt/venv/lib/python3.12/site-packages (0.65.0)
+#9 226.8 Collecting nvtx
+#9 226.9   Downloading nvtx-0.2.16-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (3.0 kB)
+#9 226.9 Requirement already satisfied: opentelemetry-api<=1.40.0,>=1.20.0 in /opt/venv/lib/python3.12/site-packages (1.40.0)
+#9 226.9 Requirement already satisfied: opentelemetry-sdk>=1.20.0 in /opt/venv/lib/python3.12/site-packages (1.40.0)
+#9 226.9 Requirement already satisfied: opentelemetry-exporter-otlp>=1.20.0 in /opt/venv/lib/python3.12/site-packages (1.40.0)
+#9 226.9 Requirement already satisfied: opentelemetry-exporter-prometheus<=0.61b0,>=0.50b0 in /opt/venv/lib/python3.12/site-packages (0.61b0)
+#9 226.9 Requirement already satisfied: prometheus_client<=0.24.1,>=0.18.0 in /opt/venv/lib/python3.12/site-packages (0.24.1)
+#9 226.9 Requirement already satisfied: psutil in /opt/venv/lib/python3.12/site-packages (7.2.2)
+#9 226.9 Requirement already satisfied: py-cpuinfo in /opt/venv/lib/python3.12/site-packages (9.0.0)
+#9 226.9 Requirement already satisfied: importlib-metadata<8.8.0,>=6.0 in /opt/venv/lib/python3.12/site-packages (from opentelemetry-api<=1.40.0,>=1.20.0) (8.7.1)
+#9 226.9 Requirement already satisfied: typing-extensions>=4.5.0 in /opt/venv/lib/python3.12/site-packages (from opentelemetry-api<=1.40.0,>=1.20.0) (4.16.0)
+#9 226.9 Requirement already satisfied: opentelemetry-semantic-conventions==0.61b0 in /opt/venv/lib/python3.12/site-packages (from opentelemetry-sdk>=1.20.0) (0.61b0)
+#9 226.9 Requirement already satisfied: zipp>=3.20 in /opt/venv/lib/python3.12/site-packages (from importlib-metadata<8.8.0,>=6.0->opentelemetry-api<=1.40.0,>=1.20.0) (4.1.0)
+#9 226.9 Requirement already satisfied: llvmlite<0.48,>=0.47.0dev0 in /opt/venv/lib/python3.12/site-packages (from numba) (0.47.0)
+#9 226.9 Requirement already satisfied: opentelemetry-exporter-otlp-proto-grpc==1.40.0 in /opt/venv/lib/python3.12/site-packages (from opentelemetry-exporter-otlp>=1.20.0) (1.40.0)
+#9 226.9 Requirement already satisfied: opentelemetry-exporter-otlp-proto-http==1.40.0 in /opt/venv/lib/python3.12/site-packages (from opentelemetry-exporter-otlp>=1.20.0) (1.40.0)
+#9 226.9 Requirement already satisfied: googleapis-common-protos~=1.57 in /opt/venv/lib/python3.12/site-packages (from opentelemetry-exporter-otlp-proto-grpc==1.40.0->opentelemetry-exporter-otlp>=1.20.0) (1.75.3)
+#9 226.9 Requirement already satisfied: grpcio<2.0.0,>=1.63.2 in /opt/venv/lib/python3.12/site-packages (from opentelemetry-exporter-otlp-proto-grpc==1.40.0->opentelemetry-exporter-otlp>=1.20.0) (1.83.1)
+#9 226.9 Requirement already satisfied: opentelemetry-exporter-otlp-proto-common==1.40.0 in /opt/venv/lib/python3.12/site-packages (from opentelemetry-exporter-otlp-proto-grpc==1.40.0->opentelemetry-exporter-otlp>=1.20.0) (1.40.0)
+#9 226.9 Requirement already satisfied: opentelemetry-proto==1.40.0 in /opt/venv/lib/python3.12/site-packages (from opentelemetry-exporter-otlp-proto-grpc==1.40.0->opentelemetry-exporter-otlp>=1.20.0) (1.40.0)
+#9 226.9 Requirement already satisfied: requests~=2.7 in /opt/venv/lib/python3.12/site-packages (from opentelemetry-exporter-otlp-proto-http==1.40.0->opentelemetry-exporter-otlp>=1.20.0) (2.34.2)
+#9 226.9 Requirement already satisfied: protobuf<7.0,>=5.0 in /opt/venv/lib/python3.12/site-packages (from opentelemetry-proto==1.40.0->opentelemetry-exporter-otlp-proto-grpc==1.40.0->opentelemetry-exporter-otlp>=1.20.0) (6.33.6)
+#9 226.9 Requirement already satisfied: charset_normalizer<4,>=2 in /opt/venv/lib/python3.12/site-packages (from requests~=2.7->opentelemetry-exporter-otlp-proto-http==1.40.0->opentelemetry-exporter-otlp>=1.20.0) (3.5.1)
+#9 226.9 Requirement already satisfied: idna<4,>=2.5 in /opt/venv/lib/python3.12/site-packages (from requests~=2.7->opentelemetry-exporter-otlp-proto-http==1.40.0->opentelemetry-exporter-otlp>=1.20.0) (3.19)
+#9 226.9 Requirement already satisfied: urllib3<3,>=1.26 in /opt/venv/lib/python3.12/site-packages (from requests~=2.7->opentelemetry-exporter-otlp-proto-http==1.40.0->opentelemetry-exporter-otlp>=1.20.0) (2.7.0)
+#9 226.9 Requirement already satisfied: certifi>=2023.5.7 in /opt/venv/lib/python3.12/site-packages (from requests~=2.7->opentelemetry-exporter-otlp-proto-http==1.40.0->opentelemetry-exporter-otlp>=1.20.0) (2026.7.22)
+#9 227.0 Downloading nvtx-0.2.16-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (2.8 MB)
+#9 227.1    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.8/2.8 MB 18.4 MB/s  0:00:00
+#9 227.5 Installing collected packages: nvtx
+#9 227.5 ERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.
+#9 227.5 lmcache 0.5.6+arc1 requires aiofile, which is not installed.
+#9 227.5 lmcache 0.5.6+arc1 requires awscrt, which is not installed.
+#9 227.5 lmcache 0.5.6+arc1 requires cufile-python, which is not installed.
+#9 227.5 lmcache 0.5.6+arc1 requires google-api-core, which is not installed.
+#9 227.5 lmcache 0.5.6+arc1 requires google-cloud-bigtable, which is not installed.
+#9 227.5 lmcache 0.5.6+arc1 requires grpcio-observability==1.78.0; platform_system == "Linux", which is not installed.
+#9 227.5 lmcache 0.5.6+arc1 requires pytest, which is not installed.
+#9 227.5 lmcache 0.5.6+arc1 requires redis, which is not installed.
+#9 227.6 Successfully installed nvtx-0.2.16
+#9 DONE 228.6s
+
+#10 [vllm-arc 5/9] RUN set -euxo pipefail; pip install "aiofile" "redis"
+#10 0.477 + pip install aiofile redis
+#10 0.897 Looking in indexes: https://pypi.org/simple, https://download.pytorch.org/whl/xpu
+#10 1.460 Collecting aiofile
+#10 1.566   Downloading aiofile-3.12.3-py3-none-any.whl.metadata (17 kB)
+#10 1.987 Collecting redis
+#10 1.999   Downloading redis-8.1.0-py3-none-any.whl.metadata (16 kB)
+#10 2.406 Collecting caio~=0.12.0 (from aiofile)
+#10 2.423   Downloading caio-0.12.10-cp312-cp312-manylinux_2_34_x86_64.whl.metadata (4.6 kB)
+#10 2.441 Downloading aiofile-3.12.3-py3-none-any.whl (22 kB)
+#10 2.454 Downloading caio-0.12.10-cp312-cp312-manylinux_2_34_x86_64.whl (162 kB)
+#10 2.475 Downloading redis-8.1.0-py3-none-any.whl (560 kB)
+#10 2.497    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 560.6/560.6 kB 31.3 MB/s  0:00:00
+#10 2.831 Installing collected packages: redis, caio, aiofile
+#10 3.367 
+#10 3.368 ERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.
+#10 3.368 lmcache 0.5.6+arc1 requires awscrt, which is not installed.
+#10 3.368 lmcache 0.5.6+arc1 requires cufile-python, which is not installed.
+#10 3.368 lmcache 0.5.6+arc1 requires google-api-core, which is not installed.
+#10 3.368 lmcache 0.5.6+arc1 requires google-cloud-bigtable, which is not installed.
+#10 3.368 lmcache 0.5.6+arc1 requires grpcio-observability==1.78.0; platform_system == "Linux", which is not installed.
+#10 3.368 lmcache 0.5.6+arc1 requires pytest, which is not installed.
+#10 3.384 Successfully installed aiofile-3.12.3 caio-0.12.10 redis-8.1.0
+#10 DONE 3.5s
+
+#11 [vllm-arc 6/9] COPY src/ /build/vllm-arc/
+#11 DONE 0.4s
+
+#12 [vllm-arc 7/9] RUN set -euxo pipefail;     pip install /build/vllm-arc;     pip freeze > /opt/vllm-arc-v0.30.0.constraints.txt;     pip check || true
+#12 0.260 + pip install /build/vllm-arc
+#12 0.680 Looking in indexes: https://pypi.org/simple, https://download.pytorch.org/whl/xpu
+#12 0.681 Processing /build/vllm-arc
+#12 0.683   Installing build dependencies: started
+#12 4.516   Installing build dependencies: finished with status 'done'
+#12 4.517   Getting requirements to build wheel: started
+#12 5.234   Getting requirements to build wheel: finished with status 'done'
+#12 5.236   Preparing metadata (pyproject.toml): started
+#12 5.552   Preparing metadata (pyproject.toml): finished with status 'done'
+#12 5.560 Requirement already satisfied: pandas>=2.3.3 in /opt/venv/lib/python3.12/site-packages (from vllm_gaudi==0.0.0) (3.0.6)
+#12 6.296 Collecting numba>=0.67.0 (from vllm_gaudi==0.0.0)
+#12 6.417   Downloading numba-0.68.1-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (2.8 kB)
+#12 6.423 Requirement already satisfied: numpy>=1.26.0 in /opt/venv/lib/python3.12/site-packages (from vllm_gaudi==0.0.0) (2.2.6)
+#12 6.905 Collecting kaldi-native-fbank>=1.22.3 (from vllm_gaudi==0.0.0)
+#12 6.918   Downloading kaldi_native_fbank-1.22.5-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (4.5 kB)
+#12 7.268 Collecting tblib==3.2.2 (from vllm_gaudi==0.0.0)
+#12 7.279   Downloading tblib-3.2.2-py3-none-any.whl.metadata (27 kB)
+#12 7.302 Requirement already satisfied: fastapi<0.137 in /opt/venv/lib/python3.12/site-packages (from vllm_gaudi==0.0.0) (0.136.3)
+#12 7.746 Collecting transformers<5.17 (from vllm_gaudi==0.0.0)
+#12 7.755   Downloading transformers-5.16.1-py3-none-any.whl.metadata (32 kB)
+#12 7.828 Requirement already satisfied: starlette>=0.46.0 in /opt/venv/lib/python3.12/site-packages (from fastapi<0.137->vllm_gaudi==0.0.0) (1.6.0)
+#12 7.829 Requirement already satisfied: pydantic>=2.9.0 in /opt/venv/lib/python3.12/site-packages (from fastapi<0.137->vllm_gaudi==0.0.0) (2.13.5)
+#12 7.829 Requirement already satisfied: typing-extensions>=4.8.0 in /opt/venv/lib/python3.12/site-packages (from fastapi<0.137->vllm_gaudi==0.0.0) (4.16.0)
+#12 7.830 Requirement already satisfied: typing-inspection>=0.4.2 in /opt/venv/lib/python3.12/site-packages (from fastapi<0.137->vllm_gaudi==0.0.0) (0.4.4)
+#12 7.830 Requirement already satisfied: annotated-doc>=0.0.2 in /opt/venv/lib/python3.12/site-packages (from fastapi<0.137->vllm_gaudi==0.0.0) (0.0.5)
+#12 7.833 Requirement already satisfied: huggingface-hub<2.0,>=1.5.0 in /opt/venv/lib/python3.12/site-packages (from transformers<5.17->vllm_gaudi==0.0.0) (1.33.0)
+#12 7.833 Requirement already satisfied: packaging>=20.0 in /opt/venv/lib/python3.12/site-packages (from transformers<5.17->vllm_gaudi==0.0.0) (26.3)
+#12 7.834 Requirement already satisfied: pyyaml>=5.1 in /opt/venv/lib/python3.12/site-packages (from transformers<5.17->vllm_gaudi==0.0.0) (6.0.3)
+#12 7.834 Requirement already satisfied: regex>=2025.10.22 in /opt/venv/lib/python3.12/site-packages (from transformers<5.17->vllm_gaudi==0.0.0) (2026.9.29)
+#12 7.835 Requirement already satisfied: tokenizers<0.24.0,>=0.23.1 in /opt/venv/lib/python3.12/site-packages (from transformers<5.17->vllm_gaudi==0.0.0) (0.23.3)
+#12 7.835 Requirement already satisfied: typer in /opt/venv/lib/python3.12/site-packages (from transformers<5.17->vllm_gaudi==0.0.0) (0.27.3)
+#12 7.835 Requirement already satisfied: safetensors>=0.8.0 in /opt/venv/lib/python3.12/site-packages (from transformers<5.17->vllm_gaudi==0.0.0) (0.8.0)
+#12 7.836 Requirement already satisfied: tqdm>=4.60 in /opt/venv/lib/python3.12/site-packages (from transformers<5.17->vllm_gaudi==0.0.0) (4.70.1)
+#12 7.839 Requirement already satisfied: click<9.0.0,>=8.4.2 in /opt/venv/lib/python3.12/site-packages (from huggingface-hub<2.0,>=1.5.0->transformers<5.17->vllm_gaudi==0.0.0) (8.5.0)
+#12 7.840 Requirement already satisfied: filelock>=3.10.0 in /opt/venv/lib/python3.12/site-packages (from huggingface-hub<2.0,>=1.5.0->transformers<5.17->vllm_gaudi==0.0.0) (3.32.3)
+#12 7.840 Requirement already satisfied: fsspec>=2023.5.0 in /opt/venv/lib/python3.12/site-packages (from huggingface-hub<2.0,>=1.5.0->transformers<5.17->vllm_gaudi==0.0.0) (2026.7.0)
+#12 7.841 Requirement already satisfied: hf-xet<2.0.0,>=1.6.0 in /opt/venv/lib/python3.12/site-packages (from huggingface-hub<2.0,>=1.5.0->transformers<5.17->vllm_gaudi==0.0.0) (1.7.0)
+#12 7.842 Requirement already satisfied: httpx<1,>=0.23.0 in /opt/venv/lib/python3.12/site-packages (from huggingface-hub<2.0,>=1.5.0->transformers<5.17->vllm_gaudi==0.0.0) (0.28.1)
+#12 7.849 Requirement already satisfied: anyio in /opt/venv/lib/python3.12/site-packages (from httpx<1,>=0.23.0->huggingface-hub<2.0,>=1.5.0->transformers<5.17->vllm_gaudi==0.0.0) (4.15.1)
+#12 7.850 Requirement already satisfied: certifi in /opt/venv/lib/python3.12/site-packages (from httpx<1,>=0.23.0->huggingface-hub<2.0,>=1.5.0->transformers<5.17->vllm_gaudi==0.0.0) (2026.7.22)
+#12 7.850 Requirement already satisfied: httpcore==1.* in /opt/venv/lib/python3.12/site-packages (from httpx<1,>=0.23.0->huggingface-hub<2.0,>=1.5.0->transformers<5.17->vllm_gaudi==0.0.0) (1.0.9)
+#12 7.851 Requirement already satisfied: idna in /opt/venv/lib/python3.12/site-packages (from httpx<1,>=0.23.0->huggingface-hub<2.0,>=1.5.0->transformers<5.17->vllm_gaudi==0.0.0) (3.19)
+#12 7.853 Requirement already satisfied: h11>=0.16 in /opt/venv/lib/python3.12/site-packages (from httpcore==1.*->httpx<1,>=0.23.0->huggingface-hub<2.0,>=1.5.0->transformers<5.17->vllm_gaudi==0.0.0) (0.16.0)
+#12 8.320 Collecting llvmlite<0.51,>=0.50.0dev0 (from numba>=0.67.0->vllm_gaudi==0.0.0)
+#12 8.331   Downloading llvmlite-0.50.0-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (5.1 kB)
+#12 8.354 Requirement already satisfied: python-dateutil>=2.8.2 in /opt/venv/lib/python3.12/site-packages (from pandas>=2.3.3->vllm_gaudi==0.0.0) (2.9.0.post0)
+#12 8.362 Requirement already satisfied: annotated-types>=0.6.0 in /opt/venv/lib/python3.12/site-packages (from pydantic>=2.9.0->fastapi<0.137->vllm_gaudi==0.0.0) (0.8.0)
+#12 8.362 Requirement already satisfied: pydantic-core==2.46.5 in /opt/venv/lib/python3.12/site-packages (from pydantic>=2.9.0->fastapi<0.137->vllm_gaudi==0.0.0) (2.46.5)
+#12 8.366 Requirement already satisfied: six>=1.5 in /opt/venv/lib/python3.12/site-packages (from python-dateutil>=2.8.2->pandas>=2.3.3->vllm_gaudi==0.0.0) (1.17.0)
+#12 8.382 Requirement already satisfied: shellingham>=1.3.0 in /opt/venv/lib/python3.12/site-packages (from typer->transformers<5.17->vllm_gaudi==0.0.0) (1.5.4)
+#12 8.382 Requirement already satisfied: rich>=13.8.0 in /opt/venv/lib/python3.12/site-packages (from typer->transformers<5.17->vllm_gaudi==0.0.0) (15.0.0)
+#12 8.384 Requirement already satisfied: markdown-it-py>=2.2.0 in /opt/venv/lib/python3.12/site-packages (from rich>=13.8.0->typer->transformers<5.17->vllm_gaudi==0.0.0) (4.2.0)
+#12 8.385 Requirement already satisfied: pygments<3.0.0,>=2.13.0 in /opt/venv/lib/python3.12/site-packages (from rich>=13.8.0->typer->transformers<5.17->vllm_gaudi==0.0.0) (2.21.0)
+#12 8.387 Requirement already satisfied: mdurl~=0.1 in /opt/venv/lib/python3.12/site-packages (from markdown-it-py>=2.2.0->rich>=13.8.0->typer->transformers<5.17->vllm_gaudi==0.0.0) (0.1.2)
+#12 8.401 Downloading tblib-3.2.2-py3-none-any.whl (12 kB)
+#12 8.414 Downloading transformers-5.16.1-py3-none-any.whl (12.1 MB)
+#12 8.797    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 12.1/12.1 MB 34.6 MB/s  0:00:00
+#12 8.812 Downloading kaldi_native_fbank-1.22.5-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (345 kB)
+#12 8.848 Downloading numba-0.68.1-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (3.9 MB)
+#12 8.890    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 3.9/3.9 MB 101.5 MB/s  0:00:00
+#12 8.904 Downloading llvmlite-0.50.0-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (59.7 MB)
+#12 9.414    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 59.7/59.7 MB 117.6 MB/s  0:00:00
+#12 9.688 Building wheels for collected packages: vllm_gaudi
+#12 9.689   Building wheel for vllm_gaudi (pyproject.toml): started
+#12 10.21   Building wheel for vllm_gaudi (pyproject.toml): finished with status 'done'
+#12 10.22   Created wheel for vllm_gaudi: filename=vllm_gaudi-0.0.0-py3-none-any.whl size=614522 sha256=ce444eeae44784e93b2ba2ef4dce453ae61bde178d643d27e231be33623a2900
+#12 10.22   Stored in directory: /tmp/pip-ephem-wheel-cache-q1pkyyqt/wheels/c7/28/8b/41954131710f04aae1a9dbe27c0b3c14a9730ed606d57b9c41
+#12 10.23 Successfully built vllm_gaudi
+#12 10.52 Installing collected packages: tblib, llvmlite, kaldi-native-fbank, numba, transformers, vllm_gaudi
+#12 10.53   Attempting uninstall: llvmlite
+#12 10.53     Found existing installation: llvmlite 0.47.0
+#12 10.54     Uninstalling llvmlite-0.47.0:
+#12 10.79       Successfully uninstalled llvmlite-0.47.0
+#12 11.94   Attempting uninstall: numba
+#12 11.95     Found existing installation: numba 0.65.0
+#12 12.01     Uninstalling numba-0.65.0:
+#12 12.60       Successfully uninstalled numba-0.65.0
+#12 15.51   Attempting uninstall: transformers
+#12 15.51     Found existing installation: transformers 5.22.1
+#12 15.81     Uninstalling transformers-5.22.1:
+#12 17.12       Successfully uninstalled transformers-5.22.1
+#12 26.57 
+#12 26.57 ERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.
+#12 26.57 lmcache 0.5.6+arc1 requires awscrt, which is not installed.
+#12 26.57 lmcache 0.5.6+arc1 requires cufile-python, which is not installed.
+#12 26.57 lmcache 0.5.6+arc1 requires google-api-core, which is not installed.
+#12 26.57 lmcache 0.5.6+arc1 requires google-cloud-bigtable, which is not installed.
+#12 26.57 lmcache 0.5.6+arc1 requires grpcio-observability==1.78.0; platform_system == "Linux", which is not installed.
+#12 26.57 lmcache 0.5.6+arc1 requires pytest, which is not installed.
+#12 26.57 vllm 0.30.0+xpu requires numba==0.65.0, but you have numba 0.68.1 which is incompatible.
+#12 26.59 Successfully installed kaldi-native-fbank-1.22.5 llvmlite-0.50.0 numba-0.68.1 tblib-3.2.2 transformers-5.16.1 vllm_gaudi-0.0.0
+#12 26.72 + pip freeze
+#12 27.15 + pip check
+#12 27.76 lmcache 0.5.6+arc1 requires awscrt, which is not installed.
+#12 27.76 lmcache 0.5.6+arc1 requires cufile-python, which is not installed.
+#12 27.76 lmcache 0.5.6+arc1 requires google-api-core, which is not installed.
+#12 27.76 lmcache 0.5.6+arc1 requires google-cloud-bigtable, which is not installed.
+#12 27.76 lmcache 0.5.6+arc1 requires grpcio-observability, which is not installed.
+#12 27.76 lmcache 0.5.6+arc1 requires pytest, which is not installed.
+#12 27.76 vllm 0.30.0+xpu has requirement numba==0.65.0, but you have numba 0.68.1.
+#12 27.76 kvweave 0.1.0 has requirement torch==2.12.0+xpu, but you have torch 2.13.0+xpu.
+#12 27.76 decord 0.6.0 is not supported on this platform
+#12 27.80 + true
+#12 DONE 28.0s
+
+#13 [vllm-arc 8/9] RUN set -euxo pipefail;     python -c "import vllm, torch; assert vllm.__version__ == '0.30.0', vllm.__version__; assert torch.__version__.startswith('2.13.0'), torch.__version__";     python -c "import triton; assert triton.__version__.startswith('3.7.2'), triton.__version__";     python -c "import vllm_gaudi; print('PLUGIN_IMPORT_OK')";     python -c "from importlib.metadata import entry_points; eps = {e.name: e.value for e in entry_points(group='vllm.platform_plugins')}; assert eps.get('arc') == 'vllm_gaudi.xpu:register', eps; print('ARC_ENTRYPOINT_OK')";     python -c "import vllm; from vllm.platforms import current_platform; print('PLATFORM_RESOLVE_OK', type(current_platform).__name__)";     python -c "from vllm_gaudi.xpu.platform import ArcXpuPlatform, is_xe2_arch; print('ARC_PLATFORM_IMPORT_OK')";     python -c "import vllm_xpu_kernels; from importlib.metadata import version; v = version('vllm-xpu-kernels'); assert '+arc3' in v, v; print('VXK_ARC3_PIN_OK', v)";     python -c "import lmcache, lmcache.xpu_ops; from importlib.metadata import version; v = version('lmcache'); assert v == '0.5.6+arc1', v; print('LMCACHE_ARC1_PIN_OK', v)";     python -c "import aiofile, caio, redis; print('LMCACHE_RUNTIME_DEPS_OK')"
+#13 0.333 + python -c 'import vllm, torch; assert vllm.__version__ == '\''0.30.0'\'', vllm.__version__; assert torch.__version__.startswith('\''2.13.0'\''), torch.__version__'
+#13 2.346 INFO 11-03 20:03:10 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+#13 2.346 INFO 11-03 20:03:10 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+#13 2.346 INFO 11-03 20:03:10 [__init__.py:54] - hpu -> vllm_gaudi:register
+#13 2.346 INFO 11-03 20:03:10 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+#13 2.564 /opt/venv/lib/python3.12/site-packages/torch/xpu/__init__.py:251: UserWarning: Can't initialize Level Zero Sysman
+#13 2.564   return _enum_zes_device_infos(visible_mask)
+#13 2.616 /opt/venv/lib/python3.12/site-packages/torch/xpu/__init__.py:278: UserWarning: XPU device count is zero! (Triggered internally at /__w/pytorch/pytorch/c10/xpu/XPUFunctions.cpp:117.)
+#13 2.616   count = torch._C._xpu_getDeviceCount() if zes_count < 0 else zes_count
+#13 6.739 + python -c 'import triton; assert triton.__version__.startswith('\''3.7.2'\''), triton.__version__'
+#13 7.029 + python -c 'import vllm_gaudi; print('\''PLUGIN_IMPORT_OK'\'')'
+#13 7.069 PLUGIN_IMPORT_OK
+#13 7.073 + python -c 'from importlib.metadata import entry_points; eps = {e.name: e.value for e in entry_points(group='\''vllm.platform_plugins'\'')}; assert eps.get('\''arc'\'') == '\''vllm_gaudi.xpu:register'\'', eps; print('\''ARC_ENTRYPOINT_OK'\'')'
+#13 7.170 ARC_ENTRYPOINT_OK
+#13 7.181 + python -c 'import vllm; from vllm.platforms import current_platform; print('\''PLATFORM_RESOLVE_OK'\'', type(current_platform).__name__)'
+#13 9.131 INFO 11-03 20:03:16 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+#13 9.131 INFO 11-03 20:03:16 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+#13 9.131 INFO 11-03 20:03:16 [__init__.py:54] - hpu -> vllm_gaudi:register
+#13 9.131 INFO 11-03 20:03:16 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+#13 9.349 /opt/venv/lib/python3.12/site-packages/torch/xpu/__init__.py:251: UserWarning: Can't initialize Level Zero Sysman
+#13 9.349   return _enum_zes_device_infos(visible_mask)
+#13 9.400 /opt/venv/lib/python3.12/site-packages/torch/xpu/__init__.py:278: UserWarning: XPU device count is zero! (Triggered internally at /__w/pytorch/pytorch/c10/xpu/XPUFunctions.cpp:117.)
+#13 9.400   count = torch._C._xpu_getDeviceCount() if zes_count < 0 else zes_count
+#13 12.16 PLATFORM_RESOLVE_OK UnspecifiedPlatform
+#13 13.27 + python -c 'from vllm_gaudi.xpu.platform import ArcXpuPlatform, is_xe2_arch; print('\''ARC_PLATFORM_IMPORT_OK'\'')'
+#13 15.20 INFO 11-03 20:03:22 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+#13 15.20 INFO 11-03 20:03:22 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+#13 15.20 INFO 11-03 20:03:22 [__init__.py:54] - hpu -> vllm_gaudi:register
+#13 15.20 INFO 11-03 20:03:22 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+#13 15.42 /opt/venv/lib/python3.12/site-packages/torch/xpu/__init__.py:251: UserWarning: Can't initialize Level Zero Sysman
+#13 15.42   return _enum_zes_device_infos(visible_mask)
+#13 15.47 /opt/venv/lib/python3.12/site-packages/torch/xpu/__init__.py:278: UserWarning: XPU device count is zero! (Triggered internally at /__w/pytorch/pytorch/c10/xpu/XPUFunctions.cpp:117.)
+#13 15.47   count = torch._C._xpu_getDeviceCount() if zes_count < 0 else zes_count
+#13 18.12 /opt/venv/lib/python3.12/site-packages/torch/xpu/__init__.py:251: UserWarning: Can't initialize Level Zero Sysman
+#13 18.12   return _enum_zes_device_infos(visible_mask)
+#13 18.13 ARC_PLATFORM_IMPORT_OK
+#13 19.21 + python -c 'import vllm_xpu_kernels; from importlib.metadata import version; v = version('\''vllm-xpu-kernels'\''); assert '\''+arc3'\'' in v, v; print('\''VXK_ARC3_PIN_OK'\'', v)'
+#13 21.25 VXK_ARC3_PIN_OK 0.1.14.1+arc3
+#13 21.75 + python -c 'import lmcache, lmcache.xpu_ops; from importlib.metadata import version; v = version('\''lmcache'\''); assert v == '\''0.5.6+arc1'\'', v; print('\''LMCACHE_ARC1_PIN_OK'\'', v)'
+#13 24.14 /opt/venv/lib/python3.12/site-packages/torch/xpu/__init__.py:251: UserWarning: Can't initialize Level Zero Sysman
+#13 24.14   return _enum_zes_device_infos(visible_mask)
+#13 24.20 /opt/venv/lib/python3.12/site-packages/torch/xpu/__init__.py:278: UserWarning: XPU device count is zero! (Triggered internally at /__w/pytorch/pytorch/c10/xpu/XPUFunctions.cpp:117.)
+#13 24.20   count = torch._C._xpu_getDeviceCount() if zes_count < 0 else zes_count
+#13 24.20 [32;20m[2026-11-03 20:03:31,862] LMCache INFO:[0m torch_dev=StubCPUDevice(device_type=cpu), torch_device_type=cpu [3m(_device_detect.py:311:lmcache.v1.platform._device_detect)[0m
+#13 24.21 LMCACHE_ARC1_PIN_OK 0.5.6+arc1
+#13 24.79 + python -c 'import aiofile, caio, redis; print('\''LMCACHE_RUNTIME_DEPS_OK'\'')'
+#13 25.09 LMCACHE_RUNTIME_DEPS_OK
+#13 DONE 25.2s
+
+#14 [vllm-arc 9/9] RUN set -euxo pipefail;     { echo "image=vllm-arc:v0.30.0-b70";       echo "fork_sha=848dd7ef6fadb531a05cb6c33d12ea79eb0c73de";       echo "build_host=REDACTED-HOST";       echo "base_image=vllm-iexperimental:base-v0.26.0";       echo "vllm_core=0.30.0+xpu $(md5sum /wheels/arc/vllm-0.30.0+xpu-*.whl)";       echo "triton=3.7.2+xpu $(md5sum /wheels/arc/triton-3.7.2+xpu-*.whl)";       echo "vxk=0.1.14.1+arc3 (int64 wedge fix, §6) $(md5sum /wheels/arc/vllm_xpu_kernels-0.1.14.1+arc3-*.whl)";       echo "lmcache=0.5.6+arc1 (SYCL XPU build + 5-file patch kit, external_patches/lmcache P6.2) $(md5sum /wheels/arc/lmcache-0.5.6+arc1-*.whl)";       echo "lmcache_closure=aiofile redis (Requires-Dist; gds_backend.py:19 module-level import, r42 fix)";       echo "stack_freeze=/etc/vllm-arc/venv-freeze.txt";       echo "dpcpp=none (esimd-build stage lands at P2, plan §8)";       echo "built=$(date -u +%Y-%m-%dT%H:%M:%SZ)";     } > /etc/vllm-arc/IMAGE_MANIFEST;     cp /opt/vllm-arc-v0.30.0.constraints.txt /etc/vllm-arc/venv-freeze.txt;     cat /etc/vllm-arc/IMAGE_MANIFEST
+#14 0.272 + echo image=vllm-arc:v0.30.0-b70
+#14 0.272 + echo fork_sha=848dd7ef6fadb531a05cb6c33d12ea79eb0c73de
+#14 0.272 + echo build_host=REDACTED-HOST
+#14 0.272 + echo base_image=vllm-iexperimental:base-v0.26.0
+#14 0.273 ++ md5sum /wheels/arc/vllm-0.30.0+xpu-cp38-abi3-manylinux_2_34_x86_64.whl
+#14 0.352 + echo 'vllm_core=0.30.0+xpu 1f14d00ba178540b85c8ccc29883e3fb  /wheels/arc/vllm-0.30.0+xpu-cp38-abi3-manylinux_2_34_x86_64.whl'
+#14 0.353 ++ md5sum /wheels/arc/triton-3.7.2+xpu-py3-none-any.whl
+#14 0.356 + echo 'triton=3.7.2+xpu 708e93ed4392da98ab071b507050abc7  /wheels/arc/triton-3.7.2+xpu-py3-none-any.whl'
+#14 0.356 ++ md5sum /wheels/arc/vllm_xpu_kernels-0.1.14.1+arc3-cp312-cp312-linux_x86_64.whl
+#14 1.070 + echo 'vxk=0.1.14.1+arc3 (int64 wedge fix, §6) a51df187aae8efa3871b0cb9b7d3f3c7  /wheels/arc/vllm_xpu_kernels-0.1.14.1+arc3-cp312-cp312-linux_x86_64.whl'
+#14 1.071 ++ md5sum /wheels/arc/lmcache-0.5.6+arc1-cp312-cp312-manylinux_2_35_x86_64.whl
+#14 1.148 + echo 'lmcache=0.5.6+arc1 (SYCL XPU build + 5-file patch kit, external_patches/lmcache P6.2) 352295b4af1e2c58da8a2363b05a4f0c  /wheels/arc/lmcache-0.5.6+arc1-cp312-cp312-manylinux_2_35_x86_64.whl'
+#14 1.148 + echo 'lmcache_closure=aiofile redis (Requires-Dist; gds_backend.py:19 module-level import, r42 fix)'
+#14 1.148 + echo stack_freeze=/etc/vllm-arc/venv-freeze.txt
+#14 1.148 + echo 'dpcpp=none (esimd-build stage lands at P2, plan §8)'
+#14 1.149 ++ date -u +%Y-%m-%dT%H:%M:%SZ
+#14 1.151 + echo built=2026-11-03T20:03:33Z
+#14 1.151 + cp /opt/vllm-arc-v0.30.0.constraints.txt /etc/vllm-arc/venv-freeze.txt
+#14 1.155 + cat /etc/vllm-arc/IMAGE_MANIFEST
+#14 1.156 image=vllm-arc:v0.30.0-b70
+#14 1.156 fork_sha=848dd7ef6fadb531a05cb6c33d12ea79eb0c73de
+#14 1.156 build_host=REDACTED-HOST
+#14 1.156 base_image=vllm-iexperimental:base-v0.26.0
+#14 1.156 vllm_core=0.30.0+xpu 1f14d00ba178540b85c8ccc29883e3fb  /wheels/arc/vllm-0.30.0+xpu-cp38-abi3-manylinux_2_34_x86_64.whl
+#14 1.156 triton=3.7.2+xpu 708e93ed4392da98ab071b507050abc7  /wheels/arc/triton-3.7.2+xpu-py3-none-any.whl
+#14 1.156 vxk=0.1.14.1+arc3 (int64 wedge fix, §6) a51df187aae8efa3871b0cb9b7d3f3c7  /wheels/arc/vllm_xpu_kernels-0.1.14.1+arc3-cp312-cp312-linux_x86_64.whl
+#14 1.156 lmcache=0.5.6+arc1 (SYCL XPU build + 5-file patch kit, external_patches/lmcache P6.2) 352295b4af1e2c58da8a2363b05a4f0c  /wheels/arc/lmcache-0.5.6+arc1-cp312-cp312-manylinux_2_35_x86_64.whl
+#14 1.156 lmcache_closure=aiofile redis (Requires-Dist; gds_backend.py:19 module-level import, r42 fix)
+#14 1.156 stack_freeze=/etc/vllm-arc/venv-freeze.txt
+#14 1.156 dpcpp=none (esimd-build stage lands at P2, plan §8)
+#14 1.156 built=2026-11-03T20:03:33Z
+#14 DONE 1.2s
+
+#15 exporting to image
+#15 exporting layers
+#15 exporting layers 612.1s done
+#15 exporting manifest sha256:8815e96bc1f96d1f2248b1722822a4968b19882ec2216ef1dc1b3a9d01d21b10 done
+#15 exporting config sha256:f912fecea421cc19b36b6d8eb64b6f0790520e75933baacd51d8466cd47b1fa1 done
+#15 exporting attestation manifest sha256:470b88065c2684c31ddc190b7aea0d5aa68799af4aa1b8a629b9d1a62109e086 done
+#15 exporting manifest list sha256:e7d840c884efe701aa612d405e1dbaf8a96cc7594bec36b706673500c5b5dad4 done
+#15 naming to docker.io/library/vllm-arc:v0.30.0-b70-cert7 done
+#15 unpacking to docker.io/library/vllm-arc:v0.30.0-b70-cert7
+#15 unpacking to docker.io/library/vllm-arc:v0.30.0-b70-cert7 120.3s done
+#15 DONE 732.5s
+BUILD done: vllm-arc:v0.30.0-b70-cert7 (fork 848dd7ef6fadb531a05cb6c33d12ea79eb0c73de)
+BUILD_RC=0

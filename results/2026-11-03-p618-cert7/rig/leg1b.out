@@ -1,0 +1,12 @@
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert7 name=arc-test graph=1 spec=3 gmu=0.8 mnbt=8192 seqs=64 xgc=0 port=8000 21:55:19
+HEALTH=OK after ~300s
+(EngineCore pid=698) INFO 11-03 21:58:06 [kv_cache_utils.py:2395] XPU KV cache size: 400,739 tokens, Maximum concurrency for 262,144 tokens per request: 1.53x
+FLIP_FIRST: stop 9.2s
+1
+1
+ERROR=0
+TRACEBACK=0
+WARN_RAW=43
+30 warn_classes.txt
+LEG1B COMPLETE
+LEG1B_RC=0

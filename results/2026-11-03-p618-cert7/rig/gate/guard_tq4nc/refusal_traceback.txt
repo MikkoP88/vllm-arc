@@ -1,0 +1,5 @@
+(APIServer pid=13)   File "/opt/venv/lib/python3.12/site-packages/pydantic/_internal/_dataclasses.py", line 121, in __init__
+(APIServer pid=13)     s.__pydantic_validator__.validate_python(ArgsKwargs(args, kwargs), self_instance=s)
+(APIServer pid=13) pydantic_core._pydantic_core.ValidationError: 1 validation error for VllmConfig
+(APIServer pid=13)   Value error, ArcXpuPlatform: kv_cache_dtype 'turboquant_4bit_nc' is deprecated on vllm-arc: TurboQuant presets quantize values to 4-bit-class precision and produce degenerate generations on this model (P6.18 campaign, 2026-11-03). Serve with the certified default 'fp8_e4m3'. [type=value_error, input_value=ArgsKwargs((), {'model_co... 'shutdown_timeout': 0}), input_type=ArgsKwargs]
+(APIServer pid=13)     For further information visit https://errors.pydantic.dev/2.13/v/value_error
