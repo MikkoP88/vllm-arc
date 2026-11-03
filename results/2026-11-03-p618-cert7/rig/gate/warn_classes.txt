@@ -1,0 +1,30 @@
+(APIServer pid=N) WARNING N-N N:N:N [config.py:N] QwenN.N model specifies mamba_ssm_dtype='floatN' in its config, but --mamba-ssm-cache-dtype='floatN' was passed. Using the user-specified value.
+(APIServer pid=N) WARNING N-N N:N:N [envs.py:N] Unknown vLLM environment variable detected: VLLM_QUANTIZE_QN_LIB
+(APIServer pid=N) WARNING N-N N:N:N [indexer_topk.py:N] Failed to import the DeepSelect extension (vllm._deepselect_C): No module named 'vllm._deepselect_C'
+(APIServer pid=N) WARNING N-N N:N:N [input_processor.py:N] Passing raw prompts to InputProcessor is deprecated and will be removed in the future. You should instead pass the outputs of Renderer.render_cmpl() or Renderer.render_chat().
+(APIServer pid=N) WARNING N-N N:N:N [model.py:N] Casting torch.bfloatN to torch.floatN.
+(APIServer pid=N) WARNING N-N N:N:N [model.py:N] Default vLLM sampling parameters have been overridden by the model's `generation_config.json`: `{'repetition_penalty': N.N, 'temperature': N.N, 'top_k': N, 'top_p': N.N, 'min_p': N.N}`. If this is not intended, please relaunch vLLM instance with `--generation-config vllm`.
+(APIServer pid=N) WARNING N-N N:N:N [speculative.py:N] Enabling num_speculative_tokens > N will run multiple times of forward on same MTP layer,which may result in lower acceptance rate
+(APIServer pid=N) WARNING N-N N:N:N [vllm.py:N] Inductor compilation was disabled by user settings, optimizations settings that are only active during inductor compilation will be ignored.
+(APIServer pid=N) WARNING N-N N:N:N [xpu.py:N] XPU Graph support is experimental and currently only supports single-GPU execution.
+(EngineCore pid=N) [N;Nm[N-N-N N:N:N,N] LMCache WARNING:[Nm Could not load 'builtin' from vLLM. Using builtin hash. This may cause inconsistencies in distributed caching. [Nm(token_database.py:N:lmcache.vN.token_database)[Nm
+(EngineCore pid=N) [N;Nm[N-N-N N:N:N,N] LMCache WARNING:[Nm No LMCache configuration file is set. Trying to read configurations from the environment variables. [Nm(utils.py:N:vllm.distributed.kv_transfer.kv_connector.vN.lmcache_integration.utils)[Nm
+(EngineCore pid=N) [N;Nm[N-N-N N:N:N,N] LMCache WARNING:[Nm You can set the configuration file through the environment variable: LMCACHE_CONFIG_FILE [Nm(utils.py:N:vllm.distributed.kv_transfer.kv_connector.vN.lmcache_integration.utils)[Nm
+(EngineCore pid=N) WARNING N-N N:N:N [base.py:N] Initializing KVConnectorBase_VN. This API is experimental and subject to change in the future as we iterate the design.
+(EngineCore pid=N) WARNING N-N N:N:N [kv_cache_utils.py:N] Add N padding layers, may waste at most N.N% KV cache memory
+(EngineCore pid=N) WARNING N-N N:N:N [kv_cache_utils.py:N] Speculative decoding (method=mtp) is enabled but no KV cache group could be identified as the draft model's.
+(EngineCore pid=N) WARNING N-N N:N:N [vllm.py:N] Inductor compilation was disabled by user settings, optimizations settings that are only active during inductor compilation will be ignored.
+(EngineCore pid=N) WARNING N-N N:N:N [xpu.py:N] XPU Graph support is experimental and currently only supports single-GPU execution.
+WARNING N-N N:N:N [argparse_utils.py:N] With `vllm serve`, you should provide the model as a positional argument or in a config file instead of via the `--model` option. The `--model` option will be removed in a future version.
+WARNING N-N N:N:N [indexer_topk.py:N] Failed to import the DeepSelect extension (vllm._deepselect_C): No module named 'vllm._deepselect_C'
+(Worker_TPN pid=N) [N;Nm[N-N-N N:N:N,N] LMCache WARNING:[Nm Controller message sender is not initialized [Nm(local_cpu_backend.py:N:lmcache.vN.storage_backend.local_cpu_backend)[Nm
+(Worker_TPN pid=N) [N;Nm[N-N-N N:N:N,N] LMCache WARNING:[Nm Could not load 'builtin' from vLLM. Using builtin hash. This may cause inconsistencies in distributed caching. [Nm(token_database.py:N:lmcache.vN.token_database)[Nm
+(Worker_TPN pid=N) [N;Nm[N-N-N N:N:N,N] LMCache WARNING:[Nm NL_X_NB_BS_NH_TWO_HS_Spec.__init__ is deprecated: NL_X_NB_BS_NH_TWO_HS is superseded by NL_X_NB_BS_NH_CS (raw N-D content-size layout) [Nm(utils.py:N:lmcache.utils)[Nm
+(Worker_TPN pid=N) [N;Nm[N-N-N N:N:N,N] LMCache WARNING:[Nm No LMCache configuration file is set. Trying to read configurations from the environment variables. [Nm(utils.py:N:vllm.distributed.kv_transfer.kv_connector.vN.lmcache_integration.utils)[Nm
+(Worker_TPN pid=N) [N;Nm[N-N-N N:N:N,N] LMCache WARNING:[Nm You can set the configuration file through the environment variable: LMCACHE_CONFIG_FILE [Nm(utils.py:N:vllm.distributed.kv_transfer.kv_connector.vN.lmcache_integration.utils)[Nm
+(Worker_TPN pid=N) WARNING N-N N:N:N [base.py:N] Initializing KVConnectorBase_VN. This API is experimental and subject to change in the future as we iterate the design.
+(Worker_TPN pid=N) WARNING N-N N:N:N [jit_monitor.py:N] Triton kernel JIT compilation during inference: _compute_local_logits_stats_kernel. This causes a latency spike; consider extending warmup to cover this shape/config.
+(Worker_TPN pid=N) WARNING N-N N:N:N [jit_monitor.py:N] Triton kernel JIT compilation during inference: _rejection_kernel. This causes a latency spike; consider extending warmup to cover this shape/config.
+(Worker_TPN pid=N) WARNING N-N N:N:N [jit_monitor.py:N] Triton kernel JIT compilation during inference: _resample_kernel. This causes a latency spike; consider extending warmup to cover this shape/config.
+(Worker_TPN pid=N) WARNING N-N N:N:N [kv_cache.py:N] Checkpoint does not provide a q scaling factor. Setting it to k_scale. This only matters for FPN Attention backends (flash-attn or flashinfer).
+(Worker_TPN pid=N) WARNING N-N N:N:N [kv_cache.py:N] Using KV cache scaling factor N.N for fpN_eNmN. If this is unintended, verify that k/v_scale scaling factors are properly set in the checkpoint.
