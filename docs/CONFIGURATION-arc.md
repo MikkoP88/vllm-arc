@@ -361,6 +361,13 @@ exact — `results/2026-11-02-p614-cert6/`).
 
 ## KV-cache dtype: TurboQuant presets (validated since cert6, opt-in)
 
+> **CORRUPTION WARNING (opened 2026-11-03, P6.18 fix campaign in
+> progress):** corrupted generations reported under
+> `turboquant_k8v4`; all `turboquant_*` presets are under
+> re-validation (store/load roundtrip defect is the leading suspect).
+> The certified default `fp8_e4m3` is NOT affected. Do not serve any
+> `turboquant_*` dtype until the fixed certified image ships.
+
 The certified default stays `--kv-cache-dtype fp8_e4m3`. Since cert6 the
 engine's first-class TurboQuant KV dtypes are **validated end-to-end**
 (lagged KV store healthy, integrity 5/5, determinism 3/3, spec gate PASS
