@@ -1,0 +1,183 @@
+{
+ "tag": "tq4",
+ "mode": "full",
+ "probe": "v2",
+ "ts": "2026-11-03 17:03:43",
+ "essay": {
+  "t0_identical": true,
+  "hashes": [
+   "da39a3ee5e6b",
+   "da39a3ee5e6b",
+   "da39a3ee5e6b"
+  ],
+  "content_hashes": [
+   "da39a3ee5e6b",
+   "da39a3ee5e6b",
+   "da39a3ee5e6b"
+  ],
+  "garble": {
+   "cold": [
+    "EMPTY"
+   ],
+   "rehit": [
+    "EMPTY"
+   ],
+   "rehit2": [
+    "EMPTY"
+   ]
+  },
+  "finish": [
+   "length",
+   "length",
+   "length"
+  ],
+  "prompt_tok": 2185,
+  "chars": [
+   0,
+   0,
+   0
+  ],
+  "t1_seed_identical": true,
+  "t1_hashes": [
+   "da39a3ee5e6b",
+   "da39a3ee5e6b"
+  ],
+  "t1_garble": [
+   "EMPTY"
+  ],
+  "dt_cold": 40.6
+ },
+ "code": {
+  "t0_identical": true,
+  "hashes": [
+   "da39a3ee5e6b",
+   "da39a3ee5e6b",
+   "da39a3ee5e6b"
+  ],
+  "content_hashes": [
+   "da39a3ee5e6b",
+   "da39a3ee5e6b",
+   "da39a3ee5e6b"
+  ],
+  "garble": {
+   "cold": [
+    "EMPTY"
+   ],
+   "rehit": [
+    "EMPTY"
+   ],
+   "rehit2": [
+    "EMPTY"
+   ]
+  },
+  "finish": [
+   "length",
+   "length",
+   "length"
+  ],
+  "prompt_tok": 5091,
+  "chars": [
+   0,
+   0,
+   0
+  ],
+  "t1_seed_identical": true,
+  "t1_hashes": [
+   "da39a3ee5e6b",
+   "da39a3ee5e6b"
+  ],
+  "t1_garble": [
+   "EMPTY"
+  ],
+  "dt_cold": 44.5
+ },
+ "multi": {
+  "t0_identical": true,
+  "hashes": [
+   "da39a3ee5e6b",
+   "da39a3ee5e6b",
+   "da39a3ee5e6b"
+  ],
+  "content_hashes": [
+   "da39a3ee5e6b",
+   "da39a3ee5e6b",
+   "da39a3ee5e6b"
+  ],
+  "garble": {
+   "cold": [
+    "EMPTY"
+   ],
+   "rehit": [
+    "EMPTY"
+   ],
+   "rehit2": [
+    "EMPTY"
+   ]
+  },
+  "finish": [
+   "length",
+   "length",
+   "length"
+  ],
+  "prompt_tok": 3440,
+  "chars": [
+   0,
+   0,
+   0
+  ],
+  "t1_seed_identical": true,
+  "t1_hashes": [
+   "da39a3ee5e6b",
+   "da39a3ee5e6b"
+  ],
+  "t1_garble": [
+   "EMPTY"
+  ],
+  "dt_cold": 33.8
+ },
+ "simple": {
+  "t0_identical": true,
+  "hashes": [
+   "da39a3ee5e6b",
+   "da39a3ee5e6b",
+   "da39a3ee5e6b"
+  ],
+  "content_hashes": [
+   "da39a3ee5e6b",
+   "da39a3ee5e6b",
+   "da39a3ee5e6b"
+  ],
+  "garble": {
+   "cold": [
+    "EMPTY"
+   ],
+   "rehit": [
+    "EMPTY"
+   ],
+   "rehit2": [
+    "EMPTY"
+   ]
+  },
+  "finish": [
+   "length",
+   "length",
+   "length"
+  ],
+  "prompt_tok": 78,
+  "chars": [
+   0,
+   0,
+   0
+  ],
+  "t1_seed_identical": true,
+  "t1_hashes": [
+   "da39a3ee5e6b",
+   "da39a3ee5e6b"
+  ],
+  "t1_garble": [
+   "EMPTY"
+  ],
+  "dt_cold": 31.9
+ },
+ "VERDICT": "CORRUPTION_SIGNAL"
+}

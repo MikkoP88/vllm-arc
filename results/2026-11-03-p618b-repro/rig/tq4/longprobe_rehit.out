@@ -1,0 +1,5 @@
+[essay] post_churn_rehit_identical=True hashes=['da39a3ee5e6b', 'da39a3ee5e6b'] garble={'r1': ['EMPTY'], 'r2': ['EMPTY']}
+[code] post_churn_rehit_identical=True hashes=['da39a3ee5e6b', 'da39a3ee5e6b'] garble={'r1': ['EMPTY'], 'r2': ['EMPTY']}
+[multi] post_churn_rehit_identical=True hashes=['da39a3ee5e6b', 'da39a3ee5e6b'] garble={'r1': ['EMPTY'], 'r2': ['EMPTY']}
+[simple] post_churn_rehit_identical=True hashes=['da39a3ee5e6b', 'da39a3ee5e6b'] garble={'r1': ['EMPTY'], 'r2': ['EMPTY']}
+LONGPROBE tq4 rehit: CLEAN

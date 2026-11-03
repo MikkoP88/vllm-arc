@@ -264,6 +264,23 @@ class ArcXpuPlatform(XPUPlatform):
         # Core XPU posture first: XPU-graph env law, fusion-pass disabling,
         # XPUWorker selection, spawn multiproc, oneCCL shutdown timeout.
         super().check_and_update_config(vllm_config)
+        # TurboQuant KV-cache dtypes are deprecated on this build (P6.18,
+        # 2026-11-03): the SoA store->decode pair is numerically proven
+        # correct on XPU (p618c roundtest, results/2026-11-03-p618c-
+        # roundtest/), but every turboquant_* preset quantizes values to
+        # 4-bit-class precision (16 affine levels per token-head, 8 on
+        # 3bit) and the target model degenerates on all four presets
+        # (deterministic repetition attractors, cold-included,
+        # LMC-independent) while fp8_e4m3 runs clean. Refuse at boot on
+        # every entry point rather than serve corrupted generations.
+        kv_cache_dtype = vllm_config.cache_config.kv_cache_dtype
+        if isinstance(kv_cache_dtype, str) and kv_cache_dtype.startswith("turboquant"):
+            raise ValueError(
+                f"ArcXpuPlatform: kv_cache_dtype '{kv_cache_dtype}' is "
+                "deprecated on vllm-arc: TurboQuant presets quantize "
+                "values to 4-bit-class precision and produce degenerate "
+                "generations on this model (P6.18 campaign, 2026-11-03). "
+                "Serve with the certified default 'fp8_e4m3'.")
         # XPU in-place patches (defect-b graph-safe outputs, defect-a
         # speculator FULL-capture): idempotent per-process install — this
         # runs at config time in APIServer + EngineCore; the per-worker

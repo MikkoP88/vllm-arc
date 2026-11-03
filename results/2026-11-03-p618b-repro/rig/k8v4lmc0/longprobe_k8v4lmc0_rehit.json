@@ -1,0 +1,71 @@
+{
+ "tag": "k8v4lmc0",
+ "mode": "rehit",
+ "probe": "v3",
+ "ts": "2026-11-03 18:05:23",
+ "essay": {
+  "post_churn_rehit_identical": true,
+  "hashes": [
+   "700bbba1f878",
+   "700bbba1f878"
+  ],
+  "garble": {
+   "r1": [
+    "REP-LOOP"
+   ],
+   "r2": [
+    "REP-LOOP"
+   ]
+  },
+  "prompt_tok": 2145
+ },
+ "code": {
+  "post_churn_rehit_identical": true,
+  "hashes": [
+   "76a92299e7ea",
+   "76a92299e7ea"
+  ],
+  "garble": {
+   "r1": [
+    "REP-LOOP"
+   ],
+   "r2": [
+    "REP-LOOP"
+   ]
+  },
+  "prompt_tok": 5051
+ },
+ "multi": {
+  "post_churn_rehit_identical": true,
+  "hashes": [
+   "8853a9d894bb",
+   "8853a9d894bb"
+  ],
+  "garble": {
+   "r1": [
+    "REP-LOOP"
+   ],
+   "r2": [
+    "REP-LOOP"
+   ]
+  },
+  "prompt_tok": 3400
+ },
+ "simple": {
+  "post_churn_rehit_identical": true,
+  "hashes": [
+   "5cfb47762ab1",
+   "5cfb47762ab1"
+  ],
+  "garble": {
+   "r1": [
+    "REP-LOOP"
+   ],
+   "r2": [
+    "REP-LOOP"
+   ]
+  },
+  "prompt_tok": 38
+ },
+ "VERDICT": "CLEAN"
+}
