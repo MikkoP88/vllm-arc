@@ -146,6 +146,10 @@ inside the family above. Full r46t→cert4 parity table (every face, Δ
 column, verdict): `results/2026-10-31-p70-r70-cert4-comprehensive/R46T_PARITY.md`
 — **no regression**.
 
+Per-KV-dtype t1.0-xhigh (solo pair + 4-way, all five quantizations) is
+banked in the TurboQuant table and the Master matrix below — the ladder
+above is the fp8 cert4-native record.
+
 ### Prefill / TTFT — solo U-bars, fresh prompts, greedy
 
 | Face | prompt tok | TTFT (cert4-native) | Family (r66a/r67 bars) | prefill rate |
@@ -343,13 +347,22 @@ survival, kit transfer live (`2+2 @slot` lines, both workers), external
 tier participating (first time under TQ — hit-rate max 5.9 / 6.2 /
 7.6 % through the integrity re-hits).
 
-| Preset | KV capacity | U32k / U64k TTFT | t0 agg#2/solo | t1.0 xhigh agg | gap p95 U32k/U64k |
+| Preset | KV capacity | U32k / U64k TTFT | t0 agg#2/solo | t1.0 xhigh agg#2 / solo pair | gap p95 U32k/U64k |
 |---|---|---|---|---|---|
-| `fp8_e4m3` (default)¹ | 405,491 tok (1.55×) | 23.16 / 50.77 s | 297.19 / 84.48 | **189.41** | 1299 / 1569 ms¹ |
-| `turboquant_k8v4` | 526,445 tok (2.01×) | **15.29 / 33.03 s** | 302.58 / 88.05 | **173.39 (−8.5 %)** | 3690 / 4385 ms |
-| `turboquant_4bit_nc` | 757,641 tok (2.89×) | 15.91 / 34.02 s | 300.06 / 86.31 | 93.05 (−51 %) | 3218 / 3785 ms |
-| `turboquant_k3v4_nc` | 853,220 tok (3.25×) | 15.48 / 33.78 s | 294.43 / 83.44 | 88.95 (−53 %) | 3736 / 4186 ms |
-| `turboquant_3bit_nc` | **975,329 tok (3.72×)** | 16.02 / 35.74 s | 302.77 / 86.25 | 89.58 (−53 %) | 3188 / 3729 ms |
+| `fp8_e4m3` (default)¹ | 405,491 tok (1.55×) | 23.16 / 50.77 s | 297.19 / 84.48 | **189.41** (cert6: 186.48) / **61.73 / 61.79 — clean pair** | 1299 / 1569 ms¹ |
+| `turboquant_k8v4` | 526,445 tok (2.01×) | **15.29 / 33.03 s** | 302.58 / 88.05 | **173.39 (−8.5 %)** / 77.31 + 26.08 ragged | 3690 / 4385 ms |
+| `turboquant_4bit_nc` | 757,641 tok (2.89×) | 15.91 / 34.02 s | 300.06 / 86.31 | 93.05 (cert6 G7: 93.76) (−51 %) / 77.60 + 25.94 ragged | 3218 / 3785 ms |
+| `turboquant_k3v4_nc` | 853,220 tok (3.25×) | 15.48 / 33.78 s | 294.43 / 83.44 | 88.95 (−53 %) / 77.37 + 25.88 ragged | 3736 / 4186 ms |
+| `turboquant_3bit_nc` | **975,329 tok (3.72×)** | 16.02 / 35.74 s | 302.77 / 86.25 | 89.58 (−53 %) / 25.99 + 85.57 ragged | 3188 / 3729 ms |
+
+t1.0 xhigh reading (solo + concurrent per quantization, owner ask
+2026-11-03): fp8 is the only dtype whose sampled solo pair is CLEAN
+(61.73/61.79 — both legs uniform); every TQ preset shows the ragged pair
+(one leg 77–86 tok/s — ABOVE fp8's sampled solo — plus one degenerate
+~26 tok/s leg where sampled acceptance collapses mid-run under quantized
+KV), and the same raggedness appears in the 4-way agg streams
+(256-tok legs spreading 3.7–11.5 s). Net: concurrent sampled throughput
+is the honest dtype comparator — k8v4 −8.5 %, sub-4-bit presets −51…−53 %.
 
 ¹ fp8 comparator row as run in the A/B (thr2048-profile face —
 hence its 23.16/50.77 TTFT and 1.3/1.6 s gaps). P6.15 re-measured
@@ -422,17 +435,60 @@ narratives: `results/2026-11-02-p614-{dbg,preflight,l1v1,l1v2,l2,l3}/`
 VERDICTs. Config guidance: [`CONFIGURATION-arc.md`](CONFIGURATION-arc.md)
 "KV-cache dtype: TurboQuant presets".
 
-### Solo vs concurrent — decode / prefill / TTFT per face (P6.15b probes, 2026-11-03)
+### Master matrix — every face × decode / prefill / TTFT / stalls / capacity (P6.15b, 2026-11-03)
 
-The comprehensive solo battery: 12 one-variable legs on the cert6 image,
-each face re-run with the fork's own harnesses (`bench_run7n_t5.py` t0
-battery + `p70_solo_ttft.py` U-bar ladder) so every number reads directly
-against the banked records — all faces land in-family with their older
-banks (fp8-def U-bar 17.34/40.24 s vs p70-cert4's 17.36/40.26; tq4-def
-t0 298.38 vs G7's 299.67). Full matrix:
-`results/2026-11-02-p615-probes/VERDICT.md`. Condensed:
+The comprehensive battery: 12 one-variable legs on the cert6 image, each
+face re-run with the fork's own harnesses (`bench_run7n_t5.py` t0 +
+t1.0-xhigh batteries, `p70_solo_ttft.py` U-bar ladder) so every number
+reads directly against the banked records — all faces land in-family
+with their older banks (fp8-def U-bar 17.34/40.24 s vs p70-cert4's
+17.36/40.26; tq4-def t0 298.38 vs G7's 299.67). Full evidence:
+`results/2026-11-02-p615-probes/VERDICT.md` (t1.0 from
+`…-p614-{l1v2,l3,cert6}/`). Two views, same 12 faces:
 
-- **Decode is knob-free and dtype-light.** Chunk-size knobs (thr2048 /
+**Decode** (t0 = greedy, thinking off; t1.0 = xhigh sampled face;
+solo = max-200 single stream ×2; concurrent = 4×256 agg#2 steady):
+
+| Face | Chunk | t0 solo ×2 | t0 4-way | t1.0 solo pair | t1.0 4-way |
+|---|---|---|---|---|---|
+| fp8 default (certified) | 7488 | 84.51 / 84.41 | 296.25 † | **61.73 / 61.79 clean** | 186.48 |
+| fp8 + MNBT 4096 | 3328 | 84.47 / 84.47 | 296.88 | = dtype default (knob decode-neutral at t0; not separately measured) | — |
+| TQ4 default | 6656 | 86.24 / 85.98 | 298.38 | 77.60 + 25.94 ragged | 93.05–93.76 |
+| TQ4 + MNBT 4096 | 3328 | 83.06 / 83.23 | 290.94 | = dtype default (as above) | — |
+| TQ4 + MNBT 2048 | 1664 | 86.19 / 85.75 | 299.34 | = dtype default (as above) | — |
+| TQ4 + thr2048 | 1664 | 85.65 / 85.80 | 299.16 | = dtype default (as above) | — |
+| k8v4 default | 8064 | **88.49 / 88.61** | 301.97 | 77.31 + 26.08 ragged | **173.39 (−8.5 %)** |
+| k8v4 + MNBT 4096 | 3456 | 88.47 / 88.27 | **302.38** | = dtype default (as above) | — |
+| k3v4_nc default | 7424 | 80.83 / 80.45 | 285.85 | 77.37 + 25.88 ragged | 88.95 |
+| k3v4_nc + MNBT 4096 | 3712 | 83.29 / 83.05 | 293.98 | = dtype default (as above) | — |
+| 3bit_nc default | 6528 | 85.83 / 85.55 | 301.13 | 25.99 + 85.57 ragged | 89.58 |
+| 3bit_nc + MNBT 4096 | 2176 | 83.45 / 83.11 | 294.33 | = dtype default (as above) | — |
+
+† fp8-default t0 4-way: the probe's second repeat hit a one-off uniform
+4-stream slowdown (153.44, 0 errors; repeat #1 270.67 in-band) — the
+certified cert6 gate bank on the identical posture (**296.25**) stands.
+
+**Prefill / TTFT / stalls / capacity** (solo U-bars = probe legs; wave =
+banked 12-stream timeline legs; gaps = bystander inter-token p95):
+
+| Face | Prefill solo U32k / U64k (t/s) | TTFT solo U32k / U64k (s) | TTFT wave U32k / U64k (s) | gap p95 U32k / U64k (ms) | KV capacity |
+|---|---|---|---|---|---|
+| fp8 default (certified) | 1877 / 1623 | 17.34 / 40.24 | 17.25 / 39.77 | **3986 / 5295 (worst)** | 405,491 (1.55×) |
+| fp8 + MNBT 4096 | 1729 / 1516 | 18.83 / 43.07 | 19.49 / 42.83 | 2030 / 2587 | 433,210 (1.65×) |
+| TQ4 default | 2077 / 1921 | 15.67 / 33.99 | 15.85 / 33.98 | 3227 / 3780 | 757,641 (2.89×) |
+| TQ4 + MNBT 4096 | 1888 / 1791 | 17.24 / 36.47 | 17.59 / 37.03 | 2003 / 2049 | 809,161 (3.09×) |
+| TQ4 + MNBT 2048 | 1589 / 1459 | 20.48 / 44.76 | 22.14 / 45.38 | 1325 / **1286** | 821,283 (3.13×) |
+| TQ4 + thr2048 | 1595 / 1445 | 20.41 / 45.20 | 21.60 / 47.78 | **1159** / 1329 | 757,641 (2.89×) |
+| k8v4 default | **2097 / 1945** | **15.52** / 33.58 | **15.29 / 33.03** | 3690 / 4385 | 526,445 (2.01×) |
+| k8v4 + MNBT 4096 | 1885 / 1716 | 17.27 / 38.06 | 17.41 / 37.58 | 1936 / 2225 | 562,045 (2.14×) |
+| k3v4_nc default | 2076 / 1945 | 15.68 / **33.58** | 15.48 / 33.78 | 3736 / 4186 | 853,220 (3.25×) |
+| k3v4_nc + MNBT 4096 | 1930 / 1760 | **16.86** / 37.10 | **16.99** / 36.90 | 2011 / 2309 | 911,660 (3.48×) |
+| 3bit_nc default | 2062 / 1893 | 15.79 / 34.51 | 16.02 / 35.74 | 3188 / 3729 | 975,329 (3.72×) |
+| 3bit_nc + MNBT 4096 | 1696 / 1549 | 19.19 / 42.15 | 19.41 / 42.09 | 1932 / 1637 | **1,042,793 (3.98×)** |
+
+Findings:
+
+- **Decode (t0) is knob-free and dtype-light.** Chunk-size knobs (thr2048 /
   MNBT 2048 / 4096) move solo decode <1.5 % vs the same dtype's default
   (tq4 family 85.7–86.2 solo across 1664/3328/6656-token chunks); dtype
   spread k8v4 88.3–88.6 > tq4/3bit 83.1–86.2 > fp8 84.4–84.5 >
@@ -441,14 +497,22 @@ t0 298.38 vs G7's 299.67). Full matrix:
   chunk = one engine step = 3.93–3.95 accepted MTP tokens; lifetime
   45.9 tok/s for a stall-exposed bystander; engine-wide ≈ 440 tok/s) —
   solo 84.5 vs concurrent ~73 = −13 % per-stream for 6× parallelism.
+- **Decode (t1.0 xhigh) is where the dtypes split.** fp8: clean solo
+  pair 61.73/61.79, agg 186.48. Every TQ preset: ragged solo pair
+  (~77–86 good leg + ~26 degenerate leg) and ragged 4-way streams
+  (3.7–11.5 s spreads) — concurrent agg is the honest comparator:
+  k8v4 173.39 (−8.5 %), 4bit 93.05, k3v4 88.95, 3bit 89.58 (−51…−53 %).
+  The good TQ leg (~77 tok/s) actually beats fp8's sampled solo — the
+  cost is the collapse leg, not a uniform slowdown.
 - **Solo prefill is a chunk-size story per dtype** (U64k t/s): tq4
   1664→1459, 3328→1791, 6656→1921; k8v4 3456→1716, 8064→1945; k3v4_nc
   3712→1760, 7424→1945; 3bit_nc 2176→1549, 6528→1893; fp8 3328→1516,
   7488→1623 — bigger chunks, fewer steps, less cumulative prefix
   re-read (the B5 mechanism), monotone within every dtype.
-- **k8v4 is the decode+prefill sweet spot**: fastest decode AND fastest
-  default prefill (2097/1945 t/s), and P6.14's quality-safest preset;
-  its MNBT-4096 face keeps top decode (88.3–88.5) with stalls halved.
+- **k8v4 is the decode+prefill sweet spot**: fastest t0 decode AND fastest
+  default prefill (2097/1945 t/s), mildest sampled-throughput cost
+  (−8.5 %), and P6.14's quality-safest preset; its MNBT-4096 face keeps
+  top decode (88.3–88.5) with stalls halved.
 
 ## History — pre-cert4 images (labeled by image; never mixed into the record)
 
