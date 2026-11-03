@@ -5,7 +5,7 @@ at the r46t close-out) from `vllm_gaudi/envs.py` arc-lane markers + the
 certified serve line (`r43_serve_k5.sh`, spec depth 3 per the r46t
 recommendation — a serve-time CLI change — on image
 `vllm-arc:v0.30.0-b70-cert`; unchanged since — the chain is identical on
-the current certified image `vllm-arc:v0.30.0-b70-cert6`, where
+the current certified image `vllm-arc:v0.30.0-b70-cert7`, where
 `LMCACHE_TRACK_USAGE=false` (P6.3) made it 25). Every entry cites its
 provenance (no-unevidenced law, plan Appendix H #6). Audit of record:
 `results/2026-10-30-p5-r45-env-log-audit/`.

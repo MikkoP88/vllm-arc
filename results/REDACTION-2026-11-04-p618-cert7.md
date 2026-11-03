@@ -20,3 +20,16 @@ the bytes ever entered git).
 Verify: per-file ripgrep raw-ref total 0 across the tree after the
 pass (directory-mode rg silently skips NUL-bearing logs — the sweep ran
 per file).
+
+## Append (p618e perf banking, 2026-11-04) — +180
+
+The p618e perf legs (`rig/perf/`, first bank — E-LAW n/a; redacted
+before entering git):
+
+| File | rig | node | host | delta |
+|---|---|---|---|---|
+| `rig/perf/serve_full_default.log` | 1 | 11 | 0 | +83 |
+| `rig/perf/serve_full_mnbt4096.log` | 8 | 7 | 0 | +97 |
+
+Tree total now **+312** = 132 + 180. Per-file raw-ref sweep 0 after the
+pass (verified: 0 / 0).
