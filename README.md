@@ -39,27 +39,31 @@ A fork of [vllm-project/vllm-gaudi](https://github.com/vllm-project/vllm-gaudi) 
 
 Full 5-dtype matrix in the TurboQuant table below and [`docs/PERFORMANCE-arc.md`](docs/PERFORMANCE-arc.md) "Draft-sampling posture". Worst-case caveat: rare divergent-trajectory requests on TQ dtypes can still collapse ~26 tok/s — **fp8 is immune** (one more reason it is the recommended dtype).
 
-### TurboQuant KV-cache dtypes (opt-in, P6.14 — validated on the cert6 image)
+### TurboQuant KV-cache dtypes (opt-in, P6.14)
 
-Swapping only `--kv-cache-dtype fp8_e4m3` → a `turboquant_*` preset (one-variable legs,
-`results/2026-11-02-p614-l1v2/` + `-l3/`; integrity 5/5 + determinism 3/3 + spec gate PASS on every preset, lagged KV store now healthy — 0 store errors, kit transfer live, external tier participating). The t1.0 aggregates are the **certified probabilistic lane** (P6.17; `results/2026-11-03-p616b-probmatrix/`, one boot per dtype on cert6):
+Beyond the default `fp8_e4m3`, four quantized KV presets trade aggregate
+throughput for cache capacity (2.0–3.7× more tokens resident). The swap is
+one variable — `--kv-cache-dtype` only; every preset validated on the
+certified image (integrity 5/5, determinism 3/3, spec gate PASS, KV store
+healthy):
 
-| Preset | KV capacity | U32k / U64k TTFT | t1.0 agg (tok/s) | Standing |
+| Preset | KV capacity | U32k / U64k TTFT | t1.0 agg (tok/s) | Position |
 |---|---|---|---|---|
-| `fp8_e4m3` (default dtype) | 405,491 tok (1.55×) | 23.16 / 50.77 s | **241.10** | **recommended dtype — fastest aggregate; sampled-collapse-immune** |
-| `turboquant_k8v4` | 526,445 tok (2.01×) | **15.29 / 33.03 s** | 172.95 | **quality-safest TQ face** |
-| `turboquant_4bit_nc` | 757,641 tok (2.89×) | 15.91 / 34.02 s | **134.42** | middle |
-| `turboquant_k3v4_nc` | 853,220 tok (3.25×) | 15.48 / 33.78 s | **137.11** | capacity |
-| `turboquant_3bit_nc` | **975,329 tok (3.72×)** | 16.02 / 35.74 s | **171.32** | **max capacity** |
+| `fp8_e4m3` (default) | 405,491 tok (1.55×) | 23.16 / 50.77 s | **241.10** | **recommended — fastest aggregate; collapse-immune** |
+| `turboquant_k8v4` | 526,445 tok (2.01×) | 15.29 / 33.03 s | 172.95 | quality-safest quantized |
+| `turboquant_4bit_nc` | 757,641 tok (2.89×) | 15.91 / 34.02 s | 134.42 | balanced capacity |
+| `turboquant_k3v4_nc` | 853,220 tok (3.25×) | 15.48 / 33.78 s | 137.11 | higher capacity |
+| `turboquant_3bit_nc` | **975,329 tok (3.72×)** | 16.02 / 35.74 s | 171.32 | **max capacity** |
 
-Known TQ trade-offs (dtype-wide, unchanged by the store fix — owner-call material):
-beyond the divergent-trajectory collapse caveat above (fp8 immune), bystander prefill
-stalls — at TRUE default posture TQ **improves** them vs fp8 (TQ4 p95 3.23/3.78 s vs
-fp8's 3.99/5.30 s — P6.15 first-ever fp8-default measurement; the old "fp8 ~1.3/1.6 s"
-comparator was a thr2048-profile face); chunk-granularity knobs (MNBT 4096/2048) tune
-stalls vs TTFT along a measured Pareto frontier — best stall face TQ4+MNBT4096
-(2.00/2.05 s at fp8-default TTFT), sub-1.5 s needs 1664-token chunks at +14–40 % TTFT.
-Full matrix + dispositions: [`docs/PERFORMANCE-arc.md`](docs/PERFORMANCE-arc.md).
+Quantized KV also cuts long-context TTFT (U64k 33.0–35.7 s vs fp8's 50.77 s —
+smaller resident footprint) and improves bystander prefill stalls (TQ4 p95
+3.23/3.78 s vs fp8's 3.99/5.30 s). The divergent-trajectory collapse caveat
+above applies to the quantized presets only — fp8 is immune. Chunk
+granularity (`ARC_MNBT`, 4096/2048) trades stalls against TTFT along a
+measured Pareto frontier (best stall face: TQ4+MNBT4096, 2.00/2.05 s).
+Dtype validation `results/2026-11-02-p614-l1v2/` + `-l3/`; t1.0 lane
+`results/2026-11-03-p616b-probmatrix/`. Full matrix + dispositions:
+[`docs/PERFORMANCE-arc.md`](docs/PERFORMANCE-arc.md).
 
 ## Quick start
 
