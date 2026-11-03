@@ -7,47 +7,53 @@ definitions and hardware in [`TESTING-arc.md`](TESTING-arc.md)).
 
 1. **Measurement methodology** — defines every face, the protocol laws,
    the two prefix-cache tiers, and the provenance rule. Read it first.
-2. **Current record** — cert4-native only (`vllm-arc:v0.30.0-b70-cert4`;
-   byte-identical default posture on cert5, re-verified in-family at the
-   cert5 gates), plus the opt-in posture sections with their own tables
-   (TurboQuant dtypes P6.14; draft-sampling posture
-   `ARC_SPEC_METHOD=probabilistic` P6.16) and the current-era analyses
-   (prefill anatomy, op-class trace).
-3. **History** — every pre-cert4 measurement, labeled by image, kept as
-   the decision record (k-depth, load shape, soak). History numbers are
-   never mixed into current-record tables (comparator law).
+2. **Current record** — the **probabilistic draft lane on
+   `vllm-arc:v0.30.0-b70-cert6`** (the certified posture since P6.17,
+   owner directives 2026-11-03: the serve-script default; every record
+   face measured natively on that lane by the p617 campaign), plus the
+   posture/dtype matrices (TurboQuant dtypes P6.14; the P6.16 prob
+   matrix) and the current-era analyses (prefill anatomy, op-class
+   trace). The pre-P6.17 greedy-lane record (r70, cert4-native) is
+   retained as labeled history.
+3. **History** — every pre-P6.17 measurement, labeled by image and
+   posture, kept as the decision record (k-depth, load shape, soak).
+   History numbers are never mixed into current-record tables
+   (comparator law).
 
 All certified faces: first-traffic fresh boot, timers off, XPU graphs
-on, TP2, greedy temp 0. Opt-in-posture faces (TQ dtypes, probabilistic
-drafting) run the same protocol laws with exactly one flipped variable;
-their tables are labeled by posture. **Recommended MTP depth = k3**
-(r46t campaign, reproduced natively on cert4 by r70 — both in this
-file). **Recommended draft posture for sampled serving =
-`ARC_SPEC_METHOD=probabilistic`** (P6.16, owner call 2026-11-03 —
-the certified default remains greedy; section below).
+on, TP2. Temp-0 faces are posture-invariant (drafts are argmax at t0 —
+proof in the draft-sampling section); sampled faces are measured on the
+certified probabilistic lane. Opt-in faces (TQ dtypes) run the same
+protocol laws with exactly one flipped variable; their tables are
+labeled. **Recommended MTP depth = k3** (r46t campaign, reproduced
+natively on cert4 by r70). **Certified draft posture = probabilistic**
+(P6.17 — the serve-script default; `ARC_SPEC_METHOD=greedy` is the
+opt-out historical lane; section below).
 
 ## Measurement methodology — how every number in this file is produced
 
-**Provenance rule (owner law, 2026-10-31; updated for the cert6
-release):** the current record cites **only faces measured natively on
-the certified image line** — the record image
-(`vllm-arc:v0.30.0-b70-cert4`), or a later release whose default
-posture is byte-identical and whose gates re-verified the
-default-posture faces in-family (`vllm-arc:v0.30.0-b70-cert5`,
-`vllm-arc:v0.30.0-b70-cert6`). The TurboQuant dtype faces (P6.14) are
-cert6-era opt-in faces and carry their own table below. Numbers from
-earlier images (cert / cert2 / cert3 / p46) are history — labeled by
-image, never mixed into current-record tables.
+**Provenance rule (owner law, 2026-10-31; updated for P6.17):** the
+current record cites **only faces measured natively on the certified
+image line under the certified (probabilistic) draft posture** — the
+p617 campaign on `vllm-arc:v0.30.0-b70-cert6` (every record face
+re-measured on that lane) plus the P6.16 posture legs on cert6
+(`results/2026-11-03-p616b-probmatrix/`, `…-p616c-spechook/`). The
+TurboQuant dtype faces (P6.14) are cert6-era faces and carry their own
+table below. Numbers measured on the pre-P6.17 greedy posture (r70 and
+earlier) and from earlier images (cert / cert2 / cert3 / p46) are
+history — labeled by image and posture, never mixed into
+current-record tables.
 
 ### Rig, image, and posture identity
 
 | Layer | Identity |
 |---|---|
 | Hardware | dual Intel Arc Pro B70 (48 GB each), TP2, one card per socket (`ZE_AFFINITY_MASK=0,1`) |
-| Engine image | **current**: `vllm-arc:v0.30.0-b70-cert6` — tag `rel/v0.30.0-b70-cert6`, commit `986e97d6`, `IMAGE_MANIFEST.fork_sha` verified at build (cert6 gate, `results/2026-11-02-p614-cert6/`). Default posture byte-identical to the record image `vllm-arc:v0.30.0-b70-cert4` — tag `rel/v0.30.0-b70-cert4`, commit `b5df28b5`, digest `0c25a4f747af` (all default-record numbers below are cert4-native; cert5 and cert6 re-verified the default-posture faces in-family — cert5: run7n t0 297.19/84.48, t1.0 189.41/62.35, integrity 5/5 + det 3/3, WARN class-set identical, `results/2026-11-01-p65-cert5/`; cert6 adds the TurboQuant-aware lagged store, inert under `fp8_e4m3`). cert6 additionally validates the four opt-in `turboquant_*` kv-cache dtype faces (own table below; candidate-image legs `results/2026-11-02-p614-{l1v2,l3}/`) |
+| Engine image | **current**: `vllm-arc:v0.30.0-b70-cert6` — tag `rel/v0.30.0-b70-cert6`, commit `986e97d6`, `IMAGE_MANIFEST.fork_sha` verified at build (cert6 gate, `results/2026-11-02-p614-cert6/`). Every current-record number below was measured natively on cert6 under the certified probabilistic draft posture (p617 campaign). Engine byte-identical to the record image `vllm-arc:v0.30.0-b70-cert4` — tag `rel/v0.30.0-b70-cert4`, commit `b5df28b5`, digest `0c25a4f747af` — through cert5 (cert5 re-verified the default-posture faces in-family: run7n t0 297.19/84.48, integrity 5/5 + det 3/3, `results/2026-11-01-p65-cert5/`; cert6 adds the TurboQuant-aware lagged store, inert under `fp8_e4m3`). cert6 additionally validates the four opt-in `turboquant_*` kv-cache dtype faces (own table below; candidate-image legs `results/2026-11-02-p614-{l1v2,l3}/`). **No cert7**: P6.16/P6.17 are serve-layer only (the serve script is not shipped in the image; the wheel and engine are untouched) |
 | Wheels | md5-pinned at build (`tools/wheel_guard.sh`, 4 pins: vllm/triton/vxk/lmcache 0.5.6+arc1) |
-| Serve line | the certified 25-var env chain + CLI ([`CONFIGURATION-arc.md`](CONFIGURATION-arc.md)): MTP k3, `mode:none`, FULL_DECODE_ONLY graphs (85 capture sizes, 1–320), MNBT 8192, LMCacheConnectorV1 `kv_both` |
-| r70 campaign (the comprehensive cert4 measurement) | 3 fresh boots on the one image — greedy+sweep leg (a), no-spec leg (b), soak leg (c) — evidence `results/2026-10-31-p70-r70-cert4-comprehensive/` |
+| Serve line | the certified 25-var env chain + CLI ([`CONFIGURATION-arc.md`](CONFIGURATION-arc.md)): MTP k3 **+ probabilistic drafting (the P6.17 certified default)**, `mode:none`, FULL_DECODE_ONLY graphs (85 capture sizes, 1–320), MNBT 8192, LMCacheConnectorV1 `kv_both` |
+| p617 campaign (the comprehensive prob-lane certification) | 5 fresh boots on cert6 — prob comprehensive leg (a), prob family leg (b), no-spec A/B leg (c), default-path validation boot (d), greedy opt-out boot (e) — evidence `results/2026-11-03-p617a-probcert/` |
+| r70 campaign (the comprehensive greedy-lane measurement; history since P6.17) | 3 fresh boots on cert4 — greedy+sweep leg (a), no-spec leg (b), soak leg (c) — evidence `results/2026-10-31-p70-r70-cert4-comprehensive/` |
 
 ### Face definitions (exact)
 
@@ -106,16 +112,17 @@ accepted/drafts + 1** (the +1 bonus token). Windows are counter deltas
 snapshotted before/after each battery, so each face's acceptance covers
 that face's traffic only.
 
-## Current certified image — cert6 (`rel/v0.30.0-b70-cert6`): current release; record measured cert4-native (identical default posture)
+## Current certified image — cert6 (`rel/v0.30.0-b70-cert6`) + probabilistic draft lane (P6.17): the current record
 
-**Current release = cert6** (tag commit `986e97d6`; adds only the P6.14
-TurboQuant-aware lagged-store hunk over cert5's engine — inert under the
-default `fp8_e4m3` kv-cache dtype, so the default posture is cert4's
-engine byte-identical, proven at the cert6 gates:
-`results/2026-11-02-p614-cert6/`). **Every default-record number below
-was measured natively on the cert4 image** — the r70 comprehensive
-campaign (2026-10-31, 3 fresh boots) plus the p65/r67 certification
-legs; per-face evidence in the right column. Nothing validated beats the
+**Current release = cert6; current certified posture = probabilistic
+drafting (P6.17, the serve-script default).** Every record number below
+was measured natively on the cert6 image under
+`ARC_SPEC_METHOD=probabilistic` (p617 campaign, 2026-11-03, fresh boot
+per leg; the serve script's hook appends the upstream-config-native
+`draft_sample_method` key — P6.16). The engine is byte-identical to
+cert4/cert5 (cert6 adds only the P6.14 TurboQuant-aware lagged store,
+inert under `fp8_e4m3` — proven at the cert6 gates:
+`results/2026-11-02-p614-cert6/`). Nothing validated beats the
 certified default (the two faster-on-paper postures are rejected:
 k5-depth owner-dropped — its greedy edge inverts under sampling;
 compile — Appendix H law #1 acceptance gate, p67). The opt-in slice
@@ -125,101 +132,137 @@ cert5-native face: U64k TTFT 50.77 s (cert4 51.95), W_U64k_start max
 own table below. How to run: the 25-var chain in
 [`CONFIGURATION-arc.md`](CONFIGURATION-arc.md).
 
-### Throughput — greedy t0, thinking off (chat battery)
+### Throughput — t0, thinking off (chat battery; posture-invariant face)
 
-| Face | cert4-native value | Boots | Evidence |
+| Face | cert6 prob-lane value | Boots | Evidence |
 |---|---|---|---|
-| agg4x256 steady | **294.7–300.5 tok/s** (r70 294.68/296.42 · p65 299.15/300.16 · r67 300.48) | 5 | `…-p70-r70-cert4-comprehensive/`, `…-p65-cert4/`, `…-p67-r67a-compile-ab/` |
-| solo200 | **83.7–84.9 tok/s** (r70 83.66–84.48 · p65 84.53–84.86 · r67 84.49) | 5 | same |
-| survival (first request after boot) | HTTP 200, 6.2–7.3 s (p12b interlock warmup included) | 3 | p70 |
-| first-battery warmup face | agg run #1 147–178 vs steady #2 ≈295+ — first-traffic cost, gone by run #2 | r70 | p70 |
+| agg4x256 steady | **291.4–303.1 tok/s** (p617 298.29/298.19 · 303.13/291.37; greedy-lane family r70/p65/r67 294.7–300.5 in-band — argmax path identical) | 2+ | `…-p617a-probcert/`, `…-p70-r70-cert4-comprehensive/` |
+| solo200 | **83.7–84.9 tok/s** (p617 83.73–84.85; one degraded pair 42.0/44.9 on one leg-b battery — disclosed below) | 2+ | same |
+| survival (first request after boot) | HTTP 200, 6.2–8.2 s (p12b interlock warmup included) | 5 | p617, p70 |
+| first-battery warmup face | agg run #1 261–270 vs steady #2 ≈291–303 — first-traffic cost, gone by run #2 | p617 | p617a |
 
-### Sampled / thinking faces (real-world regimes, cert4-native)
+### Sampled / thinking faces (real-world regimes, cert6 prob lane)
 
 | Face | agg steady (tok/s) | solo (tok/s) | acceptance (window) |
 |---|---|---|---|
-| xhigh t0.2 | 205.6 | 62.5–65.8 | 56.6 % |
-| xhigh t0.4 | 221.7 | 64.7–65.8 | 55.8 % |
-| xhigh t0.6 | 202.4 | 65.7–68.4 | 54.5 % |
-| xhigh t0.8 | 204.8 | 58.9–61.0 | 50.5 % |
-| xhigh t1.0 | 194.4 | 55.1–62.2 | 49.0 % |
-| alt (t0.7/tp0.80/pp1.5, non-thinking) | 264.0 (peak 280.9) | 72.5–73.1 | 87.7 % |
+| xhigh t0.2 | 214.9 (run #1 133.6 — first-sampled-face transient, disclosed below) | 62.3–64.2 | 0.58 (mean-len 1.75) |
+| xhigh t0.4 | 215.0 | 63.4–69.1 | 0.57 (mean-len 1.71) |
+| xhigh t0.6 | 222.3 | 68.4–71.0 | 0.61 (mean-len 1.83) |
+| xhigh t0.8 | 224.7 | 64.9–66.3 | 0.61 (mean-len 1.82) |
+| xhigh t1.0 | **232.7** (steady family 222.7–241.3 cross-boot p616b/p616c/p617; first-sampled-face transient disclosed below) | 64.1–71.0 — uniform, zero collapse legs | 0.61 (mean-len 1.84) |
+| alt (t0.7/tp0.80/pp1.5, non-thinking) | 281.3 (other face 271.5) | 82.7–92.1 | 0.91 (mean-len 2.73) |
 
-The p46 campaign's k3 table (the depth decision) is reproduced on
-cert4 within ~1 pp acceptance / ±6 % throughput per cell — the **k3**
-law now stands on cert4-native data. The p65 t1.0-xhigh battery
-(190.62 / 56.90, 62.24) is the same face on an earlier cert4 boot —
-inside the family above. Full r46t→cert4 parity table (every face, Δ
-column, verdict): `results/2026-10-31-p70-r70-cert4-comprehensive/R46T_PARITY.md`
+Acceptance windows are engine-counter deltas per face (leg-a `metrics.txt`
+snapshots; acceptance = accepted ÷ drafted tokens). The sampled-temp band
+0.57–0.61 is the expected cost of the correct sampler: probabilistic
+drafts sample the target distribution (rejection-ratio verify), so fewer
+draft tokens verify than a greedy draft chasing argmax — the uniform
+64–71 solo floor and zero collapse legs show what that acceptance buys.
+
+The greedy-lane sweep (r70, cert4-native — history): 205.6 / 221.7 /
+202.4 / 204.8 / 194.4 agg steady t0.2→t1.0, alt 264.0–280.9 / solo
+72.5–73.1 — parity at cool temperatures, the prob lane pulls ahead as
+temperature rises (t1.0 +19…+29 %) and clearly on alt solo (82.7–92.1
+vs 72.5–73.1). The p46 campaign's k3 table (the depth decision) is
+reproduced on cert4 within ~1 pp acceptance / ±6 % throughput per cell
+— the **k3** law stands on cert4-native data. Full r46t→cert4 parity
+table (every face, Δ column, verdict):
+`results/2026-10-31-p70-r70-cert4-comprehensive/R46T_PARITY.md`
 — **no regression**.
 
-Per-KV-dtype t1.0-xhigh (solo pair + 4-way, all five quantizations) is
-banked in the TurboQuant table and the Master matrix below — the ladder
-above is the fp8 cert4-native record.
+Per-KV-dtype t1.0-xhigh (solo pair + 4-way, all five quantizations,
+prob lane) is banked in the draft-sampling matrix below.
 
-### Prefill / TTFT — solo U-bars, fresh prompts, greedy
+### Prefill / TTFT — solo U-bars, fresh prompts (posture-invariant face)
 
-| Face | prompt tok | TTFT (cert4-native) | Family (r66a/r67 bars) | prefill rate |
+| Face | prompt tok | TTFT (cert6 prob lane) | Family (r66a/r67/r70 bars) | prefill rate |
 |---|---|---|---|---|
-| U8k | 8,158 | **3.86 s** | 3.74–3.86 s | 2,078–2,178 t/s |
-| U16k | 16,354 | **7.87 s** — first-ever 16k bar | — | 2,078 t/s |
-| U32k | 32,553 | **17.36 s** | 17.08–17.36 s | 1,875 t/s |
-| U64k | 65,303 | **40.26 s** | 39.19–40.26 s | 1,622–1,666 t/s |
+| U8k | 8,158 | **3.77 s** | 3.74–3.86 s | 2,164 t/s |
+| U16k | 16,354 | **7.90 s** | 7.87 (r70) | 2,069 t/s |
+| U32k | 32,553 | **17.38 s** | 17.08–17.36 s | 1,873 t/s |
+| U64k | 65,303 | **40.32 s** | 39.19–40.26 s | 1,620 t/s |
 
 ### Prefix reuse — warm faces with tier attribution
 
 | Face | cold t1 | warm t2 | served by |
 |---|---|---|---|
-| U8k | 3.87 s | **0.99 s** | engine APC (external tier 0.0 %, zero LMCache retrievals in window) |
-| U16k | 8.35 s | **1.08 s** | same |
-| U32k | 17.30 s | **1.11 s** | same |
-| U8k warm-hit re-fires (n=6, two probes) | — | **0.80–0.91 s** | same |
+| U8k | 3.89 s | **0.99 s** | engine APC (external tier 0.0 %, store-only LMCache window — same attribution as r70) |
+| U16k | 8.39 s | **1.08 s** | same |
+| U32k | 17.44 s | **1.07 s** | same |
+| U8k warm-hit re-fires (n=6 across p617 legs a+f) | — | **0.80–0.85 s** (r70 family 0.80–0.91) | same |
+
+Cold/warm provenance (p617): the t1 faces are the **fresh-seed**
+`p70_warm_rehit2` probe (seeds 6157/6159/6161, disjoint from every
+prior corpus — the v1 probe's t1 rows shared the ladder corpus and were
+quarantined); t1 3.89/8.39/17.44 s is in-family with the solo ladder
+TTFT faces 3.77/7.90/17.38 s (independent corpus, same boot family) and
+t2 is 3.6–3.9× faster than t1 on every face. The engine's usage payload
+does not emit `cached_tokens` (field None on every v2 row), so tier-1
+attribution rests on the behavioral face + the counter window (warm
+re-hit window prefix-hit 121,472/138,354 queries — leg-a `metrics.txt`).
 
 (The cert-era warm faces used a different prompt corpus — prewarm-v7 —
 so they stay in history and do not compare; see the history soak block.)
 
-### Speculative decoding (MTP k3) — cert4-native
+### Speculative decoding (MTP k3) — cert6 prob lane (+ greedy-lane rows, history)
 
 | Condition | acceptance | mean accepted length |
 |---|---|---|
-| greedy t0, battery window (r70) | **85.9 %** | **3.58** |
-| spec-gate light-load windows | 83.1–83.7 % | 3.49–3.51 |
-| xhigh t0.2 → t1.0 (sweep) | 56.6 % → 49.0 % | — |
-| alt face | 87.7 % | — |
+| t0 strict-gate window (p617 boots a/b/d — identical to r70's greedy gate window: posture-invariant argmax path) | **83.7 %** (pos1 0.9258) | 3.51 |
+| t0 battery window (p617 leg a; identical to r70's greedy-lane 85.9 % — posture-invariant at t0) | **85.9 %** | 2.58 |
+| xhigh sweep t0.2 → t1.0 (p617 leg-a counter windows) | 0.58 / 0.57 / 0.61 / 0.61 / 0.61 | 1.75 / 1.71 / 1.83 / 1.82 / 1.84 |
+| alt face (p617 leg-a counter window) | 0.91 | 2.73 |
 | r67a compile posture (rejected) | — | 2.12–2.32 (−35 %, the gate that keeps `mode:none`) |
 
-**MTP value over no-spec — cert4-native A/B (fresh boot per side,
-r70 legs a/b):**
+**MTP value over no-spec — p617 prob-lane A/B (fresh boot per side,
+legs a/c):**
 
-| Face | MTP k3 | no-spec | ratio |
+| Face | MTP k3 prob | no-spec | ratio |
 |---|---|---|---|
-| agg greedy t0 | 296.4 | 126.5 | **2.34×** |
-| solo greedy t0 | 84.5 | 34.3 | **2.46×** |
-| agg xhigh t1.0 | 194.4 | 126.1 | **1.54×** |
-| solo xhigh t1.0 | 58.6 | 33.6 | 1.74× |
-| agg alt | 264.0 | 115.9 | **2.28×** |
-| solo alt | 72.8 | 33.6 | 2.16× |
+| agg t0 | 298.2 / 303.1 | 124.5 / 127.1 | **2.35–2.44×** |
+| solo t0 | 83.7–84.9 | 34.3 | **2.44–2.47×** |
+| agg xhigh t1.0 | 232.7 (family 223.9–241.1) | 115.3–121.8 | **1.84–2.09×** |
+| solo xhigh t1.0 | 64.1–71.0 | 33.6 | 1.91–2.11× |
+| agg alt | 271.5 / 281.3 | 107.1 / 116.0 | **2.42–2.53×** |
+| solo alt | 82.7–92.1 | 33.6 | 2.46–2.74× |
 
-### Stability — cert4-native
+(Greedy-lane A/B, r70 legs a/b — history: t0 2.34×/2.46×, t1.0
+1.54×/1.74×, alt 2.28×/2.16×. The prob lane widens every ratio.)
 
-- r70 soak (4 h, 56 cycles of battery+integrity+health, 10:46–14:46
-  UTC): **GREEN** — battery failures 0 (agg 4/4 streams ×112, solo
-  ×112), integrity 56/56 `bad=0`, health 200 every cycle, 0 ERROR /
-  0 Traceback in the full engine log (141 WARNINGs: 98 LMCache
-  pin_monitor self-resolving from the warm-v2 store window + 43
-  boot-accepted; neither class recurs in the driver's vllm-logger
-  warn counter — 0). Throughput drift none: steady-state agg
-  260.53–301.25 tok/s (mean 283.12), solo 83.65–84.80 (mean 84.32);
-  first-vs-last cycle 273.41/300.50 + 84.54/84.55 → 265.82/300.07 +
-  84.61/84.58; the single dip (cycle 2) is the warm-v2 probes
-  contending, streams still 4/4. Final spec gate on the soak boot:
-  pos1 0.9258 / acceptance 0.837 (target miss, recorded). W14
-  restored post-window. Evidence: `results/2026-10-31-p70-r70-cert4-comprehensive/c/`
-  (VERDICT §Leg C close-out).
-- Zero boot failures across the cert4 image family: r70 3 boots, p65
-  2 gate images, r66 7 probe boots, r67 compile-A/B boots.
-- run7n ×2 per leg agree within 1.5 % (steady-state); prefix battery
-  phases byte-identical (deterministic corpus, temp 0).
+### Stability
+
+- p617 campaign (prob lane, 5 fresh boots incl. default-path and
+  greedy opt-out validation boots): **zero boot failures, survival 200
+  on every boot (6.2–8.2 s), 0 ERROR / 0 Traceback in every full
+  engine log**, integrity 5/5 + determinism 3/3 on every measured boot
+  (a/b/d), golden 5/5 zero-drift (b/d), garbage suite 15/15 (a), spec
+  gates hard-floor PASS everywhere (acceptance 0.837 gate window,
+  identical to the greedy-lane gate window). W14 restored + health-200
+  verified after the campaign AND after the validation phase.
+- r70 soak (greedy lane, t0 battery — posture-invariant faces; 4 h, 56
+  cycles of battery+integrity+health, 10:46–14:46 UTC): **GREEN** —
+  battery failures 0 (agg 4/4 streams ×112, solo ×112), integrity 56/56
+  `bad=0`, health 200 every cycle, 0 ERROR / 0 Traceback in the full
+  engine log (141 WARNINGs: 98 LMCache pin_monitor self-resolving from
+  the warm-v2 store window + 43 boot-accepted; neither class recurs in
+  the driver's vllm-logger warn counter — 0). Throughput drift none:
+  steady-state agg 260.53–301.25 tok/s (mean 283.12), solo 83.65–84.80
+  (mean 84.32). Evidence: `results/2026-10-31-p70-r70-cert4-comprehensive/c/`.
+- **Disclosed transients (p617, honest record):** (1) **first-sampled-
+  face-after-t0 transient** — the first sampled battery/face after
+  sustained t0 traffic can measure uniform-slow ~134–137 agg (leg b
+  t1.0 battery 1: 134.13/134.76; boot d t1.0 face 1: 136.92; leg a
+  t0.2 face 1: 133.56), recovering within 1–2 faces (boot d face 2:
+  241.29). POSTURE-INVARIANT: the greedy-lane r70 sweep shows the
+  identical class on its first sampled face (t0.2 #1 = 134.39 → #2
+  205.63) — a sampled-path warm-up, not a posture defect; all faces
+  4/4 streams, 0 errors. (2) one leg-b t0 solo pair measured
+  42.0/44.9 tok/s (battery 2) — unreproduced across the 12 other t0
+  solo faces that day (83.7–84.9 incl. boot d), the same one-off
+  uniform-slow class as the p615 master-matrix † footnote.
+- run7n ×2 per leg agree within 1.5 % (steady-state, outside disclosed
+  windows); prefix battery phases byte-identical (deterministic corpus,
+  temp 0).
 
 (The 8 h soak of record — r46, 46/46 cycles — is cert-era: history
 block below.)
@@ -354,22 +397,25 @@ survival, kit transfer live (`2+2 @slot` lines, both workers), external
 tier participating (first time under TQ — hit-rate max 5.9 / 6.2 /
 7.6 % through the integrity re-hits).
 
-| Preset | KV capacity | U32k / U64k TTFT | t0 agg#2/solo | t1.0 xhigh agg#2 / solo pair | gap p95 U32k/U64k |
+| Preset | KV capacity | U32k / U64k TTFT | t0 agg#2/solo | t1.0 xhigh agg#2 / solo pair (probabilistic lane — certified) | gap p95 U32k/U64k |
 |---|---|---|---|---|---|
-| `fp8_e4m3` (default)¹ | 405,491 tok (1.55×) | 23.16 / 50.77 s | 297.19 / 84.48 | **189.41** (cert6: 186.48) / **61.73 / 61.79 — clean pair** | 1299 / 1569 ms¹ |
-| `turboquant_k8v4` | 526,445 tok (2.01×) | **15.29 / 33.03 s** | 302.58 / 88.05 | **173.39 (−8.5 %)** / 77.31 + 26.08 ragged | 3690 / 4385 ms |
-| `turboquant_4bit_nc` | 757,641 tok (2.89×) | 15.91 / 34.02 s | 300.06 / 86.31 | 93.05 (cert6 G7: 93.76) (−51 %) / 77.60 + 25.94 ragged | 3218 / 3785 ms |
-| `turboquant_k3v4_nc` | 853,220 tok (3.25×) | 15.48 / 33.78 s | 294.43 / 83.44 | 88.95 (−53 %) / 77.37 + 25.88 ragged | 3736 / 4186 ms |
-| `turboquant_3bit_nc` | **975,329 tok (3.72×)** | 16.02 / 35.74 s | 302.77 / 86.25 | 89.58 (−53 %) / 25.99 + 85.57 ragged | 3188 / 3729 ms |
+| `fp8_e4m3` (default)¹ | 405,491 tok (1.55×) | 23.16 / 50.77 s | 297.19 / 84.48 | **241.10** / **67.46 / 64.10 — uniform** | 1299 / 1569 ms¹ |
+| `turboquant_k8v4` | 526,445 tok (2.01×) | **15.29 / 33.03 s** | 302.58 / 88.05 | **172.95 (−28 % vs fp8)** / 54.77 + 51.62 uniform | 3690 / 4385 ms |
+| `turboquant_4bit_nc` | 757,641 tok (2.89×) | 15.91 / 34.02 s | 300.06 / 86.31 | 134.42 (−44 %) / 54.27 + 50.86 uniform | 3218 / 3785 ms |
+| `turboquant_k3v4_nc` | 853,220 tok (3.25×) | 15.48 / 33.78 s | 294.43 / 83.44 | 137.11 (−43 %) / 52.37 + 62.32 uniform | 3736 / 4186 ms |
+| `turboquant_3bit_nc` | **975,329 tok (3.72×)** | 16.02 / 35.74 s | 302.77 / 86.25 | 171.32 (−29 %) / 53.11 + 58.90 uniform | 3188 / 3729 ms |
+
+(t1.0 greedy-lane history, for the affected-numbers comparison:
+fp8 186.48–189.41 clean pair 61.73/61.79; k8v4 173.39 with 77.31 +
+26.08 ragged; 4bit 93.05; k3v4 88.95; 3bit 89.58 — all ragged.)
 
 t1.0 xhigh reading (solo + concurrent per quantization, owner ask
-2026-11-03): fp8 is the only dtype whose sampled solo pair is CLEAN
-(61.73/61.79 — both legs uniform); every TQ preset shows the ragged pair
-(one leg 77–86 tok/s — ABOVE fp8's sampled solo — plus one degenerate
-~26 tok/s leg), and the same raggedness appears in the 4-way agg streams
-(256-tok legs spreading 3.7–11.5 s). Net: concurrent sampled throughput
-is the honest dtype comparator — k8v4 −8.5 %, sub-4-bit presets −51…−53 %.
-Mechanism (pinned by the P6.15c diagnostic, `results/2026-11-03-p615c-t10collapse/`):
+2026-11-03): under the certified probabilistic lane every dtype's solo
+pair is uniform and every TQ aggregate is +44…+91 % over its greedy
+face — concurrent sampled throughput is the honest dtype comparator:
+k8v4 −28 %, sub-4-bit presets −43…−44 % vs fp8's 241.10. The greedy
+lane (history) showed the ragged pairs. Mechanism (pinned by the
+P6.15c diagnostic, `results/2026-11-03-p615c-t10collapse/`):
 the collapse leg is NOT a stall and NOT mid-run — the engine step stays
 41.7 ms and **wall = drafts × 41.7 ms** in every request; a collapsed
 request is BORN collapsed (MTP draft acceptance dead from round 1,
@@ -384,8 +430,8 @@ fix (nothing stalled; spec depth doesn't change wall); cool the sampling
 (acceptance recovers as temp falls — intermediate temps unmeasured) or
 stay on fp8 (immune) when uniform sampled latency matters;
 engine-side acceptance-aware gating is out of scope (upstream
-direction). **Update (P6.16, 2026-11-03): the serve-layer fix is now
-measured and ships opt-in — `ARC_SPEC_METHOD=probabilistic` drafting
+direction). **Update (P6.16→P6.17, 2026-11-03): the serve-layer fix is
+measured, certified, and the default — probabilistic drafting
 (see "Draft-sampling posture" below) removes the graded damage modes
 and lifts every dtype's t1.0-xhigh aggregate (fp8 +29 %, sub-4-bit
 +44…+91 %); the rare total-collapse trajectory remains (true draft/
@@ -408,13 +454,12 @@ prefill is the slowest of the family, 1623 t/s U64k); t0 greedy
 throughput in-family or better (294–303 agg across presets); at equal
 posture, bystander prefill stalls (see ¹).
 
-**TQ-inherent costs (unchanged by the fix — owner-call material, per
-preset):** the sampled t1.0 xhigh agg drops 8.5 % (k8v4) to ~53 %
-(sub-4-bit presets — ragged early-finish streams, solo pair ~77–86 +
-~26 tok/s). Leg-average spec acceptance stays ≥ 0.86 on every preset,
-but P6.15c shows it is per-request bimodal at t1.0 (healthy requests
-3.6–3.9 tok/round, collapsed ones 1.1–2.0 — the averages hide the
-lottery); integrity/determinism hold.
+**TQ-inherent costs (owner-call material, per preset, probabilistic
+lane):** the sampled t1.0 xhigh agg drops 28 % (k8v4) to 43–44 %
+(sub-4-bit presets) vs fp8's 241.10 — with uniform solo pairs
+(51–62 tok/s) and the rare divergent-trajectory collapse residual
+(~26 tok/s) still possible. Leg-average spec acceptance stays ≥ 0.86
+on every preset at t0; integrity/determinism hold.
 
 **Dispositions:** `k8v4` = the quality-safest TQ face (within 9 % of
 fp8 on the worst quality face, best absolute TTFT); `3bit_nc` /
@@ -424,20 +469,26 @@ default posture). The certified default stays `fp8_e4m3` — fastest
 sampled throughput, the quality reference face; NOT the lowest
 bystander cost (true-default fp8 has the highest — see below).
 
-### Draft-sampling posture — probabilistic drafting (P6.16, RECOMMENDED for sampled serving: `ARC_SPEC_METHOD=probabilistic`)
+### Draft-sampling posture — probabilistic drafting (P6.16 measured; P6.17: the CERTIFIED DEFAULT)
 
-Serve-layer opt-in, **no image change** (the knob lives in
-`tools/serve_arc_b70.sh`): `ARC_SPEC_METHOD=probabilistic` appends the
-upstream-config-native spec key `draft_sample_method` (pinned 0.30.0
-wheel, `config/speculative.py:588`) to the MTP config — MTP drafts are
-**sampled from the draft distribution and verified by the
-rejection-ratio test**, instead of argmax-drafted. Default (unset —
-and any non-`probabilistic` value) = greedy drafting = the certified
-posture, **byte-identical**: the p616c flag probe expands unset ==
-junk == the exact certified `--speculative-config` bytes, the runtime
-`ps`/config-dump carry no method key, and the full certified battery
-re-measured in-family through the hook (t0 296.69 / 84.47-84.44,
-t1.0 greedy 184.86 / 61.79-61.07, TTFT 17.47/40.51 — all in band).
+Serve-layer, **no image change** (the knob lives in
+`tools/serve_arc_b70.sh`): the spec config carries the
+upstream-config-native key `draft_sample_method` (pinned 0.30.0 wheel,
+`config/speculative.py:588`) — MTP drafts are **sampled from the draft
+distribution and verified by the rejection-ratio test**, instead of
+argmax-drafted. **Since P6.17 the default (unset) posture IS
+probabilistic** (owner directives 2026-11-03: the certified line is
+`ARC_SPEC_METHOD=probabilistic`, every record value from that lane —
+the superior lane); `ARC_SPEC_METHOD=greedy` is the **opt-out
+historical lane** (the pre-P6.17 certified bytes). Validated flip
+(p617b): flag probe 5/5 on the real script via a PATH-stubbed docker
+(unset/probabilistic/junk → the exact prob spec bytes; `greedy` → the
+exact old certified bytes, no method key; `ARC_SPEC=0` → no spec flag),
+and live-boot proof: the default-path boot's engine cmdline bytes are
+IDENTICAL to the env-form record legs (`ps` audit, boot d vs leg a),
+while the `greedy` opt-out boot carries the old certified bytes with
+zero `draft_sample_method` occurrences (boot e, t0 battery in-family
+with the greedy record).
 
 **Why it matters**: greedy drafts + sampled verify is a **biased
 sampler at temperature** (only argmax-drafted continuations can be
@@ -445,13 +496,14 @@ accepted); probabilistic drafts + the ratio test provably sample the
 target distribution. At t0 the two are provably identical (drafts are
 plain argmax at temp 0, `gumbel.py:102,117`; verify accepts iff
 `target_argmax == draft_sampled`, `rejection_sampler_utils.py:571-585`)
-— and measure in-band on every dtype. Engine cadence is unchanged
-(41–42 ms; the gumbel/triton draft sampler runs inside the FULL draft
-graphs at zero measurable cost).
+— and measure in-band on every dtype (p616b; p617: t0 family
+291.4–303.1 / 83.7–84.9, gate window 0.837 identical to the greedy
+gate window). Engine cadence is unchanged (41–42 ms; the gumbel/triton
+draft sampler runs inside the FULL draft graphs at zero measurable
+cost).
 
-The matrix (p616b — one boot per dtype on cert6; the p616c hook
-reproduces the same serve-line bytes and the fp8 faces through the
-env knob):
+The matrix (p616b — one boot per dtype on cert6; greedy column =
+pre-P6.17 history):
 
 | dtype | t1.0-xhigh agg greedy → prob | solo pair greedy → prob |
 |---|---|---|
@@ -479,18 +531,28 @@ trajectory the draft distribution genuinely diverges from the target
 (Σ min(p,q) ≈ 0.08 at pos0) — no verify scheme fixes true divergence.
 **fp8 is immune-and-improved**: no such trajectory in the traced corpus
 and its sampled face gains +29 %. Menu: sampled serving (t ≥ 0.5) →
-probabilistic, any dtype (fp8 included); worst-case-latency-sensitive
-fleets on TQ dtypes → fp8 or cooler sampling. The **default stays
-greedy** (pre-registered adoption rule: a default flip needs EVERY
-dtype ≥ +10 % t1.0 agg AND t0 ±1.5 % — k8v4 is EV-neutral, so it
-fails the first clause).
+the default probabilistic posture, any dtype (fp8 included);
+worst-case-latency-sensitive fleets on TQ dtypes → fp8 or cooler
+sampling.
+
+**Default-flip ledger (owner override, recorded):** P6.16 shipped the
+posture opt-in under a pre-registered adoption rule (default flip needs
+EVERY dtype ≥ +10 % t1.0 agg — k8v4 is EV-neutral, fails). P6.17
+flipped the default anyway **by owner directive** (2026-11-03: "new
+valid certificated line has to be ARC_SPEC_METHOD=probabilistic …
+probabilistic lanes are superiors") — the certified dtype stays fp8
+(gains +29 %, collapse-immune); k8v4 users get an EV-neutral posture
+change with uniform solo streams (still strictly better than its
+ragged greedy face).
 
 Evidence: `results/2026-11-03-p616a-probsmoke/` (boot+smoke, cadence
 law), `results/2026-11-03-p616b-probmatrix/` (5-dtype matrix + collapse
 traces + the b2 integrity discriminator: the two t0 integrity flakes
 need posture × full-battery churn together, not reproducible ×4,
 opt-in-posture-only caveat), `results/2026-11-03-p616c-spechook/` (the
-hook deployment: flag probe + default/opt-in boots). Config:
+P6.16 hook deployment: flag probe + default/opt-in boots),
+`results/2026-11-03-p617a-probcert/` (the P6.17 prob-lane certification
+campaign + flipped-default validation). Config:
 [`CONFIGURATION-arc.md`](CONFIGURATION-arc.md) "Draft-sampling posture".
 
 ### Bystander-stall tuning — chunk granularity (P6.15, 2026-11-02)
@@ -545,22 +607,24 @@ with their older banks (fp8-def U-bar 17.34/40.24 s vs p70-cert4's
 `results/2026-11-02-p615-probes/VERDICT.md` (t1.0 from
 `…-p614-{l1v2,l3,cert6}/`). Two views, same 12 faces:
 
-**Decode** (t0 = greedy, thinking off; t1.0 = xhigh sampled face;
+**Decode** (t0 = thinking off — posture-invariant face; t1.0 = xhigh
+sampled face on the **certified probabilistic lane** (P6.16 matrix,
+P6.17 default; greedy-lane t1.0 history in the TurboQuant table);
 solo = max-200 single stream ×2; concurrent = 4×256 agg#2 steady):
 
-| Face | Chunk | t0 solo ×2 | t0 4-way | t1.0 solo pair | t1.0 4-way |
+| Face | Chunk | t0 solo ×2 | t0 4-way | t1.0 solo pair (prob) | t1.0 4-way (prob) |
 |---|---|---|---|---|---|
-| fp8 default (certified) | 7488 | 84.51 / 84.41 | 296.25 † | **61.73 / 61.79 clean** | 186.48 |
+| fp8 default (certified) | 7488 | 84.51 / 84.41 | 296.25 † | **67.46 / 64.10 uniform** | **241.10** |
 | fp8 + MNBT 4096 | 3328 | 84.47 / 84.47 | 296.88 | = dtype default (knob decode-neutral at t0; not separately measured) | — |
-| TQ4 default | 6656 | 86.24 / 85.98 | 298.38 | 77.60 + 25.94 ragged | 93.05–93.76 |
+| TQ4 default | 6656 | 86.24 / 85.98 | 298.38 | 54.27 / 50.86 uniform | 134.42 |
 | TQ4 + MNBT 4096 | 3328 | 83.06 / 83.23 | 290.94 | = dtype default (as above) | — |
 | TQ4 + MNBT 2048 | 1664 | 86.19 / 85.75 | 299.34 | = dtype default (as above) | — |
 | TQ4 + thr2048 | 1664 | 85.65 / 85.80 | 299.16 | = dtype default (as above) | — |
-| k8v4 default | 8064 | **88.49 / 88.61** | 301.97 | 77.31 + 26.08 ragged | **173.39 (−8.5 %)** |
+| k8v4 default | 8064 | **88.49 / 88.61** | 301.97 | 54.77 / 51.62 uniform | 172.95 (EV-neutral) |
 | k8v4 + MNBT 4096 | 3456 | 88.47 / 88.27 | **302.38** | = dtype default (as above) | — |
-| k3v4_nc default | 7424 | 80.83 / 80.45 | 285.85 | 77.37 + 25.88 ragged | 88.95 |
+| k3v4_nc default | 7424 | 80.83 / 80.45 | 285.85 | 52.37 / 62.32 uniform | 137.11 |
 | k3v4_nc + MNBT 4096 | 3712 | 83.29 / 83.05 | 293.98 | = dtype default (as above) | — |
-| 3bit_nc default | 6528 | 85.83 / 85.55 | 301.13 | 25.99 + 85.57 ragged | 89.58 |
+| 3bit_nc default | 6528 | 85.83 / 85.55 | 301.13 | 53.11 / 58.90 uniform | 171.32 |
 | 3bit_nc + MNBT 4096 | 2176 | 83.45 / 83.11 | 294.33 | = dtype default (as above) | — |
 
 † fp8-default t0 4-way: the probe's second repeat hit a one-off uniform
@@ -596,20 +660,17 @@ Findings:
   chunk = one engine step = 3.93–3.95 accepted MTP tokens; lifetime
   45.9 tok/s for a stall-exposed bystander; engine-wide ≈ 440 tok/s) —
   solo 84.5 vs concurrent ~73 = −13 % per-stream for 6× parallelism.
-- **Decode (t1.0 xhigh) is where the dtypes split.** fp8: clean solo
-  pair 61.73/61.79, agg 186.48. Every TQ preset: ragged solo pair
-  (~77–86 good leg + ~26 degenerate leg) and ragged 4-way streams
-  (3.7–11.5 s spreads) — concurrent agg is the honest comparator:
-  k8v4 173.39 (−8.5 %), 4bit 93.05, k3v4 88.95, 3bit 89.58 (−51…−53 %).
-  The good TQ leg (~77 tok/s) actually beats fp8's sampled solo — the
-  cost is the collapse leg, not a uniform slowdown. P6.15c pins the
-  collapse: per-request acceptance death from round 1 (engine cadence
-  constant 41.7 ms, wall = drafts × cadence), 4-bit-V noise vs sampled
-  trajectory — see the TurboQuant t1.0 reading above and
-  `results/2026-11-03-p615c-t10collapse/`. Under the opt-in
-  probabilistic drafting posture (P6.16) these sampled faces change
-  materially — uniform solo pairs and +29…+91 % aggregates; see
-  "Draft-sampling posture" above.
+- **Decode (t1.0 xhigh, probabilistic lane) is where the dtypes split.**
+  fp8: uniform solo pair 67.46/64.10, agg **241.10** — the certified
+  dtype+posture face. TQ presets: uniform solo pairs (51–62 tok/s — no
+  collapse legs under probabilistic drafting) with aggregates k8v4
+  172.95 (−28 % vs fp8), 4bit 134.42, k3v4 137.11, 3bit 171.32; every
+  preset +44…+91 % over its own greedy face. Residual: the rare
+  divergent-trajectory collapse (~26 tok/s) remains possible on TQ
+  dtypes (see the TurboQuant t1.0 reading and
+  `results/2026-11-03-p615c-t10collapse/`; fp8 immune). On the greedy
+  lane (history) every TQ preset showed the ragged pair and −51…−53 %
+  aggregates.
 - **Solo prefill is a chunk-size story per dtype** (U64k t/s): tq4
   1664→1459, 3328→1791, 6656→1921; k8v4 3456→1716, 8064→1945; k3v4_nc
   3712→1760, 7424→1945; 3bit_nc 2176→1549, 6528→1893; fp8 3328→1516,

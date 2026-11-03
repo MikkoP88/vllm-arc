@@ -1,0 +1,15 @@
+=== warmup (first-traffic law: p12b interlock + first graphs)
+warmup done (completion=8)
+  U8k.t1_cold: prompt=8145 cached=None TTFT=3.891s wall=4.26s
+  U8k.t2_warm: prompt=8145 cached=None TTFT=0.994s wall=1.36s
+  U16k.t1_cold: prompt=16341 cached=None TTFT=8.394s wall=8.80s
+  U16k.t2_warm: prompt=16341 cached=None TTFT=1.084s wall=1.49s
+  U32k.t1_cold: prompt=32567 cached=None TTFT=17.443s wall=17.86s
+  U32k.t2_warm: prompt=32567 cached=None TTFT=1.068s wall=1.48s
+=== warm-hit face (U8k seed 6157 x3 re-fires)
+  U8k.warmhit_prime: prompt=6119 cached=None TTFT=2.951s wall=3.28s
+  U8k.warmhit_1: prompt=6119 cached=None TTFT=0.845s wall=1.17s
+  U8k.warmhit_2: prompt=6119 cached=None TTFT=0.839s wall=1.17s
+  U8k.warmhit_3: prompt=6119 cached=None TTFT=0.852s wall=1.18s
+P70_WARM2: DONE
+warm2_rc=0

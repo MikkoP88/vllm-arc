@@ -15,15 +15,16 @@
 #               CLI flag, not env (plan p30). P2-candidate posture — the
 #               §10 P2 gate ("FULL graph + MTP boots and survives first
 #               request") is proven by the P2 spec legs, not assumed.
-#   ARC_SPEC_METHOD  opt-in draft-sampling posture (P6.16; default unset =
-#               greedy = the certified posture, behavior byte-identical).
-#               =probabilistic appends "draft_sample_method":"probabilistic"
-#               to the spec config — sampled drafts + rejection-ratio verify,
-#               the recommended posture for sampled serving (t>=0.5):
-#               t1.0 agg +29% fp8 / +44..+91% TQ, uniform streams, correct
-#               target distribution. Only validated value: probabilistic
-#               (anything else = default posture). Evidence:
-#               results/2026-11-03-p616{a,b}-*/.
+#   ARC_SPEC_METHOD  draft-sampling posture (P6.17; default unset =
+#               probabilistic = the CERTIFIED posture). Appends
+#               "draft_sample_method":"probabilistic" to the spec config —
+#               sampled drafts + rejection-ratio verify: the superior lane
+#               on every measured face (p617 certification: t1.0 agg +29%
+#               fp8 over greedy, uniform solo streams, mathematically
+#               correct target distribution; owner directives 2026-11-03).
+#               =greedy is the OPT-OUT historical posture (pre-P6.17
+#               certified bytes). Any other value = default posture.
+#               Evidence: results/2026-11-03-p617a-probcert/ (+p616 lineage).
 #   ARC_LMC     0 no LMCache | 1 D-champion kv-transfer config (P3; default —
 #               the certified posture: LMCacheConnectorV1 + the 10-var
 #               LMCACHE_* chain, keep as a set)
@@ -164,26 +165,25 @@ fi
 # text_config.mtp_num_hidden_layers (p30 README assessment) — no draft-model
 # path, the head ships inside the target checkpoint (mtp.* weights).
 #
-# P6.16 opt-in draft-sampling posture (upstream-config-native on the pinned
-# 0.30.0 wheel; spec config key draft_sample_method, config/speculative.py:588):
-# ARC_SPEC_METHOD=probabilistic switches MTP drafting to sampled drafts +
-# rejection-ratio verify — the recommended posture for SAMPLED serving
-# (t>=0.5): t1.0-xhigh 4-way agg +29% (fp8 186.48->241.10) and +44..+91% on
-# the TQ presets, uniform solo streams (no 26-tok/s collapse legs), and the
-# mathematically-correct target distribution (greedy drafts + sampled verify
-# is biased at temperature). DEFAULT (unset) = greedy drafting = the
-# certified posture, behavior byte-identical. At t0 the two are provably
-# identical: drafts are plain argmax at temp 0 (gumbel.py:102,117) and verify
-# accepts iff draft==target argmax (rejection_sampler_utils.py:571-585) —
-# measured in-band on every dtype (results/2026-11-03-p616{a,b}-*/). Residual
-# on TQ dtypes: rare divergent-trajectory requests can still collapse
-# (~26 tok/s) — worst-case-sensitive fleets use fp8 (whose sampled face
-# improves under this posture) or cooler sampling. Validated values:
-# probabilistic only (any other value falls back to the default greedy
-# posture — no unevidenced config surface).
-SPEC_METHOD_FLAG=""
-if [ "$ARC_SPEC_METHOD" = "probabilistic" ]; then
-  SPEC_METHOD_FLAG=",\"draft_sample_method\":\"probabilistic\""
+# P6.17 CERTIFIED draft-sampling posture (upstream-config-native on the
+# pinned 0.30.0 wheel; spec config key draft_sample_method,
+# config/speculative.py:588): DEFAULT (unset) = probabilistic drafting =
+# sampled drafts + rejection-ratio verify — the certified posture on every
+# measured face (p617 campaign: t1.0-xhigh 4-way agg +29% over greedy at
+# fp8, uniform solo streams — no 26-tok/s collapse legs — and the
+# mathematically-correct target distribution; greedy drafts + sampled
+# verify is biased at temperature). ARC_SPEC_METHOD=greedy is the OPT-OUT
+# historical posture (the pre-P6.17 certified bytes, behavior
+# byte-identical at t0: drafts are plain argmax at temp 0 (gumbel.py:102,117)
+# and verify accepts iff draft==target argmax
+# (rejection_sampler_utils.py:571-585) — measured in-band on every dtype).
+# Residual on TQ dtypes: rare divergent-trajectory requests can still
+# collapse (~26 tok/s) — worst-case-sensitive fleets use fp8 (whose sampled
+# face improves under this posture) or cooler sampling. Any value other
+# than "greedy" = default posture (no unevidenced config surface).
+SPEC_METHOD_FLAG=",\"draft_sample_method\":\"probabilistic\""
+if [ "$ARC_SPEC_METHOD" = "greedy" ]; then
+  SPEC_METHOD_FLAG=""
 fi
 SPEC_FLAG=""
 if [ "$ARC_SPEC" != 0 ]; then

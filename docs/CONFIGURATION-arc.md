@@ -91,11 +91,14 @@ non-privileged TP2 init — validated posture, env-inspected 2026-10-27).
 
 ### Step 2 — Serve (environment chain + CLI as ONE unit)
 
-The CLI below is the **recommended line** — the certified line (rig
-`/root/build/r42/r43_serve_k5.sh`, depth 3 per r46t) plus the P6.16
-`draft_sample_method` key (recommended draft posture, owner call
-2026-11-03); drop that one key for the byte-identical certified greedy
-default — every flag byte-verified. It is certified **only**
+The CLI below is the **certified line** — the rig-certified line
+(`/root/build/r42/r43_serve_k5.sh`, depth 3 per r46t) plus the
+`draft_sample_method` key (probabilistic drafting — the P6.17 certified
+default posture, owner directives 2026-11-03; the serve script's
+default since P6.17); drop that one key (or set
+`ARC_SPEC_METHOD=greedy` on the script interface) for the historical
+greedy lane — byte-identical at t0, lower on every sampled face —
+every flag byte-verified. It is certified **only**
 together with these 23 exported vars (13 runtime/system + 10 LMCache —
 the other 2 of the 25-var chain are the `-e` pair in Step 1). Ship it as
 one script inside the container — never a bare interactive
@@ -133,11 +136,13 @@ export LMCACHE_TRACK_USAGE=false        # P6.3: usage telemetry is default-ON;
                                         # this rig serves offline (pairs with
                                         # the e04 wheel patch gating the
                                         # per-request usage-context creation)
-# --- the recommended CLI: MTP k3 + probabilistic drafting (P6.16 — the CLI
-#     form of ARC_SPEC_METHOD=probabilistic on the boot interface; identical
-#     runtime bytes), LMCache ON, mode:none (no torch.compile) + decode-only
-#     graphs, explicit capture list. Drop the "draft_sample_method" key for
-#     the certified greedy default (byte-identical at t0). ---
+# --- the certified CLI: MTP k3 + probabilistic drafting (P6.17 — the CLI
+#     form of the serve-script default posture; ARC_SPEC_METHOD=probabilistic
+#     on the boot interface produces identical runtime bytes), LMCache ON,
+#     mode:none (no torch.compile) + decode-only graphs, explicit capture
+#     list. Drop the "draft_sample_method" key (or set
+#     ARC_SPEC_METHOD=greedy on the script interface) for the historical
+#     greedy lane — byte-identical at t0, lower on every sampled face. ---
 exec /opt/venv/bin/vllm serve --model /models/target \
   --served-model-name qwen3.8-27b-fp8 \
   --tensor-parallel-size 2 \
@@ -340,36 +345,41 @@ the attention block size; the lmcint adapter's TQ-aware pool view +
 uint8 KV_2LTD engine geometry follow the live spec — P6.14, commit
 `6f1a09d9` lineage; evidence `results/2026-11-02-p614-{l1v2,l3}/`).
 Per-preset capacity/TTFT/quality numbers and dispositions: the README
-KV-quant table + PERFORMANCE-arc "TurboQuant faces". Guidance:
-**k8v4 = quality-safest** (t1.0 xhigh within 9 % of fp8), **3bit_nc =
+KV-quant table + PERFORMANCE-arc "TurboQuant KV-cache dtype faces".
+Guidance:
+**k8v4 = quality-safest** (t1.0 xhigh −28 % vs fp8 on the certified
+probabilistic lane; EV-neutral vs its own greedy face), **3bit_nc =
 max KV capacity** (3.72×) where the TQ-inherent sampled-throughput
-raggedness (~77+~26 tok/s solo pair) is acceptable — dtype-wide cost,
-unchanged by the fix and owner-call material per the A/B disposition.
+cost (uniform mid-50s solo under the certified posture; rare
+divergent-trajectory collapse residual) is acceptable — dtype-wide
+cost, owner-call material per the A/B disposition.
 (Bystander stalls are NOT a TQ cost at equal posture — see the next
 section: true-default fp8 is the worst stall face.)
 
-## Draft-sampling posture (P6.16, RECOMMENDED for sampled serving — `ARC_SPEC_METHOD`)
+## Draft-sampling posture (P6.17: CERTIFIED DEFAULT — `ARC_SPEC_METHOD`)
 
-The certified default is **greedy MTP drafting** (argmax drafts) —
-byte-identical to every prior certified posture. For **sampled serving
-(temperature ≥ ~0.5)** the **recommended** posture (owner call
-2026-11-03) is **probabilistic drafting**: MTP drafts sampled from the
-draft distribution + the rejection-ratio verify (the
+The certified posture is **probabilistic MTP drafting** — MTP drafts
+sampled from the draft distribution + the rejection-ratio verify (the
 mathematically-correct target sampler; greedy drafts + sampled verify
-is biased at temperature). At t0 the two are provably identical
-(plain-argmax drafts + accept-iff-argmax verify) — measured in-band on
-every dtype.
+is biased at temperature), and the superior lane on every measured
+sampled face (P6.16 matrix; P6.17 comprehensive re-certification, owner
+directives 2026-11-03). Since P6.17 this is the **serve script's
+default posture** (unset = probabilistic); at t0 the two postures are
+provably identical (plain-argmax drafts + accept-iff-argmax verify) —
+measured in-band on every dtype and every p617 gate window.
 
-Enable it with one env on the uniform boot interface (no image change,
-no CLI edit):
+The certified line on the uniform boot interface (no image change, no
+CLI edit — the env states the default explicitly):
 
 ```bash
 ARC_SPEC_METHOD=probabilistic ARC_IMAGE=vllm-arc:v0.30.0-b70-cert6 \
   ARC_GRAPH=1 ARC_SPEC=3 bash /root/build/serve_arc_b70.sh
 # appends "draft_sample_method":"probabilistic" to --speculative-config
+# (P6.17: this is also the DEFAULT when ARC_SPEC_METHOD is unset;
+#  ARC_SPEC_METHOD=greedy opts out to the historical lane bytes)
 ```
 
-Measured effect (t1.0-xhigh, vs the greedy default; full matrix in
+Measured effect (t1.0-xhigh, vs the greedy lane; full matrix in
 PERFORMANCE-arc "Draft-sampling posture"):
 
 | dtype | agg | solo pair |
@@ -378,15 +388,18 @@ PERFORMANCE-arc "Draft-sampling posture"):
 | k8v4 | EV-neutral | ragged → uniform |
 | tq4 / k3v4 / 3bit | **+44 / +54 / +91 %** | ~77+~26 ragged → uniform mid-50s–60s |
 
-Menu: **probabilistic for sampled serving on any dtype (fp8 included
-— it is the biggest agg win AND immune to the residual)**.
+Menu: **probabilistic is the default — nothing to enable**. Opt out
+with `ARC_SPEC_METHOD=greedy` only for the historical lane (byte-
+identical at t0; −15…−23 % t1.0 agg on fp8; ragged solo on TQ dtypes).
 Worst-case-latency-sensitive fleets on TQ dtypes: rare divergent-
-trajectory requests can still collapse ~26 tok/s (true draft/target
-divergence — no config fix); use fp8 or cooler sampling there. Only
-`probabilistic` is validated — any other value (and unset) falls back
-to the default greedy posture (byte-identical, hook-proven:
-`results/2026-11-03-p616c-spechook/`; posture evidence
-`results/2026-11-03-p616{a,b}-*/`).
+trajectory requests can still collapse ~26 tok/s under either posture
+(true draft/target divergence — no config fix); use fp8 or cooler
+sampling there. Flip validation: flag probe 5/5 (unset/probabilistic/
+junk → prob bytes; `greedy` → the exact pre-P6.17 bytes; `ARC_SPEC=0`
+→ no spec flag) + live-boot audits — default-path engine bytes ==
+env-form record-leg bytes; greedy opt-out boot carries the old
+certified bytes (`results/2026-11-03-p617a-probcert/`; P6.16 lineage
+`results/2026-11-03-p616{a,b,c}-*/`).
 
 ## Bystander-stall tuning (P6.15, opt-in — certified defaults unchanged)
 
@@ -505,9 +518,9 @@ Host-script layer (`tools/serve_arc_b70.sh`): `ARC_IMAGE`, `ARC_NAME`,
 `ARC_GRAPH` (0 eager / 1 graph — certified = 1), `ARC_SPEC` (MTP depth
 = `num_speculative_tokens`: 0 = off, default 3 = the recommendation,
 4 = the D-champion alternative; only 0/3/4/5 accepted — the legged
-depths), `ARC_SPEC_METHOD` (draft-sampling posture, P6.16: `probabilistic`
-= RECOMMENDED for sampled serving (owner call 2026-11-03) — section
-above; unset = greedy = certified byte-identical default), `ARC_LMC` (1 = the certified
+depths), `ARC_SPEC_METHOD` (draft-sampling posture, P6.17: unset =
+`probabilistic` = the CERTIFIED default (owner directives 2026-11-03) —
+section above; `greedy` = the opt-out historical lane), `ARC_LMC` (1 = the certified
 LMCache connector + the 9-var `LMCACHE_*` chain — default; 0 = no
 LMCache), `ARC_GMU` (0.8), `ARC_MNBT` (8192 — the certified default;
 r66c A/B'd 16384: long-face

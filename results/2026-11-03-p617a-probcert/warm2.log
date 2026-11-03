@@ -1,0 +1,6 @@
+[12:43:19] p617f warm2 mini-boot start (img=vllm-arc:v0.30.0-b70-cert6 method=probabilistic)
+[12:48:34] arc-p617f health 200 boot=303s
+[12:48:35] hook_audit arc-p617f: ps_bytes=1 log_hits=1
+[12:49:53] p617f warm2 COMPLETE (see f/warm_rehit2.txt)
+[12:49:53] warm2 exit rc=0
+[12:50:05] W14_RESTORED (radiance-test up)
