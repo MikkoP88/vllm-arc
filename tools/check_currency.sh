@@ -2,7 +2,7 @@
 # check_currency.sh — main-currency gate (plan §11 rule 10).
 #
 # "All main information is always up to date based on the latest certified
-# image" (owner law, 2026-10-31). Fails when any current-pointer on main
+# image" (2026-10-31). Fails when any current-pointer on main
 # names a certified tag older than the newest rel/v0.30.0-b70-* tag, or
 # when one of the anchor points is missing. Run (with leak_sweep.sh)
 # before every push of main.

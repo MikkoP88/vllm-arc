@@ -24,10 +24,10 @@ Its contributions to our stack: the certified env set + kv-transfer form
 (serve line), the p41 re-anchor STRATEGY (below), and the REVAL ledger of
 9 runtime patches (below).
 
-## P6.2 retarget to 0.5.6 (2026-10-30 — owner directive "lmcache-0.5.6
-implementation", plan §12 item 7 / §12.6 backlog ACTIVATED)
+## P6.2 retarget to 0.5.6 (2026-10-30 — plan §12 item 7 /
+§12.6 backlog ACTIVATED)
 
-The wheel base moved 0.5.5 → **upstream 0.5.6** (owner P6 directive). The
+The wheel base moved 0.5.5 → **upstream 0.5.6** (plan §12 item 7). The
 0.5.5 sections below stand as the provenance record of the arc1 graft
 lineage; this section is the CURRENT truth for what the kit builds.
 

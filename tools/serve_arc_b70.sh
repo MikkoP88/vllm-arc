@@ -21,7 +21,7 @@
 #               sampled drafts + rejection-ratio verify: the superior lane
 #               on every measured face (p617 certification: t1.0 agg +29%
 #               fp8 over greedy, uniform solo streams, mathematically
-#               correct target distribution; owner directives 2026-11-03).
+#               correct target distribution — the P6.17 certified default).
 #               =greedy is the OPT-OUT historical posture (pre-P6.17
 #               certified bytes). Any other value = default posture.
 #               Evidence: results/2026-11-03-p617a-probcert/ (+p616 lineage).

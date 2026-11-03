@@ -94,8 +94,8 @@ non-privileged TP2 init — validated posture, env-inspected 2026-10-27).
 The CLI below is the **certified line** — the rig-certified line
 (`/root/build/r42/r43_serve_k5.sh`, depth 3 per r46t) plus the
 `draft_sample_method` key (probabilistic drafting — the P6.17 certified
-default posture, owner directives 2026-11-03; the serve script's
-default since P6.17); drop that one key (or set
+default posture and the serve script's default since P6.17); drop that
+one key (or set
 `ARC_SPEC_METHOD=greedy` on the script interface) for the historical
 greedy lane — byte-identical at t0, lower on every sampled face —
 every flag byte-verified. It is certified **only**
@@ -247,20 +247,58 @@ pays when acceptance is high; real-world sampled thinking sits well
 below the crossover. Spec depth is serve-time CLI only — changing it
 rebuilds no image.
 
-### Long-context serve profile (p65) — opt-in, for fleets serving ≥48k prompts
+### fp8 stall levers — `ARC_MNBT=4096` (preferred) and the p65 long-context profile
 
-**Position (owner directive 2026-11-03): `ARC_MNBT=4096` is the
-first-choice stall lever** (previous section — one knob, fp8 stalls
-p95 2030/2587 ms at U64k TTFT 42.83 s, KV +6.8 %, decode-neutral).
-This profile is the deeper-stall niche: fp8 bystander gap p95/max
-**1580/1599 ms** at U64k TTFT **51.16 s** (cert4/cert5-era face) —
-enable it when the absolute stall floor is the binding constraint on
-≥48k prompts, not as the general stall lever.
+A bystander stall is the inter-token gap a decoding stream suffers
+while another stream's long prefill runs. Two opt-in levers cut it —
+both shrink the prefill chunk and trade stall depth against TTFT;
+neither changes the certified default posture, and both are
+decode-neutral. **Preferred: `ARC_MNBT=4096`** — one knob, the milder
+TTFT cost, a larger KV pool. The p65 profile buys the deeper stall
+floor for fleets serving ≥48k prompts into concurrent decoders, at a
+higher TTFT cost.
+
+| fp8 dtype | certified default | `ARC_MNBT=4096` (preferred) | p65 profile |
+|---|---|---|---|
+| Configure | — (MNBT 8192) | `ARC_MNBT=4096` | thr2048 + defer pair (below) |
+| Prefill chunk | 7488 tok | 3328 tok | 1664 tok |
+| TTFT U32k / U64k | 17.25 / 39.77 s | 19.49 / 42.83 s | 22.88–23.15 / 51.16 s |
+| Bystander gap p95 U32k / U64k | 3986 / 5295 ms | 2030 / 2587 ms | — / 1580 ms |
+| Bystander gap max U64k | — | — | 1599 ms |
+| KV capacity | 405,491 tok (1.55×) | 433,210 tok (1.65×) | 405,491 tok (1.55×) |
+| Decode (t0) | certified family | unchanged (knob decode-neutral) | zero cost (run7n) |
+
+Era note: the default and `MNBT 4096` columns are the cert6 P6.15
+matrix (`results/2026-11-02-p615-stall-analysis/`); the p65 column is
+the cert4/cert5-era record face (`results/2026-10-31-p65-cert4/`,
+`results/2026-11-01-p65-cert5/`).
+
+**Enable MNBT 4096** — one knob; the serve script maps the host var to
+the CLI flag:
+
+```bash
+ARC_MNBT=4096 bash tools/serve_arc_b70.sh    # -> --max-num-batched-tokens 4096
+```
+
+Raw CLI form: add `--max-num-batched-tokens 4096` to the `vllm serve`
+line. Verify: the launch echo prints `mnbt=4096`, and prefill steps
+run 3328-token chunks (fp8 KV page 832 × 4).
+
+**Enable the p65 profile** — three settings, always together (the rig
+copy: `/root/build/serve_arc_b70_defer2.sh`):
+
+```bash
+# 1) engine CLI (with the serve line's other flags):
+--long-prefill-token-threshold 2048
+# 2) env, inside the LMC_ENV set (keeps the 25-var chain + 2):
+export LMC_DEFER_CHUNK_STORE=1
+export LMC_DEFER_MIN_TOKENS=40960
+```
 
 **Default posture is unchanged** — the certified serve block above sets
 none of this; the deferral hunk is inert without the envs (cert4 gate:
 default-posture boot + run7n + WARN/ERROR audit byte-class-identical to
-cert3). Enable this profile only when long prompts (≥ ~48k tokens)
+cert3). Enable the p65 profile only when long prompts (≥ ~48k tokens)
 arrive into a fleet with concurrent decoders.
 
 **The problem it fixes** (P6.5, `results/2026-10-31-p65-r48a-stall-capture/`):
@@ -273,17 +311,6 @@ with no connector) and bystander inter-token gap p95 **4829 ms** vs
 ~25 % engine-side chunk cost ([viii], the P6.6 lane). At 32k the
 per-chunk events are ≈ free (LMC ≡ no-LMC, 22.78 vs 22.39 s) — the fix
 is a 64k-class phenomenon only.
-
-**The profile** (all three together; rig:
-`/root/build/serve_arc_b70_defer2.sh`):
-
-```bash
-# 1) engine CLI (with the serve line's other flags):
---long-prefill-token-threshold 2048
-# 2) env, inside the LMC_ENV set (keeps the 25-var chain + 2):
-export LMC_DEFER_CHUNK_STORE=1
-export LMC_DEFER_MIN_TOKENS=40960
-```
 
 Semantics: intermediate prefill-chunk rows keep their row (loads and
 mamba addressing still ride it) but carry `can_save=False` and leave
@@ -322,7 +349,7 @@ adopted into the certified profile: the pre-registered ≤600 ms bystander
 max-gap bar was mechanically missed (1598 ms) and is recorded as mis-set
 (the r48e nolmc floor is 2347 ms with zero stores — chunk compute [viii]
 is the floor; the corrected claim, store-side contribution removed, is
-confirmed). Enabling it is an owner call on the corrected bar.
+confirmed). Enabling it is a caller decision on the corrected bar.
 **Reproducible on the certified image since cert5** (the hunk ships in
 `rel/v0.30.0-b70-cert5`, default-OFF): the cert5 release gate re-ran the
 slice face on the tag-built image — U64k TTFT **50.77 s** (cert4 same-face
@@ -358,7 +385,7 @@ probabilistic lane; EV-neutral vs its own greedy face), **3bit_nc =
 max KV capacity** (3.72×) where the TQ-inherent sampled-throughput
 cost (uniform mid-50s solo under the certified posture; rare
 divergent-trajectory collapse residual) is acceptable — dtype-wide
-cost, owner-call material per the A/B disposition.
+cost per the A/B disposition.
 (Bystander stalls are NOT a TQ cost at equal posture — see the next
 section: true-default fp8 is the worst stall face.)
 
@@ -368,8 +395,8 @@ The certified posture is **probabilistic MTP drafting** — MTP drafts
 sampled from the draft distribution + the rejection-ratio verify (the
 mathematically-correct target sampler; greedy drafts + sampled verify
 is biased at temperature), and the superior lane on every measured
-sampled face (P6.16 matrix; P6.17 comprehensive re-certification, owner
-directives 2026-11-03). Since P6.17 this is the **serve script's
+sampled face (P6.16 matrix; P6.17 comprehensive re-certification,
+2026-11-03). Since P6.17 this is the **serve script's
 default posture** (unset = probabilistic); at t0 the two postures are
 provably identical (plain-argmax drafts + accept-iff-argmax verify) —
 measured in-band on every dtype and every p617 gate window.
@@ -441,13 +468,11 @@ re-validated; one knob at a time (the matrix is one-variable);
 `ARC_MNBT=2048` under fp8 floors to 1664-token chunks — the fp8
 thr2048 profile is the historical equivalent (r66a).
 
-**First choice for stall-sensitive fp8 fleets (owner directive
-2026-11-03): `ARC_MNBT=4096`** — one knob, stalls −49/−51 %
-(p95 2030/2587 ms), TTFT +8–13 % (U64k 42.83 s), KV +6.8 %,
-decode-neutral. The deeper fp8 stall floor is the p65 long-context
-profile (next section: p95/max 1580/1599 ms at U64k TTFT 51.16 s,
-cert4/cert5-era face) — reach for it only when the absolute stall
-floor is the binding constraint and prompts run ≥48k.
+**First choice for stall-sensitive fp8 fleets: `ARC_MNBT=4096`** —
+one knob, stalls −49/−51 % (p95 2030/2587 ms), TTFT +8–13 % (U64k
+42.83 s), KV +6.8 %, decode-neutral. The head-to-head with the p65
+profile — usage blocks and the performance table — is the
+"fp8 stall levers" section above.
 
 ## The 25-var chain (reference)
 
@@ -533,7 +558,7 @@ Host-script layer (`tools/serve_arc_b70.sh`): `ARC_IMAGE`, `ARC_NAME`,
 = `num_speculative_tokens`: 0 = off, default 3 = the recommendation,
 4 = the D-champion alternative; only 0/3/4/5 accepted — the legged
 depths), `ARC_SPEC_METHOD` (draft-sampling posture, P6.17: unset =
-`probabilistic` = the CERTIFIED default (owner directives 2026-11-03) —
+`probabilistic` = the CERTIFIED default —
 section above; `greedy` = the opt-out historical lane), `ARC_LMC` (1 = the certified
 LMCache connector + the 9-var `LMCACHE_*` chain — default; 0 = no
 LMCache), `ARC_GMU` (0.8), `ARC_MNBT` (8192 — the certified default;

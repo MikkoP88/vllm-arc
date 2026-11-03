@@ -138,7 +138,7 @@ vars** + 3 dropped at r45d + 1 dead since r47b, below), `NN-category/pNN-slug` p
 `ARC_*` **host-side script vars** (10, `tools/serve_arc_b70.sh` — a
 different layer from engine envs; the 10th is `ARC_SPEC_METHOD`, the
 draft-sampling posture knob: P6.17 — unset = `probabilistic` = the
-CERTIFIED default (owner directives 2026-11-03; appends the upstream
+CERTIFIED default (appends the upstream
 spec-config key `draft_sample_method`), `greedy` = the opt-out
 historical lane — flip validated
 `results/2026-11-03-p617a-probcert/`), kebab-case docs, and the

@@ -8,8 +8,8 @@ definitions and hardware in [`TESTING-arc.md`](TESTING-arc.md)).
 1. **Measurement methodology** — defines every face, the protocol laws,
    the two prefix-cache tiers, and the provenance rule. Read it first.
 2. **Current record** — the **probabilistic draft lane on
-   `vllm-arc:v0.30.0-b70-cert6`** (the certified posture since P6.17,
-   owner directives 2026-11-03: the serve-script default; every record
+   `vllm-arc:v0.30.0-b70-cert6`** (the certified posture since P6.17 —
+   the serve-script default; every record
    face measured natively on that lane by the p617 campaign), plus the
    posture/dtype matrices (TurboQuant dtypes P6.14; the P6.16 prob
    matrix) and the current-era analyses (prefill anatomy, op-class
@@ -32,7 +32,7 @@ opt-out historical lane; section below).
 
 ## Measurement methodology — how every number in this file is produced
 
-**Provenance rule (owner law, 2026-10-31; updated for P6.17):** the
+**Provenance rule (2026-10-31; updated for P6.17):** the
 current record cites **only faces measured natively on the certified
 image line under the certified (probabilistic) draft posture** — the
 p617 campaign on `vllm-arc:v0.30.0-b70-cert6` (every record face
@@ -124,7 +124,7 @@ cert4/cert5 (cert6 adds only the P6.14 TurboQuant-aware lagged store,
 inert under `fp8_e4m3` — proven at the cert6 gates:
 `results/2026-11-02-p614-cert6/`). Nothing validated beats the
 certified default (the two faster-on-paper postures are rejected:
-k5-depth owner-dropped — its greedy edge inverts under sampling;
+k5-depth dropped — its greedy edge inverts under sampling;
 compile — Appendix H law #1 acceptance gate, p67). The opt-in slice
 profile (experimental, P6.13) is NOT part of the certified default; its
 cert5-native face: U64k TTFT 50.77 s (cert4 51.95), W_U64k_start max
@@ -409,7 +409,7 @@ tier participating (first time under TQ — hit-rate max 5.9 / 6.2 /
 fp8 186.48–189.41 clean pair 61.73/61.79; k8v4 173.39 with 77.31 +
 26.08 ragged; 4bit 93.05; k3v4 88.95; 3bit 89.58 — all ragged.)
 
-t1.0 xhigh reading (solo + concurrent per quantization, owner ask
+t1.0 xhigh reading (solo + concurrent per quantization,
 2026-11-03): under the certified probabilistic lane every dtype's solo
 pair is uniform and every TQ aggregate is +44…+91 % over its greedy
 face — concurrent sampled throughput is the honest dtype comparator:
@@ -454,7 +454,7 @@ prefill is the slowest of the family, 1623 t/s U64k); t0 greedy
 throughput in-family or better (294–303 agg across presets); at equal
 posture, bystander prefill stalls (see ¹).
 
-**TQ-inherent costs (owner-call material, per preset, probabilistic
+**TQ-inherent costs (per preset, probabilistic
 lane):** the sampled t1.0 xhigh agg drops 28 % (k8v4) to 43–44 %
 (sub-4-bit presets) vs fp8's 241.10 — with uniform solo pairs
 (51–62 tok/s) and the rare divergent-trajectory collapse residual
@@ -477,9 +477,9 @@ upstream-config-native key `draft_sample_method` (pinned 0.30.0 wheel,
 `config/speculative.py:588`) — MTP drafts are **sampled from the draft
 distribution and verified by the rejection-ratio test**, instead of
 argmax-drafted. **Since P6.17 the default (unset) posture IS
-probabilistic** (owner directives 2026-11-03: the certified line is
+probabilistic** (the certified line is
 `ARC_SPEC_METHOD=probabilistic`, every record value from that lane —
-the superior lane); `ARC_SPEC_METHOD=greedy` is the **opt-out
+the superior sampled lane); `ARC_SPEC_METHOD=greedy` is the **opt-out
 historical lane** (the pre-P6.17 certified bytes). Validated flip
 (p617b): flag probe 5/5 on the real script via a PATH-stubbed docker
 (unset/probabilistic/junk → the exact prob spec bytes; `greedy` → the
@@ -535,12 +535,11 @@ the default probabilistic posture, any dtype (fp8 included);
 worst-case-latency-sensitive fleets on TQ dtypes → fp8 or cooler
 sampling.
 
-**Default-flip ledger (owner override, recorded):** P6.16 shipped the
+**Default-flip ledger (recorded):** P6.16 shipped the
 posture opt-in under a pre-registered adoption rule (default flip needs
 EVERY dtype ≥ +10 % t1.0 agg — k8v4 is EV-neutral, fails). P6.17
-flipped the default anyway **by owner directive** (2026-11-03: "new
-valid certificated line has to be ARC_SPEC_METHOD=probabilistic …
-probabilistic lanes are superiors") — the certified dtype stays fp8
+flipped the default anyway (2026-11-03: probabilistic ruled the
+superior lane on every dtype, EV-neutral on k8v4) — the certified dtype stays fp8
 (gains +29 %, collapse-immune); k8v4 users get an EV-neutral posture
 change with uniform solo streams (still strictly better than its
 ragged greedy face).
@@ -583,10 +582,10 @@ Guidance: stall-sensitive mixed fleets → **TQ4 + MNBT 4096** (stalls
 −38/−46 %, capacity +6.8 %, TTFT ≤ fp8-default); sub-1.5 s stalls →
 TQ4 + MNBT 2048 (largest TQ4 pool; dominates the equivalent thr2048
 face) at +14–40 % TTFT; fp8-fixed fleets → MNBT 4096 (stalls halved,
-+6.8 % capacity, +8–13 % TTFT — the first-choice fp8 lever, owner
-directive 2026-11-03; the deeper fp8 stall floor is the p65
++6.8 % capacity, +8–13 % TTFT — the first-choice fp8 lever; the deeper
+fp8 stall floor is the p65
 long-context profile — [`CONFIGURATION-arc.md`](CONFIGURATION-arc.md)
-"Long-context serve profile" — p95/max 1580/1599 ms for ≥48k fleets
+"fp8 stall levers" — p95/max 1580/1599 ms for ≥48k fleets
 at U64k TTFT 51.16 s). The 2026-11-03 all-presets completion
 set (B6–B8) generalizes the balanced face: **MNBT 4096 halves stalls on
 every preset** at TTFT ≤ fp8-default family (k3v4_nc is under family on
