@@ -249,6 +249,14 @@ rebuilds no image.
 
 ### Long-context serve profile (p65) — opt-in, for fleets serving ≥48k prompts
 
+**Position (owner directive 2026-11-03): `ARC_MNBT=4096` is the
+first-choice stall lever** (previous section — one knob, fp8 stalls
+p95 2030/2587 ms at U64k TTFT 42.83 s, KV +6.8 %, decode-neutral).
+This profile is the deeper-stall niche: fp8 bystander gap p95/max
+**1580/1599 ms** at U64k TTFT **51.16 s** (cert4/cert5-era face) —
+enable it when the absolute stall floor is the binding constraint on
+≥48k prompts, not as the general stall lever.
+
 **Default posture is unchanged** — the certified serve block above sets
 none of this; the deferral hunk is inert without the envs (cert4 gate:
 default-posture boot + run7n + WARN/ERROR audit byte-class-identical to
@@ -432,6 +440,14 @@ Laws: never combine with the experimental slice profile unless
 re-validated; one knob at a time (the matrix is one-variable);
 `ARC_MNBT=2048` under fp8 floors to 1664-token chunks — the fp8
 thr2048 profile is the historical equivalent (r66a).
+
+**First choice for stall-sensitive fp8 fleets (owner directive
+2026-11-03): `ARC_MNBT=4096`** — one knob, stalls −49/−51 %
+(p95 2030/2587 ms), TTFT +8–13 % (U64k 42.83 s), KV +6.8 %,
+decode-neutral. The deeper fp8 stall floor is the p65 long-context
+profile (next section: p95/max 1580/1599 ms at U64k TTFT 51.16 s,
+cert4/cert5-era face) — reach for it only when the absolute stall
+floor is the binding constraint and prompts run ≥48k.
 
 ## The 25-var chain (reference)
 
