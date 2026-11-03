@@ -1,0 +1,3 @@
+SPEC_GATE {"wall_s": 2.98, "streams_ok": "4/4", "drafts": 232, "draft_tokens": 696, "accepted": 572, "pos": {"0": 0.9181, "1": 0.8233, "2": 0.7241, "3": 0.0}, "pos1": 0.9181, "acceptance": 0.8218, "mean_acceptance_length": 3.47, "hard": 0.5, "target": 0.85}
+SPEC_GATE log_window: (APIServer pid=13) INFO 11-03 09:56:11 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 2.79, Accepted throughput: 93.58 tokens/s, Drafted throughput: 156.57 tokens/s, Accepted: 936 tokens, Drafted: 1566 tokens, Per-position acceptance rate: 0.782, 0.579, 0.433, Avg Draft acceptance rate: 59.8%
+SPEC_GATE PASS: pos1=0.9181 >= 0.5 hard, acceptance=0.8218 vs 0.85 target (TARGET MISS — recorded, --strict-target for certification)

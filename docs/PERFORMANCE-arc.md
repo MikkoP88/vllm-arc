@@ -377,7 +377,13 @@ fix (nothing stalled; spec depth doesn't change wall); cool the sampling
 (acceptance recovers as temp falls — intermediate temps unmeasured) or
 stay on fp8 (immune) when uniform sampled latency matters;
 engine-side acceptance-aware gating is out of scope (upstream
-direction).
+direction). **Update (P6.16, 2026-11-03): the serve-layer fix is now
+measured and ships opt-in — `ARC_SPEC_METHOD=probabilistic` drafting
+(see "Draft-sampling posture" below) removes the graded damage modes
+and lifts every dtype's t1.0-xhigh aggregate (fp8 +29 %, sub-4-bit
++44…+91 %); the rare total-collapse trajectory remains (true draft/
+target divergence); engine-side acceptance-aware gating stays upstream
+direction.**
 
 ¹ fp8 comparator row as run in the A/B (thr2048-profile face —
 hence its 23.16/50.77 TTFT and 1.3/1.6 s gaps). P6.15 re-measured
@@ -410,6 +416,75 @@ acceptable; `4bit_nc` = middle (and the best bystander-stall face at
 default posture). The certified default stays `fp8_e4m3` — fastest
 sampled throughput, the quality reference face; NOT the lowest
 bystander cost (true-default fp8 has the highest — see below).
+
+### Draft-sampling posture — probabilistic drafting (P6.16, opt-in: `ARC_SPEC_METHOD=probabilistic`)
+
+Serve-layer opt-in, **no image change** (the knob lives in
+`tools/serve_arc_b70.sh`): `ARC_SPEC_METHOD=probabilistic` appends the
+upstream-config-native spec key `draft_sample_method` (pinned 0.30.0
+wheel, `config/speculative.py:588`) to the MTP config — MTP drafts are
+**sampled from the draft distribution and verified by the
+rejection-ratio test**, instead of argmax-drafted. Default (unset —
+and any non-`probabilistic` value) = greedy drafting = the certified
+posture, **byte-identical**: the p616c flag probe expands unset ==
+junk == the exact certified `--speculative-config` bytes, the runtime
+`ps`/config-dump carry no method key, and the full certified battery
+re-measured in-family through the hook (t0 296.69 / 84.47-84.44,
+t1.0 greedy 184.86 / 61.79-61.07, TTFT 17.47/40.51 — all in band).
+
+**Why it matters**: greedy drafts + sampled verify is a **biased
+sampler at temperature** (only argmax-drafted continuations can be
+accepted); probabilistic drafts + the ratio test provably sample the
+target distribution. At t0 the two are provably identical (drafts are
+plain argmax at temp 0, `gumbel.py:102,117`; verify accepts iff
+`target_argmax == draft_sampled`, `rejection_sampler_utils.py:571-585`)
+— and measure in-band on every dtype. Engine cadence is unchanged
+(41–42 ms; the gumbel/triton draft sampler runs inside the FULL draft
+graphs at zero measurable cost).
+
+The matrix (p616b — one boot per dtype on cert6; the p616c hook
+reproduces the same serve-line bytes and the fp8 faces through the
+env knob):
+
+| dtype | t1.0-xhigh agg greedy → prob | solo pair greedy → prob |
+|---|---|---|
+| `fp8_e4m3` | 186.48 → **241.10 (+29 %)** | 61.73/61.79 clean → **67.46/64.10 clean** |
+| `turboquant_k8v4` | 173.39 → 172.95 (EV-neutral) | 77.31 **+ 26.08 ragged** → 54.77/51.62 |
+| `turboquant_4bit_nc` | 93.05 → **134.42 (+44 %)** | 77.60 **+ 25.94 ragged** → 54.27/50.86 |
+| `turboquant_k3v4_nc` | 88.95 → **137.11 (+54 %)** | 77.37 **+ 25.88 ragged** → 52.37/62.32 |
+| `turboquant_3bit_nc` | 89.58 → **171.32 (+91 %)** | **25.99** + 85.57 ragged → 53.11/58.90 |
+
+Every probabilistic solo pair is **uniform — zero 26-tok/s legs in any
+measured face** (the greedy banks' defining defect; a same-day greedy
+control boot sampled a live 25.96 + 81.44 pair). fp8's sampled solo
+BEATS its greedy bank (67.46 vs 61.73) — the ~49 %-greedy-draft
+acceptance ceiling on the certified dtype is broken. t0 faces unchanged
+on every dtype (±1.5 %; the tq4 −3 % dip proven environmental by the
+greedy control boot), TTFT within −3 % except one flagged face (3bit
+U64k +7.2 %), det 3/3 everywhere, spec gates PASS.
+
+**Collapse status (honest reading)**: the **graded damage modes are
+gone** — 0 depth-dead legs in 40 traced requests vs 2/10 in the banked
+greedy traces (p615c's 47/66 t/s legs), and the argmax-mismatch
+lottery with them. But one deterministic **divergent-trajectory
+request still collapses (~26 tok/s) on every TQ dtype**: on that
+trajectory the draft distribution genuinely diverges from the target
+(Σ min(p,q) ≈ 0.08 at pos0) — no verify scheme fixes true divergence.
+**fp8 is immune-and-improved**: no such trajectory in the traced corpus
+and its sampled face gains +29 %. Menu: sampled serving (t ≥ 0.5) →
+probabilistic, any dtype (fp8 included); worst-case-latency-sensitive
+fleets on TQ dtypes → fp8 or cooler sampling. The **default stays
+greedy** (pre-registered adoption rule: a default flip needs EVERY
+dtype ≥ +10 % t1.0 agg AND t0 ±1.5 % — k8v4 is EV-neutral, so it
+fails the first clause).
+
+Evidence: `results/2026-11-03-p616a-probsmoke/` (boot+smoke, cadence
+law), `results/2026-11-03-p616b-probmatrix/` (5-dtype matrix + collapse
+traces + the b2 integrity discriminator: the two t0 integrity flakes
+need posture × full-battery churn together, not reproducible ×4,
+opt-in-posture-only caveat), `results/2026-11-03-p616c-spechook/` (the
+hook deployment: flag probe + default/opt-in boots). Config:
+[`CONFIGURATION-arc.md`](CONFIGURATION-arc.md) "Draft-sampling posture".
 
 ### Bystander-stall tuning — chunk granularity (P6.15, 2026-11-02)
 
@@ -524,7 +599,10 @@ Findings:
   collapse: per-request acceptance death from round 1 (engine cadence
   constant 41.7 ms, wall = drafts × cadence), 4-bit-V noise vs sampled
   trajectory — see the TurboQuant t1.0 reading above and
-  `results/2026-11-03-p615c-t10collapse/`.
+  `results/2026-11-03-p615c-t10collapse/`. Under the opt-in
+  probabilistic drafting posture (P6.16) these sampled faces change
+  materially — uniform solo pairs and +29…+91 % aggregates; see
+  "Draft-sampling posture" above.
 - **Solo prefill is a chunk-size story per dtype** (U64k t/s): tq4
   1664→1459, 3328→1791, 6656→1921; k8v4 3456→1716, 8064→1945; k3v4_nc
   3712→1760, 7424→1945; 3bit_nc 2176→1549, 6528→1893; fp8 3328→1516,
