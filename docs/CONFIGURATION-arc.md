@@ -10,7 +10,7 @@ complete control surface + naming map); test definitions in
 
 | Item | Value |
 |---|---|
-| Image | `vllm-arc:v0.30.0-b70-cert6` — **the certified release**, tag `rel/v0.30.0-b70-cert6` (cert5 engine + the P6.14 TurboQuant-aware lagged store in the lmcint adapter — all four `turboquant_*` kv-cache dtypes validated, default `fp8_e4m3` posture identical to cert5; gates `results/2026-11-02-p614-cert6/` + preset legs `results/2026-11-02-p614-{l1v2,l2,l3}/`) |
+| Image | `vllm-arc:v0.30.0-b70-cert7` — **the certified release**, tag `rel/v0.30.0-b70-cert7` (cert6 engine + the P6.18 TurboQuant deprecation guard in `ArcXpuPlatform.check_and_update_config` — every `turboquant_*` kv-cache dtype refused at config time; default `fp8_e4m3` posture byte-identical to cert6; gates `results/2026-11-03-p618-cert7/` + repro/roundtest `results/2026-11-03-p618{b-repro,c-roundtest}/`; rebuildability audit `results/2026-11-03-p618-cert7/REPRODUCIBILITY-AUDIT.md`) |
 | Manifest | `/etc/vllm-arc/IMAGE_MANIFEST` inside the image — fork SHA, wheel pins, dependency closure (`lmcache_closure=`), build host |
 | Base | upstream vllm-gaudi v0.30.0 + pinned wheels (vllm 0.30.0+xpu, triton 3.7.2+xpu, vllm_xpu_kernels 0.1.14.1+arc3, lmcache 0.5.6+arc1) |
 
@@ -19,6 +19,7 @@ with per-image evidence lives in PERFORMANCE-arc "Image lineage"):
 
 | Image | Status |
 |---|---|
+| `v0.30.0-b70-cert6` | superseded by cert7 — fp8 behavior byte-identical; its servable `turboquant_*` dtypes degenerate on this model (P6.18 Class B) — **do not serve TQ dtypes on cert6** (gates `results/2026-11-02-p614-cert6/`) |
 | `v0.30.0-b70-cert5` | superseded by cert6 — identical default behavior, lacks the P6.14 TQ-aware store hunk (gates `results/2026-11-01-p65-cert5/`) |
 | `v0.30.0-b70-cert4` | superseded by cert5 — identical default behavior, lacks the default-OFF slice hunk (gates `results/2026-10-31-p65-cert4/`) |
 | `v0.30.0-b70-cert3` | superseded by cert4 — identical default behavior, lacks the deferral hunk (gates `results/2026-10-31-p6-r47c-p48-056gates/`) |
@@ -54,7 +55,7 @@ docker run -d --name arc-test \
   -v /root/build/inductor_cache:/root/.inductor_cache \
   -e VLLM_ALLOW_LONG_MAX_MODEL_LEN=1 \
   -e VLLM_WORKER_MULTIPROC_METHOD=spawn \
-  --entrypoint /bin/bash vllm-arc:v0.30.0-b70-cert6 -c 'sleep infinity'
+  --entrypoint /bin/bash vllm-arc:v0.30.0-b70-cert7 -c 'sleep infinity'
 ```
 
 These are the validated boot bytes (rig `r46t_campaign.sh:54-63`,
@@ -271,7 +272,11 @@ higher TTFT cost.
 Era note: the default and `MNBT 4096` columns are the cert6 P6.15
 matrix (`results/2026-11-02-p615-stall-analysis/`); the p65 column is
 the cert4/cert5-era record face (`results/2026-10-31-p65-cert4/`,
-`results/2026-11-01-p65-cert5/`).
+`results/2026-11-01-p65-cert5/`). Both live levers were re-verified
+natively on cert7 (p618e, same harness): default TTFT 18.27/39.91 s +
+gaps p95 4001/5273 ms; MNBT 4096 TTFT 19.51/42.34 s + gaps p95
+2052/2523 ms; KV pools 400,739/427,666 — all in-family
+(`results/2026-11-03-p618-cert7/PERF.md`).
 
 **Enable MNBT 4096** — one knob; the serve script maps the host var to
 the CLI flag:
@@ -359,42 +364,44 @@ gone), `63232`-class **0** / `3328`×38 exact, U32k unchanged
 face in-family (U64k TTFT 51.66 s, `63232`-class 0, `3328` signature
 exact — `results/2026-11-02-p614-cert6/`).
 
-## KV-cache dtype: TurboQuant presets (validated since cert6, opt-in)
+## KV-cache dtype: TurboQuant presets (DEPRECATED — refused at boot since cert7)
 
-> **CORRUPTION WARNING (opened 2026-11-03, P6.18 fix campaign in
-> progress):** corrupted generations reported under
-> `turboquant_k8v4`; all `turboquant_*` presets are under
-> re-validation (store/load roundtrip defect is the leading suspect).
-> The certified default `fp8_e4m3` is NOT affected. Do not serve any
-> `turboquant_*` dtype until the fixed certified image ships.
+> **DEPRECATED (closed 2026-11-04, P6.18): every `turboquant_*` preset is
+> refused at config time.** `ArcXpuPlatform.check_and_update_config`
+> raises a loud `ValueError` on any `cache_dtype` starting with
+> `turboquant` — every entry point (CLI flag, serve script, raw image),
+> **no override lever**. The boot dies in ~65 s with
+> `ValidationError … Value error, ArcXpuPlatform: kv_cache_dtype
+> '…' is deprecated on vllm-arc: … Serve with the certified default
+> 'fp8_e4m3'`; `Application startup complete` is never reached
+> (G0 guard-proof on `turboquant_k8v4` AND `turboquant_4bit_nc`,
+> `results/2026-11-03-p618-cert7/`).
 
-The certified default stays `--kv-cache-dtype fp8_e4m3`. Since cert6 the
-engine's first-class TurboQuant KV dtypes are **validated end-to-end**
-(lagged KV store healthy, integrity 5/5, determinism 3/3, spec gate PASS
-on every preset): swap exactly that one flag to one of
+The certified dtype is `--kv-cache-dtype fp8_e4m3` — the default; do not
+set the flag at all. Why the presets died (P6.18 campaign):
 
-```bash
-  --kv-cache-dtype turboquant_k8v4       # 8-bit keys / 4-bit values
-  --kv-cache-dtype turboquant_4bit_nc    # 4-bit MSE keys + values, NC
-  --kv-cache-dtype turboquant_k3v4_nc    # 3-bit keys / 4-bit values, NC
-  --kv-cache-dtype turboquant_3bit_nc    # 3-bit keys + values, NC
-```
+- **Class B — deterministic degenerate generation** on ALL FOUR presets
+  (repetition attractors, cold-included, LMC-independent, cross-dtype
+  byte-identical attractors) — `results/2026-11-03-p618b-repro/`.
+- **Root cause closed by the roundtest** — the live SoA store→decode
+  Triton pair is numerically correct on XPU (decode self-coherence
+  rel_err ≤ 6e-6, store spec-conformant, fully deterministic, all four
+  presets) — so the degeneracy is the **4-bit-class value-precision
+  quality ceiling** (16 affine levels per token-head, 8 on 3bit;
+  upstream's own tables rate these presets +2.71…+20.59 % PPL on
+  gpt-oss) — `results/2026-11-03-p618c-roundtest/`.
+- **Class A — t0 warm-resume trajectory flips** (dtype+LMC-independent)
+  settled as inherent warm-resume-vs-cold numerical divergence of cached
+  spec-decode serving; disposition documentation, not code (p618b
+  canaries). No quality-correcting kernel exists in any admitted donor
+  (scope law) — refusal, not repair.
 
-Nothing else changes (the engine auto-forces FA2 under TQ and re-derives
-the attention block size; the lmcint adapter's TQ-aware pool view +
-uint8 KV_2LTD engine geometry follow the live spec — P6.14, commit
-`6f1a09d9` lineage; evidence `results/2026-11-02-p614-{l1v2,l3}/`).
-Per-preset capacity/TTFT/quality numbers and dispositions: the README
-KV-quant table + PERFORMANCE-arc "TurboQuant KV-cache dtype faces".
-Guidance:
-**k8v4 = quality-safest** (t1.0 xhigh −28 % vs fp8 on the certified
-probabilistic lane; EV-neutral vs its own greedy face), **3bit_nc =
-max KV capacity** (3.72×) where the TQ-inherent sampled-throughput
-cost (uniform mid-50s solo under the certified posture; rare
-divergent-trajectory collapse residual) is acceptable — dtype-wide
-cost per the A/B disposition.
-(Bystander stalls are NOT a TQ cost at equal posture — see the next
-section: true-default fp8 is the worst stall face.)
+The historical per-preset capacity/TTFT/quality faces (P6.14–P6.16, the
+README KV-quant table + PERFORMANCE-arc "TurboQuant KV-cache dtype
+faces") remain banked as the record of what the presets traded — on
+cert7+ they are unreachable. KV capacity beyond fp8's 405,491-token pool
+is **not recoverable** on this stack; for stall relief use the fp8
+levers in the next section (`ARC_MNBT=4096` first choice).
 
 ## Draft-sampling posture (P6.17: CERTIFIED DEFAULT — `ARC_SPEC_METHOD`)
 
@@ -412,7 +419,7 @@ The certified line on the uniform boot interface (no image change, no
 CLI edit — the env states the default explicitly):
 
 ```bash
-ARC_SPEC_METHOD=probabilistic ARC_IMAGE=vllm-arc:v0.30.0-b70-cert6 \
+ARC_SPEC_METHOD=probabilistic ARC_IMAGE=vllm-arc:v0.30.0-b70-cert7 \
   ARC_GRAPH=1 ARC_SPEC=3 bash /root/build/serve_arc_b70.sh
 # appends "draft_sample_method":"probabilistic" to --speculative-config
 # (P6.17: this is also the DEFAULT when ARC_SPEC_METHOD is unset;
@@ -430,11 +437,11 @@ PERFORMANCE-arc "Draft-sampling posture"):
 
 Menu: **probabilistic is the default — nothing to enable**. Opt out
 with `ARC_SPEC_METHOD=greedy` only for the historical lane (byte-
-identical at t0; −15…−23 % t1.0 agg on fp8; ragged solo on TQ dtypes).
-Worst-case-latency-sensitive fleets on TQ dtypes: rare divergent-
-trajectory requests can still collapse ~26 tok/s under either posture
-(true draft/target divergence — no config fix); use fp8 or cooler
-sampling there. Flip validation: flag probe 5/5 (unset/probabilistic/
+identical at t0; −15…−23 % t1.0 agg on fp8). The historical TQ-dtype
+lane notes (ragged greedy solo, the ~26 tok/s divergent-trajectory
+collapse residual) died with the dtype — that collapse face was
+TQ-only and fp8 was always immune (P6.18 closed the dtype itself).
+Flip validation: flag probe 5/5 (unset/probabilistic/
 junk → prob bytes; `greedy` → the exact pre-P6.17 bytes; `ARC_SPEC=0`
 → no spec flag) + live-boot audits — default-path engine bytes ==
 env-form record-leg bytes; greedy opt-out boot carries the old
@@ -448,27 +455,28 @@ one chunked-prefill engine step (no decode piggyback on this stack).
 Stall duration ≈ tokens-per-chunk / prefill-rate, so the lever is
 chunk granularity, tuned by `ARC_MNBT` (`--max-num-batched-tokens`)
 or `--long-prefill-token-threshold`, floored to the dtype's KV-page
-multiple (TQ page 1664 → 1664/3328/6656-token chunks; fp8 page 832 →
-1664/3328/7488). Smaller chunks = shorter stalls but more prefix
-re-reads = longer TTFT — a measured Pareto frontier, no free knob
-(all legs on cert6, integrity 5/5 + det 3/3, 0 errors;
-`results/2026-11-02-p615-stall-analysis/`):
+multiple (fp8 page 832 → 1664/3328/7488-token chunks). Smaller
+chunks = shorter stalls but more prefix re-reads = longer TTFT — a
+measured Pareto frontier, no free knob (all legs on cert6, integrity
+5/5 + det 3/3, 0 errors; `results/2026-11-02-p615-stall-analysis/`).
+The former TQ-preset rows of this menu are gone with the dtype
+(P6.18 — refused at boot); those faces remain banked in the p615
+legs as history. **The certified dtype is fp8 only — the levers
+below are the whole menu** (P6.17l guide):
 
 | Fleet priority | Recommended face | Cost |
 |---|---|---|
-| Balanced (stalls −38/−46 %, KV +6.8 %) | `turboquant_4bit_nc` + `ARC_MNBT=4096` | TTFT +9–11 % vs TQ4 default; ≤ fp8-default |
-| Balanced, quality-safest preset (P6.15b) | `turboquant_k8v4` + `ARC_MNBT=4096` | stalls −51/−58 % vs fp8 default, TTFT at family, KV 2.14×; keeps the family's fastest decode (88.3–88.5 solo) |
-| Balanced, max capacity (P6.15b) | `turboquant_k3v4_nc` + `ARC_MNBT=4096` | stalls −49/−56 %, TTFT UNDER fp8-default family (16.99/36.90 s), KV 3.48×; sampled-throughput cost is the k3v4 dtype face |
-| Sub-1.5 s stalls (p95 ~1.3 s) | `turboquant_4bit_nc` + `ARC_MNBT=2048` | TTFT +14–40 % vs fp8/TQ4 defaults; largest TQ4 pool (3.13×) |
-| fp8 dtype fixed | `fp8_e4m3` + `ARC_MNBT=4096` | stalls −49/−51 %, KV +6.8 %, TTFT +8–13 % |
-| Max capacity near-low-stall (P6.15b) | `turboquant_3bit_nc` + `ARC_MNBT=4096` | KV 3.98× (largest pool), U64k gaps 1637 ms (closest large-budget face to 1.5 s); dtype quality cost per P6.14 |
+| **Balanced — first choice (P6.15/P6.17l)** | `fp8_e4m3` + `ARC_MNBT=4096` | stalls −49/−51 % (bystander p95 2030/2587 ms vs 3986/5295 default), KV +6.8 %, TTFT +8–13 %, decode-neutral |
+| Long-context stall floor (p65 profile, P6.17l) | fp8 + `--long-prefill-token-threshold 2048` + `LMC_DEFER_CHUNK_STORE=1` + `LMC_DEFER_MIN_TOKENS=40960` | U64k TTFT 51.16 s, bystander p95/max 1580/1599 ms; all three together — never lower the min-tokens gate below 40960 (32k-class prompts regress +4.2 s) |
 | Max TTFT / max throughput | certified defaults as-is | fp8 true-default bystander p95 3.99/5.30 s (worst stall face, best sampled throughput) |
 
 The 2026-11-03 completion set (B6–B8, `results/2026-11-02-p615-b{6,7,8}-*/`)
-generalizes the balanced row: **MNBT 4096 halves stalls on every preset**
-at TTFT ≤ fp8-default family; chunk = KV page × n (k8v4 3456, k3v4_nc
-3712, 3bit_nc 2176-token chunks). Solo decode/prefill/TTFT for every
-face: `results/2026-11-02-p615-probes/VERDICT.md`.
+had generalized the balanced row across the then-servable presets
+(**MNBT 4096 halves stalls at TTFT ≤ fp8-default family**; chunk =
+KV page × n) — the TQ instances of that generalization are historical
+since the P6.18 deprecation; the fp8 instance is the live first-choice
+row above. Solo decode/prefill/TTFT for every face:
+`results/2026-11-02-p615-probes/VERDICT.md`.
 
 Laws: never combine with the experimental slice profile unless
 re-validated; one knob at a time (the matrix is one-variable);
