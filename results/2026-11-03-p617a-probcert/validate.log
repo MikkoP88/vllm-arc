@@ -1,0 +1,20 @@
+[12:23:50] PHASE1 OK: flipped script in place (sha 57ff15649d8b); p616 original backed up
+[12:23:52] probe unset->prob: PASS
+[12:23:54] probe probabilistic->prob: PASS
+[12:23:56] probe junk->prob(default): PASS
+[12:23:58] probe greedy->old-bytes: PASS
+[12:24:00] probe spec0->noflag: PASS
+[12:24:00] PHASE2 flag probe: 5 pass / 0 fail
+[12:24:00] PHASE3: stop W14; boot cert6 DEFAULT PATH (no ARC_SPEC_METHOD)
+[12:29:16] arc-p617d health 200 default-path boot=304s
+survival http=200 dt=8.39s
+[12:29:24] hook_audit d==a: DEFAULT PATH bytes IDENTICAL to leg-a env-form bytes
+[12:31:51] PHASE3 done: errors=0
+[12:31:51] PHASE4: boot cert6 ARC_SPEC_METHOD=greedy (opt-out historical lane)
+[12:36:34] arc-p617e health 200 greedy boot=283s
+survival http=200 dt=7.25s
+[12:36:42] greedy opt-out audit: bytes=--speculative-config {"method":"mtp","num_speculative_tokens":3} draft_key_count=0
+[12:37:12] PHASE4 done: errors=0
+[12:37:12] p617b VALIDATE COMPLETE
+[12:37:12] validate exit rc=0
+[12:48:31] W14_RESTORED health=200

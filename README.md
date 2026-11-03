@@ -5,7 +5,7 @@
 A fork of [vllm-project/vllm-gaudi](https://github.com/vllm-project/vllm-gaudi) at **v0.30.0** (package name `vllm_gaudi` preserved; the Arc/XPU work lives in `vllm_gaudi/xpu/`).
 
 - Certified release: **`rel/v0.30.0-b70-cert6`** — every gate GREEN with banked evidence. cert6 = cert5's engine + the P6.14 TurboQuant-aware lagged KV store (all four `turboquant_*` kv-cache dtypes validated end-to-end — see the KV-quant table below; default `fp8_e4m3` posture identical to cert5).
-- **Project status: P0–P6.16 complete.** All phases closed with evidence — engine hardening (P2), cache lane (P3), certification battery (P4), audits + soak (P5), measurement/analysis phases P6.1–P6.15 (external-hit-rate truth, comparator law, telemetry off, publishing hygiene, main currency, the comprehensive cert4-native re-measurement, the P2P-allreduce closure r71, the docs overhaul, the END-stall mechanism analysis + sliced-store rung, the TurboQuant lagged-store fix + full preset validation, and the bystander-stall taxonomy + chunk-granularity Pareto matrix for ALL dtypes — completed by P6.15b: the all-presets MNBT-4096 legs and the 12-face solo/concurrent decode/prefill/TTFT matrix on the fork's own harnesses; P6.15c pinned the t1.0-xhigh sampled-collapse mechanism — per-request MTP acceptance death from round 1 under 4-bit-V KV noise, engine cadence constant, no config fix, fp8 immune), and **P6.16 the draft-sampling posture fix**: `ARC_SPEC_METHOD=probabilistic` (opt-in knob, **the recommended posture for sampled serving — owner call 2026-11-03**; upstream-config-native spec key on the pinned wheel) — sampled drafts + rejection-ratio verify, the mathematically-correct sampler at temperature; t1.0-xhigh agg **fp8 +29 %, TQ presets +44…+91 %** with uniform solo streams (zero 26-tok/s legs in measured faces), t0 provably + measurably identical, merged serve-layer with the default (greedy) byte-identical (k8v4 EV-neutral fails the every-dtype default-flip rule). Zero engine-code change in the certified default posture since cert3: **cert6 is the latest certified image — default posture byte-identical to cert5's (the fastest validated)**, adding only the TQ-aware store path (inert under `fp8_e4m3`) plus the opt-in `turboquant_*` dtype faces and the opt-in slice profile (64k TTFT −1.2 s, one-shot store eliminated), which stays experimental per its pre-registered rule (rejected-on-evidence for defaults: k5 depth, torch.compile). P6.16 is serve-layer by design — **the image line is unchanged (no cert7; the serve script is not in the image and the wheel is untouched)**. Full phase ledger: [`docs/TESTING-arc.md`](docs/TESTING-arc.md) (validation record) and [`docs/MIGRATION-arc.md`](docs/MIGRATION-arc.md) (evidence table).
+- **Project status: P0–P6.17 complete.** All phases closed with evidence — engine hardening (P2), cache lane (P3), certification battery (P4), audits + soak (P5), measurement/analysis phases P6.1–P6.15 (external-hit-rate truth, comparator law, telemetry off, publishing hygiene, main currency, the comprehensive cert4-native re-measurement, the P2P-allreduce closure r71, the docs overhaul, the END-stall mechanism analysis + sliced-store rung, the TurboQuant lagged-store fix + full preset validation, and the bystander-stall taxonomy + chunk-granularity Pareto matrix for ALL dtypes), **P6.16 the draft-sampling posture fix** (`ARC_SPEC_METHOD=probabilistic`: sampled drafts + rejection-ratio verify — the mathematically-correct sampler at temperature; t1.0-xhigh agg **fp8 +29 %, TQ presets +44…+91 %** with uniform solo streams), and **P6.17 the prob-lane certification (owner directives 2026-11-03)**: the certified line is now **probabilistic drafting by default** — the serve script's default posture flipped (unset = probabilistic; `ARC_SPEC_METHOD=greedy` = the opt-out historical lane, byte-identical at t0), and **every record face re-measured natively on the probabilistic lane** (comprehensive p617 campaign on cert6: t0/t1.0 batteries across fresh boots, TTFT ladder, warm re-hit, temp sweep, alt face, integrity + determinism + golden + garbage gates, no-spec A/B). Zero engine-code change in the certified posture since cert3: **cert6 is the latest certified image** (TQ-aware store path inert under `fp8_e4m3`; opt-in `turboquant_*` dtype faces; opt-in slice profile). P6.16/P6.17 are serve-layer by design — **the image line is unchanged (no cert7; the serve script is not in the image and the wheel is untouched)**. Full phase ledger: [`docs/TESTING-arc.md`](docs/TESTING-arc.md) (validation record) and [`docs/MIGRATION-arc.md`](docs/MIGRATION-arc.md) (evidence table).
 - **Open improvement lanes** (all analysis-side, none certified yet): ESIMD dense-FA kernel project (r67b re-scope). The TP2 allreduce path question is **closed** — r71 proved direct P2P (10.23 GB/s D2D; all collectives on the `topo sycl` device path; `tools/pcie/README.md`).
 
 ## What this fork adds
@@ -23,25 +23,28 @@ A fork of [vllm-project/vllm-gaudi](https://github.com/vllm-project/vllm-gaudi) 
 
 ## Certified performance (dual Arc Pro B70, TP2, qwen3.8-27b-fp8)
 
-**Recommended posture (owner call 2026-11-03): `ARC_SPEC_METHOD=probabilistic`** — the best measured performance on every sampled face. The **certified default (greedy)** is the alternative column: byte-identical line, provably + measurably identical at t0, and what you get when the knob is unset. All values measured natively on the certified image line (default-posture record: `vllm-arc:v0.30.0-b70-cert4` r70 campaign, re-verified in-family on cert5/cert6; posture faces: `results/2026-11-03-p616b-probmatrix/` + `…-p616c-spechook/` on cert6. Methodology, face definitions, per-face provenance, and pre-cert4 history in [`docs/PERFORMANCE-arc.md`](docs/PERFORMANCE-arc.md)):
+**Certified posture (P6.17, owner directives 2026-11-03): probabilistic drafting — the serve script's default.** The certified line is `ARC_SPEC_METHOD=probabilistic` (now the default when unset); the greedy lane is the opt-out alternative (`ARC_SPEC_METHOD=greedy`, the pre-P6.17 certified bytes: provably + measurably identical at t0, lower on every sampled face). **All record values below are measured natively on the probabilistic lane** (comprehensive p617 campaign on `vllm-arc:v0.30.0-b70-cert6` — every face re-measured on fresh boots; earlier prob-lane faces `results/2026-11-03-p616b-probmatrix/` + `…-p616c-spechook/`. Methodology, face definitions, per-face provenance, and pre-P6.17 history in [`docs/PERFORMANCE-arc.md`](docs/PERFORMANCE-arc.md)):
 
-| Face | Recommended — `ARC_SPEC_METHOD=probabilistic` | Alternative — default (greedy) |
+| Face | Certified — probabilistic (default) | Opt-out — greedy (affected numbers) |
 |---|---|---|
-| t0 agg4x256 / solo200 (identical by proof + measurement) | **294.7–300.5 / 83.7–84.9 tok/s** | identical (argmax path) |
-| t1.0-xhigh agg4x256 | **241.10 tok/s (+29 %; cross-boot 226.87)** | 186.48–189.41 tok/s |
-| t1.0-xhigh solo pair | **67.46 / 64.10 tok/s — uniform** | 61.73 / 61.79 (ragged on TQ dtypes: ~77 + ~26) |
-| TTFT solo 8k / 16k / 32k / 64k | 3.86 / 7.87 / 17.3 / 40.3 s | unchanged (within noise) |
-| Warm prefix re-hit 8k / 16k / 32k | **0.99 / 1.08 / 1.11 s** | unchanged (posture-independent) |
-| MTP k3 acceptance, t0 | **85.9 %** (mean accepted length 3.58) | identical (t0) |
+| t0 agg4x256 / solo200 (identical by proof + measurement) | **291.4–303.1 / 83.7–84.9 tok/s** | identical (argmax path) |
+| t1.0-xhigh agg4x256 | **222.7–241.3 tok/s steady (+18…+29 %)** | 186.48–189.41 tok/s |
+| t1.0-xhigh solo | **64–71 tok/s, uniform (no collapse face in 20 measured pairs)** | 61.73 / 61.79 (ragged on TQ dtypes: ~77 + ~26) |
+| Temperature sweep agg (t0.2/0.4/0.6/0.8 steady) | **214.9 / 215.0 / 222.3 / 224.7 tok/s** | 205.6 / 221.7 / 202.4 / 204.8 (parity at cool temps; prob pulls ahead as temperature rises) |
+| Alt sampling face (t0.7/tp0.80/pp1.5) agg / solo | **271.5–281.3 / 82.7–92.1 tok/s** | 264.0–280.9 / 72.5–73.1 (agg parity, solo −11…−21 %) |
+| TTFT solo 8k / 16k / 32k / 64k | **3.77 / 7.90 / 17.4 / 40.3 s** | unchanged (within noise) |
+| Warm prefix re-hit 8k / 16k / 32k (t2) | **0.99 / 1.08 / 1.07 s** (warm-hit face 0.80–0.85 s) | unchanged (posture-independent) |
+| MTP k3 acceptance, t0 (strict-gate window) | **83.7 %** (mean accepted length 3.51; hard floor PASS — identical on both lanes: r70 greedy measured the same gate window) | battery-window face 85.9 % / 3.58 (r70 metrics deltas) |
+| MTP over no-spec (same-boot A/B) | **t0 2.35–2.47× · t1.0 1.84–2.09× · alt 2.42–2.53×** | — |
 
-Full 5-dtype matrix (TQ presets up to **+91 %**) in the TurboQuant table below and [`docs/PERFORMANCE-arc.md`](docs/PERFORMANCE-arc.md) "Draft-sampling posture". Worst-case caveat: rare divergent-trajectory requests on TQ dtypes can still collapse ~26 tok/s — **fp8 is immune** (one more reason it is the recommended dtype). MTP value over no-spec: **1.5–2.5×** (cert4 A/B, by face).
+Full 5-dtype matrix (TQ presets up to **+91 %**) in the TurboQuant table below and [`docs/PERFORMANCE-arc.md`](docs/PERFORMANCE-arc.md) "Draft-sampling posture". Worst-case caveat: rare divergent-trajectory requests on TQ dtypes can still collapse ~26 tok/s — **fp8 is immune** (one more reason it is the recommended dtype).
 
 ### TurboQuant KV-cache dtypes (opt-in, P6.14 — validated on the cert6 image)
 
 Swapping only `--kv-cache-dtype fp8_e4m3` → a `turboquant_*` preset (one-variable legs,
-`results/2026-11-02-p614-l1v2/` + `-l3/`; integrity 5/5 + determinism 3/3 + spec gate PASS on every preset, lagged KV store now healthy — 0 store errors, kit transfer live, external tier participating). The t1.0 aggregate carries **two postures** (P6.16): *probabilistic* = the RECOMMENDED `ARC_SPEC_METHOD=probabilistic` posture (`results/2026-11-03-p616b-probmatrix/`, one boot per dtype on cert6, posture flip only; deltas vs the same dtype's greedy); *greedy* = the certified default alternative (TQ deltas vs fp8's 189.41):
+`results/2026-11-02-p614-l1v2/` + `-l3/`; integrity 5/5 + determinism 3/3 + spec gate PASS on every preset, lagged KV store now healthy — 0 store errors, kit transfer live, external tier participating). The t1.0 aggregate carries **two postures**: *probabilistic* = the CERTIFIED default (P6.17; `results/2026-11-03-p616b-probmatrix/`, one boot per dtype on cert6, posture flip only; deltas vs the same dtype's greedy); *greedy* = the opt-out historical lane (`ARC_SPEC_METHOD=greedy`; TQ deltas vs fp8's 189.41):
 
-| Preset | KV capacity | U32k / U64k TTFT | t1.0 agg — probabilistic (recommended) | t1.0 agg — greedy (default alternative) | Standing |
+| Preset | KV capacity | U32k / U64k TTFT | t1.0 agg — probabilistic (certified default) | t1.0 agg — greedy (opt-out) | Standing |
 |---|---|---|---|---|---|
 | `fp8_e4m3` (default dtype) | 405,491 tok (1.55×) | 23.16 / 50.77 s | **241.10 (+29 %)** | 189.41 | **recommended dtype+posture — fastest agg; sampled-collapse-immune** |
 | `turboquant_k8v4` | 526,445 tok (2.01×) | **15.29 / 33.03 s** | 172.95 (EV-neutral) | **173.39 (−8.5 %)** | **quality-safest TQ face** |
@@ -50,8 +53,8 @@ Swapping only `--kv-cache-dtype fp8_e4m3` → a `turboquant_*` preset (one-varia
 | `turboquant_3bit_nc` | **975,329 tok (3.72×)** | 16.02 / 35.74 s | **171.32 (+91 %)** | 89.58 (−53 %) | **max capacity** |
 
 Known TQ-inherent costs (dtype-wide, unchanged by the store fix — owner-call material): ragged
-sampled-throughput solo streams (~77 + ~26 tok/s pair) — **the opt-in P6.16 draft posture
-(`ARC_SPEC_METHOD=probabilistic`) makes these pairs uniform and lifts the t1.0 aggregates
+sampled-throughput solo streams (~77 + ~26 tok/s pair) on the greedy lane — **the certified
+probabilistic draft posture makes these pairs uniform and lifts the t1.0 aggregates
 +44…+91 % (rare divergent-trajectory collapse remains on TQ dtypes; fp8 gains +29 % and is
 immune)**. Bystander prefill stalls: at
 TRUE default posture TQ **improves** them vs fp8 (TQ4 p95 3.23/3.78 s vs fp8's
@@ -110,7 +113,8 @@ docker run -d --name arc-test --privileged --network host --ipc host \
   -e VLLM_WORKER_MULTIPROC_METHOD=spawn \
   --entrypoint bash vllm-arc:v0.30.0-b70-cert6 -c "sleep infinity"
 
-# 3. Serve — the recommended line (P6.16 draft posture), byte-identical to
+# 3. Serve — the certified line (P6.17: probabilistic drafting = the serve
+#    script's default posture), byte-identical to
 #    docs/CONFIGURATION-arc.md Step 2 (that file is canonical; per-var
 #    semantics there + docs/envs.md). The rig pattern: script + docker cp
 #    + exec; logs land in /root/serve_full.log.
@@ -141,11 +145,13 @@ export LMCACHE_MIN_RETRIEVE_TOKENS=1024
 export LMCACHE_LOG_LEVEL=INFO
 export LMCACHE_DISABLE_PINNED_MEMORY=1  # law: pinned USM >16-32 GiB/proc segfaults
 export LMCACHE_TRACK_USAGE=false        # P6.3: LMCache telemetry is default-ON; rig serves offline
-# --- the recommended CLI: MTP k3 + probabilistic drafting (P6.16 — the CLI
-#     form of ARC_SPEC_METHOD=probabilistic on the boot interface; identical
-#     runtime bytes), LMCache ON, mode:none (no torch.compile) + decode-only
-#     graphs, explicit capture list. Drop the "draft_sample_method" key for
-#     the certified greedy default (byte-identical at t0). ---
+# --- the certified CLI: MTP k3 + probabilistic drafting (P6.17 — the CLI
+#     form of the serve-script default posture; ARC_SPEC_METHOD=probabilistic
+#     on the boot interface produces identical runtime bytes), LMCache ON,
+#     mode:none (no torch.compile) + decode-only graphs, explicit capture
+#     list. Drop the "draft_sample_method" key (or set
+#     ARC_SPEC_METHOD=greedy on the script interface) for the historical
+#     greedy lane — byte-identical at t0, lower on every sampled face. ---
 exec /opt/venv/bin/vllm serve --model /models/target \
   --served-model-name qwen3.8-27b-fp8 \
   --tensor-parallel-size 2 \
@@ -188,12 +194,13 @@ Optional postures (all documented in full in
   `--long-prefill-token-threshold 2048` + `LMC_DEFER_CHUNK_STORE=1` +
   `LMC_DEFER_MIN_TOKENS=40960` (U64k TTFT 51.16 s, bystander p95/max
   1580/1599 ms; WARNING: ungated use regresses short-prefill r48k).
-- **Sampled-serving draft posture (P6.16 — recommended)** — one env on
-  the boot interface: `ARC_SPEC_METHOD=probabilistic` (greedy default
-  unchanged when unset, byte-identical; t1.0-xhigh agg fp8 +29 % / TQ
-  +44…+91 %, uniform solo streams, t0 provably identical — recommended
-  for temperature ≥ ~0.5 serving; worst-case-sensitive TQ fleets stay
-  on fp8).
+- **Draft-sampling posture (P6.17 — CERTIFIED DEFAULT)** — probabilistic
+  drafting is the serve script's default posture (the certified line;
+  `ARC_SPEC_METHOD=probabilistic` states it explicitly — identical
+  runtime bytes). `ARC_SPEC_METHOD=greedy` is the opt-out historical lane:
+  byte-identical at t0, −15…−23 % on t1.0-xhigh agg (fp8), ragged solo on
+  TQ dtypes. Worst-case-sensitive TQ fleets stay on fp8 (collapse-immune
+  under both postures).
 
 The uniform boot interface with posture knobs (rig paths) is
 `tools/serve_arc_b70.sh`.
@@ -201,7 +208,7 @@ The uniform boot interface with posture knobs (rig paths) is
 ## Documentation
 
 - [`docs/CONFIGURATION-arc.md`](docs/CONFIGURATION-arc.md) — how to run the certified posture (the canonical serve block, knob table, posture laws)
-- [`docs/PERFORMANCE-arc.md`](docs/PERFORMANCE-arc.md) — measured numbers: **current certified record (cert4-native r70 campaign, default-identical on cert5) first**, the P6.16 recommended-posture matrix, then pre-cert4 history (image-labeled)
+- [`docs/PERFORMANCE-arc.md`](docs/PERFORMANCE-arc.md) — measured numbers: **current certified record (P6.17 prob-lane campaign on cert6) first**, the dtype/posture matrices, then pre-P6.17 history (posture-labeled)
 - [`docs/TESTING-arc.md`](docs/TESTING-arc.md) — 13 test suites, gates, validation record
 - [`docs/MIGRATION-arc.md`](docs/MIGRATION-arc.md) — swap an incumbent stack for this one (boot, verify, rollback) + the evidence table
 - [`docs/envs.md`](docs/envs.md) — complete env/knob control surface + naming map
@@ -210,7 +217,7 @@ The uniform boot interface with posture knobs (rig paths) is
 
 - **`main` is linear and protected**: changes land as squash commits from per-item lanes (`feat/arc-pNN-*`); direct pushes, force pushes, and deletions are blocked; PRs are required.
 - **Certified releases are annotated tags** pointing at the certified `main` commit — current: `rel/v0.30.0-b70-cert6`; superseded: `rel/v0.30.0-b70-cert5` (identical default behavior, lacks the P6.14 TQ-aware store hunk), `rel/v0.30.0-b70-cert4` (identical default behavior, lacks the default-OFF P6.13 slice hunk), `rel/v0.30.0-b70-cert3` (identical default behavior, lacks the p65 deferral hunk), `rel/v0.30.0-b70-cert2` (0.5.5-era lmcache line — valid, older), `rel/v0.30.0-b70-cert` (predates the r46u glue-alias fix — never build from it). The Docker image embeds the fork SHA in `/etc/vllm-arc/IMAGE_MANIFEST` for A/B verification.
-- **Evidence is in-tree**: every validation leg banks to `results/YYYY-MM-DD-<phase>-r<leg>-<slug>/` (VERDICT + raw outputs) — **103 evidence dirs, 98 VERDICTs of record**, P0 through P6.
+- **Evidence is in-tree**: every validation leg banks to `results/YYYY-MM-DD-<phase>-r<leg>-<slug>/` (VERDICT + raw outputs) — **104 evidence dirs, 99 VERDICTs of record**, P0 through P6.
 - **No secrets or real host addresses in-tree (publishing-hygiene law)**: tracked == pushable, so credentials, rig/host addresses, and private identities never enter tracked files; banked logs carry redacted host addresses (`results/REDACTION-2026-10-31.md` documents the one-time scrub). `tools/leak_sweep.sh` must exit 0 before every push.
 - The `feat/arc-*` branches are kept deliberately: squash-merging leaves the per-item development history nowhere else.
 
