@@ -1,0 +1,34 @@
+[
+ {
+  "face": "U8k",
+  "prompt_tokens": 8158,
+  "cached": null,
+  "ttft_s": 3.624968721996993,
+  "wall_s": 4.1609275279333815,
+  "prefill_tok_s": 2250.502176886581
+ },
+ {
+  "face": "U16k",
+  "prompt_tokens": 16354,
+  "cached": null,
+  "ttft_s": 7.411395682953298,
+  "wall_s": 7.946304862038232,
+  "prefill_tok_s": 2206.6019275715216
+ },
+ {
+  "face": "U32k",
+  "prompt_tokens": 32553,
+  "cached": null,
+  "ttft_s": 15.363366065081209,
+  "wall_s": 15.855898549081758,
+  "prefill_tok_s": 2118.871597676009
+ },
+ {
+  "face": "U64k",
+  "prompt_tokens": 65303,
+  "cached": null,
+  "ttft_s": 33.544527118094265,
+  "wall_s": 33.70127591409255,
+  "prefill_tok_s": 1946.75571875255
+ }
+]
