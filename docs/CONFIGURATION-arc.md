@@ -140,9 +140,7 @@ export LMCACHE_TRACK_USAGE=false        # P6.3: usage telemetry is default-ON;
 #     form of the serve-script default posture; ARC_SPEC_METHOD=probabilistic
 #     on the boot interface produces identical runtime bytes), LMCache ON,
 #     mode:none (no torch.compile) + decode-only graphs, explicit capture
-#     list. Drop the "draft_sample_method" key (or set
-#     ARC_SPEC_METHOD=greedy on the script interface) for the historical
-#     greedy lane — byte-identical at t0, lower on every sampled face. ---
+#     list. ---
 exec /opt/venv/bin/vllm serve --model /models/target \
   --served-model-name qwen3.8-27b-fp8 \
   --tensor-parallel-size 2 \
