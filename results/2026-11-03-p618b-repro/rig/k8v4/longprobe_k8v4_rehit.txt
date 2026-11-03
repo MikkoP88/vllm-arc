@@ -1,0 +1,72 @@
+===== essay =====
+{
+ "post_churn_rehit_identical": true,
+ "hashes": [
+  "da39a3ee5e6b",
+  "da39a3ee5e6b"
+ ],
+ "garble": {
+  "r1": [
+   "EMPTY"
+  ],
+  "r2": [
+   "EMPTY"
+  ]
+ },
+ "prompt_tok": 2185
+}
+
+===== code =====
+{
+ "post_churn_rehit_identical": true,
+ "hashes": [
+  "da39a3ee5e6b",
+  "da39a3ee5e6b"
+ ],
+ "garble": {
+  "r1": [
+   "EMPTY"
+  ],
+  "r2": [
+   "EMPTY"
+  ]
+ },
+ "prompt_tok": 5091
+}
+
+===== multi =====
+{
+ "post_churn_rehit_identical": true,
+ "hashes": [
+  "da39a3ee5e6b",
+  "da39a3ee5e6b"
+ ],
+ "garble": {
+  "r1": [
+   "EMPTY"
+  ],
+  "r2": [
+   "EMPTY"
+  ]
+ },
+ "prompt_tok": 3440
+}
+
+===== simple =====
+{
+ "post_churn_rehit_identical": true,
+ "hashes": [
+  "da39a3ee5e6b",
+  "da39a3ee5e6b"
+ ],
+ "garble": {
+  "r1": [
+   "EMPTY"
+  ],
+  "r2": [
+   "EMPTY"
+  ]
+ },
+ "prompt_tok": 78
+}
+

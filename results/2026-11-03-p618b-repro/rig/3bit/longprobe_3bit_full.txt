@@ -1,0 +1,178 @@
+===== essay =====
+{
+ "t0_identical": true,
+ "hashes": [
+  "700bbba1f878",
+  "700bbba1f878",
+  "700bbba1f878"
+ ],
+ "content_hashes": [
+  "4fb09187af77",
+  "4fb09187af77",
+  "4fb09187af77"
+ ],
+ "garble": {
+  "cold": [
+   "REP-LOOP"
+  ],
+  "rehit": [
+   "REP-LOOP"
+  ],
+  "rehit2": [
+   "REP-LOOP"
+  ]
+ },
+ "finish": [
+  "length",
+  "length",
+  "length"
+ ],
+ "prompt_tok": 2145,
+ "chars": [
+  4667,
+  4667,
+  4667
+ ],
+ "t1_seed_identical": true,
+ "t1_hashes": [
+  "fc075afc3ee4",
+  "fc075afc3ee4"
+ ],
+ "t1_garble": [
+  "REP-LOOP"
+ ],
+ "dt_cold": 21.5
+}
+
+===== code =====
+{
+ "t0_identical": true,
+ "hashes": [
+  "2571902dc210",
+  "2571902dc210",
+  "2571902dc210"
+ ],
+ "content_hashes": [
+  "a87bed8e0af6",
+  "a87bed8e0af6",
+  "a87bed8e0af6"
+ ],
+ "garble": {
+  "cold": [
+   "REP-LOOP"
+  ],
+  "rehit": [
+   "REP-LOOP"
+  ],
+  "rehit2": [
+   "REP-LOOP"
+  ]
+ },
+ "finish": [
+  "length",
+  "length",
+  "length"
+ ],
+ "prompt_tok": 5051,
+ "chars": [
+  4589,
+  4589,
+  4589
+ ],
+ "t1_seed_identical": false,
+ "t1_hashes": [
+  "bd1536ced3b4",
+  "2a518da68d8c"
+ ],
+ "t1_garble": [
+  "REP-LOOP"
+ ],
+ "dt_cold": 34.0
+}
+
+===== multi =====
+{
+ "t0_identical": true,
+ "hashes": [
+  "f11c651f4944",
+  "f11c651f4944",
+  "f11c651f4944"
+ ],
+ "content_hashes": [
+  "86a9864a2858",
+  "86a9864a2858",
+  "86a9864a2858"
+ ],
+ "garble": {
+  "cold": [],
+  "rehit": [],
+  "rehit2": []
+ },
+ "finish": [
+  "stop",
+  "stop",
+  "stop"
+ ],
+ "prompt_tok": 3400,
+ "chars": [
+  72,
+  72,
+  72
+ ],
+ "t1_seed_identical": true,
+ "t1_hashes": [
+  "96f515826bb9",
+  "96f515826bb9"
+ ],
+ "t1_garble": [
+  "REP-LOOP"
+ ],
+ "dt_cold": 2.1
+}
+
+===== simple =====
+{
+ "t0_identical": true,
+ "hashes": [
+  "5cfb47762ab1",
+  "5cfb47762ab1",
+  "5cfb47762ab1"
+ ],
+ "content_hashes": [
+  "f4fd6fa95450",
+  "f4fd6fa95450",
+  "f4fd6fa95450"
+ ],
+ "garble": {
+  "cold": [
+   "REP-LOOP"
+  ],
+  "rehit": [
+   "REP-LOOP"
+  ],
+  "rehit2": [
+   "REP-LOOP"
+  ]
+ },
+ "finish": [
+  "length",
+  "length",
+  "length"
+ ],
+ "prompt_tok": 38,
+ "chars": [
+  3159,
+  3159,
+  3159
+ ],
+ "t1_seed_identical": false,
+ "t1_hashes": [
+  "adef30298441",
+  "a0c6c9af9e6c"
+ ],
+ "t1_garble": [
+  "REP-LOOP"
+ ],
+ "dt_cold": 16.9
+}
+
