@@ -1,0 +1,76 @@
+=================== P618D CERT7 GATE START 2026-11-03 20:53:36 ===================
+=== [0] manifest + guard code + image-native verify ===
+MANIFEST fork_sha: PASS (5bf4192d16e91d4e1c5fb3066db68b7415013dd7)
+GUARD_CODE_PRESENT: raise=1 comment=1 (expect 1 each)
+P48_VERIFY: ALL_GREEN
+P73_CHECKS: 11/11 PASS
+=== [G0] guard proof k8v4 (turboquant_k8v4) 20:53:55 ===
+SUBSTITUTIONS: dtype=1 other=0
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert7 name=arc-test graph=1 spec=3 gmu=0.8 mnbt=8192 seqs=64 xgc=0 port=8000 20:54:00
+REFUSAL_FOUND=1 after ~65s
+(APIServer pid=13)   File "/opt/venv/lib/python3.12/site-packages/pydantic/_internal/_dataclasses.py", line 121, in __init__
+(APIServer pid=13)     s.__pydantic_validator__.validate_python(ArgsKwargs(args, kwargs), self_instance=s)
+(APIServer pid=13) pydantic_core._pydantic_core.ValidationError: 1 validation error for VllmConfig
+(APIServer pid=13)   Value error, ArcXpuPlatform: kv_cache_dtype 'turboquant_k8v4' is deprecated on vllm-arc: TurboQuant presets quantize values to 4-bit-class precision and produce degenerate generations on this model (P6.18 campaign, 2026-11-03). Serve with the certified default 'fp8_e4m3'. [type=value_error, input_value=ArgsKwargs((), {'model_co... 'shutdown_timeout': 0}), input_type=ArgsKwargs]
+(APIServer pid=13)     For further information visit https://errors.pydantic.dev/2.13/v/value_error
+G0 k8v4: PASS (loud refusal, startup never reached)
+=== [G0] guard proof tq4nc (turboquant_4bit_nc) 20:55:06 ===
+SUBSTITUTIONS: dtype=1 other=0
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert7 name=arc-test graph=1 spec=3 gmu=0.8 mnbt=8192 seqs=64 xgc=0 port=8000 20:55:09
+REFUSAL_FOUND=1 after ~65s
+(APIServer pid=13)   File "/opt/venv/lib/python3.12/site-packages/pydantic/_internal/_dataclasses.py", line 121, in __init__
+(APIServer pid=13)     s.__pydantic_validator__.validate_python(ArgsKwargs(args, kwargs), self_instance=s)
+(APIServer pid=13) pydantic_core._pydantic_core.ValidationError: 1 validation error for VllmConfig
+(APIServer pid=13)   Value error, ArcXpuPlatform: kv_cache_dtype 'turboquant_4bit_nc' is deprecated on vllm-arc: TurboQuant presets quantize values to 4-bit-class precision and produce degenerate generations on this model (P6.18 campaign, 2026-11-03). Serve with the certified default 'fp8_e4m3'. [type=value_error, input_value=ArgsKwargs((), {'model_co... 'shutdown_timeout': 0}), input_type=ArgsKwargs]
+(APIServer pid=13)     For further information visit https://errors.pydantic.dev/2.13/v/value_error
+G0 tq4nc: PASS (loud refusal, startup never reached)
+=== [1] default fp8_e4m3 posture 20:56:37 ===
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert7 name=arc-test graph=1 spec=3 gmu=0.8 mnbt=8192 seqs=64 xgc=0 port=8000 20:56:39
+HEALTH=OK after ~295s
+(EngineCore pid=698) INFO 11-03 20:59:19 [kv_cache_utils.py:2395] XPU KV cache size: 400,739 tokens, Maximum concurrency for 262,144 tokens per request: 1.53x
+SLICE_ENV_ABSENT=0 (expect 0)
+FLIP_FIRST: stop 9.2s
+A-gates: integrity_5of5=1 det_3of3=1
+agg4x256#1 wall=3.84s aggregate=266.41 tok/s ok_streams=4/4 [256tok/3.7s 256tok/3.8s 256tok/3.8s 256tok/3.8s]
+agg4x256#2 wall=3.42s aggregate=299.73 tok/s ok_streams=4/4 [256tok/3.4s 256tok/3.4s 256tok/3.4s 256tok/3.4s]
+solo200 n=200 dt=2.37s tps=84.50
+solo200 n=200 dt=2.37s tps=84.44
+agg4x256#1 wall=7.13s aggregate=143.56 tok/s ok_streams=4/4 [256tok/7.0s 256tok/7.0s 256tok/7.1s 256tok/6.6s]
+agg4x256#2 wall=4.69s aggregate=218.29 tok/s ok_streams=4/4 [256tok/4.2s 256tok/4.4s 256tok/4.7s 256tok/4.3s]
+solo200 n=200 dt=2.82s tps=70.91
+solo200 n=200 dt=2.94s tps=68.11
+SPEC_GATE {"wall_s": 3.04, "streams_ok": "4/4", "drafts": 229, "draft_tokens": 687, "accepted": 575, "pos": {"0": 0.9258, "1": 0.8384, "2": 0.7467, "3": 0.0}, "pos1": 0.9258, "acceptance": 0.837, "mean_acceptance_length": 3.51, "hard": 0.5, "target": 0.85}
+SPEC_GATE log_window: (APIServer pid=13) INFO 11-03 21:03:31 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 2.82, Accepted throughput: 84.09 tokens/s, Drafted throughput: 138.59 tokens/s, Accepted: 841 tokens, Drafted: 1386 tokens, Per-position acceptance rate: 0.801, 0.584, 0.435, Avg Draft acceptance rate: 60.7%
+SPEC_GATE PASS: pos1=0.9258 >= 0.5 hard, acceptance=0.8370 vs 0.85 target (TARGET MISS — recorded, --strict-target for certification)
+=== [2] LONG-RETURN GATE (owner hard gate) 21:03:34 ===
+[essay] t0_identical=True hashes=['648d66ae32c9', '648d66ae32c9', '648d66ae32c9'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=2145 chars=[3885, 3885, 3885]
+[code] t0_identical=True hashes=['507d389dc258', '507d389dc258', '507d389dc258'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=5051 chars=[2746, 2746, 2746]
+[multi] t0_identical=True hashes=['2b2ddebff529', '2b2ddebff529', '2b2ddebff529'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=3400 chars=[1023, 1023, 1023]
+[simple] t0_identical=True hashes=['84efc84cc142', '84efc84cc142', '84efc84cc142'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=False prompt_tok=38 chars=[1510, 1510, 1510]
+LONGPROBE cert7fp8 full: CORRUPTION_SIGNAL
+CHURN 4x256 done: ['4.9s/256tok', '5.1s/256tok', '5.1s/256tok', '5.3s/256tok']
+[essay] post_churn_rehit_identical=True hashes=['648d66ae32c9', '648d66ae32c9'] garble={'r1': [], 'r2': []}
+[code] post_churn_rehit_identical=True hashes=['507d389dc258', '507d389dc258'] garble={'r1': [], 'r2': []}
+[multi] post_churn_rehit_identical=True hashes=['2b2ddebff529', '2b2ddebff529'] garble={'r1': [], 'r2': []}
+[simple] post_churn_rehit_identical=True hashes=['84efc84cc142', '84efc84cc142'] garble={'r1': [], 'r2': []}
+LONGPROBE cert7fp8r1 rehit: CLEAN
+CHURN 4x256 done: ['4.9s/256tok', '5.2s/256tok', '5.3s/256tok', '5.6s/256tok']
+[essay] post_churn_rehit_identical=True hashes=['648d66ae32c9', '648d66ae32c9'] garble={'r1': [], 'r2': []}
+[code] post_churn_rehit_identical=True hashes=['507d389dc258', '507d389dc258'] garble={'r1': [], 'r2': []}
+[multi] post_churn_rehit_identical=True hashes=['2b2ddebff529', '2b2ddebff529'] garble={'r1': [], 'r2': []}
+[simple] post_churn_rehit_identical=True hashes=['84efc84cc142', '84efc84cc142'] garble={'r1': [], 'r2': []}
+LONGPROBE cert7fp8r2 rehit: CLEAN
+CHURN 4x256 done: ['4.9s/256tok', '5.0s/256tok', '5.0s/256tok', '5.4s/256tok']
+[essay] post_churn_rehit_identical=True hashes=['648d66ae32c9', '648d66ae32c9'] garble={'r1': [], 'r2': []}
+[code] post_churn_rehit_identical=True hashes=['507d389dc258', '507d389dc258'] garble={'r1': [], 'r2': []}
+[multi] post_churn_rehit_identical=True hashes=['2b2ddebff529', '2b2ddebff529'] garble={'r1': [], 'r2': []}
+[simple] post_churn_rehit_identical=True hashes=['84efc84cc142', '84efc84cc142'] garble={'r1': [], 'r2': []}
+LONGPROBE cert7fp8r3 rehit: CLEAN
+[essay] hashes=['648d66ae32c9'] finish=['stop', 'stop', 'stop'] chars=[3885, 3885, 3885] t1_seed_identical=True garble_empty=True
+[code] hashes=['507d389dc258'] finish=['stop', 'stop', 'stop'] chars=[2746, 2746, 2746] t1_seed_identical=True garble_empty=True
+[multi] hashes=['2b2ddebff529'] finish=['stop', 'stop', 'stop'] chars=[1023, 1023, 1023] t1_seed_identical=True garble_empty=True
+[simple] hashes=['84efc84cc142'] finish=['stop', 'stop', 'stop'] chars=[1510, 1510, 1510] t1_seed_identical=False garble_empty=True
+probe verdicts: ['CORRUPTION_SIGNAL', 'CLEAN', 'CLEAN', 'CLEAN']
+LONGRETURN_GATE: FAIL ['simple: t1-seed not reproducible', "probe verdicts not all CLEAN: ['CORRUPTION_SIGNAL', 'CLEAN', 'CLEAN', 'CLEAN']"]
+LONG-RETURN GATE: FAIL
+GATE_RC=1
