@@ -1,0 +1,5 @@
+[essay] t0_identical=True hashes=['700bbba1f878', '700bbba1f878', '700bbba1f878'] garble={'cold': ['REP-LOOP'], 'rehit': ['REP-LOOP'], 'rehit2': ['REP-LOOP']} t1_seed_identical=True prompt_tok=2145 chars=[4667, 4667, 4667]
+[code] t0_identical=True hashes=['98e00598a815', '98e00598a815', '98e00598a815'] garble={'cold': ['REP-LOOP'], 'rehit': ['REP-LOOP'], 'rehit2': ['REP-LOOP']} t1_seed_identical=True prompt_tok=5051 chars=[4578, 4578, 4578]
+[multi] t0_identical=True hashes=['971d33b4163e', '971d33b4163e', '971d33b4163e'] garble={'cold': ['REP-LOOP'], 'rehit': ['REP-LOOP'], 'rehit2': ['REP-LOOP']} t1_seed_identical=True prompt_tok=3400 chars=[3118, 3118, 3118]
+[simple] t0_identical=True hashes=['5cfb47762ab1', '5cfb47762ab1', '5cfb47762ab1'] garble={'cold': ['REP-LOOP'], 'rehit': ['REP-LOOP'], 'rehit2': ['REP-LOOP']} t1_seed_identical=True prompt_tok=38 chars=[3159, 3159, 3159]
+LONGPROBE k3v4 full: CORRUPTION_SIGNAL
