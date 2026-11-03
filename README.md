@@ -25,7 +25,7 @@ A fork of [vllm-project/vllm-gaudi](https://github.com/vllm-project/vllm-gaudi) 
 
 **Certified posture (P6.17, owner directives 2026-11-03): probabilistic drafting — the serve script's default.** The certified line is `ARC_SPEC_METHOD=probabilistic` (the default when unset). **All record values below are measured natively on the probabilistic lane** (comprehensive p617 campaign on `vllm-arc:v0.30.0-b70-cert6` — every face re-measured on fresh boots; earlier prob-lane faces `results/2026-11-03-p616b-probmatrix/` + `results/2026-11-03-p616c-spechook/`. Methodology, face definitions, and per-face provenance in [`docs/PERFORMANCE-arc.md`](docs/PERFORMANCE-arc.md)):
 
-| Face | Certified — probabilistic (default) |
+| Face | Value |
 |---|---|
 | t0 agg4x256 / solo200 | **291.4–303.1 / 83.7–84.9 tok/s** |
 | t1.0-xhigh agg4x256 | **222.7–241.3 tok/s steady** |
@@ -37,20 +37,20 @@ A fork of [vllm-project/vllm-gaudi](https://github.com/vllm-project/vllm-gaudi) 
 | MTP k3 acceptance, t0 | **83.7 %** strict-gate window / **85.9 %** battery window (mean accepted length 3.51 / 2.58; hard floor PASS) |
 | MTP over no-spec (same-boot A/B) | **t0 2.35–2.47× · t1.0 1.84–2.09× · alt 2.42–2.53×** |
 
-Full 5-dtype matrix (TQ presets up to **+91 %**) in the TurboQuant table below and [`docs/PERFORMANCE-arc.md`](docs/PERFORMANCE-arc.md) "Draft-sampling posture". Worst-case caveat: rare divergent-trajectory requests on TQ dtypes can still collapse ~26 tok/s — **fp8 is immune** (one more reason it is the recommended dtype).
+Full 5-dtype matrix in the TurboQuant table below and [`docs/PERFORMANCE-arc.md`](docs/PERFORMANCE-arc.md) "Draft-sampling posture". Worst-case caveat: rare divergent-trajectory requests on TQ dtypes can still collapse ~26 tok/s — **fp8 is immune** (one more reason it is the recommended dtype).
 
 ### TurboQuant KV-cache dtypes (opt-in, P6.14 — validated on the cert6 image)
 
 Swapping only `--kv-cache-dtype fp8_e4m3` → a `turboquant_*` preset (one-variable legs,
-`results/2026-11-02-p614-l1v2/` + `-l3/`; integrity 5/5 + determinism 3/3 + spec gate PASS on every preset, lagged KV store now healthy — 0 store errors, kit transfer live, external tier participating). The t1.0 aggregates are the **certified probabilistic lane** (P6.17; `results/2026-11-03-p616b-probmatrix/`, one boot per dtype on cert6; deltas vs the same dtype's pre-P6.17 posture):
+`results/2026-11-02-p614-l1v2/` + `-l3/`; integrity 5/5 + determinism 3/3 + spec gate PASS on every preset, lagged KV store now healthy — 0 store errors, kit transfer live, external tier participating). The t1.0 aggregates are the **certified probabilistic lane** (P6.17; `results/2026-11-03-p616b-probmatrix/`, one boot per dtype on cert6):
 
-| Preset | KV capacity | U32k / U64k TTFT | t1.0 agg — probabilistic (certified default) | Standing |
+| Preset | KV capacity | U32k / U64k TTFT | t1.0 agg (tok/s) | Standing |
 |---|---|---|---|---|
-| `fp8_e4m3` (default dtype) | 405,491 tok (1.55×) | 23.16 / 50.77 s | **241.10 (+29 %)** | **recommended dtype+posture — fastest agg; sampled-collapse-immune** |
-| `turboquant_k8v4` | 526,445 tok (2.01×) | **15.29 / 33.03 s** | 172.95 (≈ parity) | **quality-safest TQ face** |
-| `turboquant_4bit_nc` | 757,641 tok (2.89×) | 15.91 / 34.02 s | **134.42 (+44 %)** | middle |
-| `turboquant_k3v4_nc` | 853,220 tok (3.25×) | 15.48 / 33.78 s | **137.11 (+54 %)** | capacity |
-| `turboquant_3bit_nc` | **975,329 tok (3.72×)** | 16.02 / 35.74 s | **171.32 (+91 %)** | **max capacity** |
+| `fp8_e4m3` (default dtype) | 405,491 tok (1.55×) | 23.16 / 50.77 s | **241.10** | **recommended dtype — fastest aggregate; sampled-collapse-immune** |
+| `turboquant_k8v4` | 526,445 tok (2.01×) | **15.29 / 33.03 s** | 172.95 | **quality-safest TQ face** |
+| `turboquant_4bit_nc` | 757,641 tok (2.89×) | 15.91 / 34.02 s | **134.42** | middle |
+| `turboquant_k3v4_nc` | 853,220 tok (3.25×) | 15.48 / 33.78 s | **137.11** | capacity |
+| `turboquant_3bit_nc` | **975,329 tok (3.72×)** | 16.02 / 35.74 s | **171.32** | **max capacity** |
 
 Known TQ trade-offs (dtype-wide, unchanged by the store fix — owner-call material):
 beyond the divergent-trajectory collapse caveat above (fp8 immune), bystander prefill
