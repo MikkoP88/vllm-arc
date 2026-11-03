@@ -5,7 +5,7 @@
 A fork of [vllm-project/vllm-gaudi](https://github.com/vllm-project/vllm-gaudi) at **v0.30.0** (package name `vllm_gaudi` preserved; the Arc/XPU work lives in `vllm_gaudi/xpu/`).
 
 - Certified release: **`rel/v0.30.0-b70-cert6`** — every gate GREEN with banked evidence. cert6 = cert5's engine + the P6.14 TurboQuant-aware lagged KV store (all four `turboquant_*` kv-cache dtypes validated end-to-end — see the KV-quant table below; default `fp8_e4m3` posture identical to cert5).
-- **Project status: P0–P6.15 complete.** All phases closed with evidence — engine hardening (P2), cache lane (P3), certification battery (P4), audits + soak (P5), measurement/analysis phases P6.1–P6.15 (external-hit-rate truth, comparator law, telemetry off, publishing hygiene, main currency, the comprehensive cert4-native re-measurement, the P2P-allreduce closure r71, the docs overhaul, the END-stall mechanism analysis + sliced-store rung, the TurboQuant lagged-store fix + full preset validation, and the bystander-stall taxonomy + chunk-granularity Pareto matrix for ALL dtypes — completed by P6.15b: the all-presets MNBT-4096 legs and the 12-face solo/concurrent decode/prefill/TTFT matrix on the fork's own harnesses; P6.15c pinned the t1.0-xhigh sampled-collapse mechanism — per-request MTP acceptance death from round 1 under 4-bit-V KV noise, engine cadence constant, no config fix, fp8 immune). Zero engine-code change in the certified default posture since cert3: **cert6 is the latest certified image — default posture byte-identical to cert5's (the fastest validated)**, adding only the TQ-aware store path (inert under `fp8_e4m3`) plus the opt-in `turboquant_*` dtype faces and the opt-in slice profile (64k TTFT −1.2 s, one-shot store eliminated), which stays experimental per its pre-registered rule (rejected-on-evidence for defaults: k5 depth, torch.compile). Full phase ledger: [`docs/TESTING-arc.md`](docs/TESTING-arc.md) (validation record) and [`docs/MIGRATION-arc.md`](docs/MIGRATION-arc.md) (evidence table).
+- **Project status: P0–P6.16 complete.** All phases closed with evidence — engine hardening (P2), cache lane (P3), certification battery (P4), audits + soak (P5), measurement/analysis phases P6.1–P6.15 (external-hit-rate truth, comparator law, telemetry off, publishing hygiene, main currency, the comprehensive cert4-native re-measurement, the P2P-allreduce closure r71, the docs overhaul, the END-stall mechanism analysis + sliced-store rung, the TurboQuant lagged-store fix + full preset validation, and the bystander-stall taxonomy + chunk-granularity Pareto matrix for ALL dtypes — completed by P6.15b: the all-presets MNBT-4096 legs and the 12-face solo/concurrent decode/prefill/TTFT matrix on the fork's own harnesses; P6.15c pinned the t1.0-xhigh sampled-collapse mechanism — per-request MTP acceptance death from round 1 under 4-bit-V KV noise, engine cadence constant, no config fix, fp8 immune), and **P6.16 the draft-sampling posture fix**: opt-in `ARC_SPEC_METHOD=probabilistic` (upstream-config-native spec key on the pinned wheel) — sampled drafts + rejection-ratio verify, the mathematically-correct sampler at temperature; t1.0-xhigh agg **fp8 +29 %, TQ presets +44…+91 %** with uniform solo streams (zero 26-tok/s legs in measured faces), t0 provably + measurably identical, merged serve-layer with the default (greedy) byte-identical (k8v4 EV-neutral fails the every-dtype default-flip rule). Zero engine-code change in the certified default posture since cert3: **cert6 is the latest certified image — default posture byte-identical to cert5's (the fastest validated)**, adding only the TQ-aware store path (inert under `fp8_e4m3`) plus the opt-in `turboquant_*` dtype faces and the opt-in slice profile (64k TTFT −1.2 s, one-shot store eliminated), which stays experimental per its pre-registered rule (rejected-on-evidence for defaults: k5 depth, torch.compile). P6.16 is serve-layer by design — **the image line is unchanged (no cert7; the serve script is not in the image and the wheel is untouched)**. Full phase ledger: [`docs/TESTING-arc.md`](docs/TESTING-arc.md) (validation record) and [`docs/MIGRATION-arc.md`](docs/MIGRATION-arc.md) (evidence table).
 - **Open improvement lanes** (all analysis-side, none certified yet): ESIMD dense-FA kernel project (r67b re-scope). The TP2 allreduce path question is **closed** — r71 proved direct P2P (10.23 GB/s D2D; all collectives on the `topo sycl` device path; `tools/pcie/README.md`).
 
 ## What this fork adds
@@ -47,8 +47,11 @@ Swapping only `--kv-cache-dtype fp8_e4m3` → a `turboquant_*` preset (one-varia
 | `turboquant_k3v4_nc` | 853,220 tok (3.25×) | 15.48 / 33.78 s | 88.95 (−53 %) | capacity |
 | `turboquant_3bit_nc` | **975,329 tok (3.72×)** | 16.02 / 35.74 s | 89.58 (−53 %) | **max capacity** |
 
-Known TQ-inherent costs (dtype-wide, unchanged by the fix — owner-call material): ragged
-sampled-throughput solo streams (~77 + ~26 tok/s pair). Bystander prefill stalls: at
+Known TQ-inherent costs (dtype-wide, unchanged by the store fix — owner-call material): ragged
+sampled-throughput solo streams (~77 + ~26 tok/s pair) — **the opt-in P6.16 draft posture
+(`ARC_SPEC_METHOD=probabilistic`) makes these pairs uniform and lifts the t1.0 aggregates
++44…+91 % (rare divergent-trajectory collapse remains on TQ dtypes; fp8 gains +29 % and is
+immune)**. Bystander prefill stalls: at
 TRUE default posture TQ **improves** them vs fp8 (TQ4 p95 3.23/3.78 s vs fp8's
 3.99/5.30 s — P6.15 first-ever fp8-default measurement; the old "fp8 ~1.3/1.6 s"
 comparator was a thr2048-profile face); chunk-granularity knobs (MNBT 4096/2048) tune
@@ -170,7 +173,7 @@ docker exec -d arc-test bash /root/serve_k3.sh
 curl -s -o /dev/null -w "%{http_code}\n" -m 5 http://127.0.0.1:8000/health
 ```
 
-Optional postures (both documented in full in
+Optional postures (all documented in full in
 [`docs/CONFIGURATION-arc.md`](docs/CONFIGURATION-arc.md)):
 
 - **OpenAI `reasoning_effort` compatibility** — mount + pass
@@ -180,6 +183,11 @@ Optional postures (both documented in full in
   `--long-prefill-token-threshold 2048` + `LMC_DEFER_CHUNK_STORE=1` +
   `LMC_DEFER_MIN_TOKENS=40960` (U64k TTFT 51.16 s, bystander p95/max
   1580/1599 ms; WARNING: ungated use regresses short-prefill r48k).
+- **Sampled-serving draft posture (P6.16)** — one env on the boot
+  interface: `ARC_SPEC_METHOD=probabilistic` (greedy default unchanged,
+  byte-identical; t1.0-xhigh agg fp8 +29 % / TQ +44…+91 %, uniform solo
+  streams, t0 provably identical — recommended for temperature ≥ ~0.5
+  serving; worst-case-sensitive TQ fleets stay on fp8).
 
 The uniform boot interface with posture knobs (rig paths) is
 `tools/serve_arc_b70.sh`.
@@ -196,7 +204,7 @@ The uniform boot interface with posture knobs (rig paths) is
 
 - **`main` is linear and protected**: changes land as squash commits from per-item lanes (`feat/arc-pNN-*`); direct pushes, force pushes, and deletions are blocked; PRs are required.
 - **Certified releases are annotated tags** pointing at the certified `main` commit — current: `rel/v0.30.0-b70-cert6`; superseded: `rel/v0.30.0-b70-cert5` (identical default behavior, lacks the P6.14 TQ-aware store hunk), `rel/v0.30.0-b70-cert4` (identical default behavior, lacks the default-OFF P6.13 slice hunk), `rel/v0.30.0-b70-cert3` (identical default behavior, lacks the p65 deferral hunk), `rel/v0.30.0-b70-cert2` (0.5.5-era lmcache line — valid, older), `rel/v0.30.0-b70-cert` (predates the r46u glue-alias fix — never build from it). The Docker image embeds the fork SHA in `/etc/vllm-arc/IMAGE_MANIFEST` for A/B verification.
-- **Evidence is in-tree**: every validation leg banks to `results/YYYY-MM-DD-<phase>-r<leg>-<slug>/` (VERDICT + raw outputs) — **100 evidence dirs, 95 VERDICTs of record**, P0 through P6.
+- **Evidence is in-tree**: every validation leg banks to `results/YYYY-MM-DD-<phase>-r<leg>-<slug>/` (VERDICT + raw outputs) — **103 evidence dirs, 98 VERDICTs of record**, P0 through P6.
 - **No secrets or real host addresses in-tree (publishing-hygiene law)**: tracked == pushable, so credentials, rig/host addresses, and private identities never enter tracked files; banked logs carry redacted host addresses (`results/REDACTION-2026-10-31.md` documents the one-time scrub). `tools/leak_sweep.sh` must exit 0 before every push.
 - The `feat/arc-*` branches are kept deliberately: squash-merging leaves the per-item development history nowhere else.
 

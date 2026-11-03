@@ -123,8 +123,13 @@ twin of the live `VLLM_COMPACT_GDN` above).
 In-line with best practice: `VLLM_ARC_*` engine-env namespace (**11 live
 vars** + 3 dropped at r45d, below), `NN-category/pNN-slug` patch dirs,
 `feat/arc-pNN-<slug>` branches, `vllm-arc:v0.30.0-b70[-pNN]` image tags,
-`ARC_*` **host-side script vars** (9, `tools/serve_arc_b70.sh` — a
-different layer from engine envs), kebab-case docs, and the evidence-dir
+`ARC_*` **host-side script vars** (10, `tools/serve_arc_b70.sh` — a
+different layer from engine envs; the 10th is `ARC_SPEC_METHOD`, the
+P6.16 opt-in draft-sampling posture knob: unset = greedy = certified
+byte-identical, `probabilistic` appends the upstream spec-config key
+`draft_sample_method` — validated
+`results/2026-11-03-p616c-spechook/`), kebab-case docs, and the
+evidence-dir
 convention `results/YYYY-MM-DD-<phase/item>-r<leg>-<slug>/` (internal
 only, never upstreamed). **`pNN` is TWO sequences** — patch dirs/branches
 carry PLAN-ITEM numbers (§5: p01..p61), image tags carry BUILD-sequence
