@@ -69,6 +69,27 @@ accepted tokens** (MTP k4; B1 39004/9929, B5 27843/7062, TQ4-def
 at 6-way ≈ **440 tok/s**. Solo 84.5 vs concurrent ~73 per-stream = **−13 %
 per-stream cost for 6× parallelism** (memory-bound batching).
 
+## Table 2b — decode at t1.0 xhigh (sampled), solo + concurrent, per KV quantization (owner ask 2026-11-03; banked P6.14/cert6 legs, default posture per dtype)
+
+| Quantization | t1.0 solo pair (tok/s) | t1.0 4-way agg#2 (tok/s) | Reading |
+|---|---|---|---|
+| `fp8_e4m3` (cert6 gate) | **61.73 / 61.79 — clean pair** | 186.48 (cert5 A/B face: 189.41) | the only dtype with a uniform sampled solo pair |
+| `turboquant_k8v4` (L3) | 77.31 + 26.08 ragged | **173.39 (−8.5 %)** | mildest TQ sampled cost |
+| `turboquant_4bit_nc` (L1v2 / G7) | 77.60 + 25.94 ragged (cert6: 77.30 + 25.85) | 93.05 / 93.76 (−51 %) | ragged pair dtype-wide |
+| `turboquant_k3v4_nc` (L3) | 77.37 + 25.88 ragged | 88.95 (−53 %) | ragged pair |
+| `turboquant_3bit_nc` (L3) | 25.99 + 85.57 ragged (order flipped) | 89.58 (−53 %) | ragged pair |
+
+Knob faces (MNBT/thr) are not separately measured at t1.0: the chunk
+knobs are decode-neutral at t0 (Table 1, <1.5 % across all chunk sizes)
+and the ragged face is KV-dtype-driven — knob rows inherit their dtype's
+t1.0 column. The good TQ solo leg (~77 tok/s) beats fp8's sampled solo
+(61.7); the cost is the ~26 tok/s collapse leg and the ragged 4-way
+streams (256-tok legs spreading 3.7–11.5 s) — concurrent agg is the
+honest dtype comparator. Sources: `../2026-11-02-p614-l3/l3_{k8v4} +
+l3r_{k3v4,3bit}/rig/tq_t1.0_run7n.out`,
+`../2026-11-02-p614-l1v2/rig/tq_t1.0_run7n.out`,
+`../2026-11-02-p614-cert6/rig/cert6_{gate/k3_t1.0,tq4/tq_t1.0}_run7n.out`.
+
 ## Table 3 — in-line with the fork's older tests (comparability)
 
 | Face | probe (this dir) | older bank | Δ |
