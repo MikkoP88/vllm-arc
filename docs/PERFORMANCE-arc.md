@@ -22,7 +22,9 @@ on, TP2, greedy temp 0. Opt-in-posture faces (TQ dtypes, probabilistic
 drafting) run the same protocol laws with exactly one flipped variable;
 their tables are labeled by posture. **Recommended MTP depth = k3**
 (r46t campaign, reproduced natively on cert4 by r70 — both in this
-file).
+file). **Recommended draft posture for sampled serving =
+`ARC_SPEC_METHOD=probabilistic`** (P6.16, owner call 2026-11-03 —
+the certified default remains greedy; section below).
 
 ## Measurement methodology — how every number in this file is produced
 
@@ -422,7 +424,7 @@ default posture). The certified default stays `fp8_e4m3` — fastest
 sampled throughput, the quality reference face; NOT the lowest
 bystander cost (true-default fp8 has the highest — see below).
 
-### Draft-sampling posture — probabilistic drafting (P6.16, opt-in: `ARC_SPEC_METHOD=probabilistic`)
+### Draft-sampling posture — probabilistic drafting (P6.16, RECOMMENDED for sampled serving: `ARC_SPEC_METHOD=probabilistic`)
 
 Serve-layer opt-in, **no image change** (the knob lives in
 `tools/serve_arc_b70.sh`): `ARC_SPEC_METHOD=probabilistic` appends the

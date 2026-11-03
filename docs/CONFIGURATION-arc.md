@@ -91,9 +91,11 @@ non-privileged TP2 init — validated posture, env-inspected 2026-10-27).
 
 ### Step 2 — Serve (environment chain + CLI as ONE unit)
 
-The CLI below is the certified line (rig
-`/root/build/r42/r43_serve_k5.sh`, depth 3 per r46t) minus the optional
-chat template — every flag byte-verified. It is certified **only**
+The CLI below is the **recommended line** — the certified line (rig
+`/root/build/r42/r43_serve_k5.sh`, depth 3 per r46t) plus the P6.16
+`draft_sample_method` key (recommended draft posture, owner call
+2026-11-03); drop that one key for the byte-identical certified greedy
+default — every flag byte-verified. It is certified **only**
 together with these 23 exported vars (13 runtime/system + 10 LMCache —
 the other 2 of the 25-var chain are the `-e` pair in Step 1). Ship it as
 one script inside the container — never a bare interactive
@@ -131,8 +133,10 @@ export LMCACHE_TRACK_USAGE=false        # P6.3: usage telemetry is default-ON;
                                         # this rig serves offline (pairs with
                                         # the e04 wheel patch gating the
                                         # per-request usage-context creation)
-# --- the certified CLI: MTP k3 (recommended), LMCache ON, mode:none
-#     (no torch.compile) + decode-only graphs, explicit capture list ---
+# --- the recommended CLI: MTP k3 + probabilistic drafting (P6.16), LMCache
+#     ON, mode:none (no torch.compile) + decode-only graphs, explicit capture
+#     list. Drop the "draft_sample_method" key for the certified greedy
+#     default (byte-identical at t0). ---
 exec /opt/venv/bin/vllm serve --model /models/target \
   --served-model-name qwen3.8-27b-fp8 \
   --tensor-parallel-size 2 \
@@ -154,7 +158,7 @@ exec /opt/venv/bin/vllm serve --model /models/target \
   --enable-auto-tool-choice \
   --no-disable-hybrid-kv-cache-manager \
   --compilation-config '{"mode":"none","cudagraph_mode":"FULL_DECODE_ONLY","cudagraph_capture_sizes":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,20,25,30,35,40,45,48,50,55,60,64,65,70,75,80,85,90,95,96,100,105,110,112,115,120,125,128,130,135,140,145,150,155,160,165,170,175,180,185,190,192,195,200,205,210,215,220,224,225,230,235,240,245,250,255,256,260,265,270,275,280,285,290,295,300,305,310,315,320]}' \
-  --speculative-config '{"method":"mtp","num_speculative_tokens":3}' \
+  --speculative-config '{"method":"mtp","num_speculative_tokens":3,"draft_sample_method":"probabilistic"}' \
   --port 8000 \
   > /root/serve_full.log 2>&1
 ```
@@ -262,7 +266,7 @@ is a 64k-class phenomenon only.
 `/root/build/serve_arc_b70_defer2.sh`):
 
 ```bash
-# 1) engine CLI (with the certified line's other flags):
+# 1) engine CLI (with the serve line's other flags):
 --long-prefill-token-threshold 2048
 # 2) env, inside the LMC_ENV set (keeps the 25-var chain + 2):
 export LMC_DEFER_CHUNK_STORE=1
@@ -343,16 +347,17 @@ unchanged by the fix and owner-call material per the A/B disposition.
 (Bystander stalls are NOT a TQ cost at equal posture — see the next
 section: true-default fp8 is the worst stall face.)
 
-## Draft-sampling posture (P6.16, opt-in — `ARC_SPEC_METHOD`)
+## Draft-sampling posture (P6.16, RECOMMENDED for sampled serving — `ARC_SPEC_METHOD`)
 
 The certified default is **greedy MTP drafting** (argmax drafts) —
 byte-identical to every prior certified posture. For **sampled serving
-(temperature ≥ ~0.5)** the recommended opt-in is **probabilistic
-drafting**: MTP drafts sampled from the draft distribution + the
-rejection-ratio verify (the mathematically-correct target sampler;
-greedy drafts + sampled verify is biased at temperature). At t0 the two
-are provably identical (plain-argmax drafts + accept-iff-argmax verify)
-— measured in-band on every dtype.
+(temperature ≥ ~0.5)** the **recommended** posture (owner call
+2026-11-03) is **probabilistic drafting**: MTP drafts sampled from the
+draft distribution + the rejection-ratio verify (the
+mathematically-correct target sampler; greedy drafts + sampled verify
+is biased at temperature). At t0 the two are provably identical
+(plain-argmax drafts + accept-iff-argmax verify) — measured in-band on
+every dtype.
 
 Enable it with one env on the uniform boot interface (no image change,
 no CLI edit):
@@ -499,9 +504,9 @@ Host-script layer (`tools/serve_arc_b70.sh`): `ARC_IMAGE`, `ARC_NAME`,
 `ARC_GRAPH` (0 eager / 1 graph — certified = 1), `ARC_SPEC` (MTP depth
 = `num_speculative_tokens`: 0 = off, default 3 = the recommendation,
 4 = the D-champion alternative; only 0/3/4/5 accepted — the legged
-depths), `ARC_SPEC_METHOD` (draft-sampling posture, P6.16: unset =
-greedy = certified byte-identical; `probabilistic` = the opt-in
-sampled-serving posture — section above), `ARC_LMC` (1 = the certified
+depths), `ARC_SPEC_METHOD` (draft-sampling posture, P6.16: `probabilistic`
+= RECOMMENDED for sampled serving (owner call 2026-11-03) — section
+above; unset = greedy = certified byte-identical default), `ARC_LMC` (1 = the certified
 LMCache connector + the 9-var `LMCACHE_*` chain — default; 0 = no
 LMCache), `ARC_GMU` (0.8), `ARC_MNBT` (8192 — the certified default;
 r66c A/B'd 16384: long-face
