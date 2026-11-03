@@ -189,10 +189,18 @@ Optional postures (all documented in full in
 - **OpenAI `reasoning_effort` compatibility** — mount + pass
   `assets/chat_template_qwen38_high.jinja` (high/max→xhigh aliasing,
   none→thinking-off; default path identical either way).
-- **Long-context serve profile (p65)** — for U48k+-heavy fleets:
+- **Bystander-stall tuning — first choice (P6.15)** — `ARC_MNBT=4096`
+  on fp8: bystander p95 2030/2587 ms (vs 3986/5295 default) at TTFT
+  +8–13 %, KV +6.8 %, decode-neutral; per-dtype menu in
+  `docs/CONFIGURATION-arc.md`.
+- **Long-context serve profile (p65)** — the deeper-stall niche for
+  ≥48k prompts into concurrent decoders:
   `--long-prefill-token-threshold 2048` + `LMC_DEFER_CHUNK_STORE=1` +
   `LMC_DEFER_MIN_TOKENS=40960` (U64k TTFT 51.16 s, bystander p95/max
-  1580/1599 ms; WARNING: ungated use regresses short-prefill r48k).
+  1580/1599 ms). All three together; never lower the min-tokens gate
+  below 40960 (32k-class prompts regress +4.2 s). Prefer
+  `ARC_MNBT=4096` unless the absolute stall floor is the binding
+  constraint.
 
 The uniform boot interface with posture knobs (rig paths) is
 `tools/serve_arc_b70.sh`.

@@ -583,7 +583,11 @@ Guidance: stall-sensitive mixed fleets → **TQ4 + MNBT 4096** (stalls
 −38/−46 %, capacity +6.8 %, TTFT ≤ fp8-default); sub-1.5 s stalls →
 TQ4 + MNBT 2048 (largest TQ4 pool; dominates the equivalent thr2048
 face) at +14–40 % TTFT; fp8-fixed fleets → MNBT 4096 (stalls halved,
-+6.8 % capacity, +8–13 % TTFT). The 2026-11-03 all-presets completion
++6.8 % capacity, +8–13 % TTFT — the first-choice fp8 lever, owner
+directive 2026-11-03; the deeper fp8 stall floor is the p65
+long-context profile — [`CONFIGURATION-arc.md`](CONFIGURATION-arc.md)
+"Long-context serve profile" — p95/max 1580/1599 ms for ≥48k fleets
+at U64k TTFT 51.16 s). The 2026-11-03 all-presets completion
 set (B6–B8) generalizes the balanced face: **MNBT 4096 halves stalls on
 every preset** at TTFT ≤ fp8-default family (k3v4_nc is under family on
 both bars), with per-preset chunk = KV page × n; 3bit_nc + MNBT 4096 is
