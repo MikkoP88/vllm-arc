@@ -1,0 +1,3 @@
+ARC_CONTAINER_FRESH image=vllm-arc:v0.30.0-b70-cert6 id=f47c12369202 (recreated from none)
+bb881811902cb1723acae40de006e08f81d17be5e1a1f2330393f8ec4dd61b5a
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert6 name=arc-p617c graph=1 spec=0 gmu=0.8 mnbt=8192 seqs=64 xgc=0 port=8000 12:09:39

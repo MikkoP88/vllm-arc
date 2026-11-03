@@ -1,0 +1,18 @@
+[11:50:04] p617 campaign start (img=vllm-arc:v0.30.0-b70-cert6 method=probabilistic script=/root/build/serve_arc_b70.sh)
+[11:50:04] LEG A: stopping W14 incumbent; boot cert6 k3 PROBABILISTIC
+[11:55:19] arc-p617a health 200 (spec=3 method=probabilistic) boot=303s
+survival http=200 dt=8.19s
+[11:55:28] hook_audit arc-p617a: ps_spec_bytes=1 log_hits=1
+[12:01:56] LEG A done
+[12:01:56] LEG B: second fresh boot cert6 k3 PROBABILISTIC (family)
+[12:06:49] arc-p617b health 200 (spec=3 method=probabilistic) boot=293s
+survival http=200 dt=8.17s
+[12:06:58] hook_audit arc-p617b: ps_spec_bytes=1 log_hits=1
+[12:09:36] LEG B done
+[12:09:36] LEG C: boot cert6 no-spec (ARC_SPEC=0) — MTP-over-no-spec denominators
+[12:13:39] arc-p617c health 200 (spec=0 method=unset) boot=243s
+survival http=200 dt=6.18s
+[12:15:23] LEG C done
+[12:15:23] p617 CAMPAIGN COMPLETE
+[12:15:23] campaign exit rc=0
+[12:15:31] W14_RESTORED (radiance-test up)

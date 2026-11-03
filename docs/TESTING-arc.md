@@ -187,15 +187,18 @@ superseded evidence, v2 pins `enable_thinking: false` on valid probes.
   `--no-enable-prefix-caching` (silently flips cache mode to "none",
   kills the boundary registry and long-context cells).
 - **graph law**: all graph legs run `VLLM_XPU_ENABLE_XPU_GRAPH=1`.
-- **pinned-KV law**: `VLLM_ARC_LMC_TORCH_KV=1` default (native pinned
-  ops segfault >16–32 GiB/process); boundary snap ON (integrity).
+- **pinned-KV law**: pinned USM >16–32 GiB/proc segfaults — the live
+  gate is `LMCACHE_DISABLE_PINNED_MEMORY=1` (certified 25-var chain;
+  the 5-op torch-baseline transfer re-pin is unconditional wheel-side,
+  `e01-xpu-platform-ops.patch` — the old `VLLM_ARC_LMC_TORCH_KV` knob
+  is dead since r47b, see envs.md); boundary snap ON (integrity).
 - **timers off** for every performance face (profilers perturb decode).
 
 ## Evidence layout
 
 Each leg banks to `results/YYYY-MM-DD-<phase>-r<leg>-<slug>/` (VERDICT,
-raw bench outputs, hook audit, integrity shas, serve keylines) — 103
-dirs / 98 VERDICTs of record to date; the naming convention is
+raw bench outputs, hook audit, integrity shas, serve keylines) — 104
+dirs / 99 VERDICTs of record to date; the naming convention is
 documented in [`envs.md`](envs.md) (naming map).
 
 ## Validation record
@@ -204,8 +207,8 @@ documented in [`envs.md`](envs.md) (naming map).
 |---|---|---|
 | P0 venv ground truth | GREEN | `results/2026-10-27-p0-venv-groundtruth/` |
 | P1 platform + first serve | GREEN | `results/2026-10-27-p1-platform/` |
-| P2 spec/graph defects fixed (survival, capture, speculator) | GREEN | `results/2026-10-28-p2-*` (10 legs) |
-| P3 cache lane (connector, hybrid state, elide/memo, tail-split) | GREEN | `results/2026-10-29-p3-r30..r36/` |
+| P2 spec/graph defects fixed (survival, capture, speculator) | GREEN | `results/2026-10-28-p2-*` (34 legs) |
+| P3 cache lane (connector, hybrid state, elide/memo, tail-split) | GREEN | `results/2026-10-2{8,9}-p3-r3*` (r30 banked 10-28, r31–r36 under 10-29) |
 | P4 certification battery + certified image + k5 adoption + 12-cell matrix | GREEN | `results/2026-10-30-p4-r42/r43/r44/` |
 | P5 env/doc/lint/Dockerfile audits + mypy delta=0 | GREEN | `results/2026-10-30-p5-r45-env-log-audit/`, rig leg `arc-p5-r46` |
 | 64k TTFT face | GREEN (40,926 ms, concurrent-load conservative — cert-era); cert4-native solo U64k: 39.19–40.26 s | rig leg `arc-p5-r46/ttft64k_t1.txt`; `results/2026-10-31-p70-r70-cert4-comprehensive/` |
@@ -215,3 +218,4 @@ documented in [`envs.md`](envs.md) (naming map).
 | P6.13 cert5 release (owner directive 2026-11-01: cut the certified image) | GREEN single-flow on the tag-built image: manifest fork_sha == tag `3e268627`, p48 28/28 + p73 slice-hunk 11/11 image-native, SLICE_ENV_ABSENT=0 + flip 8.3 s, run7n t0 297.19/84.48-84.47 + t1.0 189.41/62.35-61.85 in-family, integrity 5/5 + det 3/3, WARN class-set identical to cert4 (44 == 44 lines, comm empty both ways), 0 ERROR/Traceback; slice face on the same image — U64k TTFT 50.77 s, W_U64k_start max 1602 ms, 63232-class 0 / 3328×38 exact | `results/2026-11-01-p65-cert5/` |
 | P6.14 TurboQuant lane (owner directive 2026-11-02: fix `turboquant_*` lagged store, validate all presets, certify) | GREEN — fix (TQ branch first in `_arc_attn_pool_view`, kernel-block→page merge, uint8 KV_2LTD init) validated per preset on the candidate image: 0 ERROR/Traceback, kit D2H live per slot (262/388/230/198), integrity 5/5 + det 3/3, spec ≥ target, KV 526k/757k/853k/975k (2.01/2.89/3.25/3.72×), U32k/U64k TTFT −30…−35 % vs fp8; default face inert (WARN class-set identical, all faces in-family); cert6 release gate single-flow GREEN on the tag-built image (default battery + slice face 3328×38 exact + TQ4 face: 0 errors, spec 0.9714/0.9381, KV 757,641, TTFT 15.85/33.98 s); patch-audit phase 4/4 PASS | `results/2026-11-02-p614-{dbg,preflight,l1v1,l1v2,l2,l3,cert6}/` |
 | P6.16 draft-sampling posture (owner directive 2026-11-03: research the upstream-direction fix, implement inline, retest all numbers, merge only on real impact, certified configs untouched) | GREEN — **opt-in `ARC_SPEC_METHOD=probabilistic`** serve hook (`tools/serve_arc_b70.sh`, branch `feat/arc-p616-spec-method-hook`): p616a boot+smoke (boots, t0 safe, cadence unchanged — gumbel/triton inside FULL draft graphs), p616b full 5-dtype matrix on cert6 (serve-line sed, 0 ERROR/Traceback, det 3/3 everywhere: t1.0-xhigh agg fp8 +29 % / tq4 +44 % / k3v4 +54 % / 3bit +91 % / k8v4 EV-neutral; every measured solo pair uniform, zero 26-tok/s legs; t0 unchanged every dtype; honest correction — the deterministic divergent-trajectory collapse remains on TQ dtypes; integrity flakes classified by the b2 discriminator: posture × churn, not reproducible ×4), p616c hook deployment (flag probe unset==junk==certified bytes + prob appends the validated string + spec-off empty, 4/4; Boot A default path full battery in-family with zero `draft_sample_method` in ps+log; Boot B opt-in engine-parsed + runtime bytes = the sed, t1.0 226.87 agg + 68.14/64.14 solo, t0 +0.3 %; 11/11 gates PASS). **Default stays greedy (k8v4 fails the every-dtype ≥ +10 % rule); no new image — cert6 remains certified (serve-layer change, wheel unchanged)** | `results/2026-11-03-p616a-probsmoke/`, `…-p616b-probmatrix/`, `…-p616c-spechook/` |
+| P6.17 prob-lane certification (owner directives 2026-11-03: the certified line is `ARC_SPEC_METHOD=probabilistic`, ALL record values from that lane, missing faces measured; prob lanes are the superior lanes) | GREEN — comprehensive p617 campaign on cert6 (5 fresh boots: prob legs a/b, no-spec leg c, default-path boot d, greedy opt-out boot e): every record face re-measured natively on the probabilistic lane (t0 agg 291.4–303.1 / solo 83.7–84.9; t1.0 steady 222.7–241.3 family + uniform 64–71 solo, zero collapse pairs in 20; TTFT 3.77/7.90/17.38/40.32; warm t2 0.99/1.08/1.07 via the fresh-seed warm2 probe (t1 colds 3.89/8.39/17.44 in-family with the ladder) + warm-hit 0.80–0.85 s; temp sweep 214.9–224.7 steady t0.2–0.8; alt 271.5–281.3/82.7–92.1; per-face acceptance windows 0.57–0.61 sampled / 0.859 t0 battery / 0.91 alt; MTP-over-no-spec 2.35–2.53× by face); gates — integrity 5/5 + det 3/3 every measured boot, golden 5/5 zero-drift, garbage 15/15, spec gate hard-PASS everywhere (acceptance 0.83 gate window, posture-invariant — r70 greedy gate identical), 0 ERROR/Traceback ×5, survival 200 ×5; serve-default FLIP validated: flag probe 5/5 via PATH-stubbed docker on the real script (unset/probabilistic/junk → prob bytes, `greedy` → the exact pre-P6.17 bytes, `ARC_SPEC=0` → no flag), default-path boot engine bytes IDENTICAL to the record legs (ps audit d==a), greedy opt-out boot carries the old certified bytes with t0 in-family; honest transients disclosed (first-sampled-face-after-t0 ~134–137, posture-invariant — r70 greedy identical class; one unreproduced t0 solo pair); owner override recorded (default flipped despite the k8v4 EV-neutral clause); no new image — cert6 remains the certified image (serve-layer default change, wheel/engine untouched) | `results/2026-11-03-p617a-probcert/` |

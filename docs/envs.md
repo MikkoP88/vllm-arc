@@ -75,11 +75,23 @@ kill-switch to disable):
 | `VLLM_ARC_GDN_FASTPATH_DISABLE` | `""` → fastpath ACTIVE | `patches/gdn_metadata_fastpath.py:275` | p10/r23 | any non-`0` |
 | `VLLM_ARC_LOOKUP_MEMO` | `1` → memo ACTIVE (async only) | `patches/lmcache_hma_connector.py:260` | p42 | `=0` |
 | `VLLM_ARC_LMC_HMA` | `1` → HMA mixin ACTIVE | `patches/lmcache_hma_connector.py:170` | p41b | `=0` (boot then dies at factory gate — A/B only) |
-| `VLLM_ARC_LMC_TORCH_KV` | `1` → torch-baseline KV ops ACTIVE | `patches/lmc_xpu_pinned_env.py:85` | p40d | `=0` (native pinned ops segfault >16–32 GiB/proc) |
 | `VLLM_ARC_LMC_MAMBA_SNAP` | `1` → boundary snap ACTIVE | `patches/mamba_hybrid_snap_glue.py:94` | p41c | `=0` (breaks integrity) |
 | `VLLM_MAMBA_FP16_SEED_REPAIR` | `1` → repair ACTIVE | `patches/mamba_lmcache_glue.py:69` | p41 | `=0` |
 | `VLLM_ARC_R35_TAIL_SPLIT` | `1` → tail-split v4 ACTIVE | `patches/sched_tail_split.py:59` | p43/r35 | `=0` |
 | `VLLM_ARC_FP8_W8A16_DISABLE` | `0` → W8A16 reroute ACTIVE | `patches/fp8_block_w8a16.py:65` | p44 | `=1` (stock W8A8) |
+
+Dead since r47b (kept OUT of the live tables — no-unevidenced law):
+`VLLM_ARC_LMC_TORCH_KV` — its consumer module
+`patches/lmc_xpu_pinned_env.py` was DELETED when p40c/p40d were
+absorbed into the lmcache wheel patch
+(`external_patches/lmcache/patches/e01-xpu-platform-ops.patch`: the
+5-op torch-baseline transfer re-pin is UNCONDITIONAL in
+`XpuDeviceOps.ensure_native`; the live gate is
+`LMCACHE_DISABLE_PINNED_MEMORY`, part of the certified 25-var chain).
+Setting the var is a no-op on the certified image. (The stale registry
+row in `vllm_gaudi/envs.py:196-198` is engine-layer and stays
+untouched — the cert6 engine is byte-frozen; cleanup belongs to the
+next engine-touching item.)
 
 **Default-OFF / opt-in** (inactive unless set):
 
@@ -120,15 +132,16 @@ twin of the live `VLLM_COMPACT_GDN` above).
 
 ## Naming map (r45g naming audit; completed r45h/r45i full sweep)
 
-In-line with best practice: `VLLM_ARC_*` engine-env namespace (**11 live
-vars** + 3 dropped at r45d, below), `NN-category/pNN-slug` patch dirs,
+In-line with best practice: `VLLM_ARC_*` engine-env namespace (**10 live
+vars** + 3 dropped at r45d + 1 dead since r47b, below), `NN-category/pNN-slug` patch dirs,
 `feat/arc-pNN-<slug>` branches, `vllm-arc:v0.30.0-b70[-pNN]` image tags,
 `ARC_*` **host-side script vars** (10, `tools/serve_arc_b70.sh` — a
 different layer from engine envs; the 10th is `ARC_SPEC_METHOD`, the
-P6.16 opt-in draft-sampling posture knob: unset = greedy = certified
-byte-identical, `probabilistic` appends the upstream spec-config key
-`draft_sample_method` — validated
-`results/2026-11-03-p616c-spechook/`), kebab-case docs, and the
+draft-sampling posture knob: P6.17 — unset = `probabilistic` = the
+CERTIFIED default (owner directives 2026-11-03; appends the upstream
+spec-config key `draft_sample_method`), `greedy` = the opt-out
+historical lane — flip validated
+`results/2026-11-03-p617a-probcert/`), kebab-case docs, and the
 evidence-dir
 convention `results/YYYY-MM-DD-<phase/item>-r<leg>-<slug>/` (internal
 only, never upstreamed). **`pNN` is TWO sequences** — patch dirs/branches
@@ -148,7 +161,7 @@ without rewriting"):
 | `VLLM_ARC_XG_COMPACT` | donor-lineage name (C/D `V1227_XGCOMPACT` port) worn in the engine namespace, but consumed HOST-side only (`serve_arc_b70.sh:23`) | p06 provenance + certified-line spelling; upstream-lane candidate: fold into the host layer (`ARC_XG_COMPACT`) or spell out (`VLLM_ARC_XGRAMMAR_COMPACT`) |
 | `VLLM_ARC_R35_TAIL_SPLIT` | embeds leg number `r35` | named for the leg that banked tail-split **v4** (ab81fc11) after r34 A/B-falsified v3 (c4468339); `R35` ties the knob to its falsification evidence — same evidence-chain class as `ARC_TRACE_FLIP`; internal marker attrs `_arc_r35_tail_split`/`_arc_r35_probe` (`sched_tail_split.py:65/94`) share the stem (internal-only, never upstreamed); rename candidate `VLLM_ARC_TAIL_SPLIT` at the upstream lane |
 | `VLLM_ARC_LOOKUP_ELIDE` | name reads bool, value is int tokens | documented above; rename candidate `..._ELIDE_TOKENS` at the upstream lane |
-| module prefix `lmc_` vs `lmcache_` | our own patch modules use both (`lmcache_hma_connector.py` vs `lmc_xpu_pinned_env.py`, `lmc_twohs_transfer.py`, `lmc_kvfmt_detector.py`) | historical per-patch coinage; `patches/lmcint/` dir is the donor kit name (kept for provenance); unify candidate `lmcache_*` at the upstream lane |
+| module prefix `lmc_` vs `lmcache_` | our own patch modules use both (`lmcache_hma_connector.py` vs the `patches/lmcint/` kit's `lmc_twohs_transfer.py`, `lmc_kvfmt_detector.py`) | historical per-patch coinage; `patches/lmcint/` dir is the donor kit name (kept for provenance); unify candidate `lmcache_*` at the upstream lane |
 
 Regenerate: this file is a snapshot; on any envs.py or serve-line change,
 update alongside the leg's VERDICT (the audit leg re-runs the §A–E sweeps).

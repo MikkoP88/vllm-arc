@@ -1,0 +1,74 @@
+[
+ {
+  "tag": "U8k.t1_cold",
+  "prompt_tokens": -1,
+  "cached": null,
+  "ttft_s": 0.9960331750335172,
+  "wall_s": 1.3230487309629098,
+  "face": "U8k"
+ },
+ {
+  "tag": "U8k.t2_warm",
+  "prompt_tokens": -1,
+  "cached": null,
+  "ttft_s": 1.0022577000781894,
+  "wall_s": 1.3272021770244464,
+  "face": "U8k"
+ },
+ {
+  "tag": "U16k.t1_cold",
+  "prompt_tokens": -1,
+  "cached": null,
+  "ttft_s": 1.0843109070556238,
+  "wall_s": 1.4088284320896491,
+  "face": "U16k"
+ },
+ {
+  "tag": "U16k.t2_warm",
+  "prompt_tokens": -1,
+  "cached": null,
+  "ttft_s": 1.0866397389909253,
+  "wall_s": 1.4115193519974127,
+  "face": "U16k"
+ },
+ {
+  "tag": "U32k.t1_cold",
+  "prompt_tokens": -1,
+  "cached": null,
+  "ttft_s": 1.059023456997238,
+  "wall_s": 1.6817777910036966,
+  "face": "U32k"
+ },
+ {
+  "tag": "U32k.t2_warm",
+  "prompt_tokens": -1,
+  "cached": null,
+  "ttft_s": 1.063274969928898,
+  "wall_s": 1.6853550910018384,
+  "face": "U32k"
+ },
+ {
+  "tag": "U8k.warmhit_1",
+  "prompt_tokens": -1,
+  "cached": null,
+  "ttft_s": 0.8046754549723119,
+  "wall_s": 1.1331595319788903,
+  "face": "U8k_warmhit"
+ },
+ {
+  "tag": "U8k.warmhit_2",
+  "prompt_tokens": -1,
+  "cached": null,
+  "ttft_s": 0.8031302280724049,
+  "wall_s": 1.1293081050971523,
+  "face": "U8k_warmhit"
+ },
+ {
+  "tag": "U8k.warmhit_3",
+  "prompt_tokens": -1,
+  "cached": null,
+  "ttft_s": 0.8001949309837073,
+  "wall_s": 1.1262703309766948,
+  "face": "U8k_warmhit"
+ }
+]
