@@ -166,7 +166,7 @@ table is below). How to run: the 25-var chain in
 | xhigh t0.4 | 215.0 | 63.4–69.1 | 0.57 (mean-len 1.71) |
 | xhigh t0.6 | 222.3 | 68.4–71.0 | 0.61 (mean-len 1.83) |
 | xhigh t0.8 | 224.7 | 64.9–66.3 | 0.61 (mean-len 1.82) |
-| xhigh t1.0 | **232.7** (steady family 222.7–241.3 cross-boot p616b/p616c/p617; first-sampled-face transient disclosed below) | 64.1–71.0 — uniform, zero collapse legs | 0.61 (mean-len 1.84) |
+| xhigh t1.0 | **232.7** (steady family 218–241.3 cross-boot: p616b/p616c/p617 222.7–241.3 + the cert7/cert8 release gates 218.29/221.36 — the face's highest-variance posture; first-sampled-face transient disclosed below) | 64.1–71.0 — uniform, zero collapse legs | 0.61 (mean-len 1.84) |
 | alt (t0.7/tp0.80/pp1.5, non-thinking) | 281.3 (other face 271.5) | 82.7–92.1 | 0.91 (mean-len 2.73) |
 
 Acceptance windows are engine-counter deltas per face (leg-a `metrics.txt`
@@ -238,7 +238,7 @@ legs a/c):**
 |---|---|---|---|
 | agg t0 | 298.2 / 303.1 | 124.5 / 127.1 | **2.35–2.44×** |
 | solo t0 | 83.7–84.9 | 34.3 | **2.44–2.47×** |
-| agg xhigh t1.0 | 232.7 (family 223.9–241.1) | 115.3–121.8 | **1.84–2.09×** |
+| agg xhigh t1.0 | 232.7 (cross-boot family 218–241, incl. the cert7/cert8 gates) | 115.3–121.8 | **1.84–2.09×** |
 | solo xhigh t1.0 | 64.1–71.0 | 33.6 | 1.91–2.11× |
 | agg alt | 271.5 / 281.3 | 107.1 / 116.0 | **2.42–2.53×** |
 | solo alt | 82.7–92.1 | 33.6 | 2.46–2.74× |
@@ -483,6 +483,50 @@ at equal posture, IMPROVE bystander stalls; the old "TQ gaps ~2.5× vs
 fp8" reading was this profile mismatch). See "Bystander-stall tuning"
 below.
 
+**cert8-gate re-measurement (2026-11-04, same day, all five dtypes —
+the certified-image values):**
+
+| dtype | KV pool (cert8 gate) | pool × | cert8-native faces |
+|---|---|---|---|
+| `fp8_e4m3` (default) | 400,739 (== cert7 byte-value; the P6.14 405,491 was that day's free-memory state) | — (baseline dtype) | run7n t0 agg#2 300.65 / solo 84.53/84.57; t1.0 221.36 / 70.98/68.14 |
+| `turboquant_k8v4` (split) | 519,972 (== t6p dev leg, cross-day byte-value) | 1.98× | spec tps solo 54.42/54.59, agg8 235.97; long-return bar PASS full + 3 churn cycles |
+| `turboquant_k8v4` (**mq**, opt-in) | 519,972 | 1.98× | spec tps solo 53.83/54.31, **agg8 284.81 = 1.21× split** (t8g family 289.23) |
+| `turboquant_4bit_nc` | 748,549 | 2.86× | long-return fully clean incl. the t1 lane |
+| `turboquant_k3v4_nc` | 843,202 | 3.22× | cold + rehit2 byte-match the t9 primaries on all four classes |
+| `turboquant_3bit_nc` | 963,764 | 3.68× | precision-floor coherent variants (essay/code), multi/simple stable |
+
+KV capacity tracks the boot-day free-memory state (same posture,
+different days → 405,491 vs 400,739 on fp8) — the P6.14 columns in the
+matrix above were that campaign's state and stay valid as its labeled
+record. Gate source: `results/2026-11-04-p619-tqverify/` (VERDICT.md
+performance table + `rig/gate/`, `rig/mqannex2/`).
+
+### MQ experimental mode (`VLLM_ARC_TQ_VERIFY_MODE=mq`, opt-in)
+
+The single-pass **multi-query verify kernel** for TurboQuant
+spec-decode — one kernel scores all q_len+1 draft rows against the
+quantized cache, replacing split's q_len sequential single-row decode
+calls. Implementation `vllm_gaudi/xpu/patches/tq_mq_aos.py` re-ports
+the wheel's own MQ kernel onto the engine's slot-interleaved **AoS**
+ops layout (the wheel kernel targets the SoA tree, never dispatched on
+XPU — the addressing mismatch was root cause RC3); validated offline
+bit-exact vs the engine's own store/decode pair on all four presets
+(MQVAL5 — LAW: offline validation imports the pair the runtime
+dispatches).
+
+Measured (cert8 gate annex, certified k8v4 posture, mode env injected
+into the serve chain): **agg8 284.81 tok/s = 1.21× split's 235.97**
+(in-family with the t8g dev leg's 289.23), solo unchanged
+(53.83/54.31 vs split's 54.42/54.59) — the gain is concurrency, not
+latency. **Experimental, not the certified default**: its identity
+faces are wider than split's (multi/simple classes drift across
+coherent variants between rounds — same text quality, different
+hashes); split keeps the tightest t0 identity and backs every
+certified TQ number. Serve `mq` when +20 % aggregate matters more than
+variant stability; `VLLM_ARC_TQ_MQ_SPLITS=32` sets the KV split count.
+Evidence: `results/2026-11-04-p619-tqverify/rig/mqannex2/` + the t8/t9
+dev legs in the same tree.
+
 **What improves (dtype-wide):** KV capacity 1.55× → 2.0–3.7× max
 concurrency at the same 6.92 GiB pool; U32k/U64k TTFT −30…−35 % vs the
 thr2048-profile fp8 comparator (¹) — vs **true-default fp8 solo U-bars
@@ -503,7 +547,8 @@ is guidance again — since cert8 every `turboquant_*` preset serves
 clean (P6.19 spec-verify fix; zero garble all-dtype gate) while
 `fp8_e4m3` remains the certified default (fastest sampled throughput,
 the quality reference face). Choose a TQ preset for the KV-capacity
-lane (2.01×–3.72×) or its U-bar TTFT edge; choose fp8 for maximum
+lane (1.98×–3.68× at the cert8 gate; 2.01×–3.72× at the P6.14
+campaign's memory state) or its U-bar TTFT edge; choose fp8 for maximum
 aggregate quality/speed.
 For bystander-stall relief use the fp8 levers (`ARC_MNBT=4096` first
 choice — see "Bystander-stall tuning" below); true-default fp8's
@@ -698,8 +743,10 @@ re-measured on the certified cert7 image — default: TTFT wave
 18.27/39.91 s, gap p95 **4001/5273 ms**, KV 400,739 (the cert7-gate
 byte-value); MNBT 4096: TTFT 19.51/42.34 s, gap p95 **2052/2523 ms**,
 KV 427,666 — every face in-family with the table (the guard changes
-nothing under `fp8_e4m3`). The TQ rows are pre-deprecation history
-(P6.18).
+nothing under `fp8_e4m3`). The TQ rows are the banked P6.15 campaign
+record — **servable again since cert8** (P6.19); their faces were not
+re-measured on cert7/cert8 (the cert8-gate dtype table above carries
+the current capacity/tps values).
 
 Findings:
 

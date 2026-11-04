@@ -75,7 +75,11 @@ private-IPC fallback, where small values ENOSPC-crash TP2 IPC buffers.
 per card; the older "16 G each" in this doc was wrong): ~27 G of fp8
 weights split TP2 (≈ 13.5 GiB/card) plus KV/mamba/graph pools inside the
 GMU-0.8 budget (0.8 × 31.9 ≈ 25.5 GiB/card) — the measured XPU KV pool
-is 405,491 tokens at MNBT 8192 (332,629 at 16384, r66c). Host RAM is not
+at MNBT 8192 is **400,739 tokens** (the value reproduced byte-exact on
+three separate days: p618b, the cert7 gate, the cert8 gate; the
+405,491 figure in older tables was the P6.14/cert6-gate day's
+free-memory state — KV capacity tracks boot-day free memory). At
+MNBT 16384: 332,629 tokens (r66c). Host RAM is not
 gated by the cache:
 `LMCACHE_MAX_LOCAL_CPU_SIZE=100` is a single *virtual* reservation —
 one malloc wrapped by `torch.frombuffer`, first-touch physical pages,
@@ -186,8 +190,8 @@ Two compile-posture laws (p67, do not re-try blind — evidence
    the certified `mode:none` posture (FULL_DECODE_ONLY never builds the
    offending piecewise captures; the real k3 verify shape is 256).
 
-Launch and health-check (the rig pattern; first boot ~10 min to 200 —
-model load + graph capture):
+Launch and health-check (the rig pattern; first boot ~5 min to 200 —
+295 s at the cert7 and cert8 gates: model load + graph capture):
 
 ```bash
 docker cp serve_k3.sh arc-test:/root/
@@ -267,16 +271,17 @@ higher TTFT cost.
 | TTFT U32k / U64k | 17.25 / 39.77 s | 19.49 / 42.83 s | 22.88–23.15 / 51.16 s |
 | Bystander gap p95 U32k / U64k | 3986 / 5295 ms | 2030 / 2587 ms | — / 1580 ms |
 | Bystander gap max U64k | — | — | 1599 ms |
-| KV capacity | 405,491 tok (1.55×) | 433,210 tok (1.65×) | 405,491 tok (1.55×) |
+| KV capacity | 400,739 tok (cert7-native) | 427,666 tok (cert7-native) | 405,491 tok (P6.15 value) |
 | Decode (t0) | certified family | unchanged (knob decode-neutral) | zero cost (run7n) |
 
 Era note: the default and `MNBT 4096` columns are the cert6 P6.15
-matrix (`results/2026-11-02-p615-stall-analysis/`); the p65 column is
-the cert4/cert5-era record face (`results/2026-10-31-p65-cert4/`,
+matrix (`results/2026-11-02-p615-stall-analysis/`; KV row above
+re-verified natively on cert7, p618e — 400,739/427,666); the p65 column
+is the cert4/cert5-era record face (`results/2026-10-31-p65-cert4/`,
 `results/2026-11-01-p65-cert5/`). Both live levers were re-verified
 natively on cert7 (p618e, same harness): default TTFT 18.27/39.91 s +
 gaps p95 4001/5273 ms; MNBT 4096 TTFT 19.51/42.34 s + gaps p95
-2052/2523 ms; KV pools 400,739/427,666 — all in-family
+2052/2523 ms — all in-family
 (`results/2026-11-03-p618-cert7/PERF.md`).
 
 **Enable MNBT 4096** — one knob; the serve script maps the host var to
@@ -365,7 +370,7 @@ gone), `63232`-class **0** / `3328`×38 exact, U32k unchanged
 face in-family (U64k TTFT 51.66 s, `63232`-class 0, `3328` signature
 exact — `results/2026-11-02-p614-cert6/`).
 
-## KV-cache dtype: TurboQuant presets (SERVABLE since cert8 — P6.19 spec-verify fix)
+## KV-cache dtype — `fp8_e4m3` default + the four TurboQuant presets (comprehensive; all servable on cert8)
 
 > **FIXED (2026-11-04, P6.19 / cert8): every `turboquant_*` preset serves
 > clean.** The P6.18 boot refusal is lifted; the corruption it guarded
@@ -383,27 +388,131 @@ exact — `results/2026-11-02-p614-cert6/`).
 > (`results/2026-11-04-p619-tqverify/`).
 
 The certified default remains `--kv-cache-dtype fp8_e4m3` — do not set
-the flag at all unless you want a TQ preset. What the presets trade
-(the P6.14–P6.16 faces, again servable):
+the flag at all unless you want a TQ preset. **All five dtypes are
+servable on cert8**; three knobs govern the TQ verify path (section
+below).
 
-- **KV capacity** 526k/757k/853k/975k tokens (2.01×/2.89×/3.25×/3.72×
-  vs fp8's ~405k) — the practical reason to serve a TQ dtype.
-- **U32k/U64k TTFT** 15.3–16.0 / 33.0–35.7 s (vs fp8 23.2 / 50.8) and
-  t1.0 aggregate 134–173 tok/s (vs fp8 ~241) — the speed side of the
-  trade; k8v4 spec tps solo 54.4 / agg8 236.0 (cert8 gate; t6p dev-leg
-  54.5/240.9), MQ experimental mode agg8 284.8 (cert8 gate re-run;
-  t8g 289.2).
-- **Preset precision characteristics remain** (upstream's own tables
-  rate these presets +2.71…+20.59 % PPL on gpt-oss) — the coarsest
-  preset (`3bit_nc`, 8 affine V levels) shows the widest t0 variant
-  drift; identity faces on TQ dtypes are the same engine-class
-  probabilistic-drafting faces the certified fp8 posture fires (fp8
-  control in the P6.19 gate).
+### The dtype menu (all five; capacity = cert8-gate same-day values)
 
-Knobs (A/B, `docs/envs.md`): `VLLM_ARC_TQ_SPEC_FIX=1` default-active;
-`VLLM_ARC_TQ_VERIFY_MODE=split|mq|synth` (split ships; mq = single-pass
-kernel on the AoS layout, +20 % agg8, experimental; synth = the pre-fix
-dispatch, diagnosis only); `VLLM_ARC_TQ_MQ_SPLITS=32`.
+| dtype (`--kv-cache-dtype`) | KV pool (cert8) | pool × | t0 solo ×2 (P6.15) | t1.0 agg (P6.14, prob lane) | U32k/U64k TTFT (P6.14)¹ | identity record (cert8 gate) |
+|---|---|---|---|---|---|---|
+| `fp8_e4m3` — **certified default** | 400,739 | — (baseline dtype) | 84.5 / 84.4 | **241.10** | 23.16 / 50.77 s | t0 lanes 100 % clean, code/simple byte == cert7 |
+| `turboquant_k8v4` | 519,972 (== t6p) | 1.98× | 88.5 / 88.6 | 172.95 (−28 %) | 15.29 / 33.03 s | long-return bar PASS full + 3 churn cycles (multi = the Class-A variant trio) |
+| `turboquant_4bit_nc` | 748,549 | 2.86× | 86.2 / 86.0 | 134.42 (−44 %) | 15.91 / 34.02 s | **cleanest record — zero flags of any kind, incl. the t1 lane** |
+| `turboquant_k3v4_nc` | 843,202 | 3.22× | 80.8 / 80.5 | 137.11 (−43 %) | 15.48 / 33.78 s | rehit1 takes the Class-A variant; cold + rehit2 byte-match the t9 primaries on all 4 classes |
+| `turboquant_3bit_nc` | **963,764** | **3.68×** | 85.8 / 85.6 | 171.32 (−29 %) | 16.02 / 35.74 s | 3-bit precision floor: essay/code coherent adjacent variants per round; multi/simple stable |
+
+¹ The TTFT column is the P6.14 same-harness A/B (fp8 comparator as run
+there = the thr2048-profile face, hence its 23.16/50.77); the
+true-default fp8 TTFT is 17.25/39.77 s (P6.15) — the honest TQ
+TTFT edge vs true-default fp8 is **−10…−16 %**. The t1.0/t0 columns
+are the P6.14/P6.15 campaign faces (prob lane); full matrices with
+per-face provenance in PERFORMANCE-arc ("TurboQuant KV-cache dtype
+faces" + "Master matrix"). KV pool tracks boot-day free memory — the
+P6.14-era table there (526k/757k/853k/975k) was that campaign's
+memory state.
+
+### fp8_e4m3 — the certified default
+
+The quality/speed reference: fastest aggregate on every measured face,
+the tightest identity record, and the P6.19 fix never engages (the
+hooked module is not imported — control-proven t7/t9 + cert8 gate,
+`fix-engaged-on-fp8=0`). Choose it unless KV capacity is the binding
+constraint. Records: PERFORMANCE-arc "Current certified image".
+
+### What each TurboQuant preset buys and costs
+
+- **`turboquant_k8v4`** — the balanced TQ choice: 4-bit K/V with 8-level
+  scales, the decode+prefill sweet spot of the family (fastest t0
+  decode 88.5+ AND fastest default prefill 2097/1945 t/s, P6.15),
+  mildest sampled-aggregate cost (−28 %), P6.14's quality-safest
+  preset, spec-verify tps solo 54.42/54.59 / agg8 235.97 (cert8 gate,
+  split dispatch; t6p dev-leg 54.5/240.9 in-family).
+- **`turboquant_4bit_nc`** — the capacity lane with the cleanest
+  identity record (2.86× pool; zero flags anywhere in the cert8 gate);
+  pays the largest sampled-aggregate cost (−44 %).
+- **`turboquant_k3v4_nc`** — 3-level K scales: 3.22× pool at −43 %
+  sampled aggregate, the slowest t0 decode of the family (80.5–83.3).
+- **`turboquant_3bit_nc`** — the max-capacity lane: 3.68× pool and only
+  −29 % sampled aggregate (its t1.0 agg beats the sub-4-bit presets'),
+  but the coarsest precision — 8 affine V levels, upstream's own table
+  +20.59 % PPL on gpt-oss — and the widest t0 variant drift (each round
+  takes a different coherent adjacent variant on essay/code; outputs
+  stay coherent English/code, garble-clean — the P6.18c-documented
+  value-precision floor, NOT corruption).
+
+Identity faces on TQ dtypes are the same engine-class
+probabilistic-drafting faces the certified fp8 posture fires (fp8
+control in the P6.19 gate): warm-resume variant flips (p618b Class-A)
+and, on `3bit_nc`, the precision-floor drift. The deterministic serving
+guarantee — t0 within-path byte-identity — holds wherever t0 is
+identical; the owner corruption bar (REP-LOOP/JUNK/BLEED/EMPTY,
+garble) is **zero across all five dtypes** on cert8, cold and warm,
+churn included.
+
+### Serving a TurboQuant preset
+
+Exactly one flag changes on the certified line — everything else (the
+25-var chain, graphs, MTP k3 + probabilistic drafting, LMCache) is
+identical:
+
+```bash
+# in the serve script, replace the fp8 default:
+#   --kv-cache-dtype fp8_e4m3
+# with the preset, e.g.:
+    --kv-cache-dtype turboquant_k8v4
+# (the uniform boot interface has no dtype knob — edit the flag in the
+#  script copy, exactly how the cert8 gate boots each preset)
+```
+
+Verify the fix is engaged in `/root/serve_full.log` — the posture line
+`v6 installed (active=True mode=split mq_kernel=True)` must appear on
+every TQ boot (cert8 gate posture check), and
+`tq_spec_fix` in the hook-install table. On fp8 neither appears
+(the control proof).
+
+### Verify dispatch — split (certified) / MQ (experimental) / synth (diagnosis-only)
+
+TurboQuant spec-decode **verify** (scoring the q_len+1 draft rows
+against the quantized cache) has three dispatch modes on cert8:
+
+- **`split` — the certified default** (`VLLM_ARC_TQ_VERIFY_MODE=split`
+  or unset): q_len separate single-row stock decode calls with per-row
+  causal limits as recorded device ops on the live `seq_lens` buffer —
+  graph-replay-safe, all-dtype gate-proven. This is the posture behind
+  every cert8 TQ number above.
+- **`mq` — experimental, opt-in** (`VLLM_ARC_TQ_VERIFY_MODE=mq`): a
+  single-pass multi-query kernel (`patches/tq_mq_aos.py`) re-ported
+  onto the engine's slot-interleaved **AoS** layout (the wheel's own MQ
+  kernel targets the SoA tree, which is never used on XPU — that
+  mismatch was root cause RC3). Offline-exact vs the engine's own
+  store/decode pair on all four presets (MQVAL5). Measured on the
+  cert8 gate annex: **agg8 284.81 tok/s = 1.21× split** (235.97),
+  solo unchanged (53.83/54.31) — the win is concurrency, not latency;
+  in-family with the t8g dev leg (289.23). **Experimental because its
+  identity faces are wider than split's** (multi/simple variant drift
+  across rounds) — serve it when +20 % aggregate matters more than
+  variant stability. Knob `VLLM_ARC_TQ_MQ_SPLITS=32` (KV split count).
+- **`synth` — never serve** (`VLLM_ARC_TQ_VERIFY_MODE=synth`): the
+  pre-fix multi-row synthetic-decode dispatch, kept for differential
+  diagnosis only — it is replay-broken under XPU graphs by construction
+  (root cause RC2).
+
+Kill-switch: `VLLM_ARC_TQ_SPEC_FIX=0` disables the whole fix (returns
+the pre-fix corrupt spec-verify path — diagnosis only). Full knob
+semantics: [`envs.md`](envs.md).
+
+### Stall levers per dtype
+
+The P6.15 generalization holds on every preset: **`ARC_MNBT=4096`
+halves bystander stalls** at TTFT ≤ the fp8-default family, with the
+chunk ladder quantized to the dtype's KV page (fp8 page 832 →
+1664/3328/7488-token chunks; TQ page 1664 → e.g. 4bit 1664/3328/6656,
+k8v4 3456@4096 / 8064 default, k3v4 3712/7424, 3bit 2176/6528). The
+full per-face Pareto matrix (TTFT / gaps / capacity for every
+dtype × knob cell): PERFORMANCE-arc "Bystander-stall tuning" +
+"Master matrix" — the fp8 rows are the live first-choice menu (the TQ
+rows are the banked P6.15 record, servable again since cert8).
 
 The P6.18 record (reproduction battery, roundtest, guard gate) stays
 banked at `results/2026-11-03-p618{b-repro,c-roundtest,-cert7}/` — its
@@ -481,9 +590,10 @@ fp8 default the levers below are the whole menu** (P6.17l guide):
 The 2026-11-03 completion set (B6–B8, `results/2026-11-02-p615-b{6,7,8}-*/`)
 had generalized the balanced row across the then-servable presets
 (**MNBT 4096 halves stalls at TTFT ≤ fp8-default family**; chunk =
-KV page × n) — the TQ instances of that generalization are historical
-since the P6.18 deprecation; the fp8 instance is the live first-choice
-row above. Solo decode/prefill/TTFT for every face:
+KV page × n) — the TQ instances of that generalization were suspended
+during P6.18–P6.19 and are **servable again since cert8** (the p615
+legs remain the banked record of those faces); the fp8 instance is the
+live first-choice row above. Solo decode/prefill/TTFT for every face:
 `results/2026-11-02-p615-probes/VERDICT.md`.
 
 Laws: never combine with the experimental slice profile unless
@@ -560,7 +670,6 @@ may change and when:
 | `VLLM_ARC_GDN_FASTPATH_DISABLE` | unset (fastpath ACTIVE, saves ~6.5 ms/req) | any non-`0` value isolates the stock metadata path |
 | `VLLM_ARC_LOOKUP_MEMO` | unset (=1, memo ON) | `=0` to debug lookup replay |
 | `VLLM_ARC_LMC_HMA` | unset (=1, connector ON) | `=0` A/B only (boot then dies at the HMA gate) |
-| `VLLM_ARC_LMC_TORCH_KV` | unset (=1) | **never `=0` in production** — native pinned ops segfault >16–32 GiB/process |
 | `VLLM_ARC_LMC_MAMBA_SNAP` | unset (=1) | **never `=0`** — breaks output integrity |
 | `VLLM_MAMBA_FP16_SEED_REPAIR` | unset (=1) | `=0` only to reproduce the fp16 seed defect |
 | `VLLM_ARC_R35_TAIL_SPLIT` | unset (=1, v4 tail-split) | `=0` restores upstream backoff exactly (A/B control) |
@@ -583,7 +692,7 @@ Host-script layer (`tools/serve_arc_b70.sh`): `ARC_IMAGE`, `ARC_NAME`,
 depths), `ARC_SPEC_METHOD` (draft-sampling posture, P6.17: unset =
 `probabilistic` = the CERTIFIED default —
 section above; `greedy` = the opt-out historical lane), `ARC_LMC` (1 = the certified
-LMCache connector + the 9-var `LMCACHE_*` chain — default; 0 = no
+LMCache connector + the 10-var `LMCACHE_*` chain — default; 0 = no
 LMCache), `ARC_GMU` (0.8), `ARC_MNBT` (8192 — the certified default;
 r66c A/B'd 16384: long-face
 solo TTFT −4…−10 % but −18 % KV pool (405,491→332,629 tokens,
@@ -600,8 +709,13 @@ PERFORMANCE-arc "Prefill anatomy"), `ARC_MAXSEQS` (64), `ARC_PORT`
    boundary registry and long-context cells).
 2. **graph law** — always `VLLM_XPU_ENABLE_XPU_GRAPH=1` on the certified
    posture.
-3. **pinned-KV law** — `VLLM_ARC_LMC_TORCH_KV` default 1 is a segfault
-   guard, not a tuning knob.
+3. **pinned-KV law** — `LMCACHE_DISABLE_PINNED_MEMORY=1` (in the
+   certified 25-var chain) is a segfault guard, not a tuning knob:
+   pinned USM >16–32 GiB/process segfaults, and the 5-op
+   torch-baseline transfer re-pin is unconditional wheel-side
+   (`e01-xpu-platform-ops.patch`). The old `VLLM_ARC_LMC_TORCH_KV`
+   knob is **dead since r47b** — setting it is a no-op on every
+   certified image (see [`envs.md`](envs.md)).
 4. **container freshness** — recreate the serve container whenever the
    image changes (a stale container silently runs old code).
 5. **model mounts read-only** (`:ro`) — the checkpoint and chat template
