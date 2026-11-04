@@ -1,0 +1,82 @@
+=================== P620 R84B ANNEX START 2026-11-04 21:50:18 ===================
+=== [A0] k3v4 t1-seed re-characterization (r82/r82b + cert7/cert8 annex method) 2026-11-04 21:50:18 ===
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert9 name=arc-test graph=1 spec=3 gmu=0.8 mnbt=8192 seqs=64 xgc=0 port=8000 21:50:57
+HEALTH=OK after ~400s
+(Worker_TP0 pid=930) P619 tq_spec_fix v6 installed (active=True mode=split mq_kernel=True): v19b verify-capture forcing + split-row continuation dispatch
+FLIP_FIRST: stop 9.8s head: '\n\n1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20.'
+R1 [essay] t1_seed_identical=False a=ab0ff6b60576 b=e010d2ac13fb garble=[] chars=3308/3885
+R1 [code] t1_seed_identical=True a=033347581246 b=033347581246 garble=[] chars=729/729
+R1 [multi] t1_seed_identical=True a=20697f9fd763 b=20697f9fd763 garble=[] chars=577/577
+R1 [simple] t1_seed_identical=True a=b050204c6424 b=b050204c6424 garble=[] chars=1350/1350
+R1 [simple-t0] identical=True hash=cc082a03dea2 garble=[]
+R2 [essay] t1_seed_identical=False a=0799a978301e b=c5c53efbc212 garble=[] chars=3135/4232
+R2 [code] t1_seed_identical=True a=033347581246 b=033347581246 garble=[] chars=729/729
+R2 [multi] t1_seed_identical=True a=20697f9fd763 b=20697f9fd763 garble=[] chars=577/577
+R2 [simple] t1_seed_identical=True a=b050204c6424 b=b050204c6424 garble=[] chars=1350/1350
+R2 [simple-t0] identical=True hash=cc082a03dea2 garble=[]
+R3 [essay] t1_seed_identical=False a=f7c219c33403 b=0799a978301e garble=[] chars=3482/3135
+R3 [code] t1_seed_identical=False a=5ecbacd30727 b=033347581246 garble=[] chars=671/729
+R3 [multi] t1_seed_identical=True a=20697f9fd763 b=20697f9fd763 garble=[] chars=577/577
+R3 [simple] t1_seed_identical=True a=b050204c6424 b=b050204c6424 garble=[] chars=1350/1350
+R3 [simple-t0] identical=True hash=cc082a03dea2 garble=[]
+R4 [essay] t1_seed_identical=True a=0799a978301e b=0799a978301e garble=[] chars=3135/3135
+R4 [code] t1_seed_identical=True a=033347581246 b=033347581246 garble=[] chars=729/729
+R4 [multi] t1_seed_identical=True a=20697f9fd763 b=20697f9fd763 garble=[] chars=577/577
+R4 [simple] t1_seed_identical=True a=b050204c6424 b=b050204c6424 garble=[] chars=1350/1350
+R4 [simple-t0] identical=True hash=cc082a03dea2 garble=[]
+CTRL [simple] seed999=1f23dcb45cbb vs seed1234=b050204c6424 different=True
+T1SEED_CHAR_DONE
+ERROR=0
+TRACEBACK=0
+=== [A0b] q4nc identity re-characterization (cert8 gate recorded this dtype cleanest; r84 shows essay t0 A-B-A variants + t1-seed miss — same char battery) 2026-11-04 22:01:42 ===
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert9 name=arc-test graph=1 spec=3 gmu=0.8 mnbt=8192 seqs=64 xgc=0 port=8000 22:02:23
+HEALTH=OK after ~390s
+(Worker_TP0 pid=930) P619 tq_spec_fix v6 installed (active=True mode=split mq_kernel=True): v19b verify-capture forcing + split-row continuation dispatch
+FLIP_FIRST: stop 9.8s head: '\n\n1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20.'
+R1 [essay] t1_seed_identical=True a=32c5c13f4f59 b=32c5c13f4f59 garble=[] chars=3873/3873
+R1 [code] t1_seed_identical=True a=71502786b5f5 b=71502786b5f5 garble=[] chars=987/987
+R1 [multi] t1_seed_identical=True a=917b86c7b8b0 b=917b86c7b8b0 garble=[] chars=892/892
+R1 [simple] t1_seed_identical=True a=9a0718cb0845 b=9a0718cb0845 garble=[] chars=1267/1267
+R1 [simple-t0] identical=True hash=84efc84cc142 garble=[]
+R2 [essay] t1_seed_identical=True a=6f4b835ebb07 b=6f4b835ebb07 garble=[] chars=3753/3753
+R2 [code] t1_seed_identical=True a=71502786b5f5 b=71502786b5f5 garble=[] chars=987/987
+R2 [multi] t1_seed_identical=True a=917b86c7b8b0 b=917b86c7b8b0 garble=[] chars=892/892
+R2 [simple] t1_seed_identical=True a=9a0718cb0845 b=9a0718cb0845 garble=[] chars=1267/1267
+R2 [simple-t0] identical=True hash=84efc84cc142 garble=[]
+R3 [essay] t1_seed_identical=True a=32c5c13f4f59 b=32c5c13f4f59 garble=[] chars=3873/3873
+R3 [code] t1_seed_identical=True a=71502786b5f5 b=71502786b5f5 garble=[] chars=987/987
+R3 [multi] t1_seed_identical=True a=917b86c7b8b0 b=917b86c7b8b0 garble=[] chars=892/892
+R3 [simple] t1_seed_identical=True a=9a0718cb0845 b=9a0718cb0845 garble=[] chars=1267/1267
+R3 [simple-t0] identical=True hash=84efc84cc142 garble=[]
+R4 [essay] t1_seed_identical=False a=6f4b835ebb07 b=32c5c13f4f59 garble=[] chars=3753/3873
+R4 [code] t1_seed_identical=True a=71502786b5f5 b=71502786b5f5 garble=[] chars=987/987
+R4 [multi] t1_seed_identical=True a=917b86c7b8b0 b=917b86c7b8b0 garble=[] chars=892/892
+R4 [simple] t1_seed_identical=True a=9a0718cb0845 b=9a0718cb0845 garble=[] chars=1267/1267
+R4 [simple-t0] identical=True hash=84efc84cc142 garble=[]
+CTRL [simple] seed999=f822f2de494a vs seed1234=9a0718cb0845 different=True
+T1SEED_CHAR_DONE
+ERROR=0
+TRACEBACK=0
+=== [A] mq annex (fixed GRAPH_ENV injection) 2026-11-04 22:13:15 ===
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert9 name=arc-test graph=1 spec=3 gmu=0.8 mnbt=8192 seqs=64 xgc=0 port=8000 22:13:50
+HEALTH=OK after ~310s
+(Worker_TP0 pid=930) P619 tq_spec_fix v6 installed (active=True mode=mq mq_kernel=True): v19b verify-capture forcing + single-pass MQ continuation dispatch
+(EngineCore pid=698) INFO 11-04 22:16:31 [kv_cache_utils.py:2395] XPU KV cache size: 519,972 tokens, Maximum concurrency for 262,144 tokens per request: 1.98x
+MQ POSTURE: OK (mode=mq engaged)
+FLIP_FIRST: stop 9.3s head: '\n\n1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20'
+solo1: tps=54.06 tok=512 dt=9.5s finish=length
+solo2: tps=54.32 tok=512 dt=9.4s finish=length
+agg8: tps=285.36 tok=4096 wall=14.4s per_stream=['38.2', '37.2', '36.9', '36.9', '36.9', '35.7', '36.1', '36.1']
+ERROR=0
+TRACEBACK=0
+=== [B] W14 restore + generation verify (w14_boot fullres) 2026-11-04 22:19:39 ===
+W14_BOOT_DONE=1 after ~450s
+POSTURE W13H HEALTH_OK after ~430s
+---FRANCE---
+FRANCE: ' Paris, a city that has been the'
+W13H_BOOT_DONE
+W14_GEN_VERIFIED: {"id":"chatcmpl-ae35ed5c8236fef3","object":"chat.completion","created":1793831246,"model":"qwen3.8-flashnext","choices":
+W14_ENGINES=1 (expect 1)
+PORT_8000_OWNER=NONE (expect radiance-test, arc-test absent)
+arc-test removed OK
+=================== P620 R84B ANNEX COMPLETE 2026-11-04 22:27:27 ===================

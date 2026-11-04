@@ -1,0 +1,22 @@
+R1 [essay] t1_seed_identical=False a=ab0ff6b60576 b=e010d2ac13fb garble=[] chars=3308/3885
+R1 [code] t1_seed_identical=True a=033347581246 b=033347581246 garble=[] chars=729/729
+R1 [multi] t1_seed_identical=True a=20697f9fd763 b=20697f9fd763 garble=[] chars=577/577
+R1 [simple] t1_seed_identical=True a=b050204c6424 b=b050204c6424 garble=[] chars=1350/1350
+R1 [simple-t0] identical=True hash=cc082a03dea2 garble=[]
+R2 [essay] t1_seed_identical=False a=0799a978301e b=c5c53efbc212 garble=[] chars=3135/4232
+R2 [code] t1_seed_identical=True a=033347581246 b=033347581246 garble=[] chars=729/729
+R2 [multi] t1_seed_identical=True a=20697f9fd763 b=20697f9fd763 garble=[] chars=577/577
+R2 [simple] t1_seed_identical=True a=b050204c6424 b=b050204c6424 garble=[] chars=1350/1350
+R2 [simple-t0] identical=True hash=cc082a03dea2 garble=[]
+R3 [essay] t1_seed_identical=False a=f7c219c33403 b=0799a978301e garble=[] chars=3482/3135
+R3 [code] t1_seed_identical=False a=5ecbacd30727 b=033347581246 garble=[] chars=671/729
+R3 [multi] t1_seed_identical=True a=20697f9fd763 b=20697f9fd763 garble=[] chars=577/577
+R3 [simple] t1_seed_identical=True a=b050204c6424 b=b050204c6424 garble=[] chars=1350/1350
+R3 [simple-t0] identical=True hash=cc082a03dea2 garble=[]
+R4 [essay] t1_seed_identical=True a=0799a978301e b=0799a978301e garble=[] chars=3135/3135
+R4 [code] t1_seed_identical=True a=033347581246 b=033347581246 garble=[] chars=729/729
+R4 [multi] t1_seed_identical=True a=20697f9fd763 b=20697f9fd763 garble=[] chars=577/577
+R4 [simple] t1_seed_identical=True a=b050204c6424 b=b050204c6424 garble=[] chars=1350/1350
+R4 [simple-t0] identical=True hash=cc082a03dea2 garble=[]
+CTRL [simple] seed999=1f23dcb45cbb vs seed1234=b050204c6424 different=True
+T1SEED_CHAR_DONE

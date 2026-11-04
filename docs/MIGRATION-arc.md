@@ -2,16 +2,19 @@
 
 Migration addendum banked at P5 close-out (2026-10-30) per the banking
 directive; identities re-pointed at each certification close-out — most
-recently **cert8 (P6.19, 2026-11-04; the TurboQuant spec-verify
-corruption root-caused and FIXED — all four `turboquant_*` kv-cache
-dtypes servable again, `VLLM_ARC_TQ_SPEC_FIX=1` default-ON, fp8 bytes
-unchanged)**, after cert7 (P6.18, 2026-11-04 — its dtype refusal was
-the interim mitigation, lifted at P6.19), cert6 (P6.14, 2026-11-02)
-and the P6.17 serve-layer certification (2026-11-03: the certified
-line is `ARC_SPEC_METHOD=probabilistic` — the serve script default
-flipped). Target: serve **qwen3.8-27b-fp8**
+recently **cert9 (P6.20, 2026-11-04; the prefill host-path patch — L3
+off-thread LMCache store default-ON + L6 dispatch-late + step_trace
+diagnostics; U32k/U64k/U8k TTFT −0.74/−1.64/−0.08 s, spec/identity
+faces byte-exact cert8)**, after cert8 (P6.19, 2026-11-04; the
+TurboQuant spec-verify corruption root-caused and FIXED — all four
+`turboquant_*` kv-cache dtypes servable, `VLLM_ARC_TQ_SPEC_FIX=1`
+default-ON, fp8 bytes unchanged), cert7 (P6.18, 2026-11-04 — its dtype
+refusal was the interim mitigation, lifted at P6.19), cert6 (P6.14,
+2026-11-02) and the P6.17 serve-layer certification (2026-11-03: the
+certified line is `ARC_SPEC_METHOD=probabilistic` — the serve script
+default flipped). Target: serve **qwen3.8-27b-fp8**
 (dense hybrid-GDN, **MTP k3 recommended** — r46t real-world campaign) on
-`vllm-arc:v0.30.0-b70-cert8`, replacing the W14 incumbent
+`vllm-arc:v0.30.0-b70-cert9`, replacing the W14 incumbent
 (`radiance-test`, flash-next k3) as the rig's serving stack. Everything
 below is rig-proven; the full phase-by-phase evidence table is §6.
 
@@ -19,10 +22,10 @@ below is rig-proven; the full phase-by-phase evidence table is §6.
 
 | item | value |
 |---|---|
-| image | `vllm-arc:v0.30.0-b70-cert8` (tag-built from `rel/v0.30.0-b70-cert8` — cert8; cert7's engine + the P6.19 `tq_spec_fix` spec-verify patch [default-ON, split dispatch = the certified lane] and the P6.18 guard's removal; fp8 serving bytes byte-identical to cert7/cert6; gate verdict `results/2026-11-04-p619-tqverify/VERDICT.md`) |
-| fork SHA baked | `e47739b0` (IMAGE_MANIFEST `fork_sha=e47739b018411fb72d66c5499701b430c5a302e2` == the annotated tag's commit; annotated tag `rel/v0.30.0-b70-cert8` on main; image id `b212fbca59ec`) |
-| validation image | `vllm-arc:v0.30.0-b70-cert8` itself (28/28 p48_verify + 11/11 p73_verify image-native, fix-engaged-on-fp8=0 control, default-fp8 battery + long-return t0 lane 100 % CLEAN byte-family cert7 + **all-dtype TQ long-return zero garble** — `results/2026-11-04-p619-tqverify/` incl. `VERDICT.md` + `BEST-PRACTICES-AUDIT.md`; default faces first validated cert4-native `results/2026-10-31-p65-cert4/` + r70 comprehensive `results/2026-10-31-p70-r70-cert4-comprehensive/` + p617 prob-lane `results/2026-11-03-p617a-probcert/`) |
-| canonical serve script | rig `/root/build/serve_arc_b70.sh` (the uniform boot interface; carries the **25-var chain** incl. `LMCACHE_TRACK_USAGE=false` — P6.3; run with `ARC_IMAGE=vllm-arc:v0.30.0-b70-cert8 ARC_GRAPH=1 ARC_SPEC=3`; since **P6.17 the certified default is the probabilistic draft-sampling posture — unset or `ARC_SPEC_METHOD=probabilistic` appends the upstream spec key `draft_sample_method`**, `ARC_SPEC_METHOD=greedy` = the opt-out historical lane (pre-P6.17 bytes), `ARC_SPEC=0` = no spec; flip validated end-to-end — flag probe 5/5 + default-path boot engine bytes identical to the record legs — `results/2026-11-03-p617a-probcert/`; the pre-flip script is preserved on the rig as `/root/build/serve_arc_b70_p616.sh` (provenance backup) |
+| image | `vllm-arc:v0.30.0-b70-cert9` (tag-built from `rel/v0.30.0-b70-cert9` — cert9; cert8's engine + the P6.20 prefill host-path patch [`lmcint/vllm_v1_adapter.py` L3 off-thread store default-ON + L6 dispatch-late; `patches/step_trace.py` silent-off diagnostics]; compute bytes identical to cert8 — the delta is where the store body's host wait runs; gate evidence `results/2026-11-04-p620-prefill-opt/`) |
+| fork SHA baked | `aa2ee17d` (IMAGE_MANIFEST `fork_sha=aa2ee17d11612d9292684cbcbd2825bde4c7a65d` == the annotated tag's commit; annotated tag `rel/v0.30.0-b70-cert9` on main; image id `a9f8252451b6`; all four p620-touched files md5-identical to the tag tar at the gate) |
+| validation image | `vllm-arc:v0.30.0-b70-cert9` itself (p48 ALL_GREEN + p73 11/11 image-native; default-fp8 battery with ZERO env overrides proving default-ON L3 [STORE_WORKER_ACTIVE, LMC_ENV_SET=0, trace silent-off]; long-return bar PASS with zero t1-seed misses; all-TQ zero garble with cross-cert dominant-hash identity proof — `results/2026-11-04-p620-prefill-opt/`; default faces first validated cert4-native `results/2026-10-31-p65-cert4/` + r70 comprehensive `results/2026-10-31-p70-r70-cert4-comprehensive/` + p617 prob-lane `results/2026-11-03-p617a-probcert/` + cert8 `results/2026-11-04-p619-tqverify/`) |
+| canonical serve script | rig `/root/build/serve_arc_b70.sh` (the uniform boot interface; carries the **25-var chain** incl. `LMCACHE_TRACK_USAGE=false` — P6.3; run with `ARC_IMAGE=vllm-arc:v0.30.0-b70-cert9 ARC_GRAPH=1 ARC_SPEC=3`; since **P6.17 the certified default is the probabilistic draft-sampling posture — unset or `ARC_SPEC_METHOD=probabilistic` appends the upstream spec key `draft_sample_method`**, `ARC_SPEC_METHOD=greedy` = the opt-out historical lane (pre-P6.17 bytes), `ARC_SPEC=0` = no spec; flip validated end-to-end — flag probe 5/5 + default-path boot engine bytes identical to the record legs — `results/2026-11-03-p617a-probcert/`; the pre-flip script is preserved on the rig as `/root/build/serve_arc_b70_p616.sh` (provenance backup) |
 | long-context profile | rig `/root/build/serve_arc_b70_defer2.sh` (the canonical chain + `--long-prefill-token-threshold 2048` + `LMC_DEFER_CHUNK_STORE=1` + `LMC_DEFER_MIN_TOKENS=40960` — P6.5; opt-in, see CONFIGURATION-arc "fp8 stall levers") |
 | A/B fallback | same script with `ARC_SPEC=4` (MTP k4 — documented alternative for near-deterministic workloads) |
 | golden reference | rig `/root/build/p25/golden_ref.json` (md5 `e02cbb07…`; covers k4 AND k5 — r42/r43 proved byte-identical) |
@@ -43,7 +46,7 @@ standalone loader — r42 Fix B).
 #                  export SSH_ASKPASS=/tmp/askpass.sh
 #                  SSH_ASKPASS_REQUIRE=force DISPLAY=:0)
 docker stop radiance-test                      # frees port 8000 + both GPUs
-ARC_IMAGE=vllm-arc:v0.30.0-b70-cert8 ARC_NAME=arc-test ARC_GRAPH=1 ARC_SPEC=3 \
+ARC_IMAGE=vllm-arc:v0.30.0-b70-cert9 ARC_NAME=arc-test ARC_GRAPH=1 ARC_SPEC=3 \
   bash /root/build/serve_arc_b70.sh            # boot + serve as one unit
 # draft posture: unset/probabilistic = CERTIFIED (P6.17); the certified
 # line can be written explicitly as ARC_SPEC_METHOD=probabilistic (same
@@ -57,13 +60,15 @@ The script boots the certified container (`--privileged` REQUIRED —
 pidfd IPC law, r30 defect #1; `--network host --ipc host`, the model
 mount, cache mounts, and the 2 boot-layer `-e` vars) and execs the
 serve line with the full 25-var chain — env + CLI as one unit by
-construction. Boot takes ~5 min to health 200 (295 s at the cert7 and
-cert8 gates). Verify in
+construction. Boot takes ~5 min to health 200 (285–295 s at the
+cert7/cert8/cert9 gates). Verify in
 `/root/serve_full.log`: wheel hooks install (zero `FAILED`, silent
 defer is DEBUG), `fp8 reroute ACTIVE`, `kvfmt TWO_HS`, the p40c re-pin
 line both workers (`alloc/free_pinned_ptr re-pinned to the pageable
 torch baseline`), `glue-unavailable 0`, `[p41c] wrap live`, posture
-lines (mode=none, FULL_DECODE_ONLY [1..320], MTP k3, align).
+lines (mode=none, FULL_DECODE_ONLY [1..320], MTP k3, align), and since
+cert9 the P6.20 store-worker line after the FIRST request
+(`LMC store worker ACTIVE` — the off-thread L3 store, default ON).
 
 ## 3. Post-boot verification (any migration or image bump)
 
@@ -75,8 +80,9 @@ lines (mode=none, FULL_DECODE_ONLY [1..320], MTP k3, align).
    `golden_ref.json` (0-drift law).
 4. **run7n ×2**: conservative floors solo ≥ 79.74, agg#2 ≥ 274.41;
    certified steady family at k3, prob lane (p617 + release gates):
-   solo **83.7–84.9** / agg **291.4–303.1** (cert8 gate: 300.65 /
-   84.53–84.57; cert4-native greedy family 294.7–300.5 in-band — the
+   solo **83.7–84.9** / agg **291.4–303.1** (cert9 gate: 296.91 /
+   84.54–84.48; cert8 gate: 300.65 / 84.53–84.57; cert4-native greedy
+   family 294.7–300.5 in-band — the
    argmax path is posture-invariant) — **comparator law (r47c)**:
    a fresh-boot FIRST battery on the same stack reads lower (~206/64.5
    warmup face); gate a fresh boot against a same-posture A/B, not the
@@ -143,5 +149,6 @@ PERFORMANCE-arc / TESTING-arc. All paths relative to `results/`.
 | P6.18a/b repro + triage | `2026-11-03-p618b-repro/` | **the turboquant corruption campaign**: owner report (k8v4 corrupt returns) reproduced and split — **Class B** deterministic degenerate generation (REP-LOOP attractors) on ALL FOUR `turboquant_*` presets, cold-included, LMC-independent, cross-dtype byte-identical attractors; **Class A** t0 warm-resume trajectory flips (dtype+LMC-independent, settled as inherent warm-resume-vs-cold numerical divergence — diag/diag2 canaries; disposition documentation, not code); fp8 legs clean throughout; 14 MB tree with byte-exact redaction (+1872) + W14 restore incident record |
 | P6.18c roundtest + fix | `2026-11-03-p618c-roundtest/` (+ `BEST-PRACTICES-AUDIT.md` in the cert7 tree) | **root cause closed + the fix**: the live SoA store→decode Triton pair is numerically correct on XPU (decode self-coherence rel_err ≤ 6e-6, store spec-conformant [V ≤ 1 tie-step, K value-exact], fully deterministic, all four presets with engine tables + model geometry) — the degeneracy is the 4-bit-class value-precision quality ceiling (16 affine levels per token-head, 8 on 3bit; upstream's own tables +2.71…+20.59 % PPL on gpt-oss) → fix = `ArcXpuPlatform.check_and_update_config` refuses any `cache_dtype` startswith `turboquant` (upstream-patterened: rocm's prefix-match fail-loud idiom, cuda's config-time ValueError+remedy); upstream-pattern audit `BEST-PRACTICES-AUDIT.md` |
 | P6.18d cert7 gates | `2026-11-03-p618-cert7/` | **cert7 release gates** (tag-built image `a8cd765b0380`, single flow; tag moved once — the first build read the CLI flag name `kv_cache_dtype` instead of the pydantic field `cache_dtype` and was caught by G0): manifest fork_sha `5bf4192d` == tag, p48 28/28 + p73 11/11 image-native, **G0 guard proof** k8v4 + tq4nc (loud ValueError ~65 s, startup 0, health never), default fp8 posture (health ~295 s, SLICE_ENV_ABSENT=0, KV pool 400,739 == p618b cert6-fp8 legs, flip 9.2 s stop), run7n t0 299.73/84.50/84.44 in-family, integrity 5/5 + det 3/3 (×2), spec pos1 0.9258 PASS, 0 ERROR/Traceback, WARN class-set zero fork-added, **LONG-RETURN GATE 100 % CLEAN** (4 classes single-hash across cold/rehit/rehit2 + 3 churn cycles; zero REP-LOOP/JUNK/BLEED/EMPTY; t1-seed annex: one sporadic flip characterized 16/16 identical — Class-A RNG-path divergence at sampled temperature, not corruption) + **REPRODUCIBILITY-AUDIT.md** (image ⊆ repo 144/144 md5; every image input tracked or pinned) — **`rel/v0.30.0-b70-cert7` = certified release** — superseded by cert8 (P6.19, next row): the TQ corruption root-caused and fixed, the dtype refusal lifted |
-| P6.19 TQ spec-verify fix + cert8 | `2026-11-04-p619-tqverify/` (+ `rig/` gate evidence) | **corruption root-caused and FIXED — all dtypes servable**: 3 root causes from the t2i telemetry campaign (verify-capture baked raw-KV fast-path graphs / replay-broken multi-row synthetic-decode dispatch / SoA-vs-AoS MQ addressing on the first draft read), fix = `patches/tq_spec_fix.py` default-ON (split dispatch certified; `VLLM_ARC_TQ_VERIFY_MODE=mq` opt-in experimental, agg8 +21 %, MQVAL5 4/4 exact); cert8 gates ALL GREEN on the tag-built image (`b212fbca59ec`): manifest == tag `e47739b0`, p48 28/28 + p73 11/11, fp8 byte-family cert7 (KV 400,739, t0 300.65/84.53-84.57, spec pos1 0.9258, integrity 5/5 + det 3/3), fp8 + all-TQ long-return zero garble on the t0 lanes (identity faces dispositioned: Class-A warm-resume variants, 3-bit precision floor, and the t1-seed REP-LOOP flag = a temp-1.0 model-lane property proven firing on the zero-fork W14 incumbent too), tps k8v4 54.42/54.59/235.97, mq 284.81; 0 ERROR/Traceback ×7 boots; best-practices audit banked — **`rel/v0.30.0-b70-cert8` = current certified release** |
+| P6.19 TQ spec-verify fix + cert8 | `2026-11-04-p619-tqverify/` (+ `rig/` gate evidence) | **corruption root-caused and FIXED — all dtypes servable**: 3 root causes from the t2i telemetry campaign (verify-capture baked raw-KV fast-path graphs / replay-broken multi-row synthetic-decode dispatch / SoA-vs-AoS MQ addressing on the first draft read), fix = `patches/tq_spec_fix.py` default-ON (split dispatch certified; `VLLM_ARC_TQ_VERIFY_MODE=mq` opt-in experimental, agg8 +21 %, MQVAL5 4/4 exact); cert8 gates ALL GREEN on the tag-built image (`b212fbca59ec`): manifest == tag `e47739b0`, p48 28/28 + p73 11/11, fp8 byte-family cert7 (KV 400,739, t0 300.65/84.53-84.57, spec pos1 0.9258, integrity 5/5 + det 3/3), fp8 + all-TQ long-return zero garble on the t0 lanes (identity faces dispositioned: Class-A warm-resume variants, 3-bit precision floor, and the t1-seed REP-LOOP flag = a temp-1.0 model-lane property proven firing on the zero-fork W14 incumbent too), tps k8v4 54.42/54.59/235.97, mq 284.81; 0 ERROR/Traceback ×7 boots; best-practices audit banked — **`rel/v0.30.0-b70-cert8` = certified release** — superseded by cert9 (P6.20, next row): the prefill host-path store patch, strictly faster TTFT, byte-exact spec/identity |
+| P6.20 prefill host-path + cert9 | `2026-11-04-p620-prefill-opt/` (+ `rig/` r80–r84b evidence) | **prefill host path eliminated as a bottleneck; U32k/U64k proven device-bound**: step telemetry first (`patches/step_trace.py` 9-segment per-step timeline, silent-off) → L1 evsync NEUTRAL (r80, in-order stream), **L3 off-thread store ADOPTED** (r81 interleave A/B/A/B: U32k −0.74 s / U64k −1.64 s / U8k −0.08 s; `arc-lmc-store` worker, device ops stay on the engine stream; default ON, `VLLM_ARC_LMC_ASYNC_STORE=0` kill switch), r82 battery GREEN + source-override instrument lesson (wrap the ENGINE's module), **L6 dispatch-late** (r83 FULL GREEN; spec byte-exact cert8 pos1 0.9258/acc 0.837), r83 window trace = **lane closure** (wfs waits = device-queue drain behind chunk forwards, worker bodies ≤108 ms, ~89 % of U64k TTFT device-side; L6a/L6b dispositioned NOT-built; remaining lever = kernel compute AR 30.4 %/FA 20.3 %); cert9 gates ALL GREEN on the tag-built image (`a9f8252451b6` @ `aa2ee17d`, 4/4 file md5 == tag tar): manifest + p48 ALL_GREEN + p73 11/11, **default fp8 with ZERO env overrides** (STORE_WORKER_ACTIVE=2, LMC_ENV_SET=0, trace silent-off), integrity 5/5 + det 3/3, t0 296.91/84.54-84.48 in-family, t1.0 240.06 steady, spec byte-exact cert8, fp8 long-return PASS zero t1-seed misses + WARN diff 0/0, **p65 image-native U32k 16.93 / U64k 38.93 / U8k 3.76 / C32k 1.09**, all-TQ zero garble (k8v4 tps 54.64/54.85/236.15; k3v4/q4nc identity faces annexed with **cross-cert dominant-hash proof** — variant families byte-identical to the cert8 gate boots; q3nc = its P6.14 record character), mq annex (cert8-precedent fixed sed), 0 ERROR/Traceback every boot — **`rel/v0.30.0-b70-cert9` = current certified release** |
 | env reference | `docs/envs.md` | complete control surface + naming map |

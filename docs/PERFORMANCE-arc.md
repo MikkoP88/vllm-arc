@@ -8,13 +8,14 @@ definitions and hardware in [`TESTING-arc.md`](TESTING-arc.md)).
 1. **Measurement methodology** — defines every face, the protocol laws,
    the two prefix-cache tiers, and the provenance rule. Read it first.
 2. **Current record** — the **probabilistic draft lane on
-   `vllm-arc:v0.30.0-b70-cert8`** (the certified posture since P6.17 —
+   `vllm-arc:v0.30.0-b70-cert9`** (the certified posture since P6.17 —
    the serve-script default; every record
    face measured natively on that lane by the p617 campaign, and the
-   cert7/cert8 release gates re-verified the key faces on the tag-built
-   image — same engine under `fp8_e4m3`), plus the
+   cert7/cert8/cert9 release gates re-verified the key faces on the tag-built
+   image — same engine under `fp8_e4m3`; cert9 adds the P6.20 off-thread
+   store, so the prefill TTFT faces carry the cert9-gate values), plus the
    posture matrices (the P6.16 prob matrix; the TurboQuant dtype faces,
-   P6.14, **servable again since cert8**) and the current-era analyses
+   P6.14, **servable again since cert8, re-gated on cert9**) and the current-era analyses
    (prefill anatomy, op-class trace). The pre-P6.17 greedy-lane record
    (r70, cert4-native) is retained as labeled history.
 3. **History** — every pre-P6.17 measurement, labeled by image and
@@ -56,7 +57,7 @@ current-record tables.
 | Layer | Identity |
 |---|---|
 | Hardware | dual Intel Arc Pro B70 (48 GB each), TP2, one card per socket (`ZE_AFFINITY_MASK=0,1`) |
-| Engine image | **current**: `vllm-arc:v0.30.0-b70-cert8` — tag `rel/v0.30.0-b70-cert8`, commit `e47739b0`, image `b212fbca59ec`, `IMAGE_MANIFEST.fork_sha` verified at build (cert8 gate, `results/2026-11-04-p619-tqverify/`). The current-record numbers below were measured natively on cert6 (identical engine under fp8) under the certified probabilistic draft posture (p617 campaign) and the key faces re-verified at the cert7 and cert8 release gates (t0 in-family, integrity/det/spec green, long-return t0 lanes 100 % clean on every dtype — the one t1-seed window flag dispositioned benign with the W14 incumbent control, gate `VERDICT.md`). cert8 = cert7 engine + the **P6.19 TurboQuant spec-verify fix** (`patches/tq_spec_fix.py` wheel-side hook — donor-v19b verify-capture forcing + graph-safe split-row continuation dispatch, default-active on `turboquant_*` dtypes; MQ kernel `patches/tq_mq_aos.py` opt-in-experimental) with the P6.18 boot refusal lifted: **all four TQ presets serve clean — zero garble, all-dtype gate with fp8 control**. Under the certified `fp8_e4m3` the serving bytes are identical to cert6/cert7 (the hooked module never imports there — control-proven t7/t9); KV pool 400,739 == cert7 byte-value, run7n t0 300.65/84.53/84.57 in-family |
+| Engine image | **current**: `vllm-arc:v0.30.0-b70-cert9` — tag `rel/v0.30.0-b70-cert9`, commit `aa2ee17d`, image `a9f8252451b6`, `IMAGE_MANIFEST.fork_sha` verified at build + all four p620-touched files md5-identical to the tag tar (cert9 gate, `results/2026-11-04-p620-prefill-opt/`). The current-record numbers below were measured natively on cert6 under the certified probabilistic draft posture (p617 campaign) and the key faces re-verified at the cert7, cert8 and cert9 release gates (t0 in-family, integrity/det/spec green — cert9 spec gate at exactly the cert8 banked values — long-return t0 lanes 100 % clean on every dtype; the one t1-seed window flag dispositioned benign with the W14 incumbent control at cert8; the cert9-gate TQ identity faces carry the cross-cert dominant-hash proof — same variant families as the cert8 gate). cert9 = cert8 engine + the **P6.20 prefill host-path patch** (L3 off-thread LMCache store, default ON via `VLLM_ARC_LMC_ASYNC_STORE` — device ops stay on the engine's in-order stream, only the host wait moves to the `arc-lmc-store` worker; L6 dispatch-late handoff; `patches/step_trace.py` diagnostics, silent-off). Under `fp8_e4m3` the compute bytes are identical to cert6–cert8 — the delta is WHERE the store body's D2H gathers + CPU insert run (off-thread), worth **−0.74 s U32k / −1.64 s U64k / −0.08 s U8k TTFT**; KV pool 400,739 == cert7 byte-value, run7n t0 296.91/84.54/84.48 in-family. cert8 (`e47739b0`, image `b212fbca59ec`) remains fully valid |
 | Wheels | md5-pinned at build (`tools/wheel_guard.sh`, 4 pins: vllm/triton/vxk/lmcache 0.5.6+arc1) |
 | Serve line | the certified 25-var env chain + CLI ([`CONFIGURATION-arc.md`](CONFIGURATION-arc.md)): MTP k3 **+ probabilistic drafting (the P6.17 certified default)**, `mode:none`, FULL_DECODE_ONLY graphs (85 capture sizes, 1–320), MNBT 8192, LMCacheConnectorV1 `kv_both` |
 | p617 campaign (the comprehensive prob-lane certification) | 5 fresh boots on cert6 — prob comprehensive leg (a), prob family leg (b), no-spec A/B leg (c), default-path validation boot (d), greedy opt-out boot (e) — evidence `results/2026-11-03-p617a-probcert/` |
@@ -119,9 +120,9 @@ accepted/drafts + 1** (the +1 bonus token). Windows are counter deltas
 snapshotted before/after each battery, so each face's acceptance covers
 that face's traffic only.
 
-## Current certified image — cert8 (`rel/v0.30.0-b70-cert8`) + probabilistic draft lane (P6.17): the current record
+## Current certified image — cert9 (`rel/v0.30.0-b70-cert9`) + probabilistic draft lane (P6.17): the current record
 
-**Current release = cert8; current certified posture = probabilistic
+**Current release = cert9; current certified posture = probabilistic
 drafting (P6.17, the serve-script default).** Every record number below
 was measured natively on the cert6 image under
 `ARC_SPEC_METHOD=probabilistic` (p617 campaign, 2026-11-03, fresh boot
@@ -138,7 +139,24 @@ long-return gate on every corruption/looping face across 3 churn cycles
 posture, in-family with cert7's banked 218.29; KV pool 400,739 tokens
 == the cert7/p618b byte-value) —
 `results/2026-11-04-p619-tqverify/` (gate VERDICT) +
-`results/2026-11-03-p618-cert7/` (cert7 record). Nothing validated
+`results/2026-11-03-p618-cert7/` (cert7 record).
+**cert9 = cert8 + the P6.20 prefill host-path patch** (L3 off-thread
+LMCache store, default ON, `VLLM_ARC_LMC_ASYNC_STORE=0` kill switch; L6
+dispatch-late store handoff; `step_trace` diagnostics, silent-off) —
+the store body's D2H gathers + CPU insert leave the engine thread
+(device ops stay on the engine's in-order stream), and the cert9 gate
+re-verified everything image-native with **no env overrides**: t0
+agg#2 296.91 (solo 84.54/84.48; agg#1 276.88 first-run warm-up),
+t1.0-xhigh agg 240.06 steady (133.47 first-sampled-face transient, the
+documented warm-up face; solo 67.04/64.15 in-family), integrity 5/5 +
+determinism 3/3, **spec gate at exactly the cert8 banked values (pos1
+0.9258, acceptance 0.837, mean accepted length 3.51)**, long-return
+bar PASS with zero t1-seed misses on fp8, 0 ERROR / 0 Traceback, WARN
+class-set identical to cert8 (+0 −0), KV pool 400,739 tokens — and the
+P6.20 TTFT wins on the same gate: **U32k 16.93 s / U64k 38.93 s / U8k
+3.76 s / C32k re-hit 1.09 s** vs the cert8-posture faces 17.9–18.1 /
+39.6–41.5 / 3.84 (r81 interleave A/B/A/B: −0.74 / −1.64 / −0.08 s) —
+`results/2026-11-04-p620-prefill-opt/`. Nothing validated
 beats the certified default (the two faster-on-paper postures are
 rejected: k5-depth dropped — its greedy edge inverts under sampling;
 compile — Appendix H law #1 acceptance gate, p67). The opt-in slice
@@ -146,7 +164,8 @@ profile (experimental, P6.13) is NOT part of the certified default; its
 cert5-native face: U64k TTFT 50.77 s (cert4 51.95), W_U64k_start max
 1602 vs 1997 ms. The TurboQuant dtype faces are **servable again since
 cert8** (P6.19 spec-verify fix — zero garble all four presets; their
-table is below). How to run: the 25-var chain in
+table is below; re-gated clean on cert9 — dominant identity hashes
+byte-identical across the two gates). How to run: the 25-var chain in
 [`CONFIGURATION-arc.md`](CONFIGURATION-arc.md).
 
 ### Throughput — t0, thinking off (chat battery; posture-invariant face)
@@ -198,6 +217,21 @@ prob lane) is banked in the draft-sampling matrix below.
 | U16k | 16,354 | **7.90 s** | 7.87 (r70) | 2,069 t/s |
 | U32k | 32,553 | **17.38 s** | 17.08–17.36 s | 1,873 t/s |
 | U64k | 65,303 | **40.32 s** | 39.19–40.26 s | 1,620 t/s |
+
+**cert9 (P6.20 L3 off-thread store) — the certified-current prefill
+faces, image-native at the cert9 gate**: **U8k 3.76 s / U32k 16.93 s /
+U64k 38.93 s / C32k re-hit 1.09 s** (16k not re-measured at the gate;
+p617 record 7.90 s stands). The deltas vs the p617 record (−0.08 /
+−0.45 / −1.39 s) are the store body leaving the engine thread — the
+r81 interleave A/B/A/B on the same boot pair measured the pure L3 win
+as **−0.74 s U32k / −1.64 s U64k / −0.08 s U8k** vs the cert8 inline
+posture (17.9–18.1 / 39.6–41.5 / 3.84 s). P6.20's trace-driven closure:
+the big-prefill face is **device-compute-bound** — ~89 % of U64k TTFT
+is the wait_for_save device-queue drain behind just-submitted chunk
+forwards (worker bodies ≤108 ms, submit walls ~400 ms); the residual
+U32k/U64k gap is kernel compute (r67b: AR 30.4 % / FA 20.3 % of rank0
+device time at U32k), the remaining lever — see the P6.20 record in
+`results/2026-11-04-p620-prefill-opt/`.
 
 ### Prefix reuse — warm faces with tier attribution
 
@@ -800,7 +834,8 @@ governs.
 | `v0.30.0-b70-cert5` | `rel/v0.30.0-b70-cert5` | cert4 engine + P6.13 default-OFF sliced-store hunk (`LMC_STORE_SLICE_TOKENS`, experimental opt-in profile) | superseded by cert6 (identical default behavior, lacks the P6.14 TQ-aware store hunk) |
 | `v0.30.0-b70-cert6` | `rel/v0.30.0-b70-cert6` | cert5 engine + P6.14 TurboQuant-aware lagged store (inert under `fp8_e4m3`) + the four then-validated opt-in `turboquant_*` dtype faces | superseded — fp8 behavior byte-identical; its TQ dtypes carry the pre-P6.19 corrupted spec-verify path (P6.18 Class B), so **do not serve TQ dtypes on cert6** |
 | `v0.30.0-b70-cert7` | `rel/v0.30.0-b70-cert7` | cert6 engine + the P6.18 `ArcXpuPlatform` config-time guard refusing every `turboquant_*` kv-cache dtype (fp8 serving bytes byte-identical to cert6) | superseded by cert8 — fp8 behavior byte-identical; the guard superseded by the P6.19 fix |
-| `v0.30.0-b70-cert8` | `rel/v0.30.0-b70-cert8` | cert7 engine with the P6.18 refusal lifted + the **P6.19 TQ spec-verify fix** (`patches/tq_spec_fix.py` wheel-side hook: v19b verify-capture forcing + split-row dispatch, default-active on TQ dtypes; `patches/tq_mq_aos.py` MQ kernel opt-in-experimental; fp8 serving bytes identical — hooked module never imports) — all four TQ presets serve clean | **current release** |
+| `v0.30.0-b70-cert8` | `rel/v0.30.0-b70-cert8` | cert7 engine with the P6.18 refusal lifted + the **P6.19 TQ spec-verify fix** (`patches/tq_spec_fix.py` wheel-side hook: v19b verify-capture forcing + split-row dispatch, default-active on TQ dtypes; `patches/tq_mq_aos.py` MQ kernel opt-in-experimental; fp8 serving bytes identical — hooked module never imports) — all four TQ presets serve clean | superseded by cert9 — fully valid; its fp8 TTFT faces carry the pre-P6.20 inline store path |
+| `v0.30.0-b70-cert9` | `rel/v0.30.0-b70-cert9` | cert8 engine + the **P6.20 prefill host-path patch** (L3 off-thread LMCache store default-ON `VLLM_ARC_LMC_ASYNC_STORE`; L6 dispatch-late handoff; `patches/step_trace.py` silent-off diagnostics): store D2H gathers + CPU insert leave the engine thread, device ops stay on the in-order stream — U32k −0.74 s / U64k −1.64 s / U8k −0.08 s TTFT; spec gate byte-exact cert8 values; TQ dtypes re-gated clean (dominant identity hashes identical to the cert8 gate) | **current release** |
 
 ### Depth-selection faces (cert-era images — the k3/k4/k5 greedy record)
 

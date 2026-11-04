@@ -1,0 +1,3 @@
+solo1: tps=54.06 tok=512 dt=9.5s finish=length
+solo2: tps=54.32 tok=512 dt=9.4s finish=length
+agg8: tps=285.36 tok=4096 wall=14.4s per_stream=['38.2', '37.2', '36.9', '36.9', '36.9', '35.7', '36.1', '36.1']

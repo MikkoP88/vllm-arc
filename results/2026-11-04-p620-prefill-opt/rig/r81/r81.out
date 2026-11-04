@@ -1,0 +1,93 @@
+=================== [phase l3on1] async_store=1 18:23:09 ===================
+cc67e55b21cc384b11d18e781642bcec329a1200294ce9f8fba66b9e273167cd
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert8 name=arc-test graph=1 spec=3 gmu=0.8 mnbt=8192 seqs=64 xgc=0 port=8000 18:23:34
+HEALTH=OK after ~285s
+(APIServer pid=13) INFO 11-04 18:24:32 [step_trace.py:236] ArcXpuPlatform: step_trace INSTALLED (ARC_STEP_TRACE=1, rank 0, pid 13, file /tmp/arc_step_trace_r0_p13.jsonl)
+(Worker pid=930) INFO 11-04 18:25:16 [step_trace.py:236] ArcXpuPlatform: step_trace INSTALLED (ARC_STEP_TRACE=1, rank 0, pid 930, file /tmp/arc_step_trace_r0_p930.jsonl)
+(Worker pid=1030) INFO 11-04 18:25:29 [step_trace.py:236] ArcXpuPlatform: step_trace INSTALLED (ARC_STEP_TRACE=1, rank 0, pid 1030, file /tmp/arc_step_trace_r0_p1030.jsonl)
+--- traffic: p65_timeline v5.1 full faces (~4 min) ---
+  window                 n    p50 ms    p95 ms    max ms #>2xb95  stall_s
+  W_base              2390      53.6      55.2     323.6      24     6.21
+  W_U32k_start         158      58.9    3894.9    4216.3      36   101.42
+  W_U32k_end           420      55.3      59.2      60.6       0     0.00
+  W_C32k_start(cached)     0        —         —         —       —        —
+  W_C32k_end             0        —         —         —       —        —
+  W_U8k_start          126      55.0     909.6    2725.5      18    21.62
+  W_U8k_end            276      54.5     289.6     792.9      24     7.78
+  W_U64k_start          74    3599.4    5515.6    5518.2      44   186.00
+  W_U64k_end             0        —         —         —       —        —
+
+P65_CAPTURE: DONE
+--- fetch traces + serve log ---
+(Worker_TP1 pid=1030) [32;20m[2026-11-04 18:28:15,663] LMCache INFO:[0m LMC store worker ACTIVE (arc p620 L3 off-thread flush, queue depth 2, engine-stream ctx; VLLM_ARC_LMC_ASYNC_STORE=0 disables) [3m(vllm_v1_adapter.py:2877:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.vllm_v1_adapter)[0m
+(Worker_TP0 pid=930) [32;20m[2026-11-04 18:28:15,667] LMCache INFO:[0m LMC store worker ACTIVE (arc p620 L3 off-thread flush, queue depth 2, engine-stream ctx; VLLM_ARC_LMC_ASYNC_STORE=0 disables) [3m(vllm_v1_adapter.py:2877:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.vllm_v1_adapter)[0m
+-rw-r--r-- 1 root root 86934 Nov  4 18:30 /tmp/arc_step_trace_r0_p698.jsonl
+=================== [phase off1] async_store=0 18:30:57 ===================
+b14a6fb5fdfd27798af2461894767f885ecb5aa18554489384b2f6345fa0b9bd
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert8 name=arc-test graph=1 spec=3 gmu=0.8 mnbt=8192 seqs=64 xgc=0 port=8000 18:31:22
+HEALTH=OK after ~285s
+(APIServer pid=13) INFO 11-04 18:32:21 [step_trace.py:236] ArcXpuPlatform: step_trace INSTALLED (ARC_STEP_TRACE=1, rank 0, pid 13, file /tmp/arc_step_trace_r0_p13.jsonl)
+(Worker pid=930) INFO 11-04 18:33:05 [step_trace.py:236] ArcXpuPlatform: step_trace INSTALLED (ARC_STEP_TRACE=1, rank 0, pid 930, file /tmp/arc_step_trace_r0_p930.jsonl)
+(Worker pid=1030) INFO 11-04 18:33:18 [step_trace.py:236] ArcXpuPlatform: step_trace INSTALLED (ARC_STEP_TRACE=1, rank 0, pid 1030, file /tmp/arc_step_trace_r0_p1030.jsonl)
+--- traffic: p65_timeline v5.1 full faces (~4 min) ---
+  window                 n    p50 ms    p95 ms    max ms #>2xb95  stall_s
+  W_base              2322      53.5      54.9     808.2      30    10.81
+  W_U32k_start         144      59.1    3980.3    4298.3      36   104.02
+  W_U32k_end           414      55.3      59.2      59.8       0     0.00
+  W_C32k_start(cached)    38      60.1    1027.0    1028.8      12    10.27
+  W_C32k_end            22      56.1      59.6      60.1       0     0.00
+  W_U8k_start          132      55.0     992.4    2718.0      12    21.62
+  W_U8k_end            275      54.1     298.3     781.0      18     7.37
+  W_U64k_start          81    3076.8    5598.8    5599.8      51   209.82
+  W_U64k_end             0        —         —         —       —        —
+
+P65_CAPTURE: DONE
+--- fetch traces + serve log ---
+-rw-r--r-- 1 root root 86193 Nov  4 18:38 /tmp/arc_step_trace_r0_p698.jsonl
+=================== [phase l3on2] async_store=1 18:38:46 ===================
+bc7c4482d45b2a8872a165a6ff87ce2ea573f518672cbff631abfdcb3e9a08f1
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert8 name=arc-test graph=1 spec=3 gmu=0.8 mnbt=8192 seqs=64 xgc=0 port=8000 18:39:11
+HEALTH=OK after ~285s
+(APIServer pid=13) INFO 11-04 18:40:09 [step_trace.py:236] ArcXpuPlatform: step_trace INSTALLED (ARC_STEP_TRACE=1, rank 0, pid 13, file /tmp/arc_step_trace_r0_p13.jsonl)
+(Worker pid=930) INFO 11-04 18:40:52 [step_trace.py:236] ArcXpuPlatform: step_trace INSTALLED (ARC_STEP_TRACE=1, rank 0, pid 930, file /tmp/arc_step_trace_r0_p930.jsonl)
+(Worker pid=1030) INFO 11-04 18:41:06 [step_trace.py:236] ArcXpuPlatform: step_trace INSTALLED (ARC_STEP_TRACE=1, rank 0, pid 1030, file /tmp/arc_step_trace_r0_p1030.jsonl)
+--- traffic: p65_timeline v5.1 full faces (~4 min) ---
+  window                 n    p50 ms    p95 ms    max ms #>2xb95  stall_s
+  W_base              2040      53.4      54.9    2255.2      24    25.20
+  W_U32k_start         159      58.9    3907.8    4219.0      36    98.18
+  W_U32k_end           270      55.4      93.7    1045.3      12     7.74
+  W_C32k_start(cached)   130      60.4      90.0     984.9       6     5.57
+  W_C32k_end           143      60.5     343.9    1019.6      12     7.54
+  W_U8k_start          126      55.1     912.3    2714.8      18    21.58
+  W_U8k_end            271      53.9     304.6     552.8      24     7.91
+  W_U64k_start          81    3598.6    5518.3    5520.1      51   209.29
+  W_U64k_end             0        —         —         —       —        —
+
+P65_CAPTURE: DONE
+--- fetch traces + serve log ---
+(Worker_TP0 pid=930) [32;20m[2026-11-04 18:43:52,793] LMCache INFO:[0m LMC store worker ACTIVE (arc p620 L3 off-thread flush, queue depth 2, engine-stream ctx; VLLM_ARC_LMC_ASYNC_STORE=0 disables) [3m(vllm_v1_adapter.py:2877:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.vllm_v1_adapter)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-11-04 18:43:52,819] LMCache INFO:[0m LMC store worker ACTIVE (arc p620 L3 off-thread flush, queue depth 2, engine-stream ctx; VLLM_ARC_LMC_ASYNC_STORE=0 disables) [3m(vllm_v1_adapter.py:2877:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.vllm_v1_adapter)[0m
+-rw-r--r-- 1 root root 85382 Nov  4 18:46 /tmp/arc_step_trace_r0_p698.jsonl
+=================== [phase off2] async_store=0 18:46:34 ===================
+c4b96e12b71ae2bd1831f3d82ea8ab7133d11f0a6f18bb4c73188c989c5901d5
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert8 name=arc-test graph=1 spec=3 gmu=0.8 mnbt=8192 seqs=64 xgc=0 port=8000 18:46:59
+HEALTH=OK after ~285s
+(APIServer pid=13) INFO 11-04 18:47:57 [step_trace.py:236] ArcXpuPlatform: step_trace INSTALLED (ARC_STEP_TRACE=1, rank 0, pid 13, file /tmp/arc_step_trace_r0_p13.jsonl)
+(Worker pid=930) INFO 11-04 18:48:41 [step_trace.py:236] ArcXpuPlatform: step_trace INSTALLED (ARC_STEP_TRACE=1, rank 0, pid 930, file /tmp/arc_step_trace_r0_p930.jsonl)
+(Worker pid=1030) INFO 11-04 18:48:54 [step_trace.py:236] ArcXpuPlatform: step_trace INSTALLED (ARC_STEP_TRACE=1, rank 0, pid 1030, file /tmp/arc_step_trace_r0_p1030.jsonl)
+--- traffic: p65_timeline v5.1 full faces (~4 min) ---
+  window                 n    p50 ms    p95 ms    max ms #>2xb95  stall_s
+  W_base              2322      53.5      55.0     545.4      30     9.04
+  W_U32k_start         156      59.0    3959.6    4274.0      36   102.90
+  W_U32k_end           414      55.3      59.1      60.0       0     0.00
+  W_C32k_start(cached)     0        —         —         —       —        —
+  W_C32k_end             0        —         —         —       —        —
+  W_U8k_start          132      55.0     963.9    2719.9      12    21.45
+  W_U8k_end            306      53.8      96.0     757.3      12     5.60
+  W_U64k_start          44      55.3    3983.4    3984.8      14    48.98
+  W_U64k_end             0        —         —         —       —        —
+
+P65_CAPTURE: DONE
+--- fetch traces + serve log ---
+-rw-r--r-- 1 root root 87262 Nov  4 18:53 /tmp/arc_step_trace_r0_p698.jsonl
+=================== P620 R81 DONE 2026-11-04 18:54:24 ===================

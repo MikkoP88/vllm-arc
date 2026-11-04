@@ -1,0 +1,4 @@
+(APIServer pid=13) INFO 11-04 19:21:11 [step_trace.py:304] ArcXpuPlatform: step_trace INSTALLED (ARC_STEP_TRACE=1, rank 0, pid 13, file /tmp/arc_step_trace_r0_p13.jsonl)
+(Worker pid=930) INFO 11-04 19:21:54 [step_trace.py:304] ArcXpuPlatform: step_trace INSTALLED (ARC_STEP_TRACE=1, rank 0, pid 930, file /tmp/arc_step_trace_r0_p930.jsonl)
+(Worker pid=1030) INFO 11-04 19:22:07 [step_trace.py:304] ArcXpuPlatform: step_trace INSTALLED (ARC_STEP_TRACE=1, rank 0, pid 1030, file /tmp/arc_step_trace_r0_p1030.jsonl)
+(EngineCore pid=698) INFO 11-04 19:24:50 [step_trace.py:304] ArcXpuPlatform: step_trace INSTALLED (ARC_STEP_TRACE=1, rank 0, pid 698, file /tmp/arc_step_trace_r0_p698.jsonl)

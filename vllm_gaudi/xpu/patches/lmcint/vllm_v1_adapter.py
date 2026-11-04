@@ -2,8 +2,11 @@
 # SPDX-FileCopyrightText: Copyright contributors to the vLLM project
 # Standard
 import os
+import queue
+import threading
 import uuid
 from collections.abc import Generator
+from contextlib import contextmanager
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any
 
@@ -2020,20 +2023,23 @@ class LMCacheConnectorV1Impl:
                     next(layerwise_retriever)
                     self.layerwise_retrievers.append(layerwise_retriever)
             else:
-                ret_token_mask = self.lmcache_engine.retrieve(
-                    tokens[:lmcache_cached_tokens],
-                    token_mask[:lmcache_cached_tokens],
-                    kvcaches=kvcaches,
-                    slot_mapping=slot_mapping[:lmcache_cached_tokens],
-                    request_configs=request.request_configs,
-                    req_id=request.req_id,
-                )
-                if not self.async_loading:
-                    # Blocking retrieve releases get references, not lookup pins.
-                    # Release this request's pins before the next load may need
-                    # CPU staging space; wait_for_save cleanup is idempotent.
-                    # (upstream 0.5.6; pairs with the epoch-ledger unpin below)
-                    self.lmcache_engine.lookup_unpin(request.req_id)
+                # arc p620 L3: under the store lock — the retrieve's
+                # allocator/storage paths are shared with the store worker.
+                with self._lmc_lock_guard():
+                    ret_token_mask = self.lmcache_engine.retrieve(
+                        tokens[:lmcache_cached_tokens],
+                        token_mask[:lmcache_cached_tokens],
+                        kvcaches=kvcaches,
+                        slot_mapping=slot_mapping[:lmcache_cached_tokens],
+                        request_configs=request.request_configs,
+                        req_id=request.req_id,
+                    )
+                    if not self.async_loading:
+                        # Blocking retrieve releases get references, not lookup pins.
+                        # Release this request's pins before the next load may need
+                        # CPU staging space; wait_for_save cleanup is idempotent.
+                        # (upstream 0.5.6; pairs with the epoch-ledger unpin below)
+                        self.lmcache_engine.lookup_unpin(request.req_id)
 
                 # Check the result
                 num_retrieved_tokens = ret_token_mask.sum().item()
@@ -2101,15 +2107,18 @@ class LMCacheConnectorV1Impl:
                     b_tokens - self._lmcache_chunk_size : b_tokens
                 ] = True
                 seed_holder: dict = {}
-                m_ret = self.mamba_engine.retrieve(
-                    tokens[:b_tokens],
-                    m_token_mask,
-                    kvcaches=self._mamba_kvcaches,
-                    slot_mapping=m_slot_mapping[:b_tokens],
-                    request_configs=None,
-                    req_id=request.req_id,
-                    lmc_seed=seed_holder,
-                )
+                # arc p620 L3: under the store lock (same engine-shared
+                # paths as the attn retrieve above).
+                with self._lmc_lock_guard():
+                    m_ret = self.mamba_engine.retrieve(
+                        tokens[:b_tokens],
+                        m_token_mask,
+                        kvcaches=self._mamba_kvcaches,
+                        slot_mapping=m_slot_mapping[:b_tokens],
+                        request_configs=None,
+                        req_id=request.req_id,
+                        lmc_seed=seed_holder,
+                    )
                 m_num_retrieved = int(m_ret.sum().item())
                 seed = seed_holder.get("bytes")
                 seed_end = int(seed_holder.get("tokens", 0) or 0)
@@ -2315,6 +2324,11 @@ class LMCacheConnectorV1Impl:
         connector_metadata = self._parent._get_connector_metadata()
         assert isinstance(connector_metadata, LMCacheConnectorMetadata)
 
+        # arc p620 L3: first-wfs creation of the store machinery (lock
+        # always; worker thread when async store is on) so every lmcache
+        # call below and in the flush path serializes against the worker.
+        self._lmc_store_machinery()
+
         # 0.5.5 lookup_unpin takes one lookup_id at a time.
         # llm-scaler v140 (double-unpin fix, 2026-10-10): a request can be
         # re-entered by the scheduler within one round (async/chunked
@@ -2325,19 +2339,22 @@ class LMCacheConnectorV1Impl:
         # releasing the same objects again -> pin_count -1 warnings at
         # memory_management.py:818. Dedupe per step so each id unpins
         # exactly once (dict.fromkeys keeps first-seen order).
-        for lookup_id in dict.fromkeys(connector_metadata.lookup_requests_in_step):
-            self.lmcache_engine.lookup_unpin(lookup_id)
-        # llm-scaler v136: mirror for the mamba boundary pins ("m-<req_id>"
-        # is deterministic). start_load's seed retrieve ran earlier in this
-        # same step, so the pinned boundary object survived lookup -> load;
-        # ids whose request never loaded are released here too, so pins
-        # cannot accumulate across warm requests. v140: same per-step
-        # dedupe as the attn loop above.
-        if self.mamba_engine is not None:
-            for lookup_id in dict.fromkeys(
-                getattr(connector_metadata, "mamba_lookup_ids", None) or []
-            ):
-                self.mamba_engine.lookup_unpin(lookup_id)
+        # arc p620 L3: under the store lock (lookup_unpin touches the
+        # storage manager's unpin paths, which the worker's stores share).
+        with self._lmc_lock_guard():
+            for lookup_id in dict.fromkeys(connector_metadata.lookup_requests_in_step):
+                self.lmcache_engine.lookup_unpin(lookup_id)
+            # llm-scaler v136: mirror for the mamba boundary pins ("m-<req_id>"
+            # is deterministic). start_load's seed retrieve ran earlier in this
+            # same step, so the pinned boundary object survived lookup -> load;
+            # ids whose request never loaded are released here too, so pins
+            # cannot accumulate across warm requests. v140: same per-step
+            # dedupe as the attn loop above.
+            if self.mamba_engine is not None:
+                for lookup_id in dict.fromkeys(
+                    getattr(connector_metadata, "mamba_lookup_ids", None) or []
+                ):
+                    self.mamba_engine.lookup_unpin(lookup_id)
 
         if self.kv_role == "kv_consumer":
             # Don't do save if the role is kv_consumer
@@ -2377,7 +2394,18 @@ class LMCacheConnectorV1Impl:
             self.kv_role == "kv_both"
         )
         if _lag:
-            self._lmc_flush_pending()
+            # arc p620 L6 (dispatch-late): SNAPSHOT the previous call's
+            # spans here (one-step lag law unchanged — this list holds
+            # exactly what the top-of-call dispatch used to hand over) but
+            # hold the handoff until the END of this call. Dispatching here
+            # put the mamba section below in lock contention with the
+            # just-started worker body — r82 traces: chunk-step wfs_total
+            # p90 2.3 s with wfs_flush at 0.0 ms (the engine waited one
+            # full body inside the same wfs). Late handoff: mamba rows and
+            # the re-serve sweep run against an idle worker, and the body
+            # overlaps the NEXT step's forward instead.
+            _late_pending = getattr(self, "_lmc_pending_stores", None)
+            self._lmc_pending_stores = []
 
         # Recurrent-state (mamba) store. llm-scaler v136: bank the frozen
         # boundary snapshots from mamba_utils._LMC_BOUNDARY_REGISTRY — one
@@ -2504,10 +2532,14 @@ class LMCacheConnectorV1Impl:
                             continue
                         deepest = boundaries[-1][0]
                     hash_map: dict[int, object] = {}
-                    for s, e, h in self.mamba_engine.token_database.process_tokens(
-                        tokens=list(token_ids[:deepest]), make_key=False
-                    ):
-                        hash_map[int(e)] = h
+                    # arc p620 L3: token_database + store under the store
+                    # lock — both are shared with the worker's mamba
+                    # pending stores.
+                    with self._lmc_lock_guard():
+                        for s, e, h in self.mamba_engine.token_database.process_tokens(
+                            tokens=list(token_ids[:deepest]), make_key=False
+                        ):
+                            hash_map[int(e)] = h
                     hashes = []
                     offsets = []
                     seeds = []
@@ -2546,18 +2578,21 @@ class LMCacheConnectorV1Impl:
                     # mismatch indexes seeds out of range. tokens=None
                     # activates the hashes branch: one (start,end) per
                     # (hash,offset) pair, aligned with seeds.
-                    self.mamba_engine.store(
-                        None,
-                        hashes=hashes,
-                        offsets=offsets,
-                        kvcaches=self._mamba_kvcaches,
-                        slot_mapping=dummy_slots,
-                        lmc_seed_bytes=seeds,
-                        # request_configs stays out of the mamba keys:
-                        # boundary states are prefix property, shared
-                        # across requests (None on both sides of the pair).
-                        request_configs=None,
-                    )
+                    # arc p620 L3: under the store lock (worker shares the
+                    # mamba engine).
+                    with self._lmc_lock_guard():
+                        self.mamba_engine.store(
+                            None,
+                            hashes=hashes,
+                            offsets=offsets,
+                            kvcaches=self._mamba_kvcaches,
+                            slot_mapping=dummy_slots,
+                            lmc_seed_bytes=seeds,
+                            # request_configs stays out of the mamba keys:
+                            # boundary states are prefix property, shared
+                            # across requests (None on both sides of the pair).
+                            request_configs=None,
+                        )
                     # arc p43b: register the banked m-keys.
                     for _h in hashes:
                         _banked[str(_h)] = True
@@ -2637,12 +2672,15 @@ class LMCacheConnectorV1Impl:
                             continue
                         _deepest = _new[-1][0]
                     _hash_map: dict[int, object] = {}
-                    for _s, _e, _h in (
-                        self.mamba_engine.token_database.process_tokens(
-                            tokens=list(_tok[:_deepest]), make_key=False
-                        )
-                    ):
-                        _hash_map[int(_e)] = _h
+                    # arc p620 L3: under the store lock (same sharing as
+                    # the row-loop mamba section above).
+                    with self._lmc_lock_guard():
+                        for _s, _e, _h in (
+                            self.mamba_engine.token_database.process_tokens(
+                                tokens=list(_tok[:_deepest]), make_key=False
+                            )
+                        ):
+                            _hash_map[int(_e)] = _h
                     _hashes, _offsets, _seeds = [], [], []
                     for _b, _cpu_bytes in _new:
                         if _b not in _hash_map:
@@ -2660,15 +2698,18 @@ class LMCacheConnectorV1Impl:
                         # the full deepest so later wfs passes skip it.
                         _served[_rid] = _deepest
                         continue
-                    self.mamba_engine.store(
-                        None,
-                        hashes=_hashes,
-                        offsets=_offsets,
-                        kvcaches=self._mamba_kvcaches,
-                        slot_mapping=[0] * sum(_offsets),
-                        lmc_seed_bytes=_seeds,
-                        request_configs=None,
-                    )
+                    # arc p620 L3: under the store lock (worker shares the
+                    # mamba engine).
+                    with self._lmc_lock_guard():
+                        self.mamba_engine.store(
+                            None,
+                            hashes=_hashes,
+                            offsets=_offsets,
+                            kvcaches=self._mamba_kvcaches,
+                            slot_mapping=[0] * sum(_offsets),
+                            lmc_seed_bytes=_seeds,
+                            request_configs=None,
+                        )
                     # arc p43b: register the banked m-keys.
                     for _h in _hashes:
                         _banked[str(_h)] = True
@@ -2772,21 +2813,32 @@ class LMCacheConnectorV1Impl:
                     )
                 )
             else:
-                self.lmcache_engine.store(
-                    token_ids,
-                    mask=store_mask,
-                    kvcaches=kvcaches,
-                    slot_mapping=slot_mapping,
-                    offset=skip_leading_tokens,
-                    transfer_spec=request.disagg_spec,
-                    request_configs=request.request_configs,
-                )
+                # arc p620 L3: under the store lock (non-lag immediate
+                # path — not the certified chain, guarded regardless).
+                with self._lmc_lock_guard():
+                    self.lmcache_engine.store(
+                        token_ids,
+                        mask=store_mask,
+                        kvcaches=kvcaches,
+                        slot_mapping=slot_mapping,
+                        offset=skip_leading_tokens,
+                        transfer_spec=request.disagg_spec,
+                        request_configs=request.request_configs,
+                    )
 
 
             # NOTE(Jiayi): We assume all tokens are saved
             save_spec.skip_leading_tokens = len(token_ids)
             if request.disagg_spec:
                 request.disagg_spec.num_transferred_tokens = len(token_ids)
+
+        # arc p620 L6: the late handoff — see the snapshot block at the
+        # top of the _lag path. A raise between snapshot and here drops
+        # the batch (clean-miss law: unstored chunks recompute on rehit,
+        # never partial bytes) — the same failure class the top-of-call
+        # dispatch had for the current call's spans.
+        if _lag and _late_pending:
+            self._lmc_flush_pending(_late_pending)
 
     def _lmc_mamba_page_map(
         self, request: "ReqMeta"
@@ -2809,7 +2861,77 @@ class LMCacheConnectorV1Impl:
         if self.mamba_engine is not None:
             self.mamba_engine.gpu_connector._lmc_chunk_pages = None
 
-    def _lmc_flush_pending(self) -> None:
+    def _lmc_async_store_enabled(self) -> bool:
+        """arc p620 fork delta (2026-11-04, plan P6.20 lane L3): off-thread
+        lagged stores, default ON. VLLM_ARC_LMC_ASYNC_STORE=0 restores the
+        certified inline (engine-thread) flush byte-exactly."""
+        _en = getattr(self, "_lmc_async_store", None)
+        if _en is None:
+            _en = self._lmc_async_store = (
+                os.environ.get("VLLM_ARC_LMC_ASYNC_STORE", "1") != "0"
+                # layerwise mode drives the storers from the forward path
+                # across many resume points; keep it on the certified
+                # inline path (not our certified chain either way).
+                and not getattr(self, "use_layerwise", False)
+            )
+        return _en
+
+    def _lmc_store_machinery(self) -> None:
+        """arc p620 L3: lazily create the store lock (+ the arc-lmc-store
+        worker thread when the async path is enabled) at the first
+        wait_for_save. The lock exists in BOTH modes so every lmcache call
+        site guards through one uniform path (uncontended when inline)."""
+        if getattr(self, "_lmc_store_lock", None) is None:
+            self._lmc_store_queue = queue.Queue(maxsize=2)
+            self._lmc_store_lock = threading.RLock()
+            if self._lmc_async_store_enabled():
+                _t = threading.Thread(
+                    target=self._lmc_store_loop,
+                    args=(self._lmc_store_queue,),
+                    daemon=True,
+                    name="arc-lmc-store",
+                )
+                self._lmc_store_thread = _t
+                _t.start()
+                logger.info(
+                    "LMC store worker ACTIVE (arc p620 L3 off-thread flush, "
+                    "queue depth 2, engine-stream ctx; "
+                    "VLLM_ARC_LMC_ASYNC_STORE=0 disables)"
+                )
+
+    def _lmc_store_loop(self, q: "queue.Queue") -> None:
+        """arc p620 L3 worker: drain lagged-store batches FIFO. The body
+        runs under the ENGINE stream context so its device ops (the lag
+        sync + the D2H gathers) enqueue on the same in-order stream the
+        forwards ride — device-side ordering is byte-identical to the
+        inline path; only the HOST wait moves off the engine thread. A
+        body-level failure drops the batch: unstored chunks recompute on
+        later lookups (clean-miss law) — never a partial/poisoned store,
+        per-store failures are caught inside the body itself."""
+        while True:
+            pending, stream = q.get()
+            try:
+                with torch.xpu.stream(stream), self._lmc_store_lock:
+                    self._lmc_flush_body(pending)
+            except Exception:
+                logger.exception(
+                    "LMC off-thread flush failed (batch dropped; unstored "
+                    "chunks recompute — clean-miss law)"
+                )
+
+    @contextmanager
+    def _lmc_lock_guard(self):
+        """Serialize this adapter's lmcache-engine calls against the L3
+        store worker. None-lock = machinery not created yet = no worker
+        exists = no concurrency (single engine thread)."""
+        _lock = getattr(self, "_lmc_store_lock", None)
+        if _lock is None:
+            yield
+        else:
+            with _lock:
+                yield
+
+    def _lmc_flush_pending(self, pending=None) -> None:
         """llm-scaler LMC fix (2026-10-09): execute the one-step-lagged
         stores captured by the previous wait_for_save call. The lag + sync
         guarantees the writing step's KV kernels are enqueued and complete
@@ -2817,15 +2939,73 @@ class LMCacheConnectorV1Impl:
         Mamba-first ordering law preserved: every pending mamba store runs
         before any attn store, and a failed mamba store drops that
         request's pending attn store so the two engines stay consistent.
+
+        arc p620 fork delta (2026-11-04, plan P6.20 lanes L1+L3): this is
+        now a DISPATCHER. r80 (results/2026-11-04-p620-prefill-opt/rig/r80)
+        measured the evsync-only form (L1) neutral — on the in-order XPU
+        stream a flush-time event sits behind the just-submitted chunk
+        forward, so the host wait is the same lockstep either way. The
+        block only truly leaves the step path when the WHOLE flush body
+        (sync + gathers + CPU-side store insert) runs off the engine
+        thread: default hands each pending batch to the arc-lmc-store
+        worker captured with the engine stream; queue-full backpressure
+        runs the batch inline (the certified behavior, lock-serialized);
+        VLLM_ARC_LMC_ASYNC_STORE=0 forces inline always.
+
+        arc p620 L6 (dispatch-late, same day): ``pending`` may carry the
+        snapshot wait_for_save took at its top — dispatching that snapshot
+        at the TOP made the mamba section below contend with the
+        just-started worker body (r82 traces: chunk-step wfs_total p90
+        2.3 s while wfs_flush itself is 0.0 ms — the engine waits one full
+        body inside the same call). wait_for_save now passes the snapshot
+        at its END, after the mamba rows/sweep ran against an idle worker.
+        No-arg calls keep the legacy swap-off-self semantics.
         """
-        pending = getattr(self, "_lmc_pending_stores", None)
-        if not pending:
-            return
-        self._lmc_pending_stores = []
+        if pending is None:
+            pending = getattr(self, "_lmc_pending_stores", None)
+            if not pending:
+                return
+            self._lmc_pending_stores = []
         logger.debug("LMC store lag: flushing %d pending store(s)", len(pending))
+        if self._lmc_async_store_enabled() and getattr(
+            self, "_lmc_store_thread", None
+        ) is not None:
+            try:
+                self._lmc_store_queue.put_nowait(
+                    (pending, torch.xpu.current_stream())
+                )
+                return
+            except queue.Full:
+                pass  # backpressure: fall through to inline
+        with self._lmc_lock_guard():
+            self._lmc_flush_body(pending)
+
+    def _lmc_flush_body(self, pending: list) -> None:
+        """The flush itself (former _lmc_flush_pending body). Runs on the
+        engine thread (inline mode) or the arc-lmc-store worker (default)
+        under the engine stream ctx — same ops, same order, same stream."""
         # One wfs call has passed since these spans were computed; the
         # writing step's kernels are enqueued. Complete them before reading.
-        torch.xpu.synchronize()
+        # arc p620 fork delta (2026-11-04, plan P6.20 lane L1 "evsync"):
+        # the historical device-wide torch.xpu.synchronize() drains the
+        # WHOLE device inside wait_for_save — which the runner's deferred
+        # kv-connector finalize calls at the tail of EVERY engine step
+        # under spec decode (decode rows keep the pending queue non-empty
+        # under LMCACHE_SAVE_DECODE_CACHE=True), so the CPU thread blocks
+        # until even the NEXT step's already-submitted forward completes
+        # before running its store work — async scheduling degenerates to
+        # lockstep (host step time never overlaps device compute).
+        # VLLM_ARC_LMC_EVSYNC=0 restores the device sync byte-exactly
+        # (A/B + falsification switch, r30 pattern). On the L3 worker the
+        # chosen sync blocks the WORKER, never the engine thread.
+        if os.environ.get("VLLM_ARC_LMC_EVSYNC", "1") != "0":
+            _ev = getattr(self, "_lmc_evsync_event", None)
+            if _ev is None:
+                _ev = self._lmc_evsync_event = torch.xpu.Event()
+            _ev.record()
+            _ev.synchronize()
+        else:
+            torch.xpu.synchronize()
         failed: set[str] = set()
         if self.mamba_engine is not None and self._mamba_kvcaches:
             for kind, rid, token_ids, mask, slot, offset, cfg, pmap in pending:

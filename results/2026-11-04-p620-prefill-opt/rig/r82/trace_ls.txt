@@ -1,0 +1,3 @@
+-rw-r--r-- 1 root root 9525654 Nov  4 19:44 /tmp/arc_step_trace_r0_p1030.jsonl
+-rw-r--r-- 1 root root 1258053 Nov  4 19:44 /tmp/arc_step_trace_r0_p698.jsonl
+-rw-r--r-- 1 root root 9523553 Nov  4 19:44 /tmp/arc_step_trace_r0_p930.jsonl

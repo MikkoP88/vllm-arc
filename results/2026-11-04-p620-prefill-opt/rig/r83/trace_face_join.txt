@@ -1,0 +1,7 @@
+face send times (monotonic): {'U32k': 780352.4, 'C32k': 780382.4, 'U8k': 780397.4, 'U64k': 780412.4}
+--- traces/arc_step_trace_r0_p1030.jsonl ---
+U32k: chunk_steps=2 em_max=534ms | wfs_stalls>300ms n=6 sum=14.47s max=3817ms | bodies n=12 sum=3.98s max=3099ms
+C32k: chunk_steps=0 em_max=0ms | wfs_stalls>300ms n=1 sum=0.50s max=503ms | bodies n=1 sum=0.09s max=92ms
+U8k: chunk_steps=1 em_max=713ms | wfs_stalls>300ms n=2 sum=3.04s max=2549ms | bodies n=6 sum=0.47s max=138ms
+U64k: chunk_steps=0 em_max=0ms | wfs_stalls>300ms n=10 sum=34.74s max=5117ms | bodies n=10 sum=0.95s max=108ms
+outside-p65: wfs_stalls>300ms n=42 sum=36.31s max=2893ms

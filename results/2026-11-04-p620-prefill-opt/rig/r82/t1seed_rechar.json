@@ -1,0 +1,101 @@
+{
+ "t0_hashes": [
+  "648d66ae32c9",
+  "648d66ae32c9"
+ ],
+ "pairs": [
+  {
+   "round": 0,
+   "a": "18ff99786c73",
+   "b": "18ff99786c73",
+   "same": true,
+   "finish": [
+    "stop",
+    "stop"
+   ],
+   "garble_a": []
+  },
+  {
+   "round": 1,
+   "a": "18ff99786c73",
+   "b": "18ff99786c73",
+   "same": true,
+   "finish": [
+    "stop",
+    "stop"
+   ],
+   "garble_a": []
+  },
+  {
+   "round": 2,
+   "a": "18ff99786c73",
+   "b": "18ff99786c73",
+   "same": true,
+   "finish": [
+    "stop",
+    "stop"
+   ],
+   "garble_a": []
+  },
+  {
+   "round": 3,
+   "a": "18ff99786c73",
+   "b": "18ff99786c73",
+   "same": true,
+   "finish": [
+    "stop",
+    "stop"
+   ],
+   "garble_a": []
+  },
+  {
+   "round": 4,
+   "a": "18ff99786c73",
+   "b": "18ff99786c73",
+   "same": true,
+   "finish": [
+    "stop",
+    "stop"
+   ],
+   "garble_a": []
+  },
+  {
+   "round": 5,
+   "a": "18ff99786c73",
+   "b": "18ff99786c73",
+   "same": true,
+   "finish": [
+    "stop",
+    "stop"
+   ],
+   "garble_a": []
+  },
+  {
+   "round": 6,
+   "a": "18ff99786c73",
+   "b": "18ff99786c73",
+   "same": true,
+   "finish": [
+    "stop",
+    "stop"
+   ],
+   "garble_a": []
+  },
+  {
+   "round": 7,
+   "a": "18ff99786c73",
+   "b": "18ff99786c73",
+   "same": true,
+   "finish": [
+    "stop",
+    "stop"
+   ],
+   "garble_a": []
+  }
+ ],
+ "hash_counts": {
+  "18ff99786c73": 16
+ },
+ "control_seed999": "50dee29bdd80",
+ "verdict": "KNOWN_FACE"
+}

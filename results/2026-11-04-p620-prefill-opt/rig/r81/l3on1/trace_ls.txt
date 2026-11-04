@@ -1,0 +1,1 @@
+-rw-r--r-- 1 root root 86934 Nov  4 18:30 /tmp/arc_step_trace_r0_p698.jsonl

@@ -1,0 +1,32 @@
+=================== P620 R80 START 2026-11-04 17:34:55 ===================
+=== [0] py_compile the three staged files inside the image (p618c law) ===
+PY_COMPILE: PASS
+=================== [phase a] evsync=1 17:34:55 ===================
+d203fbe709976bc9496e915b41e61fe19285fa1c68fc013346c523422a1da48e
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert8 name=arc-test graph=1 spec=3 gmu=0.8 mnbt=8192 seqs=64 xgc=0 port=8000 17:35:20
+HEALTH=OK after ~305s
+(APIServer pid=13) INFO 11-04 17:36:21 [step_trace.py:167] ArcXpuPlatform: step_trace ARMED (ARC_STEP_TRACE=1, rank 0, file /tmp/arc_step_trace_rank0.jsonl)
+(Worker pid=930) INFO 11-04 17:37:05 [step_trace.py:167] ArcXpuPlatform: step_trace ARMED (ARC_STEP_TRACE=1, rank 0, file /tmp/arc_step_trace_rank0.jsonl)
+(Worker pid=1030) INFO 11-04 17:37:18 [step_trace.py:167] ArcXpuPlatform: step_trace ARMED (ARC_STEP_TRACE=1, rank 0, file /tmp/arc_step_trace_rank0.jsonl)
+--- traffic: p65_timeline v5.1 full faces (~4 min) ---
+  W_U8k_end            276      53.9     296.1     764.6      18     7.26
+  W_U64k_start          76    3695.4    5599.4    5599.9      46   196.80
+  W_U64k_end             0        —         —         —       —        —
+
+P65_CAPTURE: DONE
+--- fetch traces + serve log ---
+=================== [phase b] evsync=0 17:43:04 ===================
+9679ed60751d91cacaf42c66c4eec6603abd776c61964420c9249374bc7069a6
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert8 name=arc-test graph=1 spec=3 gmu=0.8 mnbt=8192 seqs=64 xgc=0 port=8000 17:43:29
+HEALTH=OK after ~285s
+(APIServer pid=13) INFO 11-04 17:44:26 [step_trace.py:167] ArcXpuPlatform: step_trace ARMED (ARC_STEP_TRACE=1, rank 0, file /tmp/arc_step_trace_rank0.jsonl)
+(Worker pid=930) INFO 11-04 17:45:10 [step_trace.py:167] ArcXpuPlatform: step_trace ARMED (ARC_STEP_TRACE=1, rank 0, file /tmp/arc_step_trace_rank0.jsonl)
+(Worker pid=1030) INFO 11-04 17:45:23 [step_trace.py:167] ArcXpuPlatform: step_trace ARMED (ARC_STEP_TRACE=1, rank 0, file /tmp/arc_step_trace_rank0.jsonl)
+--- traffic: p65_timeline v5.1 full faces (~4 min) ---
+  W_U8k_end            300      53.8     288.0     551.6      18     5.85
+  W_U64k_start          56      68.7    4623.9    4931.1      26   100.21
+  W_U64k_end             0        —         —         —       —        —
+
+P65_CAPTURE: DONE
+--- fetch traces + serve log ---
+=================== P620 R80 DONE 2026-11-04 17:51:04 ===================

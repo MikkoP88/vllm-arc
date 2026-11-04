@@ -1,0 +1,55 @@
+{
+ "tag": "p620l3r3",
+ "mode": "rehit",
+ "probe": "v3",
+ "ts": "2026-11-04 20:02:36",
+ "essay": {
+  "post_churn_rehit_identical": true,
+  "hashes": [
+   "648d66ae32c9",
+   "648d66ae32c9"
+  ],
+  "garble": {
+   "r1": [],
+   "r2": []
+  },
+  "prompt_tok": 2145
+ },
+ "code": {
+  "post_churn_rehit_identical": true,
+  "hashes": [
+   "6eeef478ed62",
+   "6eeef478ed62"
+  ],
+  "garble": {
+   "r1": [],
+   "r2": []
+  },
+  "prompt_tok": 5051
+ },
+ "multi": {
+  "post_churn_rehit_identical": true,
+  "hashes": [
+   "1d4819646c8c",
+   "1d4819646c8c"
+  ],
+  "garble": {
+   "r1": [],
+   "r2": []
+  },
+  "prompt_tok": 3400
+ },
+ "simple": {
+  "post_churn_rehit_identical": true,
+  "hashes": [
+   "84efc84cc142",
+   "84efc84cc142"
+  ],
+  "garble": {
+   "r1": [],
+   "r2": []
+  },
+  "prompt_tok": 38
+ },
+ "VERDICT": "CLEAN"
+}

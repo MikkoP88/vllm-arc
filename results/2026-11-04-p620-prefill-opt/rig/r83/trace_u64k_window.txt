@@ -1,0 +1,20 @@
+U64k window start: 780412.4 ttft events: []
+events >20ms in U64k+60s window: 67
+  sample_tokens  n= 11 sum=  34.92s max=  5126.9ms
+  wfs            n= 11 sum=  34.82s max=  5116.9ms
+  wfs_total      n= 11 sum=  34.82s max=  5116.6ms
+  execute_model  n= 25 sum=   4.35s max=   406.1ms
+  wfs_body       n=  9 sum=   0.94s max=   107.6ms
+--- biggest 12 waits in order ---
+  t+   35.2s step=10987 sample_tokens   5126.9ms
+  t+   35.2s step=10987 wfs            5116.9ms
+  t+   35.2s step=10987 wfs_total      5116.6ms
+  t+   29.7s step=10986 sample_tokens   4799.0ms
+  t+   29.7s step=10986 wfs            4789.6ms
+  t+   29.7s step=10986 wfs_total      4789.4ms
+  t+   24.5s step=10985 sample_tokens   4466.1ms
+  t+   24.5s step=10985 wfs            4456.6ms
+  t+   24.5s step=10985 wfs_total      4456.3ms
+  t+   19.6s step=10984 sample_tokens   4146.8ms
+  t+   19.6s step=10984 wfs            4137.5ms
+  t+   19.6s step=10984 wfs_total      4137.2ms

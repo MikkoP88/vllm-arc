@@ -1,0 +1,14 @@
+t0 spot: 648d66ae32c9 finish=stop chars=3885
+t0 spot: 648d66ae32c9 finish=stop chars=3885
+round 0: a=18ff99786c73 b=18ff99786c73 same=True fin=stop/stop
+round 1: a=18ff99786c73 b=18ff99786c73 same=True fin=stop/stop
+round 2: a=18ff99786c73 b=18ff99786c73 same=True fin=stop/stop
+round 3: a=18ff99786c73 b=18ff99786c73 same=True fin=stop/stop
+round 4: a=18ff99786c73 b=18ff99786c73 same=True fin=stop/stop
+round 5: a=18ff99786c73 b=18ff99786c73 same=True fin=stop/stop
+round 6: a=18ff99786c73 b=18ff99786c73 same=True fin=stop/stop
+round 7: a=18ff99786c73 b=18ff99786c73 same=True fin=stop/stop
+seed999 control: 50dee29bdd80
+
+RECHAR_SUMMARY: pairs_identical=8/8 finish_stop=8/8 garble_flags=0 distinct_t1_hashes=1 dominant=16/16 t0_spot_stable=True t0_hash=648d66ae32c9 seed999_control_differs=True
+RECHAR_VERDICT: KNOWN_FACE (sporadic seeded-t1 RNG-path divergence under probabilistic drafting — p618b Class-A semantics; NOT corruption/looping/dtype if KNOWN_FACE)
