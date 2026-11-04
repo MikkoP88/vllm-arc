@@ -1,0 +1,22 @@
+=== pid 1030 steps=11004 ===
+  execute_model  n=11093 p50=28.6 p90=39.4 p99=281.0 max=5824.3
+  sample_tokens  n=11003 p50=11.2 p90=12.6 p99=72.0 max=37645.6
+  wfs            n=11091 p50=0.1 p90=0.2 p99=55.1 max=5116.9
+  wfs_flush      n=128 p50=0.0 p90=0.1 p99=0.1 max=0.1
+  wfs_body       n=128 p50=86.5 p90=107.6 p99=461.8 max=3098.7
+  wfs_total      n=10997 p50=0.0 p90=0.1 p99=56.1 max=5116.6
+  [chunk_steps n=9] execute_model  n=9 p50=534.4 p90=768.5 p99=5824.3 max=5824.3
+  [chunk_steps n=9] wfs_flush      n=3 p50=0.0 p90=0.0 p99=0.0 max=0.0
+  [chunk_steps n=9] wfs_total      n=8 p50=0.3 p90=2337.1 p99=2875.0 max=2875.0
+  [chunk_steps n=9] wfs_body       n=3 p50=66.4 p90=66.8 p99=66.8 max=66.8
+=== pid 930 steps=11004 ===
+  execute_model  n=11093 p50=28.6 p90=39.4 p99=281.3 max=5955.0
+  sample_tokens  n=11003 p50=11.2 p90=12.6 p99=68.4 max=37515.3
+  wfs            n=11091 p50=0.1 p90=0.2 p99=55.1 max=5117.6
+  wfs_flush      n=128 p50=0.0 p90=0.1 p99=0.3 max=0.4
+  wfs_body       n=128 p50=86.3 p90=107.8 p99=471.4 max=3098.4
+  wfs_total      n=10997 p50=0.0 p90=0.1 p99=55.0 max=5117.2
+  [chunk_steps n=9] execute_model  n=9 p50=542.9 p90=768.4 p99=5955.0 max=5955.0
+  [chunk_steps n=9] wfs_flush      n=3 p50=0.0 p90=0.0 p99=0.0 max=0.0
+  [chunk_steps n=9] wfs_total      n=8 p50=0.2 p90=2337.3 p99=2874.9 max=2874.9
+  [chunk_steps n=9] wfs_body       n=3 p50=66.8 p90=69.9 p99=69.9 max=69.9

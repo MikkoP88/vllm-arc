@@ -10,7 +10,7 @@ complete control surface + naming map); test definitions in
 
 | Item | Value |
 |---|---|
-| Image | `vllm-arc:v0.30.0-b70-cert8` — **the certified release**, tag `rel/v0.30.0-b70-cert8` (cert7 engine with the P6.18 refusal lifted + the **P6.19 TurboQuant spec-verify fix**: wheel-side hook `vllm_gaudi/xpu/patches/tq_spec_fix.py` — donor-v19b verify-capture forcing + graph-safe split-row continuation dispatch, active by default on every `turboquant_*` dtype; all four TQ presets serve clean, all-dtype gate with fp8 control; default `fp8_e4m3` posture unchanged — the hooked module never imports on fp8; campaign + best-practices audit `results/2026-11-04-p619-tqverify/`) |
+| Image | `vllm-arc:v0.30.0-b70-cert9` — **the certified release**, tag `rel/v0.30.0-b70-cert9` (cert8 engine + the **P6.20 prefill host-path patch**: `vllm_gaudi/xpu/patches/lmcint/vllm_v1_adapter.py` — L3 off-thread LMCache store, **default ON** (`VLLM_ARC_LMC_ASYNC_STORE=0` kill switch), the store body's D2H gathers + CPU insert run on the `arc-lmc-store` worker while device ops stay on the engine's in-order stream + L6 dispatch-late handoff; new `vllm_gaudi/xpu/patches/step_trace.py` per-step host timeline, silent-off diagnostic (`ARC_STEP_TRACE`); U32k/U64k/U8k TTFT wins −0.74/−1.64/−0.08 s, spec gate byte-exact cert8 values, TQ dtypes re-gated clean; campaign + lane-closure evidence `results/2026-11-04-p620-prefill-opt/`) |
 | Manifest | `/etc/vllm-arc/IMAGE_MANIFEST` inside the image — fork SHA, wheel pins, dependency closure (`lmcache_closure=`), build host |
 | Base | upstream vllm-gaudi v0.30.0 + pinned wheels (vllm 0.30.0+xpu, triton 3.7.2+xpu, vllm_xpu_kernels 0.1.14.1+arc3, lmcache 0.5.6+arc1) |
 
@@ -19,6 +19,7 @@ with per-image evidence lives in PERFORMANCE-arc "Image lineage"):
 
 | Image | Status |
 |---|---|
+| `v0.30.0-b70-cert8` | superseded by cert9 — fully valid; all four TQ presets serve clean (P6.19 fix); its prefill TTFT faces carry the pre-P6.20 inline store path (cert9's off-thread store is strictly faster) |
 | `v0.30.0-b70-cert7` | superseded by cert8 — fp8 behavior byte-identical; its `turboquant_*` boot refusal superseded by the P6.19 fix (TQ dtypes serve clean on cert8) — do not serve TQ dtypes on cert7 (refused) |
 | `v0.30.0-b70-cert6` | superseded — fp8 behavior byte-identical; its servable `turboquant_*` dtypes carry the pre-P6.19 corrupted spec-verify path — **do not serve TQ dtypes on cert6** (gates `results/2026-11-02-p614-cert6/`) |
 | `v0.30.0-b70-cert5` | superseded by cert6 — identical default behavior, lacks the P6.14 TQ-aware store hunk (gates `results/2026-11-01-p65-cert5/`) |
@@ -56,7 +57,7 @@ docker run -d --name arc-test \
   -v /root/build/inductor_cache:/root/.inductor_cache \
   -e VLLM_ALLOW_LONG_MAX_MODEL_LEN=1 \
   -e VLLM_WORKER_MULTIPROC_METHOD=spawn \
-  --entrypoint /bin/bash vllm-arc:v0.30.0-b70-cert8 -c 'sleep infinity'
+  --entrypoint /bin/bash vllm-arc:v0.30.0-b70-cert9 -c 'sleep infinity'
 ```
 
 These are the validated boot bytes (rig `r46t_campaign.sh:54-63`,
@@ -191,7 +192,7 @@ Two compile-posture laws (p67, do not re-try blind — evidence
    offending piecewise captures; the real k3 verify shape is 256).
 
 Launch and health-check (the rig pattern; first boot ~5 min to 200 —
-295 s at the cert7 and cert8 gates: model load + graph capture):
+285–295 s at the cert7/cert8/cert9 gates: model load + graph capture):
 
 ```bash
 docker cp serve_k3.sh arc-test:/root/
@@ -370,7 +371,7 @@ gone), `63232`-class **0** / `3328`×38 exact, U32k unchanged
 face in-family (U64k TTFT 51.66 s, `63232`-class 0, `3328` signature
 exact — `results/2026-11-02-p614-cert6/`).
 
-## KV-cache dtype — `fp8_e4m3` default + the four TurboQuant presets (comprehensive; all servable on cert8)
+## KV-cache dtype — `fp8_e4m3` default + the four TurboQuant presets (comprehensive; all servable on cert8, re-gated clean on cert9)
 
 > **FIXED (2026-11-04, P6.19 / cert8): every `turboquant_*` preset serves
 > clean.** The P6.18 boot refusal is lifted; the corruption it guarded
@@ -430,7 +431,12 @@ constraint. Records: PERFORMANCE-arc "Current certified image".
   split dispatch; t6p dev-leg 54.5/240.9 in-family).
 - **`turboquant_4bit_nc`** — the capacity lane with the cleanest
   identity record (2.86× pool; zero flags anywhere in the cert8 gate);
-  pays the largest sampled-aggregate cost (−44 %).
+  pays the largest sampled-aggregate cost (−44 %). Cert9-gate note: that
+  boot sampled the essay variant set (t0 A-B-A + one t1-seed pair —
+  r84b re-char 7/8 essay pairs identical, code 4/4, all coherent, zero
+  garble, dominant hashes byte-identical to the cert8 gate boot): the
+  per-boot draft lottery chooses which identity face shows; the variant
+  families are cross-cert stable.
 - **`turboquant_k3v4_nc`** — 3-level K scales: 3.22× pool at −43 %
   sampled aggregate, the slowest t0 decode of the family (80.5–83.3).
 - **`turboquant_3bit_nc`** — the max-capacity lane: 3.68× pool and only
@@ -447,8 +453,10 @@ control in the P6.19 gate): warm-resume variant flips (p618b Class-A)
 and, on `3bit_nc`, the precision-floor drift. The deterministic serving
 guarantee — t0 within-path byte-identity — holds wherever t0 is
 identical; the owner corruption bar (REP-LOOP/JUNK/BLEED/EMPTY,
-garble) is **zero across all five dtypes** on cert8, cold and warm,
-churn included.
+garble) is **zero across all five dtypes** on cert8 AND cert9, cold and
+warm, churn included (cert9 evidence: the r84 gate + r84b re-char —
+dominant identity hashes byte-identical across the two cert gates, so
+the P6.20 off-thread store changed no output distribution).
 
 ### Serving a TurboQuant preset
 
@@ -536,7 +544,7 @@ The certified line on the uniform boot interface (no image change, no
 CLI edit — the env states the default explicitly):
 
 ```bash
-ARC_SPEC_METHOD=probabilistic ARC_IMAGE=vllm-arc:v0.30.0-b70-cert8 \
+ARC_SPEC_METHOD=probabilistic ARC_IMAGE=vllm-arc:v0.30.0-b70-cert9 \
   ARC_GRAPH=1 ARC_SPEC=3 bash /root/build/serve_arc_b70.sh
 # appends "draft_sample_method":"probabilistic" to --speculative-config
 # (P6.17: this is also the DEFAULT when ARC_SPEC_METHOD is unset;

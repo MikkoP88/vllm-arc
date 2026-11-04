@@ -1,0 +1,86 @@
+=================== P620 R83 GATE START 2026-11-04 19:50:28 ===================
+=== [0] py_compile staged files inside the image (p618c law) ===
+PY_COMPILE: PASS
+=== [1] boot L3 posture (async store ON, step trace ON) 19:50:29 ===
+676657dd01ce914080ae2ef0099651512259d48d5fecc99e3bef4883ce555270
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert8 name=arc-test graph=1 spec=3 gmu=0.8 mnbt=8192 seqs=64 xgc=0 port=8000 19:50:54
+HEALTH=OK after ~285s
+(APIServer pid=13) INFO 11-04 19:51:52 [step_trace.py:304] ArcXpuPlatform: step_trace INSTALLED (ARC_STEP_TRACE=1, rank 0, pid 13, file /tmp/arc_step_trace_r0_p13.jsonl)
+(Worker pid=930) INFO 11-04 19:52:36 [step_trace.py:304] ArcXpuPlatform: step_trace INSTALLED (ARC_STEP_TRACE=1, rank 0, pid 930, file /tmp/arc_step_trace_r0_p930.jsonl)
+(Worker pid=1030) INFO 11-04 19:52:49 [step_trace.py:304] ArcXpuPlatform: step_trace INSTALLED (ARC_STEP_TRACE=1, rank 0, pid 1030, file /tmp/arc_step_trace_r0_p1030.jsonl)
+(EngineCore pid=698) INFO 11-04 19:55:31 [step_trace.py:304] ArcXpuPlatform: step_trace INSTALLED (ARC_STEP_TRACE=1, rank 0, pid 698, file /tmp/arc_step_trace_r0_p698.jsonl)
+FLIP_FIRST: stop 9.2s
+=== [1b] INSTRUMENT-V2 gate: segments present in worker traces ===
+FILES ['/tmp/arc_step_trace_r0_p1030.jsonl', '/tmp/arc_step_trace_r0_p698.jsonl', '/tmp/arc_step_trace_r0_p930.jsonl']
+SEGS ['execute_model', 'get_finished', 'prep_inputs', 'sample_tokens', 'schedule', 'wfs', 'wfs_body', 'wfs_flush', 'wfs_total']
+INSTRUMENT_V2 PASS
+(Worker_TP0 pid=930) [32;20m[2026-11-04 19:55:35,785] LMCache INFO:[0m LMC store worker ACTIVE (arc p620 L3 off-thread flush, queue depth 2, engine-stream ctx; VLLM_ARC_LMC_ASYNC_STORE=0 disables) [3m(vllm_v1_adapter.py:2896:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.vllm_v1_adapter)[0m
+(Worker_TP1 pid=1030) [32;20m[2026-11-04 19:55:35,821] LMCache INFO:[0m LMC store worker ACTIVE (arc p620 L3 off-thread flush, queue depth 2, engine-stream ctx; VLLM_ARC_LMC_ASYNC_STORE=0 disables) [3m(vllm_v1_adapter.py:2896:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.vllm_v1_adapter)[0m
+(EngineCore pid=698) INFO 11-04 19:53:33 [kv_cache_utils.py:2395] XPU KV cache size: 400,739 tokens, Maximum concurrency for 262,144 tokens per request: 1.53x
+=== [2] integrity + determinism (r42 battery) 19:55:44 ===
+A-gates: integrity_5of5=1 det_3of3=1
+=== [3] run7n t0 + t1.0-xhigh 19:57:02 ===
+agg4x256#1 wall=3.82s aggregate=267.76 tok/s ok_streams=4/4 [256tok/3.7s 256tok/3.8s 256tok/3.8s 256tok/3.7s]
+agg4x256#2 wall=3.41s aggregate=300.59 tok/s ok_streams=4/4 [256tok/3.4s 256tok/3.4s 256tok/3.4s 256tok/3.4s]
+solo200 n=200 dt=2.37s tps=84.45
+solo200 n=200 dt=2.37s tps=84.54
+agg4x256#1 wall=7.21s aggregate=141.98 tok/s ok_streams=4/4 [256tok/6.9s 256tok/6.5s 256tok/7.2s 256tok/6.6s]
+agg4x256#2 wall=4.76s aggregate=215.33 tok/s ok_streams=4/4 [256tok/4.1s 256tok/4.8s 256tok/4.3s 256tok/4.4s]
+solo200 n=200 dt=2.82s tps=70.98
+solo200 n=200 dt=2.93s tps=68.17
+=== [4] spec gate 19:57:32 ===
+SPEC_GATE {"wall_s": 3.04, "streams_ok": "4/4", "drafts": 229, "draft_tokens": 687, "accepted": 575, "pos": {"0": 0.9258, "1": 0.8384, "2": 0.7467, "3": 0.0}, "pos1": 0.9258, "acceptance": 0.837, "mean_acceptance_length": 3.51, "hard": 0.5, "target": 0.85}
+SPEC_GATE log_window: (APIServer pid=13) INFO 11-04 19:57:32 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 2.88, Accepted throughput: 91.99 tokens/s, Drafted throughput: 146.68 tokens/s, Accepted: 920 tokens, Drafted: 1467 tokens, Per-position acceptance rate: 0.804, 0.613, 0.464, Avg Draft acceptance rate: 62.7%
+SPEC_GATE PASS: pos1=0.9258 >= 0.5 hard, acceptance=0.8370 vs 0.85 target (TARGET MISS — recorded, --strict-target for certification)
+=== [5] LONG-RETURN GATE (zero-KV proof under async store) 19:57:36 ===
+[essay] t0_identical=True hashes=['648d66ae32c9', '648d66ae32c9', '648d66ae32c9'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=2145 chars=[3885, 3885, 3885]
+[code] t0_identical=True hashes=['6eeef478ed62', '6eeef478ed62', '6eeef478ed62'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=5051 chars=[3184, 3184, 3184]
+[multi] t0_identical=True hashes=['1d4819646c8c', '1d4819646c8c', '1d4819646c8c'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=3400 chars=[1064, 1064, 1064]
+[simple] t0_identical=True hashes=['84efc84cc142', '84efc84cc142', '84efc84cc142'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=38 chars=[1510, 1510, 1510]
+LONGPROBE p620l3 full: CLEAN
+CHURN 4x256 done: ['4.9s/256tok', '5.1s/256tok', '5.3s/256tok', '5.5s/256tok']
+[essay] post_churn_rehit_identical=True hashes=['648d66ae32c9', '648d66ae32c9'] garble={'r1': [], 'r2': []}
+[code] post_churn_rehit_identical=True hashes=['6eeef478ed62', '6eeef478ed62'] garble={'r1': [], 'r2': []}
+[multi] post_churn_rehit_identical=True hashes=['1d4819646c8c', '1d4819646c8c'] garble={'r1': [], 'r2': []}
+[simple] post_churn_rehit_identical=True hashes=['84efc84cc142', '84efc84cc142'] garble={'r1': [], 'r2': []}
+LONGPROBE p620l3r1 rehit: CLEAN
+CHURN 4x256 done: ['4.9s/256tok', '5.1s/256tok', '5.2s/256tok', '5.4s/256tok']
+[essay] post_churn_rehit_identical=True hashes=['648d66ae32c9', '648d66ae32c9'] garble={'r1': [], 'r2': []}
+[code] post_churn_rehit_identical=True hashes=['6eeef478ed62', '6eeef478ed62'] garble={'r1': [], 'r2': []}
+[multi] post_churn_rehit_identical=True hashes=['1d4819646c8c', '1d4819646c8c'] garble={'r1': [], 'r2': []}
+[simple] post_churn_rehit_identical=True hashes=['84efc84cc142', '84efc84cc142'] garble={'r1': [], 'r2': []}
+LONGPROBE p620l3r2 rehit: CLEAN
+CHURN 4x256 done: ['5.0s/256tok', '5.2s/256tok', '5.5s/256tok', '5.5s/256tok']
+[essay] post_churn_rehit_identical=True hashes=['648d66ae32c9', '648d66ae32c9'] garble={'r1': [], 'r2': []}
+[code] post_churn_rehit_identical=True hashes=['6eeef478ed62', '6eeef478ed62'] garble={'r1': [], 'r2': []}
+[multi] post_churn_rehit_identical=True hashes=['1d4819646c8c', '1d4819646c8c'] garble={'r1': [], 'r2': []}
+[simple] post_churn_rehit_identical=True hashes=['84efc84cc142', '84efc84cc142'] garble={'r1': [], 'r2': []}
+LONGPROBE p620l3r3 rehit: CLEAN
+[essay] hashes=['648d66ae32c9'] finish=['stop', 'stop', 'stop'] chars=[3885, 3885, 3885] t1_seed_identical=True garble_empty=True
+[code] hashes=['6eeef478ed62'] finish=['stop', 'stop', 'stop'] chars=[3184, 3184, 3184] t1_seed_identical=True garble_empty=True
+[multi] hashes=['1d4819646c8c'] finish=['stop', 'stop', 'stop'] chars=[1064, 1064, 1064] t1_seed_identical=True garble_empty=True
+[simple] hashes=['84efc84cc142'] finish=['stop', 'stop', 'stop'] chars=[1510, 1510, 1510] t1_seed_identical=True garble_empty=True
+probe verdicts: ['CLEAN', 'CLEAN', 'CLEAN', 'CLEAN']
+LONGRETURN_GATE: PASS (100% CLEAN, 4 classes x cold/rehit/rehit2 + 3 churn cycles)
+=== [6] p65 full faces + trace capture 20:03:40 ===
+=== long-stream faces (perf_counter, wave-relative)
+  U32k: TTFT=  17.17s total=  18.06s (start @ wave+  25.0s)
+  C32k: TTFT=   1.11s total=   1.74s (start @ wave+  55.0s)
+  U8k: TTFT=   3.76s total=   4.61s (start @ wave+  70.0s)
+  U64k: TTFT=  38.92s total=  39.56s (start @ wave+  85.0s)
+
+-rw-r--r-- 1 root root 5742092 Nov  4 20:05 /tmp/arc_step_trace_r0_p1030.jsonl
+-rw-r--r-- 1 root root  894512 Nov  4 20:05 /tmp/arc_step_trace_r0_p698.jsonl
+-rw-r--r-- 1 root root 5742491 Nov  4 20:05 /tmp/arc_step_trace_r0_p930.jsonl
+total 12100
+drwxr-xr-x 2 root root    4096 Nov  4 20:05 .
+drwxr-xr-x 3 root root    4096 Nov  4 20:05 ..
+-rw-r--r-- 1 root root 5742092 Nov  4 20:05 arc_step_trace_r0_p1030.jsonl
+-rw-r--r-- 1 root root  894512 Nov  4 20:05 arc_step_trace_r0_p698.jsonl
+-rw-r--r-- 1 root root 5742491 Nov  4 20:05 arc_step_trace_r0_p930.jsonl
+=== [7] error/WARN audit 20:05:48 ===
+ERROR=0
+TRACEBACK=0
+WARN_RAW=46
+33 warn_classes.txt
+=================== P620 R83 GATE DONE 2026-11-04 20:06:15 ===================

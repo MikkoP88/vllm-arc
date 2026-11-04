@@ -1,0 +1,6 @@
+[essay] hashes=['648d66ae32c9'] finish=['stop', 'stop', 'stop'] chars=[3885, 3885, 3885] t1_seed_identical=True garble_empty=True
+[code] hashes=['6eeef478ed62'] finish=['stop', 'stop', 'stop'] chars=[3184, 3184, 3184] t1_seed_identical=True garble_empty=True
+[multi] hashes=['1d4819646c8c'] finish=['stop', 'stop', 'stop'] chars=[1064, 1064, 1064] t1_seed_identical=True garble_empty=True
+[simple] hashes=['84efc84cc142'] finish=['stop', 'stop', 'stop'] chars=[1510, 1510, 1510] t1_seed_identical=True garble_empty=True
+probe verdicts: ['CLEAN', 'CLEAN', 'CLEAN', 'CLEAN']
+LONGRETURN_GATE: PASS (100% CLEAN, 4 classes x cold/rehit/rehit2 + 3 churn cycles)

@@ -1,0 +1,6 @@
+[essay] hashes=['648d66ae32c9'] finish=['stop', 'stop', 'stop'] chars=[3885, 3885, 3885] t1_seed_identical=False garble_empty=True
+[code] hashes=['2b830d22e5ff'] finish=['stop', 'stop', 'stop'] chars=[3884, 3884, 3884] t1_seed_identical=True garble_empty=True
+[multi] hashes=['87292214d5e7'] finish=['stop', 'stop', 'stop'] chars=[1069, 1069, 1069] t1_seed_identical=True garble_empty=True
+[simple] hashes=['84efc84cc142'] finish=['stop', 'stop', 'stop'] chars=[1510, 1510, 1510] t1_seed_identical=True garble_empty=True
+probe verdicts: ['CORRUPTION_SIGNAL', 'CLEAN', 'CLEAN', 'CLEAN']
+LONGRETURN_GATE: FAIL ['essay: t1-seed not reproducible', "probe verdicts not all CLEAN: ['CORRUPTION_SIGNAL', 'CLEAN', 'CLEAN', 'CLEAN']"]

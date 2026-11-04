@@ -1,0 +1,197 @@
+=================== P620 R84 CERT9 GATE START 2026-11-04 20:36:37 ===================
+=== [0] manifest + p620 code + registry + baked md5 + image-native verify 20:36:37 ===
+MANIFEST fork_sha: PASS (aa2ee17d11612d9292684cbcbd2825bde4c7a65d)
+patches/: __init__.py
+__pycache__
+first_request_warmup.py
+fp8_block_w8a16.py
+gdn_metadata_fastpath.py
+graph_safe_output.py
+lmcache_hma_connector.py
+lmcint
+mamba_hybrid_snap_glue.py
+mamba_lmcache_glue.py
+sched_tail_split.py
+speculator_full_capture.py
+step_trace.py
+tq_mq_aos.py
+tq_spec_fix.py
+platform.py step_trace entries=1 (expect >=1)
+adapter: _lmc_store_loop=2 _late_pending=3 (expect >=1 each)
+envs.py registry rows (ASYNC_STORE mentions)=3 (expect >=2)
+--- baked-file md5 vs cert9 tar ---
+MD5 OK  vllm_gaudi/xpu/patches/step_trace.py  43f39bc0366d614d1de96897c2dd9592
+MD5 OK  vllm_gaudi/xpu/patches/lmcint/vllm_v1_adapter.py  9f2927253a83f4547f7dbfcb6e84f734
+MD5 OK  vllm_gaudi/xpu/platform.py  a0f6d2b53d0204a371adb5519e5bdc89
+MD5 OK  vllm_gaudi/envs.py  d83260d1bfa572fb2253655c25b76d7f
+P48_VERIFY: ALL_GREEN
+p48: P48_VERIFY: ALL_GREEN
+P73_CHECKS: 11/11 PASS
+p73: P73_CHECKS: 11/11 PASS
+=== [1] default fp8_e4m3 posture — NO env overrides 20:36:59 ===
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert9 name=arc-test graph=1 spec=3 gmu=0.8 mnbt=8192 seqs=64 xgc=0 port=8000 20:37:02
+HEALTH=OK after ~285s
+LMC_ENV_SET=0 (expect 0 — default-ON must need NO env)
+FLIP_FIRST: stop 11.7s head: '\n\n1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20'
+STORE_WORKER_ACTIVE=2 (expect >=1 — L3 default ON, fires at first wait_for_save)
+TRACE_SILENT_OFF=0 (expect 0 — ARC_STEP_TRACE unset => no files)
+A-gates: integrity_5of5=1 det_3of3=1
+agg4x256#1 wall=3.70s aggregate=276.88 tok/s ok_streams=4/4 [256tok/3.6s 256tok/3.7s 256tok/3.7s 256tok/3.7s]
+agg4x256#2 wall=3.45s aggregate=296.91 tok/s ok_streams=4/4 [256tok/3.4s 256tok/3.4s 256tok/3.4s 256tok/3.4s]
+solo200 n=200 dt=2.37s tps=84.54
+solo200 n=200 dt=2.37s tps=84.48
+agg4x256#1 wall=7.67s aggregate=133.47 tok/s ok_streams=4/4 [256tok/7.3s 256tok/6.9s 256tok/7.7s 256tok/7.7s]
+agg4x256#2 wall=4.27s aggregate=240.06 tok/s ok_streams=4/4 [256tok/4.1s 256tok/4.2s 256tok/4.3s 256tok/4.2s]
+solo200 n=200 dt=2.98s tps=67.04
+solo200 n=200 dt=3.12s tps=64.15
+SPEC_GATE {"wall_s": 3.03, "streams_ok": "4/4", "drafts": 229, "draft_tokens": 687, "accepted": 575, "pos": {"0": 0.9258, "1": 0.8384, "2": 0.7467, "3": 0.0}, "pos1": 0.9258, "acceptance": 0.837, "mean_acceptance_length": 3.51, "hard": 0.5, "target": 0.85}
+SPEC_GATE log_window: (APIServer pid=14) INFO 11-04 20:43:40 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 2.85, Accepted throughput: 116.69 tokens/s, Drafted throughput: 189.28 tokens/s, Accepted: 1167 tokens, Drafted: 1893 tokens, Per-position acceptance rate: 0.797, 0.596, 0.456, Avg Draft acceptance rate: 61.6%
+SPEC_GATE PASS: pos1=0.9258 >= 0.5 hard, acceptance=0.8370 vs 0.85 target (TARGET MISS — recorded, --strict-target for certification)
+ERROR=0
+TRACEBACK=0
+=== [2] fp8 LONG-RETURN GATE (owner hard gate) 20:43:46 ===
+[essay] t0_identical=True hashes=['648d66ae32c9', '648d66ae32c9', '648d66ae32c9'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=2145 chars=[3885, 3885, 3885]
+[code] t0_identical=True hashes=['61df690304d9', '61df690304d9', '61df690304d9'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=5051 chars=[3222, 3222, 3222]
+[multi] t0_identical=True hashes=['0627e973e7b1', '0627e973e7b1', '0627e973e7b1'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=3400 chars=[1096, 1096, 1096]
+[simple] t0_identical=True hashes=['84efc84cc142', '84efc84cc142', '84efc84cc142'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=38 chars=[1510, 1510, 1510]
+LONGPROBE cert9fp8 full: CLEAN
+GARBLE: class_lines=4 empty_garble=0 (expect equal, >=4) in fp8_longprobe_full.out
+ZERO-GARBLE: FAIL (fp8_longprobe_full.out)
+CHURN 4x256 done: ['5.0s/256tok', '5.1s/256tok', '5.3s/256tok', '5.5s/256tok']
+[essay] post_churn_rehit_identical=True hashes=['648d66ae32c9', '648d66ae32c9'] garble={'r1': [], 'r2': []}
+[code] post_churn_rehit_identical=True hashes=['61df690304d9', '61df690304d9'] garble={'r1': [], 'r2': []}
+[multi] post_churn_rehit_identical=True hashes=['0627e973e7b1', '0627e973e7b1'] garble={'r1': [], 'r2': []}
+[simple] post_churn_rehit_identical=True hashes=['84efc84cc142', '84efc84cc142'] garble={'r1': [], 'r2': []}
+LONGPROBE cert9fp8r1 rehit: CLEAN
+GARBLE: class_lines=4 empty_garble=0 (expect equal, >=4) in fp8_longprobe_rehit1.out
+ZERO-GARBLE: FAIL (fp8_longprobe_rehit1.out)
+CHURN 4x256 done: ['4.9s/256tok', '5.1s/256tok', '5.3s/256tok', '5.4s/256tok']
+[essay] post_churn_rehit_identical=True hashes=['648d66ae32c9', '648d66ae32c9'] garble={'r1': [], 'r2': []}
+[code] post_churn_rehit_identical=True hashes=['61df690304d9', '61df690304d9'] garble={'r1': [], 'r2': []}
+[multi] post_churn_rehit_identical=True hashes=['0627e973e7b1', '0627e973e7b1'] garble={'r1': [], 'r2': []}
+[simple] post_churn_rehit_identical=True hashes=['84efc84cc142', '84efc84cc142'] garble={'r1': [], 'r2': []}
+LONGPROBE cert9fp8r2 rehit: CLEAN
+GARBLE: class_lines=4 empty_garble=0 (expect equal, >=4) in fp8_longprobe_rehit2.out
+ZERO-GARBLE: FAIL (fp8_longprobe_rehit2.out)
+CHURN 4x256 done: ['4.9s/256tok', '5.1s/256tok', '5.3s/256tok', '5.4s/256tok']
+[essay] post_churn_rehit_identical=True hashes=['648d66ae32c9', '648d66ae32c9'] garble={'r1': [], 'r2': []}
+[code] post_churn_rehit_identical=True hashes=['61df690304d9', '61df690304d9'] garble={'r1': [], 'r2': []}
+[multi] post_churn_rehit_identical=True hashes=['0627e973e7b1', '0627e973e7b1'] garble={'r1': [], 'r2': []}
+[simple] post_churn_rehit_identical=True hashes=['84efc84cc142', '84efc84cc142'] garble={'r1': [], 'r2': []}
+LONGPROBE cert9fp8r3 rehit: CLEAN
+GARBLE: class_lines=4 empty_garble=0 (expect equal, >=4) in fp8_longprobe_rehit3.out
+ZERO-GARBLE: FAIL (fp8_longprobe_rehit3.out)
+[essay] hashes=['648d66ae32c9'] finish=['stop', 'stop', 'stop'] chars=[3885, 3885, 3885] t1_seed_identical=True garble_empty=True
+[code] hashes=['61df690304d9'] finish=['stop', 'stop', 'stop'] chars=[3222, 3222, 3222] t1_seed_identical=True garble_empty=True
+[multi] hashes=['0627e973e7b1'] finish=['stop', 'stop', 'stop'] chars=[1096, 1096, 1096] t1_seed_identical=True garble_empty=True
+[simple] hashes=['84efc84cc142'] finish=['stop', 'stop', 'stop'] chars=[1510, 1510, 1510] t1_seed_identical=True garble_empty=True
+T1_SEED_MISS_CLASSES: []
+FP8_LONGRETURN_CORRUPTION_BAR: PASS
+31 warn_classes.txt
+WARN class-set diff vs cert8: +0 -0 (expect 0 0)
+=== [3] p65 full faces + tps (image-native perf record) 20:49:51 ===
+=== long-stream faces (perf_counter, wave-relative)
+  U32k: TTFT=  16.93s total=  17.82s (start @ wave+  25.0s)
+  C32k: TTFT=   1.09s total=   1.72s (start @ wave+  55.0s)
+  U8k: TTFT=   3.76s total=   4.61s (start @ wave+  70.0s)
+  U64k: TTFT=  38.93s total=  39.62s (start @ wave+  85.0s)
+
+solo1: tps=61.12 tok=512 dt=8.4s finish=length
+solo2: tps=61.18 tok=512 dt=8.4s finish=length
+agg8: tps=310.93 tok=4096 wall=13.2s per_stream=['41.3', '39.7', '41.3', '41.4', '39.5', '38.9', '40.9', '39.5']
+=== [4] TQ ALL-DTYPE GATE (P6.19 owner bar carried) 20:52:29 ===
+=================== [boot] k8v4 (turboquant_k8v4 modeenv=no) 20:52:29 ===================
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert9 name=arc-test graph=1 spec=3 gmu=0.8 mnbt=8192 seqs=64 xgc=0 port=8000 20:52:57
+HEALTH=OK after ~350s
+(Worker_TP1 pid=1030) P619 tq_spec_fix v6 installed (active=True mode=split mq_kernel=True): v19b verify-capture forcing + split-row continuation dispatch
+(Worker_TP0 pid=930) P619 tq_spec_fix v6 installed (active=True mode=split mq_kernel=True): v19b verify-capture forcing + split-row continuation dispatch
+FLIP_FIRST: stop 9.3s head: '\n\n1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20'
+[essay] t0_identical=True hashes=['6084223df0a5', '6084223df0a5', '6084223df0a5'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=2145 chars=[4269, 4269, 4269]
+[code] t0_identical=True hashes=['4065e97dc61c', '4065e97dc61c', '4065e97dc61c'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=5051 chars=[3301, 3301, 3301]
+[multi] t0_identical=True hashes=['3bb45b51520b', '3bb45b51520b', '3bb45b51520b'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=3400 chars=[802, 802, 802]
+[simple] t0_identical=True hashes=['fe080656ac71', 'fe080656ac71', 'fe080656ac71'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=38 chars=[1507, 1507, 1507]
+LONGPROBE cert9k8v4 full: CLEAN
+GARBLE: class_lines=4 empty_garble=0 (expect equal, >=4) in longprobe_full.out
+ZERO-GARBLE: FAIL (/root/build/p620/cert9/gate/k8v4/longprobe_full.out)
+CHURN 4x256 done: ['5.7s/256tok', '6.1s/256tok', '6.2s/256tok', '6.4s/256tok']
+[essay] post_churn_rehit_identical=False hashes=['26fef5f1fded', '6084223df0a5'] garble={'r1': [], 'r2': []}
+[code] post_churn_rehit_identical=True hashes=['4065e97dc61c', '4065e97dc61c'] garble={'r1': [], 'r2': []}
+[multi] post_churn_rehit_identical=True hashes=['3bb45b51520b', '3bb45b51520b'] garble={'r1': [], 'r2': []}
+[simple] post_churn_rehit_identical=True hashes=['fe080656ac71', 'fe080656ac71'] garble={'r1': [], 'r2': []}
+LONGPROBE cert9k8v4r1 rehit: CORRUPTION_SIGNAL
+GARBLE: class_lines=4 empty_garble=0 (expect equal, >=4) in longprobe_rehit1.out
+ZERO-GARBLE: FAIL (/root/build/p620/cert9/gate/k8v4/longprobe_rehit1.out)
+CHURN 4x256 done: ['6.1s/256tok', '6.1s/256tok', '6.1s/256tok', '6.2s/256tok']
+[essay] post_churn_rehit_identical=True hashes=['6084223df0a5', '6084223df0a5'] garble={'r1': [], 'r2': []}
+[code] post_churn_rehit_identical=True hashes=['4065e97dc61c', '4065e97dc61c'] garble={'r1': [], 'r2': []}
+[multi] post_churn_rehit_identical=True hashes=['3bb45b51520b', '3bb45b51520b'] garble={'r1': [], 'r2': []}
+[simple] post_churn_rehit_identical=True hashes=['fe080656ac71', 'fe080656ac71'] garble={'r1': [], 'r2': []}
+LONGPROBE cert9k8v4r2 rehit: CLEAN
+GARBLE: class_lines=4 empty_garble=0 (expect equal, >=4) in longprobe_rehit2.out
+ZERO-GARBLE: FAIL (/root/build/p620/cert9/gate/k8v4/longprobe_rehit2.out)
+CHURN 4x256 done: ['5.7s/256tok', '5.7s/256tok', '5.8s/256tok', '6.4s/256tok']
+[essay] post_churn_rehit_identical=True hashes=['6084223df0a5', '6084223df0a5'] garble={'r1': [], 'r2': []}
+[code] post_churn_rehit_identical=True hashes=['4065e97dc61c', '4065e97dc61c'] garble={'r1': [], 'r2': []}
+[multi] post_churn_rehit_identical=False hashes=['f0dce5b55f4f', '3bb45b51520b'] garble={'r1': [], 'r2': []}
+[simple] post_churn_rehit_identical=True hashes=['fe080656ac71', 'fe080656ac71'] garble={'r1': [], 'r2': []}
+LONGPROBE cert9k8v4r3 rehit: CORRUPTION_SIGNAL
+GARBLE: class_lines=4 empty_garble=0 (expect equal, >=4) in longprobe_rehit3.out
+ZERO-GARBLE: FAIL (/root/build/p620/cert9/gate/k8v4/longprobe_rehit3.out)
+[essay] hashes=['26fef5f1fded', '6084223df0a5'] finish=['stop', 'stop', 'stop'] (t0 drift: adjacent coherent variants, Class-A) garble_empty=True
+[code] hashes=['4065e97dc61c'] finish=['stop', 'stop', 'stop'] garble_empty=True
+[multi] hashes=['3bb45b51520b', 'f0dce5b55f4f'] finish=['stop', 'stop', 'stop'] (t0 drift: adjacent coherent variants, Class-A) garble_empty=True
+[simple] hashes=['fe080656ac71'] finish=['stop', 'stop', 'stop'] garble_empty=True
+K8V4_LONGRETURN_CORRUPTION_BAR: PASS
+solo1: tps=54.64 tok=512 dt=9.4s finish=length
+solo2: tps=54.85 tok=512 dt=9.3s finish=length
+agg8: tps=236.15 tok=4096 wall=17.3s per_stream=['31.8', '33.8', '33.0', '33.0', '33.0', '29.5', '30.2', '30.2']
+ERROR=0
+TRACEBACK=0
+=================== [boot] k3v4 (turboquant_k3v4_nc modeenv=no) 21:07:51 ===================
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert9 name=arc-test graph=1 spec=3 gmu=0.8 mnbt=8192 seqs=64 xgc=0 port=8000 21:08:20
+HEALTH=OK after ~385s
+(Worker_TP0 pid=930) P619 tq_spec_fix v6 installed (active=True mode=split mq_kernel=True): v19b verify-capture forcing + split-row continuation dispatch
+(Worker_TP1 pid=1030) P619 tq_spec_fix v6 installed (active=True mode=split mq_kernel=True): v19b verify-capture forcing + split-row continuation dispatch
+FLIP_FIRST: stop 9.5s head: '\n\n1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20.'
+[essay] t0_identical=True hashes=['8ccfa3b73aa1', '8ccfa3b73aa1', '8ccfa3b73aa1'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=False prompt_tok=2145 chars=[4165, 4165, 4165]
+[code] t0_identical=True hashes=['df99aacc45be', 'df99aacc45be', 'df99aacc45be'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=5051 chars=[2985, 2985, 2985]
+[multi] t0_identical=True hashes=['9ec8a5001cfd', '9ec8a5001cfd', '9ec8a5001cfd'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=3400 chars=[1044, 1044, 1044]
+[simple] t0_identical=True hashes=['cc082a03dea2', 'cc082a03dea2', 'cc082a03dea2'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=38 chars=[1422, 1422, 1422]
+LONGPROBE cert9k3v4 full: CORRUPTION_SIGNAL
+GARBLE: class_lines=4 empty_garble=0 (expect equal, >=4) in longprobe_full.out
+ZERO-GARBLE: FAIL (/root/build/p620/cert9/gate/k3v4/longprobe_full.out)
+ERROR=0
+TRACEBACK=0
+=================== [boot] q4nc (turboquant_4bit_nc modeenv=no) 21:18:04 ===================
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert9 name=arc-test graph=1 spec=3 gmu=0.8 mnbt=8192 seqs=64 xgc=0 port=8000 21:18:33
+HEALTH=OK after ~395s
+(Worker_TP0 pid=930) P619 tq_spec_fix v6 installed (active=True mode=split mq_kernel=True): v19b verify-capture forcing + split-row continuation dispatch
+(Worker_TP1 pid=1030) P619 tq_spec_fix v6 installed (active=True mode=split mq_kernel=True): v19b verify-capture forcing + split-row continuation dispatch
+FLIP_FIRST: stop 9.8s head: '\n\n1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20.'
+[essay] t0_identical=False hashes=['56a2e47a4325', '88ad6b37c7c0', '56a2e47a4325'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=False prompt_tok=2145 chars=[4041, 4114, 4041]
+[code] t0_identical=True hashes=['ccef33edf9b1', 'ccef33edf9b1', 'ccef33edf9b1'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=5051 chars=[3064, 3064, 3064]
+[multi] t0_identical=True hashes=['ce38cfd6df8c', 'ce38cfd6df8c', 'ce38cfd6df8c'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=3400 chars=[1000, 1000, 1000]
+[simple] t0_identical=True hashes=['84efc84cc142', '84efc84cc142', '84efc84cc142'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=38 chars=[1510, 1510, 1510]
+LONGPROBE cert9q4nc full: CORRUPTION_SIGNAL
+GARBLE: class_lines=4 empty_garble=0 (expect equal, >=4) in longprobe_full.out
+ZERO-GARBLE: FAIL (/root/build/p620/cert9/gate/q4nc/longprobe_full.out)
+ERROR=0
+TRACEBACK=0
+=================== [boot] q3nc (turboquant_3bit_nc modeenv=no) 21:28:20 ===================
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert9 name=arc-test graph=1 spec=3 gmu=0.8 mnbt=8192 seqs=64 xgc=0 port=8000 21:28:49
+HEALTH=OK after ~385s
+(Worker_TP1 pid=1030) P619 tq_spec_fix v6 installed (active=True mode=split mq_kernel=True): v19b verify-capture forcing + split-row continuation dispatch
+(Worker_TP0 pid=930) P619 tq_spec_fix v6 installed (active=True mode=split mq_kernel=True): v19b verify-capture forcing + split-row continuation dispatch
+FLIP_FIRST: stop 10.2s head: '\n\n1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20'
+[essay] t0_identical=False hashes=['bcc7f9d4c8e0', '768b2e32d1a7', '7376024af8d9'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=False prompt_tok=2145 chars=[3922, 3801, 3924]
+[code] t0_identical=False hashes=['ea7ed3fadb3c', 'acb3a08b2f0b', '2252f74105f5'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=False prompt_tok=5051 chars=[2920, 3354, 2667]
+[multi] t0_identical=True hashes=['b4398cdffedc', 'b4398cdffedc', 'b4398cdffedc'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=3400 chars=[439, 439, 439]
+[simple] t0_identical=True hashes=['e0414695aa10', 'e0414695aa10', 'e0414695aa10'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=38 chars=[1368, 1368, 1368]
+LONGPROBE cert9q3nc full: CORRUPTION_SIGNAL
+GARBLE: class_lines=4 empty_garble=0 (expect equal, >=4) in longprobe_full.out
+ZERO-GARBLE: FAIL (/root/build/p620/cert9/gate/q3nc/longprobe_full.out)
+ERROR=0
+TRACEBACK=0
+=== [5] mq annex (experimental knob number) 21:38:34 ===
+=================== [boot] mqannex (turboquant_k8v4 modeenv=yes) 21:38:34 ===================
+FATAL: mode env not injected

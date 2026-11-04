@@ -1,0 +1,37 @@
+=== [r82b.1] essay t1-seed re-characterization 19:39:36 ===
+t0 spot: 648d66ae32c9 finish=stop chars=3885
+t0 spot: 648d66ae32c9 finish=stop chars=3885
+round 0: a=18ff99786c73 b=18ff99786c73 same=True fin=stop/stop
+round 1: a=18ff99786c73 b=18ff99786c73 same=True fin=stop/stop
+round 2: a=18ff99786c73 b=18ff99786c73 same=True fin=stop/stop
+round 3: a=18ff99786c73 b=18ff99786c73 same=True fin=stop/stop
+round 4: a=18ff99786c73 b=18ff99786c73 same=True fin=stop/stop
+round 5: a=18ff99786c73 b=18ff99786c73 same=True fin=stop/stop
+round 6: a=18ff99786c73 b=18ff99786c73 same=True fin=stop/stop
+round 7: a=18ff99786c73 b=18ff99786c73 same=True fin=stop/stop
+seed999 control: 50dee29bdd80
+
+RECHAR_SUMMARY: pairs_identical=8/8 finish_stop=8/8 garble_flags=0 distinct_t1_hashes=1 dominant=16/16 t0_spot_stable=True t0_hash=648d66ae32c9 seed999_control_differs=True
+RECHAR_VERDICT: KNOWN_FACE (sporadic seeded-t1 RNG-path divergence under probabilistic drafting — p618b Class-A semantics; NOT corruption/looping/dtype if KNOWN_FACE)
+=== [r82b.2] p65 full faces + trace capture 19:42:34 ===
+=== long-stream faces (perf_counter, wave-relative)
+  U32k: TTFT=  17.24s total=  18.11s (start @ wave+  25.0s)
+  C32k: TTFT=   1.07s total=   1.70s (start @ wave+  55.0s)
+  U8k: TTFT=   3.75s total=   4.60s (start @ wave+  70.0s)
+  U64k: TTFT=  38.95s total=  39.65s (start @ wave+  85.0s)
+
+-rw-r--r-- 1 root root 9525654 Nov  4 19:44 /tmp/arc_step_trace_r0_p1030.jsonl
+-rw-r--r-- 1 root root 1258053 Nov  4 19:44 /tmp/arc_step_trace_r0_p698.jsonl
+-rw-r--r-- 1 root root 9523553 Nov  4 19:44 /tmp/arc_step_trace_r0_p930.jsonl
+total 19848
+drwxr-xr-x 2 root root    4096 Nov  4 19:44 .
+drwxr-xr-x 3 root root    4096 Nov  4 19:44 ..
+-rw-r--r-- 1 root root 9525654 Nov  4 19:44 arc_step_trace_r0_p1030.jsonl
+-rw-r--r-- 1 root root 1258053 Nov  4 19:44 arc_step_trace_r0_p698.jsonl
+-rw-r--r-- 1 root root 9523553 Nov  4 19:44 arc_step_trace_r0_p930.jsonl
+=== [r82b.3] error/WARN audit 19:44:42 ===
+ERROR=0
+TRACEBACK=0
+WARN_RAW=46
+33 warn_classes.txt
+=================== P620 R82B DONE 2026-11-04 19:45:04 ===================
