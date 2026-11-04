@@ -98,6 +98,7 @@ _WHEEL_HOOKS = (
     ("lmcache.v1.gpu_connector.kv_format.detectors.vllm", "lmcint.lmc_kvfmt_detector"),  # r43
     ("lmcache.v1.platform.torch_ops", "lmcint.lmc_twohs_transfer"),  # r43
     ("vllm.v1.core.sched.scheduler", "sched_tail_split"),  # r35
+    ("vllm.v1.attention.backends.turboquant_attn", "tq_spec_fix"),  # p619
 )
 # gdn_metadata_fastpath and fp8_block_w8a16 are NOT here: they self-install
 # in-place (_XPU_PATCH_MODULES) — no exec-wrap needed.
@@ -264,27 +265,18 @@ class ArcXpuPlatform(XPUPlatform):
         # Core XPU posture first: XPU-graph env law, fusion-pass disabling,
         # XPUWorker selection, spawn multiproc, oneCCL shutdown timeout.
         super().check_and_update_config(vllm_config)
-        # TurboQuant KV-cache dtypes are deprecated on this build (P6.18,
-        # 2026-11-03): the SoA store->decode pair is numerically proven
-        # correct on XPU (p618c roundtest, results/2026-11-03-p618c-
-        # roundtest/), but every turboquant_* preset quantizes values to
-        # 4-bit-class precision (16 affine levels per token-head, 8 on
-        # 3bit) and the target model degenerates on all four presets
-        # (deterministic repetition attractors, cold-included,
-        # LMC-independent) while fp8_e4m3 runs clean. Refuse at boot on
-        # every entry point rather than serve corrupted generations.
-        # CacheConfig's pydantic field is `cache_dtype` (config/cache.py:111,
-        # typed as the CacheDType Literal); `--kv-cache-dtype` is only the
-        # CLI flag name. (First cert7 build read the flag name and died on
-        # AttributeError before ever reaching this raise — G0 caught it.)
-        cache_dtype = vllm_config.cache_config.cache_dtype
-        if isinstance(cache_dtype, str) and cache_dtype.startswith("turboquant"):
-            raise ValueError(
-                f"ArcXpuPlatform: kv_cache_dtype '{cache_dtype}' is "
-                "deprecated on vllm-arc: TurboQuant presets quantize "
-                "values to 4-bit-class precision and produce degenerate "
-                "generations on this model (P6.18 campaign, 2026-11-03). "
-                "Serve with the certified default 'fp8_e4m3'.")
+        # TurboQuant KV-cache dtypes serve clean since P6.19 (2026-11-04):
+        # the P6.18 corruption was NOT the 4-bit precision ceiling then
+        # dispositioned — it was two XPU-graph defects in the spec-verify
+        # path (capture baking the raw-KV flash fast path into verify
+        # graphs, #TQ-blind-verify; and a replay-broken multi-row
+        # synthetic-decode dispatch in the continuation branch), both now
+        # fixed wheel-side by the tq_spec_fix hook (patches/tq_spec_fix.py;
+        # turboquant_k8v4 clean under graphs in leg t5, all-preset gate in
+        # results/2026-11-04-p619-tqverify/). The cert7 boot refusal is
+        # lifted; fp8_e4m3 stays the certified default. Preset precision
+        # characteristics (upstream's own table rates these presets
+        # +2.71..+20.59 pct PPL on gpt-oss) remain — choose per deployment.
         # XPU in-place patches (defect-b graph-safe outputs, defect-a
         # speculator FULL-capture): idempotent per-process install — this
         # runs at config time in APIServer + EngineCore; the per-worker
