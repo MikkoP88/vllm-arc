@@ -1,0 +1,177 @@
+{
+ "tag": "t4f",
+ "mode": "full",
+ "probe": "v3",
+ "ts": "2026-11-04 08:09:25",
+ "essay": {
+  "t0_identical": false,
+  "hashes": [
+   "e24a8da78d06",
+   "adee4b2b0714",
+   "b9c1fa38d4a8"
+  ],
+  "content_hashes": [
+   "cedcdc06b4b8",
+   "09236b3a9856",
+   "b375b9e85b2f"
+  ],
+  "garble": {
+   "cold": [],
+   "rehit": [
+    "REP-LOOP"
+   ],
+   "rehit2": []
+  },
+  "finish": [
+   "stop",
+   "stop",
+   "stop"
+  ],
+  "prompt_tok": 2145,
+  "chars": [
+   4078,
+   3543,
+   4330
+  ],
+  "t1_seed_identical": false,
+  "t1_hashes": [
+   "e3e0832a096a",
+   "38eb1bf23ce1"
+  ],
+  "t1_garble": [],
+  "dt_cold": 18.9
+ },
+ "code": {
+  "t0_identical": true,
+  "hashes": [
+   "ec53687470c1",
+   "ec53687470c1",
+   "ec53687470c1"
+  ],
+  "content_hashes": [
+   "a62fe8910981",
+   "a62fe8910981",
+   "a62fe8910981"
+  ],
+  "garble": {
+   "cold": [
+    "REP-LOOP"
+   ],
+   "rehit": [
+    "REP-LOOP"
+   ],
+   "rehit2": [
+    "REP-LOOP"
+   ]
+  },
+  "finish": [
+   "length",
+   "length",
+   "length"
+  ],
+  "prompt_tok": 5051,
+  "chars": [
+   13830,
+   13830,
+   13830
+  ],
+  "t1_seed_identical": true,
+  "t1_hashes": [
+   "b729ef25894f",
+   "b729ef25894f"
+  ],
+  "t1_garble": [
+   "REP-LOOP"
+  ],
+  "dt_cold": 102.7
+ },
+ "multi": {
+  "t0_identical": true,
+  "hashes": [
+   "52fd1c2e3351",
+   "52fd1c2e3351",
+   "52fd1c2e3351"
+  ],
+  "content_hashes": [
+   "b136ef187e59",
+   "b136ef187e59",
+   "b136ef187e59"
+  ],
+  "garble": {
+   "cold": [
+    "REP-LOOP"
+   ],
+   "rehit": [
+    "REP-LOOP"
+   ],
+   "rehit2": [
+    "REP-LOOP"
+   ]
+  },
+  "finish": [
+   "length",
+   "length",
+   "length"
+  ],
+  "prompt_tok": 3400,
+  "chars": [
+   13830,
+   13830,
+   13830
+  ],
+  "t1_seed_identical": true,
+  "t1_hashes": [
+   "b810f54e55a6",
+   "b810f54e55a6"
+  ],
+  "t1_garble": [
+   "REP-LOOP"
+  ],
+  "dt_cold": 129.3
+ },
+ "simple": {
+  "t0_identical": true,
+  "hashes": [
+   "2efec45a762e",
+   "2efec45a762e",
+   "2efec45a762e"
+  ],
+  "content_hashes": [
+   "4316bce9d101",
+   "4316bce9d101",
+   "4316bce9d101"
+  ],
+  "garble": {
+   "cold": [
+    "REP-LOOP"
+   ],
+   "rehit": [
+    "REP-LOOP"
+   ],
+   "rehit2": [
+    "REP-LOOP"
+   ]
+  },
+  "finish": [
+   "length",
+   "length",
+   "length"
+  ],
+  "prompt_tok": 38,
+  "chars": [
+   13831,
+   13831,
+   13831
+  ],
+  "t1_seed_identical": true,
+  "t1_hashes": [
+   "cdde77aa4c11",
+   "cdde77aa4c11"
+  ],
+  "t1_garble": [
+   "REP-LOOP"
+  ],
+  "dt_cold": 110.8
+ },
+ "VERDICT": "CORRUPTION_SIGNAL"
+}

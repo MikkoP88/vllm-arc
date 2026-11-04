@@ -1,0 +1,152 @@
+===== essay =====
+{
+ "t0_identical": true,
+ "hashes": [
+  "13d65b60c1c7",
+  "13d65b60c1c7",
+  "13d65b60c1c7"
+ ],
+ "content_hashes": [
+  "d3c210377720",
+  "d3c210377720",
+  "d3c210377720"
+ ],
+ "garble": {
+  "cold": [],
+  "rehit": [],
+  "rehit2": []
+ },
+ "finish": [
+  "stop",
+  "stop",
+  "stop"
+ ],
+ "prompt_tok": 2145,
+ "chars": [
+  3992,
+  3992,
+  3992
+ ],
+ "t1_seed_identical": true,
+ "t1_hashes": [
+  "ca7468cc386c",
+  "ca7468cc386c"
+ ],
+ "t1_garble": [],
+ "dt_cold": 13.7
+}
+
+===== code =====
+{
+ "t0_identical": true,
+ "hashes": [
+  "ad83bc9e5839",
+  "ad83bc9e5839",
+  "ad83bc9e5839"
+ ],
+ "content_hashes": [
+  "0d16e68200ef",
+  "0d16e68200ef",
+  "0d16e68200ef"
+ ],
+ "garble": {
+  "cold": [],
+  "rehit": [],
+  "rehit2": []
+ },
+ "finish": [
+  "stop",
+  "stop",
+  "stop"
+ ],
+ "prompt_tok": 5051,
+ "chars": [
+  3321,
+  3321,
+  3321
+ ],
+ "t1_seed_identical": true,
+ "t1_hashes": [
+  "9e0bb099b21b",
+  "9e0bb099b21b"
+ ],
+ "t1_garble": [],
+ "dt_cold": 16.6
+}
+
+===== multi =====
+{
+ "t0_identical": false,
+ "hashes": [
+  "3bb45b51520b",
+  "f0dce5b55f4f",
+  "3bb45b51520b"
+ ],
+ "content_hashes": [
+  "415bdb391499",
+  "47098f53e894",
+  "415bdb391499"
+ ],
+ "garble": {
+  "cold": [],
+  "rehit": [],
+  "rehit2": []
+ },
+ "finish": [
+  "stop",
+  "stop",
+  "stop"
+ ],
+ "prompt_tok": 3400,
+ "chars": [
+  802,
+  812,
+  802
+ ],
+ "t1_seed_identical": false,
+ "t1_hashes": [
+  "41350c7da299",
+  "b3c2d52cd366"
+ ],
+ "t1_garble": [],
+ "dt_cold": 5.0
+}
+
+===== simple =====
+{
+ "t0_identical": false,
+ "hashes": [
+  "84efc84cc142",
+  "fe080656ac71",
+  "fe080656ac71"
+ ],
+ "content_hashes": [
+  "bcbf6958e0f1",
+  "128a8078afb2",
+  "128a8078afb2"
+ ],
+ "garble": {
+  "cold": [],
+  "rehit": [],
+  "rehit2": []
+ },
+ "finish": [
+  "stop",
+  "stop",
+  "stop"
+ ],
+ "prompt_tok": 38,
+ "chars": [
+  1510,
+  1507,
+  1507
+ ],
+ "t1_seed_identical": true,
+ "t1_hashes": [
+  "942245d0ceca",
+  "942245d0ceca"
+ ],
+ "t1_garble": [],
+ "dt_cold": 6.7
+}
+

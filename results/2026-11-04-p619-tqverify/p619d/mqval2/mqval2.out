@@ -1,0 +1,26 @@
+INFO 11-04 10:44:33 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+INFO 11-04 10:44:33 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+INFO 11-04 10:44:33 [__init__.py:54] - hpu -> vllm_gaudi:register
+INFO 11-04 10:44:33 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+INFO 11-04 10:44:33 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+INFO 11-04 10:44:33 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+INFO 11-04 10:44:33 [__init__.py:54] - hpu -> vllm_gaudi:register
+INFO 11-04 10:44:33 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+INFO 11-04 10:44:33 [__init__.py:272] Platform plugin arc is activated
+INFO 11-04 10:44:33 [__init__.py:272] Platform plugin arc is activated
+device: Intel(R) Graphics [0xe223]
+[turboquant_k8v4 q4 seq2048 sparse] PASS rel_ref=0.002691 rel_split=0.000046 det=True nan=0
+[turboquant_k8v4 q4 seq4096 sparse] PASS rel_ref=0.002413 rel_split=0.000019 det=True nan=0
+[turboquant_k8v4 q5 seq2048 sparse] PASS rel_ref=0.002496 rel_split=0.000735 det=True nan=0
+[turboquant_4bit_nc q4 seq2048 sparse] PASS rel_ref=0.002802 rel_split=0.000000 det=True nan=0
+[turboquant_4bit_nc q4 seq4096 sparse] PASS rel_ref=0.002443 rel_split=0.000000 det=True nan=0
+[turboquant_4bit_nc q5 seq2048 sparse] PASS rel_ref=0.002559 rel_split=0.000000 det=True nan=0
+
+==== P619D MQVAL2 SUMMARY ====
+  turboquant_k8v4 q4 seq2048 sparse: PASS
+  turboquant_k8v4 q4 seq4096 sparse: PASS
+  turboquant_k8v4 q5 seq2048 sparse: PASS
+  turboquant_4bit_nc q4 seq2048 sparse: PASS
+  turboquant_4bit_nc q4 seq4096 sparse: PASS
+  turboquant_4bit_nc q5 seq2048 sparse: PASS
+P619D MQVAL2: PASS

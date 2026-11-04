@@ -1,0 +1,40 @@
+(Worker_TP0 pid=930) P619T STORE first: layer=language_model.model.layers.3.self_attn.attn n_tok=185
+(Worker_TP1 pid=1030) P619T STORE first: layer=language_model.model.layers.3.self_attn.attn n_tok=185
+(Worker_TP0 pid=930) P619T STORE first: layer=language_model.model.layers.7.self_attn.attn n_tok=185
+(Worker_TP1 pid=1030) P619T STORE first: layer=language_model.model.layers.7.self_attn.attn n_tok=185
+(Worker_TP0 pid=930) P619T STORE first: layer=language_model.model.layers.11.self_attn.attn n_tok=185
+(Worker_TP1 pid=1030) P619T STORE first: layer=language_model.model.layers.11.self_attn.attn n_tok=185
+(Worker_TP0 pid=930) P619T STORE first: layer=language_model.model.layers.15.self_attn.attn n_tok=185
+(Worker_TP1 pid=1030) P619T STORE first: layer=language_model.model.layers.15.self_attn.attn n_tok=185
+(Worker_TP0 pid=930) P619T STORE first: layer=language_model.model.layers.19.self_attn.attn n_tok=185
+(Worker_TP1 pid=1030) P619T STORE first: layer=language_model.model.layers.19.self_attn.attn n_tok=185
+(Worker_TP0 pid=930) P619T STORE first: layer=language_model.model.layers.23.self_attn.attn n_tok=185
+(Worker_TP1 pid=1030) P619T STORE first: layer=language_model.model.layers.23.self_attn.attn n_tok=185
+(Worker_TP0 pid=930) P619T STORE first: layer=language_model.model.layers.27.self_attn.attn n_tok=185
+(Worker_TP1 pid=1030) P619T STORE first: layer=language_model.model.layers.27.self_attn.attn n_tok=185
+(Worker_TP0 pid=930) P619T STORE first: layer=language_model.model.layers.31.self_attn.attn n_tok=185
+(Worker_TP1 pid=1030) P619T STORE first: layer=language_model.model.layers.31.self_attn.attn n_tok=185
+(Worker_TP0 pid=930) P619T STORE first: layer=language_model.model.layers.35.self_attn.attn n_tok=185
+(Worker_TP1 pid=1030) P619T STORE first: layer=language_model.model.layers.35.self_attn.attn n_tok=185
+(Worker_TP0 pid=930) P619T STORE first: layer=language_model.model.layers.39.self_attn.attn n_tok=185
+(Worker_TP1 pid=1030) P619T STORE first: layer=language_model.model.layers.39.self_attn.attn n_tok=185
+(Worker_TP0 pid=930) P619T STORE first: layer=language_model.model.layers.43.self_attn.attn n_tok=185
+(Worker_TP1 pid=1030) P619T STORE first: layer=language_model.model.layers.43.self_attn.attn n_tok=185
+(Worker_TP0 pid=930) P619T STORE first: layer=language_model.model.layers.47.self_attn.attn n_tok=185
+(Worker_TP1 pid=1030) P619T STORE first: layer=language_model.model.layers.47.self_attn.attn n_tok=185
+(Worker_TP0 pid=930) P619T STORE first: layer=language_model.model.layers.51.self_attn.attn n_tok=185
+(Worker_TP1 pid=1030) P619T STORE first: layer=language_model.model.layers.51.self_attn.attn n_tok=185
+(Worker_TP0 pid=930) P619T STORE first: layer=language_model.model.layers.55.self_attn.attn n_tok=185
+(Worker_TP1 pid=1030) P619T STORE first: layer=language_model.model.layers.55.self_attn.attn n_tok=185
+(Worker_TP0 pid=930) P619T STORE first: layer=language_model.model.layers.59.self_attn.attn n_tok=185
+(Worker_TP1 pid=1030) P619T STORE first: layer=language_model.model.layers.59.self_attn.attn n_tok=185
+(Worker_TP0 pid=930) P619T STORE first: layer=language_model.model.layers.63.self_attn.attn n_tok=185
+(Worker_TP1 pid=1030) P619T STORE first: layer=language_model.model.layers.63.self_attn.attn n_tok=185
+(Worker_TP1 pid=1030) P619T STORE first: layer=mtp.layers.0.self_attn.attn n_tok=185
+(Worker_TP0 pid=930) P619T STORE first: layer=mtp.layers.0.self_attn.attn n_tok=185
+(Worker_TP0 pid=930) P619T STORE rewrite: layer=mtp.layers.0.self_attn.attn n_tok=148 n_rewrite=74 total_rw=74 slots=[14981, 14982, 29957, 29958, 44933, 44934, 59909, 59910]
+(Worker_TP1 pid=1030) P619T STORE rewrite: layer=mtp.layers.0.self_attn.attn n_tok=148 n_rewrite=74 total_rw=74 slots=[14981, 14982, 29957, 29958, 44933, 44934, 59909, 59910]
+(Worker_TP0 pid=930) P619T STORE rewrite: layer=mtp.layers.0.self_attn.attn n_tok=37 n_rewrite=35 total_rw=109 slots=[14984, 29960, 44936, 59912, 74888, 89864, 104838, 119816]
+(Worker_TP1 pid=1030) P619T STORE rewrite: layer=mtp.layers.0.self_attn.attn n_tok=37 n_rewrite=35 total_rw=109 slots=[14984, 29960, 44936, 59912, 74888, 89864, 104838, 119816]
+(Worker_TP0 pid=930) P619T STORE rewrite: layer=mtp.layers.0.self_attn.attn n_tok=37 n_rewrite=7 total_rw=116 slots=[104839, 224648, 239623, 284551, 299528, 344455, 359431]
+(Worker_TP1 pid=1030) P619T STORE rewrite: layer=mtp.layers.0.self_attn.attn n_tok=37 n_rewrite=7 total_rw=116 slots=[104839, 224648, 239623, 284551, 299528, 344455, 359431]

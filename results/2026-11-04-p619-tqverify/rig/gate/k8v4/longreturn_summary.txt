@@ -1,0 +1,5 @@
+[essay] hashes=['6084223df0a5'] finish=['stop', 'stop', 'stop'] garble_empty=True
+[code] hashes=['4065e97dc61c'] finish=['stop', 'stop', 'stop'] garble_empty=True
+[multi] hashes=['3bb45b51520b', 'f0dce5b55f4f', 'f978fd6b15e2'] finish=['stop', 'stop', 'stop'] (t0 drift: adjacent coherent variants, Class-A) garble_empty=True
+[simple] hashes=['fe080656ac71'] finish=['stop', 'stop', 'stop'] garble_empty=True
+K8V4_LONGRETURN_CORRUPTION_BAR: PASS

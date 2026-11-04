@@ -1,0 +1,17 @@
+=================== P619C LEG t4f (k8v4 spec3 GRAPH=1 FIX=ON) 08:03:09 ===================
+SUBSTITUTIONS dtype=1 mounts=1
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert6 name=arc-test graph=1 spec=3 gmu=0.8 mnbt=8192 seqs=64 xgc=0 port=8000 08:03:53
+HEALTH=OK after ~325s
+(Worker_TP1 pid=1030) P619 tq_spec_fix installed (active=True): v19b verify-capture forcing + device-dynamic continuation limits
+FLIP_FIRST: stop 10.5s head: '\n\n1. 2. 3. 4. 4. 5. 6. 7. 8. 11. 12. 13. 14. 15. 16. 17. 18. 19. 20.\n\n\n\n\n1, 2. 3. 5. 5. 6. 7. 8. 9. 10. 11. 12. 13. 14. '
+[essay] t0_identical=False hashes=['e24a8da78d06', 'adee4b2b0714', 'b9c1fa38d4a8'] garble={'cold': [], 'rehit': ['REP-LOOP'], 'rehit2': []} t1_seed_identical=False prompt_tok=2145 chars=[4078, 3543, 4330]
+[code] t0_identical=True hashes=['ec53687470c1', 'ec53687470c1', 'ec53687470c1'] garble={'cold': ['REP-LOOP'], 'rehit': ['REP-LOOP'], 'rehit2': ['REP-LOOP']} t1_seed_identical=True prompt_tok=5051 chars=[13830, 13830, 13830]
+[multi] t0_identical=True hashes=['52fd1c2e3351', '52fd1c2e3351', '52fd1c2e3351'] garble={'cold': ['REP-LOOP'], 'rehit': ['REP-LOOP'], 'rehit2': ['REP-LOOP']} t1_seed_identical=True prompt_tok=3400 chars=[13830, 13830, 13830]
+[simple] t0_identical=True hashes=['2efec45a762e', '2efec45a762e', '2efec45a762e'] garble={'cold': ['REP-LOOP'], 'rehit': ['REP-LOOP'], 'rehit2': ['REP-LOOP']} t1_seed_identical=True prompt_tok=38 chars=[13831, 13831, 13831]
+LONGPROBE t4f full: CORRUPTION_SIGNAL
+(Worker_TP0 pid=930) P619I forward: is_prefill=True n_tok=185 qlens=(5, 10, 15, 20, 25, 30, 35, 40) seqs=[5, 5, 5, 5, 5, 5, 5, 5] ndec=0 mql=5 msl=5
+(Worker_TP1 pid=1030) P619I forward: is_prefill=True n_tok=185 qlens=(5, 10, 15, 20, 25, 30, 35, 40) seqs=[5, 5, 5, 5, 5, 5, 5, 5] ndec=0 mql=5 msl=5
+(Worker_TP0 pid=930) P619I forward: is_prefill=False n_tok=37 qlens=(1, 2, 3, 4, 5, 6, 7, 8) seqs=[6, 6, 6, 6, 6, 6, 6, 6] ndec=37 mql=1 msl=8
+(Worker_TP1 pid=1030) P619I forward: is_prefill=False n_tok=37 qlens=(1, 2, 3, 4, 5, 6, 7, 8) seqs=[6, 6, 6, 6, 6, 6, 6, 6] ndec=37 mql=1 msl=8
+0
+LEG t4f COMPLETE 08:35:00

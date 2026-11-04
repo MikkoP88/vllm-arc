@@ -1,0 +1,5 @@
+[essay] t0_identical=False hashes=['1d9f39ad8231', 'ab659c3301e5', 'f9e60b003464'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=False prompt_tok=2145 chars=[3563, 4341, 3821]
+[code] t0_identical=False hashes=['699e9e26fddd', 'd6a9dbeafd82', '3809b5fe77fc'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=False prompt_tok=5051 chars=[3077, 3652, 3350]
+[multi] t0_identical=True hashes=['a3b5f407f146', 'a3b5f407f146', 'a3b5f407f146'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=3400 chars=[467, 467, 467]
+[simple] t0_identical=True hashes=['e0414695aa10', 'e0414695aa10', 'e0414695aa10'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=38 chars=[1368, 1368, 1368]
+LONGPROBE t9_q3nc full: CORRUPTION_SIGNAL

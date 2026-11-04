@@ -1,0 +1,1120 @@
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=1 ctx=5 rows=5 rel_max=2.136e-03 rel_mean=1.505e-03 ratio_min=0.999 ratio_max=1.001 rw_total=0
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=1 ctx=5 rows=5 rel_max=3.262e-03 rel_mean=2.021e-03 ratio_min=0.999 ratio_max=1.001 rw_total=0
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=1 ctx=5 rows=5 rel_max=2.802e-03 rel_mean=1.896e-03 ratio_min=0.999 ratio_max=1.002 rw_total=0
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=1 ctx=5 rows=5 rel_max=2.852e-03 rel_mean=1.609e-03 ratio_min=1.000 ratio_max=1.000 rw_total=0
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=1 ctx=5 rows=5 rel_max=6.044e-03 rel_mean=2.264e-03 ratio_min=0.999 ratio_max=1.000 rw_total=0
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=1 ctx=5 rows=5 rel_max=4.447e-03 rel_mean=1.869e-03 ratio_min=0.999 ratio_max=1.001 rw_total=0
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=1 ctx=5 rows=5 rel_max=1.186e-02 rel_mean=3.107e-03 ratio_min=0.999 ratio_max=1.005 rw_total=0
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=1 ctx=5 rows=5 rel_max=4.076e-03 rel_mean=1.662e-03 ratio_min=0.998 ratio_max=1.002 rw_total=0
+(Worker_TP0 pid=931) P619T CANARY layer=mtp.layers.0.self_attn.attn step=1 ctx=5 rows=5 rel_max=1.376e-02 rel_mean=2.845e-03 ratio_min=0.999 ratio_max=1.005 rw_total=0
+(Worker_TP1 pid=1031) P619T CANARY layer=mtp.layers.0.self_attn.attn step=1 ctx=5 rows=5 rel_max=4.320e-03 rel_mean=2.011e-03 ratio_min=0.998 ratio_max=1.001 rw_total=0
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=2 ctx=9 rows=4 rel_max=1.183e-01 rel_mean=8.928e-02 ratio_min=1.001 ratio_max=1.028 rw_total=0
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=2 ctx=9 rows=4 rel_max=1.450e-01 rel_mean=9.910e-02 ratio_min=0.965 ratio_max=1.012 rw_total=0
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=2 ctx=9 rows=4 rel_max=2.356e-01 rel_mean=1.220e-01 ratio_min=0.999 ratio_max=1.049 rw_total=0
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=2 ctx=9 rows=4 rel_max=1.876e-01 rel_mean=9.580e-02 ratio_min=0.990 ratio_max=1.026 rw_total=0
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=2 ctx=9 rows=4 rel_max=2.096e-01 rel_mean=1.317e-01 ratio_min=0.972 ratio_max=1.035 rw_total=0
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=2 ctx=9 rows=4 rel_max=2.574e-01 rel_mean=1.589e-01 ratio_min=0.994 ratio_max=1.059 rw_total=0
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=2 ctx=9 rows=4 rel_max=2.375e-01 rel_mean=1.754e-01 ratio_min=0.989 ratio_max=1.045 rw_total=0
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=2 ctx=9 rows=4 rel_max=2.607e-01 rel_mean=1.726e-01 ratio_min=0.976 ratio_max=1.054 rw_total=0
+(Worker_TP1 pid=1031) P619T CANARY layer=mtp.layers.0.self_attn.attn step=2 ctx=9 rows=4 rel_max=2.183e-01 rel_mean=1.281e-01 ratio_min=0.988 ratio_max=1.035 rw_total=74
+(Worker_TP0 pid=931) P619T CANARY layer=mtp.layers.0.self_attn.attn step=2 ctx=9 rows=4 rel_max=5.930e-01 rel_mean=1.686e-01 ratio_min=0.917 ratio_max=1.298 rw_total=74
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=3 ctx=13 rows=4 rel_max=2.989e-01 rel_mean=1.132e-01 ratio_min=0.990 ratio_max=1.062 rw_total=2
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=3 ctx=13 rows=4 rel_max=7.220e-01 rel_mean=1.476e-01 ratio_min=0.885 ratio_max=1.083 rw_total=2
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=3 ctx=13 rows=4 rel_max=4.856e-01 rel_mean=1.584e-01 ratio_min=0.954 ratio_max=1.134 rw_total=2
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=3 ctx=13 rows=4 rel_max=3.857e-01 rel_mean=1.613e-01 ratio_min=0.968 ratio_max=1.101 rw_total=2
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=3 ctx=13 rows=4 rel_max=3.065e-01 rel_mean=1.642e-01 ratio_min=0.915 ratio_max=1.084 rw_total=2
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=3 ctx=13 rows=4 rel_max=4.617e-01 rel_mean=1.545e-01 ratio_min=0.985 ratio_max=1.171 rw_total=2
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=3 ctx=13 rows=4 rel_max=5.040e-01 rel_mean=1.689e-01 ratio_min=0.960 ratio_max=1.069 rw_total=2
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=3 ctx=13 rows=4 rel_max=8.022e-01 rel_mean=2.720e-01 ratio_min=0.881 ratio_max=1.115 rw_total=2
+(Worker_TP1 pid=1031) P619T CANARY layer=mtp.layers.0.self_attn.attn step=3 ctx=13 rows=4 rel_max=7.132e-01 rel_mean=1.707e-01 ratio_min=0.897 ratio_max=1.210 rw_total=119
+(Worker_TP0 pid=931) P619T CANARY layer=mtp.layers.0.self_attn.attn step=3 ctx=13 rows=4 rel_max=6.538e-01 rel_mean=1.815e-01 ratio_min=0.854 ratio_max=1.253 rw_total=119
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=4 ctx=18 rows=4 rel_max=6.273e-01 rel_mean=2.377e-01 ratio_min=0.948 ratio_max=1.097 rw_total=5
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=4 ctx=18 rows=4 rel_max=1.377e+00 rel_mean=2.405e-01 ratio_min=0.719 ratio_max=1.325 rw_total=5
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=4 ctx=18 rows=4 rel_max=9.446e-01 rel_mean=2.259e-01 ratio_min=0.791 ratio_max=1.147 rw_total=5
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=4 ctx=18 rows=4 rel_max=1.374e+00 rel_mean=3.556e-01 ratio_min=0.911 ratio_max=1.420 rw_total=5
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=4 ctx=18 rows=4 rel_max=9.799e-01 rel_mean=2.903e-01 ratio_min=0.874 ratio_max=1.342 rw_total=5
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=4 ctx=18 rows=4 rel_max=6.906e-01 rel_mean=1.801e-01 ratio_min=0.963 ratio_max=1.205 rw_total=5
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=4 ctx=18 rows=4 rel_max=1.601e+00 rel_mean=2.379e-01 ratio_min=0.978 ratio_max=1.896 rw_total=5
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=4 ctx=18 rows=4 rel_max=2.664e+00 rel_mean=5.710e-01 ratio_min=0.706 ratio_max=2.655 rw_total=5
+(Worker_TP1 pid=1031) P619T CANARY layer=mtp.layers.0.self_attn.attn step=4 ctx=18 rows=4 rel_max=4.525e-01 rel_mean=1.636e-01 ratio_min=0.951 ratio_max=1.039 rw_total=129
+(Worker_TP0 pid=931) P619T CANARY layer=mtp.layers.0.self_attn.attn step=4 ctx=18 rows=4 rel_max=5.404e-01 rel_mean=1.755e-01 ratio_min=0.898 ratio_max=1.287 rw_total=129
+(Worker_TP0 pid=931) Capturing CUDA graphs (FULL):   0%|          | 0/54 [00:00<?, ?it/s]P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=5 ctx=4 rows=4 rel_max=1.699e-03 rel_mean=1.431e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=5 ctx=4 rows=4 rel_max=1.762e-03 rel_mean=1.484e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=5 ctx=4 rows=4 rel_max=2.486e-03 rel_mean=1.658e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=5 ctx=4 rows=4 rel_max=1.763e-03 rel_mean=1.512e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=5 ctx=4 rows=4 rel_max=2.268e-03 rel_mean=1.576e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=5 ctx=4 rows=4 rel_max=2.206e-03 rel_mean=1.620e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=5 ctx=4 rows=4 rel_max=1.861e-03 rel_mean=1.555e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=5 ctx=4 rows=4 rel_max=2.266e-03 rel_mean=1.561e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) Capturing CUDA graphs (FULL):   2%|▏         | 1/54 [00:02<01:57,  2.22s/it]P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=7 ctx=4 rows=4 rel_max=2.164e-03 rel_mean=1.491e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=7 ctx=4 rows=4 rel_max=2.688e-03 rel_mean=1.592e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=7 ctx=4 rows=4 rel_max=1.872e-03 rel_mean=1.562e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=7 ctx=4 rows=4 rel_max=1.768e-03 rel_mean=1.430e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=7 ctx=4 rows=4 rel_max=1.865e-03 rel_mean=1.512e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=7 ctx=4 rows=4 rel_max=3.521e-03 rel_mean=1.686e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=7 ctx=4 rows=4 rel_max=2.910e-03 rel_mean=1.640e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=7 ctx=4 rows=4 rel_max=2.163e-03 rel_mean=1.599e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) Capturing CUDA graphs (FULL):   4%|▎         | 2/54 [00:02<01:03,  1.22s/it]P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=9 ctx=4 rows=4 rel_max=2.357e-03 rel_mean=1.576e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=9 ctx=4 rows=4 rel_max=1.948e-03 rel_mean=1.578e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=9 ctx=4 rows=4 rel_max=1.937e-03 rel_mean=1.557e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=9 ctx=4 rows=4 rel_max=2.078e-03 rel_mean=1.672e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=9 ctx=4 rows=4 rel_max=3.242e-03 rel_mean=1.714e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=9 ctx=4 rows=4 rel_max=2.265e-03 rel_mean=1.667e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=9 ctx=4 rows=4 rel_max=4.083e-03 rel_mean=1.709e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=9 ctx=4 rows=4 rel_max=1.829e-03 rel_mean=1.532e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) Capturing CUDA graphs (FULL):   6%|▌         | 3/54 [00:03<00:45,  1.13it/s]P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=11 ctx=4 rows=4 rel_max=2.721e-03 rel_mean=1.583e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=11 ctx=4 rows=4 rel_max=3.310e-03 rel_mean=1.560e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=11 ctx=4 rows=4 rel_max=2.030e-03 rel_mean=1.539e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=11 ctx=4 rows=4 rel_max=2.292e-03 rel_mean=1.634e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=11 ctx=4 rows=4 rel_max=2.586e-03 rel_mean=1.639e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=11 ctx=4 rows=4 rel_max=1.961e-03 rel_mean=1.641e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=11 ctx=4 rows=4 rel_max=3.356e-03 rel_mean=1.651e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=11 ctx=4 rows=4 rel_max=1.955e-03 rel_mean=1.696e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) Capturing CUDA graphs (FULL):   7%|▋         | 4/54 [00:03<00:36,  1.37it/s]P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=13 ctx=4 rows=4 rel_max=2.283e-03 rel_mean=1.617e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=13 ctx=4 rows=4 rel_max=3.283e-03 rel_mean=1.581e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=13 ctx=4 rows=4 rel_max=2.685e-03 rel_mean=1.643e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=13 ctx=4 rows=4 rel_max=2.542e-03 rel_mean=1.648e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=13 ctx=4 rows=4 rel_max=2.199e-03 rel_mean=1.626e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=13 ctx=4 rows=4 rel_max=1.941e-03 rel_mean=1.705e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=13 ctx=4 rows=4 rel_max=2.034e-03 rel_mean=1.613e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=13 ctx=4 rows=4 rel_max=2.300e-03 rel_mean=1.584e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) Capturing CUDA graphs (FULL):   9%|▉         | 5/54 [00:04<00:31,  1.55it/s](Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=15 ctx=4 rows=4 rel_max=2.243e-03 rel_mean=1.615e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=15 ctx=4 rows=4 rel_max=2.242e-03 rel_mean=1.557e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=15 ctx=4 rows=4 rel_max=1.807e-03 rel_mean=1.593e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=15 ctx=4 rows=4 rel_max=2.568e-03 rel_mean=1.649e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=15 ctx=4 rows=4 rel_max=2.615e-03 rel_mean=1.683e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=15 ctx=4 rows=4 rel_max=2.496e-03 rel_mean=1.645e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=15 ctx=4 rows=4 rel_max=1.997e-03 rel_mean=1.672e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=15 ctx=4 rows=4 rel_max=2.333e-03 rel_mean=1.615e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) Capturing CUDA graphs (FULL):  11%|█         | 6/54 [00:04<00:28,  1.70it/s]P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=17 ctx=4 rows=4 rel_max=3.188e-03 rel_mean=1.596e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=17 ctx=4 rows=4 rel_max=1.968e-03 rel_mean=1.599e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=17 ctx=4 rows=4 rel_max=2.171e-03 rel_mean=1.700e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=17 ctx=4 rows=4 rel_max=2.414e-03 rel_mean=1.668e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=17 ctx=4 rows=4 rel_max=2.275e-03 rel_mean=1.604e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=17 ctx=4 rows=4 rel_max=2.201e-03 rel_mean=1.644e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=17 ctx=4 rows=4 rel_max=2.536e-03 rel_mean=1.702e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=17 ctx=4 rows=4 rel_max=3.236e-03 rel_mean=1.723e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) Capturing CUDA graphs (FULL):  13%|█▎        | 7/54 [00:05<00:25,  1.82it/s]P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=19 ctx=4 rows=4 rel_max=2.234e-03 rel_mean=1.661e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=19 ctx=4 rows=4 rel_max=2.676e-03 rel_mean=1.661e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=19 ctx=4 rows=4 rel_max=2.708e-03 rel_mean=1.657e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=19 ctx=4 rows=4 rel_max=2.011e-03 rel_mean=1.559e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=19 ctx=4 rows=4 rel_max=2.033e-03 rel_mean=1.742e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=19 ctx=4 rows=4 rel_max=2.442e-03 rel_mean=1.615e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=19 ctx=4 rows=4 rel_max=2.377e-03 rel_mean=1.707e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=19 ctx=4 rows=4 rel_max=2.831e-03 rel_mean=1.653e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) Capturing CUDA graphs (FULL):  15%|█▍        | 8/54 [00:05<00:24,  1.91it/s](Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=21 ctx=4 rows=4 rel_max=1.896e-03 rel_mean=1.506e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=21 ctx=4 rows=4 rel_max=2.918e-03 rel_mean=1.591e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=21 ctx=4 rows=4 rel_max=2.977e-03 rel_mean=1.554e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=21 ctx=4 rows=4 rel_max=2.068e-03 rel_mean=1.682e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=21 ctx=4 rows=4 rel_max=2.355e-03 rel_mean=1.712e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=21 ctx=4 rows=4 rel_max=2.253e-03 rel_mean=1.686e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=21 ctx=4 rows=4 rel_max=2.608e-03 rel_mean=1.680e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=21 ctx=4 rows=4 rel_max=2.095e-03 rel_mean=1.633e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) Capturing CUDA graphs (FULL):  17%|█▋        | 9/54 [00:06<00:22,  1.96it/s]P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=23 ctx=4 rows=4 rel_max=3.977e-03 rel_mean=1.767e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=23 ctx=4 rows=4 rel_max=2.127e-03 rel_mean=1.663e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=23 ctx=4 rows=4 rel_max=2.175e-03 rel_mean=1.647e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=23 ctx=4 rows=4 rel_max=2.206e-03 rel_mean=1.595e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=23 ctx=4 rows=4 rel_max=2.659e-03 rel_mean=1.663e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=23 ctx=4 rows=4 rel_max=2.115e-03 rel_mean=1.750e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=23 ctx=4 rows=4 rel_max=1.932e-03 rel_mean=1.692e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=23 ctx=4 rows=4 rel_max=3.593e-03 rel_mean=1.735e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) Capturing CUDA graphs (FULL):  19%|█▊        | 10/54 [00:06<00:21,  2.01it/s]P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=25 ctx=4 rows=4 rel_max=2.869e-03 rel_mean=1.700e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=25 ctx=4 rows=4 rel_max=2.471e-03 rel_mean=1.649e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=25 ctx=4 rows=4 rel_max=1.921e-03 rel_mean=1.662e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=25 ctx=4 rows=4 rel_max=2.744e-03 rel_mean=1.609e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=25 ctx=4 rows=4 rel_max=2.482e-03 rel_mean=1.613e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=25 ctx=4 rows=4 rel_max=2.416e-03 rel_mean=1.719e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=25 ctx=4 rows=4 rel_max=2.158e-03 rel_mean=1.700e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=25 ctx=4 rows=4 rel_max=2.469e-03 rel_mean=1.711e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) Capturing CUDA graphs (FULL):  20%|██        | 11/54 [00:07<00:21,  2.04it/s](Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=27 ctx=4 rows=4 rel_max=2.226e-03 rel_mean=1.608e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=27 ctx=4 rows=4 rel_max=2.924e-03 rel_mean=1.701e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=27 ctx=4 rows=4 rel_max=2.515e-03 rel_mean=1.586e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=27 ctx=4 rows=4 rel_max=2.370e-03 rel_mean=1.667e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=27 ctx=4 rows=4 rel_max=2.227e-03 rel_mean=1.609e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=27 ctx=4 rows=4 rel_max=2.046e-03 rel_mean=1.623e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=27 ctx=4 rows=4 rel_max=2.280e-03 rel_mean=1.748e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=27 ctx=4 rows=4 rel_max=3.977e-03 rel_mean=1.733e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) Capturing CUDA graphs (FULL):  22%|██▏       | 12/54 [00:07<00:20,  2.08it/s]P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=29 ctx=4 rows=4 rel_max=2.242e-03 rel_mean=1.689e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=29 ctx=4 rows=4 rel_max=2.168e-03 rel_mean=1.664e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=29 ctx=4 rows=4 rel_max=2.162e-03 rel_mean=1.714e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=29 ctx=4 rows=4 rel_max=1.983e-03 rel_mean=1.619e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=29 ctx=4 rows=4 rel_max=3.006e-03 rel_mean=1.651e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=29 ctx=4 rows=4 rel_max=1.842e-03 rel_mean=1.642e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=29 ctx=4 rows=4 rel_max=2.117e-03 rel_mean=1.661e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=29 ctx=4 rows=4 rel_max=2.918e-03 rel_mean=1.694e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) Capturing CUDA graphs (FULL):  24%|██▍       | 13/54 [00:07<00:19,  2.11it/s]P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=31 ctx=4 rows=4 rel_max=2.444e-03 rel_mean=1.597e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=31 ctx=4 rows=4 rel_max=2.086e-03 rel_mean=1.580e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=31 ctx=4 rows=4 rel_max=1.953e-03 rel_mean=1.656e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=31 ctx=4 rows=4 rel_max=2.519e-03 rel_mean=1.556e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=31 ctx=4 rows=4 rel_max=3.605e-03 rel_mean=1.724e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=31 ctx=4 rows=4 rel_max=2.270e-03 rel_mean=1.641e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=31 ctx=4 rows=4 rel_max=2.047e-03 rel_mean=1.684e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=31 ctx=4 rows=4 rel_max=1.999e-03 rel_mean=1.656e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP0 pid=931) Capturing CUDA graphs (FULL):  26%|██▌       | 14/54 [00:08<00:18,  2.14it/s](Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=33 ctx=4 rows=4 rel_max=2.452e-03 rel_mean=1.650e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=33 ctx=4 rows=4 rel_max=2.370e-03 rel_mean=1.605e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=33 ctx=4 rows=4 rel_max=2.130e-03 rel_mean=1.683e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=33 ctx=4 rows=4 rel_max=2.024e-03 rel_mean=1.563e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=33 ctx=4 rows=4 rel_max=2.750e-03 rel_mean=1.681e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=33 ctx=4 rows=4 rel_max=2.420e-03 rel_mean=1.777e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=33 ctx=4 rows=4 rel_max=2.786e-03 rel_mean=1.750e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=33 ctx=4 rows=4 rel_max=2.899e-03 rel_mean=1.743e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) Capturing CUDA graphs (FULL):  28%|██▊       | 15/54 [00:08<00:18,  2.16it/s]P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=35 ctx=4 rows=4 rel_max=3.211e-03 rel_mean=1.705e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=35 ctx=4 rows=4 rel_max=1.870e-03 rel_mean=1.548e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=35 ctx=4 rows=4 rel_max=2.602e-03 rel_mean=1.692e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=35 ctx=4 rows=4 rel_max=2.286e-03 rel_mean=1.569e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=35 ctx=4 rows=4 rel_max=2.456e-03 rel_mean=1.672e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=35 ctx=4 rows=4 rel_max=2.721e-03 rel_mean=1.652e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=35 ctx=4 rows=4 rel_max=2.470e-03 rel_mean=1.730e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=35 ctx=4 rows=4 rel_max=3.444e-03 rel_mean=1.763e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) Capturing CUDA graphs (FULL):  30%|██▉       | 16/54 [00:09<00:17,  2.18it/s](Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=37 ctx=4 rows=4 rel_max=3.320e-03 rel_mean=1.619e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=37 ctx=4 rows=4 rel_max=2.055e-03 rel_mean=1.648e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=37 ctx=4 rows=4 rel_max=2.564e-03 rel_mean=1.622e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=37 ctx=4 rows=4 rel_max=2.804e-03 rel_mean=1.690e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=37 ctx=4 rows=4 rel_max=2.534e-03 rel_mean=1.669e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=37 ctx=4 rows=4 rel_max=2.368e-03 rel_mean=1.666e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=37 ctx=4 rows=4 rel_max=2.511e-03 rel_mean=1.742e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=37 ctx=4 rows=4 rel_max=3.375e-03 rel_mean=1.742e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) Capturing CUDA graphs (FULL):  31%|███▏      | 17/54 [00:09<00:16,  2.22it/s]P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=39 ctx=4 rows=4 rel_max=2.386e-03 rel_mean=1.651e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=39 ctx=4 rows=4 rel_max=2.435e-03 rel_mean=1.676e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=39 ctx=4 rows=4 rel_max=2.818e-03 rel_mean=1.688e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=39 ctx=4 rows=4 rel_max=2.358e-03 rel_mean=1.686e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=39 ctx=4 rows=4 rel_max=2.541e-03 rel_mean=1.645e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=39 ctx=4 rows=4 rel_max=2.313e-03 rel_mean=1.637e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=39 ctx=4 rows=4 rel_max=3.240e-03 rel_mean=1.669e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=39 ctx=4 rows=4 rel_max=2.713e-03 rel_mean=1.727e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) Capturing CUDA graphs (FULL):  33%|███▎      | 18/54 [00:10<00:16,  2.22it/s](Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=41 ctx=4 rows=4 rel_max=1.972e-03 rel_mean=1.617e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=41 ctx=4 rows=4 rel_max=4.156e-03 rel_mean=1.816e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=41 ctx=4 rows=4 rel_max=2.573e-03 rel_mean=1.599e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=41 ctx=4 rows=4 rel_max=2.606e-03 rel_mean=1.726e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=41 ctx=4 rows=4 rel_max=2.710e-03 rel_mean=1.653e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=41 ctx=4 rows=4 rel_max=2.269e-03 rel_mean=1.731e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=41 ctx=4 rows=4 rel_max=3.816e-03 rel_mean=1.834e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=41 ctx=4 rows=4 rel_max=2.159e-03 rel_mean=1.681e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) Capturing CUDA graphs (FULL):  35%|███▌      | 19/54 [00:10<00:15,  2.26it/s]P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=43 ctx=4 rows=4 rel_max=2.340e-03 rel_mean=1.592e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=43 ctx=4 rows=4 rel_max=2.023e-03 rel_mean=1.617e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=43 ctx=4 rows=4 rel_max=3.194e-03 rel_mean=1.647e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=43 ctx=4 rows=4 rel_max=2.166e-03 rel_mean=1.704e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=43 ctx=4 rows=4 rel_max=2.158e-03 rel_mean=1.659e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=43 ctx=4 rows=4 rel_max=2.617e-03 rel_mean=1.691e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=43 ctx=4 rows=4 rel_max=2.753e-03 rel_mean=1.746e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=43 ctx=4 rows=4 rel_max=3.318e-03 rel_mean=1.729e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) Capturing CUDA graphs (FULL):  37%|███▋      | 20/54 [00:11<00:15,  2.25it/s]P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=45 ctx=4 rows=4 rel_max=2.357e-03 rel_mean=1.709e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=45 ctx=4 rows=4 rel_max=1.926e-03 rel_mean=1.555e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=45 ctx=4 rows=4 rel_max=1.901e-03 rel_mean=1.669e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=45 ctx=4 rows=4 rel_max=2.135e-03 rel_mean=1.606e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=45 ctx=4 rows=4 rel_max=2.753e-03 rel_mean=1.644e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=45 ctx=4 rows=4 rel_max=2.586e-03 rel_mean=1.677e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=45 ctx=4 rows=4 rel_max=3.655e-03 rel_mean=1.664e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=45 ctx=4 rows=4 rel_max=2.522e-03 rel_mean=1.654e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) Capturing CUDA graphs (FULL):  39%|███▉      | 21/54 [00:11<00:14,  2.29it/s]P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=47 ctx=4 rows=4 rel_max=3.106e-03 rel_mean=1.763e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=47 ctx=4 rows=4 rel_max=3.297e-03 rel_mean=1.657e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=47 ctx=4 rows=4 rel_max=2.543e-03 rel_mean=1.776e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=47 ctx=4 rows=4 rel_max=2.156e-03 rel_mean=1.522e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=47 ctx=4 rows=4 rel_max=2.144e-03 rel_mean=1.645e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=47 ctx=4 rows=4 rel_max=1.882e-03 rel_mean=1.652e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=47 ctx=4 rows=4 rel_max=3.436e-03 rel_mean=1.765e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=47 ctx=4 rows=4 rel_max=2.665e-03 rel_mean=1.692e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) Capturing CUDA graphs (FULL):  41%|████      | 22/54 [00:11<00:13,  2.32it/s](Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=49 ctx=4 rows=4 rel_max=2.390e-03 rel_mean=1.659e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=49 ctx=4 rows=4 rel_max=3.035e-03 rel_mean=1.671e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=49 ctx=4 rows=4 rel_max=2.628e-03 rel_mean=1.685e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=49 ctx=4 rows=4 rel_max=2.025e-03 rel_mean=1.652e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=49 ctx=4 rows=4 rel_max=3.407e-03 rel_mean=1.677e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=49 ctx=4 rows=4 rel_max=3.561e-03 rel_mean=1.689e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=49 ctx=4 rows=4 rel_max=4.900e-03 rel_mean=1.792e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=49 ctx=4 rows=4 rel_max=2.955e-03 rel_mean=1.808e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP0 pid=931) Capturing CUDA graphs (FULL):  43%|████▎     | 23/54 [00:12<00:13,  2.36it/s](Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=51 ctx=4 rows=4 rel_max=2.292e-03 rel_mean=1.606e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=51 ctx=4 rows=4 rel_max=2.586e-03 rel_mean=1.628e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=51 ctx=4 rows=4 rel_max=2.748e-03 rel_mean=1.650e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=51 ctx=4 rows=4 rel_max=2.009e-03 rel_mean=1.674e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=51 ctx=4 rows=4 rel_max=1.838e-03 rel_mean=1.664e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=51 ctx=4 rows=4 rel_max=2.274e-03 rel_mean=1.610e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=51 ctx=4 rows=4 rel_max=3.370e-03 rel_mean=1.882e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=51 ctx=4 rows=4 rel_max=2.999e-03 rel_mean=1.726e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) Capturing CUDA graphs (FULL):  44%|████▍     | 24/54 [00:12<00:12,  2.38it/s](Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=53 ctx=4 rows=4 rel_max=2.647e-03 rel_mean=1.582e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=53 ctx=4 rows=4 rel_max=2.285e-03 rel_mean=1.699e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=53 ctx=4 rows=4 rel_max=1.919e-03 rel_mean=1.532e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=53 ctx=4 rows=4 rel_max=2.039e-03 rel_mean=1.739e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=53 ctx=4 rows=4 rel_max=2.208e-03 rel_mean=1.666e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=53 ctx=4 rows=4 rel_max=2.467e-03 rel_mean=1.748e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=53 ctx=4 rows=4 rel_max=2.424e-03 rel_mean=1.704e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=53 ctx=4 rows=4 rel_max=2.211e-03 rel_mean=1.771e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) Capturing CUDA graphs (FULL):  46%|████▋     | 25/54 [00:13<00:11,  2.42it/s]P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=55 ctx=4 rows=4 rel_max=2.305e-03 rel_mean=1.714e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=55 ctx=4 rows=4 rel_max=2.307e-03 rel_mean=1.609e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=55 ctx=4 rows=4 rel_max=2.115e-03 rel_mean=1.734e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=55 ctx=4 rows=4 rel_max=2.637e-03 rel_mean=1.644e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=55 ctx=4 rows=4 rel_max=2.669e-03 rel_mean=1.741e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=55 ctx=4 rows=4 rel_max=2.408e-03 rel_mean=1.676e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=55 ctx=4 rows=4 rel_max=2.798e-03 rel_mean=1.740e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=55 ctx=4 rows=4 rel_max=2.676e-03 rel_mean=1.708e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) Capturing CUDA graphs (FULL):  48%|████▊     | 26/54 [00:13<00:11,  2.46it/s](Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=57 ctx=4 rows=4 rel_max=2.150e-03 rel_mean=1.655e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=57 ctx=4 rows=4 rel_max=3.206e-03 rel_mean=1.674e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=57 ctx=4 rows=4 rel_max=2.215e-03 rel_mean=1.625e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=57 ctx=4 rows=4 rel_max=2.389e-03 rel_mean=1.704e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=57 ctx=4 rows=4 rel_max=3.335e-03 rel_mean=1.679e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=57 ctx=4 rows=4 rel_max=3.383e-03 rel_mean=1.742e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=57 ctx=4 rows=4 rel_max=3.622e-03 rel_mean=1.857e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=57 ctx=4 rows=4 rel_max=2.944e-03 rel_mean=1.737e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) Capturing CUDA graphs (FULL):  50%|█████     | 27/54 [00:13<00:10,  2.49it/s](Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=59 ctx=4 rows=4 rel_max=3.825e-03 rel_mean=1.621e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=59 ctx=4 rows=4 rel_max=2.711e-03 rel_mean=1.716e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=59 ctx=4 rows=4 rel_max=3.807e-03 rel_mean=1.665e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=59 ctx=4 rows=4 rel_max=2.258e-03 rel_mean=1.679e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=59 ctx=4 rows=4 rel_max=2.584e-03 rel_mean=1.658e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=59 ctx=4 rows=4 rel_max=2.319e-03 rel_mean=1.635e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=59 ctx=4 rows=4 rel_max=2.501e-03 rel_mean=1.724e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=59 ctx=4 rows=4 rel_max=3.935e-03 rel_mean=1.690e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) Capturing CUDA graphs (FULL):  52%|█████▏    | 28/54 [00:14<00:11,  2.28it/s]P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=61 ctx=4 rows=4 rel_max=2.691e-03 rel_mean=1.681e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=61 ctx=4 rows=4 rel_max=2.961e-03 rel_mean=1.755e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=61 ctx=4 rows=4 rel_max=2.056e-03 rel_mean=1.616e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=61 ctx=4 rows=4 rel_max=2.209e-03 rel_mean=1.683e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=61 ctx=4 rows=4 rel_max=2.560e-03 rel_mean=1.770e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=61 ctx=4 rows=4 rel_max=1.871e-03 rel_mean=1.582e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=61 ctx=4 rows=4 rel_max=1.957e-03 rel_mean=1.627e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=61 ctx=4 rows=4 rel_max=2.605e-03 rel_mean=1.669e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) Capturing CUDA graphs (FULL):  54%|█████▎    | 29/54 [00:14<00:10,  2.39it/s]P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=63 ctx=4 rows=4 rel_max=2.469e-03 rel_mean=1.647e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=63 ctx=4 rows=4 rel_max=2.397e-03 rel_mean=1.587e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=63 ctx=4 rows=4 rel_max=3.339e-03 rel_mean=1.692e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=63 ctx=4 rows=4 rel_max=2.365e-03 rel_mean=1.652e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=63 ctx=4 rows=4 rel_max=2.678e-03 rel_mean=1.719e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=63 ctx=4 rows=4 rel_max=1.930e-03 rel_mean=1.571e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=63 ctx=4 rows=4 rel_max=2.724e-03 rel_mean=1.742e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=63 ctx=4 rows=4 rel_max=2.589e-03 rel_mean=1.681e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) Capturing CUDA graphs (FULL):  56%|█████▌    | 30/54 [00:15<00:09,  2.48it/s](Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=65 ctx=4 rows=4 rel_max=2.719e-03 rel_mean=1.620e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=65 ctx=4 rows=4 rel_max=2.426e-03 rel_mean=1.634e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=65 ctx=4 rows=4 rel_max=2.420e-03 rel_mean=1.682e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=65 ctx=4 rows=4 rel_max=2.101e-03 rel_mean=1.648e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=65 ctx=4 rows=4 rel_max=2.003e-03 rel_mean=1.614e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=65 ctx=4 rows=4 rel_max=3.422e-03 rel_mean=1.774e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=65 ctx=4 rows=4 rel_max=3.844e-03 rel_mean=1.762e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=65 ctx=4 rows=4 rel_max=2.497e-03 rel_mean=1.777e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) Capturing CUDA graphs (FULL):  57%|█████▋    | 31/54 [00:15<00:09,  2.55it/s](Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=67 ctx=4 rows=4 rel_max=2.401e-03 rel_mean=1.688e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=67 ctx=4 rows=4 rel_max=2.627e-03 rel_mean=1.648e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=67 ctx=4 rows=4 rel_max=2.941e-03 rel_mean=1.657e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=67 ctx=4 rows=4 rel_max=2.073e-03 rel_mean=1.626e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=67 ctx=4 rows=4 rel_max=2.298e-03 rel_mean=1.713e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=67 ctx=4 rows=4 rel_max=3.000e-03 rel_mean=1.778e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=67 ctx=4 rows=4 rel_max=2.991e-03 rel_mean=1.698e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=67 ctx=4 rows=4 rel_max=2.853e-03 rel_mean=1.625e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) Capturing CUDA graphs (FULL):  59%|█████▉    | 32/54 [00:15<00:08,  2.62it/s]P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=69 ctx=4 rows=4 rel_max=2.484e-03 rel_mean=1.683e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=69 ctx=4 rows=4 rel_max=2.712e-03 rel_mean=1.644e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=69 ctx=4 rows=4 rel_max=2.316e-03 rel_mean=1.743e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=69 ctx=4 rows=4 rel_max=2.908e-03 rel_mean=1.690e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=69 ctx=4 rows=4 rel_max=2.561e-03 rel_mean=1.741e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=69 ctx=4 rows=4 rel_max=2.525e-03 rel_mean=1.623e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=69 ctx=4 rows=4 rel_max=2.841e-03 rel_mean=1.667e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=69 ctx=4 rows=4 rel_max=2.580e-03 rel_mean=1.767e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) Capturing CUDA graphs (FULL):  61%|██████    | 33/54 [00:16<00:07,  2.68it/s](Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=71 ctx=4 rows=4 rel_max=2.237e-03 rel_mean=1.616e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=71 ctx=4 rows=4 rel_max=2.852e-03 rel_mean=1.689e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=71 ctx=4 rows=4 rel_max=4.253e-03 rel_mean=1.674e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=71 ctx=4 rows=4 rel_max=2.419e-03 rel_mean=1.723e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=71 ctx=4 rows=4 rel_max=1.795e-03 rel_mean=1.604e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=71 ctx=4 rows=4 rel_max=3.666e-03 rel_mean=1.787e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=71 ctx=4 rows=4 rel_max=2.575e-03 rel_mean=1.724e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=71 ctx=4 rows=4 rel_max=1.931e-03 rel_mean=1.629e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) Capturing CUDA graphs (FULL):  63%|██████▎   | 34/54 [00:16<00:08,  2.43it/s]P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=73 ctx=4 rows=4 rel_max=2.700e-03 rel_mean=1.700e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=73 ctx=4 rows=4 rel_max=2.272e-03 rel_mean=1.671e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=73 ctx=4 rows=4 rel_max=1.953e-03 rel_mean=1.622e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=73 ctx=4 rows=4 rel_max=2.197e-03 rel_mean=1.660e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=73 ctx=4 rows=4 rel_max=2.735e-03 rel_mean=1.724e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=73 ctx=4 rows=4 rel_max=2.057e-03 rel_mean=1.625e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=73 ctx=4 rows=4 rel_max=2.339e-03 rel_mean=1.656e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=73 ctx=4 rows=4 rel_max=2.981e-03 rel_mean=1.732e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) Capturing CUDA graphs (FULL):  65%|██████▍   | 35/54 [00:17<00:07,  2.51it/s](Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=75 ctx=4 rows=4 rel_max=2.533e-03 rel_mean=1.698e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=75 ctx=4 rows=4 rel_max=2.847e-03 rel_mean=1.741e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=75 ctx=4 rows=4 rel_max=2.253e-03 rel_mean=1.707e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=75 ctx=4 rows=4 rel_max=3.019e-03 rel_mean=1.739e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=75 ctx=4 rows=4 rel_max=2.660e-03 rel_mean=1.667e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=75 ctx=4 rows=4 rel_max=2.830e-03 rel_mean=1.805e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=75 ctx=4 rows=4 rel_max=3.469e-03 rel_mean=1.694e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=75 ctx=4 rows=4 rel_max=2.529e-03 rel_mean=1.796e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) Capturing CUDA graphs (FULL):  67%|██████▋   | 36/54 [00:17<00:06,  2.66it/s]P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=77 ctx=4 rows=4 rel_max=2.552e-03 rel_mean=1.756e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=77 ctx=4 rows=4 rel_max=2.083e-03 rel_mean=1.619e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=77 ctx=4 rows=4 rel_max=2.189e-03 rel_mean=1.755e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=77 ctx=4 rows=4 rel_max=3.070e-03 rel_mean=1.645e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=77 ctx=4 rows=4 rel_max=2.345e-03 rel_mean=1.639e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=77 ctx=4 rows=4 rel_max=2.233e-03 rel_mean=1.627e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=77 ctx=4 rows=4 rel_max=3.226e-03 rel_mean=1.698e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=77 ctx=4 rows=4 rel_max=3.423e-03 rel_mean=1.788e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) Capturing CUDA graphs (FULL):  69%|██████▊   | 37/54 [00:17<00:06,  2.76it/s]P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=79 ctx=4 rows=4 rel_max=2.170e-03 rel_mean=1.659e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=79 ctx=4 rows=4 rel_max=2.032e-03 rel_mean=1.547e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=79 ctx=4 rows=4 rel_max=2.228e-03 rel_mean=1.687e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=79 ctx=4 rows=4 rel_max=2.591e-03 rel_mean=1.617e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=79 ctx=4 rows=4 rel_max=2.138e-03 rel_mean=1.638e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=79 ctx=4 rows=4 rel_max=2.165e-03 rel_mean=1.650e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=79 ctx=4 rows=4 rel_max=2.401e-03 rel_mean=1.689e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=79 ctx=4 rows=4 rel_max=2.576e-03 rel_mean=1.679e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) Capturing CUDA graphs (FULL):  70%|███████   | 38/54 [00:18<00:05,  2.85it/s](Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=81 ctx=4 rows=4 rel_max=2.171e-03 rel_mean=1.562e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=81 ctx=4 rows=4 rel_max=2.595e-03 rel_mean=1.765e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=81 ctx=4 rows=4 rel_max=3.407e-03 rel_mean=1.745e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=81 ctx=4 rows=4 rel_max=2.842e-03 rel_mean=1.654e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=81 ctx=4 rows=4 rel_max=1.973e-03 rel_mean=1.684e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=81 ctx=4 rows=4 rel_max=2.854e-03 rel_mean=1.693e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=81 ctx=4 rows=4 rel_max=2.492e-03 rel_mean=1.764e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=81 ctx=4 rows=4 rel_max=3.053e-03 rel_mean=1.771e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP0 pid=931) Capturing CUDA graphs (FULL):  72%|███████▏  | 39/54 [00:18<00:05,  2.93it/s](Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=83 ctx=4 rows=4 rel_max=2.223e-03 rel_mean=1.602e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=83 ctx=4 rows=4 rel_max=2.468e-03 rel_mean=1.704e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=83 ctx=4 rows=4 rel_max=3.350e-03 rel_mean=1.708e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=83 ctx=4 rows=4 rel_max=2.453e-03 rel_mean=1.758e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=83 ctx=4 rows=4 rel_max=2.954e-03 rel_mean=1.798e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=83 ctx=4 rows=4 rel_max=2.640e-03 rel_mean=1.765e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=83 ctx=4 rows=4 rel_max=2.694e-03 rel_mean=1.685e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=83 ctx=4 rows=4 rel_max=2.333e-03 rel_mean=1.700e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP0 pid=931) Capturing CUDA graphs (FULL):  74%|███████▍  | 40/54 [00:18<00:04,  2.99it/s](Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=85 ctx=4 rows=4 rel_max=2.337e-03 rel_mean=1.607e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=85 ctx=4 rows=4 rel_max=2.392e-03 rel_mean=1.604e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=85 ctx=4 rows=4 rel_max=3.254e-03 rel_mean=1.671e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=85 ctx=4 rows=4 rel_max=2.206e-03 rel_mean=1.704e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=85 ctx=4 rows=4 rel_max=2.013e-03 rel_mean=1.694e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=85 ctx=4 rows=4 rel_max=3.354e-03 rel_mean=1.727e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=85 ctx=4 rows=4 rel_max=2.248e-03 rel_mean=1.639e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=85 ctx=4 rows=4 rel_max=2.244e-03 rel_mean=1.737e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP0 pid=931) Capturing CUDA graphs (FULL):  76%|███████▌  | 41/54 [00:19<00:04,  3.05it/s](Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=87 ctx=4 rows=4 rel_max=2.608e-03 rel_mean=1.664e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=87 ctx=4 rows=4 rel_max=3.055e-03 rel_mean=1.702e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=87 ctx=4 rows=4 rel_max=2.336e-03 rel_mean=1.689e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=87 ctx=4 rows=4 rel_max=3.173e-03 rel_mean=1.667e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=87 ctx=4 rows=4 rel_max=2.095e-03 rel_mean=1.649e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=87 ctx=4 rows=4 rel_max=2.481e-03 rel_mean=1.683e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=87 ctx=4 rows=4 rel_max=3.794e-03 rel_mean=1.797e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=87 ctx=4 rows=4 rel_max=2.631e-03 rel_mean=1.683e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP0 pid=931) Capturing CUDA graphs (FULL):  78%|███████▊  | 42/54 [00:19<00:03,  3.10it/s](Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=89 ctx=4 rows=4 rel_max=2.748e-03 rel_mean=1.776e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=89 ctx=4 rows=4 rel_max=3.050e-03 rel_mean=1.767e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=89 ctx=4 rows=4 rel_max=2.763e-03 rel_mean=1.655e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=89 ctx=4 rows=4 rel_max=2.792e-03 rel_mean=1.708e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=89 ctx=4 rows=4 rel_max=2.165e-03 rel_mean=1.695e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=89 ctx=4 rows=4 rel_max=3.259e-03 rel_mean=1.739e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=89 ctx=4 rows=4 rel_max=2.316e-03 rel_mean=1.708e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=89 ctx=4 rows=4 rel_max=2.958e-03 rel_mean=1.684e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP0 pid=931) Capturing CUDA graphs (FULL):  80%|███████▉  | 43/54 [00:19<00:03,  3.15it/s](Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=91 ctx=4 rows=4 rel_max=2.131e-03 rel_mean=1.620e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=91 ctx=4 rows=4 rel_max=3.219e-03 rel_mean=1.813e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=91 ctx=4 rows=4 rel_max=2.463e-03 rel_mean=1.748e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=91 ctx=4 rows=4 rel_max=2.177e-03 rel_mean=1.735e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=91 ctx=4 rows=4 rel_max=2.427e-03 rel_mean=1.643e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=91 ctx=4 rows=4 rel_max=1.900e-03 rel_mean=1.651e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=91 ctx=4 rows=4 rel_max=2.633e-03 rel_mean=1.758e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=91 ctx=4 rows=4 rel_max=2.371e-03 rel_mean=1.714e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP0 pid=931) Capturing CUDA graphs (FULL):  81%|████████▏ | 44/54 [00:19<00:03,  3.20it/s]P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=93 ctx=4 rows=4 rel_max=3.166e-03 rel_mean=1.866e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=93 ctx=4 rows=4 rel_max=2.218e-03 rel_mean=1.642e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=93 ctx=4 rows=4 rel_max=2.492e-03 rel_mean=1.728e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=93 ctx=4 rows=4 rel_max=2.243e-03 rel_mean=1.674e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=93 ctx=4 rows=4 rel_max=2.347e-03 rel_mean=1.738e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=93 ctx=4 rows=4 rel_max=2.920e-03 rel_mean=1.661e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=93 ctx=4 rows=4 rel_max=2.595e-03 rel_mean=1.688e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=93 ctx=4 rows=4 rel_max=3.028e-03 rel_mean=1.786e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) Capturing CUDA graphs (FULL):  83%|████████▎ | 45/54 [00:20<00:02,  3.26it/s](Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=95 ctx=4 rows=4 rel_max=1.954e-03 rel_mean=1.609e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=95 ctx=4 rows=4 rel_max=3.185e-03 rel_mean=1.670e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=95 ctx=4 rows=4 rel_max=3.701e-03 rel_mean=1.791e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=95 ctx=4 rows=4 rel_max=1.984e-03 rel_mean=1.720e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=95 ctx=4 rows=4 rel_max=2.073e-03 rel_mean=1.615e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=95 ctx=4 rows=4 rel_max=2.750e-03 rel_mean=1.694e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=95 ctx=4 rows=4 rel_max=2.493e-03 rel_mean=1.759e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=95 ctx=4 rows=4 rel_max=2.903e-03 rel_mean=1.751e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP0 pid=931) Capturing CUDA graphs (FULL):  85%|████████▌ | 46/54 [00:20<00:02,  3.09it/s](Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=97 ctx=4 rows=4 rel_max=2.679e-03 rel_mean=1.585e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=97 ctx=4 rows=4 rel_max=3.038e-03 rel_mean=1.712e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=97 ctx=4 rows=4 rel_max=2.407e-03 rel_mean=1.621e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=97 ctx=4 rows=4 rel_max=2.642e-03 rel_mean=1.675e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=97 ctx=4 rows=4 rel_max=2.684e-03 rel_mean=1.720e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=97 ctx=4 rows=4 rel_max=2.667e-03 rel_mean=1.754e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=97 ctx=4 rows=4 rel_max=3.312e-03 rel_mean=1.674e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=97 ctx=4 rows=4 rel_max=2.095e-03 rel_mean=1.691e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) Capturing CUDA graphs (FULL):  87%|████████▋ | 47/54 [00:20<00:02,  3.26it/s]P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=99 ctx=4 rows=4 rel_max=3.122e-03 rel_mean=1.699e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=99 ctx=4 rows=4 rel_max=2.566e-03 rel_mean=1.690e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=99 ctx=4 rows=4 rel_max=2.760e-03 rel_mean=1.762e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=99 ctx=4 rows=4 rel_max=2.220e-03 rel_mean=1.647e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=99 ctx=4 rows=4 rel_max=3.038e-03 rel_mean=1.781e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=99 ctx=4 rows=4 rel_max=2.659e-03 rel_mean=1.683e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=99 ctx=4 rows=4 rel_max=3.226e-03 rel_mean=1.657e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=99 ctx=4 rows=4 rel_max=3.425e-03 rel_mean=1.890e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) Capturing CUDA graphs (FULL):  89%|████████▉ | 48/54 [00:21<00:01,  3.25it/s]P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=101 ctx=4 rows=4 rel_max=2.489e-03 rel_mean=1.727e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=101 ctx=4 rows=4 rel_max=2.695e-03 rel_mean=1.640e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=101 ctx=4 rows=4 rel_max=3.926e-03 rel_mean=1.777e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=101 ctx=4 rows=4 rel_max=2.117e-03 rel_mean=1.621e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=101 ctx=4 rows=4 rel_max=2.213e-03 rel_mean=1.644e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=101 ctx=4 rows=4 rel_max=1.929e-03 rel_mean=1.640e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=101 ctx=4 rows=4 rel_max=2.513e-03 rel_mean=1.613e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=101 ctx=4 rows=4 rel_max=2.181e-03 rel_mean=1.675e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) Capturing CUDA graphs (FULL):  91%|█████████ | 49/54 [00:21<00:01,  3.38it/s]P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=103 ctx=4 rows=4 rel_max=2.558e-03 rel_mean=1.715e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=103 ctx=4 rows=4 rel_max=2.309e-03 rel_mean=1.614e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=103 ctx=4 rows=4 rel_max=2.499e-03 rel_mean=1.706e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=103 ctx=4 rows=4 rel_max=2.741e-03 rel_mean=1.677e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=103 ctx=4 rows=4 rel_max=2.919e-03 rel_mean=1.802e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=103 ctx=4 rows=4 rel_max=2.104e-03 rel_mean=1.721e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=103 ctx=4 rows=4 rel_max=3.271e-03 rel_mean=1.674e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=103 ctx=4 rows=4 rel_max=2.691e-03 rel_mean=1.753e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) Capturing CUDA graphs (FULL):  93%|█████████▎| 50/54 [00:21<00:01,  3.51it/s]P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=105 ctx=4 rows=4 rel_max=2.240e-03 rel_mean=1.650e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=105 ctx=4 rows=4 rel_max=2.203e-03 rel_mean=1.655e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=105 ctx=4 rows=4 rel_max=2.179e-03 rel_mean=1.705e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=105 ctx=4 rows=4 rel_max=2.142e-03 rel_mean=1.725e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=105 ctx=4 rows=4 rel_max=2.651e-03 rel_mean=1.747e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=105 ctx=4 rows=4 rel_max=2.361e-03 rel_mean=1.674e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=105 ctx=4 rows=4 rel_max=2.925e-03 rel_mean=1.691e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=105 ctx=4 rows=4 rel_max=2.888e-03 rel_mean=1.747e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) Capturing CUDA graphs (FULL):  94%|█████████▍| 51/54 [00:22<00:00,  3.46it/s](Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=107 ctx=4 rows=4 rel_max=2.654e-03 rel_mean=1.666e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=107 ctx=4 rows=4 rel_max=2.123e-03 rel_mean=1.694e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=107 ctx=4 rows=4 rel_max=3.055e-03 rel_mean=1.858e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=107 ctx=4 rows=4 rel_max=2.597e-03 rel_mean=1.678e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=107 ctx=4 rows=4 rel_max=4.447e-03 rel_mean=1.812e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=107 ctx=4 rows=4 rel_max=2.418e-03 rel_mean=1.750e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=107 ctx=4 rows=4 rel_max=2.461e-03 rel_mean=1.757e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=107 ctx=4 rows=4 rel_max=2.163e-03 rel_mean=1.671e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP0 pid=931) Capturing CUDA graphs (FULL):  96%|█████████▋| 52/54 [00:22<00:00,  3.62it/s]P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=109 ctx=4 rows=4 rel_max=3.532e-03 rel_mean=1.783e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=109 ctx=4 rows=4 rel_max=2.480e-03 rel_mean=1.649e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=109 ctx=4 rows=4 rel_max=2.728e-03 rel_mean=1.769e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=109 ctx=4 rows=4 rel_max=2.616e-03 rel_mean=1.716e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=109 ctx=4 rows=4 rel_max=3.514e-03 rel_mean=1.647e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=109 ctx=4 rows=4 rel_max=3.708e-03 rel_mean=1.738e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=109 ctx=4 rows=4 rel_max=2.075e-03 rel_mean=1.682e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=109 ctx=4 rows=4 rel_max=3.493e-03 rel_mean=1.792e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) Capturing CUDA graphs (FULL):  98%|█████████▊| 53/54 [00:22<00:00,  3.75it/s](Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=111 ctx=4 rows=4 rel_max=2.231e-03 rel_mean=1.651e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=111 ctx=4 rows=4 rel_max=3.382e-03 rel_mean=1.709e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=111 ctx=4 rows=4 rel_max=3.210e-03 rel_mean=1.729e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=111 ctx=4 rows=4 rel_max=2.006e-03 rel_mean=1.624e-03 ratio_min=1.000 ratio_max=1.000 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=111 ctx=4 rows=4 rel_max=2.946e-03 rel_mean=1.766e-03 ratio_min=1.000 ratio_max=1.001 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=111 ctx=4 rows=4 rel_max=3.237e-03 rel_mean=1.716e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=111 ctx=4 rows=4 rel_max=2.887e-03 rel_mean=1.788e-03 ratio_min=0.999 ratio_max=1.000 rw_total=6
+(Worker_TP0 pid=931) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=111 ctx=4 rows=4 rel_max=2.554e-03 rel_mean=1.712e-03 ratio_min=0.999 ratio_max=1.001 rw_total=6
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP0 pid=931) Capturing prefill CUDA graphs (FULL):   0%|          | 0/54 [00:00<?, ?it/s](Worker_TP1 pid=1031) P619T CANARY layer=mtp.layers.0.self_attn.attn step=5 ctx=4 rows=4 rel_max=3.428e-03 rel_mean=1.703e-03 ratio_min=1.000 ratio_max=1.002 rw_total=134
+P619T CANARY layer=mtp.layers.0.self_attn.attn step=5 ctx=4 rows=4 rel_max=5.236e-03 rel_mean=1.815e-03 ratio_min=0.999 ratio_max=1.000 rw_total=134
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) Capturing prefill CUDA graphs (FULL):   2%|▏         | 1/54 [00:00<00:08,  6.18it/s]P619T CANARY layer=mtp.layers.0.self_attn.attn step=7 ctx=4 rows=4 rel_max=1.863e-03 rel_mean=1.305e-03 ratio_min=1.000 ratio_max=1.000 rw_total=134
+(Worker_TP1 pid=1031) P619T CANARY layer=mtp.layers.0.self_attn.attn step=7 ctx=4 rows=4 rel_max=3.441e-03 rel_mean=1.743e-03 ratio_min=0.999 ratio_max=1.001 rw_total=134
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY layer=mtp.layers.0.self_attn.attn step=9 ctx=4 rows=4 rel_max=2.504e-03 rel_mean=1.638e-03 ratio_min=1.000 ratio_max=1.000 rw_total=134
+(Worker_TP1 pid=1031) P619T CANARY layer=mtp.layers.0.self_attn.attn step=9 ctx=4 rows=4 rel_max=3.051e-03 rel_mean=1.562e-03 ratio_min=0.999 ratio_max=1.000 rw_total=134
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) Capturing prefill CUDA graphs (FULL):   6%|▌         | 3/54 [00:00<00:04, 11.39it/s]P619T CANARY layer=mtp.layers.0.self_attn.attn step=11 ctx=4 rows=4 rel_max=1.794e-03 rel_mean=1.398e-03 ratio_min=1.000 ratio_max=1.001 rw_total=134
+(Worker_TP1 pid=1031) P619T CANARY layer=mtp.layers.0.self_attn.attn step=11 ctx=4 rows=4 rel_max=4.172e-03 rel_mean=1.582e-03 ratio_min=1.000 ratio_max=1.001 rw_total=134
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY layer=mtp.layers.0.self_attn.attn step=13 ctx=4 rows=4 rel_max=2.091e-03 rel_mean=1.485e-03 ratio_min=1.000 ratio_max=1.000 rw_total=134
+(Worker_TP1 pid=1031) P619T CANARY layer=mtp.layers.0.self_attn.attn step=13 ctx=4 rows=4 rel_max=3.419e-03 rel_mean=1.589e-03 ratio_min=1.000 ratio_max=1.001 rw_total=134
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY layer=mtp.layers.0.self_attn.attn step=15 ctx=4 rows=4 rel_max=3.529e-03 rel_mean=1.552e-03 ratio_min=0.999 ratio_max=1.000 rw_total=134
+(Worker_TP1 pid=1031) P619T CANARY layer=mtp.layers.0.self_attn.attn step=15 ctx=4 rows=4 rel_max=3.637e-03 rel_mean=1.480e-03 ratio_min=0.999 ratio_max=1.001 rw_total=134
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP0 pid=931) Capturing prefill CUDA graphs (FULL):  11%|█         | 6/54 [00:00<00:03, 15.31it/s]P619T CANARY layer=mtp.layers.0.self_attn.attn step=17 ctx=4 rows=4 rel_max=1.964e-03 rel_mean=1.437e-03 ratio_min=1.000 ratio_max=1.000 rw_total=134
+(Worker_TP1 pid=1031) P619T CANARY layer=mtp.layers.0.self_attn.attn step=17 ctx=4 rows=4 rel_max=2.432e-03 rel_mean=1.490e-03 ratio_min=0.999 ratio_max=1.001 rw_total=134
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY layer=mtp.layers.0.self_attn.attn step=19 ctx=4 rows=4 rel_max=3.253e-03 rel_mean=1.577e-03 ratio_min=0.999 ratio_max=1.000 rw_total=134
+(Worker_TP1 pid=1031) P619T CANARY layer=mtp.layers.0.self_attn.attn step=19 ctx=4 rows=4 rel_max=2.330e-03 rel_mean=1.299e-03 ratio_min=0.999 ratio_max=1.000 rw_total=134
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY layer=mtp.layers.0.self_attn.attn step=21 ctx=4 rows=4 rel_max=2.375e-03 rel_mean=1.467e-03 ratio_min=1.000 ratio_max=1.001 rw_total=134
+(Worker_TP0 pid=931) P619T CANARY layer=mtp.layers.0.self_attn.attn step=21 ctx=4 rows=4 rel_max=2.038e-03 rel_mean=1.418e-03 ratio_min=1.000 ratio_max=1.000 rw_total=134
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) Capturing prefill CUDA graphs (FULL):  17%|█▋        | 9/54 [00:00<00:02, 17.65it/s]P619T CANARY layer=mtp.layers.0.self_attn.attn step=23 ctx=4 rows=4 rel_max=1.704e-03 rel_mean=1.395e-03 ratio_min=1.000 ratio_max=1.000 rw_total=134
+(Worker_TP1 pid=1031) P619T CANARY layer=mtp.layers.0.self_attn.attn step=23 ctx=4 rows=4 rel_max=2.767e-03 rel_mean=1.456e-03 ratio_min=0.999 ratio_max=1.001 rw_total=134
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY layer=mtp.layers.0.self_attn.attn step=25 ctx=4 rows=4 rel_max=2.062e-03 rel_mean=1.522e-03 ratio_min=1.000 ratio_max=1.000 rw_total=134
+(Worker_TP1 pid=1031) P619T CANARY layer=mtp.layers.0.self_attn.attn step=25 ctx=4 rows=4 rel_max=2.623e-03 rel_mean=1.434e-03 ratio_min=0.999 ratio_max=1.000 rw_total=134
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY layer=mtp.layers.0.self_attn.attn step=27 ctx=4 rows=4 rel_max=1.767e-03 rel_mean=1.366e-03 ratio_min=1.000 ratio_max=1.000 rw_total=134
+(Worker_TP1 pid=1031) P619T CANARY layer=mtp.layers.0.self_attn.attn step=27 ctx=4 rows=4 rel_max=2.823e-03 rel_mean=1.425e-03 ratio_min=0.999 ratio_max=1.001 rw_total=134
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP0 pid=931) Capturing prefill CUDA graphs (FULL):  22%|██▏       | 12/54 [00:00<00:02, 19.32it/s](Worker_TP1 pid=1031) P619T CANARY layer=mtp.layers.0.self_attn.attn step=29 ctx=4 rows=4 rel_max=2.239e-03 rel_mean=1.339e-03 ratio_min=1.000 ratio_max=1.001 rw_total=134
+P619T CANARY layer=mtp.layers.0.self_attn.attn step=29 ctx=4 rows=4 rel_max=2.074e-03 rel_mean=1.399e-03 ratio_min=0.999 ratio_max=1.000 rw_total=134
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY layer=mtp.layers.0.self_attn.attn step=31 ctx=4 rows=4 rel_max=4.572e-03 rel_mean=1.924e-03 ratio_min=1.000 ratio_max=1.001 rw_total=134
+(Worker_TP0 pid=931) P619T CANARY layer=mtp.layers.0.self_attn.attn step=31 ctx=4 rows=4 rel_max=1.898e-03 rel_mean=1.463e-03 ratio_min=0.999 ratio_max=1.000 rw_total=134
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP0 pid=931) Capturing prefill CUDA graphs (FULL):  26%|██▌       | 14/54 [00:01<00:04,  9.14it/s]P619T CANARY layer=mtp.layers.0.self_attn.attn step=33 ctx=4 rows=4 rel_max=1.870e-03 rel_mean=1.497e-03 ratio_min=1.000 ratio_max=1.000 rw_total=134
+(Worker_TP1 pid=1031) P619T CANARY layer=mtp.layers.0.self_attn.attn step=33 ctx=4 rows=4 rel_max=2.000e-03 rel_mean=1.351e-03 ratio_min=1.000 ratio_max=1.000 rw_total=134
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY layer=mtp.layers.0.self_attn.attn step=35 ctx=4 rows=4 rel_max=2.821e-03 rel_mean=1.627e-03 ratio_min=1.000 ratio_max=1.001 rw_total=134
+(Worker_TP0 pid=931) P619T CANARY layer=mtp.layers.0.self_attn.attn step=35 ctx=4 rows=4 rel_max=1.957e-03 rel_mean=1.506e-03 ratio_min=1.000 ratio_max=1.000 rw_total=134
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY layer=mtp.layers.0.self_attn.attn step=37 ctx=4 rows=4 rel_max=3.306e-03 rel_mean=1.551e-03 ratio_min=0.999 ratio_max=1.000 rw_total=134
+(Worker_TP0 pid=931) P619T CANARY layer=mtp.layers.0.self_attn.attn step=37 ctx=4 rows=4 rel_max=1.840e-03 rel_mean=1.399e-03 ratio_min=1.000 ratio_max=1.000 rw_total=134
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP0 pid=931) Capturing prefill CUDA graphs (FULL):  31%|███▏      | 17/54 [00:01<00:03, 11.93it/s](Worker_TP1 pid=1031) P619T CANARY layer=mtp.layers.0.self_attn.attn step=39 ctx=4 rows=4 rel_max=2.542e-03 rel_mean=1.391e-03 ratio_min=1.000 ratio_max=1.000 rw_total=134
+P619T CANARY layer=mtp.layers.0.self_attn.attn step=39 ctx=4 rows=4 rel_max=2.231e-03 rel_mean=1.541e-03 ratio_min=0.999 ratio_max=1.000 rw_total=134
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY layer=mtp.layers.0.self_attn.attn step=41 ctx=4 rows=4 rel_max=2.499e-03 rel_mean=1.393e-03 ratio_min=1.000 ratio_max=1.001 rw_total=134
+(Worker_TP0 pid=931) P619T CANARY layer=mtp.layers.0.self_attn.attn step=41 ctx=4 rows=4 rel_max=1.801e-03 rel_mean=1.397e-03 ratio_min=1.000 ratio_max=1.000 rw_total=134
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY layer=mtp.layers.0.self_attn.attn step=43 ctx=4 rows=4 rel_max=4.274e-03 rel_mean=1.814e-03 ratio_min=0.999 ratio_max=1.001 rw_total=134
+(Worker_TP0 pid=931) P619T CANARY layer=mtp.layers.0.self_attn.attn step=43 ctx=4 rows=4 rel_max=1.785e-03 rel_mean=1.404e-03 ratio_min=0.999 ratio_max=1.000 rw_total=134
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP0 pid=931) Capturing prefill CUDA graphs (FULL):  37%|███▋      | 20/54 [00:01<00:02, 14.70it/s](Worker_TP1 pid=1031) P619T CANARY layer=mtp.layers.0.self_attn.attn step=45 ctx=4 rows=4 rel_max=2.730e-03 rel_mean=1.408e-03 ratio_min=1.000 ratio_max=1.001 rw_total=134
+P619T CANARY layer=mtp.layers.0.self_attn.attn step=45 ctx=4 rows=4 rel_max=1.895e-03 rel_mean=1.497e-03 ratio_min=1.000 ratio_max=1.001 rw_total=134
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY layer=mtp.layers.0.self_attn.attn step=47 ctx=4 rows=4 rel_max=3.556e-03 rel_mean=1.601e-03 ratio_min=0.999 ratio_max=1.001 rw_total=134
+(Worker_TP0 pid=931) P619T CANARY layer=mtp.layers.0.self_attn.attn step=47 ctx=4 rows=4 rel_max=1.920e-03 rel_mean=1.433e-03 ratio_min=1.000 ratio_max=1.001 rw_total=134
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY layer=mtp.layers.0.self_attn.attn step=49 ctx=4 rows=4 rel_max=1.929e-03 rel_mean=1.594e-03 ratio_min=1.000 ratio_max=1.001 rw_total=134
+(Worker_TP1 pid=1031) P619T CANARY layer=mtp.layers.0.self_attn.attn step=49 ctx=4 rows=4 rel_max=4.256e-03 rel_mean=1.726e-03 ratio_min=1.000 ratio_max=1.001 rw_total=134
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP0 pid=931) Capturing prefill CUDA graphs (FULL):  43%|████▎     | 23/54 [00:01<00:01, 16.17it/s]P619T CANARY layer=mtp.layers.0.self_attn.attn step=51 ctx=4 rows=4 rel_max=1.826e-03 rel_mean=1.418e-03 ratio_min=1.000 ratio_max=1.000 rw_total=134
+(Worker_TP1 pid=1031) P619T CANARY layer=mtp.layers.0.self_attn.attn step=51 ctx=4 rows=4 rel_max=2.282e-03 rel_mean=1.461e-03 ratio_min=0.999 ratio_max=1.001 rw_total=134
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY layer=mtp.layers.0.self_attn.attn step=53 ctx=4 rows=4 rel_max=1.804e-03 rel_mean=1.363e-03 ratio_min=1.000 ratio_max=1.000 rw_total=134
+(Worker_TP1 pid=1031) P619T CANARY layer=mtp.layers.0.self_attn.attn step=53 ctx=4 rows=4 rel_max=2.947e-03 rel_mean=1.454e-03 ratio_min=0.999 ratio_max=1.000 rw_total=134
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY layer=mtp.layers.0.self_attn.attn step=55 ctx=4 rows=4 rel_max=1.733e-03 rel_mean=1.311e-03 ratio_min=1.000 ratio_max=1.000 rw_total=134
+(Worker_TP1 pid=1031) P619T CANARY layer=mtp.layers.0.self_attn.attn step=55 ctx=4 rows=4 rel_max=4.022e-03 rel_mean=1.670e-03 ratio_min=1.000 ratio_max=1.001 rw_total=134
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) Capturing prefill CUDA graphs (FULL):  48%|████▊     | 26/54 [00:01<00:01, 17.85it/s]P619T CANARY layer=mtp.layers.0.self_attn.attn step=57 ctx=4 rows=4 rel_max=1.866e-03 rel_mean=1.348e-03 ratio_min=1.000 ratio_max=1.000 rw_total=134
+(Worker_TP1 pid=1031) P619T CANARY layer=mtp.layers.0.self_attn.attn step=57 ctx=4 rows=4 rel_max=3.071e-03 rel_mean=1.471e-03 ratio_min=1.000 ratio_max=1.001 rw_total=134
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY layer=mtp.layers.0.self_attn.attn step=59 ctx=4 rows=4 rel_max=1.843e-03 rel_mean=1.379e-03 ratio_min=0.999 ratio_max=1.000 rw_total=134
+(Worker_TP1 pid=1031) P619T CANARY layer=mtp.layers.0.self_attn.attn step=59 ctx=4 rows=4 rel_max=5.225e-03 rel_mean=1.915e-03 ratio_min=1.000 ratio_max=1.002 rw_total=134
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY layer=mtp.layers.0.self_attn.attn step=61 ctx=4 rows=4 rel_max=1.874e-03 rel_mean=1.412e-03 ratio_min=1.000 ratio_max=1.000 rw_total=134
+(Worker_TP1 pid=1031) P619T CANARY layer=mtp.layers.0.self_attn.attn step=61 ctx=4 rows=4 rel_max=4.279e-03 rel_mean=1.594e-03 ratio_min=0.998 ratio_max=1.000 rw_total=134
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) Capturing prefill CUDA graphs (FULL):  54%|█████▎    | 29/54 [00:01<00:01, 18.57it/s]P619T CANARY layer=mtp.layers.0.self_attn.attn step=63 ctx=4 rows=4 rel_max=1.886e-03 rel_mean=1.450e-03 ratio_min=1.000 ratio_max=1.000 rw_total=134
+(Worker_TP1 pid=1031) P619T CANARY layer=mtp.layers.0.self_attn.attn step=63 ctx=4 rows=4 rel_max=2.771e-03 rel_mean=1.513e-03 ratio_min=0.999 ratio_max=1.001 rw_total=134
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY layer=mtp.layers.0.self_attn.attn step=65 ctx=4 rows=4 rel_max=1.700e-03 rel_mean=1.355e-03 ratio_min=1.000 ratio_max=1.000 rw_total=134
+(Worker_TP1 pid=1031) P619T CANARY layer=mtp.layers.0.self_attn.attn step=65 ctx=4 rows=4 rel_max=4.655e-03 rel_mean=1.630e-03 ratio_min=0.999 ratio_max=1.001 rw_total=134
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY layer=mtp.layers.0.self_attn.attn step=67 ctx=4 rows=4 rel_max=1.820e-03 rel_mean=1.330e-03 ratio_min=1.000 ratio_max=1.000 rw_total=134
+(Worker_TP1 pid=1031) P619T CANARY layer=mtp.layers.0.self_attn.attn step=67 ctx=4 rows=4 rel_max=5.453e-03 rel_mean=1.512e-03 ratio_min=0.999 ratio_max=1.000 rw_total=134
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP0 pid=931) Capturing prefill CUDA graphs (FULL):  59%|█████▉    | 32/54 [00:02<00:01, 19.36it/s](Worker_TP1 pid=1031) P619T CANARY layer=mtp.layers.0.self_attn.attn step=69 ctx=4 rows=4 rel_max=2.652e-03 rel_mean=1.636e-03 ratio_min=0.999 ratio_max=1.001 rw_total=134
+P619T CANARY layer=mtp.layers.0.self_attn.attn step=69 ctx=4 rows=4 rel_max=1.831e-03 rel_mean=1.359e-03 ratio_min=0.999 ratio_max=1.000 rw_total=134
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY layer=mtp.layers.0.self_attn.attn step=71 ctx=4 rows=4 rel_max=5.568e-03 rel_mean=2.101e-03 ratio_min=1.000 ratio_max=1.002 rw_total=134
+(Worker_TP0 pid=931) P619T CANARY layer=mtp.layers.0.self_attn.attn step=71 ctx=4 rows=4 rel_max=1.721e-03 rel_mean=1.401e-03 ratio_min=1.000 ratio_max=1.000 rw_total=134
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY layer=mtp.layers.0.self_attn.attn step=73 ctx=4 rows=4 rel_max=1.803e-03 rel_mean=1.354e-03 ratio_min=1.000 ratio_max=1.000 rw_total=134
+(Worker_TP1 pid=1031) P619T CANARY layer=mtp.layers.0.self_attn.attn step=73 ctx=4 rows=4 rel_max=3.729e-03 rel_mean=1.794e-03 ratio_min=0.999 ratio_max=1.000 rw_total=134
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP0 pid=931) Capturing prefill CUDA graphs (FULL):  65%|██████▍   | 35/54 [00:02<00:00, 20.34it/s]P619T CANARY layer=mtp.layers.0.self_attn.attn step=75 ctx=4 rows=4 rel_max=1.730e-03 rel_mean=1.412e-03 ratio_min=1.000 ratio_max=1.000 rw_total=134
+(Worker_TP1 pid=1031) P619T CANARY layer=mtp.layers.0.self_attn.attn step=75 ctx=4 rows=4 rel_max=4.296e-03 rel_mean=1.684e-03 ratio_min=0.999 ratio_max=1.000 rw_total=134
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY layer=mtp.layers.0.self_attn.attn step=77 ctx=4 rows=4 rel_max=2.013e-03 rel_mean=1.405e-03 ratio_min=1.000 ratio_max=1.000 rw_total=134
+(Worker_TP1 pid=1031) P619T CANARY layer=mtp.layers.0.self_attn.attn step=77 ctx=4 rows=4 rel_max=3.228e-03 rel_mean=1.559e-03 ratio_min=0.999 ratio_max=1.000 rw_total=134
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY layer=mtp.layers.0.self_attn.attn step=79 ctx=4 rows=4 rel_max=1.807e-03 rel_mean=1.431e-03 ratio_min=1.000 ratio_max=1.000 rw_total=134
+(Worker_TP1 pid=1031) P619T CANARY layer=mtp.layers.0.self_attn.attn step=79 ctx=4 rows=4 rel_max=2.976e-03 rel_mean=1.465e-03 ratio_min=0.999 ratio_max=1.001 rw_total=134
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) Capturing prefill CUDA graphs (FULL):  70%|███████   | 38/54 [00:02<00:00, 21.87it/s]P619T CANARY layer=mtp.layers.0.self_attn.attn step=81 ctx=4 rows=4 rel_max=1.738e-03 rel_mean=1.336e-03 ratio_min=1.000 ratio_max=1.000 rw_total=134
+(Worker_TP1 pid=1031) P619T CANARY layer=mtp.layers.0.self_attn.attn step=81 ctx=4 rows=4 rel_max=3.197e-03 rel_mean=1.598e-03 ratio_min=0.999 ratio_max=1.000 rw_total=134
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY layer=mtp.layers.0.self_attn.attn step=83 ctx=4 rows=4 rel_max=1.713e-03 rel_mean=1.380e-03 ratio_min=1.000 ratio_max=1.000 rw_total=134
+(Worker_TP1 pid=1031) P619T CANARY layer=mtp.layers.0.self_attn.attn step=83 ctx=4 rows=4 rel_max=3.165e-03 rel_mean=1.604e-03 ratio_min=1.000 ratio_max=1.001 rw_total=134
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY layer=mtp.layers.0.self_attn.attn step=85 ctx=4 rows=4 rel_max=1.737e-03 rel_mean=1.415e-03 ratio_min=1.000 ratio_max=1.000 rw_total=134
+(Worker_TP1 pid=1031) P619T CANARY layer=mtp.layers.0.self_attn.attn step=85 ctx=4 rows=4 rel_max=2.509e-03 rel_mean=1.445e-03 ratio_min=0.999 ratio_max=1.000 rw_total=134
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP0 pid=931) Capturing prefill CUDA graphs (FULL):  76%|███████▌  | 41/54 [00:02<00:00, 23.82it/s]P619T CANARY layer=mtp.layers.0.self_attn.attn step=87 ctx=4 rows=4 rel_max=1.961e-03 rel_mean=1.489e-03 ratio_min=1.000 ratio_max=1.000 rw_total=134
+(Worker_TP1 pid=1031) P619T CANARY layer=mtp.layers.0.self_attn.attn step=87 ctx=4 rows=4 rel_max=3.211e-03 rel_mean=1.619e-03 ratio_min=1.000 ratio_max=1.000 rw_total=134
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY layer=mtp.layers.0.self_attn.attn step=89 ctx=4 rows=4 rel_max=1.687e-03 rel_mean=1.398e-03 ratio_min=1.000 ratio_max=1.000 rw_total=134
+(Worker_TP1 pid=1031) P619T CANARY layer=mtp.layers.0.self_attn.attn step=89 ctx=4 rows=4 rel_max=4.808e-03 rel_mean=1.542e-03 ratio_min=0.999 ratio_max=1.001 rw_total=134
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY layer=mtp.layers.0.self_attn.attn step=91 ctx=4 rows=4 rel_max=1.854e-03 rel_mean=1.421e-03 ratio_min=1.000 ratio_max=1.000 rw_total=134
+(Worker_TP1 pid=1031) P619T CANARY layer=mtp.layers.0.self_attn.attn step=91 ctx=4 rows=4 rel_max=3.832e-03 rel_mean=1.662e-03 ratio_min=0.999 ratio_max=1.000 rw_total=134
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY layer=mtp.layers.0.self_attn.attn step=93 ctx=4 rows=4 rel_max=1.731e-03 rel_mean=1.413e-03 ratio_min=1.000 ratio_max=1.000 rw_total=134
+(Worker_TP1 pid=1031) P619T CANARY layer=mtp.layers.0.self_attn.attn step=93 ctx=4 rows=4 rel_max=4.501e-03 rel_mean=1.797e-03 ratio_min=1.000 ratio_max=1.001 rw_total=134
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) Capturing prefill CUDA graphs (FULL):  83%|████████▎ | 45/54 [00:02<00:00, 26.48it/s]P619T CANARY layer=mtp.layers.0.self_attn.attn step=95 ctx=4 rows=4 rel_max=1.759e-03 rel_mean=1.403e-03 ratio_min=1.000 ratio_max=1.000 rw_total=134
+(Worker_TP1 pid=1031) P619T CANARY layer=mtp.layers.0.self_attn.attn step=95 ctx=4 rows=4 rel_max=4.794e-03 rel_mean=1.670e-03 ratio_min=0.999 ratio_max=1.000 rw_total=134
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY layer=mtp.layers.0.self_attn.attn step=97 ctx=4 rows=4 rel_max=1.664e-03 rel_mean=1.367e-03 ratio_min=1.000 ratio_max=1.000 rw_total=134
+(Worker_TP1 pid=1031) P619T CANARY layer=mtp.layers.0.self_attn.attn step=97 ctx=4 rows=4 rel_max=3.690e-03 rel_mean=1.625e-03 ratio_min=0.999 ratio_max=1.000 rw_total=134
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY layer=mtp.layers.0.self_attn.attn step=99 ctx=4 rows=4 rel_max=1.765e-03 rel_mean=1.335e-03 ratio_min=1.000 ratio_max=1.000 rw_total=134
+(Worker_TP1 pid=1031) P619T CANARY layer=mtp.layers.0.self_attn.attn step=99 ctx=4 rows=4 rel_max=2.245e-03 rel_mean=1.524e-03 ratio_min=1.000 ratio_max=1.000 rw_total=134
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY layer=mtp.layers.0.self_attn.attn step=101 ctx=4 rows=4 rel_max=1.897e-03 rel_mean=1.415e-03 ratio_min=1.000 ratio_max=1.000 rw_total=134
+(Worker_TP1 pid=1031) P619T CANARY layer=mtp.layers.0.self_attn.attn step=101 ctx=4 rows=4 rel_max=3.881e-03 rel_mean=1.622e-03 ratio_min=0.999 ratio_max=1.001 rw_total=134
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) Capturing prefill CUDA graphs (FULL):  91%|█████████ | 49/54 [00:02<00:00, 29.39it/s]P619T CANARY layer=mtp.layers.0.self_attn.attn step=103 ctx=4 rows=4 rel_max=1.896e-03 rel_mean=1.462e-03 ratio_min=0.999 ratio_max=1.000 rw_total=134
+(Worker_TP1 pid=1031) P619T CANARY layer=mtp.layers.0.self_attn.attn step=103 ctx=4 rows=4 rel_max=2.216e-03 rel_mean=1.470e-03 ratio_min=1.000 ratio_max=1.001 rw_total=134
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY layer=mtp.layers.0.self_attn.attn step=105 ctx=4 rows=4 rel_max=2.466e-03 rel_mean=1.578e-03 ratio_min=0.999 ratio_max=1.000 rw_total=134
+(Worker_TP1 pid=1031) P619T CANARY layer=mtp.layers.0.self_attn.attn step=105 ctx=4 rows=4 rel_max=3.097e-03 rel_mean=1.552e-03 ratio_min=0.999 ratio_max=1.001 rw_total=134
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY layer=mtp.layers.0.self_attn.attn step=107 ctx=4 rows=4 rel_max=2.066e-03 rel_mean=1.461e-03 ratio_min=1.000 ratio_max=1.000 rw_total=134
+(Worker_TP1 pid=1031) P619T CANARY layer=mtp.layers.0.self_attn.attn step=107 ctx=4 rows=4 rel_max=2.087e-03 rel_mean=1.365e-03 ratio_min=0.999 ratio_max=1.001 rw_total=134
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY layer=mtp.layers.0.self_attn.attn step=109 ctx=4 rows=4 rel_max=1.805e-03 rel_mean=1.510e-03 ratio_min=1.000 ratio_max=1.000 rw_total=134
+(Worker_TP1 pid=1031) P619T CANARY layer=mtp.layers.0.self_attn.attn step=109 ctx=4 rows=4 rel_max=3.623e-03 rel_mean=1.620e-03 ratio_min=1.000 ratio_max=1.001 rw_total=134
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error
+(Worker_TP0 pid=931) P619T CANARY layer=mtp.layers.0.self_attn.attn step=111 ctx=4 rows=4 rel_max=2.227e-03 rel_mean=1.489e-03 ratio_min=0.999 ratio_max=1.000 rw_total=134
+(Worker_TP1 pid=1031) P619T CANARY layer=mtp.layers.0.self_attn.attn step=111 ctx=4 rows=4 rel_max=4.400e-03 rel_mean=1.663e-03 ratio_min=0.999 ratio_max=1.001 rw_total=134
+(Worker_TP0 pid=931) P619T CANARY telemetry error
+(Worker_TP1 pid=1031) P619T CANARY telemetry error

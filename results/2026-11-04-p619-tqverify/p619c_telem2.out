@@ -1,0 +1,127 @@
+=================== P619C LEG t2i2 (k8v4 telemetry spec=3) 07:05:08 ===================
+101:    ("vllm.v1.attention.backends.turboquant_attn", "tq_telemetry"),  # p619 test
+SUBSTITUTIONS dtype=1 telem=1 platform=1
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert6 name=arc-test graph=1 spec=3 gmu=0.8 mnbt=8192 seqs=64 xgc=0 port=8000 07:05:53
+HEALTH=OK after ~305s
+(Worker_TP1 pid=1030) P619T telemetry installed (shadow=8192 pos x 4 layers, canary<=300 steps/layer)
+GEN 10.5s finish=stop chars=185 rchars=0 tok=188
+HEAD: '\n\nHello! How can I help you today?\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n'
+TAIL: '\n\nHello! How can I help you today?\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n'
+GEN 14.8s finish=length chars=-1 rchars=0 tok=1200
+HEAD: ''
+TAIL: ''
+GEN 27.5s finish=length chars=-1 rchars=0 tok=900
+HEAD: ''
+TAIL: ''
+== counts ==
+6
+102
+896
+2786
+--- FWD ---
+(Worker_TP0 pid=930) P619T FWD layer=language_model.model.layers.3.self_attn.attn is_prefill=True n_tok=185 n_req=37 qsl=(0, 5, 10, 15, 20, 25, 30, 35, 40) seqs=(5, 5, 5, 5, 5, 5, 5, 5, 5) ndec=0 ndectok=0 mql=5 msl=5
+(Worker_TP1 pid=1030) P619T FWD layer=language_model.model.layers.3.self_attn.attn is_prefill=True n_tok=185 n_req=37 qsl=(0, 5, 10, 15, 20, 25, 30, 35, 40) seqs=(5, 5, 5, 5, 5, 5, 5, 5, 5) ndec=0 ndectok=0 mql=5 msl=5
+(Worker_TP1 pid=1030) P619T FWD layer=mtp.layers.0.self_attn.attn is_prefill=False n_tok=37 n_req=37 qsl=(0, 1, 2, 3, 4, 5, 6, 7, 8) seqs=(6, 6, 6, 6, 6, 6, 6, 6, 6) ndec=37 ndectok=37 mql=1 msl=8
+(Worker_TP0 pid=930) P619T FWD layer=mtp.layers.0.self_attn.attn is_prefill=False n_tok=37 n_req=37 qsl=(0, 1, 2, 3, 4, 5, 6, 7, 8) seqs=(6, 6, 6, 6, 6, 6, 6, 6, 6) ndec=37 ndectok=37 mql=1 msl=8
+(Worker_TP0 pid=930) P619T FWD layer=mtp.layers.0.self_attn.attn is_prefill=False n_tok=37 n_req=37 qsl=(0, 1, 2, 3, 4, 5, 6, 7, 8) seqs=(7, 7, 7, 7, 7, 7, 7, 7, 7) ndec=37 ndectok=37 mql=1 msl=8
+(Worker_TP1 pid=1030) P619T FWD layer=mtp.layers.0.self_attn.attn is_prefill=False n_tok=37 n_req=37 qsl=(0, 1, 2, 3, 4, 5, 6, 7, 8) seqs=(7, 7, 7, 7, 7, 7, 7, 7, 7) ndec=37 ndectok=37 mql=1 msl=8
+--- STORE (head) ---
+(Worker_TP0 pid=930) P619T STORE first: layer=language_model.model.layers.3.self_attn.attn n_tok=185
+(Worker_TP1 pid=1030) P619T STORE first: layer=language_model.model.layers.3.self_attn.attn n_tok=185
+(Worker_TP0 pid=930) P619T STORE first: layer=language_model.model.layers.7.self_attn.attn n_tok=185
+(Worker_TP1 pid=1030) P619T STORE first: layer=language_model.model.layers.7.self_attn.attn n_tok=185
+(Worker_TP0 pid=930) P619T STORE first: layer=language_model.model.layers.11.self_attn.attn n_tok=185
+(Worker_TP1 pid=1030) P619T STORE first: layer=language_model.model.layers.11.self_attn.attn n_tok=185
+(Worker_TP0 pid=930) P619T STORE first: layer=language_model.model.layers.15.self_attn.attn n_tok=185
+(Worker_TP1 pid=1030) P619T STORE first: layer=language_model.model.layers.15.self_attn.attn n_tok=185
+(Worker_TP0 pid=930) P619T STORE first: layer=language_model.model.layers.19.self_attn.attn n_tok=185
+(Worker_TP1 pid=1030) P619T STORE first: layer=language_model.model.layers.19.self_attn.attn n_tok=185
+(Worker_TP0 pid=930) P619T STORE first: layer=language_model.model.layers.23.self_attn.attn n_tok=185
+(Worker_TP1 pid=1030) P619T STORE first: layer=language_model.model.layers.23.self_attn.attn n_tok=185
+(Worker_TP0 pid=930) P619T STORE first: layer=language_model.model.layers.27.self_attn.attn n_tok=185
+(Worker_TP1 pid=1030) P619T STORE first: layer=language_model.model.layers.27.self_attn.attn n_tok=185
+--- CANARY (head/tail) ---
+(Worker_TP0 pid=930) P619T CANARY telemetry error
+(Worker_TP1 pid=1030) P619T CANARY telemetry error
+(Worker_TP0 pid=930) P619T CANARY telemetry error
+(Worker_TP1 pid=1030) P619T CANARY telemetry error
+(Worker_TP0 pid=930) P619T CANARY telemetry error
+(Worker_TP1 pid=1030) P619T CANARY telemetry error
+(Worker_TP0 pid=930) P619T CANARY telemetry error
+(Worker_TP1 pid=1030) P619T CANARY telemetry error
+...
+(Worker_TP0 pid=930) P619T CANARY telemetry error
+(Worker_TP1 pid=1030) P619T CANARY telemetry error
+(Worker_TP0 pid=930) P619T CANARY telemetry error
+(Worker_TP1 pid=1030) P619T CANARY telemetry error
+(Worker_TP0 pid=930) P619T CANARY telemetry error
+(Worker_TP1 pid=1030) P619T CANARY telemetry error
+(Worker_TP0 pid=930) P619T CANARY telemetry error
+(Worker_TP1 pid=1030) P619T CANARY telemetry error
+--- telemetry errors ---
+LEG t2i2 DONE 07:11:47
+=================== P619C LEG t2c2 (k8v4 telemetry spec=0) 07:11:47 ===================
+101:    ("vllm.v1.attention.backends.turboquant_attn", "tq_telemetry"),  # p619 test
+SUBSTITUTIONS dtype=1 telem=1 platform=1
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert6 name=arc-test graph=1 spec=0 gmu=0.8 mnbt=8192 seqs=64 xgc=0 port=8000 07:12:28
+HEALTH=OK after ~255s
+(Worker_TP0 pid=741) P619T telemetry installed (shadow=8192 pos x 4 layers, canary<=300 steps/layer)
+GEN 9.2s finish=stop chars=71 rchars=0 tok=107
+HEAD: '\n\n1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20'
+TAIL: '\n\n1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20'
+GEN 10.1s finish=stop chars=293 rchars=0 tok=340
+HEAD: '\n\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\n14\n15\n16\n17\n18\n19\n20\n21\n22\n23\n24\n25\n26\n27\n28\n29\n30\n31\n32\n33\n34\n35\n36\n37\n38\n39\n40\n41\n42\n43\n44\n45\n46\n47\n48\n49\n50\n51\n52\n53\n54\n55\n56\n57\n58\n59\n60\n61\n62\n63\n64\n65\n66\n67\n68\n69\n'
+TAIL: '4\n35\n36\n37\n38\n39\n40\n41\n42\n43\n44\n45\n46\n47\n48\n49\n50\n51\n52\n53\n54\n55\n56\n57\n58\n59\n60\n61\n62\n63\n64\n65\n66\n67\n68\n69\n70\n71\n72\n73\n74\n75\n76\n77\n78\n79\n80\n81\n82\n83\n84\n85\n86\n87\n88\n89\n90\n91\n92\n93\n94\n95\n96\n97\n98\n99\n100'
+GEN 26.3s finish=length chars=-1 rchars=0 tok=900
+HEAD: ''
+TAIL: ''
+== counts ==
+8
+96
+8
+872
+--- FWD ---
+(Worker_TP0 pid=741) P619T FWD layer=language_model.model.layers.3.self_attn.attn is_prefill=True n_tok=128 n_req=64 qsl=(0, 2, 4, 6, 8, 10, 12, 14, 16) seqs=(2, 2, 2, 2, 2, 2, 2, 2, 2) ndec=0 ndectok=0 mql=2 msl=2
+(Worker_TP1 pid=742) P619T FWD layer=language_model.model.layers.3.self_attn.attn is_prefill=True n_tok=128 n_req=64 qsl=(0, 2, 4, 6, 8, 10, 12, 14, 16) seqs=(2, 2, 2, 2, 2, 2, 2, 2, 2) ndec=0 ndectok=0 mql=2 msl=2
+(Worker_TP0 pid=741) P619T FWD layer=language_model.model.layers.3.self_attn.attn is_prefill=False n_tok=64 n_req=64 qsl=(0, 1, 2, 3, 4, 5, 6, 7, 8) seqs=(3, 3, 3, 3, 3, 3, 3, 3, 3) ndec=64 ndectok=64 mql=1 msl=3
+(Worker_TP1 pid=742) P619T FWD layer=language_model.model.layers.3.self_attn.attn is_prefill=False n_tok=64 n_req=64 qsl=(0, 1, 2, 3, 4, 5, 6, 7, 8) seqs=(3, 3, 3, 3, 3, 3, 3, 3, 3) ndec=64 ndectok=64 mql=1 msl=3
+(Worker_TP0 pid=741) P619T FWD layer=language_model.model.layers.3.self_attn.attn is_prefill=False n_tok=2 n_req=2 qsl=(0, 1, 2) seqs=(4, 4) ndec=2 ndectok=2 mql=1 msl=4
+(Worker_TP1 pid=742) P619T FWD layer=language_model.model.layers.3.self_attn.attn is_prefill=False n_tok=2 n_req=2 qsl=(0, 1, 2) seqs=(4, 4) ndec=2 ndectok=2 mql=1 msl=4
+(Worker_TP0 pid=741) P619T FWD layer=language_model.model.layers.3.self_attn.attn is_prefill=False n_tok=1 n_req=1 qsl=(0, 1) seqs=(5,) ndec=1 ndectok=1 mql=1 msl=5
+(Worker_TP1 pid=742) P619T FWD layer=language_model.model.layers.3.self_attn.attn is_prefill=False n_tok=1 n_req=1 qsl=(0, 1) seqs=(5,) ndec=1 ndectok=1 mql=1 msl=5
+--- STORE (head) ---
+(Worker_TP0 pid=741) P619T STORE first: layer=language_model.model.layers.3.self_attn.attn n_tok=128
+(Worker_TP1 pid=742) P619T STORE first: layer=language_model.model.layers.3.self_attn.attn n_tok=128
+(Worker_TP1 pid=742) P619T STORE first: layer=language_model.model.layers.7.self_attn.attn n_tok=128
+(Worker_TP0 pid=741) P619T STORE first: layer=language_model.model.layers.7.self_attn.attn n_tok=128
+(Worker_TP0 pid=741) P619T STORE first: layer=language_model.model.layers.11.self_attn.attn n_tok=128
+(Worker_TP1 pid=742) P619T STORE first: layer=language_model.model.layers.11.self_attn.attn n_tok=128
+(Worker_TP0 pid=741) P619T STORE first: layer=language_model.model.layers.15.self_attn.attn n_tok=128
+(Worker_TP1 pid=742) P619T STORE first: layer=language_model.model.layers.15.self_attn.attn n_tok=128
+(Worker_TP0 pid=741) P619T STORE first: layer=language_model.model.layers.19.self_attn.attn n_tok=128
+(Worker_TP1 pid=742) P619T STORE first: layer=language_model.model.layers.19.self_attn.attn n_tok=128
+(Worker_TP0 pid=741) P619T STORE first: layer=language_model.model.layers.23.self_attn.attn n_tok=128
+(Worker_TP1 pid=742) P619T STORE first: layer=language_model.model.layers.23.self_attn.attn n_tok=128
+(Worker_TP0 pid=741) P619T STORE first: layer=language_model.model.layers.27.self_attn.attn n_tok=128
+(Worker_TP1 pid=742) P619T STORE first: layer=language_model.model.layers.27.self_attn.attn n_tok=128
+--- CANARY (head/tail) ---
+(Worker_TP0 pid=741) P619T CANARY telemetry error
+(Worker_TP1 pid=742) P619T CANARY telemetry error
+(Worker_TP0 pid=741) P619T CANARY telemetry error
+(Worker_TP1 pid=742) P619T CANARY telemetry error
+(Worker_TP0 pid=741) P619T CANARY telemetry error
+(Worker_TP1 pid=742) P619T CANARY telemetry error
+(Worker_TP0 pid=741) P619T CANARY telemetry error
+(Worker_TP1 pid=742) P619T CANARY telemetry error
+...
+(Worker_TP0 pid=741) P619T CANARY telemetry error
+(Worker_TP1 pid=742) P619T CANARY telemetry error
+(Worker_TP0 pid=741) P619T CANARY telemetry error
+(Worker_TP1 pid=742) P619T CANARY telemetry error
+(Worker_TP0 pid=741) P619T CANARY telemetry error
+(Worker_TP1 pid=742) P619T CANARY telemetry error
+(Worker_TP0 pid=741) P619T CANARY telemetry error
+(Worker_TP1 pid=742) P619T CANARY telemetry error
+--- telemetry errors ---
+LEG t2c2 DONE 07:17:25
+LEGS t2i+t2c COMPLETE 07:17:25

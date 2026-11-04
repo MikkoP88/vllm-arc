@@ -1,0 +1,48 @@
+=================== P619D LEG t7_k3v4 (turboquant_k3v4_nc spec3 GRAPH=1 FIX split) 09:10:42 ===================
+SUBSTITUTIONS dtype=1 mounts=1
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert6 name=arc-test graph=1 spec=3 gmu=0.8 mnbt=8192 seqs=64 xgc=0 port=8000 09:11:27
+HEALTH=OK after ~395s
+(Worker_TP1 pid=1030) P619 tq_spec_fix v4 installed (active=True mode=split): v19b verify-capture forcing + split-row continuation dispatch
+(EngineCore pid=698) INFO 11-04 09:14:08 [kv_cache_utils.py:2395] XPU KV cache size: 843,202 tokens, Maximum concurrency for 262,144 tokens per request: 3.22x
+FLIP_FIRST: stop 9.8s head: '\n\n1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20.'
+[essay] t0_identical=True hashes=['8ccfa3b73aa1', '8ccfa3b73aa1', '8ccfa3b73aa1'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=False prompt_tok=2145 chars=[4165, 4165, 4165]
+[code] t0_identical=True hashes=['df99aacc45be', 'df99aacc45be', 'df99aacc45be'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=5051 chars=[2985, 2985, 2985]
+[multi] t0_identical=True hashes=['9ec8a5001cfd', '9ec8a5001cfd', '9ec8a5001cfd'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=3400 chars=[1044, 1044, 1044]
+[simple] t0_identical=True hashes=['cc082a03dea2', 'cc082a03dea2', 'cc082a03dea2'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=38 chars=[1422, 1422, 1422]
+LONGPROBE t7_k3v4 full: CORRUPTION_SIGNAL
+0
+LEG t7_k3v4 DONE 09:21:22
+=================== P619D LEG t7_q4nc (turboquant_4bit_nc spec3 GRAPH=1 FIX split) 09:21:22 ===================
+SUBSTITUTIONS dtype=1 mounts=1
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert6 name=arc-test graph=1 spec=3 gmu=0.8 mnbt=8192 seqs=64 xgc=0 port=8000 09:22:02
+HEALTH=OK after ~400s
+(Worker_TP1 pid=1030) P619 tq_spec_fix v4 installed (active=True mode=split): v19b verify-capture forcing + split-row continuation dispatch
+(EngineCore pid=698) INFO 11-04 09:24:50 [kv_cache_utils.py:2395] XPU KV cache size: 748,549 tokens, Maximum concurrency for 262,144 tokens per request: 2.86x
+FLIP_FIRST: stop 9.9s head: '\n\n1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20.'
+[essay] t0_identical=False hashes=['56a2e47a4325', '56a2e47a4325', '88ad6b37c7c0'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=False prompt_tok=2145 chars=[4041, 4041, 4114]
+[code] t0_identical=True hashes=['ccef33edf9b1', 'ccef33edf9b1', 'ccef33edf9b1'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=5051 chars=[3064, 3064, 3064]
+[multi] t0_identical=True hashes=['ce38cfd6df8c', 'ce38cfd6df8c', 'ce38cfd6df8c'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=3400 chars=[1000, 1000, 1000]
+[simple] t0_identical=True hashes=['84efc84cc142', '84efc84cc142', '84efc84cc142'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=38 chars=[1510, 1510, 1510]
+LONGPROBE t7_q4nc full: CORRUPTION_SIGNAL
+0
+LEG t7_q4nc DONE 09:31:57
+=================== P619D LEG t7_q3nc (turboquant_3bit_nc spec3 GRAPH=1 FIX split) 09:31:57 ===================
+SUBSTITUTIONS dtype=1 mounts=1
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert6 name=arc-test graph=1 spec=3 gmu=0.8 mnbt=8192 seqs=64 xgc=0 port=8000 09:32:47
+HEALTH=OK after ~390s
+(Worker_TP0 pid=930) P619 tq_spec_fix v4 installed (active=True mode=split): v19b verify-capture forcing + split-row continuation dispatch
+(EngineCore pid=698) INFO 11-04 09:35:28 [kv_cache_utils.py:2395] XPU KV cache size: 940,634 tokens, Maximum concurrency for 262,144 tokens per request: 3.59x
+FLIP_FIRST: stop 10.4s head: '\n\n1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20'
+[essay] t0_identical=False hashes=['53113a1ccdab', '577f01b9eea3', '2e62c62548e7'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=False prompt_tok=2145 chars=[4217, 3997, 4229]
+[code] t0_identical=False hashes=['1fd070bc3601', '070839adb97c', '8b43b7ff01f9'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=False prompt_tok=5051 chars=[3254, 3444, 3104]
+[multi] t0_identical=True hashes=['648c2c186dd0', '648c2c186dd0', '648c2c186dd0'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=3400 chars=[485, 485, 485]
+[simple] t0_identical=True hashes=['e0414695aa10', 'e0414695aa10', 'e0414695aa10'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=38 chars=[1368, 1368, 1368]
+LONGPROBE t7_q3nc full: CORRUPTION_SIGNAL
+0
+LEG t7_q3nc DONE 09:42:34
+=================== P619D LEG t7_fp8 (fp8_e4m3 spec3 GRAPH=1 FIX split) 09:42:34 ===================
+SUBSTITUTIONS dtype=1 mounts=1
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert6 name=arc-test graph=1 spec=3 gmu=0.8 mnbt=8192 seqs=64 xgc=0 port=8000 09:43:24
+HEALTH=OK after ~285s
+(EngineCore pid=698) INFO 11-04 09:46:04 [kv_cache_utils.py:2395] XPU KV cache size: 400,739 tokens, Maximum concurrency for 262,144 tokens per request: 1.53x
+FATAL: fix not installed

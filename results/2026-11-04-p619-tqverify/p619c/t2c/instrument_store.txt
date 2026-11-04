@@ -1,0 +1,40 @@
+(Worker_TP1 pid=733) P619T STORE first: layer=language_model.model.layers.3.self_attn.attn n_tok=128
+(Worker_TP0 pid=732) P619T STORE first: layer=language_model.model.layers.3.self_attn.attn n_tok=128
+(Worker_TP1 pid=733) P619T STORE first: layer=language_model.model.layers.7.self_attn.attn n_tok=128
+(Worker_TP0 pid=732) P619T STORE first: layer=language_model.model.layers.7.self_attn.attn n_tok=128
+(Worker_TP1 pid=733) P619T STORE first: layer=language_model.model.layers.11.self_attn.attn n_tok=128
+(Worker_TP0 pid=732) P619T STORE first: layer=language_model.model.layers.11.self_attn.attn n_tok=128
+(Worker_TP1 pid=733) P619T STORE first: layer=language_model.model.layers.15.self_attn.attn n_tok=128
+(Worker_TP0 pid=732) P619T STORE first: layer=language_model.model.layers.15.self_attn.attn n_tok=128
+(Worker_TP1 pid=733) P619T STORE first: layer=language_model.model.layers.19.self_attn.attn n_tok=128
+(Worker_TP0 pid=732) P619T STORE first: layer=language_model.model.layers.19.self_attn.attn n_tok=128
+(Worker_TP1 pid=733) P619T STORE first: layer=language_model.model.layers.23.self_attn.attn n_tok=128
+(Worker_TP0 pid=732) P619T STORE first: layer=language_model.model.layers.23.self_attn.attn n_tok=128
+(Worker_TP0 pid=732) P619T STORE first: layer=language_model.model.layers.27.self_attn.attn n_tok=128
+(Worker_TP1 pid=733) P619T STORE first: layer=language_model.model.layers.27.self_attn.attn n_tok=128
+(Worker_TP1 pid=733) P619T STORE first: layer=language_model.model.layers.31.self_attn.attn n_tok=128
+(Worker_TP0 pid=732) P619T STORE first: layer=language_model.model.layers.31.self_attn.attn n_tok=128
+(Worker_TP1 pid=733) P619T STORE first: layer=language_model.model.layers.35.self_attn.attn n_tok=128
+(Worker_TP0 pid=732) P619T STORE first: layer=language_model.model.layers.35.self_attn.attn n_tok=128
+(Worker_TP1 pid=733) P619T STORE first: layer=language_model.model.layers.39.self_attn.attn n_tok=128
+(Worker_TP0 pid=732) P619T STORE first: layer=language_model.model.layers.39.self_attn.attn n_tok=128
+(Worker_TP0 pid=732) P619T STORE first: layer=language_model.model.layers.43.self_attn.attn n_tok=128
+(Worker_TP1 pid=733) P619T STORE first: layer=language_model.model.layers.43.self_attn.attn n_tok=128
+(Worker_TP1 pid=733) P619T STORE first: layer=language_model.model.layers.47.self_attn.attn n_tok=128
+(Worker_TP0 pid=732) P619T STORE first: layer=language_model.model.layers.47.self_attn.attn n_tok=128
+(Worker_TP1 pid=733) P619T STORE first: layer=language_model.model.layers.51.self_attn.attn n_tok=128
+(Worker_TP0 pid=732) P619T STORE first: layer=language_model.model.layers.51.self_attn.attn n_tok=128
+(Worker_TP1 pid=733) P619T STORE first: layer=language_model.model.layers.55.self_attn.attn n_tok=128
+(Worker_TP0 pid=732) P619T STORE first: layer=language_model.model.layers.55.self_attn.attn n_tok=128
+(Worker_TP1 pid=733) P619T STORE first: layer=language_model.model.layers.59.self_attn.attn n_tok=128
+(Worker_TP0 pid=732) P619T STORE first: layer=language_model.model.layers.59.self_attn.attn n_tok=128
+(Worker_TP0 pid=732) P619T STORE first: layer=language_model.model.layers.63.self_attn.attn n_tok=128
+(Worker_TP1 pid=733) P619T STORE first: layer=language_model.model.layers.63.self_attn.attn n_tok=128
+(Worker_TP1 pid=733) P619T STORE telemetry error
+(Worker_TP0 pid=732) P619T STORE telemetry error
+(Worker_TP1 pid=733) P619T STORE telemetry error
+(Worker_TP0 pid=732) P619T STORE telemetry error
+(Worker_TP1 pid=733) P619T STORE telemetry error
+(Worker_TP0 pid=732) P619T STORE telemetry error
+(Worker_TP1 pid=733) P619T STORE telemetry error
+(Worker_TP0 pid=732) P619T STORE telemetry error

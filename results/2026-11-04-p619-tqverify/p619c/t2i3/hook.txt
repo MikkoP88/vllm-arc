@@ -1,0 +1,1 @@
+(Worker_TP0 pid=931) P619T telemetry installed (shadow=8192 pos x 4 layers, canary<=300 steps/layer)

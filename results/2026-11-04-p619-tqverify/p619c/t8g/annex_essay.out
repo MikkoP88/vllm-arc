@@ -1,0 +1,14 @@
+== essay t0 x8 (identity face re-characterization) ==
+  round0: c4e1852bd238 chars=4699 finish=length SAME
+  round1: e3b0c44298fc chars=0 finish=length FLIP
+  round2: ec437b86a866 chars=718 finish=length FLIP
+  round3: 0589f4f9b052 chars=869 finish=length FLIP
+  round4: e3b0c44298fc chars=0 finish=length FLIP
+  round5: aed2d6bc3b9a chars=4629 finish=length FLIP
+  round6: e3b0c44298fc chars=0 finish=length FLIP
+  round7: e3b0c44298fc chars=0 finish=length FLIP
+t0: 1/8 identical to round0
+== t1 seed control (seed 7 x3 vs seed 11 x3) ==
+  seed7 : ['ab2d846bc0c6', '9aec5542bc83', 'e50832784f60'] identical=False
+  seed11: ['2a775ac5f816', 'e3b0c44298fc', '8fe00befe716'] identical=False
+  cross-seed differ: True

@@ -1,0 +1,168 @@
+===== essay =====
+{
+ "t0_identical": false,
+ "hashes": [
+  "5b7800e5daf4",
+  "55ea360c5d65",
+  "3754db3277f5"
+ ],
+ "content_hashes": [
+  "179a9e3758fc",
+  "37e3bab78cd8",
+  "6c4dae0b5d16"
+ ],
+ "garble": {
+  "cold": [],
+  "rehit": [],
+  "rehit2": [
+   "JUNK(5%)"
+  ]
+ },
+ "finish": [
+  "stop",
+  "stop",
+  "stop"
+ ],
+ "prompt_tok": 2145,
+ "chars": [
+  53,
+  80,
+  36
+ ],
+ "t1_seed_identical": false,
+ "t1_hashes": [
+  "33f8300c4671",
+  "c4b151a85a16"
+ ],
+ "t1_garble": [],
+ "dt_cold": 4.5
+}
+
+===== code =====
+{
+ "t0_identical": false,
+ "hashes": [
+  "d96ed427baa0",
+  "6cd00c3ba535",
+  "6cd00c3ba535"
+ ],
+ "content_hashes": [
+  "86c8580db8ca",
+  "41ef7a55d2d5",
+  "41ef7a55d2d5"
+ ],
+ "garble": {
+  "cold": [
+   "JUNK(7%)"
+  ],
+  "rehit": [
+   "JUNK(5%)"
+  ],
+  "rehit2": [
+   "JUNK(5%)"
+  ]
+ },
+ "finish": [
+  "stop",
+  "stop",
+  "stop"
+ ],
+ "prompt_tok": 5051,
+ "chars": [
+  26,
+  36,
+  36
+ ],
+ "t1_seed_identical": true,
+ "t1_hashes": [
+  "07854da00b57",
+  "07854da00b57"
+ ],
+ "t1_garble": [],
+ "dt_cold": 4.5
+}
+
+===== multi =====
+{
+ "t0_identical": true,
+ "hashes": [
+  "fd7397c34784",
+  "fd7397c34784",
+  "fd7397c34784"
+ ],
+ "content_hashes": [
+  "8b2db9b2cca6",
+  "8b2db9b2cca6",
+  "8b2db9b2cca6"
+ ],
+ "garble": {
+  "cold": [],
+  "rehit": [],
+  "rehit2": []
+ },
+ "finish": [
+  "stop",
+  "stop",
+  "stop"
+ ],
+ "prompt_tok": 3400,
+ "chars": [
+  51,
+  51,
+  51
+ ],
+ "t1_seed_identical": true,
+ "t1_hashes": [
+  "b0d5bd050275",
+  "b0d5bd050275"
+ ],
+ "t1_garble": [
+  "JUNK(5%)"
+ ],
+ "dt_cold": 6.8
+}
+
+===== simple =====
+{
+ "t0_identical": true,
+ "hashes": [
+  "964a8002d349",
+  "964a8002d349",
+  "964a8002d349"
+ ],
+ "content_hashes": [
+  "5ba25af0e9a7",
+  "5ba25af0e9a7",
+  "5ba25af0e9a7"
+ ],
+ "garble": {
+  "cold": [
+   "JUNK(5%)"
+  ],
+  "rehit": [
+   "JUNK(5%)"
+  ],
+  "rehit2": [
+   "JUNK(5%)"
+  ]
+ },
+ "finish": [
+  "stop",
+  "stop",
+  "stop"
+ ],
+ "prompt_tok": 38,
+ "chars": [
+  38,
+  38,
+  38
+ ],
+ "t1_seed_identical": true,
+ "t1_hashes": [
+  "3c9d8e921491",
+  "3c9d8e921491"
+ ],
+ "t1_garble": [],
+ "dt_cold": 3.0
+}
+

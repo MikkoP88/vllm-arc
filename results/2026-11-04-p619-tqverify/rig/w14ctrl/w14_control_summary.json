@@ -1,0 +1,86 @@
+[
+ {
+  "i": 0,
+  "seed": 1234,
+  "sha": "85c0dcf2ab75",
+  "garble": [],
+  "finish": "length",
+  "chars": 2022,
+  "top_window": [
+   "' `rows[::2]`\\n    *   `hel'",
+   2
+  ],
+  "n_windows_ge4": 0
+ },
+ {
+  "i": 1,
+  "seed": 1234,
+  "sha": "c2a2f4ed04cd",
+  "garble": [],
+  "finish": "length",
+  "chars": 2328,
+  "top_window": [
+   "'\\x00<<<SPLIT>>>\\x00Based on the'",
+   1
+  ],
+  "n_windows_ge4": 0
+ },
+ {
+  "i": 2,
+  "seed": 1234,
+  "sha": "ff499ff7a904",
+  "garble": [],
+  "finish": "length",
+  "chars": 2594,
+  "top_window": [
+   "'\\x00<<<SPLIT>>>\\x00Based on the'",
+   1
+  ],
+  "n_windows_ge4": 0
+ },
+ {
+  "i": 3,
+  "seed": 1234,
+  "sha": "f728a31f7003",
+  "garble": [
+   "REP-LOOP"
+  ],
+  "finish": "length",
+  "chars": 2086,
+  "top_window": [
+   "'`\\n        *   If `i % 5 ='",
+   4
+  ],
+  "n_windows_ge4": 1
+ },
+ {
+  "seed": 999,
+  "sha": "1c751ce29aa4",
+  "garble": [],
+  "finish": "length",
+  "chars": 2337,
+  "top_window": [
+   "' `step = [1, 1, 2, 3, 4]['",
+   2
+  ],
+  "n_windows_ge4": 0
+ },
+ {
+  "seed": 777,
+  "sha": "f0af7fb0b36b",
+  "garble": [],
+  "finish": "length",
+  "chars": 2879,
+  "top_window": [
+   "'\\x00<<<SPLIT>>>\\x00Based on the'",
+   1
+  ],
+  "n_windows_ge4": 0
+ },
+ {
+  "t0": true,
+  "sha": "6d256c6b8073",
+  "garble": [],
+  "chars": 2695
+ }
+]

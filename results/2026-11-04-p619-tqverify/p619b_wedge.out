@@ -1,0 +1,14 @@
+=================== P619B LEG W1 (k8v4 SPEC=0) 05:55:33 ===================
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert6 name=arc-test graph=1 spec=0 gmu=0.8 mnbt=8192 seqs=64 xgc=0 port=8000 05:56:06
+HEALTH=OK after ~260s
+(EngineCore pid=500) INFO 11-04 05:58:27 [kv_cache_utils.py:2395] XPU KV cache size: 654,829 tokens, Maximum concurrency for 262,144 tokens per request: 2.50x
+1
+2
+FLIP_FIRST: stop 9.2s
+[essay] t0_identical=True hashes=['c8fe6a787922', 'c8fe6a787922', 'c8fe6a787922'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=2145 chars=[3591, 3591, 3591]
+[code] t0_identical=True hashes=['7aa3163d149b', '7aa3163d149b', '7aa3163d149b'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=5051 chars=[2928, 2928, 2928]
+[multi] t0_identical=True hashes=['e70ff1037783', 'e70ff1037783', 'e70ff1037783'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=3400 chars=[838, 838, 838]
+[simple] t0_identical=True hashes=['84efc84cc142', '84efc84cc142', '84efc84cc142'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=38 chars=[1510, 1510, 1510]
+LONGPROBE w1 full: CLEAN
+0
+LEG W1 COMPLETE 06:06:13

@@ -1,0 +1,11 @@
+=================== P619 LEG t6p (k8v4 spec3 GRAPH=1 FIX split PERF) 09:01:14 ===================
+SUBSTITUTIONS dtype=1 mounts=1
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert6 name=arc-test graph=1 spec=3 gmu=0.8 mnbt=8192 seqs=64 xgc=0 port=8000 09:01:58
+HEALTH=OK after ~370s
+(Worker_TP1 pid=1030) P619 tq_spec_fix v4 installed (active=True mode=split): v19b verify-capture forcing + split-row continuation dispatch
+(EngineCore pid=698) INFO 11-04 09:04:47 [kv_cache_utils.py:2395] XPU KV cache size: 519,972 tokens, Maximum concurrency for 262,144 tokens per request: 1.98x
+solo1: tps=29.41 tok=512 dt=17.4s finish=length
+solo2: tps=54.50 tok=512 dt=9.4s finish=length
+agg8: tps=240.86 tok=4096 wall=17.0s finishes=LLLLLLLL per_stream=['30.1', '30.7', '30.5', '31.5', '32.5', '30.1', '30.9', '32.9']
+0
+LEG t6p COMPLETE 09:09:07
