@@ -46,6 +46,8 @@ if TYPE_CHECKING:
     VLLM_ARC_FP8_W8A16_DISABLE: bool = False
     VLLM_ARC_XG_COMPACT: bool = False
     VLLM_ARC_GMU_RELAX: float = 0.0
+    VLLM_ARC_LMC_ASYNC_STORE: bool = True
+    VLLM_ARC_LMC_EVSYNC: bool = True
 
 # The begin-* and end* here are used by the documentation generator
 # to extract the used env vars.
@@ -242,6 +244,23 @@ environment_variables: dict[str, Callable[[], Any]] = {
     # Consumed by p05.
     "VLLM_ARC_GMU_RELAX":
     lambda: float(os.environ.get("VLLM_ARC_GMU_RELAX", "0")),
+
+    # p620 L3 off-thread LMCache store (default ON): =0 keeps the whole
+    # flush on the engine thread (the cert<=8 posture). The dispatcher
+    # hands (pending, engine stream) to the arc-lmc-store daemon — device
+    # ops stay on the engine stream (in-order law), only the HOST wait
+    # moves off-thread. patches/lmcint/vllm_v1_adapter.py
+    # (_lmc_flush_pending / _lmc_store_machinery).
+    "VLLM_ARC_LMC_ASYNC_STORE":
+    lambda: os.environ.get("VLLM_ARC_LMC_ASYNC_STORE", "1") != "0",
+
+    # p620 L1 flush-scoped sync: =1 records+synchronizes a flush-scoped
+    # event instead of torch.xpu.synchronize() in the store body (r80:
+    # neutral ALONE on the in-order stream — event sits behind the chunk
+    # forward; kept as the cheap default inside the L3 worker body).
+    # patches/lmcint/vllm_v1_adapter.py (_lmc_flush_body).
+    "VLLM_ARC_LMC_EVSYNC":
+    lambda: os.environ.get("VLLM_ARC_LMC_EVSYNC", "1") != "0",
 }
 
 # end-env-vars-definition

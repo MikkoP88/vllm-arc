@@ -1,0 +1,3 @@
+(APIServer pid=13) INFO 11-04 17:36:21 [step_trace.py:167] ArcXpuPlatform: step_trace ARMED (ARC_STEP_TRACE=1, rank 0, file /tmp/arc_step_trace_rank0.jsonl)
+(Worker pid=930) INFO 11-04 17:37:05 [step_trace.py:167] ArcXpuPlatform: step_trace ARMED (ARC_STEP_TRACE=1, rank 0, file /tmp/arc_step_trace_rank0.jsonl)
+(Worker pid=1030) INFO 11-04 17:37:18 [step_trace.py:167] ArcXpuPlatform: step_trace ARMED (ARC_STEP_TRACE=1, rank 0, file /tmp/arc_step_trace_rank0.jsonl)

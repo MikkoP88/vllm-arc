@@ -108,6 +108,8 @@ next engine-touching item.)
 | `LMC_STORE_SLICE_TOKENS` | `"0"` = OFF (certified default; ships since cert5) | **experimental** — P6.13: slices the deferred one-shot final-span store into ~19 bounded windows (3328 tok runtime each), one per step, same chunk-row store call shape. `=4096` opt-in on top of the defer profile: U64k TTFT −1.2 s, `63232`-class → 0; NOT adopted into the certified profile (pre-registered max-gap bar mis-set — rung3 VERDICT §2) | lmcint `vllm_v1_adapter.py` `_lmc_flush_pending` (p73, cert5) |
 | `VLLM_ARC_XG_COMPACT` | `false` | compact-JSON structured-output posture | `tools/serve_arc_b70.sh` (p06) |
 | `VLLM_ARC_GMU_RELAX` | `0.0` | GMU conditional-relax fraction (0.8 = sanctioned B70 posture, set via serve env) | `platform.py` (p05) |
+| `VLLM_ARC_LMC_ASYNC_STORE` | `1` = ON (**cert9 certified default**, p620) | L3 off-thread store: the per-step lagged-flush dispatcher hands (pending, engine stream) to the `arc-lmc-store` daemon — device ops stay on the engine stream (in-order law), only the HOST wait (sync + D2H gathers + store insert) moves off the engine thread. r81 A/B/A/B (cert8 base): U32k TTFT −0.74 s mean, U64k −1.64 s, U8k −0.08 s (both interleave pairs), zero error delta; r82/r83 full gate batteries green incl. LONG-RETURN (zero-KV proof under async store). `=0` = the cert≤8 inline posture (kill switch) | lmcint `vllm_v1_adapter.py` `_lmc_flush_pending`/`_lmc_store_machinery` (p620 L3; L6 dispatch-late = same flush handed at wfs end) |
+| `VLLM_ARC_LMC_EVSYNC` | `1` | L1 flush-scoped event sync inside the store body (vs `torch.xpu.synchronize()`); r80: neutral ALONE — on the in-order XPU stream the event sits behind the just-submitted chunk forward; kept as the cheap default inside the L3 worker body | lmcint `vllm_v1_adapter.py` `_lmc_flush_body` (p620 L1) |
 
 **Tuning ints** (default-ON logging/caps, donor v136 lineage names):
 
@@ -125,7 +127,11 @@ next engine-touching item.)
 | `VLLM_COMPACT_GDN` | `hpu_model_runner.py` auto-detect (:1410) | `platform.py:501/539`, `hpu_worker.py` (GDN layout law) |
 
 **Diagnostics (silent-off, never in the certified line):** `ARC_SNAP_PROBE`
-(r31/r34/r35 leg telemetry, ~12 sites, comment-marked "silent off").
+(r31/r34/r35 leg telemetry, ~12 sites, comment-marked "silent off"),
+`ARC_STEP_TRACE` (p620 per-step host timeline — engine/worker step JSONL
+decomposition: schedule/prep_inputs/execute_model/sample_tokens/wfs/
+wfs_flush/wfs_body/wfs_total/get_finished; `ARC_STEP_TRACE_FILE` override;
+banked r80–r83 legs; same registry-exempt class as `ARC_SNAP_PROBE`).
 **Donor-internal (byte-pinned lmcint kit, not ours):** `LMCACHE_CONFIG_FILE`,
 `LMCACHE_FORCE_SKIP_SAVE`, `LMC_STORE_LAG`.
 

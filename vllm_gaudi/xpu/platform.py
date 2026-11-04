@@ -60,6 +60,8 @@ _XPU_PATCH_MODULES = (
     "fp8_block_w8a16",  # p44: block-fp8 linear -> fp8_gemm_w8a16 with
     # fp16 activations, input quant skipped (r40:
     # 3-8x/GEMM decode Ms, fixed-cost W8A8 path)
+    "step_trace",  # p620: per-step host timeline (ARC_STEP_TRACE,
+    # silent-off diagnostic — envs.md diagnostics class)
 )
 
 

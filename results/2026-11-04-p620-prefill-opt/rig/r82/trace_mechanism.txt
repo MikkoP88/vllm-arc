@@ -1,0 +1,28 @@
+=== pid 1030 steps=15483 ===
+  prep_inputs    n=15482 p50=0.8 p90=0.8 p99=1.6 max=635.6
+  execute_model  n=15588 p50=28.4 p90=32.9 p99=142.6 max=5789.0
+  sample_tokens  n=15482 p50=11.2 p90=12.0 p99=62.2 max=37809.4
+  wfs            n=15586 p50=0.1 p90=0.2 p99=50.0 max=5116.8
+  wfs_flush      n=15476 p50=0.0 p90=0.0 p99=0.0 max=0.1
+  wfs_body       n=163 p50=89.2 p90=108.8 p99=200.7 max=2938.8
+  wfs_total      n=15476 p50=0.1 p90=0.1 p99=49.8 max=5116.4
+  get_finished   n=15580 p50=0.0 p90=0.0 p99=0.0 max=0.0
+  [chunk_steps n=12] execute_model  n=12 p50=767.2 p90=1005.3 p99=5789.0 max=5789.0
+  [chunk_steps n=12] wfs_flush      n=11 p50=0.0 p90=0.0 p99=0.0 max=0.0
+  [chunk_steps n=12] wfs_total      n=11 p50=0.1 p90=2346.0 p99=2852.3 max=2852.3
+  [chunk_steps n=12] wfs_body       n=1 p50=63.5 p90=63.5 p99=63.5 max=63.5
+=== pid 698 steps=1 ===
+  schedule       n=15580 p50=0.1 p90=0.4 p99=1.1 max=8.0
+=== pid 930 steps=15483 ===
+  prep_inputs    n=15482 p50=0.8 p90=0.9 p99=1.4 max=639.9
+  execute_model  n=15588 p50=28.4 p90=32.8 p99=144.9 max=5884.6
+  sample_tokens  n=15482 p50=11.2 p90=12.0 p99=62.4 max=37714.7
+  wfs            n=15586 p50=0.1 p90=0.2 p99=50.1 max=5118.7
+  wfs_flush      n=15476 p50=0.0 p90=0.0 p99=0.0 max=0.1
+  wfs_body       n=163 p50=86.2 p90=109.2 p99=157.0 max=2948.5
+  wfs_total      n=15476 p50=0.1 p90=0.1 p99=49.9 max=5118.4
+  get_finished   n=15580 p50=0.0 p90=0.0 p99=0.0 max=0.0
+  [chunk_steps n=12] execute_model  n=12 p50=765.0 p90=1003.8 p99=5884.6 max=5884.6
+  [chunk_steps n=12] wfs_flush      n=11 p50=0.0 p90=0.0 p99=0.0 max=0.0
+  [chunk_steps n=12] wfs_total      n=11 p50=0.1 p90=2345.7 p99=2852.1 max=2852.1
+  [chunk_steps n=12] wfs_body       n=1 p50=63.4 p90=63.4 p99=63.4 max=63.4
