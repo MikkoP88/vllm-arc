@@ -1,0 +1,145 @@
+=================== P619C LEG t2i (k8v4 telemetry spec=3) 06:49:01 ===================
+101:    ("vllm.v1.attention.backends.turboquant_attn", "tq_telemetry"),  # p619 test
+SUBSTITUTIONS dtype=1 telem=1 platform=1
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert6 name=arc-test graph=1 spec=3 gmu=0.8 mnbt=8192 seqs=64 xgc=0 port=8000 06:49:46
+HEALTH=OK after ~310s
+(Worker_TP1 pid=1030) P619T telemetry installed (shadow=8192 pos x 4 layers, canary<=300 steps/layer)
+GEN 10.6s finish=stop chars=185 tok=188
+HEAD: '\n\nHello! How can I help you today?\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n'
+TAIL: '\n\nHello! How can I help you today?\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n'
+Traceback (most recent call last):
+  File "<stdin>", line 16, in <module>
+  File "<stdin>", line 12, in gen
+TypeError: object of type 'NoneType' has no len()
+== counts ==
+4178
+102
+0
+6068
+--- FWD ---
+(Worker_TP0 pid=930) P619T FWD pre telemetry error
+(Worker_TP1 pid=1030) P619T FWD pre telemetry error
+(Worker_TP1 pid=1030) P619T FWD pre telemetry error
+(Worker_TP0 pid=930) P619T FWD pre telemetry error
+(Worker_TP0 pid=930) P619T FWD pre telemetry error
+(Worker_TP1 pid=1030) P619T FWD pre telemetry error
+(Worker_TP0 pid=930) P619T FWD pre telemetry error
+(Worker_TP1 pid=1030) P619T FWD pre telemetry error
+(Worker_TP1 pid=1030) P619T FWD pre telemetry error
+(Worker_TP0 pid=930) P619T FWD pre telemetry error
+(Worker_TP1 pid=1030) P619T FWD pre telemetry error
+(Worker_TP0 pid=930) P619T FWD pre telemetry error
+(Worker_TP1 pid=1030) P619T FWD pre telemetry error
+(Worker_TP0 pid=930) P619T FWD pre telemetry error
+(Worker_TP1 pid=1030) P619T FWD pre telemetry error
+(Worker_TP0 pid=930) P619T FWD pre telemetry error
+(Worker_TP1 pid=1030) P619T FWD pre telemetry error
+(Worker_TP0 pid=930) P619T FWD pre telemetry error
+(Worker_TP0 pid=930) P619T FWD pre telemetry error
+(Worker_TP1 pid=1030) P619T FWD pre telemetry error
+(Worker_TP1 pid=1030) P619T FWD pre telemetry error
+(Worker_TP0 pid=930) P619T FWD pre telemetry error
+(Worker_TP1 pid=1030) P619T FWD pre telemetry error
+(Worker_TP0 pid=930) P619T FWD pre telemetry error
+--- STORE (head) ---
+(Worker_TP0 pid=930) P619T STORE first: layer=language_model.model.layers.3.self_attn.attn n_tok=185
+(Worker_TP1 pid=1030) P619T STORE first: layer=language_model.model.layers.3.self_attn.attn n_tok=185
+(Worker_TP1 pid=1030) P619T STORE first: layer=language_model.model.layers.7.self_attn.attn n_tok=185
+(Worker_TP0 pid=930) P619T STORE first: layer=language_model.model.layers.7.self_attn.attn n_tok=185
+(Worker_TP0 pid=930) P619T STORE first: layer=language_model.model.layers.11.self_attn.attn n_tok=185
+(Worker_TP1 pid=1030) P619T STORE first: layer=language_model.model.layers.11.self_attn.attn n_tok=185
+(Worker_TP0 pid=930) P619T STORE first: layer=language_model.model.layers.15.self_attn.attn n_tok=185
+(Worker_TP1 pid=1030) P619T STORE first: layer=language_model.model.layers.15.self_attn.attn n_tok=185
+(Worker_TP1 pid=1030) P619T STORE first: layer=language_model.model.layers.19.self_attn.attn n_tok=185
+(Worker_TP0 pid=930) P619T STORE first: layer=language_model.model.layers.19.self_attn.attn n_tok=185
+(Worker_TP0 pid=930) P619T STORE first: layer=language_model.model.layers.23.self_attn.attn n_tok=185
+(Worker_TP1 pid=1030) P619T STORE first: layer=language_model.model.layers.23.self_attn.attn n_tok=185
+(Worker_TP1 pid=1030) P619T STORE first: layer=language_model.model.layers.27.self_attn.attn n_tok=185
+(Worker_TP0 pid=930) P619T STORE first: layer=language_model.model.layers.27.self_attn.attn n_tok=185
+--- CANARY (head/tail) ---
+...
+--- telemetry errors ---
+(Worker_TP0 pid=930) P619T FWD pre telemetry error
+(Worker_TP1 pid=1030) P619T FWD pre telemetry error
+(Worker_TP1 pid=1030) P619T FWD pre telemetry error
+(Worker_TP0 pid=930) P619T FWD pre telemetry error
+(Worker_TP0 pid=930) P619T FWD pre telemetry error
+(Worker_TP1 pid=1030) P619T FWD pre telemetry error
+(Worker_TP0 pid=930) P619T FWD pre telemetry error
+(Worker_TP1 pid=1030) P619T FWD pre telemetry error
+(Worker_TP1 pid=1030) P619T FWD pre telemetry error
+(Worker_TP0 pid=930) P619T FWD pre telemetry error
+LEG t2i DONE 06:55:36
+=================== P619C LEG t2c (k8v4 telemetry spec=0) 06:55:36 ===================
+101:    ("vllm.v1.attention.backends.turboquant_attn", "tq_telemetry"),  # p619 test
+SUBSTITUTIONS dtype=1 telem=1 platform=1
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert6 name=arc-test graph=1 spec=0 gmu=0.8 mnbt=8192 seqs=64 xgc=0 port=8000 06:56:17
+HEALTH=OK after ~245s
+(Worker_TP0 pid=732) P619T telemetry installed (shadow=8192 pos x 4 layers, canary<=300 steps/layer)
+GEN 9.2s finish=stop chars=71 tok=107
+HEAD: '\n\n1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20'
+TAIL: '\n\n1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20'
+Traceback (most recent call last):
+  File "<stdin>", line 16, in <module>
+  File "<stdin>", line 12, in gen
+TypeError: object of type 'NoneType' has no len()
+== counts ==
+2016
+96
+0
+2880
+--- FWD ---
+(Worker_TP1 pid=733) P619T FWD pre telemetry error
+(Worker_TP0 pid=732) P619T FWD pre telemetry error
+(Worker_TP1 pid=733) P619T FWD pre telemetry error
+(Worker_TP0 pid=732) P619T FWD pre telemetry error
+(Worker_TP1 pid=733) P619T FWD pre telemetry error
+(Worker_TP0 pid=732) P619T FWD pre telemetry error
+(Worker_TP1 pid=733) P619T FWD pre telemetry error
+(Worker_TP0 pid=732) P619T FWD pre telemetry error
+(Worker_TP1 pid=733) P619T FWD pre telemetry error
+(Worker_TP0 pid=732) P619T FWD pre telemetry error
+(Worker_TP1 pid=733) P619T FWD pre telemetry error
+(Worker_TP0 pid=732) P619T FWD pre telemetry error
+(Worker_TP1 pid=733) P619T FWD pre telemetry error
+(Worker_TP0 pid=732) P619T FWD pre telemetry error
+(Worker_TP1 pid=733) P619T FWD pre telemetry error
+(Worker_TP0 pid=732) P619T FWD pre telemetry error
+(Worker_TP1 pid=733) P619T FWD pre telemetry error
+(Worker_TP0 pid=732) P619T FWD pre telemetry error
+(Worker_TP1 pid=733) P619T FWD pre telemetry error
+(Worker_TP0 pid=732) P619T FWD pre telemetry error
+(Worker_TP1 pid=733) P619T FWD pre telemetry error
+(Worker_TP0 pid=732) P619T FWD pre telemetry error
+(Worker_TP1 pid=733) P619T FWD pre telemetry error
+(Worker_TP0 pid=732) P619T FWD pre telemetry error
+--- STORE (head) ---
+(Worker_TP1 pid=733) P619T STORE first: layer=language_model.model.layers.3.self_attn.attn n_tok=128
+(Worker_TP0 pid=732) P619T STORE first: layer=language_model.model.layers.3.self_attn.attn n_tok=128
+(Worker_TP1 pid=733) P619T STORE first: layer=language_model.model.layers.7.self_attn.attn n_tok=128
+(Worker_TP0 pid=732) P619T STORE first: layer=language_model.model.layers.7.self_attn.attn n_tok=128
+(Worker_TP1 pid=733) P619T STORE first: layer=language_model.model.layers.11.self_attn.attn n_tok=128
+(Worker_TP0 pid=732) P619T STORE first: layer=language_model.model.layers.11.self_attn.attn n_tok=128
+(Worker_TP1 pid=733) P619T STORE first: layer=language_model.model.layers.15.self_attn.attn n_tok=128
+(Worker_TP0 pid=732) P619T STORE first: layer=language_model.model.layers.15.self_attn.attn n_tok=128
+(Worker_TP1 pid=733) P619T STORE first: layer=language_model.model.layers.19.self_attn.attn n_tok=128
+(Worker_TP0 pid=732) P619T STORE first: layer=language_model.model.layers.19.self_attn.attn n_tok=128
+(Worker_TP1 pid=733) P619T STORE first: layer=language_model.model.layers.23.self_attn.attn n_tok=128
+(Worker_TP0 pid=732) P619T STORE first: layer=language_model.model.layers.23.self_attn.attn n_tok=128
+(Worker_TP0 pid=732) P619T STORE first: layer=language_model.model.layers.27.self_attn.attn n_tok=128
+(Worker_TP1 pid=733) P619T STORE first: layer=language_model.model.layers.27.self_attn.attn n_tok=128
+--- CANARY (head/tail) ---
+...
+--- telemetry errors ---
+(Worker_TP1 pid=733) P619T FWD pre telemetry error
+(Worker_TP0 pid=732) P619T FWD pre telemetry error
+(Worker_TP1 pid=733) P619T FWD pre telemetry error
+(Worker_TP0 pid=732) P619T FWD pre telemetry error
+(Worker_TP1 pid=733) P619T FWD pre telemetry error
+(Worker_TP0 pid=732) P619T FWD pre telemetry error
+(Worker_TP1 pid=733) P619T FWD pre telemetry error
+(Worker_TP0 pid=732) P619T FWD pre telemetry error
+(Worker_TP1 pid=733) P619T FWD pre telemetry error
+(Worker_TP0 pid=732) P619T FWD pre telemetry error
+LEG t2c DONE 07:01:15
+LEGS t2i+t2c COMPLETE 07:01:15

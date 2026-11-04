@@ -1,0 +1,3 @@
+(Worker_TP1 pid=1030) P619 tq_spec_fix v5 installed (active=True mode=mq mq_kernel=True): v19b verify-capture forcing + single-pass MQ continuation dispatch
+(EngineCore pid=698) INFO 11-04 10:53:25 [kv_cache_utils.py:2395] XPU KV cache size: 546,942 tokens, Maximum concurrency for 262,144 tokens per request: 2.09x
+(APIServer pid=13) INFO 11-04 10:48:56 [platform.py:320] ArcXpuPlatform: graph posture cudagraph_mode=NONE capture_sizes=(1, 2, 4, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 120, 128, 136, 144, 152, 160, 168, 176, 184, 192, 200, 208, 216, 224, 232, 240, 248, 256, 272, 288, 304, 320, 336, 352, 368, 384, 400, 416, 432, 448, 464, 480, 496, 512) (VLLM_XPU_ENABLE_XPU_GRAPH=False).

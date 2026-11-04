@@ -1,0 +1,2 @@
+(Worker_TP1 pid=1030) P619 tq_spec_fix v4 installed (active=True mode=split): v19b verify-capture forcing + split-row continuation dispatch
+(EngineCore pid=698) INFO 11-04 09:24:50 [kv_cache_utils.py:2395] XPU KV cache size: 748,549 tokens, Maximum concurrency for 262,144 tokens per request: 2.86x

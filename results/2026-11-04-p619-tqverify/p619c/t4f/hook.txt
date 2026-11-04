@@ -1,0 +1,1 @@
+(Worker_TP1 pid=1030) P619 tq_spec_fix installed (active=True): v19b verify-capture forcing + device-dynamic continuation limits

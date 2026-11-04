@@ -1,0 +1,25 @@
+{"round": 1, "cls": "essay", "seed": 1234, "pair_identical": true, "sha_a": "18ff99786c73", "sha_b": "18ff99786c73", "garble": [], "garble_a": [], "garble_b": [], "finish": "stop", "chars": 2648, "content_chars": 2635, "window_detail": null}
+{"round": 1, "cls": "code", "seed": 1234, "pair_identical": true, "sha_a": "3346edf045b5", "sha_b": "3346edf045b5", "garble": [], "garble_a": [], "garble_b": [], "finish": "length", "chars": 2903, "content_chars": 2890, "window_detail": null}
+{"round": 1, "cls": "multi", "seed": 1234, "pair_identical": true, "sha_a": "35cd4d5ae273", "sha_b": "35cd4d5ae273", "garble": [], "garble_a": [], "garble_b": [], "finish": "stop", "chars": 805, "content_chars": 792, "window_detail": null}
+{"round": 1, "cls": "simple", "seed": 1234, "pair_identical": true, "sha_a": "b74924c4a80b", "sha_b": "b74924c4a80b", "garble": [], "garble_a": [], "garble_b": [], "finish": "stop", "chars": 1379, "content_chars": 1366, "window_detail": null}
+{"round": 1, "cls": "code-t0", "seed": null, "sha_a": "1c80ad9e02ce", "garble": [], "finish": "stop", "chars": 3529}
+{"round": 2, "cls": "essay", "seed": 1234, "pair_identical": true, "sha_a": "18ff99786c73", "sha_b": "18ff99786c73", "garble": [], "garble_a": [], "garble_b": [], "finish": "stop", "chars": 2648, "content_chars": 2635, "window_detail": null}
+{"round": 2, "cls": "code", "seed": 1234, "pair_identical": true, "sha_a": "3346edf045b5", "sha_b": "3346edf045b5", "garble": [], "garble_a": [], "garble_b": [], "finish": "length", "chars": 2903, "content_chars": 2890, "window_detail": null}
+{"round": 2, "cls": "multi", "seed": 1234, "pair_identical": true, "sha_a": "35cd4d5ae273", "sha_b": "35cd4d5ae273", "garble": [], "garble_a": [], "garble_b": [], "finish": "stop", "chars": 805, "content_chars": 792, "window_detail": null}
+{"round": 2, "cls": "simple", "seed": 1234, "pair_identical": true, "sha_a": "b74924c4a80b", "sha_b": "b74924c4a80b", "garble": [], "garble_a": [], "garble_b": [], "finish": "stop", "chars": 1379, "content_chars": 1366, "window_detail": null}
+{"round": 2, "cls": "code-t0", "seed": null, "sha_a": "1c80ad9e02ce", "garble": [], "finish": "stop", "chars": 3529}
+{"round": 3, "cls": "essay", "seed": 1234, "pair_identical": false, "sha_a": "a81882add278", "sha_b": "18ff99786c73", "garble": [], "garble_a": [], "garble_b": [], "finish": "stop", "chars": 2877, "content_chars": 2864, "window_detail": null}
+{"round": 3, "cls": "code", "seed": 1234, "pair_identical": true, "sha_a": "3346edf045b5", "sha_b": "3346edf045b5", "garble": [], "garble_a": [], "garble_b": [], "finish": "length", "chars": 2903, "content_chars": 2890, "window_detail": null}
+{"round": 3, "cls": "multi", "seed": 1234, "pair_identical": true, "sha_a": "35cd4d5ae273", "sha_b": "35cd4d5ae273", "garble": [], "garble_a": [], "garble_b": [], "finish": "stop", "chars": 805, "content_chars": 792, "window_detail": null}
+{"round": 3, "cls": "simple", "seed": 1234, "pair_identical": true, "sha_a": "b74924c4a80b", "sha_b": "b74924c4a80b", "garble": [], "garble_a": [], "garble_b": [], "finish": "stop", "chars": 1379, "content_chars": 1366, "window_detail": null}
+{"round": 3, "cls": "code-t0", "seed": null, "sha_a": "1c80ad9e02ce", "garble": [], "finish": "stop", "chars": 3529}
+{"round": 4, "cls": "essay", "seed": 1234, "pair_identical": true, "sha_a": "18ff99786c73", "sha_b": "18ff99786c73", "garble": [], "garble_a": [], "garble_b": [], "finish": "stop", "chars": 2648, "content_chars": 2635, "window_detail": null}
+{"round": 4, "cls": "code", "seed": 1234, "pair_identical": true, "sha_a": "3346edf045b5", "sha_b": "3346edf045b5", "garble": [], "garble_a": [], "garble_b": [], "finish": "length", "chars": 2903, "content_chars": 2890, "window_detail": null}
+{"round": 4, "cls": "multi", "seed": 1234, "pair_identical": true, "sha_a": "35cd4d5ae273", "sha_b": "35cd4d5ae273", "garble": [], "garble_a": [], "garble_b": [], "finish": "stop", "chars": 805, "content_chars": 792, "window_detail": null}
+{"round": 4, "cls": "simple", "seed": 1234, "pair_identical": true, "sha_a": "b74924c4a80b", "sha_b": "b74924c4a80b", "garble": [], "garble_a": [], "garble_b": [], "finish": "stop", "chars": 1379, "content_chars": 1366, "window_detail": null}
+{"round": 4, "cls": "code-t0", "seed": null, "sha_a": "1c80ad9e02ce", "garble": [], "finish": "stop", "chars": 3529}
+{"cls": "code", "seed": 999, "sha_a": "4052f95acbee", "garble": [], "finish": "length", "chars": 1858, "window_detail": null}
+{"cls": "simple", "seed": 999, "sha_a": "583ed2c4b9d2", "garble": [], "finish": "length", "chars": 3233, "window_detail": null}
+{"cls": "code", "seed": 777, "sha_a": "2e0a6341d5b1", "garble": [], "finish": "length", "chars": 2498, "window_detail": null}
+{"cls": "simple", "seed": 777, "sha_a": "05e5c17061fc", "garble": [], "finish": "stop", "chars": 1632, "window_detail": null}
+T1SEED_REPCHAR_DONE

@@ -1,0 +1,2 @@
+(Worker_TP0 pid=930) INFO 11-04 06:35:03 [platform.py:173] ArcXpuPlatform: wheel hook turboquant_attn <- patches.tq_spec_fix OK
+(Worker_TP1 pid=1030) INFO 11-04 06:35:03 [platform.py:173] ArcXpuPlatform: wheel hook turboquant_attn <- patches.tq_spec_fix OK

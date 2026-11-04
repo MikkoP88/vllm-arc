@@ -1,0 +1,46 @@
+INFO 11-04 09:38:38 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+INFO 11-04 09:38:38 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+INFO 11-04 09:38:38 [__init__.py:54] - hpu -> vllm_gaudi:register
+INFO 11-04 09:38:38 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+INFO 11-04 09:38:39 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+INFO 11-04 09:38:39 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+INFO 11-04 09:38:39 [__init__.py:54] - hpu -> vllm_gaudi:register
+INFO 11-04 09:38:39 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+INFO 11-04 09:38:39 [__init__.py:272] Platform plugin arc is activated
+INFO 11-04 09:38:39 [__init__.py:272] Platform plugin arc is activated
+device: Intel(R) Graphics [0xe223]
+[turboquant_k8v4 q4 seq192] PASS rel_ref=0.002149 rel_split=0.000000 det=True nan=0
+[turboquant_k8v4 q5 seq192] PASS rel_ref=0.002134 rel_split=0.000067 det=True nan=0
+[turboquant_k8v4 q2 seq192] PASS rel_ref=0.002133 rel_split=0.000017 det=True nan=0
+[turboquant_k8v4 q4 seq8] PASS rel_ref=0.002627 rel_split=0.000000 det=True nan=0
+[turboquant_4bit_nc q4 seq192] PASS rel_ref=0.002000 rel_split=0.000000 det=True nan=0
+[turboquant_4bit_nc q5 seq192] PASS rel_ref=0.001996 rel_split=0.000000 det=True nan=0
+[turboquant_4bit_nc q2 seq192] PASS rel_ref=0.002016 rel_split=0.000000 det=True nan=0
+[turboquant_4bit_nc q4 seq8] PASS rel_ref=0.002753 rel_split=0.000000 det=True nan=0
+[turboquant_k3v4_nc q4 seq192] PASS rel_ref=0.002150 rel_split=0.000000 det=True nan=0
+[turboquant_k3v4_nc q5 seq192] PASS rel_ref=0.002157 rel_split=0.000000 det=True nan=0
+[turboquant_k3v4_nc q2 seq192] PASS rel_ref=0.002019 rel_split=0.000000 det=True nan=0
+[turboquant_k3v4_nc q4 seq8] PASS rel_ref=0.002964 rel_split=0.000000 det=True nan=0
+[turboquant_3bit_nc q4 seq192] PASS rel_ref=0.002166 rel_split=0.000000 det=True nan=0
+[turboquant_3bit_nc q5 seq192] PASS rel_ref=0.002204 rel_split=0.000000 det=True nan=0
+[turboquant_3bit_nc q2 seq192] PASS rel_ref=0.002174 rel_split=0.000000 det=True nan=0
+[turboquant_3bit_nc q4 seq8] PASS rel_ref=0.002842 rel_split=0.000000 det=True nan=0
+
+==== P619D MQVAL SUMMARY ====
+  turboquant_k8v4 q4 seq192: PASS
+  turboquant_k8v4 q5 seq192: PASS
+  turboquant_k8v4 q2 seq192: PASS
+  turboquant_k8v4 q4 seq8: PASS
+  turboquant_4bit_nc q4 seq192: PASS
+  turboquant_4bit_nc q5 seq192: PASS
+  turboquant_4bit_nc q2 seq192: PASS
+  turboquant_4bit_nc q4 seq8: PASS
+  turboquant_k3v4_nc q4 seq192: PASS
+  turboquant_k3v4_nc q5 seq192: PASS
+  turboquant_k3v4_nc q2 seq192: PASS
+  turboquant_k3v4_nc q4 seq8: PASS
+  turboquant_3bit_nc q4 seq192: PASS
+  turboquant_3bit_nc q5 seq192: PASS
+  turboquant_3bit_nc q2 seq192: PASS
+  turboquant_3bit_nc q4 seq8: PASS
+P619D MQVAL: PASS

@@ -4,8 +4,8 @@
 
 A fork of [vllm-project/vllm-gaudi](https://github.com/vllm-project/vllm-gaudi) at **v0.30.0** (package name `vllm_gaudi` preserved; the Arc/XPU work lives in `vllm_gaudi/xpu/`).
 
-- Certified release: **`rel/v0.30.0-b70-cert7`** — every gate GREEN with banked evidence. cert7 = cert6's engine + the **P6.18 TurboQuant deprecation guard** (`vllm_gaudi/xpu/platform.py` refuses every `turboquant_*` kv-cache dtype at boot with a loud `ValueError` — 4-bit-class value quantization is a proven quality ceiling on this model; see the TurboQuant section below). Default `fp8_e4m3` posture byte-identical to cert6.
-- **Project status: P0–P6.18 complete.** All phases closed with evidence — engine hardening (P2), cache lane (P3), certification battery (P4), audits + soak (P5), measurement/analysis phases P6.1–P6.15 (external-hit-rate truth, comparator law, telemetry off, publishing hygiene, main currency, the comprehensive cert4-native re-measurement, the P2P-allreduce closure r71, the docs overhaul, the END-stall mechanism analysis + sliced-store rung, the TurboQuant lagged-store fix + full preset validation, and the bystander-stall taxonomy + chunk-granularity Pareto matrix for ALL dtypes), **P6.16 the draft-sampling posture fix** (`ARC_SPEC_METHOD=probabilistic`: sampled drafts + rejection-ratio verify — the mathematically-correct sampler at temperature), **P6.17 the prob-lane certification (2026-11-03)**: the certified line is now **probabilistic drafting by default** — the serve script's default posture flipped (unset = probabilistic), and **every record face re-measured natively on the probabilistic lane** (comprehensive p617 campaign on cert6: t0/t1.0 batteries across fresh boots, TTFT ladder, warm re-hit, temp sweep, alt face, integrity + determinism + golden + garbage gates, no-spec A/B), and **P6.18 the TurboQuant deprecation (2026-11-03/04)**: corrupted generations reported under `turboquant_k8v4` were split by the p618b reproduction battery into Class B (deterministic degenerate generation on ALL FOUR presets, cold-included) and Class A (t0 warm-resume trajectory flips — inherent cached-serving numerics, dispositioned); the p618c roundtest proved the SoA store→decode Triton pair numerically exact on XPU, closing the root cause as the **4-bit-class value-precision quality ceiling** (upstream's own tables rate these presets +2.71…+20.59 % PPL on gpt-oss); fix = **platform-level refusal of every `turboquant_*` dtype at config time** (no override lever — new quant kernels exist in no admitted donor, scope law), certified as **cert7** with the full release-gate battery + the long-return gate 100 % CLEAN on every corruption/looping face (`results/2026-11-03-p618-cert7/`). The engine's serving code is byte-identical to cert6 under `fp8_e4m3` — the guard is the only delta. Full phase ledger: [`docs/TESTING-arc.md`](docs/TESTING-arc.md) (validation record) and [`docs/MIGRATION-arc.md`](docs/MIGRATION-arc.md) (evidence table).
+- Certified release: **`rel/v0.30.0-b70-cert8`** — every gate GREEN with banked evidence. cert8 = cert7's engine with the P6.18 boot refusal lifted + the **P6.19 TurboQuant spec-verify fix** (`vllm_gaudi/xpu/patches/tq_spec_fix.py`: donor-v19b verify-capture forcing + graph-safe split-row continuation dispatch, active by default on every `turboquant_*` dtype): **all four TurboQuant presets now SERVE CLEAN** — zero REP-LOOP/JUNK/BLEED/EMPTY on every dtype, all-dtype gate with the fp8 certified posture as control (`results/2026-11-04-p619-tqverify/`). Default `fp8_e4m3` posture unchanged (fix absent by construction — the hooked module never imports on fp8).
+- **Project status: P0–P6.18 complete.** All phases closed with evidence — engine hardening (P2), cache lane (P3), certification battery (P4), audits + soak (P5), measurement/analysis phases P6.1–P6.15 (external-hit-rate truth, comparator law, telemetry off, publishing hygiene, main currency, the comprehensive cert4-native re-measurement, the P2P-allreduce closure r71, the docs overhaul, the END-stall mechanism analysis + sliced-store rung, the TurboQuant lagged-store fix + full preset validation, and the bystander-stall taxonomy + chunk-granularity Pareto matrix for ALL dtypes), **P6.16 the draft-sampling posture fix** (`ARC_SPEC_METHOD=probabilistic`: sampled drafts + rejection-ratio verify — the mathematically-correct sampler at temperature), **P6.17 the prob-lane certification (2026-11-03)**: the certified line is now **probabilistic drafting by default** — the serve script's default posture flipped (unset = probabilistic), and **every record face re-measured natively on the probabilistic lane** (comprehensive p617 campaign on cert6: t0/t1.0 batteries across fresh boots, TTFT ladder, warm re-hit, temp sweep, alt face, integrity + determinism + golden + garbage gates, no-spec A/B), and **P6.18 the TurboQuant deprecation (2026-11-03/04)**: corrupted generations reported under `turboquant_k8v4` were split by the p618b reproduction battery into Class B (deterministic degenerate generation on ALL FOUR presets, cold-included) and Class A (t0 warm-resume trajectory flips — inherent cached-serving numerics, dispositioned); the p618c roundtest proved the SoA store→decode Triton pair numerically exact on XPU, closing the root cause as the **4-bit-class value-precision quality ceiling** (upstream's own tables rate these presets +2.71…+20.59 % PPL on gpt-oss); fix = **platform-level refusal of every `turboquant_*` dtype at config time** (no override lever — new quant kernels exist in no admitted donor, scope law), certified as **cert7** with the full release-gate battery + the long-return gate 100 % CLEAN on every corruption/looping face (`results/2026-11-03-p618-cert7/`), and **P6.19 the TurboQuant spec-verify FIX (2026-11-04, cert8)**: the owner reopened the precision-ceiling disposition — donor/source images serve the same dtypes clean — and the campaign root-caused the corruption to **three stacked spec-verify defects, none of them the quantizer's precision**: (RC1) captured verify graphs baked the raw-KV flash fast-path (TQ-blind — reads the quantized cache as raw bytes); (RC2) the eager-fallback multi-row synthetic-decode dispatch is replay-broken under XPU graphs; (RC3) the wheel ships TWO TQ ops trees (slot-interleaved AoS = the engine's XPU default, vs a FlyDSL-gated SoA tree never used here — the first MQ-kernel draft targeted SoA and read the live cache as exact zeros). Fix = wheel-side hook `tq_spec_fix.py` (capture forcing + **split-row dispatch** — q_len single-row stock decode calls, per-row limits as recorded device ops; SHIPS) + `tq_mq_aos.py` (MQ kernel on the engine's AoS layout, opt-in `VLLM_ARC_TQ_VERIFY_MODE=mq`, +20 % agg8, experimental); P6.18 refusal lifted; **all-dtype gate: zero garble on all four TQ dtypes AND the fp8 control**, identity faces dispositioned as engine-class probabilistic-drafting faces (the fp8 certified posture fires the same class with the fix absent by construction; cross-boot-stable hash pairs) — certified as **cert8** (`results/2026-11-04-p619-tqverify/`, best-practices audit included). Full phase ledger: [`docs/TESTING-arc.md`](docs/TESTING-arc.md) (validation record) and [`docs/MIGRATION-arc.md`](docs/MIGRATION-arc.md) (evidence table).
 - **Open improvement lanes** (all analysis-side, none certified yet): ESIMD dense-FA kernel project (r67b re-scope). The TP2 allreduce path question is **closed** — r71 proved direct P2P (10.23 GB/s D2D; all collectives on the `topo sycl` device path; `tools/pcie/README.md`).
 
 ## What this fork adds
@@ -15,7 +15,7 @@ A fork of [vllm-project/vllm-gaudi](https://github.com/vllm-project/vllm-gaudi) 
 | Platform | Arc XPU platform: device detection, mem-info patch, GMU conditional relax | `vllm_gaudi/xpu/platform.py` |
 | Graphs | `FULL_DECODE_ONLY` XPU graphs (capture sizes 1–320), stream hygiene, first-request warmup interlock | `patches/`, `vllm_gaudi/xpu/patches/` |
 | Speculative decoding | MTP (multi-token prediction) — **k3 recommended**, k4 documented alternative; acceptance gate instrument | `tools/arc_spec_gate.py` |
-| KV cache | LMCache hybrid-KV connector: mamba/GDN boundary snap, TWO_HS transfer, lookup memo, pinned-memory safety law; TurboQuant dtypes refused at config time (P6.18 — proven 4-bit-class quality ceiling on this model) | `vllm_gaudi/xpu/patches/lmcache_hma_connector.py`, `vllm_gaudi/xpu/platform.py` |
+| KV cache | LMCache hybrid-KV connector: mamba/GDN boundary snap, TWO_HS transfer, lookup memo, pinned-memory safety law; TurboQuant dtypes SERVE CLEAN since P6.19 (spec-verify fix active by default; see the TurboQuant section) | `vllm_gaudi/xpu/patches/lmcache_hma_connector.py`, `vllm_gaudi/xpu/patches/tq_spec_fix.py` |
 | Quantization | FP8 weights with a block-quant **W8A16** route (vs stock per-token W8A8) | `vllm_gaudi/xpu/patches/fp8_block_w8a16.py` |
 | Scheduler | Tail-split v4 for hybrid prefix-cache loads | `vllm_gaudi/xpu/patches/sched_tail_split.py` |
 | Structured output | XGrammar backend, compact-JSON posture | `tools/serve_arc_b70.sh` |
@@ -37,54 +37,75 @@ A fork of [vllm-project/vllm-gaudi](https://github.com/vllm-project/vllm-gaudi) 
 | MTP k3 acceptance, t0 | **83.7 %** strict-gate window / **85.9 %** battery window (mean accepted length 3.51 / 2.58; hard floor PASS) |
 | MTP over no-spec (same-boot A/B) | **t0 2.35–2.47× · t1.0 1.84–2.09× · alt 2.42–2.53×** |
 
-The dtype face behind these records is `fp8_e4m3` — the only supported
-kv-cache dtype. The TurboQuant presets are **deprecated and refused at
-boot** since cert7 (section below).
+The dtype face behind these records is `fp8_e4m3` — the certified default
+and still the fastest aggregate. The TurboQuant presets are **servable
+since cert8** (P6.19 spec-verify fix — section below): they trade
+aggregate speed for KV capacity (up to 3.72×).
 
-### TurboQuant KV-cache dtypes — DEPRECATED (refused at boot since cert7, P6.18)
+### TurboQuant KV-cache dtypes — SERVABLE since cert8 (P6.19 spec-verify fix)
 
-> **DEPRECATED (closed 2026-11-04, P6.18): every `turboquant_*` kv-cache
-> dtype is refused at config time by `ArcXpuPlatform` with a loud
-> `ValueError` naming the certified default** — on every entry point (CLI,
-> scripts, raw image), no override lever. Root cause is closed: the
-> p618c roundtest proved the SoA store→decode Triton pair **numerically
-> exact on XPU** (decode self-coherence rel_err ≤ 6e-6, deterministic, all
-> four presets) — the corruption is the **4-bit-class value-precision
-> quality ceiling** (16 affine levels per token-head; upstream's own tables
-> rate these presets +2.71…+20.59 % PPL on gpt-oss), which degenerates the
-> target model into deterministic repetition attractors on ALL FOUR
-> presets, cold-included. Serve with `--kv-cache-dtype fp8_e4m3`
-> (the default — unaffected, re-certified on cert7 with the long-return
-> gate 100 % CLEAN).
+> **FIXED (2026-11-04, P6.19 / cert8): every `turboquant_*` kv-cache dtype
+> serves clean** — zero REP-LOOP / JUNK / BLEED / EMPTY on all four presets,
+> verified by the all-dtype long-return gate with the certified fp8 posture
+> as control (`results/2026-11-04-p619-tqverify/`). The P6.18 "4-bit-class
+> precision ceiling" disposition was wrong: the corruption was three stacked
+> spec-verify defects, all fixed wheel-side by `tq_spec_fix.py` (active by
+> default on TQ dtypes; fp8 never imports the hooked module):
+>
+> 1. **#TQ-blind-verify (RC1)** — captured XPU-graph verify shapes baked the
+>    raw-KV flash fast-path (`max_query_len == max_seq_len` at capture), so
+>    verify replays never read the quantized cache. Fix: donor-v19b capture
+>    forcing (`max_seq_len=q_len+1`, `seq_lens_cpu=q_len+1`,
+>    `seq_lens=q_len`) — enforcing the stock builder's own contract ("real
+>    seq_lens are filled at replay time", `turboquant_attn.py` capture
+>    builder).
+> 2. **Replay-broken multi-row dispatch (RC2)** — the stock continuation
+>    branch's single multi-row synthetic-decode call (stride-0 expanded
+>    block table + synthesized seq_lens + B=q_len grid) computes wrong under
+>    graph REPLAY. Fix: **split-row dispatch** (ships) — q_len separate
+>    single-row stock decode calls, per-row causal limit
+>    `seq_lens[i]-(q_len-1-r)` as a recorded device op on the LIVE seq_lens
+>    buffer.
+> 3. **Two TQ ops trees (RC3)** — the wheel ships a slot-interleaved AoS
+>    pair (`ops/triton_turboquant_{store,decode}.py` — the engine's XPU
+>    default) AND a FlyDSL-gated SoA tree never used on XPU. The first
+>    single-pass MQ kernel draft targeted SoA and read the live cache as
+>    exact zeros (REP-LOOP on every class). Fix: `tq_mq_aos.py` re-ports
+>    the kernel to the AoS layout — offline-exact vs the engine's own pair
+>    on all four presets (MQVAL5). LAW: offline validation must import the
+>    pair the runtime dispatches.
+>
+> Knobs: `VLLM_ARC_TQ_SPEC_FIX=1` (default), `VLLM_ARC_TQ_VERIFY_MODE=
+> split|mq|synth` (split ships; mq = single-pass kernel, +20 % agg8,
+> experimental), `VLLM_ARC_TQ_MQ_SPLITS=32` — see `docs/envs.md`.
+>
+> Identity faces (t0 variant flips / t1-seed sporadic divergence) remain on
+> some classes/dtypes — dispositioned as the engine's probabilistic-drafting
+> class (p618b Class-A semantics): the certified fp8 control fires the same
+> class with the fix absent by construction, and the variant hashes are
+> cross-boot-stable. t0 within-path byte-identity holds wherever t0 is
+> identical; the coarsest preset (3bit) shows the widest t0 variant drift.
 
-What you see if you try (`--kv-cache-dtype turboquant_k8v4`): the boot dies
-in ~65 s with `ValidationError … Value error, ArcXpuPlatform: kv_cache_dtype
-'turboquant_k8v4' is deprecated on vllm-arc: … Serve with the certified
-default 'fp8_e4m3'` — `Application startup complete` is never reached
-(G0 guard-proof legs, both presets, `results/2026-11-03-p618-cert7/`).
-
-Historical table (the pre-deprecation P6.14/P6.15/P6.16 capacity and speed
-faces — **kept for the record, not servable on cert7+**; fp8 row is live):
+Servable preset table (capacity/TTFT faces from the P6.14 campaign;
+corruption gate re-proven on cert8; fp8 row is the certified default):
 
 | Preset | KV capacity | U32k / U64k TTFT | t1.0 agg (tok/s) | Status |
 |---|---|---|---|---|
-| `fp8_e4m3` (default) | 405,491 tok (1.55×) | 23.16 / 50.77 s | **241.10** | **the certified dtype — fastest aggregate, corruption-free** |
-| `turboquant_k8v4` | 526,445 tok (2.01×) | 15.29 / 33.03 s | 172.95 | refused since cert7 |
-| `turboquant_4bit_nc` | 757,641 tok (2.89×) | 15.91 / 34.02 s | 134.42 | refused since cert7 |
-| `turboquant_k3v4_nc` | 853,220 tok (3.25×) | 15.48 / 33.78 s | 137.11 | refused since cert7 |
-| `turboquant_3bit_nc` | **975,329 tok (3.72×)** | 16.02 / 35.74 s | 171.32 | refused since cert7 |
+| `fp8_e4m3` (default) | 405,491 tok (1.55×) | 23.16 / 50.77 s | **241.10** | **the certified default — fastest aggregate** |
+| `turboquant_k8v4` | 526,445 tok (2.01×) | 15.29 / 33.03 s | 172.95 | **servable (cert8)** — spec tps solo 54.4 / agg8 236.0 (cert8 gate) |
+| `turboquant_4bit_nc` | 757,641 tok (2.89×) | 15.91 / 34.02 s | 134.42 | **servable (cert8)** |
+| `turboquant_k3v4_nc` | 853,220 tok (3.25×) | 15.48 / 33.78 s | 137.11 | **servable (cert8)** |
+| `turboquant_3bit_nc` | **975,329 tok (3.72×)** | 16.02 / 35.74 s | 171.32 | **servable (cert8)** — widest t0 variant drift (8 V levels) |
 
-The TQ capacity/TTFT advantages are **not recoverable** on this stack: the
-degeneracy is the quantizer's precision, not a fixable defect (no
-quality-correcting kernel exists in any admitted donor — scope law). For
-stall relief on the certified fp8 line use the measured levers instead:
-`ARC_MNBT=4096` (first choice) or the p65 long-context profile — see
-"Optional postures" below. Campaign evidence: reproduction battery
-`results/2026-11-03-p618b-repro/`, kernel roundtest
-`results/2026-11-03-p618c-roundtest/`, release gate + long-return
-`results/2026-11-03-p618-cert7/`; the earlier per-preset validation legs
-`results/2026-11-02-p614-l1v2/` + `-l3/` remain banked as history. Full
-matrix + dispositions: [`docs/PERFORMANCE-arc.md`](docs/PERFORMANCE-arc.md).
+For stall relief on the certified fp8 line the measured levers remain first
+choice: `ARC_MNBT=4096` or the p65 long-context profile — see "Optional
+postures" below. Campaign evidence: P6.19 root-cause + fix + all-dtype
+gate + best-practices audit `results/2026-11-04-p619-tqverify/` (this
+closed the P6.18 disposition); the P6.18 record stays banked at
+`results/2026-11-03-p618{b-repro,c-roundtest,-cert7}/`; the earlier
+per-preset validation legs `results/2026-11-02-p614-l1v2/` + `-l3/` remain
+banked as history. Full matrix + dispositions:
+[`docs/PERFORMANCE-arc.md`](docs/PERFORMANCE-arc.md).
 
 ## Quick start
 
@@ -104,25 +125,27 @@ RIG=<build-host>                                # <- set: your rig/build host
                                                  #    hygiene law, and run
                                                  #    tools/leak_sweep.sh
                                                  #    before pushing)
-SHA=$(git rev-parse rel/v0.30.0-b70-cert7)      # the certified commit
-git archive --format=tar -o /tmp/fork.tar rel/v0.30.0-b70-cert7
+SHA=$(git rev-parse rel/v0.30.0-b70-cert8)      # the certified commit
+git archive --format=tar -o /tmp/fork.tar rel/v0.30.0-b70-cert8
 scp /tmp/fork.tar root@$RIG:/root/build/
 ssh root@$RIG 'tar -xOf /root/build/fork.tar tools/build_image.sh > /root/build/build_image.sh'
-ssh root@$RIG bash /root/build/build_image.sh /root/build/fork.tar $SHA vllm-arc:v0.30.0-b70-cert7
+ssh root@$RIG bash /root/build/build_image.sh /root/build/fork.tar $SHA vllm-arc:v0.30.0-b70-cert8
 #    -> wheel_guard PASSes (4/4 md5s), IMAGE_MANIFEST records fork_sha == $SHA
 #       (verify: docker run --rm --entrypoint cat
-#        vllm-arc:v0.30.0-b70-cert7 /etc/vllm-arc/IMAGE_MANIFEST)
+#        vllm-arc:v0.30.0-b70-cert8 /etc/vllm-arc/IMAGE_MANIFEST)
 #       ~15 min cold; ~1 min when only the source changed (stack layers
 #       cached — layer-order law in the Dockerfile).
 #
 #    Tag lineage (full table: docs/PERFORMANCE-arc.md "Image lineage"):
-#    cert7 = current (the P6.18 TQ deprecation guard; fp8 default byte-
-#    identical to cert6). Superseded: cert6 (TQ dtypes servable but
-#    degenerate on this model — do NOT serve TQ on cert6), cert5
-#    (identical default behavior, lacks the TQ-aware store hunk), cert4
-#    (identical default behavior, lacks the default-OFF slice hunk),
-#    cert3 (identical default behavior, lacks the deferral hunk), cert2
-#    (0.5.5-era wheel line), cert (predates r46u — never build from it).
+#    cert8 = current (P6.19 TQ spec-verify fix — all four turboquant_*
+#    dtypes serve clean; refusal lifted; fp8 default unchanged). Superseded:
+#    cert7 (its P6.18 refusal is superseded by the P6.19 fix), cert6
+#    (its TQ dtypes carry the pre-fix corrupted spec-verify path — do NOT
+#    serve TQ on cert6 or earlier), cert5 (identical default behavior,
+#    lacks the TQ-aware store hunk), cert4 (identical default behavior,
+#    lacks the default-OFF slice hunk), cert3 (identical default behavior,
+#    lacks the deferral hunk), cert2 (0.5.5-era wheel line), cert (predates
+#    r46u — never build from it).
 
 # 2. Boot — the validated posture (annotated semantics in
 #    docs/CONFIGURATION-arc.md Step 1; key points: --privileged REQUIRED
@@ -138,7 +161,7 @@ docker run -d --name arc-test --privileged --network host --ipc host \
   -v ~/.cache/arc/inductor:/root/.inductor_cache \
   -e VLLM_ALLOW_LONG_MAX_MODEL_LEN=1 \
   -e VLLM_WORKER_MULTIPROC_METHOD=spawn \
-  --entrypoint bash vllm-arc:v0.30.0-b70-cert7 -c "sleep infinity"
+  --entrypoint bash vllm-arc:v0.30.0-b70-cert8 -c "sleep infinity"
 
 # 3. Serve — the certified line (P6.17: probabilistic drafting = the serve
 #    script's default posture), byte-identical to
@@ -243,7 +266,7 @@ The uniform boot interface with posture knobs (rig paths) is
 ## Repository model
 
 - **`main` is linear and protected**: changes land as squash commits from per-item lanes (`feat/arc-pNN-*`); direct pushes, force pushes, and deletions are blocked; PRs are required.
-- **Certified releases are annotated tags** pointing at the certified `main` commit — current: `rel/v0.30.0-b70-cert7`; superseded: `rel/v0.30.0-b70-cert6` (fp8 behavior byte-identical; its servable `turboquant_*` dtypes degenerate on this model — the reason cert7 refuses them), `rel/v0.30.0-b70-cert5` (identical default behavior, lacks the P6.14 TQ-aware store hunk), `rel/v0.30.0-b70-cert4` (identical default behavior, lacks the default-OFF P6.13 slice hunk), `rel/v0.30.0-b70-cert3` (identical default behavior, lacks the p65 deferral hunk), `rel/v0.30.0-b70-cert2` (0.5.5-era lmcache line — valid, older), `rel/v0.30.0-b70-cert` (predates the r46u glue-alias fix — never build from it). The Docker image embeds the fork SHA in `/etc/vllm-arc/IMAGE_MANIFEST` for A/B verification.
+- **Certified releases are annotated tags** pointing at the certified `main` commit — current: `rel/v0.30.0-b70-cert8`; superseded: `rel/v0.30.0-b70-cert7` (cert6 engine + the P6.18 TQ refusal — superseded by the P6.19 fix: its refusal is lifted on cert8 and the TQ dtypes serve clean), `rel/v0.30.0-b70-cert6` (fp8 behavior byte-identical; its servable `turboquant_*` dtypes carried the P6.18-corrupted spec-verify path), `rel/v0.30.0-b70-cert5` (identical default behavior, lacks the P6.14 TQ-aware store hunk), `rel/v0.30.0-b70-cert4` (identical default behavior, lacks the default-OFF P6.13 slice hunk), `rel/v0.30.0-b70-cert3` (identical default behavior, lacks the p65 deferral hunk), `rel/v0.30.0-b70-cert2` (0.5.5-era lmcache line — valid, older), `rel/v0.30.0-b70-cert` (predates the r46u glue-alias fix — never build from it). The Docker image embeds the fork SHA in `/etc/vllm-arc/IMAGE_MANIFEST` for A/B verification.
 - **Evidence is in-tree**: every validation leg banks to `results/YYYY-MM-DD-<phase>-r<leg>-<slug>/` (VERDICT + raw outputs) — **107 evidence dirs, 100 VERDICTs of record**, P0 through P6.
 - **No secrets or real host addresses in-tree (publishing-hygiene law)**: tracked == pushable, so credentials, rig/host addresses, and private identities never enter tracked files; banked logs carry redacted host addresses (each banking-time scrub documented in its `results/REDACTION-*.md` note). `tools/leak_sweep.sh` must exit 0 before every push.
 - The `feat/arc-*` branches are kept deliberately: squash-merging leaves the per-item development history nowhere else.

@@ -5,8 +5,10 @@ at the r46t close-out) from `vllm_gaudi/envs.py` arc-lane markers + the
 certified serve line (`r43_serve_k5.sh`, spec depth 3 per the r46t
 recommendation — a serve-time CLI change — on image
 `vllm-arc:v0.30.0-b70-cert`; unchanged since — the chain is identical on
-the current certified image `vllm-arc:v0.30.0-b70-cert7`, where
-`LMCACHE_TRACK_USAGE=false` (P6.3) made it 25). Every entry cites its
+the current certified image `vllm-arc:v0.30.0-b70-cert8`, where
+`LMCACHE_TRACK_USAGE=false` (P6.3) made it 25; cert8 = cert6-era
+engine bytes under the certified fp8 line — the P6.19 TQ fix never
+engages there, control-proven t7/t9 + cert8 gate). Every entry cites its
 provenance (no-unevidenced law, plan Appendix H #6). Audit of record:
 `results/2026-10-30-p5-r45-env-log-audit/`.
 
@@ -79,6 +81,7 @@ kill-switch to disable):
 | `VLLM_MAMBA_FP16_SEED_REPAIR` | `1` → repair ACTIVE | `patches/mamba_lmcache_glue.py:69` | p41 | `=0` |
 | `VLLM_ARC_R35_TAIL_SPLIT` | `1` → tail-split v4 ACTIVE | `patches/sched_tail_split.py:59` | p43/r35 | `=0` |
 | `VLLM_ARC_FP8_W8A16_DISABLE` | `0` → W8A16 reroute ACTIVE | `patches/fp8_block_w8a16.py:65` | p44 | `=1` (stock W8A8) |
+| `VLLM_ARC_TQ_SPEC_FIX` | `1` → spec-verify fix ACTIVE on every `turboquant_*` dtype (fp8 never imports the hooked module — control proof t7/t9) | `patches/tq_spec_fix.py:99` | p619 | `=0` (pre-fix TQ spec-verify — corrupt under graphs, diagnosis only) |
 
 Dead since r47b (kept OUT of the live tables — no-unevidenced law):
 `VLLM_ARC_LMC_TORCH_KV` — its consumer module
@@ -97,6 +100,8 @@ next engine-touching item.)
 
 | knob | default | semantics | consumer |
 |---|---|---|---|
+| `VLLM_ARC_TQ_VERIFY_MODE` | `"split"` = the certified dispatch (q_len single-row stock decode calls, graph-safe — t5/t9-proven all dtypes) | `=mq` single-pass MQ kernel on the wheel's AoS layout (`patches/tq_mq_aos.py`; MQVAL5 4/4 presets exact vs the engine's own pair; agg8 +20 % vs split, t8g — **experimental**: multi/simple identity faces wider than split); `=synth` the pre-fix multi-row synthetic-decode dispatch (t4f-proven replay-broken — differential diagnosis only) | `patches/tq_spec_fix.py:100` |
+| `VLLM_ARC_TQ_MQ_SPLITS` | `32` | KV split count for the MQ kernel (`mq` mode only) | `patches/tq_mq_aos.py` |
 | `VLLM_ARC_LOOKUP_ELIDE` | `0` = OFF | **INT token count, not a bool** — skips both ZMQ lookups only when engine prefix held AND residual ≤ N tokens; r31 disposition: opt-in only (p40d/p41c made real joint loads exist; elide would forfeit them) | `patches/lmcache_hma_connector.py:235` |
 | `LMC_DEFER_CHUNK_STORE` | `"0"` = OFF | P6.5 chunk-set store deferral — under `--long-prefill-token-threshold`, intermediate prefill-chunk rows carry `can_save=False` and leave `num_saved_tokens` un-advanced; the final chunk stores the whole span in ONE event. Opt-in long-context profile only (with `LMC_DEFER_MIN_TOKENS=40960`); default posture byte-identical to cert3 | lmcint `vllm_v1_adapter.py` `from_request_tracker` (p65/r48l) |
 | `LMC_DEFER_MIN_TOKENS` | `"0"` = defer every chunked prefill | length gate: defer only prompts with `prompt_len >= N`. Certified value **40960** — per-chunk events are free at 32k (LMC ≡ no-LMC) while the ungated one-shot store regresses that face +4.2 s (r48k); the win only exists at 64k (+24.6 s attribution @12 bys) | lmcint `vllm_v1_adapter.py` `from_request_tracker` (p65/r48l) |

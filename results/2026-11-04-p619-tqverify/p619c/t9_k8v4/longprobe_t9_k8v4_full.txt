@@ -1,0 +1,152 @@
+===== essay =====
+{
+ "t0_identical": true,
+ "hashes": [
+  "6084223df0a5",
+  "6084223df0a5",
+  "6084223df0a5"
+ ],
+ "content_hashes": [
+  "ed1a1a955f6a",
+  "ed1a1a955f6a",
+  "ed1a1a955f6a"
+ ],
+ "garble": {
+  "cold": [],
+  "rehit": [],
+  "rehit2": []
+ },
+ "finish": [
+  "stop",
+  "stop",
+  "stop"
+ ],
+ "prompt_tok": 2145,
+ "chars": [
+  4269,
+  4269,
+  4269
+ ],
+ "t1_seed_identical": true,
+ "t1_hashes": [
+  "07fb643fb1ff",
+  "07fb643fb1ff"
+ ],
+ "t1_garble": [],
+ "dt_cold": 17.1
+}
+
+===== code =====
+{
+ "t0_identical": true,
+ "hashes": [
+  "4065e97dc61c",
+  "4065e97dc61c",
+  "4065e97dc61c"
+ ],
+ "content_hashes": [
+  "d30d08c78b33",
+  "d30d08c78b33",
+  "d30d08c78b33"
+ ],
+ "garble": {
+  "cold": [],
+  "rehit": [],
+  "rehit2": []
+ },
+ "finish": [
+  "stop",
+  "stop",
+  "stop"
+ ],
+ "prompt_tok": 5051,
+ "chars": [
+  3301,
+  3301,
+  3301
+ ],
+ "t1_seed_identical": true,
+ "t1_hashes": [
+  "5899d3e0bec2",
+  "5899d3e0bec2"
+ ],
+ "t1_garble": [],
+ "dt_cold": 20.8
+}
+
+===== multi =====
+{
+ "t0_identical": false,
+ "hashes": [
+  "f0dce5b55f4f",
+  "3bb45b51520b",
+  "3bb45b51520b"
+ ],
+ "content_hashes": [
+  "47098f53e894",
+  "415bdb391499",
+  "415bdb391499"
+ ],
+ "garble": {
+  "cold": [],
+  "rehit": [],
+  "rehit2": []
+ },
+ "finish": [
+  "stop",
+  "stop",
+  "stop"
+ ],
+ "prompt_tok": 3400,
+ "chars": [
+  812,
+  802,
+  802
+ ],
+ "t1_seed_identical": false,
+ "t1_hashes": [
+  "b3780c696cbc",
+  "ba256b612fe8"
+ ],
+ "t1_garble": [],
+ "dt_cold": 5.5
+}
+
+===== simple =====
+{
+ "t0_identical": true,
+ "hashes": [
+  "fe080656ac71",
+  "fe080656ac71",
+  "fe080656ac71"
+ ],
+ "content_hashes": [
+  "128a8078afb2",
+  "128a8078afb2",
+  "128a8078afb2"
+ ],
+ "garble": {
+  "cold": [],
+  "rehit": [],
+  "rehit2": []
+ },
+ "finish": [
+  "stop",
+  "stop",
+  "stop"
+ ],
+ "prompt_tok": 38,
+ "chars": [
+  1507,
+  1507,
+  1507
+ ],
+ "t1_seed_identical": true,
+ "t1_hashes": [
+  "9d7633745ee2",
+  "9d7633745ee2"
+ ],
+ "t1_garble": [],
+ "dt_cold": 4.4
+}
+

@@ -1,0 +1,40 @@
+== essay t0 x8 (identity face re-characterization) ==
+  round0: e3b0c44298fc chars=0 finish=length SAME
+  round1: e3b0c44298fc chars=0 finish=length SAME
+  round2: e3b0c44298fc chars=0 finish=length SAME
+  round3: e3b0c44298fc chars=0 finish=length SAME
+  round4: e3b0c44298fc chars=0 finish=length SAME
+  round5: e3b0c44298fc chars=0 finish=length SAME
+  round6: e3b0c44298fc chars=0 finish=length SAME
+  round7: e3b0c44298fc chars=0 finish=length SAME
+t0: 8/8 identical to round0
+== t1 seed control (seed 7 x3 vs seed 11 x3) ==
+Traceback (most recent call last):
+  File "<stdin>", line 32, in <module>
+  File "<stdin>", line 12, in gen
+  File "/usr/lib/python3.12/urllib/request.py", line 215, in urlopen
+    return opener.open(url, data, timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 515, in open
+    response = self._open(req, data)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 532, in _open
+    result = self._call_chain(self.handle_open, protocol, protocol +
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 492, in _call_chain
+    result = func(*args)
+             ^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 1373, in http_open
+    return self.do_open(http.client.HTTPConnection, req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 1348, in do_open
+    r = h.getresponse()
+        ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/http/client.py", line 1457, in getresponse
+    response.begin()
+  File "/usr/lib/python3.12/http/client.py", line 336, in begin
+    version, status, reason = self._read_status()
+                              ^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/http/client.py", line 305, in _read_status
+    raise RemoteDisconnected("Remote end closed connection without"
+http.client.RemoteDisconnected: Remote end closed connection without response

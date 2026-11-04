@@ -1,0 +1,40 @@
+=================== P619C LEG t1i (instrument, redirect OFF) 06:32:18 ===================
+SUBSTITUTIONS dtype=1 mounts=1 knob=1
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert6 name=arc-test graph=1 spec=3 gmu=0.8 mnbt=8192 seqs=64 xgc=0 port=8000 06:33:04
+HEALTH=OK after ~310s
+(Worker_TP0 pid=930) INFO 11-04 06:35:03 [platform.py:173] ArcXpuPlatform: wheel hook turboquant_attn <- patches.tq_spec_fix OK
+(Worker_TP1 pid=1030) INFO 11-04 06:35:03 [platform.py:173] ArcXpuPlatform: wheel hook turboquant_attn <- patches.tq_spec_fix OK
+GEN 10.4s finish=stop chars=185 tok=188
+HEAD: '\n\nHello! How can I help you today?\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n'
+TAIL: '\n\nHello! How can I help you today?\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n'
+Traceback (most recent call last):
+  File "<stdin>", line 16, in <module>
+  File "<stdin>", line 12, in gen
+TypeError: object of type 'NoneType' has no len()
+24
+(Worker_TP1 pid=1030) P619I forward: is_prefill=None n_tok=None n_req=None qsl_head=None qlens=None seq_lens_head=None num_decodes=None num_decode_tokens=None max_query_len=None max_seq_len=None
+(Worker_TP0 pid=930) P619I forward: is_prefill=None n_tok=None n_req=None qsl_head=None qlens=None seq_lens_head=None num_decodes=None num_decode_tokens=None max_query_len=None max_seq_len=None
+(Worker_TP1 pid=1030) P619I forward: is_prefill=True n_tok=185 n_req=37 qsl_head=[0, 5, 10, 15, 20, 25, 30, 35, 40] qlens=[5, 10, 15, 20, 25, 30, 35, 40] seq_lens_head=[5, 5, 5, 5, 5, 5, 5, 5] num_decodes=0 num_decode_tokens=0 max_query_len=5 max_seq_len=5
+(Worker_TP0 pid=930) P619I forward: is_prefill=True n_tok=185 n_req=37 qsl_head=[0, 5, 10, 15, 20, 25, 30, 35, 40] qlens=[5, 10, 15, 20, 25, 30, 35, 40] seq_lens_head=[5, 5, 5, 5, 5, 5, 5, 5] num_decodes=0 num_decode_tokens=0 max_query_len=5 max_seq_len=5
+(Worker_TP1 pid=1030) P619I forward: is_prefill=False n_tok=37 n_req=37 qsl_head=[0, 1, 2, 3, 4, 5, 6, 7, 8] qlens=[1, 2, 3, 4, 5, 6, 7, 8] seq_lens_head=[6, 6, 6, 6, 6, 6, 6, 6] num_decodes=37 num_decode_tokens=37 max_query_len=1 max_seq_len=8
+(Worker_TP0 pid=930) P619I forward: is_prefill=False n_tok=37 n_req=37 qsl_head=[0, 1, 2, 3, 4, 5, 6, 7, 8] qlens=[1, 2, 3, 4, 5, 6, 7, 8] seq_lens_head=[6, 6, 6, 6, 6, 6, 6, 6] num_decodes=37 num_decode_tokens=37 max_query_len=1 max_seq_len=8
+(Worker_TP1 pid=1030) P619I forward: is_prefill=True n_tok=148 n_req=37 qsl_head=[0, 4, 8, 12, 16, 20, 24, 28, 32] qlens=[4, 8, 12, 16, 20, 24, 28, 32] seq_lens_head=[9, 9, 9, 9, 9, 9, 9, 9] num_decodes=0 num_decode_tokens=0 max_query_len=4 max_seq_len=9
+(Worker_TP0 pid=930) P619I forward: is_prefill=True n_tok=148 n_req=37 qsl_head=[0, 4, 8, 12, 16, 20, 24, 28, 32] qlens=[4, 8, 12, 16, 20, 24, 28, 32] seq_lens_head=[9, 9, 9, 9, 9, 9, 9, 9] num_decodes=0 num_decode_tokens=0 max_query_len=4 max_seq_len=9
+(Worker_TP1 pid=1030) P619I forward: is_prefill=True n_tok=5 n_req=2 qsl_head=[0, 4, 5] qlens=[4, 5] seq_lens_head=[13, 10] num_decodes=0 num_decode_tokens=0 max_query_len=4 max_seq_len=13
+(Worker_TP0 pid=930) P619I forward: is_prefill=True n_tok=5 n_req=2 qsl_head=[0, 4, 5] qlens=[4, 5] seq_lens_head=[13, 10] num_decodes=0 num_decode_tokens=0 max_query_len=4 max_seq_len=13
+(Worker_TP1 pid=1030) P619I forward: is_prefill=False n_tok=2 n_req=2 qsl_head=[0, 1, 2] qlens=[1, 2] seq_lens_head=[14, 11] num_decodes=2 num_decode_tokens=2 max_query_len=1 max_seq_len=16
+(Worker_TP0 pid=930) P619I forward: is_prefill=False n_tok=2 n_req=2 qsl_head=[0, 1, 2] qlens=[1, 2] seq_lens_head=[14, 11] num_decodes=2 num_decode_tokens=2 max_query_len=1 max_seq_len=16
+(Worker_TP1 pid=1030) P619I forward: is_prefill=True n_tok=4 n_req=1 qsl_head=[0, 4] qlens=[4] seq_lens_head=[18] num_decodes=0 num_decode_tokens=0 max_query_len=4 max_seq_len=18
+(Worker_TP0 pid=930) P619I forward: is_prefill=True n_tok=4 n_req=1 qsl_head=[0, 4] qlens=[4] seq_lens_head=[18] num_decodes=0 num_decode_tokens=0 max_query_len=4 max_seq_len=18
+(Worker_TP1 pid=1030) P619I forward: is_prefill=False n_tok=1 n_req=1 qsl_head=[0, 1] qlens=[1] seq_lens_head=[19] num_decodes=1 num_decode_tokens=1 max_query_len=1 max_seq_len=21
+(Worker_TP0 pid=930) P619I forward: is_prefill=False n_tok=1 n_req=1 qsl_head=[0, 1] qlens=[1] seq_lens_head=[19] num_decodes=1 num_decode_tokens=1 max_query_len=1 max_seq_len=21
+(Worker_TP0 pid=930) Capturing CUDA graphs (FULL):   0%|          | 0/54 [00:00<?, ?it/s](Worker_TP1 pid=1030) P619I forward: is_prefill=True n_tok=256 n_req=64 qsl_head=[0, 4, 8, 12, 16, 20, 24, 28, 32] qlens=[4, 8, 12, 16, 20, 24, 28, 32] seq_lens_head=[4, 4, 4, 4, 4, 4, 4, 4] num_decodes=0 num_decode_tokens=0 max_query_len=4 max_seq_len=262144
+P619I forward: is_prefill=True n_tok=256 n_req=64 qsl_head=[0, 4, 8, 12, 16, 20, 24, 28, 32] qlens=[4, 8, 12, 16, 20, 24, 28, 32] seq_lens_head=[4, 4, 4, 4, 4, 4, 4, 4] num_decodes=0 num_decode_tokens=0 max_query_len=4 max_seq_len=262144
+(Worker_TP1 pid=1030) P619I forward: is_prefill=True n_tok=252 n_req=63 qsl_head=[0, 4, 8, 12, 16, 20, 24, 28, 32] qlens=[4, 8, 12, 16, 20, 24, 28, 32] seq_lens_head=[4, 4, 4, 4, 4, 4, 4, 4] num_decodes=0 num_decode_tokens=0 max_query_len=4 max_seq_len=262144
+(Worker_TP0 pid=930) Capturing CUDA graphs (FULL):   2%|▏         | 1/54 [00:02<01:58,  2.23s/it]P619I forward: is_prefill=True n_tok=252 n_req=63 qsl_head=[0, 4, 8, 12, 16, 20, 24, 28, 32] qlens=[4, 8, 12, 16, 20, 24, 28, 32] seq_lens_head=[4, 4, 4, 4, 4, 4, 4, 4] num_decodes=0 num_decode_tokens=0 max_query_len=4 max_seq_len=262144
+(Worker_TP1 pid=1030) P619I forward: is_prefill=True n_tok=248 n_req=62 qsl_head=[0, 4, 8, 12, 16, 20, 24, 28, 32] qlens=[4, 8, 12, 16, 20, 24, 28, 32] seq_lens_head=[4, 4, 4, 4, 4, 4, 4, 4] num_decodes=0 num_decode_tokens=0 max_query_len=4 max_seq_len=262144
+(Worker_TP0 pid=930) Capturing CUDA graphs (FULL):   4%|▎         | 2/54 [00:02<01:04,  1.24s/it]P619I forward: is_prefill=True n_tok=248 n_req=62 qsl_head=[0, 4, 8, 12, 16, 20, 24, 28, 32] qlens=[4, 8, 12, 16, 20, 24, 28, 32] seq_lens_head=[4, 4, 4, 4, 4, 4, 4, 4] num_decodes=0 num_decode_tokens=0 max_query_len=4 max_seq_len=262144
+(Worker_TP1 pid=1030) P619I forward: is_prefill=True n_tok=240 n_req=60 qsl_head=[0, 4, 8, 12, 16, 20, 24, 28, 32] qlens=[4, 8, 12, 16, 20, 24, 28, 32] seq_lens_head=[4, 4, 4, 4, 4, 4, 4, 4] num_decodes=0 num_decode_tokens=0 max_query_len=4 max_seq_len=262144
+(Worker_TP0 pid=930) Capturing CUDA graphs (FULL):   6%|▌         | 3/54 [00:03<00:46,  1.09it/s]P619I forward: is_prefill=True n_tok=240 n_req=60 qsl_head=[0, 4, 8, 12, 16, 20, 24, 28, 32] qlens=[4, 8, 12, 16, 20, 24, 28, 32] seq_lens_head=[4, 4, 4, 4, 4, 4, 4, 4] num_decodes=0 num_decode_tokens=0 max_query_len=4 max_seq_len=262144
+0
+LEG t1i COMPLETE 06:38:53

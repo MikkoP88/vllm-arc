@@ -1,0 +1,14 @@
+=================== P619C LEG t3e (k8v4 spec3 GRAPH=0 eager) 07:42:45 ===================
+SUBSTITUTIONS dtype=1
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert6 name=arc-test graph=0 spec=3 gmu=0.8 mnbt=8192 seqs=64 xgc=0 port=8000 07:43:30
+HEALTH=OK after ~440s
+(APIServer pid=13) INFO 11-04 07:43:45 [api_utils.py:286] non-default args: {'model_tag': '/models/target', 'chat_template': '/root/chat_template_qwen38_high.jinja', 'enable_auto_tool_choice': True, 'tool_call_parser': 'qwen3_coder', 'model': '/models/target', 'trust_remote_code': True, 'dtype': 'float16', 'max_model_len': 262144, 'quantization': 'fp8', 'served_model_name': ['qwen3.8-27b-fp8'], 'reasoning_parser': 'qwen3', 'tensor_parallel_size': 2, 'block_size': 64, 'gpu_memory_utilization': 0.8, 'kv_cache_dtype': 'turboquant_k8v4', 'enable_prefix_caching': True, 'mamba_ssm_cache_dtype': 'float16', 'mamba_cache_mode': 'align', 'max_num_batched_tokens': 8192, 'max_num_seqs': 64, 'disable_hybrid_kv_cache_manager': False, 'speculative_config': {'method': 'mtp', 'num_speculative_tokens': 3, 'draft_sample_method': 'probabilistic'}, 'kv_transfer_config': KVTransferConfig(kv_connector='LMCacheConnectorV1', engine_id='arc-p40', kv_buffer_device='xpu', kv_buffer_size=1000000000.0, kv_role='kv_both', kv_rank=None, kv_parallel_size=1, kv_ip='127.0.0.1', kv_port=14579, kv_connector_extra_config={'use_native': True, 'lmcache.extra_config': {'mamba_pool_ratio': 2}}, kv_connector_module_path=None, enable_permute_local_kv=False, kv_load_failure_policy='fail')}
+(APIServer pid=13) INFO 11-04 07:44:28 [graph_safe_output.py:665] ArcXpuPlatform: XPU graph boundary hygiene installed (pid 13, XPUGraph capture_begin/capture_end/replay + graph context __exit__ wrapped).
+FLIP_FIRST: stop 12.3s head: '\n\n1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20'
+[essay] t0_identical=False hashes=['232bae02439b', 'b6f90005a337', 'b6f90005a337'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=2145 chars=[3574, 3684, 3684]
+[code] t0_identical=True hashes=['83ab2c5474a8', '83ab2c5474a8', '83ab2c5474a8'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=5051 chars=[3555, 3555, 3555]
+[multi] t0_identical=False hashes=['6ab5388730e4', 'ae375cc64d53', 'fecca8b7d3f2'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=False prompt_tok=3400 chars=[1074, 1134, 1098]
+[simple] t0_identical=True hashes=['5ab6322400a0', '5ab6322400a0', '5ab6322400a0'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=38 chars=[1406, 1406, 1406]
+LONGPROBE t3e full: CORRUPTION_SIGNAL
+0
+LEG t3e COMPLETE 07:58:44
