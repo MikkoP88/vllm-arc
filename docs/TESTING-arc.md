@@ -195,8 +195,11 @@ zero REP-LOOP / JUNK / BLEED / EMPTY signals (the probe's garble
 detectors), `finish_reason == stop`, stable output length. Cert7 ran
 4 classes × (cold + rehit + rehit2 + 3 churn+rehit cycles) — 100 %
 CLEAN; plus a t1-seed annex (seeded temp-1.0 pairs; see the
-determinism-semantics law below). Evidence:
-`results/2026-11-03-p618-cert7/rig/gate/longprobe_*`.
+determinism-semantics law below). Cert8 ran the full suite on **all
+five dtypes** (fp8 + every `turboquant_*` preset, churn included —
+zero garble everywhere; the owner bar "no corruption on ANY kv-cache
+type"). Evidence: `results/2026-11-03-p618-cert7/rig/gate/longprobe_*`,
+`results/2026-11-04-p619-tqverify/rig/gate/`.
 
 ## Laws that every test posture keeps
 
@@ -226,8 +229,8 @@ determinism-semantics law below). Evidence:
 ## Evidence layout
 
 Each leg banks to `results/YYYY-MM-DD-<phase>-r<leg>-<slug>/` (VERDICT,
-raw bench outputs, hook audit, integrity shas, serve keylines) — 107
-dirs / 100 VERDICTs of record to date; the naming convention is
+raw bench outputs, hook audit, integrity shas, serve keylines) — 108
+dirs / 101 VERDICTs of record to date; the naming convention is
 documented in [`envs.md`](envs.md) (naming map).
 
 ## Validation record
