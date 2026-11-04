@@ -1,0 +1,8 @@
+(Worker_TP0 pid=741) P619T CANARY telemetry error
+(Worker_TP1 pid=742) P619T CANARY telemetry error
+(Worker_TP0 pid=741) P619T CANARY telemetry error
+(Worker_TP1 pid=742) P619T CANARY telemetry error
+(Worker_TP0 pid=741) P619T CANARY telemetry error
+(Worker_TP1 pid=742) P619T CANARY telemetry error
+(Worker_TP0 pid=741) P619T CANARY telemetry error
+(Worker_TP1 pid=742) P619T CANARY telemetry error

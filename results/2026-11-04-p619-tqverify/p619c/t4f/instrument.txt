@@ -1,0 +1,4 @@
+(Worker_TP0 pid=930) P619I forward: is_prefill=True n_tok=185 qlens=(5, 10, 15, 20, 25, 30, 35, 40) seqs=[5, 5, 5, 5, 5, 5, 5, 5] ndec=0 mql=5 msl=5
+(Worker_TP1 pid=1030) P619I forward: is_prefill=True n_tok=185 qlens=(5, 10, 15, 20, 25, 30, 35, 40) seqs=[5, 5, 5, 5, 5, 5, 5, 5] ndec=0 mql=5 msl=5
+(Worker_TP0 pid=930) P619I forward: is_prefill=False n_tok=37 qlens=(1, 2, 3, 4, 5, 6, 7, 8) seqs=[6, 6, 6, 6, 6, 6, 6, 6] ndec=37 mql=1 msl=8
+(Worker_TP1 pid=1030) P619I forward: is_prefill=False n_tok=37 qlens=(1, 2, 3, 4, 5, 6, 7, 8) seqs=[6, 6, 6, 6, 6, 6, 6, 6] ndec=37 mql=1 msl=8

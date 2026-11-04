@@ -1,0 +1,10 @@
+=================== P619D LEG t8e (k8v4 spec3 EAGER FIX v5 MODE=mq) 10:47:45 ===================
+SUBSTITUTIONS dtype=1 fixmount=1 mqmount=1 modeenv=1
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert6 name=arc-test graph=0 spec=3 gmu=0.8 mnbt=8192 seqs=64 xgc=0 port=8000 10:47:57
+HEALTH=OK after ~445s
+(Worker_TP1 pid=1030) P619 tq_spec_fix v5 installed (active=True mode=mq mq_kernel=True): v19b verify-capture forcing + single-pass MQ continuation dispatch
+(EngineCore pid=698) INFO 11-04 10:53:25 [kv_cache_utils.py:2395] XPU KV cache size: 546,942 tokens, Maximum concurrency for 262,144 tokens per request: 2.09x
+(APIServer pid=13) INFO 11-04 10:48:56 [platform.py:320] ArcXpuPlatform: graph posture cudagraph_mode=NONE capture_sizes=(1, 2, 4, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 120, 128, 136, 144, 152, 160, 168, 176, 184, 192, 200, 208, 216, 224, 232, 240, 248, 256, 272, 288, 304, 320, 336, 352, 368, 384, 400, 416, 432, 448, 464, 480, 496, 512) (VLLM_XPU_ENABLE_XPU_GRAPH=False).
+EAGER POSTURE CONFIRMED (no VLLM_XPU_ENABLE_XPU_GRAPH=True)
+FLIP_FIRST: length 107.6s head: "\n\n```\n# 1. Identify the user's request\nThe user wants to know the capital of France.\n\n2. Countinon/Expert knowledge:\n- T"
+Terminated

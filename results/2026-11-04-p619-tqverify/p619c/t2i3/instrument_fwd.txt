@@ -1,0 +1,6 @@
+(Worker_TP0 pid=931) P619T FWD layer=language_model.model.layers.3.self_attn.attn is_prefill=True n_tok=185 n_req=37 qsl=(0, 5, 10, 15, 20, 25, 30, 35, 40) seqs=(5, 5, 5, 5, 5, 5, 5, 5, 5) ndec=0 ndectok=0 mql=5 msl=5
+(Worker_TP1 pid=1031) P619T FWD layer=language_model.model.layers.3.self_attn.attn is_prefill=True n_tok=185 n_req=37 qsl=(0, 5, 10, 15, 20, 25, 30, 35, 40) seqs=(5, 5, 5, 5, 5, 5, 5, 5, 5) ndec=0 ndectok=0 mql=5 msl=5
+(Worker_TP0 pid=931) P619T FWD layer=mtp.layers.0.self_attn.attn is_prefill=False n_tok=37 n_req=37 qsl=(0, 1, 2, 3, 4, 5, 6, 7, 8) seqs=(6, 6, 6, 6, 6, 6, 6, 6, 6) ndec=37 ndectok=37 mql=1 msl=8
+(Worker_TP1 pid=1031) P619T FWD layer=mtp.layers.0.self_attn.attn is_prefill=False n_tok=37 n_req=37 qsl=(0, 1, 2, 3, 4, 5, 6, 7, 8) seqs=(6, 6, 6, 6, 6, 6, 6, 6, 6) ndec=37 ndectok=37 mql=1 msl=8
+(Worker_TP0 pid=931) P619T FWD layer=mtp.layers.0.self_attn.attn is_prefill=False n_tok=37 n_req=37 qsl=(0, 1, 2, 3, 4, 5, 6, 7, 8) seqs=(7, 7, 7, 7, 7, 7, 7, 7, 7) ndec=37 ndectok=37 mql=1 msl=8
+(Worker_TP1 pid=1031) P619T FWD layer=mtp.layers.0.self_attn.attn is_prefill=False n_tok=37 n_req=37 qsl=(0, 1, 2, 3, 4, 5, 6, 7, 8) seqs=(7, 7, 7, 7, 7, 7, 7, 7, 7) ndec=37 ndectok=37 mql=1 msl=8

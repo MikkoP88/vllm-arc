@@ -1,0 +1,13 @@
+=================== P619B LEG D1 (donor v1.2.35 k8v4 dflash) 06:06:33 ===================
+HEALTH=OK after ~155s
+(APIServer pid=1) INFO 11-04 06:07:32 [utils.py:240] non-default args: {'model_tag': '/models/target', 'host': '0.0.0.0', 'model': '/models/target', 'dtype': 'bfloat16', 'max_model_len': 64000, 'served_model_name': ['qwen3.8-27b-fp8'], 'generation_config': 'vllm', 'tensor_parallel_size': 2, 'block_size': 64, 'gpu_memory_utilization': 0.8, 'kv_cache_dtype': 'turboquant_k8v4', 'mamba_ssm_cache_dtype': 'float16', 'max_num_batched_tokens': 4096, 'max_num_seqs': 64, 'async_scheduling': True, 'speculative_config': {'method': 'dflash', 'model': '/models/drafter', 'num_speculative_tokens': 4}}
+(APIServer pid=1) INFO 11-04 06:07:32 [utils.py:240] non-default args: {'model_tag': '/models/target', 'host': '0.0.0.0', 'model': '/models/target', 'dtype': 'bfloat16', 'max_model_len': 64000, 'served_model_name': ['qwen3.8-27b-fp8'], 'generation_config': 'vllm', 'tensor_parallel_size': 2, 'block_size': 64, 'gpu_memory_utilization': 0.8, 'kv_cache_dtype': 'turboquant_k8v4', 'mamba_ssm_cache_dtype': 'float16', 'max_num_batched_tokens': 4096, 'max_num_seqs': 64, 'async_scheduling': True, 'speculative_config': {'method': 'dflash', 'model': '/models/drafter', 'num_speculative_tokens': 4}}
+(APIServer pid=1) INFO 11-04 06:07:47 [speculative.py:841] Overriding draft model max model len from 262144 to 64000
+FLIP_FIRST: stop 32.6s
+[essay] t0_identical=False hashes=['5b7800e5daf4', '55ea360c5d65', '3754db3277f5'] garble={'cold': [], 'rehit': [], 'rehit2': ['JUNK(5%)']} t1_seed_identical=False prompt_tok=2145 chars=[53, 80, 36]
+[code] t0_identical=False hashes=['d96ed427baa0', '6cd00c3ba535', '6cd00c3ba535'] garble={'cold': ['JUNK(7%)'], 'rehit': ['JUNK(5%)'], 'rehit2': ['JUNK(5%)']} t1_seed_identical=True prompt_tok=5051 chars=[26, 36, 36]
+[multi] t0_identical=True hashes=['fd7397c34784', 'fd7397c34784', 'fd7397c34784'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=3400 chars=[51, 51, 51]
+[simple] t0_identical=True hashes=['964a8002d349', '964a8002d349', '964a8002d349'] garble={'cold': ['JUNK(5%)'], 'rehit': ['JUNK(5%)'], 'rehit2': ['JUNK(5%)']} t1_seed_identical=True prompt_tok=38 chars=[38, 38, 38]
+LONGPROBE d1 full: CORRUPTION_SIGNAL
+0
+LEG D1 COMPLETE 06:14:45

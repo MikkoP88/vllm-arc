@@ -1,0 +1,31 @@
+=================== P619D LEG t8g (k8v4 spec3 GRAPH=1 FIX v6 MODE=mq) 12:18:08 ===================
+SUBSTITUTIONS dtype=1 fixmount=1 mqmount=1 env=1
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert6 name=arc-test graph=1 spec=3 gmu=0.8 mnbt=8192 seqs=64 xgc=0 port=8000 12:18:54
+HEALTH=OK after ~320s
+(Worker_TP1 pid=1037) P619 tq_spec_fix v6 installed (active=True mode=mq mq_kernel=True): v19b verify-capture forcing + single-pass MQ continuation dispatch
+(EngineCore pid=705) INFO 11-04 12:21:42 [kv_cache_utils.py:2395] XPU KV cache size: 519,972 tokens, Maximum concurrency for 262,144 tokens per request: 1.98x
+FLIP_FIRST: stop 9.3s head: '\n\n1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20'
+[essay] t0_identical=True hashes=['13d65b60c1c7', '13d65b60c1c7', '13d65b60c1c7'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=2145 chars=[3992, 3992, 3992]
+[code] t0_identical=True hashes=['ad83bc9e5839', 'ad83bc9e5839', 'ad83bc9e5839'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=5051 chars=[3321, 3321, 3321]
+[multi] t0_identical=False hashes=['3bb45b51520b', 'f0dce5b55f4f', '3bb45b51520b'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=False prompt_tok=3400 chars=[802, 812, 802]
+[simple] t0_identical=False hashes=['84efc84cc142', 'fe080656ac71', 'fe080656ac71'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=38 chars=[1510, 1507, 1507]
+LONGPROBE t8g full: CORRUPTION_SIGNAL
+== essay t0 x8 (identity face re-characterization) ==
+  round0: c4e1852bd238 chars=4699 finish=length SAME
+  round1: e3b0c44298fc chars=0 finish=length FLIP
+  round2: ec437b86a866 chars=718 finish=length FLIP
+  round3: 0589f4f9b052 chars=869 finish=length FLIP
+  round4: e3b0c44298fc chars=0 finish=length FLIP
+  round5: aed2d6bc3b9a chars=4629 finish=length FLIP
+  round6: e3b0c44298fc chars=0 finish=length FLIP
+  round7: e3b0c44298fc chars=0 finish=length FLIP
+t0: 1/8 identical to round0
+== t1 seed control (seed 7 x3 vs seed 11 x3) ==
+  seed7 : ['ab2d846bc0c6', '9aec5542bc83', 'e50832784f60'] identical=False
+  seed11: ['2a775ac5f816', 'e3b0c44298fc', '8fe00befe716'] identical=False
+  cross-seed differ: True
+solo1: tps=54.63 tok=512 dt=9.4s finish=length
+solo2: tps=56.24 tok=512 dt=9.1s finish=length
+agg8: tps=289.23 tok=4096 wall=14.2s finishes=LLLLLLLL per_stream=['36.7', '36.5', '37.0', '37.1', '36.3', '36.2', '38.5', '36.3']
+0
+LEG t8g COMPLETE 12:37:00

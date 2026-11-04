@@ -1,0 +1,46 @@
+INFO 11-04 09:25:15 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+INFO 11-04 09:25:15 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+INFO 11-04 09:25:15 [__init__.py:54] - hpu -> vllm_gaudi:register
+INFO 11-04 09:25:15 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+INFO 11-04 09:25:16 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+INFO 11-04 09:25:16 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+INFO 11-04 09:25:16 [__init__.py:54] - hpu -> vllm_gaudi:register
+INFO 11-04 09:25:16 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+INFO 11-04 09:25:16 [__init__.py:272] Platform plugin arc is activated
+INFO 11-04 09:25:16 [__init__.py:272] Platform plugin arc is activated
+device: Intel(R) Graphics [0xe223]
+[turboquant_k8v4 q4 seq192] FAIL rel_ref=0.182576 rel_split=0.181034 det=True nan=0
+[turboquant_k8v4 q5 seq192] FAIL rel_ref=0.181877 rel_split=0.183761 det=True nan=0
+[turboquant_k8v4 q2 seq192] FAIL rel_ref=0.148415 rel_split=0.149573 det=True nan=0
+[turboquant_k8v4 q4 seq8] FAIL rel_ref=0.473329 rel_split=0.476471 det=True nan=0
+[turboquant_4bit_nc q4 seq192] FAIL rel_ref=0.170236 rel_split=0.168000 det=True nan=0
+[turboquant_4bit_nc q5 seq192] FAIL rel_ref=0.175207 rel_split=0.176000 det=True nan=0
+[turboquant_4bit_nc q2 seq192] FAIL rel_ref=0.149284 rel_split=0.149194 det=True nan=0
+[turboquant_4bit_nc q4 seq8] FAIL rel_ref=0.478818 rel_split=0.479769 det=True nan=0
+[turboquant_k3v4_nc q4 seq192] FAIL rel_ref=0.176392 rel_split=0.177489 det=True nan=0
+[turboquant_k3v4_nc q5 seq192] FAIL rel_ref=0.181441 rel_split=0.181034 det=True nan=0
+[turboquant_k3v4_nc q2 seq192] FAIL rel_ref=0.140836 rel_split=0.142276 det=True nan=0
+[turboquant_k3v4_nc q4 seq8] FAIL rel_ref=0.499973 rel_split=0.496970 det=True nan=0
+[turboquant_3bit_nc q4 seq192] FAIL rel_ref=0.181866 rel_split=0.181818 det=True nan=0
+[turboquant_3bit_nc q5 seq192] FAIL rel_ref=0.187624 rel_split=0.185841 det=True nan=0
+[turboquant_3bit_nc q2 seq192] FAIL rel_ref=0.147396 rel_split=0.147826 det=True nan=0
+[turboquant_3bit_nc q4 seq8] FAIL rel_ref=0.502840 rel_split=0.500000 det=True nan=0
+
+==== P619D MQVAL SUMMARY ====
+  turboquant_k8v4 q4 seq192: FAIL
+  turboquant_k8v4 q5 seq192: FAIL
+  turboquant_k8v4 q2 seq192: FAIL
+  turboquant_k8v4 q4 seq8: FAIL
+  turboquant_4bit_nc q4 seq192: FAIL
+  turboquant_4bit_nc q5 seq192: FAIL
+  turboquant_4bit_nc q2 seq192: FAIL
+  turboquant_4bit_nc q4 seq8: FAIL
+  turboquant_k3v4_nc q4 seq192: FAIL
+  turboquant_k3v4_nc q5 seq192: FAIL
+  turboquant_k3v4_nc q2 seq192: FAIL
+  turboquant_k3v4_nc q4 seq8: FAIL
+  turboquant_3bit_nc q4 seq192: FAIL
+  turboquant_3bit_nc q5 seq192: FAIL
+  turboquant_3bit_nc q2 seq192: FAIL
+  turboquant_3bit_nc q4 seq8: FAIL
+P619D MQVAL: FAIL

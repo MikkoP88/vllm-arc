@@ -1,0 +1,1 @@
+(Worker_TP0 pid=930) P619 tq_spec_fix v4 installed (active=True mode=split): v19b verify-capture forcing + split-row continuation dispatch

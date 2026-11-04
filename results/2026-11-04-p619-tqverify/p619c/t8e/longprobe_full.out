@@ -1,0 +1,5 @@
+[essay] t0_identical=True hashes=['52fd1c2e3351', '52fd1c2e3351', '52fd1c2e3351'] garble={'cold': ['REP-LOOP'], 'rehit': ['REP-LOOP'], 'rehit2': ['REP-LOOP']} t1_seed_identical=True prompt_tok=2145 chars=[13830, 13830, 13830]
+[code] ERROR RemoteDisconnected('Remote end closed connection without response')
+[multi] ERROR URLError(ConnectionRefusedError(111, 'Connection refused'))
+[simple] ERROR URLError(ConnectionRefusedError(111, 'Connection refused'))
+LONGPROBE t8e full: CORRUPTION_SIGNAL

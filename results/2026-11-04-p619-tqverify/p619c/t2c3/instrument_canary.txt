@@ -1,0 +1,8 @@
+(Worker_TP0 pid=732) P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=1 ctx=2 rows=2 rel_max=3.551e-03 rel_mean=2.015e-03 ratio_min=1.000 ratio_max=1.001 rw_total=0
+(Worker_TP1 pid=733) P619T CANARY layer=language_model.model.layers.3.self_attn.attn step=1 ctx=2 rows=2 rel_max=4.118e-03 rel_mean=1.735e-03 ratio_min=1.000 ratio_max=1.002 rw_total=0
+(Worker_TP0 pid=732) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=1 ctx=2 rows=2 rel_max=2.547e-03 rel_mean=2.058e-03 ratio_min=1.000 ratio_max=1.001 rw_total=0
+(Worker_TP1 pid=733) P619T CANARY layer=language_model.model.layers.7.self_attn.attn step=1 ctx=2 rows=2 rel_max=2.902e-03 rel_mean=1.737e-03 ratio_min=1.000 ratio_max=1.000 rw_total=0
+(Worker_TP0 pid=732) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=1 ctx=2 rows=2 rel_max=6.421e-03 rel_mean=2.360e-03 ratio_min=0.999 ratio_max=1.000 rw_total=0
+(Worker_TP1 pid=733) P619T CANARY layer=language_model.model.layers.11.self_attn.attn step=1 ctx=2 rows=2 rel_max=3.143e-03 rel_mean=1.775e-03 ratio_min=0.999 ratio_max=1.001 rw_total=0
+(Worker_TP0 pid=732) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=1 ctx=2 rows=2 rel_max=4.031e-03 rel_mean=2.209e-03 ratio_min=0.999 ratio_max=1.001 rw_total=0
+(Worker_TP1 pid=733) P619T CANARY layer=language_model.model.layers.15.self_attn.attn step=1 ctx=2 rows=2 rel_max=3.482e-03 rel_mean=1.488e-03 ratio_min=1.000 ratio_max=1.002 rw_total=0

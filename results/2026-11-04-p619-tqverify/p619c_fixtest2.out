@@ -1,0 +1,19 @@
+=================== P619C LEG t5 (k8v4 spec3 GRAPH=1 FIX v4 split) 08:47:30 ===================
+SUBSTITUTIONS dtype=1 mounts=1
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert6 name=arc-test graph=1 spec=3 gmu=0.8 mnbt=8192 seqs=64 xgc=0 port=8000 08:48:14
+HEALTH=OK after ~365s
+(Worker_TP0 pid=930) P619 tq_spec_fix v4 installed (active=True mode=split): v19b verify-capture forcing + split-row continuation dispatch
+FLIP_FIRST: stop 9.3s head: '\n\n1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20'
+[essay] t0_identical=True hashes=['6084223df0a5', '6084223df0a5', '6084223df0a5'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=2145 chars=[4269, 4269, 4269]
+[code] t0_identical=True hashes=['4065e97dc61c', '4065e97dc61c', '4065e97dc61c'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=5051 chars=[3301, 3301, 3301]
+[multi] t0_identical=False hashes=['6fcec8a829d0', '36a263a945c5', '3bb45b51520b'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=False prompt_tok=3400 chars=[796, 804, 802]
+[simple] t0_identical=True hashes=['fe080656ac71', 'fe080656ac71', 'fe080656ac71'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=38 chars=[1507, 1507, 1507]
+LONGPROBE t5 full: CORRUPTION_SIGNAL
+(Worker_TP1 pid=1030) P619I forward: is_prefill=True n_tok=185 qlens=(5, 10, 15, 20, 25, 30, 35, 40) seqs=[5, 5, 5, 5, 5, 5, 5, 5] ndec=0 mql=5 msl=5
+(Worker_TP0 pid=930) P619I forward: is_prefill=True n_tok=185 qlens=(5, 10, 15, 20, 25, 30, 35, 40) seqs=[5, 5, 5, 5, 5, 5, 5, 5] ndec=0 mql=5 msl=5
+(Worker_TP1 pid=1030) P619I forward: is_prefill=False n_tok=37 qlens=(1, 2, 3, 4, 5, 6, 7, 8) seqs=[6, 6, 6, 6, 6, 6, 6, 6] ndec=37 mql=1 msl=8
+(Worker_TP0 pid=930) P619I forward: is_prefill=False n_tok=37 qlens=(1, 2, 3, 4, 5, 6, 7, 8) seqs=[6, 6, 6, 6, 6, 6, 6, 6] ndec=37 mql=1 msl=8
+(Worker_TP0 pid=930) Capturing CUDA graphs (FULL):   0%|          | 0/54 [00:00<?, ?it/s](Worker_TP1 pid=1030) P619I forward: is_prefill=True n_tok=256 qlens=(4, 8, 12, 16, 20, 24, 28, 32) seqs=[5, 5, 5, 5, 5, 5, 5, 5] ndec=0 mql=4 msl=5
+(Worker_TP0 pid=930) Capturing CUDA graphs (FULL):   2%|▏         | 1/54 [00:04<03:33,  4.02s/it]P619I forward: is_prefill=True n_tok=252 qlens=(4, 8, 12, 16, 20, 24, 28, 32) seqs=[5, 5, 5, 5, 5, 5, 5, 5] ndec=0 mql=4 msl=5
+0
+LEG t5 COMPLETE 08:57:54

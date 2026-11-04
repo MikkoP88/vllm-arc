@@ -1,0 +1,152 @@
+===== essay =====
+{
+ "t0_identical": true,
+ "hashes": [
+  "8ccfa3b73aa1",
+  "8ccfa3b73aa1",
+  "8ccfa3b73aa1"
+ ],
+ "content_hashes": [
+  "42b6abfa473b",
+  "42b6abfa473b",
+  "42b6abfa473b"
+ ],
+ "garble": {
+  "cold": [],
+  "rehit": [],
+  "rehit2": []
+ },
+ "finish": [
+  "stop",
+  "stop",
+  "stop"
+ ],
+ "prompt_tok": 2145,
+ "chars": [
+  4165,
+  4165,
+  4165
+ ],
+ "t1_seed_identical": false,
+ "t1_hashes": [
+  "f7c219c33403",
+  "f8e7e2273dd5"
+ ],
+ "t1_garble": [],
+ "dt_cold": 15.5
+}
+
+===== code =====
+{
+ "t0_identical": true,
+ "hashes": [
+  "df99aacc45be",
+  "df99aacc45be",
+  "df99aacc45be"
+ ],
+ "content_hashes": [
+  "3abc9a52c7f6",
+  "3abc9a52c7f6",
+  "3abc9a52c7f6"
+ ],
+ "garble": {
+  "cold": [],
+  "rehit": [],
+  "rehit2": []
+ },
+ "finish": [
+  "stop",
+  "stop",
+  "stop"
+ ],
+ "prompt_tok": 5051,
+ "chars": [
+  2985,
+  2985,
+  2985
+ ],
+ "t1_seed_identical": true,
+ "t1_hashes": [
+  "743fc073e9fc",
+  "743fc073e9fc"
+ ],
+ "t1_garble": [],
+ "dt_cold": 17.3
+}
+
+===== multi =====
+{
+ "t0_identical": true,
+ "hashes": [
+  "9ec8a5001cfd",
+  "9ec8a5001cfd",
+  "9ec8a5001cfd"
+ ],
+ "content_hashes": [
+  "bc4a74b68c84",
+  "bc4a74b68c84",
+  "bc4a74b68c84"
+ ],
+ "garble": {
+  "cold": [],
+  "rehit": [],
+  "rehit2": []
+ },
+ "finish": [
+  "stop",
+  "stop",
+  "stop"
+ ],
+ "prompt_tok": 3400,
+ "chars": [
+  1044,
+  1044,
+  1044
+ ],
+ "t1_seed_identical": true,
+ "t1_hashes": [
+  "d165de289b0a",
+  "d165de289b0a"
+ ],
+ "t1_garble": [],
+ "dt_cold": 5.3
+}
+
+===== simple =====
+{
+ "t0_identical": true,
+ "hashes": [
+  "cc082a03dea2",
+  "cc082a03dea2",
+  "cc082a03dea2"
+ ],
+ "content_hashes": [
+  "d3414096b452",
+  "d3414096b452",
+  "d3414096b452"
+ ],
+ "garble": {
+  "cold": [],
+  "rehit": [],
+  "rehit2": []
+ },
+ "finish": [
+  "stop",
+  "stop",
+  "stop"
+ ],
+ "prompt_tok": 38,
+ "chars": [
+  1422,
+  1422,
+  1422
+ ],
+ "t1_seed_identical": true,
+ "t1_hashes": [
+  "b050204c6424",
+  "b050204c6424"
+ ],
+ "t1_garble": [],
+ "dt_cold": 4.3
+}
+

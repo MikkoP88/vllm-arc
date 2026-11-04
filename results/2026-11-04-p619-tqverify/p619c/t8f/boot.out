@@ -1,0 +1,5 @@
+NOTE: ARC_SPEC=3 with ARC_GRAPH=0 — non-champion combo (D v133 runs MTP
+with FULL_DECODE_ONLY graphs); allowed for spec-eager A/B isolation only.
+ARC_CONTAINER_FRESH image=vllm-arc:v0.30.0-b70-cert6 id=f47c12369202 (recreated from none)
+fdb62429efce536dc9ebd0d70bf8698cab1a40c07f1271fddcaa42bcfeb03b6d
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert6 name=arc-test graph=0 spec=3 gmu=0.8 mnbt=8192 seqs=64 xgc=0 port=8000 11:26:40
