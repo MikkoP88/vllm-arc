@@ -57,7 +57,8 @@ The script boots the certified container (`--privileged` REQUIRED —
 pidfd IPC law, r30 defect #1; `--network host --ipc host`, the model
 mount, cache mounts, and the 2 boot-layer `-e` vars) and execs the
 serve line with the full 25-var chain — env + CLI as one unit by
-construction. Boot takes ~5–10 min to health 200. Verify in
+construction. Boot takes ~5 min to health 200 (295 s at the cert7 and
+cert8 gates). Verify in
 `/root/serve_full.log`: wheel hooks install (zero `FAILED`, silent
 defer is DEBUG), `fp8 reroute ACTIVE`, `kvfmt TWO_HS`, the p40c re-pin
 line both workers (`alloc/free_pinned_ptr re-pinned to the pageable
@@ -73,8 +74,10 @@ lines (mode=none, FULL_DECODE_ONLY [1..320], MTP k3, align).
 3. **golden** (`p25/p32_golden.py`): 5/5 shas byte-identical to
    `golden_ref.json` (0-drift law).
 4. **run7n ×2**: conservative floors solo ≥ 79.74, agg#2 ≥ 274.41;
-   certified steady family at k3 (cert4-native, 5 boots): solo
-   **83.7–84.9** / agg **294.7–300.5** — **comparator law (r47c)**:
+   certified steady family at k3, prob lane (p617 + release gates):
+   solo **83.7–84.9** / agg **291.4–303.1** (cert8 gate: 300.65 /
+   84.53–84.57; cert4-native greedy family 294.7–300.5 in-band — the
+   argmax path is posture-invariant) — **comparator law (r47c)**:
    a fresh-boot FIRST battery on the same stack reads lower (~206/64.5
    warmup face); gate a fresh boot against a same-posture A/B, not the
    campaign table.
