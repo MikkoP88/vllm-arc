@@ -49,11 +49,63 @@ fat lib libccl.so.1.0 sha256 3a120e8b352fbd6be45ab61a7f4e927d80c9bc6618ff646e6db
 
 - Phase 0 (r96 fidelity): PASS — same-version rebuild is ABI/perf-identical.
 - Phase 1 (r97 gate): PASS (this verdict).
-- Next: r98 quality ladder (task-level parity vs cert9), r99 serve A/B +
-  cert10 image. Env trio CCL_SYCL_ALLREDUCE_FP8 / _MIN_COUNT / _STATS
-  (defaults 0 / 2097152 / 0 — silent off; the certified posture keeps
-  FP8=0 and serves stock unless explicitly enabled).
+- Phase 2 (r98 quality ladder): **PASS** (below).
+- Next: r99 serve A/B + cert10 image. Env trio CCL_SYCL_ALLREDUCE_FP8 /
+  _MIN_COUNT / _STATS (defaults 0 / 2097152 / 0 — silent off; the
+  certified posture keeps FP8=0 and serves stock unless explicitly
+  enabled).
 
-Artifacts: r96_*.json/log (phase 0), r97_v4_*.json/log (this gate),
+## r98 phase 2 — quality ladder: PASS (2026-11-05)
+
+Same-day A/B on ONE container (cert9 image, same caches): leg A = stock
+cert9 bytes, leg B = v4 overlay + exactly one env line
+(`CCL_SYCL_ALLREDUCE_FP8=1`). Suite = the t5/t9-class instruments
+(flip/integrity+det/run7n t0 + t1.0-xhigh/spec/tps/LONG-RETURN full +
+3 churn cycles). All pre-registered bars green:
+
+| bar | leg A (stock) | leg B (FP8=1) | ratio / bar |
+|---|---|---|---|
+| tps solo1 | 60.89 | 61.21 | 1.005 in [0.90,1.10] |
+| tps solo2 | 61.39 | 61.26 | 0.998 |
+| tps agg8 | 329.12 | 314.13 | 0.954 (single-wall agg) |
+| run7n t0 agg | 286.11 | 285.43 | 0.998 |
+| run7n t0 solo | 84.50 | 84.55 | 1.001 |
+| run7n t1.0-xhigh agg | 184.80 | 184.42 | 0.998 |
+| spec pos1 | 0.9177 | 0.9258 | delta +0.0081 (bar 0.03) |
+| integrity/det | 5/5 + 3/3 | 5/5 + 3/3 | PASS |
+| LONG-RETURN within-leg | PASS (4 classes single-hash, 3× CLEAN cycles) | PASS | hard bar |
+| erraudit | 0/0 | 0/0 | hard bar |
+
+- Cross-leg t0 drift: essay/code/multi hashes differ (the pre-registered
+  e4m3 prefill-noise disposition — 0.023 rel-rms flips near-tie argmax;
+  coherence gated by zero-garble + finish-stop); **`simple` byte-identical
+  across legs** — its 38-token prefill never crosses the 2M-elem
+  threshold, so it never touches the wire: the min-count law confirmed
+  live in serve.
+- In-situ wire proof (STATS probe, one ~15.6k-token prefill): 40
+  `CCL fp8` lines, e.g. `count 7459840` (= 1457×5120, mid-size prefill
+  chunks) with both ranks agreeing on `res scale 0.00235421`; first call
+  pays the one-time JIT (k1 11.5 ms) then steady (k2 0.417 ms).
+- KV pool note: 400,739 (A) vs 398,363 (B) tokens (−0.6%) — the rebuilt
+  lib's init footprint shifts pool sizing slightly; quality/parity bars
+  unaffected (all measured faces above).
+- Two analysis-layer script defects found and fixed same-day (measured
+  data never affected): the r84-inherited garble_check BRE `\[]` escapes
+  never match (grep -F does) — every prior cert gate carried false
+  ZERO-GARBLE FAIL lines dispositioned by summary PASS; and the r98
+  rehit longprobe labels lacked per-cycle suffixes (three rehit jsons
+  collapsed into one) — cross-cycle evidence reconstructed from the
+  per-cycle console outs by `r98_reconstruct.py` (hashes/garble/flags
+  print verbatim). Both fixes carry into r99. A ghost JSONDecodeError
+  (char 0 on a provably-valid json, seen twice in first-run summary
+  passes, never reproducible since) was fenced with a raw-bytes debug
+  fallback; the hardened run completes deterministically.
+
+Evidence: `r98/` (both legs' full artifact sets + statsprobe + corrected
+verdicts), `r98_gate.log` (window console), `r98_quality.sh`,
+`r98_reconstruct.py`.
+
+Artifacts: r96_*.json/log (phase 0), r97_v4_*.json/log (phase 1),
 fp8_noise_sim.py (converter twin + bar calibration), r97_debug_ledger.md
-(v1->v4 capture-first chain), external_patches/oneccl/ (patch + README).
+(v1->v4 capture-first chain), r98/ + r98_gate.log (phase 2),
+external_patches/oneccl/ (patch + README).
