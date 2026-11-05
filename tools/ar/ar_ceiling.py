@@ -56,7 +56,8 @@ def med_events(fn, iters=9, warmup=3):
     return statistics.median([s.elapsed_time(e) for s, e in evs])
 
 
-def role_dist(sizes_bytes, out):
+def role_dist(sizes_bytes, out, guard="const", label="stock",
+              tol_mean=0.02, tol_cos=0.9999):
     import os
 
     import torch.distributed as dist
@@ -73,26 +74,52 @@ def role_dist(sizes_bytes, out):
     report = []
     for nbytes in sizes_bytes:
         numel = nbytes // 2
-        a = torch.full((numel,), float(rank + 1), device=f"xpu:{rank}",
-                       dtype=torch.float16)
-        # numerics guard FIRST, on a fresh single call (the timed reps
-        # below accumulate into the same buffer — SUM == a0 + a1 == 3)
-        a.fill_(float(rank + 1))
-        dist.all_reduce(a)
-        ok = torch.allclose(a.float(), torch.full_like(a.float(), 3.0))
-        if nbytes == sizes_bytes[0]:
-            print(f"[{'PASS' if ok else 'FAIL'}] numerics (allreduce "
-                  f"sum == 3) rank{rank}")
+        if guard == "randn":
+            # P6.24 fp8 lane: realistic values + locally-constructed fp32
+            # reference (CPU-seeded per rank, deterministic across runs and
+            # ranks — no extra collective needed). Bars below.
+            a = (torch.randn(numel, generator=torch.Generator().manual_seed(
+                     1000 + rank)) * 0.5).to(device=f"xpu:{rank}",
+                                             dtype=torch.float16)
+            ref = None
+            for r in (0, 1):
+                part = (torch.randn(numel, generator=torch.Generator(
+                            ).manual_seed(1000 + r)) * 0.5)
+                ref = part if ref is None else ref + part
+            dist.all_reduce(a)
+            # cosine + RMS-normalized mean-abs bars: per-element relative
+            # error is unbounded near zero even for stock fp16; these two
+            # catch wrong-half/scale/garbage corruption while passing the
+            # e4m3 noise floor (~1-2% of RMS).
+            af, rf = a.float(), ref.float()
+            cos = ((af * rf).sum() /
+                   (af.norm() * rf.norm()).clamp_min(1e-9)).item()
+            rel = ((af - rf).abs().mean() / rf.std()).item()
+            ok = cos >= tol_cos and rel <= tol_mean
+            if nbytes == sizes_bytes[0]:
+                print(f"[{'PASS' if ok else 'FAIL'}] numerics randn "
+                      f"(cos {cos:.6f} rel-rms {rel:.5f}) rank{rank}")
+        else:
+            a = torch.full((numel,), float(rank + 1), device=f"xpu:{rank}",
+                           dtype=torch.float16)
+            # numerics guard FIRST, on a fresh single call (the timed reps
+            # below accumulate into the same buffer — SUM == a0 + a1 == 3)
+            a.fill_(float(rank + 1))
+            dist.all_reduce(a)
+            ok = torch.allclose(a.float(), torch.full_like(a.float(), 3.0))
+            if nbytes == sizes_bytes[0]:
+                print(f"[{'PASS' if ok else 'FAIL'}] numerics (allreduce "
+                      f"sum == 3) rank{rank}")
         t = med_events(lambda: dist.all_reduce(a))
         # n=2: each rank ships S bytes over the link per AR, so S/t is
         # the per-rank link utilization — directly comparable to the
         # r71b 10.23 GB/s P2P rate.
         link_gbs = nbytes / (t * 1e-3) / 1e9
-        row = {"bytes": nbytes, "stock_ms": round(t, 3),
-               "link_gbs": round(link_gbs, 2)}
+        row = {"bytes": nbytes, "label": label, "ms": round(t, 3),
+               "stock_ms": round(t, 3), "link_gbs": round(link_gbs, 2)}
         report.append(row)
         if rank == 0:
-            print(f"STOCK S={nbytes >> 20:>3d}MiB({nbytes:>9d}B): "
+            print(f"{label.upper():>10} S={nbytes >> 20:>3d}MiB({nbytes:>9d}B): "
                   f"{t:8.3f} ms  {link_gbs:6.2f} GB/rank/s")
     if rank == 0:
         json.dump(report, open(out, "w"), indent=1)
@@ -165,10 +192,22 @@ def main() -> int:
     ap.add_argument("--sizes-bytes", default=None,
                     help="comma-separated byte sizes (r94 census values)")
     ap.add_argument("--out", default="/work/ar_ceiling.json")
+    ap.add_argument("--guard", default="const", choices=["const", "randn"],
+                    help="dist numerics guard: const (sum==3) or randn "
+                         "(fp32 reference, fp8-lane bars)")
+    ap.add_argument("--label", default="stock",
+                    help="row label (stock / rebuilt / arc-fp8-off / "
+                         "arc-fp8-on)")
+    ap.add_argument("--tol-mean", type=float, default=0.02)
+    ap.add_argument("--tol-cos", type=float, default=0.9999)
     a = ap.parse_args()
     sizes = ([int(x) for x in a.sizes_bytes.split(",")]
              if a.sizes_bytes else DEFAULT_BYTES)
-    (role_dist if a.role == "dist" else role_oneshot)(sizes, a.out)
+    if a.role == "dist":
+        role_dist(sizes, a.out, guard=a.guard, label=a.label,
+                  tol_mean=a.tol_mean, tol_cos=a.tol_cos)
+    else:
+        role_oneshot(sizes, a.out)
     return 0
 
 
