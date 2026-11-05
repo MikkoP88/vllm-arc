@@ -1,0 +1,21 @@
+0b8e9f89946b8eef0050c46e47b73e41  /root/build/p621c/r92/v2so/fa_dense_v2_ops.cpython-312-x86_64-linux-gnu.so
+A (8x8): PASS (worst row-fro=0.0003)
+A (8x64): PASS (worst row-fro=0.0004)
+A (64x64): PASS (worst row-fro=0.0005)
+L1 (8x832) vs torch-exact: fro=2.57e-03 cos=0.9999968 -> PASS
+L1 (64x832) vs torch-exact: fro=2.69e-03 cos=0.9999965 -> PASS
+L1 (512x832) vs torch-exact: fro=2.73e-03 cos=0.9999962 -> PASS
+L1 (512x1664) vs torch-exact: fro=2.83e-03 cos=0.9999959 -> PASS
+L1 (100x833) vs torch-exact: fro=2.74e-03 cos=0.9999962 -> PASS
+L1 (2048x8192) vs torch-exact: fro=2.55e-03 cos=0.9999967 -> PASS
+L2a U32k vs stock (uniform ds): fro=2.70e-03 cos=0.9999966 -> PASS
+L2b (4096x16384) vs torch-exact: fro=2.88e-03 cos=0.9999959 -> PASS
+L3 OOB (8192x32768): canary corrupted=0 -> PASS
+L3 OOB (512x832): canary corrupted=0 -> PASS
+=== LADDER PASS ===
+Traceback (most recent call last):
+  File "/work/bench_v21.py", line 36, in <module>
+    import fa_dense_v2_ops  # noqa: E402
+    ^^^^^^^^^^^^^^^^^^^^^^
+ModuleNotFoundError: No module named 'fa_dense_v2_ops'
+=== window done ===

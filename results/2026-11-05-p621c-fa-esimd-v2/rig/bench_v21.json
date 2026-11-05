@@ -1,0 +1,47 @@
+{
+ "sanity_fro": 0.002874,
+ "rows": 8192,
+ "kv": 32768,
+ "levels": [
+  {
+   "level": 4,
+   "name": "+PV(full)",
+   "ms_min": 233.52
+  },
+  {
+   "level": 0,
+   "name": "staging",
+   "ms_min": 144.15
+  },
+  {
+   "level": 1,
+   "name": "+accRMW",
+   "ms_min": 164.39
+  },
+  {
+   "level": 2,
+   "name": "+QK",
+   "ms_min": 195.67
+  },
+  {
+   "level": 3,
+   "name": "+softmax",
+   "ms_min": 205.05
+  },
+  {
+   "level": 224,
+   "name": "L0 noLoad+noStore",
+   "ms_min": 77.49
+  },
+  {
+   "level": 128,
+   "name": "L0 noLoads",
+   "ms_min": 136.71
+  },
+  {
+   "level": 96,
+   "name": "L0 noKVstore",
+   "ms_min": 85.51
+  }
+ ]
+}

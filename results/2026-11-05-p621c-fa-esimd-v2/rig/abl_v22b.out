@@ -1,0 +1,18 @@
+148ba153c3c344a119bb4817899fea85  /root/build/p621c/r92/v2so/fa_dense_v2_ops.cpython-312-x86_64-linux-gnu.so
+sanity fro(level4 vs stock, 512x1664): 2.87e-03 (OK)
+round 0: L4=250.7 L0=159.6 L1=180.0 L2=213.0 L3=222.3 L8=159.6 L104=89.7 L96=89.3 L16=154.6 L32=135.9 L64=113.7
+round 1: L4=250.7 L0=159.6 L1=180.0 L2=213.0 L3=222.3 L8=159.6 L104=89.7 L96=89.2 L16=154.6 L32=135.9 L64=113.7
+round 2: L4=250.7 L0=159.6 L1=180.0 L2=212.9 L3=222.3 L8=159.6 L104=89.2 L96=89.2 L16=154.6 L32=135.9 L64=113.1
+L4  +PV(full)           :   250.71 ms
+L0  staging             :   159.58 ms
+L1  +accRMW             :   179.98 ms
+L2  +QK                 :   212.89 ms
+L3  +softmax            :   222.29 ms
+L8  L0 noDeq(floor)     :   159.58 ms
+L104 L0 noKV+noDeq       :    89.23 ms
+L96 L0 noKVstore        :    89.15 ms
+L16 L0 Kcontig          :   154.63 ms
+L32 L0 noVstore         :   135.93 ms
+L64 L0 noKstore         :   113.14 ms
+wrote /work/bench_v21.json
+=== window done ===

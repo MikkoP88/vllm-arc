@@ -1,0 +1,83 @@
+{
+ "all_pass": true,
+ "cases": [
+  [
+   "A",
+   "8x8",
+   true,
+   "worst row-fro=0.0003"
+  ],
+  [
+   "A",
+   "8x64",
+   true,
+   "worst row-fro=0.0004"
+  ],
+  [
+   "A",
+   "64x64",
+   true,
+   "worst row-fro=0.0005"
+  ],
+  [
+   "L1",
+   "8x832",
+   true,
+   "fro=2.57e-03 cos=0.9999968"
+  ],
+  [
+   "L1",
+   "64x832",
+   true,
+   "fro=2.69e-03 cos=0.9999965"
+  ],
+  [
+   "L1",
+   "512x832",
+   true,
+   "fro=2.73e-03 cos=0.9999962"
+  ],
+  [
+   "L1",
+   "512x1664",
+   true,
+   "fro=2.83e-03 cos=0.9999959"
+  ],
+  [
+   "L1",
+   "100x833",
+   true,
+   "fro=2.74e-03 cos=0.9999962"
+  ],
+  [
+   "L1",
+   "2048x8192",
+   true,
+   "fro=2.55e-03 cos=0.9999967"
+  ],
+  [
+   "L2a",
+   "8192x32768",
+   true,
+   "vs-stock fro=2.70e-03 cos=0.9999966"
+  ],
+  [
+   "L2b",
+   "4096x16384",
+   true,
+   "vs-exact fro=2.88e-03 cos=0.9999959"
+  ],
+  [
+   "L3",
+   "8192x32768",
+   true,
+   "canary bytes corrupted=0"
+  ],
+  [
+   "L3",
+   "512x832",
+   true,
+   "canary bytes corrupted=0"
+  ]
+ ]
+}

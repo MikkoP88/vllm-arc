@@ -1,0 +1,110 @@
+// Host launcher + torch binding for the P6.21 v2 dense-FA ESIMD kernel.
+// Same tensor contract as the p72 v1 launcher (fa_dense.sycl); v2 adds
+// the structural guards of the redesign: bs == 1 (chunked-prefill serve
+// contract), kvLen >= qLen (bottom-right precondition), pageSize % 32
+// == 0 (tile-never-straddles law for the 32-token SLM tile). v1 stays
+// buildable alongside for A/B (fa_dense_ops); the routing patch owns
+// the stock fall-through for anything these checks reject.
+#include <torch/extension.h>
+#include <c10/xpu/XPUStream.h>
+#include <sycl/sycl.hpp>
+
+#include "fa_dense_v2.fp8.h"
+
+// SYCL kernel-name (DPC++ requires it at namespace scope).
+class FaDenseV2E4m3;
+
+// Contract (results/2026-10-31-p72-rungb-dense-fa-esimd/RECON.md +
+// results/2026-11-05-p621b-fa-headroom/r87): q [rows, qHeads, 256] fp16
+// contiguous; k/v_cache [pages, pageSize, kvHeads, 256] e4m3; cu_seqlens_q
+// [2] = {0, rows}; seqused_k [1]; block_table [1, W] i32; out
+// [rows, qHeads, 256] fp16 (preallocated, mutated in place); k/v_scale
+// [1, kvHeads] fp32 or null.
+void fa_dense_varlen_fwd_v2(
+    torch::Tensor q, torch::Tensor k_cache, torch::Tensor v_cache,
+    torch::Tensor cu_seqlens_q, torch::Tensor seqused_k,
+    torch::Tensor block_table, torch::Tensor out,
+    std::optional<torch::Tensor> k_scale, std::optional<torch::Tensor> v_scale,
+    double softmax_scale, int64_t ablate) {
+  TORCH_CHECK(q.is_xpu() && q.dtype() == torch::kFloat16, "q must be xpu fp16");
+  TORCH_CHECK(k_cache.dtype() == torch::kFloat8_e4m3fn &&
+              v_cache.dtype() == torch::kFloat8_e4m3fn,
+              "cache must be e4m3");
+  TORCH_CHECK(cu_seqlens_q.dtype() == torch::kInt32 &&
+              seqused_k.dtype() == torch::kInt32 &&
+              block_table.dtype() == torch::kInt32, "i32 metadata");
+  TORCH_CHECK(q.size(2) == 256, "head_dim must be 256 (constexpr)");
+  TORCH_CHECK(v_cache.sizes() == k_cache.sizes(), "k/v cache shape mismatch");
+  TORCH_CHECK(q.stride(2) == 1 && k_cache.stride(3) == 1 &&
+              v_cache.stride(3) == 1 && cu_seqlens_q.stride(0) == 1 &&
+              seqused_k.stride(0) == 1 && block_table.stride(1) == 1 &&
+              out.stride(2) == 1, "innermost strides must be contiguous");
+  const uint32_t rows = (uint32_t)q.size(0);
+  const uint32_t qHeads = (uint32_t)q.size(1);
+  const uint32_t kvHeads = (uint32_t)k_cache.size(2);
+  TORCH_CHECK(qHeads % kvHeads == 0, "GQA: qHeads must divide by kvHeads");
+  const uint32_t bs = (uint32_t)cu_seqlens_q.size(0) - 1;
+  TORCH_CHECK(bs == 1 && cu_seqlens_q[0].item<int32_t>() == 0 &&
+              (uint32_t)cu_seqlens_q[1].item<int32_t>() == rows,
+              "v2 serves the bs=1 chunked-prefill contract only");
+  const uint32_t tableStride = (uint32_t)block_table.stride(0);
+  const uint32_t numPages = (uint32_t)k_cache.size(0);
+  const uint32_t pageSize = (uint32_t)k_cache.size(1);
+  const uint64_t pageStride = (uint64_t)k_cache.stride(0);
+  const uint64_t tokenStride = (uint64_t)k_cache.stride(1);
+  const uint64_t headStride = (uint64_t)k_cache.stride(2);
+  TORCH_CHECK(pageSize > 0 && pageSize % 32 == 0,
+              "page size must be a positive multiple of 32 (v2 tile law; "
+              "832 dense serve page and 1664 mamba-padded probe page)");
+  TORCH_CHECK((uint32_t)seqused_k[0].item<int32_t>() >= rows,
+              "bottom-right causal needs kvLen >= qLen");
+  if (k_scale) TORCH_CHECK(k_scale->dtype() == torch::kFloat &&
+                           (uint32_t)k_scale->numel() >= kvHeads,
+                           "k_scale [1, kvHeads] fp32");
+  if (v_scale) TORCH_CHECK(v_scale->dtype() == torch::kFloat &&
+                           (uint32_t)v_scale->numel() >= kvHeads,
+                           "v_scale [1, kvHeads] fp32");
+  // fp8 elements are 1 byte: element strides ARE byte strides (donor law).
+  const float* ks = k_scale ? (const float*)k_scale->data_ptr() : nullptr;
+  const float* vs = v_scale ? (const float*)v_scale->data_ptr() : nullptr;
+  // log2 domain for the in-kernel exp trick (donor math).
+  const float scaleLog2 = (float)softmax_scale * 1.4426950408889634f;
+
+  // SYCL device-lambda law: extract raw pointers BEFORE queue.submit.
+  const uint8_t* qP = (const uint8_t*)q.data_ptr();
+  const uint8_t* kP = (const uint8_t*)k_cache.data_ptr();
+  const uint8_t* vP = (const uint8_t*)v_cache.data_ptr();
+  const int32_t* cuP = (const int32_t*)cu_seqlens_q.data_ptr();
+  const int32_t* suP = (const int32_t*)seqused_k.data_ptr();
+  const int32_t* tbP = (const int32_t*)block_table.data_ptr();
+  uint8_t* outP = (uint8_t*)out.data_ptr();
+
+  // Grid: one work-group per (head, 64-row slab); 8 threads each (the
+  // BMG 128 KB SLM cap forces 64-row slabs — see fa_dense_v2.fp8.h).
+  const uint32_t slabs = (rows + V2_ROWS - 1) / V2_ROWS;
+  const uint32_t numWGs = qHeads * slabs;
+
+  sycl::queue& queue =
+      c10::xpu::getCurrentXPUStream(q.device().index()).queue();
+  queue.submit([&](sycl::handler& cgh) {
+    cgh.parallel_for<class FaDenseV2E4m3>(
+        sycl::nd_range<1>(sycl::range<1>(numWGs * V2_THREADS),
+                          sycl::range<1>(V2_THREADS)),
+        [=](sycl::nd_item<1> ndi) SYCL_ESIMD_KERNEL {
+          faDenseV2Kernel(
+              qP, kP, vP, cuP, suP, tbP, outP, ks, vs,
+              rows, qHeads, kvHeads, tableStride, numPages, pageStride,
+              tokenStride, headStride, pageSize, scaleLog2,
+              (uint32_t)ablate, ndi);
+        });
+  });
+}
+
+PYBIND11_MODULE(TORCH_EXTENSION_NAME, m) {
+  m.def("fa_dense_varlen_fwd_v2", &fa_dense_varlen_fwd_v2,
+        "Dense causal varlen FA v2 (ESIMD SLM tiles, P6.21)",
+        py::arg("q"), py::arg("k_cache"), py::arg("v_cache"),
+        py::arg("cu_seqlens_q"), py::arg("seqused_k"), py::arg("block_table"),
+        py::arg("out"), py::arg("k_scale"), py::arg("v_scale"),
+        py::arg("softmax_scale"), py::arg("ablate") = 4);
+}
