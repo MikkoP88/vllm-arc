@@ -134,7 +134,13 @@ next engine-touching item.)
 `ARC_STEP_TRACE` (p620 per-step host timeline — engine/worker step JSONL
 decomposition: schedule/prep_inputs/execute_model/sample_tokens/wfs/
 wfs_flush/wfs_body/wfs_total/get_finished; `ARC_STEP_TRACE_FILE` override;
-banked r80–r83 legs; same registry-exempt class as `ARC_SNAP_PROBE`).
+banked r80–r83 legs; same registry-exempt class as `ARC_SNAP_PROBE`),
+`ARC_AR_TRACE` (p622 per-call collective census — wraps
+`torch.distributed.{all_reduce, all_gather_into_tensor,
+reduce_scatter_tensor, barrier, all_gather}` in every platform-hooked
+process, JSONL {ts, rank, op, caller, numel, dtype, bytes, shape,
+enqueue dt_ms}; `ARC_AR_TRACE_FILE` override; the P6.22 TP2-AR lane's
+message-size instrument; same registry-exempt class).
 **Donor-internal (byte-pinned lmcint kit, not ours):** `LMCACHE_CONFIG_FILE`,
 `LMCACHE_FORCE_SKIP_SAVE`, `LMC_STORE_LAG`.
 

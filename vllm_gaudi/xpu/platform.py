@@ -62,6 +62,8 @@ _XPU_PATCH_MODULES = (
     # 3-8x/GEMM decode Ms, fixed-cost W8A8 path)
     "step_trace",  # p620: per-step host timeline (ARC_STEP_TRACE,
     # silent-off diagnostic — envs.md diagnostics class)
+    "ar_trace",  # p622: per-call collective census (ARC_AR_TRACE,
+    # silent-off diagnostic — message sizes for the TP2-AR lane)
 )
 
 

@@ -1,0 +1,12 @@
+-rw-r--r-- 1 root root 4602787 Nov  5 11:57 /tmp/arc_ar_trace_r0_p1044.jsonl
+-rw-r--r-- 1 root root 4601869 Nov  5 11:57 /tmp/arc_ar_trace_r0_p1156.jsonl
+
+/root/prof/:
+total 31520
+drwxr-xr-x 2 root root     4096 Nov  5 11:59 .
+drwx------ 1 root root     4096 Nov  5 11:58 ..
+-rw-r--r-- 1 root root      808 Nov  5 11:58 ainode01_13.async_llm.1793879880487633741.pt.trace.json.gz
+-rw-r--r-- 1 root root    20651 Nov  5 11:59 profiler_out_0.txt
+-rw-r--r-- 1 root root    20651 Nov  5 11:59 profiler_out_1.txt
+-rw-r--r-- 1 root root 16191823 Nov  5 11:58 rank0.1793879884978252561.pt.trace.json.gz
+-rw-r--r-- 1 root root 16015657 Nov  5 11:58 rank1.1793879884937001285.pt.trace.json.gz

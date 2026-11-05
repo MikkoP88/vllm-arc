@@ -1,0 +1,32 @@
+[
+ {
+  "bytes": 150994944,
+  "stock_ms": 15.305,
+  "link_gbs": 9.87
+ },
+ {
+  "bytes": 83886080,
+  "stock_ms": 8.513,
+  "link_gbs": 9.85
+ },
+ {
+  "bytes": 76677120,
+  "stock_ms": 7.783,
+  "link_gbs": 9.85
+ },
+ {
+  "bytes": 68157440,
+  "stock_ms": 6.922,
+  "link_gbs": 9.85
+ },
+ {
+  "bytes": 15779840,
+  "stock_ms": 1.614,
+  "link_gbs": 9.78
+ },
+ {
+  "bytes": 2621440,
+  "stock_ms": 0.332,
+  "link_gbs": 7.9
+ }
+]

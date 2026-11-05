@@ -1,0 +1,1859 @@
+{
+ "lines": 38654,
+ "rows": [
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 76677120,
+   "count": 3168,
+   "dt_total_ms": 2553.1,
+   "dt_max_ms": 15.233
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.v1.worker.xpu_worker:init_device",
+   "bytes": 4,
+   "count": 2,
+   "dt_total_ms": 2098.1,
+   "dt_max_ms": 1049.894
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 150994944,
+   "count": 108,
+   "dt_total_ms": 1375.8,
+   "dt_max_ms": 617.497
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 655360,
+   "count": 560,
+   "dt_total_ms": 1140.8,
+   "dt_max_ms": 543.885
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 655360,
+   "count": 16,
+   "dt_total_ms": 643.5,
+   "dt_max_ms": 320.969
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 81920,
+   "count": 1340,
+   "dt_total_ms": 228.4,
+   "dt_max_ms": 1.446
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 9594880,
+   "count": 264,
+   "dt_total_ms": 214.4,
+   "dt_max_ms": 11.592
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 17039360,
+   "count": 264,
+   "dt_total_ms": 210.1,
+   "dt_max_ms": 9.331
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 68157440,
+   "count": 528,
+   "dt_total_ms": 201.6,
+   "dt_max_ms": 25.093
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 42598400,
+   "count": 264,
+   "dt_total_ms": 171.3,
+   "dt_max_ms": 12.418
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 12687360,
+   "count": 264,
+   "dt_total_ms": 171.3,
+   "dt_max_ms": 10.887
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 18872320,
+   "count": 18,
+   "dt_total_ms": 158.2,
+   "dt_max_ms": 114.306
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 40960,
+   "count": 920,
+   "dt_total_ms": 104.2,
+   "dt_max_ms": 0.296
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 83886080,
+   "count": 262,
+   "dt_total_ms": 99.1,
+   "dt_max_ms": 29.484
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 15380480,
+   "count": 264,
+   "dt_total_ms": 97.6,
+   "dt_max_ms": 8.375
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 83886080,
+   "count": 2,
+   "dt_total_ms": 96.8,
+   "dt_max_ms": 62.564
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 15779840,
+   "count": 264,
+   "dt_total_ms": 96.0,
+   "dt_max_ms": 8.485
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 1556480,
+   "count": 788,
+   "dt_total_ms": 84.3,
+   "dt_max_ms": 0.526
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 2621440,
+   "count": 524,
+   "dt_total_ms": 83.4,
+   "dt_max_ms": 14.898
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 491520,
+   "count": 548,
+   "dt_total_ms": 54.1,
+   "dt_max_ms": 0.335
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 614400,
+   "count": 548,
+   "dt_total_ms": 53.9,
+   "dt_max_ms": 0.367
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 163840,
+   "count": 548,
+   "dt_total_ms": 53.4,
+   "dt_max_ms": 0.503
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 122880,
+   "count": 548,
+   "dt_total_ms": 53.1,
+   "dt_max_ms": 0.44
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 2580480,
+   "count": 524,
+   "dt_total_ms": 52.9,
+   "dt_max_ms": 0.306
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 409600,
+   "count": 548,
+   "dt_total_ms": 52.5,
+   "dt_max_ms": 0.352
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 204800,
+   "count": 548,
+   "dt_total_ms": 52.1,
+   "dt_max_ms": 0.136
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 1720320,
+   "count": 524,
+   "dt_total_ms": 51.7,
+   "dt_max_ms": 0.355
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 1515520,
+   "count": 524,
+   "dt_total_ms": 51.7,
+   "dt_max_ms": 0.278
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 1638400,
+   "count": 524,
+   "dt_total_ms": 51.6,
+   "dt_max_ms": 0.336
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 532480,
+   "count": 524,
+   "dt_total_ms": 51.4,
+   "dt_max_ms": 0.345
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 2457600,
+   "count": 524,
+   "dt_total_ms": 51.4,
+   "dt_max_ms": 0.187
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 2416640,
+   "count": 524,
+   "dt_total_ms": 51.4,
+   "dt_max_ms": 0.218
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 1433600,
+   "count": 524,
+   "dt_total_ms": 51.2,
+   "dt_max_ms": 0.293
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 1351680,
+   "count": 524,
+   "dt_total_ms": 51.2,
+   "dt_max_ms": 0.262
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 1597440,
+   "count": 524,
+   "dt_total_ms": 51.1,
+   "dt_max_ms": 0.16
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 1392640,
+   "count": 524,
+   "dt_total_ms": 51.0,
+   "dt_max_ms": 0.15
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 2293760,
+   "count": 524,
+   "dt_total_ms": 50.9,
+   "dt_max_ms": 0.296
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 1966080,
+   "count": 524,
+   "dt_total_ms": 50.9,
+   "dt_max_ms": 0.302
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 2539520,
+   "count": 524,
+   "dt_total_ms": 50.9,
+   "dt_max_ms": 0.298
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 573440,
+   "count": 524,
+   "dt_total_ms": 50.9,
+   "dt_max_ms": 0.236
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 737280,
+   "count": 524,
+   "dt_total_ms": 50.9,
+   "dt_max_ms": 0.147
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 2334720,
+   "count": 524,
+   "dt_total_ms": 50.9,
+   "dt_max_ms": 0.302
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 327680,
+   "count": 524,
+   "dt_total_ms": 50.8,
+   "dt_max_ms": 0.41
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 2252800,
+   "count": 524,
+   "dt_total_ms": 50.8,
+   "dt_max_ms": 0.382
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 1843200,
+   "count": 524,
+   "dt_total_ms": 50.8,
+   "dt_max_ms": 0.239
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 696320,
+   "count": 524,
+   "dt_total_ms": 50.7,
+   "dt_max_ms": 0.137
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 368640,
+   "count": 524,
+   "dt_total_ms": 50.7,
+   "dt_max_ms": 0.391
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 2375680,
+   "count": 524,
+   "dt_total_ms": 50.6,
+   "dt_max_ms": 0.17
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 1228800,
+   "count": 524,
+   "dt_total_ms": 50.6,
+   "dt_max_ms": 0.346
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 983040,
+   "count": 524,
+   "dt_total_ms": 50.6,
+   "dt_max_ms": 0.393
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 1310720,
+   "count": 524,
+   "dt_total_ms": 50.6,
+   "dt_max_ms": 0.361
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 2170880,
+   "count": 524,
+   "dt_total_ms": 50.5,
+   "dt_max_ms": 0.287
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 1925120,
+   "count": 524,
+   "dt_total_ms": 50.5,
+   "dt_max_ms": 0.383
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 2048000,
+   "count": 524,
+   "dt_total_ms": 50.4,
+   "dt_max_ms": 0.198
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 2007040,
+   "count": 524,
+   "dt_total_ms": 50.4,
+   "dt_max_ms": 0.249
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 901120,
+   "count": 524,
+   "dt_total_ms": 50.4,
+   "dt_max_ms": 0.275
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 1024000,
+   "count": 524,
+   "dt_total_ms": 50.4,
+   "dt_max_ms": 0.149
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 2211840,
+   "count": 524,
+   "dt_total_ms": 50.3,
+   "dt_max_ms": 0.165
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 1146880,
+   "count": 524,
+   "dt_total_ms": 50.3,
+   "dt_max_ms": 0.333
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 819200,
+   "count": 524,
+   "dt_total_ms": 50.2,
+   "dt_max_ms": 0.339
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 942080,
+   "count": 524,
+   "dt_total_ms": 50.2,
+   "dt_max_ms": 0.19
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 1187840,
+   "count": 524,
+   "dt_total_ms": 50.2,
+   "dt_max_ms": 0.241
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 1761280,
+   "count": 524,
+   "dt_total_ms": 50.1,
+   "dt_max_ms": 0.34
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 1802240,
+   "count": 524,
+   "dt_total_ms": 50.1,
+   "dt_max_ms": 0.345
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 286720,
+   "count": 524,
+   "dt_total_ms": 50.1,
+   "dt_max_ms": 0.143
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 2129920,
+   "count": 524,
+   "dt_total_ms": 50.0,
+   "dt_max_ms": 0.14
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 1105920,
+   "count": 524,
+   "dt_total_ms": 49.9,
+   "dt_max_ms": 0.138
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 778240,
+   "count": 524,
+   "dt_total_ms": 49.6,
+   "dt_max_ms": 0.133
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 10240,
+   "count": 312,
+   "dt_total_ms": 36.0,
+   "dt_max_ms": 0.288
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 1945600,
+   "count": 264,
+   "dt_total_ms": 35.6,
+   "dt_max_ms": 0.45
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 20480,
+   "count": 312,
+   "dt_total_ms": 35.3,
+   "dt_max_ms": 0.232
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 51200,
+   "count": 288,
+   "dt_total_ms": 33.8,
+   "dt_max_ms": 0.331
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 993280,
+   "count": 264,
+   "dt_total_ms": 32.8,
+   "dt_max_ms": 0.356
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 167772160,
+   "count": 2,
+   "dt_total_ms": 28.7,
+   "dt_max_ms": 27.954
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 496640,
+   "count": 122,
+   "dt_total_ms": 25.2,
+   "dt_max_ms": 0.322
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 1986560,
+   "count": 122,
+   "dt_total_ms": 24.8,
+   "dt_max_ms": 0.634
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 29301760,
+   "count": 4,
+   "dt_total_ms": 21.9,
+   "dt_max_ms": 18.364
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 28308480,
+   "count": 4,
+   "dt_total_ms": 20.5,
+   "dt_max_ms": 16.562
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 94361600,
+   "count": 2,
+   "dt_total_ms": 18.2,
+   "dt_max_ms": 17.488
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 2621440,
+   "count": 4,
+   "dt_total_ms": 17.3,
+   "dt_max_ms": 13.344
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 14899200,
+   "count": 12,
+   "dt_total_ms": 16.3,
+   "dt_max_ms": 5.494
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 31784960,
+   "count": 20,
+   "dt_total_ms": 15.9,
+   "dt_max_ms": 2.924
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 23838720,
+   "count": 12,
+   "dt_total_ms": 15.1,
+   "dt_max_ms": 3.595
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 2416640,
+   "count": 4,
+   "dt_total_ms": 14.1,
+   "dt_max_ms": 9.819
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 76677120,
+   "count": 24,
+   "dt_total_ms": 13.6,
+   "dt_max_ms": 0.732
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 19865600,
+   "count": 12,
+   "dt_total_ms": 13.3,
+   "dt_max_ms": 4.355
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 27315200,
+   "count": 12,
+   "dt_total_ms": 11.9,
+   "dt_max_ms": 3.287
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 17039360,
+   "count": 2,
+   "dt_total_ms": 11.4,
+   "dt_max_ms": 10.538
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 4469760,
+   "count": 12,
+   "dt_total_ms": 10.3,
+   "dt_max_ms": 5.862
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 2252800,
+   "count": 4,
+   "dt_total_ms": 9.7,
+   "dt_max_ms": 6.091
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 29798400,
+   "count": 12,
+   "dt_total_ms": 9.6,
+   "dt_max_ms": 4.259
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 23342080,
+   "count": 4,
+   "dt_total_ms": 9.4,
+   "dt_max_ms": 6.829
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 2334720,
+   "count": 4,
+   "dt_total_ms": 9.1,
+   "dt_max_ms": 7.541
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 17382400,
+   "count": 12,
+   "dt_total_ms": 9.1,
+   "dt_max_ms": 2.779
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 10926080,
+   "count": 4,
+   "dt_total_ms": 9.0,
+   "dt_max_ms": 4.471
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 2483200,
+   "count": 14,
+   "dt_total_ms": 8.1,
+   "dt_max_ms": 3.636
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 24832000,
+   "count": 12,
+   "dt_total_ms": 8.0,
+   "dt_max_ms": 2.397
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 22348800,
+   "count": 12,
+   "dt_total_ms": 7.9,
+   "dt_max_ms": 2.319
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 2170880,
+   "count": 4,
+   "dt_total_ms": 7.5,
+   "dt_max_ms": 4.981
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 20858880,
+   "count": 4,
+   "dt_total_ms": 6.7,
+   "dt_max_ms": 4.348
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 2293760,
+   "count": 4,
+   "dt_total_ms": 6.6,
+   "dt_max_ms": 3.633
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 12416000,
+   "count": 12,
+   "dt_total_ms": 6.2,
+   "dt_max_ms": 2.734
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 11919360,
+   "count": 4,
+   "dt_total_ms": 6.1,
+   "dt_max_ms": 4.931
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 16885760,
+   "count": 4,
+   "dt_total_ms": 6.0,
+   "dt_max_ms": 4.562
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 2129920,
+   "count": 4,
+   "dt_total_ms": 5.9,
+   "dt_max_ms": 4.883
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 9932800,
+   "count": 12,
+   "dt_total_ms": 5.9,
+   "dt_max_ms": 1.593
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 6456320,
+   "count": 12,
+   "dt_total_ms": 4.7,
+   "dt_max_ms": 1.358
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 7449600,
+   "count": 12,
+   "dt_total_ms": 4.7,
+   "dt_max_ms": 1.023
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 24335360,
+   "count": 4,
+   "dt_total_ms": 4.6,
+   "dt_max_ms": 3.335
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 19368960,
+   "count": 4,
+   "dt_total_ms": 4.6,
+   "dt_max_ms": 3.608
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 18375680,
+   "count": 4,
+   "dt_total_ms": 4.5,
+   "dt_max_ms": 3.403
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 27811840,
+   "count": 4,
+   "dt_total_ms": 4.3,
+   "dt_max_ms": 2.465
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 2375680,
+   "count": 4,
+   "dt_total_ms": 4.3,
+   "dt_max_ms": 3.048
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 6952960,
+   "count": 12,
+   "dt_total_ms": 4.2,
+   "dt_max_ms": 0.974
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 2580480,
+   "count": 4,
+   "dt_total_ms": 4.2,
+   "dt_max_ms": 2.062
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 11422720,
+   "count": 4,
+   "dt_total_ms": 4.1,
+   "dt_max_ms": 3.202
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 2211840,
+   "count": 4,
+   "dt_total_ms": 4.1,
+   "dt_max_ms": 2.885
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 5959680,
+   "count": 12,
+   "dt_total_ms": 3.8,
+   "dt_max_ms": 0.675
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 3476480,
+   "count": 12,
+   "dt_total_ms": 3.8,
+   "dt_max_ms": 0.773
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 389120,
+   "count": 24,
+   "dt_total_ms": 3.8,
+   "dt_max_ms": 0.512
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 3973120,
+   "count": 12,
+   "dt_total_ms": 3.7,
+   "dt_max_ms": 0.719
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 7946240,
+   "count": 12,
+   "dt_total_ms": 3.5,
+   "dt_max_ms": 0.7
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 4966400,
+   "count": 12,
+   "dt_total_ms": 3.4,
+   "dt_max_ms": 0.466
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 15892480,
+   "count": 4,
+   "dt_total_ms": 3.3,
+   "dt_max_ms": 1.838
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 13905920,
+   "count": 4,
+   "dt_total_ms": 3.2,
+   "dt_max_ms": 1.352
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 993280,
+   "count": 28,
+   "dt_total_ms": 3.1,
+   "dt_max_ms": 0.148
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 75489280,
+   "count": 2,
+   "dt_total_ms": 3.0,
+   "dt_max_ms": 2.736
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 2457600,
+   "count": 4,
+   "dt_total_ms": 3.0,
+   "dt_max_ms": 1.702
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 112640,
+   "count": 24,
+   "dt_total_ms": 2.9,
+   "dt_max_ms": 0.332
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 21355520,
+   "count": 4,
+   "dt_total_ms": 2.7,
+   "dt_max_ms": 1.352
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 563200,
+   "count": 24,
+   "dt_total_ms": 2.7,
+   "dt_max_ms": 0.179
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 460800,
+   "count": 24,
+   "dt_total_ms": 2.7,
+   "dt_max_ms": 0.196
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 307200,
+   "count": 24,
+   "dt_total_ms": 2.6,
+   "dt_max_ms": 0.199
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 5463040,
+   "count": 8,
+   "dt_total_ms": 2.6,
+   "dt_max_ms": 0.766
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.parallel_state:in_the_same_node_as",
+   "bytes": 8,
+   "count": 4,
+   "dt_total_ms": 2.6,
+   "dt_max_ms": 0.926
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 68157440,
+   "count": 4,
+   "dt_total_ms": 2.5,
+   "dt_max_ms": 1.588
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 81920,
+   "count": 18,
+   "dt_total_ms": 2.5,
+   "dt_max_ms": 0.308
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 26321920,
+   "count": 4,
+   "dt_total_ms": 2.5,
+   "dt_max_ms": 1.725
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 2979840,
+   "count": 8,
+   "dt_total_ms": 2.4,
+   "dt_max_ms": 0.753
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 358400,
+   "count": 24,
+   "dt_total_ms": 2.4,
+   "dt_max_ms": 0.153
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 30720,
+   "count": 24,
+   "dt_total_ms": 2.4,
+   "dt_max_ms": 0.137
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 92160,
+   "count": 24,
+   "dt_total_ms": 2.4,
+   "dt_max_ms": 0.135
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 143360,
+   "count": 24,
+   "dt_total_ms": 2.4,
+   "dt_max_ms": 0.139
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 25825280,
+   "count": 4,
+   "dt_total_ms": 2.4,
+   "dt_max_ms": 1.467
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 71680,
+   "count": 24,
+   "dt_total_ms": 2.4,
+   "dt_max_ms": 0.135
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 133120,
+   "count": 24,
+   "dt_total_ms": 2.4,
+   "dt_max_ms": 0.138
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 256000,
+   "count": 24,
+   "dt_total_ms": 2.4,
+   "dt_max_ms": 0.137
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 512000,
+   "count": 24,
+   "dt_total_ms": 2.4,
+   "dt_max_ms": 0.149
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 102400,
+   "count": 24,
+   "dt_total_ms": 2.4,
+   "dt_max_ms": 0.136
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 153600,
+   "count": 24,
+   "dt_total_ms": 2.4,
+   "dt_max_ms": 0.134
+  },
+  {
+   "op": "all_reduce",
+   "caller": "vllm.distributed.device_communicators.xpu_communicator:all_reduce",
+   "bytes": 61440,
+   "count": 24,
+   "dt_total_ms": 2.3,
+   "dt_max_ms": 0.136
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 10240,
+   "count": 18,
+   "dt_total_ms": 2.3,
+   "dt_max_ms": 0.26
+  },
+  {
+   "op": "barrier",
+   "caller": "vllm.distributed.parallel_state:in_the_same_node_as",
+   "bytes": null,
+   "count": 4,
+   "dt_total_ms": 2.3,
+   "dt_max_ms": 0.765
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 16389120,
+   "count": 4,
+   "dt_total_ms": 2.2,
+   "dt_max_ms": 0.926
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 28805120,
+   "count": 4,
+   "dt_total_ms": 2.1,
+   "dt_max_ms": 1.488
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 20480,
+   "count": 18,
+   "dt_total_ms": 2.0,
+   "dt_max_ms": 0.158
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 31288320,
+   "count": 4,
+   "dt_total_ms": 2.0,
+   "dt_max_ms": 1.243
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 2539520,
+   "count": 4,
+   "dt_total_ms": 1.7,
+   "dt_max_ms": 0.89
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 21852160,
+   "count": 4,
+   "dt_total_ms": 1.7,
+   "dt_max_ms": 0.611
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 13409280,
+   "count": 4,
+   "dt_total_ms": 1.7,
+   "dt_max_ms": 0.684
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 14402560,
+   "count": 4,
+   "dt_total_ms": 1.7,
+   "dt_max_ms": 0.708
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 26818560,
+   "count": 4,
+   "dt_total_ms": 1.6,
+   "dt_max_ms": 0.905
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 9436160,
+   "count": 4,
+   "dt_total_ms": 1.6,
+   "dt_max_ms": 0.683
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 42598400,
+   "count": 2,
+   "dt_total_ms": 1.6,
+   "dt_max_ms": 0.779
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 8442880,
+   "count": 4,
+   "dt_total_ms": 1.5,
+   "dt_max_ms": 0.537
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 40960,
+   "count": 14,
+   "dt_total_ms": 1.4,
+   "dt_max_ms": 0.116
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 1489920,
+   "count": 12,
+   "dt_total_ms": 1.4,
+   "dt_max_ms": 0.295
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 9594880,
+   "count": 2,
+   "dt_total_ms": 1.3,
+   "dt_max_ms": 0.758
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 409600,
+   "count": 12,
+   "dt_total_ms": 1.3,
+   "dt_max_ms": 0.134
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 491520,
+   "count": 12,
+   "dt_total_ms": 1.3,
+   "dt_max_ms": 0.135
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 614400,
+   "count": 12,
+   "dt_total_ms": 1.2,
+   "dt_max_ms": 0.158
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 8939520,
+   "count": 4,
+   "dt_total_ms": 1.2,
+   "dt_max_ms": 0.476
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 163840,
+   "count": 12,
+   "dt_total_ms": 1.2,
+   "dt_max_ms": 0.132
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 122880,
+   "count": 12,
+   "dt_total_ms": 1.2,
+   "dt_max_ms": 0.126
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 204800,
+   "count": 12,
+   "dt_total_ms": 1.2,
+   "dt_max_ms": 0.12
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 389120,
+   "count": 8,
+   "dt_total_ms": 1.1,
+   "dt_max_ms": 0.203
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 30791680,
+   "count": 4,
+   "dt_total_ms": 1.0,
+   "dt_max_ms": 0.362
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 51200,
+   "count": 10,
+   "dt_total_ms": 1.0,
+   "dt_max_ms": 0.136
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 12687360,
+   "count": 2,
+   "dt_total_ms": 0.9,
+   "dt_max_ms": 0.488
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 460800,
+   "count": 8,
+   "dt_total_ms": 0.9,
+   "dt_max_ms": 0.191
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 15779840,
+   "count": 2,
+   "dt_total_ms": 0.9,
+   "dt_max_ms": 0.46
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 563200,
+   "count": 8,
+   "dt_total_ms": 0.9,
+   "dt_max_ms": 0.135
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 307200,
+   "count": 8,
+   "dt_total_ms": 0.9,
+   "dt_max_ms": 0.199
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 1556480,
+   "count": 6,
+   "dt_total_ms": 0.9,
+   "dt_max_ms": 0.176
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 15380480,
+   "count": 2,
+   "dt_total_ms": 0.8,
+   "dt_max_ms": 0.421
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 358400,
+   "count": 8,
+   "dt_total_ms": 0.8,
+   "dt_max_ms": 0.141
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 512000,
+   "count": 8,
+   "dt_total_ms": 0.8,
+   "dt_max_ms": 0.147
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 153600,
+   "count": 8,
+   "dt_total_ms": 0.8,
+   "dt_max_ms": 0.124
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 256000,
+   "count": 8,
+   "dt_total_ms": 0.8,
+   "dt_max_ms": 0.126
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 143360,
+   "count": 8,
+   "dt_total_ms": 0.8,
+   "dt_max_ms": 0.116
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 112640,
+   "count": 8,
+   "dt_total_ms": 0.8,
+   "dt_max_ms": 0.123
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 30720,
+   "count": 8,
+   "dt_total_ms": 0.8,
+   "dt_max_ms": 0.125
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 92160,
+   "count": 8,
+   "dt_total_ms": 0.8,
+   "dt_max_ms": 0.116
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 102400,
+   "count": 8,
+   "dt_total_ms": 0.8,
+   "dt_max_ms": 0.116
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 133120,
+   "count": 8,
+   "dt_total_ms": 0.8,
+   "dt_max_ms": 0.116
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 71680,
+   "count": 8,
+   "dt_total_ms": 0.8,
+   "dt_max_ms": 0.116
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 61440,
+   "count": 8,
+   "dt_total_ms": 0.8,
+   "dt_max_ms": 0.116
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 1310720,
+   "count": 4,
+   "dt_total_ms": 0.6,
+   "dt_max_ms": 0.298
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 1843200,
+   "count": 4,
+   "dt_total_ms": 0.6,
+   "dt_max_ms": 0.192
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 2007040,
+   "count": 4,
+   "dt_total_ms": 0.5,
+   "dt_max_ms": 0.176
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 1945600,
+   "count": 2,
+   "dt_total_ms": 0.5,
+   "dt_max_ms": 0.255
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 1925120,
+   "count": 4,
+   "dt_total_ms": 0.5,
+   "dt_max_ms": 0.221
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 1966080,
+   "count": 4,
+   "dt_total_ms": 0.5,
+   "dt_max_ms": 0.155
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 1802240,
+   "count": 4,
+   "dt_total_ms": 0.5,
+   "dt_max_ms": 0.171
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 1597440,
+   "count": 4,
+   "dt_total_ms": 0.5,
+   "dt_max_ms": 0.162
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 1228800,
+   "count": 4,
+   "dt_total_ms": 0.5,
+   "dt_max_ms": 0.219
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 368640,
+   "count": 4,
+   "dt_total_ms": 0.5,
+   "dt_max_ms": 0.203
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 901120,
+   "count": 4,
+   "dt_total_ms": 0.5,
+   "dt_max_ms": 0.153
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 1024000,
+   "count": 4,
+   "dt_total_ms": 0.5,
+   "dt_max_ms": 0.147
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 1720320,
+   "count": 4,
+   "dt_total_ms": 0.5,
+   "dt_max_ms": 0.153
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 1433600,
+   "count": 4,
+   "dt_total_ms": 0.5,
+   "dt_max_ms": 0.154
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 942080,
+   "count": 4,
+   "dt_total_ms": 0.5,
+   "dt_max_ms": 0.138
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 1638400,
+   "count": 4,
+   "dt_total_ms": 0.4,
+   "dt_max_ms": 0.16
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 1515520,
+   "count": 4,
+   "dt_total_ms": 0.4,
+   "dt_max_ms": 0.158
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 819200,
+   "count": 4,
+   "dt_total_ms": 0.4,
+   "dt_max_ms": 0.158
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 983040,
+   "count": 4,
+   "dt_total_ms": 0.4,
+   "dt_max_ms": 0.134
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 2048000,
+   "count": 4,
+   "dt_total_ms": 0.4,
+   "dt_max_ms": 0.135
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 1392640,
+   "count": 4,
+   "dt_total_ms": 0.4,
+   "dt_max_ms": 0.151
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 1187840,
+   "count": 4,
+   "dt_total_ms": 0.4,
+   "dt_max_ms": 0.117
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 1761280,
+   "count": 4,
+   "dt_total_ms": 0.4,
+   "dt_max_ms": 0.121
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 573440,
+   "count": 4,
+   "dt_total_ms": 0.4,
+   "dt_max_ms": 0.127
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 737280,
+   "count": 4,
+   "dt_total_ms": 0.4,
+   "dt_max_ms": 0.12
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 1105920,
+   "count": 4,
+   "dt_total_ms": 0.4,
+   "dt_max_ms": 0.126
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 1351680,
+   "count": 4,
+   "dt_total_ms": 0.4,
+   "dt_max_ms": 0.116
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 1146880,
+   "count": 4,
+   "dt_total_ms": 0.4,
+   "dt_max_ms": 0.118
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 286720,
+   "count": 4,
+   "dt_total_ms": 0.4,
+   "dt_max_ms": 0.118
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 696320,
+   "count": 4,
+   "dt_total_ms": 0.4,
+   "dt_max_ms": 0.119
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 778240,
+   "count": 4,
+   "dt_total_ms": 0.4,
+   "dt_max_ms": 0.118
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 532480,
+   "count": 4,
+   "dt_total_ms": 0.4,
+   "dt_max_ms": 0.119
+  },
+  {
+   "op": "all_gather_into_tensor",
+   "caller": "vllm.distributed.device_communicators.base_device_communicator:all_gather",
+   "bytes": 327680,
+   "count": 4,
+   "dt_total_ms": 0.4,
+   "dt_max_ms": 0.117
+  }
+ ],
+ "op_totals": {
+  "barrier": {
+   "count": 4,
+   "bytes": 0.0
+  },
+  "all_reduce": {
+   "count": 37434,
+   "bytes": 386390802472.0
+  },
+  "all_gather_into_tensor": {
+   "count": 1216,
+   "bytes": 9901404160.0
+  }
+ }
+}

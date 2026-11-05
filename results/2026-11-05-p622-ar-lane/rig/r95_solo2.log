@@ -1,0 +1,73 @@
+r95 sizes: 150994944,83886080,76677120,68157440,15779840,2621440
+ONESHOT S=144MiB(150994944B): full=  30.946 ms (copies= 30.138 [ 5.01 GB/s/dir] + add= 1.382) numerics=OK
+ONESHOT S= 80MiB( 83886080B): full=  17.492 ms (copies= 16.975 [ 4.94 GB/s/dir] + add= 1.320) numerics=OK
+ONESHOT S= 73MiB( 76677120B): full=  16.039 ms (copies= 15.579 [ 4.92 GB/s/dir] + add= 0.966) numerics=OK
+ONESHOT S= 65MiB( 68157440B): full=  14.322 ms (copies= 13.980 [ 4.88 GB/s/dir] + add= 1.086) numerics=OK
+ONESHOT S= 15MiB( 15779840B): full=   3.778 ms (copies=  3.614 [ 4.37 GB/s/dir] + add= 0.930) numerics=OK
+ONESHOT S=  2MiB(  2621440B): full=   1.205 ms (copies=  1.033 [ 2.54 GB/s/dir] + add= 0.804) numerics=OK
+wrote /work/r95_oneshot.json
+
+*****************************************
+Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. 
+*****************************************
+Traceback (most recent call last):
+  File "/bench/ar_ceiling.py", line 173, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/bench/ar_ceiling.py", line 168, in main
+    (role_dist if a.role == "dist" else role_oneshot)(sizes, a.out)
+  File "/bench/ar_ceiling.py", line 68, in role_dist
+    import oneccl_bindings_for_pytorch  # noqa: F401 — registers backend
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ModuleNotFoundError: No module named 'oneccl_bindings_for_pytorch'
+Traceback (most recent call last):
+  File "/bench/ar_ceiling.py", line 173, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/bench/ar_ceiling.py", line 168, in main
+    (role_dist if a.role == "dist" else role_oneshot)(sizes, a.out)
+  File "/bench/ar_ceiling.py", line 68, in role_dist
+    import oneccl_bindings_for_pytorch  # noqa: F401 — registers backend
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ModuleNotFoundError: No module named 'oneccl_bindings_for_pytorch'
+E1105 12:17:00.884000 72 torch/distributed/elastic/multiprocessing/api.py:1002] failed (exitcode: 1) local_rank: 0 (pid: 139) of binary: /opt/venv/bin/python
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/opt/venv/lib/python3.12/site-packages/torch/distributed/run.py", line 1032, in <module>
+    main()
+  File "/opt/venv/lib/python3.12/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
+    return f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/torch/distributed/run.py", line 1028, in main
+    run(args)
+  File "/opt/venv/lib/python3.12/site-packages/torch/distributed/run.py", line 1019, in run
+    elastic_launch(
+  File "/opt/venv/lib/python3.12/site-packages/torch/distributed/launcher/api.py", line 194, in __call__
+    return launch_agent(
+           ^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/torch/distributed/launcher/api.py", line 383, in launch_agent
+    raise ChildFailedError(
+torch.distributed.elastic.multiprocessing.errors.ChildFailedError: 
+============================================================
+/bench/ar_ceiling.py FAILED
+------------------------------------------------------------
+Failures:
+[1]:
+  time      : 2026-11-05_12:17:00
+  host      : bb0e628d67be
+  rank      : 1 (local_rank: 1)
+  exitcode  : 1 (pid: 140) 
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+------------------------------------------------------------
+Root Cause (first observed failure):
+[0]:
+  time      : 2026-11-05_12:17:00
+  host      : bb0e628d67be
+  rank      : 0 (local_rank: 0)
+  exitcode  : 1 (pid: 139) 
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+============================================================
+R95_SOLO: DONE (W14 restore by trap)

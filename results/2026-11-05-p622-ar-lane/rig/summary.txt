@@ -1,0 +1,67 @@
+lines=38654 distinct(op,caller,bytes)=230
+op                     caller                                                           size   count  dt_mean   dt_max    dt_tot
+all_reduce             vllm.distributed.device_communicators.xpu_communicator:all   0.07 MiB    3168    0.806   15.233    2553.1
+all_reduce             vllm.v1.worker.xpu_worker:init_device                             4 B       2 1049.063 1049.894    2098.1
+all_reduce             vllm.distributed.device_communicators.xpu_communicator:all   0.14 MiB     108   12.739  617.497    1375.8
+all_reduce             vllm.distributed.device_communicators.xpu_communicator:all   0.62 KiB     560    2.037  543.885    1140.8
+all_gather_into_tensor vllm.distributed.device_communicators.base_device_communic   0.62 KiB      16   40.220  320.969     643.5
+all_reduce             vllm.distributed.device_communicators.xpu_communicator:all   0.08 KiB    1340    0.170    1.446     228.4
+all_reduce             vllm.distributed.device_communicators.xpu_communicator:all   0.01 MiB     264    0.812   11.592     214.4
+all_reduce             vllm.distributed.device_communicators.xpu_communicator:all   0.02 MiB     264    0.796    9.331     210.1
+all_reduce             vllm.distributed.device_communicators.xpu_communicator:all   0.06 MiB     528    0.382   25.093     201.6
+all_reduce             vllm.distributed.device_communicators.xpu_communicator:all   0.04 MiB     264    0.649   12.418     171.3
+all_reduce             vllm.distributed.device_communicators.xpu_communicator:all   0.01 MiB     264    0.649   10.887     171.3
+all_gather_into_tensor vllm.distributed.device_communicators.base_device_communic   0.02 MiB      18    8.789  114.306     158.2
+all_reduce             vllm.distributed.device_communicators.xpu_communicator:all   0.04 KiB     920    0.113    0.296     104.2
+all_reduce             vllm.distributed.device_communicators.xpu_communicator:all   0.08 MiB     262    0.378   29.484      99.1
+all_reduce             vllm.distributed.device_communicators.xpu_communicator:all   0.01 MiB     264    0.370    8.375      97.6
+all_gather_into_tensor vllm.distributed.device_communicators.base_device_communic   0.08 MiB       2   48.413   62.564      96.8
+all_reduce             vllm.distributed.device_communicators.xpu_communicator:all   0.01 MiB     264    0.364    8.485      96.0
+all_reduce             vllm.distributed.device_communicators.xpu_communicator:all   0.00 MiB     788    0.107    0.526      84.3
+all_reduce             vllm.distributed.device_communicators.xpu_communicator:all   0.00 MiB     524    0.159   14.898      83.4
+all_reduce             vllm.distributed.device_communicators.xpu_communicator:all   0.47 KiB     548    0.099    0.335      54.1
+all_reduce             vllm.distributed.device_communicators.xpu_communicator:all   0.59 KiB     548    0.098    0.367      53.9
+all_reduce             vllm.distributed.device_communicators.xpu_communicator:all   0.16 KiB     548    0.097    0.503      53.4
+all_reduce             vllm.distributed.device_communicators.xpu_communicator:all   0.12 KiB     548    0.097    0.440      53.1
+all_reduce             vllm.distributed.device_communicators.xpu_communicator:all   0.00 MiB     524    0.101    0.306      52.9
+all_reduce             vllm.distributed.device_communicators.xpu_communicator:all   0.39 KiB     548    0.096    0.352      52.5
+all_reduce             vllm.distributed.device_communicators.xpu_communicator:all   0.20 KiB     548    0.095    0.136      52.1
+all_reduce             vllm.distributed.device_communicators.xpu_communicator:all   0.00 MiB     524    0.099    0.355      51.7
+all_reduce             vllm.distributed.device_communicators.xpu_communicator:all   0.00 MiB     524    0.099    0.278      51.7
+all_reduce             vllm.distributed.device_communicators.xpu_communicator:all   0.00 MiB     524    0.098    0.336      51.6
+all_reduce             vllm.distributed.device_communicators.xpu_communicator:all   0.51 KiB     524    0.098    0.345      51.4
+all_reduce             vllm.distributed.device_communicators.xpu_communicator:all   0.00 MiB     524    0.098    0.187      51.4
+all_reduce             vllm.distributed.device_communicators.xpu_communicator:all   0.00 MiB     524    0.098    0.218      51.4
+all_reduce             vllm.distributed.device_communicators.xpu_communicator:all   0.00 MiB     524    0.098    0.293      51.2
+all_reduce             vllm.distributed.device_communicators.xpu_communicator:all   0.00 MiB     524    0.098    0.262      51.2
+all_reduce             vllm.distributed.device_communicators.xpu_communicator:all   0.00 MiB     524    0.098    0.160      51.1
+all_reduce             vllm.distributed.device_communicators.xpu_communicator:all   0.00 MiB     524    0.097    0.150      51.0
+all_reduce             vllm.distributed.device_communicators.xpu_communicator:all   0.00 MiB     524    0.097    0.296      50.9
+all_reduce             vllm.distributed.device_communicators.xpu_communicator:all   0.00 MiB     524    0.097    0.302      50.9
+all_reduce             vllm.distributed.device_communicators.xpu_communicator:all   0.00 MiB     524    0.097    0.298      50.9
+all_reduce             vllm.distributed.device_communicators.xpu_communicator:all   0.55 KiB     524    0.097    0.236      50.9
+all_reduce             vllm.distributed.device_communicators.xpu_communicator:all   0.70 KiB     524    0.097    0.147      50.9
+all_reduce             vllm.distributed.device_communicators.xpu_communicator:all   0.00 MiB     524    0.097    0.302      50.9
+all_reduce             vllm.distributed.device_communicators.xpu_communicator:all   0.31 KiB     524    0.097    0.410      50.8
+all_reduce             vllm.distributed.device_communicators.xpu_communicator:all   0.00 MiB     524    0.097    0.382      50.8
+all_reduce             vllm.distributed.device_communicators.xpu_communicator:all   0.00 MiB     524    0.097    0.239      50.8
+all_reduce             vllm.distributed.device_communicators.xpu_communicator:all   0.66 KiB     524    0.097    0.137      50.7
+all_reduce             vllm.distributed.device_communicators.xpu_communicator:all   0.35 KiB     524    0.097    0.391      50.7
+all_reduce             vllm.distributed.device_communicators.xpu_communicator:all   0.00 MiB     524    0.097    0.170      50.6
+all_reduce             vllm.distributed.device_communicators.xpu_communicator:all   0.00 MiB     524    0.097    0.346      50.6
+all_reduce             vllm.distributed.device_communicators.xpu_communicator:all   0.94 KiB     524    0.097    0.393      50.6
+all_reduce             vllm.distributed.device_communicators.xpu_communicator:all   0.00 MiB     524    0.097    0.361      50.6
+all_reduce             vllm.distributed.device_communicators.xpu_communicator:all   0.00 MiB     524    0.096    0.287      50.5
+all_reduce             vllm.distributed.device_communicators.xpu_communicator:all   0.00 MiB     524    0.096    0.383      50.5
+all_reduce             vllm.distributed.device_communicators.xpu_communicator:all   0.00 MiB     524    0.096    0.198      50.4
+all_reduce             vllm.distributed.device_communicators.xpu_communicator:all   0.00 MiB     524    0.096    0.249      50.4
+all_reduce             vllm.distributed.device_communicators.xpu_communicator:all   0.86 KiB     524    0.096    0.275      50.4
+all_reduce             vllm.distributed.device_communicators.xpu_communicator:all   0.98 KiB     524    0.096    0.149      50.4
+all_reduce             vllm.distributed.device_communicators.xpu_communicator:all   0.00 MiB     524    0.096    0.165      50.3
+all_reduce             vllm.distributed.device_communicators.xpu_communicator:all   0.00 MiB     524    0.096    0.333      50.3
+all_reduce             vllm.distributed.device_communicators.xpu_communicator:all   0.78 KiB     524    0.096    0.339      50.2
+--- op totals ---
+all_reduce             count=  37434 bytes_tot=0.35 GiB
+all_gather_into_tensor count=   1216 bytes_tot=0.01 GiB
+barrier                count=      4 bytes_tot=0.0 B
+wrote /root/build/p622/census/summary.json

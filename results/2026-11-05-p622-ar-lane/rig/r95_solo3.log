@@ -1,0 +1,29 @@
+r95 sizes: 150994944,83886080,76677120,68157440,15779840,2621440
+ONESHOT S=144MiB(150994944B): full=  30.962 ms (copies= 30.211 [ 5.00 GB/s/dir] + add= 1.375) numerics=OK
+ONESHOT S= 80MiB( 83886080B): full=  17.471 ms (copies= 16.952 [ 4.95 GB/s/dir] + add= 0.997) numerics=OK
+ONESHOT S= 73MiB( 76677120B): full=  16.028 ms (copies= 15.580 [ 4.92 GB/s/dir] + add= 0.953) numerics=OK
+ONESHOT S= 65MiB( 68157440B): full=  14.344 ms (copies= 13.864 [ 4.92 GB/s/dir] + add= 1.093) numerics=OK
+ONESHOT S= 15MiB( 15779840B): full=   3.770 ms (copies=  3.606 [ 4.38 GB/s/dir] + add= 0.792) numerics=OK
+ONESHOT S=  2MiB(  2621440B): full=   1.206 ms (copies=  1.047 [ 2.50 GB/s/dir] + add= 0.808) numerics=OK
+wrote /work/r95_oneshot.json
+
+*****************************************
+Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. 
+*****************************************
+2026:11:05-12:31:43:  139 |CCL_WARN| did not find MPI-launcher specific variables, switch to ATL/OFI, to force enable ATL/MPI set CCL_ATL_TRANSPORT=mpi
+2026:11:05-12:31:43:  139 |CCL_WARN| value of CCL_SYCL_ALLGATHERV_SCALEOUT_THRESHOLD changed to be 1048576 (default:1073741824)
+2026:11:05-12:31:43:  139 |CCL_WARN| value of CCL_TOPO_P2P_ACCESS changed to be 1 (default:-1)
+2026:11:05-12:31:43:  139 |CCL_WARN| value of CCL_TOPO_FABRIC_VERTEX_CONNECTION_CHECK changed to be 0 (default:1)
+2026:11:05-12:31:43:  139 |CCL_WARN| could not get local_idx/count from environment variables, trying to get them from ATL
+2026:11:05-12:31:43:  140 |CCL_WARN| did not find MPI-launcher specific variables, switch to ATL/OFI, to force enable ATL/MPI set CCL_ATL_TRANSPORT=mpi
+2026:11:05-12:31:43:  140 |CCL_WARN| could not get local_idx/count from environment variables, trying to get them from ATL
+[PASS] numerics (allreduce sum == 3) rank1
+[PASS] numerics (allreduce sum == 3) rank0
+STOCK S=144MiB(150994944B):   15.305 ms    9.87 GB/rank/s
+STOCK S= 80MiB( 83886080B):    8.513 ms    9.85 GB/rank/s
+STOCK S= 73MiB( 76677120B):    7.783 ms    9.85 GB/rank/s
+STOCK S= 65MiB( 68157440B):    6.922 ms    9.85 GB/rank/s
+STOCK S= 15MiB( 15779840B):    1.614 ms    9.78 GB/rank/s
+STOCK S=  2MiB(  2621440B):    0.332 ms    7.90 GB/rank/s
+wrote /work/r95_dist.json
+R95_SOLO: DONE (W14 restore by trap)
