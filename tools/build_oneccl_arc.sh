@@ -55,9 +55,11 @@ if [ "$MODE" = "arc" ]; then
     || { echo "FATAL: fp8 header marker missing"; exit 1; }
   echo "PATCH_MARKERS_OK (mode arc)"
 else
-  [ -z "$(git status --porcelain deps/libccl)" ] \
-    || { echo "FATAL: mode stock but deps/libccl is dirty — re-clone $SRC"; exit 1; }
-  echo "PRISTINE_OK (mode stock)"
+  # tracked-tree pristine check (the build generates an ignored
+  # include/oneapi/ccl/config.h inside the submodule — untracked by design)
+  git -C deps/libccl diff --quiet HEAD -- \
+    || { echo "FATAL: mode stock but deps/libccl tracked tree is dirty — re-clone $SRC"; exit 1; }
+  echo "PRISTINE_OK (mode stock, tracked tree)"
 fi
 
 # --- 3. builder container (reused when present) ---------------------------
@@ -71,38 +73,59 @@ docker start "$BUILDER" >/dev/null 2>&1 || true
 docker restart "$BUILDER" >/dev/null
 
 # --- 4. build inside the builder ------------------------------------------
+# DLE image cmake is 3.22 and has no pip; oneCCL 2022.0.0 requires >=3.24 —
+# bootstrap the pinned Kitware binary (~3.31: cmake 4 removes old policies).
+docker exec "$BUILDER" bash -eux -c '
+  [ -x /opt/cmake/bin/cmake ] || {
+    curl -sL https://github.com/Kitware/CMake/releases/download/v3.31.6/cmake-3.31.6-linux-x86_64.tar.gz \
+      | tar xz -C /opt
+    mv /opt/cmake-3.31.6-linux-x86_64 /opt/cmake
+  }
+  /opt/cmake/bin/cmake --version | head -1
+'
 docker exec "$BUILDER" bash -eux -c '
   source /opt/intel/oneapi/setvars.sh >/dev/null 2>&1 || true
-  cd /src
+  export PATH=/opt/cmake/bin:$PATH
+  rm -rf /src/build
   cmake -S /src -B /src/build -DCMAKE_CXX_COMPILER=icpx -DCMAKE_C_COMPILER=icx \
         -DCMAKE_BUILD_TYPE=Release -DENABLE_MPI=OFF \
-        -DBUILD_EXAMPLES=OFF -DBUILD_TESTS=OFF 2>&1 | tail -5
-  cmake --build /src/build --parallel $(nproc) 2>&1 | tail -5
+        -DBUILD_EXAMPLES=OFF -DBUILD_TESTS=OFF 2>&1 | tail -8
+  cmake --build /src/build --parallel $(nproc) 2>&1 | tail -8
 '
 
 # --- 5. inventory + verify + stage ----------------------------------------
+# Canonical artifact paths (the first staging pass let ./libccl_cpu's 6 MB
+# CPU-fallback libccl.so.1.0 overwrite the 210 MB SYCL fat via blind
+# find|cp — banked 2026-11-05; the SYCL fat is ./libccl/src):
+#   ./libccl/src/libccl.so.1.0   fat SYCL library (SONAME libccl.so.1)
+#   ./src/libccl.so.2.0          thin C-API shim (SONAME libccl.so.2)
 docker exec "$BUILDER" bash -eu -c '
   cd /src/build
-  echo "=== built ccl libraries ==="
-  find . -name "libccl*" -type f | sort
-  FAT=$(find . -name "libccl.so.1.0" -o -name "libccl.so.1" | head -1)
-  THIN=$(find . -name "libccl.so.2.0" -o -name "libccl.so.2" | head -1)
-  [ -n "$FAT" ] || { echo "FATAL: fat libccl.so.1 not produced (layout mismatch — inventory above is the evidence)"; exit 1; }
+  FAT=./libccl/src/libccl.so.1.0
+  THIN=./src/libccl.so.2.0
+  [ -f "$FAT" ] || { echo "FATAL: SYCL fat $FAT not produced"; exit 1; }
+  [ -f "$THIN" ] || { echo "FATAL: thin shim $THIN not produced"; exit 1; }
+  echo "=== sizes (cert9 reference: fat ~210 MB, thin ~142 KB) ==="
+  ls -la "$FAT" "$THIN"
   echo "=== SONAMEs ==="
   readelf -d "$FAT" | grep SONAME
-  if [ -n "$THIN" ]; then readelf -d "$THIN" | grep SONAME; fi
-  echo "=== C-API symbols in thin (sample) ==="
-  if [ -n "$THIN" ]; then nm -D "$THIN" | grep -c oneccl; fi
-  echo "=== fp8 markers in fat ==="
+  readelf -d "$THIN" | grep SONAME
+  echo "=== C-API symbols in thin ==="
+  nm -D "$THIN" | grep -c oneccl
+  echo "=== fp8 markers in fat (strings / demangled) ==="
   strings "$FAT" | grep -c "CCL_SYCL_ALLREDUCE_FP8" || true
   nm -DC "$FAT" 2>/dev/null | c++filt | grep -c fp8_ring || true
 '
 
-# stage every libccl artifact the build produced + manifest
-docker exec "$BUILDER" bash -eu -c "
+# stage canonical artifacts + manifest
+docker exec "$BUILDER" bash -eu -c '
   cd /src/build
-  find . -name 'libccl*' -type f -exec cp -v {} /stage/ \; 2>/dev/null || true
-"
+  cp -v ./libccl/src/libccl.so.1.0 /stage/
+  cp -v ./libccl/src/libccl.a /stage/ 2>/dev/null || true
+  cp -v ./src/libccl.so.2.0 /stage/
+  cp -v ./plugins/legacy_cpu/libccl_legacy_cpu.so /stage/ 2>/dev/null || true
+  cp -v ./libccl_cpu/src/ext/openmp/libccl_openmp.so.0 /stage/ 2>/dev/null || true
+'
 {
   echo "mode=$MODE date=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
   echo "superproject=$(git rev-parse HEAD) tag=2022.0.0"

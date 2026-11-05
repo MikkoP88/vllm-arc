@@ -91,7 +91,7 @@ def role_dist(sizes_bytes, out, guard="const", label="stock",
             # error is unbounded near zero even for stock fp16; these two
             # catch wrong-half/scale/garbage corruption while passing the
             # e4m3 noise floor (~1-2% of RMS).
-            af, rf = a.float(), ref.float()
+            af, rf = a.float().cpu(), ref.float()
             cos = ((af * rf).sum() /
                    (af.norm() * rf.norm()).clamp_min(1e-9)).item()
             rel = ((af - rf).abs().mean() / rf.std()).item()
