@@ -1,0 +1,28 @@
+BENCH_RC=0
+/work/r90b_backend_matrix.py:86: UserWarning: Flash attention kernel not used because: (Triggered internally at /__w/pytorch/pytorch/aten/src/ATen/native/mkldnn/xpu/Attention.cpp:242.)
+  return torch.nn.functional.scaled_dot_product_attention(q, k, v, **kw)
+/work/r90b_backend_matrix.py:86: UserWarning: Flash Attention does not support non-null attn_mask. (Triggered internally at /__w/pytorch/pytorch/aten/src/ATen/native/transformers/sdp_utils_cpp.h:262.)
+  return torch.nn.functional.scaled_dot_product_attention(q, k, v, **kw)
+/work/r90b_backend_matrix.py:86: UserWarning: Overrideable attention kernel not used because: (Triggered internally at /__w/pytorch/pytorch/aten/src/ATen/native/mkldnn/xpu/Attention.cpp:244.)
+  return torch.nn.functional.scaled_dot_product_attention(q, k, v, **kw)
+/work/r90b_backend_matrix.py:86: UserWarning: CuDNN attention kernel not used because: (Triggered internally at /__w/pytorch/pytorch/aten/src/ATen/native/mkldnn/xpu/Attention.cpp:246.)
+  return torch.nn.functional.scaled_dot_product_attention(q, k, v, **kw)
+/work/r90b_backend_matrix.py:86: UserWarning: XPU don't support SDPA cudnn attention backend. (Triggered internally at /__w/pytorch/pytorch/aten/src/ATen/native/mkldnn/xpu/Attention.cpp:81.)
+  return torch.nn.functional.scaled_dot_product_attention(q, k, v, **kw)
+/work/r90b_backend_matrix.py:86: UserWarning: Memory Efficient attention kernel not used because: (Triggered internally at /__w/pytorch/pytorch/aten/src/ATen/native/mkldnn/xpu/Attention.cpp:248.)
+  return torch.nn.functional.scaled_dot_product_attention(q, k, v, **kw)
+/work/r90b_backend_matrix.py:86: UserWarning: Memory Efficient attention has been runtime disabled. (Triggered internally at /__w/pytorch/pytorch/aten/src/ATen/native/transformers/sdp_utils_cpp.h:571.)
+  return torch.nn.functional.scaled_dot_product_attention(q, k, v, **kw)
+/work/r90b_backend_matrix.py:86: UserWarning: For dense input, both fused kernels require query, key and value to have the same num_heads. Query.sizes(): [1, 12, 512, 256], Key sizes(): [1, 2, 2048, 256], Value sizes(): [1, 2, 2048, 256] instead. To broadcast dense inputs, try using unsqueeze and expand_to before passing them into the kernel. (Triggered internally at /__w/pytorch/pytorch/aten/src/ATen/native/transformers/sdp_utils_cpp.h:437.)
+  return torch.nn.functional.scaled_dot_product_attention(q, k, v, **kw)
+A FLASH/bool2d     -> {'variant': 'FLASH/bool2d', 'accept': False, 'err': 'RuntimeError: No available kernel. Aborting execution.'}
+A FLASH/bool4d     -> {'variant': 'FLASH/bool4d', 'accept': False, 'err': 'RuntimeError: No available kernel. Aborting execution.'}
+A FLASH/add16      -> {'variant': 'FLASH/add16', 'accept': False, 'err': 'RuntimeError: No available kernel. Aborting execution.'}
+A EFFICIENT/bool2d -> {'variant': 'EFFICIENT/bool2d', 'accept': False, 'err': 'RuntimeError: No available kernel. Aborting execution.'}
+A EFFICIENT/bool4d -> {'variant': 'EFFICIENT/bool4d', 'accept': False, 'err': 'RuntimeError: No available kernel. Aborting execution.'}
+A EFFICIENT/add16  -> {'variant': 'EFFICIENT/add16', 'accept': False, 'err': 'RuntimeError: No available kernel. Aborting execution.'}
+A MATH/bool2d      -> {'variant': 'MATH/bool2d', 'accept': True, 'fro': 0.00021, 'ms_small': 3.409}
+A MATH/bool4d      -> {'variant': 'MATH/bool4d', 'accept': True, 'fro': 0.00021, 'ms_small': 1.56}
+A MATH/add16       -> {'variant': 'MATH/add16', 'accept': True, 'fro': 0.00021, 'ms_small': 1.539}
+C python fn -> {'signature': '(q, k, v, max_seqlen_q, cu_seqlens_q, max_seqlen_k, cu_seqlens_k=None, seqused_k=None, q_v=None, dropout_p=0.0, softmax_scale=None, causal=False, window_size: Optional[list[int]] = None, softcap=0.0, alibi_slopes=None, deterministic=False, return_attn_probs=False, block_table=None, return_softmax_lse=False, out=None, scheduler_metadata=None, q_descale: Optional[torch.Tensor] = None, k_descale: Opt', 'rate_8kx32k': "TypeError: flash_attn_varlen_func() got multiple values for argument 'max_seqlen_q'"}
+wrote r90b_backend_matrix.json

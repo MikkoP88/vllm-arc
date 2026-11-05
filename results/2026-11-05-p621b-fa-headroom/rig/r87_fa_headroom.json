@@ -1,0 +1,273 @@
+{
+ "devices": {
+  "xpu:0": {
+   "name": "Intel(R) Graphics [0xe223]",
+   "total_mem_gb": 31.89,
+   "copy_hbm_gbps": 528.7,
+   "copy_ws32k_gbps": 397.7,
+   "copy_ws64k_gbps": 438.8,
+   "ideal_oneway_gbps": 264.3,
+   "shapes": [
+    {
+     "rows": 6656,
+     "kv": 3072,
+     "stock_ms_med": 2.034,
+     "stock_ms_min": 2.002,
+     "mandatory_mb": 81.0,
+     "ideal_ms": 0.321,
+     "s_lo": 6.33,
+     "stock_eff_gbps": 41.8,
+     "v1_fro": "nan",
+     "v1_timing": "SKIPPED(numerics)"
+    },
+    {
+     "rows": 8192,
+     "kv": 8192,
+     "stock_ms_med": 11.955,
+     "stock_ms_min": 11.34,
+     "mandatory_mb": 104.0,
+     "ideal_ms": 0.413,
+     "s_lo": 28.98,
+     "stock_eff_gbps": 9.1,
+     "v1_fro": 0.002748,
+     "v1_ms_med": 279.57,
+     "v1_over_stock": 23.4
+    },
+    {
+     "rows": 8192,
+     "kv": 16384,
+     "stock_ms_med": 33.699,
+     "stock_ms_min": 33.118,
+     "mandatory_mb": 112.0,
+     "ideal_ms": 0.444,
+     "s_lo": 75.85,
+     "stock_eff_gbps": 3.5,
+     "v1_fro": 0.002823,
+     "v1_ms_med": 844.125,
+     "v1_over_stock": 25.0
+    },
+    {
+     "rows": 8192,
+     "kv": 24576,
+     "stock_ms_med": 55.403,
+     "stock_ms_min": 55.203,
+     "mandatory_mb": 120.0,
+     "ideal_ms": 0.476,
+     "s_lo": 116.39,
+     "stock_eff_gbps": 2.3,
+     "v1_fro": 0.002579,
+     "v1_ms_med": 1410.792,
+     "v1_over_stock": 25.5
+    },
+    {
+     "rows": 8192,
+     "kv": 32768,
+     "stock_ms_med": 77.46,
+     "stock_ms_min": 76.967,
+     "mandatory_mb": 128.0,
+     "ideal_ms": 0.508,
+     "s_lo": 152.56,
+     "stock_eff_gbps": 1.7,
+     "v1_fro": 0.002507,
+     "v1_ms_med": 1990.641,
+     "v1_over_stock": 25.7
+    },
+    {
+     "rows": 8192,
+     "kv": 40960,
+     "stock_ms_med": 100.287,
+     "stock_ms_min": 99.896,
+     "mandatory_mb": 136.0,
+     "ideal_ms": 0.539,
+     "s_lo": 185.9,
+     "stock_eff_gbps": 1.4,
+     "v1_fro": 0.002744,
+     "v1_ms_med": 2570.413,
+     "v1_over_stock": 25.6
+    },
+    {
+     "rows": 8192,
+     "kv": 49152,
+     "stock_ms_med": 122.917,
+     "stock_ms_min": 122.613,
+     "mandatory_mb": 144.0,
+     "ideal_ms": 0.571,
+     "s_lo": 215.19,
+     "stock_eff_gbps": 1.2,
+     "v1_fro": 0.002674,
+     "v1_ms_med": 3145.541,
+     "v1_over_stock": 25.6
+    },
+    {
+     "rows": 8192,
+     "kv": 57344,
+     "stock_ms_med": 145.633,
+     "stock_ms_min": 144.975,
+     "mandatory_mb": 152.0,
+     "ideal_ms": 0.603,
+     "s_lo": 241.54,
+     "stock_eff_gbps": 1.1,
+     "v1_fro": 0.002695,
+     "v1_ms_med": 3743.904,
+     "v1_over_stock": 25.7
+    },
+    {
+     "rows": 8192,
+     "kv": 65536,
+     "stock_ms_med": 168.097,
+     "stock_ms_min": 167.61,
+     "mandatory_mb": 160.0,
+     "ideal_ms": 0.635,
+     "s_lo": 264.86,
+     "stock_eff_gbps": 1.0,
+     "v1_fro": 0.002614,
+     "v1_ms_med": 4325.04,
+     "v1_over_stock": 25.7
+    }
+   ],
+   "u32k_aggregate": {
+    "u32k_stock_slice_ms": 2856.3,
+    "u32k_ideal_slice_ms": 29.4,
+    "u32k_s_lo": 96.99,
+    "banked_r67b_slice_ms": 3122.0
+   }
+  },
+  "xpu:1": {
+   "name": "Intel(R) Graphics [0xe223]",
+   "total_mem_gb": 31.89,
+   "copy_hbm_gbps": 534.1,
+   "copy_ws32k_gbps": 326.4,
+   "copy_ws64k_gbps": 433.1,
+   "ideal_oneway_gbps": 267.0,
+   "shapes": [
+    {
+     "rows": 6656,
+     "kv": 3072,
+     "stock_ms_med": 2.071,
+     "stock_ms_min": 2.007,
+     "mandatory_mb": 81.0,
+     "ideal_ms": 0.318,
+     "s_lo": 6.51,
+     "stock_eff_gbps": 41.0,
+     "v1_fro": "nan",
+     "v1_timing": "SKIPPED(numerics)"
+    },
+    {
+     "rows": 8192,
+     "kv": 8192,
+     "stock_ms_med": 12.022,
+     "stock_ms_min": 11.209,
+     "mandatory_mb": 104.0,
+     "ideal_ms": 0.408,
+     "s_lo": 29.44,
+     "stock_eff_gbps": 9.1,
+     "v1_fro": 0.002748,
+     "v1_ms_med": 280.274,
+     "v1_over_stock": 23.3
+    },
+    {
+     "rows": 8192,
+     "kv": 16384,
+     "stock_ms_med": 33.689,
+     "stock_ms_min": 33.471,
+     "mandatory_mb": 112.0,
+     "ideal_ms": 0.44,
+     "s_lo": 76.6,
+     "stock_eff_gbps": 3.5,
+     "v1_fro": 0.002823,
+     "v1_ms_med": 848.688,
+     "v1_over_stock": 25.2
+    },
+    {
+     "rows": 8192,
+     "kv": 24576,
+     "stock_ms_med": 55.828,
+     "stock_ms_min": 55.441,
+     "mandatory_mb": 120.0,
+     "ideal_ms": 0.471,
+     "s_lo": 118.47,
+     "stock_eff_gbps": 2.3,
+     "v1_fro": 0.002579,
+     "v1_ms_med": 1416.606,
+     "v1_over_stock": 25.4
+    },
+    {
+     "rows": 8192,
+     "kv": 32768,
+     "stock_ms_med": 78.389,
+     "stock_ms_min": 78.078,
+     "mandatory_mb": 128.0,
+     "ideal_ms": 0.503,
+     "s_lo": 155.96,
+     "stock_eff_gbps": 1.7,
+     "v1_fro": 0.002507,
+     "v1_ms_med": 2000.882,
+     "v1_over_stock": 25.5
+    },
+    {
+     "rows": 8192,
+     "kv": 40960,
+     "stock_ms_med": 100.782,
+     "stock_ms_min": 100.269,
+     "mandatory_mb": 136.0,
+     "ideal_ms": 0.534,
+     "s_lo": 188.71,
+     "stock_eff_gbps": 1.4,
+     "v1_fro": 0.002744,
+     "v1_ms_med": 2572.475,
+     "v1_over_stock": 25.5
+    },
+    {
+     "rows": 8192,
+     "kv": 49152,
+     "stock_ms_med": 123.321,
+     "stock_ms_min": 122.744,
+     "mandatory_mb": 144.0,
+     "ideal_ms": 0.565,
+     "s_lo": 218.09,
+     "stock_eff_gbps": 1.2,
+     "v1_fro": 0.002674,
+     "v1_ms_med": 3171.253,
+     "v1_over_stock": 25.7
+    },
+    {
+     "rows": 8192,
+     "kv": 57344,
+     "stock_ms_med": 146.576,
+     "stock_ms_min": 145.984,
+     "mandatory_mb": 152.0,
+     "ideal_ms": 0.597,
+     "s_lo": 245.57,
+     "stock_eff_gbps": 1.1,
+     "v1_fro": 0.002695,
+     "v1_ms_med": 3754.321,
+     "v1_over_stock": 25.6
+    },
+    {
+     "rows": 8192,
+     "kv": 65536,
+     "stock_ms_med": 169.314,
+     "stock_ms_min": 168.821,
+     "mandatory_mb": 160.0,
+     "ideal_ms": 0.628,
+     "s_lo": 269.48,
+     "stock_eff_gbps": 1.0,
+     "v1_fro": 0.002614,
+     "v1_ms_med": 4355.889,
+     "v1_over_stock": 25.7
+    }
+   ],
+   "u32k_aggregate": {
+    "u32k_stock_slice_ms": 2878.8,
+    "u32k_ideal_slice_ms": 29.2,
+    "u32k_s_lo": 98.75,
+    "banked_r67b_slice_ms": 3122.0
+   }
+  }
+ },
+ "decision": {
+  "rule": "S_lo(U32k agg) >= 2.0 opens the v2 build lane; < 2.0 closes the FA lane on physics",
+  "s_lo_min_across_devices": 96.99,
+  "verdict": "OPEN v2 lane"
+ }
+}

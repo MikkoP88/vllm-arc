@@ -1,0 +1,57 @@
+{
+ "A_small_matrix": [
+  {
+   "variant": "FLASH/bool2d",
+   "accept": false,
+   "err": "RuntimeError: No available kernel. Aborting execution."
+  },
+  {
+   "variant": "FLASH/bool4d",
+   "accept": false,
+   "err": "RuntimeError: No available kernel. Aborting execution."
+  },
+  {
+   "variant": "FLASH/add16",
+   "accept": false,
+   "err": "RuntimeError: No available kernel. Aborting execution."
+  },
+  {
+   "variant": "EFFICIENT/bool2d",
+   "accept": false,
+   "err": "RuntimeError: No available kernel. Aborting execution."
+  },
+  {
+   "variant": "EFFICIENT/bool4d",
+   "accept": false,
+   "err": "RuntimeError: No available kernel. Aborting execution."
+  },
+  {
+   "variant": "EFFICIENT/add16",
+   "accept": false,
+   "err": "RuntimeError: No available kernel. Aborting execution."
+  },
+  {
+   "variant": "MATH/bool2d",
+   "accept": true,
+   "fro": 0.00021,
+   "ms_small": 3.409
+  },
+  {
+   "variant": "MATH/bool4d",
+   "accept": true,
+   "fro": 0.00021,
+   "ms_small": 1.56
+  },
+  {
+   "variant": "MATH/add16",
+   "accept": true,
+   "fro": 0.00021,
+   "ms_small": 1.539
+  }
+ ],
+ "B_survivors": [],
+ "C_python_fn": {
+  "signature": "(q, k, v, max_seqlen_q, cu_seqlens_q, max_seqlen_k, cu_seqlens_k=None, seqused_k=None, q_v=None, dropout_p=0.0, softmax_scale=None, causal=False, window_size: Optional[list[int]] = None, softcap=0.0, alibi_slopes=None, deterministic=False, return_attn_probs=False, block_table=None, return_softmax_lse=False, out=None, scheduler_metadata=None, q_descale: Optional[torch.Tensor] = None, k_descale: Opt",
+  "rate_8kx32k": "TypeError: flash_attn_varlen_func() got multiple values for argument 'max_seqlen_q'"
+ }
+}

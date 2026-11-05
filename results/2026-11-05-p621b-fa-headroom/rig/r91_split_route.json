@@ -1,0 +1,35 @@
+{
+ "aten_ops": [
+  "_scaled_dot_product_attention_math_for_mps",
+  "_scaled_dot_product_cudnn_attention",
+  "_scaled_dot_product_cudnn_attention_backward",
+  "_scaled_dot_product_efficient_attention",
+  "_scaled_dot_product_efficient_attention_backward",
+  "_scaled_dot_product_flash_attention",
+  "_scaled_dot_product_flash_attention_backward",
+  "_scaled_dot_product_flash_attention_for_cpu",
+  "_scaled_dot_product_flash_attention_for_cpu_backward",
+  "_scaled_dot_product_fused_attention_overrideable",
+  "_scaled_dot_product_fused_attention_overrideable_backward"
+ ],
+ "efficient": {
+  "causal_8kx8k": {
+   "ms": 87.15,
+   "tflops": 4.7,
+   "lse_shape": [
+    1,
+    12,
+    8192
+   ]
+  },
+  "dense_8kx24k": {
+   "ms": 198.3,
+   "tflops": 12.5
+  },
+  "gqa_2048x4096": "ACCEPTED"
+ },
+ "split_merge_gate": {
+  "fro": 2.23675,
+  "pass": false
+ }
+}

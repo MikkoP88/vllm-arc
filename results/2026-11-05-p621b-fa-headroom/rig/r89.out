@@ -1,0 +1,26 @@
+BENCH_RC=0
+{
+ "torch": "2.13.0+xpu",
+ "sdp_kernel_backends": "enum fail TypeError(\"'pybind11_type' object is not iterable\")",
+ "vllm_xpu_kernels": [
+  "flash_attn_interface",
+  "flash_attn_varlen_func"
+ ],
+ "flash_attn_interface_fns": [
+  "build_decode_split_plan",
+  "compute_splits_per_seq",
+  "flash_attn_varlen_func",
+  "maybe_contiguous",
+  "ref_paged_attn"
+ ],
+ "vllm_flash_attn": "fail ModuleNotFoundError(\"No module named 'vllm_flash_attn'\")"
+}
+SDPA_CORRECTNESS:
+  full Lq==Lk    fro_vs_bottomright_ref=2.583e-04 [PASS]
+  chunk Lq<Lk    fro_vs_bottomright_ref=4.731e+00 [FAIL]
+  sync-hardened 8192x32768: wall=4.15 ms event=4.17 ms (r89 event-only said 4.2 — if both now >>4.2, the r89 number was stream-escape; if both ~4.2 the op is not doing the math and correctness above must explain it)
+rows=8192 kv=8192: stock=11.285 ms (36.5 TF/s) | sdpa16=4.197 ms (98.2 TF/s) | sdpabf16=3.996 ms (103.2 TF/s)
+rows=8192 kv=16384: stock=33.028 ms (37.5 TF/s) | sdpa16=4.23 ms (292.4 TF/s) | sdpabf16=4.269 ms (289.7 TF/s)
+rows=8192 kv=24576: stock=54.7 ms (37.7 TF/s) | sdpa16=4.17 ms (494.4 TF/s) | sdpabf16=4.238 ms (486.4 TF/s)
+rows=8192 kv=32768: stock=76.427 ms (37.8 TF/s) | sdpa16=4.363 ms (661.5 TF/s) | sdpabf16=4.328 ms (666.9 TF/s)
+wrote r89_attn_inventory.json
