@@ -93,7 +93,13 @@ product as a two-file overlay (fat lib at BOTH `.so.1` and `.so.1.0`)
 on cert9's engine — manifest row `oneccl=2022.0.0+arc1`** (recipe:
 `results/2026-11-05-p624-fp8-ar/r99/cert10ctx/cert10.Dockerfile` =
 cert9 + overlay + manifest rows; the exhaustive `vllm_gaudi/` md5 walk
-proving engine identity is banked in the same evidence dir).
+proving engine identity is banked in the same evidence dir). **The
+210 MB fat-lib binary itself is NOT tracked** — GitHub's pre-receive
+hook hard-rejects >100 MB files (GH001, push declined 2026-11-05);
+identity = the sha256 pinned in
+`results/2026-11-05-p624-fp8-ar/r99/cert10ctx/ARTIFACT-libccl.md`
+(durable copies: rig `stage-arc/` + inside the certified image, both
+sha-verified).
 
 ## Telemetry (three layers)
 

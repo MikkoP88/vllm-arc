@@ -152,7 +152,12 @@ r99b_cert10_cont.sh with the retry law; run note in r99_cert10_gate.sh).
 Evidence: `r99/` (def/k8v4/fp8/statsprobe/perf_*×4/r99c annex legs,
 manifest + tree walks, verdicts), `r99_gate.log`, `r99b_gate.log`,
 `r99c_annex.log`, runners r99/r99b/r99c + r99def_reconstruct.py.
-Redaction: REDACTION-2026-11-05-p624c.md.
+Redaction: REDACTION-2026-11-05-p624c.md. Post-gate note (2026-11-05):
+the 200 MB `cert10ctx/libccl.so.1.0` blob was UNTRACKED from the repo
+after GitHub's 100 MB pre-receive rejection (GH001) — sha-pinned +
+durable homes documented in `r99/cert10ctx/ARTIFACT-libccl.md`; the
+artifact itself is preserved on the rig stage dir and inside image
+2f86fc2411fb (sha re-verified identical at untrack time).
 
 ---
 
