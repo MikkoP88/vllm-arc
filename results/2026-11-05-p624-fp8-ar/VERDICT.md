@@ -82,8 +82,9 @@ posture: **FP8 env ABSENT** — stock-path serving unless explicitly enabled.
 
 ## [1] default-posture battery (no fp8 env) — PASS (one disposition)
 
-flip stop 9.1s; integrity 5/5 + determinism 3/3; run7n t0 agg 284.64 /
-solo 84.5; t1.0-xhigh ok 4/4; spec pos1 0.9258 (hard 0.5); tps solo
+flip stop 9.1s; integrity 5/5 + determinism 3/3; run7n t0 agg 300.39
+steady (268.89 first-sampled warm-up face) / solo 84.52/84.51; t1.0-xhigh
+ok 4/4; spec pos1 0.9258 (hard 0.5); tps solo
 61.18/61.27 + agg8 328.44 — every face inside the stock band (r98 leg A:
 60.89/61.39/329.12). LONG-RETURN full + 3 churn cycles: t0 single-hash all
 classes, zero garble, stop finishes, t1_seed_identical everywhere.

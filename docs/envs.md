@@ -5,8 +5,15 @@ at the r46t close-out) from `vllm_gaudi/envs.py` arc-lane markers + the
 certified serve line (`r43_serve_k5.sh`, spec depth 3 per the r46t
 recommendation — a serve-time CLI change — on image
 `vllm-arc:v0.30.0-b70-cert`; unchanged since — the chain is identical on
-the current certified image `vllm-arc:v0.30.0-b70-cert9`, where
-`LMCACHE_TRACK_USAGE=false` (P6.3) made it 25; cert9 = cert6-era
+the current certified image `vllm-arc:v0.30.0-b70-cert10`, where
+`LMCACHE_TRACK_USAGE=false` (P6.3) made it 25; cert10 = cert9's engine
+byte-identical (exhaustive md5 walk at the cert10 gate) + the P6.24
+oneCCL fp8-wire overlay, which is **default-OFF** and adds NO certified
+serve-line var — opting into the e4m3-wire allreduce is the single
+uncertified-line addition `CCL_SYCL_ALLREDUCE_FP8=1` (knob table in
+`CONFIGURATION-arc.md`; proven env-absent at the cert10 gate with
+FP8_ENV_SET=0 and default-posture numbers cert9-identical);
+cert9 = cert6-era
 compute bytes under the certified fp8 line — the P6.19 TQ fix never
 engages there (control-proven t7/t9 + cert8 gate) and the P6.20
 off-thread store (L3, default ON) adds no serve-line var — it rides the
@@ -156,7 +163,12 @@ In-line with best practice: `VLLM_ARC_*` engine-env namespace (**15 live
 vars** — the r45g audit's 10 + `VLLM_ARC_TQ_SPEC_FIX`/`VLLM_ARC_TQ_VERIFY_MODE`/`VLLM_ARC_TQ_MQ_SPLITS` (p619) +
 `VLLM_ARC_LMC_ASYNC_STORE`/`VLLM_ARC_LMC_EVSYNC` (p620); grep-verified
 against code consumers at the P6.23 docs audit — + 3 dropped at r45d +
-1 dead since r47b, below), `NN-category/pNN-slug` patch dirs,
+1 dead since r47b, below), the P6.24 `CCL_SYCL_ALLREDUCE_FP8`/
+`_MIN_COUNT`/`_STATS` trio (cert10 oneCCL overlay — oneCCL-runtime envs,
+deliberately OUTSIDE the `VLLM_ARC_` namespace: they configure the comm
+library, not the engine; registered by `arc-fp8-allreduce.patch`, all
+default-off, documented in `CONFIGURATION-arc.md`'s knob table),
+`NN-category/pNN-slug` patch dirs,
 `feat/arc-pNN-<slug>` branches, `vllm-arc:v0.30.0-b70[-pNN]` image tags,
 `ARC_*` **host-side script vars** (10, `tools/serve_arc_b70.sh` — a
 different layer from engine envs; the 10th is `ARC_SPEC_METHOD`, the

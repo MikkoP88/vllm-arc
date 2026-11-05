@@ -8,14 +8,19 @@ definitions and hardware in [`TESTING-arc.md`](TESTING-arc.md)).
 1. **Measurement methodology** — defines every face, the protocol laws,
    the two prefix-cache tiers, and the provenance rule. Read it first.
 2. **Current record** — the **probabilistic draft lane on
-   `vllm-arc:v0.30.0-b70-cert9`** (the certified posture since P6.17 —
+   `vllm-arc:v0.30.0-b70-cert10`** (the certified posture since P6.17 —
    the serve-script default; every record
    face measured natively on that lane by the p617 campaign, and the
-   cert7/cert8/cert9 release gates re-verified the key faces on the tag-built
+   cert7–cert10 release gates re-verified the key faces on the tag-built
    image — same engine under `fp8_e4m3`; cert9 adds the P6.20 off-thread
-   store, so the prefill TTFT faces carry the cert9-gate values), plus the
+   store, so the default-posture prefill TTFT faces carry the cert9-gate
+   values; **cert10 adds the P6.24 oneCCL fp8-wire overlay — default OFF,
+   so the default-posture numbers are cert9-identical (proven at the
+   gate), and the opt-in `CCL_SYCL_ALLREDUCE_FP8=1` prefill faces are the
+   new best on every p65 bar**), plus the
    posture matrices (the P6.16 prob matrix; the TurboQuant dtype faces,
-   P6.14, **servable again since cert8, re-gated on cert9**) and the current-era analyses
+   P6.14, **servable again since cert8, re-gated on cert9, k8v4 carry
+   proven on cert10**) and the current-era analyses
    (prefill anatomy, op-class trace). The pre-P6.17 greedy-lane record
    (r70, cert4-native) is retained as labeled history.
 3. **History** — every pre-P6.17 measurement, labeled by image and
@@ -57,7 +62,7 @@ current-record tables.
 | Layer | Identity |
 |---|---|
 | Hardware | dual Intel Arc Pro B70 (48 GB each), TP2, one card per socket (`ZE_AFFINITY_MASK=0,1`) |
-| Engine image | **current**: `vllm-arc:v0.30.0-b70-cert9` — tag `rel/v0.30.0-b70-cert9`, commit `aa2ee17d`, image `a9f8252451b6`, `IMAGE_MANIFEST.fork_sha` verified at build + all four p620-touched files md5-identical to the tag tar (cert9 gate, `results/2026-11-04-p620-prefill-opt/`). The current-record numbers below were measured natively on cert6 under the certified probabilistic draft posture (p617 campaign) and the key faces re-verified at the cert7, cert8 and cert9 release gates (t0 in-family, integrity/det/spec green — cert9 spec gate at exactly the cert8 banked values — long-return t0 lanes 100 % clean on every dtype; the one t1-seed window flag dispositioned benign with the W14 incumbent control at cert8; the cert9-gate TQ identity faces carry the cross-cert dominant-hash proof — same variant families as the cert8 gate). cert9 = cert8 engine + the **P6.20 prefill host-path patch** (L3 off-thread LMCache store, default ON via `VLLM_ARC_LMC_ASYNC_STORE` — device ops stay on the engine's in-order stream, only the host wait moves to the `arc-lmc-store` worker; L6 dispatch-late handoff; `patches/step_trace.py` diagnostics, silent-off). Under `fp8_e4m3` the compute bytes are identical to cert6–cert8 — the delta is WHERE the store body's D2H gathers + CPU insert run (off-thread), worth **−0.74 s U32k / −1.64 s U64k / −0.08 s U8k TTFT**; KV pool 400,739 == cert7 byte-value, run7n t0 296.91/84.54/84.48 in-family. cert8 (`e47739b0`, image `b212fbca59ec`) remains fully valid |
+| Engine image | **current**: `vllm-arc:v0.30.0-b70-cert10` — tag `rel/v0.30.0-b70-cert10`, image `2f86fc2411fb`, `IMAGE_MANIFEST.fork_sha == aa2ee17d…` (preserved from cert9) + the `oneccl=2022.0.0+arc1` overlay rows; **exhaustive `vllm_gaudi/` md5 walk vs cert9: diff_lines = 0** (cert9's vllm-layer certifications carry; only the comm lib changed), two-file fat-lib overlay sha-pinned at both SONAME paths (cert10 gate, `results/2026-11-05-p624-fp8-ar/`). The current-record numbers below were measured natively on cert6 under the certified probabilistic draft posture (p617 campaign) and the key faces re-verified at the cert7–cert10 release gates (t0 in-family — cert10 default-posture gate 300.39 steady / 84.52–84.51 solo with the FP8 env proven absent — integrity/det/spec green — cert10 spec pos1 0.9258 byte-exact on BOTH the default and FP8=1 legs — long-return t0 lanes 100 % clean on every dtype; the one t1-seed window flag dispositioned benign with the W14 incumbent control at cert8; the cert9-gate TQ identity faces carry the cross-cert dominant-hash proof — same variant families as the cert8 gate). cert10 = cert9 engine + the **P6.24 oneCCL fp8-wire overlay** (same-version 2022.0.0 rebuild + e4m3-wire large-ring allreduce, **default OFF** — `CCL_SYCL_ALLREDUCE_FP8=1` opts in; opt-in faces below). cert9 = cert8 engine + the **P6.20 prefill host-path patch** (L3 off-thread LMCache store, default ON via `VLLM_ARC_LMC_ASYNC_STORE` — device ops stay on the engine's in-order stream, only the host wait moves to the `arc-lmc-store` worker; L6 dispatch-late handoff; `patches/step_trace.py` diagnostics, silent-off). Under `fp8_e4m3` the compute bytes are identical to cert6–cert9 — the P6.20 delta is WHERE the store body's D2H gathers + CPU insert run (off-thread), worth **−0.74 s U32k / −1.64 s U64k / −0.08 s U8k TTFT**; KV pool 400,739 == cert7 byte-value, run7n t0 296.91/84.54/84.48 in-family. cert8 (`e47739b0`, image `b212fbca59ec`) remains fully valid |
 | Wheels | md5-pinned at build (`tools/wheel_guard.sh`, 4 pins: vllm/triton/vxk/lmcache 0.5.6+arc1) |
 | Serve line | the certified 25-var env chain + CLI ([`CONFIGURATION-arc.md`](CONFIGURATION-arc.md)): MTP k3 **+ probabilistic drafting (the P6.17 certified default)**, `mode:none`, FULL_DECODE_ONLY graphs (85 capture sizes, 1–320), MNBT 8192, LMCacheConnectorV1 `kv_both` |
 | p617 campaign (the comprehensive prob-lane certification) | 5 fresh boots on cert6 — prob comprehensive leg (a), prob family leg (b), no-spec A/B leg (c), default-path validation boot (d), greedy opt-out boot (e) — evidence `results/2026-11-03-p617a-probcert/` |
@@ -120,9 +125,9 @@ accepted/drafts + 1** (the +1 bonus token). Windows are counter deltas
 snapshotted before/after each battery, so each face's acceptance covers
 that face's traffic only.
 
-## Current certified image — cert9 (`rel/v0.30.0-b70-cert9`) + probabilistic draft lane (P6.17): the current record
+## Current certified image — cert10 (`rel/v0.30.0-b70-cert10`) + probabilistic draft lane (P6.17): the current record
 
-**Current release = cert9; current certified posture = probabilistic
+**Current release = cert10; current certified posture = probabilistic
 drafting (P6.17, the serve-script default).** Every record number below
 was measured natively on the cert6 image under
 `ARC_SPEC_METHOD=probabilistic` (p617 campaign, 2026-11-03, fresh boot
@@ -156,7 +161,23 @@ class-set identical to cert8 (+0 −0), KV pool 400,739 tokens — and the
 P6.20 TTFT wins on the same gate: **U32k 16.93 s / U64k 38.93 s / U8k
 3.76 s / C32k re-hit 1.09 s** vs the cert8-posture faces 17.9–18.1 /
 39.6–41.5 / 3.84 (r81 interleave A/B/A/B: −0.74 / −1.64 / −0.08 s) —
-`results/2026-11-04-p620-prefill-opt/`. Nothing validated
+`results/2026-11-04-p620-prefill-opt/`.
+**cert10 = cert9 engine + the P6.24 oneCCL fp8-wire overlay** (default
+OFF — the certified default posture serves the stock path; proven
+`FP8_ENV_SET=0` at the gate) — the cert10 release gate re-verified the
+battery on both postures: default leg t0 agg 300.39 steady (268.89
+first-run warm-up; solo 84.52/84.51), integrity 5/5 + determinism 3/3,
+spec pos1 0.9258, tps 61.18/61.27/328.44 in-band, long-return t0
+single-hash + 3 churn cycles clean, erraudit 0/0; **FP8=1 leg** flip
+8.7 s, t0 agg 299.90 steady / solo 84.57/84.51, spec pos1 0.9258
+byte-exact, KV pool 398,363 (the −0.6 % overlay init footprint,
+quality-neutral — measured), in-situ wire proof on the shipped image
+(40 `CCL fp8` STATS lines, count 7,459,840, both ranks agreeing on the
+res scale); **k8v4 TQ carry** essay/code/simple byte-identical to the
+stock cert9 k8v4 leg — `results/2026-11-05-p624-fp8-ar/` (r96→r100
+phase ladder + the r99c t1 annex; the t1 REP-LOOP disposition:
+boot-stochastic, non-reproducing on fresh boots, t0 green everywhere).
+The opt-in prefill faces are in the TTFT section below. Nothing validated
 beats the certified default (the two faster-on-paper postures are
 rejected: k5-depth dropped — its greedy edge inverts under sampling;
 compile — Appendix H law #1 acceptance gate, p67). The opt-in slice
@@ -218,7 +239,7 @@ prob lane) is banked in the draft-sampling matrix below.
 | U32k | 32,553 | **17.38 s** | 17.08–17.36 s | 1,873 t/s |
 | U64k | 65,303 | **40.32 s** | 39.19–40.26 s | 1,620 t/s |
 
-**cert9 (P6.20 L3 off-thread store) — the certified-current prefill
+**cert9 (P6.20 L3 off-thread store) — the certified-current DEFAULT-posture prefill
 faces, image-native at the cert9 gate**: **U8k 3.76 s / U32k 16.93 s /
 U64k 38.93 s / C32k re-hit 1.09 s** (16k not re-measured at the gate;
 p617 record 7.90 s stands). The deltas vs the p617 record (−0.08 /
@@ -238,6 +259,39 @@ stock oneCCL ring 2.06× FASTER than the achievable one-shot ceiling at
 the dominant 73.1 MiB prefill AR — `results/2026-11-05-p622-ar-lane/`).
 The prefill device ledger is fully dispositioned; see the P6.20 record in
 `results/2026-11-04-p620-prefill-opt/`.
+
+**cert10 + `CCL_SYCL_ALLREDUCE_FP8=1` (P6.24 e4m3-wire allreduce) — the
+BEST prefill faces, opt-in, image-native at the cert10 gate (r99
+A/B/A/B interleave, on/off ×2)**:
+
+| Face | cert9 banked | cert10 default (off) | **cert10 FP8=1** | on/off | vs cert9 |
+|---|---:|---:|---:|---:|---:|
+| U8k | 3.76 s | 3.78 s | **3.27 s** | 0.865 | −13.0 % |
+| U32k | 16.93 s | 17.71 s | **16.29 s** | 0.920 | −3.8 % |
+| U64k | 38.93 s | 39.03 s | **35.73 s** | 0.916 | −8.2 % |
+| C32k re-hit | 1.09 s | 1.21 s | **1.04 s** | 0.855 | −4.6 % |
+
+The off phases ran ~4 % above r84's day (day drift — the interleave
+design exists for this); every face beats the BANKED cert9 baseline.
+Microbench root: **1.65× at the dominant 76,677,120 B AR** (7.801→4.731
+ms, 16.2 GB/rank/s effective; 1.57–1.69× across all large sizes) with
+numerics at the measured e4m3 round-trip floor (rel-rms 0.02285 == the
+offline bit-exact simulation 0.022861; bar 0.035, corruption regime
+≥0.2) and task-level quality parity (r98: tps/spec/long-return/integrity
+all inside bars, the min-count law confirmed live — sub-2M-element
+prefills never touch the wire, `simple` class byte-identical across
+legs). r100 closed every remaining optimization door with wire-rate
+measurement over the real peer IPC mapping: remote writes 9.85 GB/s
+flat across 4/8/16-byte store widths (fabric ceiling — wider stores
+dead), remote reads 4.54 GB/s (2.2× slower — read-reduce dead),
+concurrent rd+wr collapses to 1.49 GB/s (overlap/pipelining dead), local
+write 380 GB/s (38× headroom — local kernels not binding); v4 sits at
+**82 % of the wire-bound floor** (38.4 MB/rank minimum e4m3 traffic at
+the measured ceiling = 3.90 ms) with the remaining 0.83 ms in
+measured-floor local stages — `results/2026-11-05-p624-fp8-ar/` (r97
+gate + r100 scan). How to enable: one env line
+(`CCL_SYCL_ALLREDUCE_FP8=1`) — knob table in
+[`CONFIGURATION-arc.md`](CONFIGURATION-arc.md); certified default OFF.
 
 ### Prefix reuse — warm faces with tier attribution
 
@@ -854,7 +908,8 @@ governs.
 | `v0.30.0-b70-cert6` | `rel/v0.30.0-b70-cert6` | cert5 engine + P6.14 TurboQuant-aware lagged store (inert under `fp8_e4m3`) + the four then-validated opt-in `turboquant_*` dtype faces | superseded — fp8 behavior byte-identical; its TQ dtypes carry the pre-P6.19 corrupted spec-verify path (P6.18 Class B), so **do not serve TQ dtypes on cert6** |
 | `v0.30.0-b70-cert7` | `rel/v0.30.0-b70-cert7` | cert6 engine + the P6.18 `ArcXpuPlatform` config-time guard refusing every `turboquant_*` kv-cache dtype (fp8 serving bytes byte-identical to cert6) | superseded by cert8 — fp8 behavior byte-identical; the guard superseded by the P6.19 fix |
 | `v0.30.0-b70-cert8` | `rel/v0.30.0-b70-cert8` | cert7 engine with the P6.18 refusal lifted + the **P6.19 TQ spec-verify fix** (`patches/tq_spec_fix.py` wheel-side hook: v19b verify-capture forcing + split-row dispatch, default-active on TQ dtypes; `patches/tq_mq_aos.py` MQ kernel opt-in-experimental; fp8 serving bytes identical — hooked module never imports) — all four TQ presets serve clean | superseded by cert9 — fully valid; its fp8 TTFT faces carry the pre-P6.20 inline store path |
-| `v0.30.0-b70-cert9` | `rel/v0.30.0-b70-cert9` | cert8 engine + the **P6.20 prefill host-path patch** (L3 off-thread LMCache store default-ON `VLLM_ARC_LMC_ASYNC_STORE`; L6 dispatch-late handoff; `patches/step_trace.py` silent-off diagnostics): store D2H gathers + CPU insert leave the engine thread, device ops stay on the in-order stream — U32k −0.74 s / U64k −1.64 s / U8k −0.08 s TTFT; spec gate byte-exact cert8 values; TQ dtypes re-gated clean (dominant identity hashes identical to the cert8 gate) | **current release** |
+| `v0.30.0-b70-cert9` | `rel/v0.30.0-b70-cert9` | cert8 engine + the **P6.20 prefill host-path patch** (L3 off-thread LMCache store default-ON `VLLM_ARC_LMC_ASYNC_STORE`; L6 dispatch-late handoff; `patches/step_trace.py` silent-off diagnostics): store D2H gathers + CPU insert leave the engine thread, device ops stay on the in-order stream — U32k −0.74 s / U64k −1.64 s / U8k −0.08 s TTFT; spec gate byte-exact cert8 values; TQ dtypes re-gated clean (dominant identity hashes identical to the cert8 gate) | superseded by cert10 — fully valid (cert10's engine is byte-identical; its default-posture numbers are this image's) |
+| `v0.30.0-b70-cert10` | `rel/v0.30.0-b70-cert10` | cert9 engine (exhaustive `vllm_gaudi/` md5 walk diff_lines=0 — cert9's vllm-layer certs carry) + the **P6.24 oneCCL fp8-wire overlay**: same-version oneCCL 2022.0.0 rebuild (ABI/perf-identical, r96-measured) + `arc-fp8-allreduce.patch` v4 (e4m3 wire for the BMG TP2 fp16 large ring; u32-packed peer stores per the sector law; branchless converters; min-count 2M elems; env trio `CCL_SYCL_ALLREDUCE_FP8/_MIN_COUNT/_STATS`, defaults 0/2097152/0 — **silent-off, stock path unless opted in**); manifest row `oneccl=2022.0.0+arc1`, fat-lib sha pinned at both SONAME paths; opt-in **1.65× at the dominant AR**, every p65 TTFT face beats cert9 (U8k −13 % / U64k −8.2 % / U32k −3.8 % / C32k −4.6 %); r98 quality parity + r99 full battery + r100 wire-law door-closes (`results/2026-11-05-p624-fp8-ar/`) | **current release** |
 
 ### Depth-selection faces (cert-era images — the k3/k4/k5 greedy record)
 
