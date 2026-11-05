@@ -1,0 +1,79 @@
+{
+ "inventory": {
+  "torch": "2.13.0+xpu",
+  "sdp_kernel_backends": "enum fail TypeError(\"'pybind11_type' object is not iterable\")",
+  "vllm_xpu_kernels": [
+   "flash_attn_interface",
+   "flash_attn_varlen_func"
+  ],
+  "flash_attn_interface_fns": [
+   "build_decode_split_plan",
+   "compute_splits_per_seq",
+   "flash_attn_varlen_func",
+   "maybe_contiguous",
+   "ref_paged_attn"
+  ],
+  "vllm_flash_attn": "fail ModuleNotFoundError(\"No module named 'vllm_flash_attn'\")"
+ },
+ "rates": {
+  "xpu:0": [
+   {
+    "rows": 8192,
+    "kv": 8192,
+    "flips_tflop": 0.412,
+    "stock_ms": 11.285,
+    "stock_tflops": 36.5,
+    "sdpa_fp16_ms": 4.197,
+    "sdpa_fp16_tflops": 98.2,
+    "sdpa_fp16_vs_stock": 2.69,
+    "sdpa_bf16_ms": 3.996,
+    "sdpa_bf16_tflops": 103.2,
+    "sdpa_bf16_vs_stock": 2.82
+   },
+   {
+    "rows": 8192,
+    "kv": 16384,
+    "flips_tflop": 1.237,
+    "stock_ms": 33.028,
+    "stock_tflops": 37.5,
+    "sdpa_fp16_ms": 4.23,
+    "sdpa_fp16_tflops": 292.4,
+    "sdpa_fp16_vs_stock": 7.81,
+    "sdpa_bf16_ms": 4.269,
+    "sdpa_bf16_tflops": 289.7,
+    "sdpa_bf16_vs_stock": 7.74
+   },
+   {
+    "rows": 8192,
+    "kv": 24576,
+    "flips_tflop": 2.062,
+    "stock_ms": 54.7,
+    "stock_tflops": 37.7,
+    "sdpa_fp16_ms": 4.17,
+    "sdpa_fp16_tflops": 494.4,
+    "sdpa_fp16_vs_stock": 13.12,
+    "sdpa_bf16_ms": 4.238,
+    "sdpa_bf16_tflops": 486.4,
+    "sdpa_bf16_vs_stock": 12.91
+   },
+   {
+    "rows": 8192,
+    "kv": 32768,
+    "flips_tflop": 2.886,
+    "stock_ms": 76.427,
+    "stock_tflops": 37.8,
+    "sdpa_fp16_ms": 4.363,
+    "sdpa_fp16_tflops": 661.5,
+    "sdpa_fp16_vs_stock": 17.52,
+    "sdpa_bf16_ms": 4.328,
+    "sdpa_bf16_tflops": 666.9,
+    "sdpa_bf16_vs_stock": 17.66
+   }
+  ]
+ },
+ "sdpa_correctness": {
+  "bottomright_gates": false,
+  "wall_ms_8kx32k": 4.15,
+  "event_ms_8kx32k": 4.17
+ }
+}

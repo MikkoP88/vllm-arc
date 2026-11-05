@@ -1,0 +1,21 @@
+
+=== xpu:0 ===
+copy(r+w)=535.4 GB/s oneway=267.7 | TFLOP/s fp16: square=147.4 qk_bmm=67.7 pv_bmm=136.7 -> peak=147.4
+v1 OOB proof: ref1 mutated by v1 run = True, fresh-stock-after-v1 nan = True
+rows=8192 kv=8192: stock=11.85 ms t_mem=0.407 t_flop=2.797 [flop] S=4.24 (23.6% of peak)
+rows=8192 kv=16384: stock=33.62 ms t_mem=0.439 t_flop=8.391 [flop] S=4.01 (25.0% of peak)
+rows=8192 kv=24576: stock=55.07 ms t_mem=0.470 t_flop=13.985 [flop] S=3.94 (25.4% of peak)
+rows=8192 kv=32768: stock=76.54 ms t_mem=0.501 t_flop=19.579 [flop] S=3.91 (25.6% of peak)
+U32k agg: stock=2833 ms ideal(dual)=716 ms -> S_dual=3.96 (stock at 25.3% of dual-ideal)
+
+=== xpu:1 ===
+copy(r+w)=537.3 GB/s oneway=268.7 | TFLOP/s fp16: square=147.1 qk_bmm=67.5 pv_bmm=135.3 -> peak=147.1
+v1 OOB proof: ref1 mutated by v1 run = True, fresh-stock-after-v1 nan = True
+rows=8192 kv=8192: stock=11.89 ms t_mem=0.406 t_flop=2.803 [flop] S=4.24 (23.6% of peak)
+rows=8192 kv=16384: stock=33.71 ms t_mem=0.437 t_flop=8.409 [flop] S=4.01 (24.9% of peak)
+rows=8192 kv=24576: stock=55.27 ms t_mem=0.468 t_flop=14.016 [flop] S=3.94 (25.4% of peak)
+rows=8192 kv=32768: stock=76.66 ms t_mem=0.500 t_flop=19.622 [flop] S=3.91 (25.6% of peak)
+U32k agg: stock=2840 ms ideal(dual)=718 ms -> S_dual=3.96 (stock at 25.3% of dual-ideal)
+
+DECISION: S_dual(min)=3.96 -> OPEN v2 lane
+wrote r88_gemm_peak.json

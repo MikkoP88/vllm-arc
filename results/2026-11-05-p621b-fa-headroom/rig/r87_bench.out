@@ -1,0 +1,35 @@
+V1_DIAG (fro vs stock; probe bank: 2.5-2.9e-3):
+  probe p832 small (bs2 512/512 kv1664/832 tbl32)  fro=2.768e-03 stock_nan=False
+  r87 anchor (bs1 6656 kv3072 tbl+32 pad)          fro=nan stock_nan=True
+  tail-page mult (bs1 8192 kv2496=3x832)           fro=nan stock_nan=True
+  tail-page partial (bs1 2048 kv1900)              fro=nan stock_nan=True
+  r87 anchor tbl32-exact                           fro=nan stock_nan=True
+
+=== xpu:0: {'name': 'Intel(R) Graphics [0xe223]', 'total_mem_gb': 31.89} ===
+copy GB/s: hbm512M=528.7 ws32k=397.7 ws64k=438.8  (read+write counted)
+rows= 6656 kv=  3072 stock=    2.034 ms (min     2.002) eff=   41.8 GB/s ideal=   0.321 ms S_lo=  6.33 v1=         - ms x-
+rows= 8192 kv=  8192 stock=   11.955 ms (min    11.340) eff=    9.1 GB/s ideal=   0.413 ms S_lo= 28.98 v1=    279.57 ms x23.4
+rows= 8192 kv= 16384 stock=   33.699 ms (min    33.118) eff=    3.5 GB/s ideal=   0.444 ms S_lo= 75.85 v1=   844.125 ms x25.0
+rows= 8192 kv= 24576 stock=   55.403 ms (min    55.203) eff=    2.3 GB/s ideal=   0.476 ms S_lo=116.39 v1=  1410.792 ms x25.5
+rows= 8192 kv= 32768 stock=   77.460 ms (min    76.967) eff=    1.7 GB/s ideal=   0.508 ms S_lo=152.56 v1=  1990.641 ms x25.7
+rows= 8192 kv= 40960 stock=  100.287 ms (min    99.896) eff=    1.4 GB/s ideal=   0.539 ms S_lo=185.90 v1=  2570.413 ms x25.6
+rows= 8192 kv= 49152 stock=  122.917 ms (min   122.613) eff=    1.2 GB/s ideal=   0.571 ms S_lo=215.19 v1=  3145.541 ms x25.6
+rows= 8192 kv= 57344 stock=  145.633 ms (min   144.975) eff=    1.1 GB/s ideal=   0.603 ms S_lo=241.54 v1=  3743.904 ms x25.7
+rows= 8192 kv= 65536 stock=  168.097 ms (min   167.610) eff=    1.0 GB/s ideal=   0.635 ms S_lo=264.86 v1=   4325.04 ms x25.7
+U32k aggregate (4 chunks x 16 layers): stock=2856 ms vs banked r67b 3122 ms | S_lo=96.99
+
+=== xpu:1: {'name': 'Intel(R) Graphics [0xe223]', 'total_mem_gb': 31.89} ===
+copy GB/s: hbm512M=534.1 ws32k=326.4 ws64k=433.1  (read+write counted)
+rows= 6656 kv=  3072 stock=    2.071 ms (min     2.007) eff=   41.0 GB/s ideal=   0.318 ms S_lo=  6.51 v1=         - ms x-
+rows= 8192 kv=  8192 stock=   12.022 ms (min    11.209) eff=    9.1 GB/s ideal=   0.408 ms S_lo= 29.44 v1=   280.274 ms x23.3
+rows= 8192 kv= 16384 stock=   33.689 ms (min    33.471) eff=    3.5 GB/s ideal=   0.440 ms S_lo= 76.60 v1=   848.688 ms x25.2
+rows= 8192 kv= 24576 stock=   55.828 ms (min    55.441) eff=    2.3 GB/s ideal=   0.471 ms S_lo=118.47 v1=  1416.606 ms x25.4
+rows= 8192 kv= 32768 stock=   78.389 ms (min    78.078) eff=    1.7 GB/s ideal=   0.503 ms S_lo=155.96 v1=  2000.882 ms x25.5
+rows= 8192 kv= 40960 stock=  100.782 ms (min   100.269) eff=    1.4 GB/s ideal=   0.534 ms S_lo=188.71 v1=  2572.475 ms x25.5
+rows= 8192 kv= 49152 stock=  123.321 ms (min   122.744) eff=    1.2 GB/s ideal=   0.565 ms S_lo=218.09 v1=  3171.253 ms x25.7
+rows= 8192 kv= 57344 stock=  146.576 ms (min   145.984) eff=    1.1 GB/s ideal=   0.597 ms S_lo=245.57 v1=  3754.321 ms x25.6
+rows= 8192 kv= 65536 stock=  169.314 ms (min   168.821) eff=    1.0 GB/s ideal=   0.628 ms S_lo=269.48 v1=  4355.889 ms x25.7
+U32k aggregate (4 chunks x 16 layers): stock=2879 ms vs banked r67b 3122 ms | S_lo=98.75
+
+DECISION: S_lo(min)=96.99 -> OPEN v2 lane
+wrote r87_fa_headroom.json

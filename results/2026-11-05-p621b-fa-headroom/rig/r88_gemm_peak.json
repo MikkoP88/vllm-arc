@@ -1,0 +1,129 @@
+{
+ "devices": {
+  "xpu:0": {
+   "copy_rw_gbps": 535.4,
+   "oneway_gbps": 267.7,
+   "tflops_square8k": 147.4,
+   "tflops_qk_bmm": 67.7,
+   "tflops_pv_bmm": 136.7,
+   "peak_tflops": 147.4,
+   "v1_oob_proof": {
+    "ref1_vs_snapshot_after_v1": true,
+    "fresh_stock_after_v1_nan": true
+   },
+   "u32k": {
+    "rows": [
+     {
+      "rows": 8192,
+      "kv": 8192,
+      "stock_ms": 11.851,
+      "t_mem_ms": 0.407,
+      "t_flop_ms": 2.797,
+      "bound": "flop",
+      "s_dual": 4.24,
+      "stock_pct_of_peak": 23.6
+     },
+     {
+      "rows": 8192,
+      "kv": 16384,
+      "stock_ms": 33.616,
+      "t_mem_ms": 0.439,
+      "t_flop_ms": 8.391,
+      "bound": "flop",
+      "s_dual": 4.01,
+      "stock_pct_of_peak": 25.0
+     },
+     {
+      "rows": 8192,
+      "kv": 24576,
+      "stock_ms": 55.069,
+      "t_mem_ms": 0.47,
+      "t_flop_ms": 13.985,
+      "bound": "flop",
+      "s_dual": 3.94,
+      "stock_pct_of_peak": 25.4
+     },
+     {
+      "rows": 8192,
+      "kv": 32768,
+      "stock_ms": 76.541,
+      "t_mem_ms": 0.501,
+      "t_flop_ms": 19.579,
+      "bound": "flop",
+      "s_dual": 3.91,
+      "stock_pct_of_peak": 25.6
+     }
+    ],
+    "agg_stock_ms": 2833.2,
+    "agg_ideal_ms": 716.0,
+    "agg_s_dual": 3.96,
+    "agg_pct_of_peak": 25.3
+   }
+  },
+  "xpu:1": {
+   "copy_rw_gbps": 537.3,
+   "oneway_gbps": 268.7,
+   "tflops_square8k": 147.1,
+   "tflops_qk_bmm": 67.5,
+   "tflops_pv_bmm": 135.3,
+   "peak_tflops": 147.1,
+   "v1_oob_proof": {
+    "ref1_vs_snapshot_after_v1": true,
+    "fresh_stock_after_v1_nan": true
+   },
+   "u32k": {
+    "rows": [
+     {
+      "rows": 8192,
+      "kv": 8192,
+      "stock_ms": 11.885,
+      "t_mem_ms": 0.406,
+      "t_flop_ms": 2.803,
+      "bound": "flop",
+      "s_dual": 4.24,
+      "stock_pct_of_peak": 23.6
+     },
+     {
+      "rows": 8192,
+      "kv": 16384,
+      "stock_ms": 33.709,
+      "t_mem_ms": 0.437,
+      "t_flop_ms": 8.409,
+      "bound": "flop",
+      "s_dual": 4.01,
+      "stock_pct_of_peak": 24.9
+     },
+     {
+      "rows": 8192,
+      "kv": 24576,
+      "stock_ms": 55.268,
+      "t_mem_ms": 0.468,
+      "t_flop_ms": 14.016,
+      "bound": "flop",
+      "s_dual": 3.94,
+      "stock_pct_of_peak": 25.4
+     },
+     {
+      "rows": 8192,
+      "kv": 32768,
+      "stock_ms": 76.658,
+      "t_mem_ms": 0.5,
+      "t_flop_ms": 19.622,
+      "bound": "flop",
+      "s_dual": 3.91,
+      "stock_pct_of_peak": 25.6
+     }
+    ],
+    "agg_stock_ms": 2840.3,
+    "agg_ideal_ms": 717.6,
+    "agg_s_dual": 3.96,
+    "agg_pct_of_peak": 25.3
+   }
+  }
+ },
+ "decision": {
+  "rule": "S_dual(U32k agg) >= 2.0 on BOTH cards opens the v2 build lane; < 2.0 closes the FA lane (compute-bound silicon limit)",
+  "s_dual_min": 3.96,
+  "verdict": "OPEN v2 lane"
+ }
+}
