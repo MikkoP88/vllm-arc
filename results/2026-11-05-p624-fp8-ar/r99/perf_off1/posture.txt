@@ -1,0 +1,1 @@
+(EngineCore pid=698) INFO 11-05 19:46:52 [kv_cache_utils.py:2395] XPU KV cache size: 398,363 tokens, Maximum concurrency for 262,144 tokens per request: 1.52x

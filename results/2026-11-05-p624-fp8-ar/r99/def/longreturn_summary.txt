@@ -1,0 +1,6 @@
+[essay] hashes=['648d66ae32c9']
+[code] hashes=['dc994e80e310']
+[multi] hashes=['1d4819646c8c']
+[simple] hashes=['84efc84cc142']
+T1_SEED_MISS_CLASSES: []
+LONGRETURN_BAR_R99DEF: FAIL ["code: garble flags [['REP-LOOP']]"]

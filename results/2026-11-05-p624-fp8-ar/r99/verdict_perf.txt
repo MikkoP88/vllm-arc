@@ -1,0 +1,5 @@
+U32k: TTFT off=  17.71s on=  16.29s ratio=0.920 (off spread 0.8%)
+C32k: TTFT off=   1.21s on=   1.04s ratio=0.855 (off spread 3.3%)
+U8k: TTFT off=   3.78s on=   3.27s ratio=0.865 (off spread 0.0%)
+U64k: TTFT off=  39.03s on=  35.73s ratio=0.916 (off spread 0.4%)
+R99_CERT10_PERF: PASS

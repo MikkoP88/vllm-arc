@@ -31,6 +31,23 @@
 #       REPORTED (near-zero expected delta — decode ARs stay stock under
 #       MIN_COUNT=2097152).
 #   [V] verdict tables. W14 restored by trap (rig law).
+#
+# RUN NOTE (2026-11-05, post-run — r98 precedent: the runner documents its
+# own defects; measured data was never affected):
+#   - r99 executed [0]+[1] 18:56-19:10. [0] ALL identity gates PASS;
+#     [1] battery green BUT longreturn_summary threw FileNotFoundError —
+#     longprobe writes its jsons to CWD (== $CT), the summary ran inside
+#     $LEG. All data present; corrected verdict recomputed from the banked
+#     jsons by r99def_reconstruct.py (added the r98 raw-bytes ghost fence).
+#     That recompute surfaced ONE t1 garble flag (code, REP-LOOP) —
+#     dispositioned by r99c_annex.sh (stock basis + cross-boot repro +
+#     verbatim loop capture), see VERDICT.md.
+#   - [2] died at the k8v4 boot on a transient "OCI runtime exec failed:
+#     setns ... exit status 1" — this script lacked the r84 kill_arc retry
+#     loop on container transitions. [2]+[3]+[4] completed same-day by
+#     r99b_cert10_cont.sh with the retry law; results land in the same
+#     $CT tree. Fixes applied in-place below (kill_arc + summary cwd) so
+#     the runner is correct for any future re-run.
 set -uo pipefail
 R=/root/build
 CT=$R/p624/r99
@@ -55,6 +72,18 @@ docker stop radiance-test >/dev/null 2>&1; sleep 20
 
 mkdir -p $CT
 cd $CT
+
+kill_arc() {  # r84 retry law: rm + inspect-wait (the OCI setns guard)
+  docker exec arc-test bash -c "pkill -f 'vllm serve'" >/dev/null 2>&1 || true
+  sleep 10
+  for _i in $(seq 1 36); do
+    docker rm -f arc-test >/dev/null 2>&1 || true
+    docker inspect arc-test >/dev/null 2>&1 || break
+    sleep 5
+  done
+  sleep 10
+  docker inspect arc-test >/dev/null 2>&1 && { echo "FATAL: arc-test undeletable"; exit 1; }
+}
 
 wait_health() {
   ok=""
@@ -208,7 +237,7 @@ boot_cert10() {  # $1 = leg dir, $2 = extra serve env injection sed ("" = none),
     [ "$NINJ" = "1" ] || { echo "FATAL: env inject wrong ($NINJ) for $INJ"; exit 1; }
     cp $SCRIPT $LEG/serve_used.sh
   fi
-  docker rm -f arc-test >/dev/null 2>&1 || true
+  kill_arc
   ( cd $LEG && ARC_IMAGE=$IMG ARC_NAME=arc-test ARC_GRAPH=1 ARC_SPEC=3 ARC_LMC=1 \
       bash $SCRIPT > boot.out 2>&1 )
   grep ARC_SERVE_LAUNCHED $LEG/boot.out || { echo "FATAL: launch failed ($STAG)"; cat $LEG/boot.out; exit 1; }
@@ -286,7 +315,8 @@ for cyc in 1 2 3; do
   grep -E "^\[|LONGPROBE" $LEG/longprobe_rehit$cyc.out
   garble_check $LEG/longprobe_rehit$cyc.out
 done
-( cd $LEG && longreturn_summary r99def )
+( cd $CT && longreturn_summary r99def )
+mv -f $CT/longreturn_summary.txt $LEG/longreturn_summary.txt
 docker exec arc-test sh -c 'ls /tmp/arc_step_trace_* 2>/dev/null | wc -l' > $LEG/trace_silent.txt 2>/dev/null || echo 1 > $LEG/trace_silent.txt
 [ "$(cat $LEG/trace_silent.txt)" = "0" ] || { echo "TRACE SILENT-OFF: FAIL"; GATE_FAIL=1; }
 erraudit $LEG
@@ -298,7 +328,7 @@ cp $R/serve_arc_b70.sh $R/serve_p624_r99_k8v4.sh
 sed -i "s/--kv-cache-dtype fp8_e4m3/--kv-cache-dtype turboquant_k8v4/" $R/serve_p624_r99_k8v4.sh
 NK=$(grep -c -- "--kv-cache-dtype turboquant_k8v4" $R/serve_p624_r99_k8v4.sh)
 [ "$NK" = "1" ] || { echo "FATAL: k8v4 dtype substitution wrong ($NK)"; exit 1; }
-docker rm -f arc-test >/dev/null 2>&1 || true
+kill_arc
 mkdir -p $LEG
 ( cd $LEG && ARC_IMAGE=$IMG ARC_NAME=arc-test ARC_GRAPH=1 ARC_SPEC=3 ARC_LMC=1 \
     bash $R/serve_p624_r99_k8v4.sh > boot.out 2>&1 )
@@ -325,8 +355,7 @@ python3 $R/arc_spec_gate.py > $LEG/spec_gate.out 2>&1
 tail -3 $LEG/spec_gate.out
 grep -q "SPEC_GATE PASS" $LEG/spec_gate.out || { echo "SPEC_GATE (fp8): FAIL"; GATE_FAIL=1; }
 # in-situ wire proof on the certified image (STATS=1 one-shot probe boot)
-docker exec arc-test pkill -f "vllm serve" >/dev/null 2>&1 || true
-sleep 12
+kill_arc
 cp $R/serve_p624_r99_fp8.sh $R/serve_p624_r99_stats.sh
 sed -i "s|export CCL_SYCL_ALLREDUCE_FP8=1|export CCL_SYCL_ALLREDUCE_FP8=1; export CCL_SYCL_ALLREDUCE_FP8_STATS=1|" $R/serve_p624_r99_stats.sh
 NS=$(grep -c "FP8_STATS=1" $R/serve_p624_r99_stats.sh || true)
@@ -374,8 +403,7 @@ perf_phase() {  # $1 = tag, $2 = inj ("" off | "export CCL_SYCL_ALLREDUCE_FP8=1"
     sed -i "s|export CCL_SYCL_ALLREDUCE_TMP_BUF=0|export CCL_SYCL_ALLREDUCE_TMP_BUF=0; $INJ|" $SCRIPT
     grep -q "CCL_SYCL_ALLREDUCE_FP8=1" $SCRIPT || { echo "FATAL: perf env inject failed"; exit 1; }
   fi
-  docker exec arc-test pkill -f "vllm serve" >/dev/null 2>&1 || true
-  sleep 12
+  kill_arc
   ( cd $LEG && ARC_IMAGE=$IMG ARC_NAME=arc-test ARC_GRAPH=1 ARC_SPEC=3 ARC_LMC=1 \
       bash $SCRIPT > boot.out 2>&1 )
   grep ARC_SERVE_LAUNCHED $LEG/boot.out || { echo "FATAL: perf boot failed ($TAG)"; cat $LEG/boot.out; exit 1; }

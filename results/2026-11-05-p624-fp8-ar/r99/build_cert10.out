@@ -1,0 +1,75 @@
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from cert10.Dockerfile
+#1 transferring dockerfile: 2.69kB done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/vllm-arc:v0.30.0-b70-cert9
+#2 DONE 0.0s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [1/4] FROM docker.io/library/vllm-arc:v0.30.0-b70-cert9@sha256:a9f8252451b645ee0cf96410485748e58a3bb3a88a793c9675bf574a06df6b50
+#4 resolve docker.io/library/vllm-arc:v0.30.0-b70-cert9@sha256:a9f8252451b645ee0cf96410485748e58a3bb3a88a793c9675bf574a06df6b50 0.0s done
+#4 DONE 0.1s
+
+#5 [internal] load build context
+#5 transferring context: 210.23MB 2.1s done
+#5 DONE 2.1s
+
+#6 [2/4] COPY libccl.so.1.0 /opt/venv/lib/libccl.so.1.0
+#6 DONE 0.4s
+
+#7 [3/4] COPY libccl.so.1.0 /opt/venv/lib/libccl.so.1
+#7 DONE 0.2s
+
+#8 [4/4] RUN set -euxo pipefail;     grep -aq CCL_SYCL_ALLREDUCE_FP8 /opt/venv/lib/libccl.so.1.0;     [ "$(sha256sum /opt/venv/lib/libccl.so.1.0 | cut -d' ' -f1)" = "3a120e8b352fbd6be45ab61a7f4e927d80c9bc6618ff646e6db68b0263eca4a7" ];     [ "$(sha256sum /opt/venv/lib/libccl.so.1   | cut -d' ' -f1)" = "3a120e8b352fbd6be45ab61a7f4e927d80c9bc6618ff646e6db68b0263eca4a7" ];     ls -la /opt/venv/lib/libccl.so.1 /opt/venv/lib/libccl.so.1.0 /opt/venv/lib/libccl.so.2.0;     { cat /etc/vllm-arc/IMAGE_MANIFEST;       echo "oneccl=2022.0.0+arc1 (fp8-wire allreduce overlay, P6.24; env trio CCL_SYCL_ALLREDUCE_FP8/_MIN_COUNT/_STATS default 0/2097152/0 = silent off)";       echo "oneccl_lib_sha256=3a120e8b352fbd6be45ab61a7f4e927d80c9bc6618ff646e6db68b0263eca4a7 (fat libccl.so.1 + .so.1.0, both replaced; .so.2 untouched)";       echo "oneccl_patch_sha256=effe9a27fae37ff596a43f25cfb9cc504f8e4ab5889bebcb0a92fdce7e14a07d (external_patches/oneccl/patches/arc-fp8-allreduce.patch v4)";       echo "oneccl_built=2026-11-05T18:56:21Z";     } > /etc/vllm-arc/IMAGE_MANIFEST.p624;     mv /etc/vllm-arc/IMAGE_MANIFEST.p624 /etc/vllm-arc/IMAGE_MANIFEST;     cat /etc/vllm-arc/IMAGE_MANIFEST
+#8 0.261 + grep -aq CCL_SYCL_ALLREDUCE_FP8 /opt/venv/lib/libccl.so.1.0
+#8 0.343 ++ sha256sum /opt/venv/lib/libccl.so.1.0
+#8 0.343 ++ cut '-d ' -f1
+#8 0.968 + '[' 3a120e8b352fbd6be45ab61a7f4e927d80c9bc6618ff646e6db68b0263eca4a7 = 3a120e8b352fbd6be45ab61a7f4e927d80c9bc6618ff646e6db68b0263eca4a7 ']'
+#8 0.970 ++ sha256sum /opt/venv/lib/libccl.so.1
+#8 0.970 ++ cut '-d ' -f1
+#8 1.600 + '[' 3a120e8b352fbd6be45ab61a7f4e927d80c9bc6618ff646e6db68b0263eca4a7 = 3a120e8b352fbd6be45ab61a7f4e927d80c9bc6618ff646e6db68b0263eca4a7 ']'
+#8 1.600 + ls -la /opt/venv/lib/libccl.so.1 /opt/venv/lib/libccl.so.1.0 /opt/venv/lib/libccl.so.2.0
+#8 1.604 -rwxr-xr-x 1 root root 210192096 Nov  5 18:56 /opt/venv/lib/libccl.so.1
+#8 1.604 -rwxr-xr-x 1 root root 210192096 Nov  5 18:56 /opt/venv/lib/libccl.so.1.0
+#8 1.604 -rwxr-xr-x 1 root root    142608 Nov  4 20:19 /opt/venv/lib/libccl.so.2.0
+#8 1.605 + cat /etc/vllm-arc/IMAGE_MANIFEST
+#8 1.606 + echo 'oneccl=2022.0.0+arc1 (fp8-wire allreduce overlay, P6.24; env trio CCL_SYCL_ALLREDUCE_FP8/_MIN_COUNT/_STATS default 0/2097152/0 = silent off)'
+#8 1.606 + echo 'oneccl_lib_sha256=3a120e8b352fbd6be45ab61a7f4e927d80c9bc6618ff646e6db68b0263eca4a7 (fat libccl.so.1 + .so.1.0, both replaced; .so.2 untouched)'
+#8 1.606 + echo 'oneccl_patch_sha256=effe9a27fae37ff596a43f25cfb9cc504f8e4ab5889bebcb0a92fdce7e14a07d (external_patches/oneccl/patches/arc-fp8-allreduce.patch v4)'
+#8 1.606 + echo oneccl_built=2026-11-05T18:56:21Z
+#8 1.606 + mv /etc/vllm-arc/IMAGE_MANIFEST.p624 /etc/vllm-arc/IMAGE_MANIFEST
+#8 1.609 + cat /etc/vllm-arc/IMAGE_MANIFEST
+#8 1.611 image=vllm-arc:v0.30.0-b70
+#8 1.611 fork_sha=aa2ee17d11612d9292684cbcbd2825bde4c7a65d
+#8 1.611 build_host=ainode01
+#8 1.611 base_image=vllm-iexperimental:base-v0.26.0
+#8 1.611 vllm_core=0.30.0+xpu 1f14d00ba178540b85c8ccc29883e3fb  /wheels/arc/vllm-0.30.0+xpu-cp38-abi3-manylinux_2_34_x86_64.whl
+#8 1.611 triton=3.7.2+xpu 708e93ed4392da98ab071b507050abc7  /wheels/arc/triton-3.7.2+xpu-py3-none-any.whl
+#8 1.611 vxk=0.1.14.1+arc3 (int64 wedge fix, §6) a51df187aae8efa3871b0cb9b7d3f3c7  /wheels/arc/vllm_xpu_kernels-0.1.14.1+arc3-cp312-cp312-linux_x86_64.whl
+#8 1.611 lmcache=0.5.6+arc1 (SYCL XPU build + 5-file patch kit, external_patches/lmcache P6.2) 352295b4af1e2c58da8a2363b05a4f0c  /wheels/arc/lmcache-0.5.6+arc1-cp312-cp312-manylinux_2_35_x86_64.whl
+#8 1.611 lmcache_closure=aiofile redis (Requires-Dist; gds_backend.py:19 module-level import, r42 fix)
+#8 1.611 stack_freeze=/etc/vllm-arc/venv-freeze.txt
+#8 1.611 dpcpp=none (esimd-build stage lands at P2, plan §8)
+#8 1.611 built=2026-11-04T20:21:31Z
+#8 1.611 oneccl=2022.0.0+arc1 (fp8-wire allreduce overlay, P6.24; env trio CCL_SYCL_ALLREDUCE_FP8/_MIN_COUNT/_STATS default 0/2097152/0 = silent off)
+#8 1.611 oneccl_lib_sha256=3a120e8b352fbd6be45ab61a7f4e927d80c9bc6618ff646e6db68b0263eca4a7 (fat libccl.so.1 + .so.1.0, both replaced; .so.2 untouched)
+#8 1.611 oneccl_patch_sha256=effe9a27fae37ff596a43f25cfb9cc504f8e4ab5889bebcb0a92fdce7e14a07d (external_patches/oneccl/patches/arc-fp8-allreduce.patch v4)
+#8 1.611 oneccl_built=2026-11-05T18:56:21Z
+#8 DONE 1.6s
+
+#9 exporting to image
+#9 exporting layers
+#9 exporting layers 8.3s done
+#9 exporting manifest sha256:7663e2eb754ca5a960729c7bbd579c5fb884ef6868a4dad696d335c8f611f987 done
+#9 exporting config sha256:65d425d12b416294603bc384c66feb37d737d7d4016c86ffbc03e5da2ab53ba6 done
+#9 exporting attestation manifest sha256:6d4ee24cbea41051584bdd25f05a3977fcf730174e5638dc1887be9d0bdf515d done
+#9 exporting manifest list sha256:2f86fc2411fbdbc497eda017c24e51dd939326051c55a9defa92ed8c7ce86df8 done
+#9 naming to docker.io/library/vllm-arc:v0.30.0-b70-cert10 done
+#9 unpacking to docker.io/library/vllm-arc:v0.30.0-b70-cert10
+#9 unpacking to docker.io/library/vllm-arc:v0.30.0-b70-cert10 4.7s done
+#9 DONE 13.1s
