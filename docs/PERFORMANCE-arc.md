@@ -230,7 +230,13 @@ the big-prefill face is **device-compute-bound** — ~89 % of U64k TTFT
 is the wait_for_save device-queue drain behind just-submitted chunk
 forwards (worker bodies ≤108 ms, submit walls ~400 ms); the residual
 U32k/U64k gap is kernel compute (r67b: AR 30.4 % / FA 20.3 % of rank0
-device time at U32k), the remaining lever — see the P6.20 record in
+device time at U32k) — the lever P6.21/P6.22 then attacked and **closed
+NEGATIVE on both slices**: FA (P6.21c ESIMD v2 kernel 0.33× stock, best
+ablation-decomposed case ~0.83× — `results/2026-11-05-p621c-fa-esimd-v2/`,
+ladder `results/2026-11-05-p621b-fa-headroom/`) and AR (P6.22 r94/r95:
+stock oneCCL ring 2.06× FASTER than the achievable one-shot ceiling at
+the dominant 73.1 MiB prefill AR — `results/2026-11-05-p622-ar-lane/`).
+The prefill device ledger is fully dispositioned; see the P6.20 record in
 `results/2026-11-04-p620-prefill-opt/`.
 
 ### Prefix reuse — warm faces with tier attribution
@@ -425,13 +431,26 @@ exists but r40 measured it 2.2–2.4× slower than the deployed w8a16 at
 prefill Ms — the GEMM whale already runs the fastest on-image kernel);
 **ESIMD FA-kernel rung re-scoped** to the dense varlen site (GQA 24q/4kv,
 head_dim 256, fp16, paged fp8 KV PAGE 1664; est. 5–7 % compute MFU today;
-ceiling −8…−12 % U32k TTFT if 1.5–2×) — open as a kernel project; and the
-**TP2 allreduce family (~30 %) is the largest unattacked slice** — the
+ceiling −8…−12 % U32k TTFT if 1.5–2×) — opened as the P6.21 kernel
+project and **closed negative** (P6.21c, 2026-11-05: v2 kernel
+numerics-green at 0.33× stock; the ablation-decomposed ceiling bounds the
+best case at ~0.83× — under the 2× bar —
+`results/2026-11-05-p621c-fa-esimd-v2/`, ladder
+`results/2026-11-05-p621b-fa-headroom/`); and the
+**TP2 allreduce family (~30 %) was then the largest unattacked slice** — the
 2026-10-31 P2P analysis (r71, `results/2026-10-31-p71-r71-p2p-analysis/`)
 proved the data path is **already direct P2P** (D2D 10.23 GB/s both
 directions; every collective `algo topo sycl` over pidfd ze-IPC handles,
 zero host-staged selections), so the slice is algorithmic/latency-bound,
-not link-bound — any gain there is a kernel/algorithm project.
+not link-bound — any gain there is a kernel/algorithm project. Attacked
+as P6.22 and **closed negative** (2026-11-05, r94/r95): the message-size
+census found the dominant 76,677,120 B (7488×5120 fp16) prefill chunk AR
+= 88 % of the family (27.3 % of the r94 rank0 device window), and the
+ceiling bench measured stock oneCCL ring at 7.78 ms isolated / 7.85 ms
+in-situ vs the 16.03 ms one-shot torch-primitive ceiling — stock is
+**2.06× faster than the achievable ceiling** (concurrent ring 9.85
+GB/rank/s vs the torch copy engines' 4.92 GB/s/dir) —
+`results/2026-11-05-p622-ar-lane/`.
 
 ### TurboQuant KV-cache dtype faces (P6.14 measurements — SERVABLE again since cert8 / P6.19 fix)
 
