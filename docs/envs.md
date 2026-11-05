@@ -152,8 +152,11 @@ twin of the live `VLLM_COMPACT_GDN` above).
 
 ## Naming map (r45g naming audit; completed r45h/r45i full sweep)
 
-In-line with best practice: `VLLM_ARC_*` engine-env namespace (**10 live
-vars** + 3 dropped at r45d + 1 dead since r47b, below), `NN-category/pNN-slug` patch dirs,
+In-line with best practice: `VLLM_ARC_*` engine-env namespace (**15 live
+vars** — the r45g audit's 10 + `VLLM_ARC_TQ_SPEC_FIX`/`VLLM_ARC_TQ_VERIFY_MODE`/`VLLM_ARC_TQ_MQ_SPLITS` (p619) +
+`VLLM_ARC_LMC_ASYNC_STORE`/`VLLM_ARC_LMC_EVSYNC` (p620); grep-verified
+against code consumers at the P6.23 docs audit — + 3 dropped at r45d +
+1 dead since r47b, below), `NN-category/pNN-slug` patch dirs,
 `feat/arc-pNN-<slug>` branches, `vllm-arc:v0.30.0-b70[-pNN]` image tags,
 `ARC_*` **host-side script vars** (10, `tools/serve_arc_b70.sh` — a
 different layer from engine envs; the 10th is `ARC_SPEC_METHOD`, the

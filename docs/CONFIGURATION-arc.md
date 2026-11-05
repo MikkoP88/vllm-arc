@@ -682,6 +682,10 @@ may change and when:
 | `VLLM_MAMBA_FP16_SEED_REPAIR` | unset (=1) | `=0` only to reproduce the fp16 seed defect |
 | `VLLM_ARC_R35_TAIL_SPLIT` | unset (=1, v4 tail-split) | `=0` restores upstream backoff exactly (A/B control) |
 | `VLLM_ARC_FP8_W8A16_DISABLE` | unset (=0, W8A16 reroute ACTIVE) | `=1` falls back to stock per-token W8A8 quant |
+| `VLLM_ARC_TQ_SPEC_FIX` | unset (=1, spec-verify fix ACTIVE on every `turboquant_*` dtype; fp8 never imports the hooked module) | `=0` only to reproduce the pre-fix corrupt TQ spec-verify (diagnosis) |
+| `VLLM_ARC_LMC_ASYNC_STORE` | unset (=1, off-thread store ON — the cert9 default) | `=0` restores the cert≤8 inline store posture (A/B control) |
+| `VLLM_ARC_TQ_VERIFY_MODE` / `VLLM_ARC_TQ_MQ_SPLITS` | unset (`split` = the certified dispatch) | `=mq` opt-in experimental (+21 % agg8, wider identity faces — TQ section above); `=synth` never (replay-broken); `VLLM_ARC_TQ_MQ_SPLITS` = KV split count (`32`) |
+| `VLLM_ARC_LMC_EVSYNC` | unset (=1, flush-scoped event sync in the store body) | `=0` reverts to full `torch.xpu.synchronize()` (r80: neutral alone — the in-order stream law) |
 | `VLLM_ARC_LOOKUP_ELIDE` | unset (**0 = OFF — int tokens, opt-in**) | diagnostic-only; forfeits real joint loads |
 | `VLLM_ARC_XG_COMPACT` | unset (`false`) | `=1` when you want compact-JSON xgrammar structured output (appends `--structured-outputs-config`) |
 | `VLLM_ARC_GMU_RELAX` | unset (`0`) | set `0.8` if boot aborts on headroom at higher utilization (relaxes only the engine default 0.92) |
