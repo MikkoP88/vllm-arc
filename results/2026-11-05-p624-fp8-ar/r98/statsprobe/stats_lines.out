@@ -1,0 +1,40 @@
+CCL fp8 stage barrier       0.019 ms
+CCL fp8 stage barrier       0.023 ms
+CCL fp8 allreduce: count 7459840, chunks 1, amax 0.527344, peer scale 0, res scale 0.00235421
+CCL fp8 allreduce: count 7459840, chunks 1, amax 0, peer scale 0.00117711, res scale 0.00235421
+CCL fp8 stage k1_amax      11.525 ms
+CCL fp8 stage k1_amax      11.525 ms
+CCL fp8 stage k2_quant      0.417 ms
+CCL fp8 stage k2_quant      0.421 ms
+CCL fp8 stage barrier       0.036 ms
+CCL fp8 stage barrier       0.024 ms
+CCL fp8 stage k3_res        0.016 ms
+CCL fp8 stage k3_res        0.020 ms
+CCL fp8 stage k4_reduce     0.395 ms
+CCL fp8 stage k4_reduce     0.401 ms
+CCL fp8 stage barrier       0.019 ms
+CCL fp8 stage barrier       0.029 ms
+CCL fp8 stage k5_dequant    0.082 ms
+CCL fp8 stage k5_dequant    0.088 ms
+CCL fp8 stage barrier       0.020 ms
+CCL fp8 stage barrier       0.026 ms
+CCL fp8 allreduce: count 7459840, chunks 1, amax 100.562, peer scale 0.0445731, res scale 0.44894
+CCL fp8 allreduce: count 7459840, chunks 1, amax 19.9688, peer scale 0.22447, res scale 0.44894
+CCL fp8 stage k1_amax       2.941 ms
+CCL fp8 stage k1_amax       2.942 ms
+CCL fp8 stage k2_quant      0.404 ms
+CCL fp8 stage k2_quant      0.403 ms
+CCL fp8 stage barrier       0.033 ms
+CCL fp8 stage barrier       0.022 ms
+CCL fp8 stage k3_res        0.015 ms
+CCL fp8 stage k3_res        0.021 ms
+CCL fp8 stage k4_reduce     0.393 ms
+CCL fp8 stage k4_reduce     0.398 ms
+CCL fp8 stage barrier       0.031 ms
+CCL fp8 stage barrier       0.020 ms
+CCL fp8 stage k5_dequant    0.083 ms
+CCL fp8 stage k5_dequant    0.091 ms
+CCL fp8 stage barrier       0.019 ms
+CCL fp8 stage barrier       0.029 ms
+CCL fp8 allreduce: count 7459840, chunks 1, amax 142.75, peer scale 0.217076, res scale 0.637277
+CCL fp8 allreduce: count 7459840, chunks 1, amax 97.25, peer scale 0.318638, res scale 0.637277

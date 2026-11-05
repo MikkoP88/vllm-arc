@@ -1,0 +1,296 @@
+--- a/deps/libccl/src/common/env/env.cpp
++++ b/deps/libccl/src/common/env/env.cpp
+@@ -189,6 +189,7 @@
+           sycl_allreduce_fp8(0),
+           sycl_allreduce_fp8_min_count(2097152),
+           sycl_allreduce_fp8_stats(0),
++          sycl_allreduce_fp8_probe(0),
+           sycl_allreduce_small_threshold(524288),
+           sycl_allreduce_medium_threshold(16777216),
+           sycl_allreduce_scaleout_threshold(4294967296),
+@@ -604,6 +605,7 @@
+     p.env_2_type(CCL_SYCL_ALLREDUCE_FP8, sycl_allreduce_fp8);
+     p.env_2_type(CCL_SYCL_ALLREDUCE_FP8_MIN_COUNT, sycl_allreduce_fp8_min_count);
+     p.env_2_type(CCL_SYCL_ALLREDUCE_FP8_STATS, sycl_allreduce_fp8_stats);
++    p.env_2_type(CCL_SYCL_ALLREDUCE_FP8_PROBE, sycl_allreduce_fp8_probe);
+     p.env_2_type(CCL_SYCL_ALLREDUCE_SMALL_THRESHOLD, sycl_allreduce_small_threshold);
+     p.env_2_type(CCL_SYCL_ALLREDUCE_MEDIUM_THRESHOLD, sycl_allreduce_medium_threshold);
+     p.env_2_type(CCL_SYCL_ALLREDUCE_SCALEOUT_THRESHOLD, sycl_allreduce_scaleout_threshold);
+@@ -1119,6 +1121,7 @@
+     LOG_INFO_PROFILED(CCL_SYCL_ALLREDUCE_FP8, ": ", sycl_allreduce_fp8);
+     LOG_INFO_PROFILED(CCL_SYCL_ALLREDUCE_FP8_MIN_COUNT, ": ", sycl_allreduce_fp8_min_count);
+     LOG_INFO_PROFILED(CCL_SYCL_ALLREDUCE_FP8_STATS, ": ", sycl_allreduce_fp8_stats);
++    LOG_INFO_PROFILED(CCL_SYCL_ALLREDUCE_FP8_PROBE, ": ", sycl_allreduce_fp8_probe);
+     LOG_INFO_PROFILED(CCL_SYCL_ALLREDUCE_SMALL_THRESHOLD, ": ", sycl_allreduce_small_threshold);
+     LOG_INFO_PROFILED(CCL_SYCL_ALLREDUCE_MEDIUM_THRESHOLD, ": ", sycl_allreduce_medium_threshold);
+     LOG_INFO_PROFILED(CCL_SYCL_ALLREDUCE_SCALEOUT_THRESHOLD, ": ", sycl_allreduce_scaleout_threshold);
+--- a/deps/libccl/src/common/env/env.hpp
++++ b/deps/libccl/src/common/env/env.hpp
+@@ -241,6 +241,7 @@
+     bool sycl_allreduce_fp8;
+     size_t sycl_allreduce_fp8_min_count;
+     bool sycl_allreduce_fp8_stats;
++    bool sycl_allreduce_fp8_probe;
+     size_t sycl_allreduce_small_threshold;
+     size_t sycl_allreduce_medium_threshold;
+     size_t sycl_allreduce_scaleout_threshold;
+--- a/deps/libccl/src/common/env/vars_experimental.hpp
++++ b/deps/libccl/src/common/env/vars_experimental.hpp
+@@ -284,6 +284,19 @@
+ constexpr const char* CCL_SYCL_ALLREDUCE_FP8_STATS = "CCL_SYCL_ALLREDUCE_FP8_STATS";
+ 
+ /**
++ * @brief Run the one-shot IPC wire-rate probe inside the fp8 allreduce ring
++ *
++ * @details Setting this environment variable to 1 runs a one-time bandwidth
++ * suite over the peer IPC mapping (remote stores at 4/8/16-byte widths,
++ * remote loads, concurrent read+write, local reference rates) on the first
++ * fp8 allreduce call, then proceeds with the normal algorithm. Diagnostic
++ * only (r100 bottleneck scan); keep at 0 otherwise. "<value>" : "0", "1"
++ *
++ * By-default: "0 (disabled)"
++ */
++constexpr const char* CCL_SYCL_ALLREDUCE_FP8_PROBE = "CCL_SYCL_ALLREDUCE_FP8_PROBE";
++
++/**
+  * @brief Specify the threshold for the small size algorithm in allreduce
+  *
+  * @details Set the threshold in bytes to specify the small size algorithm in the allreduce
+--- a/deps/libccl/src/coll/algorithms/allreduce/sycl/allreduce_large_sycl_ring_fp8.hpp
++++ b/deps/libccl/src/coll/algorithms/allreduce/sycl/allreduce_large_sycl_ring_fp8.hpp
+@@ -210,6 +210,201 @@
+     *res_ptr = (res > 0.0f) ? res : 1.0f; /* all-zero message: values are 0 anyway */
+ }
+ 
++/* r100 probe kernels: wire-rate measurement over the peer IPC mapping.
++ * v4's remote traffic is 100% STORES (K2 quant + K4 result, ~9.6 GB/s at
++ * u32 width); a read-based v5 (each rank reads the peer's deposits instead
++ * of receiving writes) moves the same bytes in the opposite direction and
++ * is justified only if remote LOADS outrun remote STORES. Widths 4/8/16
++ * bytes per element test whether the u32 packing law is the fabric limit
++ * or an instruction-issue limit. Loads accumulate into a device scratch so
++ * they cannot be elided. */
++static void fp8ar_probe_write_kernel(uint8_t *dst,
++                                     size_t bytes,
++                                     size_t width,
++                                     uint32_t seed) {
++    const sycl::nd_item<1> it = syclext::this_work_item::get_nd_item<1>();
++    const size_t num_threads = it.get_global_range(0);
++    const size_t gid = it.get_global_linear_id();
++    const size_t elems = bytes / width;
++    if (width == 4) {
++        uint32_t *p = (uint32_t *)dst;
++        for (size_t off = 0; off < elems; off += num_threads) {
++            const size_t i = gid + off;
++            if (i < elems) p[i] = seed ^ (uint32_t)i;
++        }
++    } else if (width == 8) {
++        uint64_t *p = (uint64_t *)dst;
++        for (size_t off = 0; off < elems; off += num_threads) {
++            const size_t i = gid + off;
++            if (i < elems) p[i] = ((uint64_t)seed << 32) ^ (uint64_t)i;
++        }
++    } else {
++        sycl::uint4 *p = (sycl::uint4 *)dst;
++        const sycl::uint4 v{ seed, 0x11111111u, 0x22222222u, 0x33333333u };
++        for (size_t off = 0; off < elems; off += num_threads) {
++            const size_t i = gid + off;
++            if (i < elems) p[i] = v;
++        }
++    }
++}
++
++static void fp8ar_probe_read_kernel(const uint8_t *src,
++                                    size_t bytes,
++                                    size_t width,
++                                    uint32_t *scratch) {
++    const sycl::nd_item<1> it = syclext::this_work_item::get_nd_item<1>();
++    const size_t num_threads = it.get_global_range(0);
++    const size_t gid = it.get_global_linear_id();
++    const size_t elems = bytes / width;
++    uint64_t acc = 0;
++    if (width == 4) {
++        const uint32_t *p = (const uint32_t *)src;
++        for (size_t off = 0; off < elems; off += num_threads) {
++            const size_t i = gid + off;
++            if (i < elems) acc += p[i];
++        }
++    } else if (width == 8) {
++        const uint64_t *p = (const uint64_t *)src;
++        for (size_t off = 0; off < elems; off += num_threads) {
++            const size_t i = gid + off;
++            if (i < elems) acc += p[i];
++        }
++    } else {
++        const sycl::uint4 *p = (const sycl::uint4 *)src;
++        for (size_t off = 0; off < elems; off += num_threads) {
++            const size_t i = gid + off;
++            if (i < elems) {
++                const sycl::uint4 v = p[i];
++                acc += (uint64_t)v[0] + v[1] + v[2] + v[3];
++            }
++        }
++    }
++    if (acc == 0xdeadbeefdeadbeefULL) {
++        *scratch = (uint32_t)acc; /* never taken: defeats elision */
++    }
++}
++
++static void fp8ar_probe_rw_kernel(uint8_t *dst,
++                                  const uint8_t *src,
++                                  size_t bytes, /* per direction */
++                                  uint32_t seed) {
++    const sycl::nd_item<1> it = syclext::this_work_item::get_nd_item<1>();
++    const size_t num_threads = it.get_global_range(0);
++    const size_t gid = it.get_global_linear_id();
++    const bool writer = (gid & 1) == 0;
++    const size_t lane = gid >> 1; /* my index within the writer/reader half */
++    const size_t half_threads = (num_threads + 1) >> 1;
++    const size_t elems = bytes / 4;
++    uint32_t *dp = (uint32_t *)dst;
++    const uint32_t *sp = (const uint32_t *)src;
++    uint64_t acc = 0;
++    for (size_t off = 0; off < elems; off += half_threads) {
++        const size_t i = lane + off;
++        if (i < elems) {
++            if (writer) {
++                dp[i] = seed ^ (uint32_t)i;
++            } else {
++                acc += sp[i];
++            }
++        }
++    }
++    if (acc == 0xdeadbeefdeadbeefULL) {
++        dp[0] = (uint32_t)acc; /* never taken */
++    }
++}
++
++/* Host-side one-shot probe (see the block in allreduce_large_fp8_ring). */
++template <typename Launch>
++static void fp8ar_run_probe(sycl::queue &q,
++                            int rank,
++                            void *remote_slot,
++                            void *local_slot,
++                            size_t half_bytes,
++                            size_t work_group_size,
++                            Launch launch_threads,
++                            uint32_t *scratch) {
++    constexpr int warm = 5;
++    constexpr int reps = 20;
++    const size_t region = half_bytes - 16; /* keep the scale area clear */
++    uint8_t *remote_first = (uint8_t *)remote_slot;
++    uint8_t *remote_second = remote_first + half_bytes;
++    uint8_t *local_first = (uint8_t *)local_slot;
++
++    auto run = [&](const char *name, size_t width, int mode) {
++        /* mode: 0 = remote write, 1 = remote read, 2 = remote rw,
++         *       3 = local write, 4 = local read */
++        if (width > 8 && ((uintptr_t)remote_first % width) != 0) {
++            fprintf(stderr, "FP8AR_PROBE rank%d %-14s SKIP (unaligned %p)\n",
++                    rank, name, remote_first);
++            return;
++        }
++        const size_t elems = region / width;
++        const size_t kernel_size = launch_threads(elems);
++        auto submit = [&]() {
++            switch (mode) {
++                case 0:
++                    q.parallel_for(sycl::nd_range<1>(kernel_size, work_group_size),
++                                   [=](sycl::nd_item<1> it) [[sycl::reqd_sub_group_size(16)]] {
++                                       fp8ar_probe_write_kernel(remote_first, region, width, 0xa5a5a5a5u);
++                                   });
++                    break;
++                case 1:
++                    q.parallel_for(sycl::nd_range<1>(kernel_size, work_group_size),
++                                   [=](sycl::nd_item<1> it) [[sycl::reqd_sub_group_size(16)]] {
++                                       fp8ar_probe_read_kernel(remote_second, region, width, scratch);
++                                   });
++                    break;
++                case 2:
++                    q.parallel_for(sycl::nd_range<1>(kernel_size, work_group_size),
++                                   [=](sycl::nd_item<1> it) [[sycl::reqd_sub_group_size(16)]] {
++                                       fp8ar_probe_rw_kernel(remote_first, remote_second, region, 0x5a5a5a5au);
++                                   });
++                    break;
++                case 3:
++                    q.parallel_for(sycl::nd_range<1>(kernel_size, work_group_size),
++                                   [=](sycl::nd_item<1> it) [[sycl::reqd_sub_group_size(16)]] {
++                                       fp8ar_probe_write_kernel(local_first, region, width, 0xa5a5a5a5u);
++                                   });
++                    break;
++                default:
++                    q.parallel_for(sycl::nd_range<1>(kernel_size, work_group_size),
++                                   [=](sycl::nd_item<1> it) [[sycl::reqd_sub_group_size(16)]] {
++                                       fp8ar_probe_read_kernel(local_first + half_bytes, region, width, scratch);
++                                   });
++                    break;
++            }
++        };
++        for (int r = 0; r < warm; r++) submit();
++        q.wait();
++        auto t0 = std::chrono::steady_clock::now();
++        for (int r = 0; r < reps; r++) submit();
++        q.wait();
++        const double ms =
++            std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - t0)
++                .count();
++        const double gbs = region * (double)reps / (ms * 1e6);
++        fprintf(stderr,
++                "FP8AR_PROBE rank%d %-14s %6.2f MB width=%2zuB : %7.2f GB/s (%.3f ms/rep)\n",
++                rank,
++                name,
++                region / 1048576.0,
++                width,
++                gbs,
++                ms / reps);
++        fflush(stderr);
++    };
++
++    run("remote_write4", 4, 0);
++    run("remote_write8", 8, 0);
++    run("remote_write16", 16, 0);
++    run("remote_read4", 4, 1);
++    run("remote_read8", 8, 1);
++    run("remote_read16", 16, 1);
++    run("remote_rw4", 4, 2);
++    run("local_write4", 4, 3);
++    run("local_read4", 4, 4);
++}
++
+ /* K4: reduce my chunk (fp16) with the peer's quantized chunk, emit the fp16
+  * result locally and the quantized result into the peer's slot tail, four
+  * codes packed per u32 remote store (the v3 packing law). */
+--- a/deps/libccl/src/coll/algorithms/allreduce/sycl/allreduce_large_sycl_ring_fp8.hpp
++++ b/deps/libccl/src/coll/algorithms/allreduce/sycl/allreduce_large_sycl_ring_fp8.hpp
+@@ -440,7 +440,31 @@
+         return ((kernel_threads + work_group_size - 1) / work_group_size) * work_group_size;
+     };
+ 
++    /* r100 IPC wire-rate probe (FP8_PROBE=1, one-shot per process): runs
++     * the bandwidth suite over the REAL peer mapping before the first
++     * fp8 allreduce, then falls through to the normal algorithm. The
++     * probe's own first-call JIT is absorbed by the warmup reps; the
++     * measured reps are steady-state. Declared diagnostic perturbation of
++     * the first call only. */
++    static bool fp8ar_probe_done = false;
++    if (ccl::global_data::env().sycl_allreduce_fp8_probe && !fp8ar_probe_done) {
++        fp8ar_probe_done = true;
++        uint32_t *probe_scratch = sycl::malloc_device<uint32_t>(1, q);
++        q.memset(probe_scratch, 0, sizeof(uint32_t)).wait();
++        invoke_p2p_barrier(node_comm, q, {}, is_cpu_barrier); /* ranks aligned */
++        fp8ar_run_probe(q,
++                        rank,
++                        remote_work_bufs[0],
++                        work_bufs[0],
++                        half_bytes,
++                        work_group_size,
++                        launch_threads,
++                        probe_scratch);
++        invoke_p2p_barrier(node_comm, q, {}, is_cpu_barrier);
++        sycl::free(probe_scratch, q);
++    }
++
+     /* r97v3 stage telemetry (FP8_STATS=1 only — declared perturbation: the
+      * q.wait() between stages drains the pipeline; numbers attribute cost,
+      * they do not race). */
+ 

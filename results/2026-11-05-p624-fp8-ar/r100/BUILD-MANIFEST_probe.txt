@@ -1,0 +1,12 @@
+mode=probe date=2026-11-05T20:44:46Z
+superproject=1318c3aaf8a67536ff538331c418c8cea3114f33 tag=2022.0.0
+libccl=4ceafd15c03ce46f11eeaf91781a92afebd3cecf
+builder=intel/deep-learning-essentials:2026.0.0-devel-ubuntu22.04 (DPC++ 2026.0.0)
+patch=arc-fp8-allreduce.patch + arc-fp8-probe.patch (probe sha256 cd66f2385f4693567f2348747365a8b82d927475d0bc0e09997264e7ba0aec4c)
+--- staged artifacts ---
+aebc7d80d99aaa6f2fca2bd3b2b17287b86549367d9887a5123fa085887d3191  BUILD-MANIFEST.txt
+e8995f897be2058403e18edf54d173a5f0b17156664e80d7062c7ee6ebaf6bb7  libccl.a
+a0a594af759b49be2c4d1729188d17eabd1ca0846cf793802e46b5b6c96824b0  libccl_legacy_cpu.so
+e1aec01964b2e106796bb512e08f368c4792bc46626c55d2c924a62aba6a1e2e  libccl_openmp.so.0
+62981a2722297d910bc4b21817ba9684ef66371d0ef6df581a2c67302228c257  libccl.so.1.0
+dbb5769c2d344ad3b2e07d68b32da6e83a2013885ccac3ec84a851d8195894a9  libccl.so.2.0

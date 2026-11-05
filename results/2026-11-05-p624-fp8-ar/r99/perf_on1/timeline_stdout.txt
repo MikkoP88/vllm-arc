@@ -1,0 +1,41 @@
+=== warmup (first-traffic law; warms p12b interlock + first graphs)
+prompt sizes: U32k=31805 U64k=63784 U8k=7961 tok
+raw -> /root/build/p624/r99/perf_on1/timeline.json (6219 chunks, 68 events)
+  text[warmup] 20ch: 'Counting from 1 to 1'
+  text[U32k] 169ch: 'Based on the notes provided, here are the records where the **sensor ID** matches the **stage ID**:\n'
+  text[byst0] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[byst3] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[byst1] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[byst2] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[byst4] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[byst5] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[C32k] 153ch: 'Based on the notes provided, here is the data for **stage 4272**:\n\n*   **Note 55:** The measured lat'
+  text[U8k] 186ch: 'Based on the notes provided, here is the data extracted and organized into a table for clarity.\n\n###'
+  text[bys22] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[bys20] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[bys21] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[bys24] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[bys25] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[bys23] 240ch: 'Counting from 1 to 1000 in a single response would result in an extremely long text (approximately 3'
+  text[U64k] 145ch: 'Based on the notes provided, here are the records for **stage 4212**:\n\n1.  **Note 128**: The measure'
+
+=== long-stream faces (perf_counter, wave-relative)
+  U32k: TTFT=  16.13s total=  17.07s (start @ wave+  25.0s)
+  C32k: TTFT=   1.05s total=   1.59s (start @ wave+  55.0s)
+  U8k: TTFT=   3.28s total=   4.24s (start @ wave+  70.0s)
+  U64k: TTFT=  35.72s total=  36.36s (start @ wave+  85.0s)
+
+=== bystander inter-chunk gaps (12 streams, greedy, k3)
+  baseline: n=2316 p50=   53.5ms p95=   54.9ms
+  window                 n    p50 ms    p95 ms    max ms #>2xb95  stall_s
+  W_base              2316      53.5      54.9     785.2      30    10.60
+  W_U32k_start         144      59.0    3539.2    3897.1      36    92.51
+  W_U32k_end           420      55.3      59.2      59.6       0     0.00
+  W_C32k_start(cached)     0        —         —         —       —        —
+  W_C32k_end             0        —         —         —       —        —
+  W_U8k_start          126      55.1     852.5    2316.3      18    18.88
+  W_U8k_end            336      53.7     138.0     526.0      18     4.81
+  W_U64k_start           0        —         —         —       —        —
+  W_U64k_end             0        —         —         —       —        —
+
+P65_CAPTURE: DONE

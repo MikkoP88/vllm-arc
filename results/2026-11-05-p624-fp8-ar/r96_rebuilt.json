@@ -1,0 +1,44 @@
+[
+ {
+  "bytes": 150994944,
+  "label": "rebuilt",
+  "ms": 15.359,
+  "stock_ms": 15.359,
+  "link_gbs": 9.83
+ },
+ {
+  "bytes": 83886080,
+  "label": "rebuilt",
+  "ms": 8.536,
+  "stock_ms": 8.536,
+  "link_gbs": 9.83
+ },
+ {
+  "bytes": 76677120,
+  "label": "rebuilt",
+  "ms": 7.805,
+  "stock_ms": 7.805,
+  "link_gbs": 9.82
+ },
+ {
+  "bytes": 68157440,
+  "label": "rebuilt",
+  "ms": 6.94,
+  "stock_ms": 6.94,
+  "link_gbs": 9.82
+ },
+ {
+  "bytes": 15779840,
+  "label": "rebuilt",
+  "ms": 1.624,
+  "stock_ms": 1.624,
+  "link_gbs": 9.72
+ },
+ {
+  "bytes": 2621440,
+  "label": "rebuilt",
+  "ms": 0.365,
+  "stock_ms": 0.365,
+  "link_gbs": 7.19
+ }
+]

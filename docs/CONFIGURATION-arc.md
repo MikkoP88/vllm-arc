@@ -10,8 +10,8 @@ complete control surface + naming map); test definitions in
 
 | Item | Value |
 |---|---|
-| Image | `vllm-arc:v0.30.0-b70-cert9` — **the certified release**, tag `rel/v0.30.0-b70-cert9` (cert8 engine + the **P6.20 prefill host-path patch**: `vllm_gaudi/xpu/patches/lmcint/vllm_v1_adapter.py` — L3 off-thread LMCache store, **default ON** (`VLLM_ARC_LMC_ASYNC_STORE=0` kill switch), the store body's D2H gathers + CPU insert run on the `arc-lmc-store` worker while device ops stay on the engine's in-order stream + L6 dispatch-late handoff; new `vllm_gaudi/xpu/patches/step_trace.py` per-step host timeline, silent-off diagnostic (`ARC_STEP_TRACE`); U32k/U64k/U8k TTFT wins −0.74/−1.64/−0.08 s, spec gate byte-exact cert8 values, TQ dtypes re-gated clean; campaign + lane-closure evidence `results/2026-11-04-p620-prefill-opt/`) |
-| Manifest | `/etc/vllm-arc/IMAGE_MANIFEST` inside the image — fork SHA, wheel pins, dependency closure (`lmcache_closure=`), build host |
+| Image | `vllm-arc:v0.30.0-b70-cert10` — **the certified release**, tag `rel/v0.30.0-b70-cert10` (cert9's engine — exhaustive `vllm_gaudi/` md5 walk diff_lines=0, so the P6.20 prefill host-path patch and all cert9 vllm-layer certifications carry — + the **P6.24 oneCCL fp8-wire overlay**: two-file fat-lib overlay, same-version oneCCL 2022.0.0 rebuild + `arc-fp8-allreduce.patch` v4, e4m3-wire large-ring allreduce for the TP2 fp16 ring, **default OFF** — opt in with ONE env line `export CCL_SYCL_ALLREDUCE_FP8=1`; opt-in 1.65× at the dominant AR, every p65 TTFT face beats cert9; knob rows in the env table below; build/provenance `external_patches/oneccl/` + `tools/build_oneccl_arc.sh`; gate + door-close evidence `results/2026-11-05-p624-fp8-ar/`) |
+| Manifest | `/etc/vllm-arc/IMAGE_MANIFEST` inside the image — fork SHA (== cert9's `aa2ee17d…`, the vllm tree is unchanged), wheel pins, dependency closure (`lmcache_closure=`), build host, and on cert10 the overlay rows (`oneccl=2022.0.0+arc1` + lib/patch shas) |
 | Base | upstream vllm-gaudi v0.30.0 + pinned wheels (vllm 0.30.0+xpu, triton 3.7.2+xpu, vllm_xpu_kernels 0.1.14.1+arc3, lmcache 0.5.6+arc1) |
 
 Superseded images (never presented as current — the full lineage table
@@ -19,6 +19,7 @@ with per-image evidence lives in PERFORMANCE-arc "Image lineage"):
 
 | Image | Status |
 |---|---|
+| `v0.30.0-b70-cert9` | superseded by cert10 — fully valid; its engine bytes carry unchanged into cert10 (cert10 = this engine + the default-OFF oneCCL overlay; default-posture behavior identical) |
 | `v0.30.0-b70-cert8` | superseded by cert9 — fully valid; all four TQ presets serve clean (P6.19 fix); its prefill TTFT faces carry the pre-P6.20 inline store path (cert9's off-thread store is strictly faster) |
 | `v0.30.0-b70-cert7` | superseded by cert8 — fp8 behavior byte-identical; its `turboquant_*` boot refusal superseded by the P6.19 fix (TQ dtypes serve clean on cert8) — do not serve TQ dtypes on cert7 (refused) |
 | `v0.30.0-b70-cert6` | superseded — fp8 behavior byte-identical; its servable `turboquant_*` dtypes carry the pre-P6.19 corrupted spec-verify path — **do not serve TQ dtypes on cert6** (gates `results/2026-11-02-p614-cert6/`) |
@@ -57,7 +58,7 @@ docker run -d --name arc-test \
   -v /root/build/inductor_cache:/root/.inductor_cache \
   -e VLLM_ALLOW_LONG_MAX_MODEL_LEN=1 \
   -e VLLM_WORKER_MULTIPROC_METHOD=spawn \
-  --entrypoint /bin/bash vllm-arc:v0.30.0-b70-cert9 -c 'sleep infinity'
+  --entrypoint /bin/bash vllm-arc:v0.30.0-b70-cert10 -c 'sleep infinity'
 ```
 
 These are the validated boot bytes (rig `r46t_campaign.sh:54-63`,
@@ -192,7 +193,7 @@ Two compile-posture laws (p67, do not re-try blind — evidence
    offending piecewise captures; the real k3 verify shape is 256).
 
 Launch and health-check (the rig pattern; first boot ~5 min to 200 —
-285–295 s at the cert7/cert8/cert9 gates: model load + graph capture):
+285–295 s at the cert7–cert10 gates: model load + graph capture):
 
 ```bash
 docker cp serve_k3.sh arc-test:/root/
@@ -371,7 +372,7 @@ gone), `63232`-class **0** / `3328`×38 exact, U32k unchanged
 face in-family (U64k TTFT 51.66 s, `63232`-class 0, `3328` signature
 exact — `results/2026-11-02-p614-cert6/`).
 
-## KV-cache dtype — `fp8_e4m3` default + the four TurboQuant presets (comprehensive; all servable on cert8, re-gated clean on cert9)
+## KV-cache dtype — `fp8_e4m3` default + the four TurboQuant presets (comprehensive; all servable on cert8, re-gated clean on cert9, k8v4 carry proven on cert10)
 
 > **FIXED (2026-11-04, P6.19 / cert8): every `turboquant_*` preset serves
 > clean.** The P6.18 boot refusal is lifted; the corruption it guarded
@@ -456,7 +457,10 @@ identical; the owner corruption bar (REP-LOOP/JUNK/BLEED/EMPTY,
 garble) is **zero across all five dtypes** on cert8 AND cert9, cold and
 warm, churn included (cert9 evidence: the r84 gate + r84b re-char —
 dominant identity hashes byte-identical across the two cert gates, so
-the P6.20 off-thread store changed no output distribution).
+the P6.20 off-thread store changed no output distribution; cert10
+carried the k8v4 leg — essay/code/simple hashes byte-identical to the
+stock cert9 k8v4 leg at the r99 gate, so the oneCCL overlay is absent
+from the TQ decision path).
 
 ### Serving a TurboQuant preset
 
@@ -544,7 +548,7 @@ The certified line on the uniform boot interface (no image change, no
 CLI edit — the env states the default explicitly):
 
 ```bash
-ARC_SPEC_METHOD=probabilistic ARC_IMAGE=vllm-arc:v0.30.0-b70-cert9 \
+ARC_SPEC_METHOD=probabilistic ARC_IMAGE=vllm-arc:v0.30.0-b70-cert10 \
   ARC_GRAPH=1 ARC_SPEC=3 bash /root/build/serve_arc_b70.sh
 # appends "draft_sample_method":"probabilistic" to --speculative-config
 # (P6.17: this is also the DEFAULT when ARC_SPEC_METHOD is unset;
@@ -684,6 +688,9 @@ may change and when:
 | `VLLM_ARC_FP8_W8A16_DISABLE` | unset (=0, W8A16 reroute ACTIVE) | `=1` falls back to stock per-token W8A8 quant |
 | `VLLM_ARC_TQ_SPEC_FIX` | unset (=1, spec-verify fix ACTIVE on every `turboquant_*` dtype; fp8 never imports the hooked module) | `=0` only to reproduce the pre-fix corrupt TQ spec-verify (diagnosis) |
 | `VLLM_ARC_LMC_ASYNC_STORE` | unset (=1, off-thread store ON — the cert9 default) | `=0` restores the cert≤8 inline store posture (A/B control) |
+| `CCL_SYCL_ALLREDUCE_FP8` | unset (`0` = **OFF — the certified default**; cert10+; oneCCL overlay env, not a vllm var) | `=1` opts into the **P6.24 e4m3-wire allreduce** for the TP2 fp16 large ring: dominant prefill ARs move 1 B/elem on the wire (1.65× at 76,677,120 B; every p65 TTFT face beats the cert9 baseline — U8k −13 %/U64k −8.2 %/U32k −3.8 %). Numerics: one e4m3 round trip per output element = rel-rms ~0.023 on the bench metric (the measured converter floor; r98 task-level parity green). Sub-`_MIN_COUNT` allreduces take the stock path (the `simple`-class byte-identity proof) |
+| `CCL_SYCL_ALLREDUCE_FP8_MIN_COUNT` | unset (`2097152` elements) | only messages ≥ this count use the fp8 wire (measured crossover: fp8 is slower below ~2M elements — 0.353 vs 0.327 ms at 2.6 MB); leave at default |
+| `CCL_SYCL_ALLREDUCE_FP8_STATS` | unset (`0` = silent-off) | `=1` per-stage telemetry to stderr (k1 amax / k2 quant / barriers / k3 res-scale / k4 reduce / k5 dequant) — diagnostic; declared perturbation (drains the pipeline between stages), numbers attribute cost, they do not race |
 | `VLLM_ARC_TQ_VERIFY_MODE` / `VLLM_ARC_TQ_MQ_SPLITS` | unset (`split` = the certified dispatch) | `=mq` opt-in experimental (+21 % agg8, wider identity faces — TQ section above); `=synth` never (replay-broken); `VLLM_ARC_TQ_MQ_SPLITS` = KV split count (`32`) |
 | `VLLM_ARC_LMC_EVSYNC` | unset (=1, flush-scoped event sync in the store body) | `=0` reverts to full `torch.xpu.synchronize()` (r80: neutral alone — the in-order stream law) |
 | `VLLM_ARC_LOOKUP_ELIDE` | unset (**0 = OFF — int tokens, opt-in**) | diagnostic-only; forfeits real joint loads |

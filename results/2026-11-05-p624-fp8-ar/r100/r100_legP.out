@@ -1,0 +1,35 @@
+
+*****************************************
+Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. 
+*****************************************
+2026:11:05-20:47:05:   76 |CCL_WARN| did not find MPI-launcher specific variables, switch to ATL/OFI, to force enable ATL/MPI set CCL_ATL_TRANSPORT=mpi
+2026:11:05-20:47:05:   76 |CCL_WARN| value of CCL_SYCL_ALLREDUCE_FP8 changed to be 1 (default:0)
+2026:11:05-20:47:05:   76 |CCL_WARN| value of CCL_SYCL_ALLREDUCE_FP8_PROBE changed to be 1 (default:0)
+2026:11:05-20:47:05:   76 |CCL_WARN| value of CCL_SYCL_ALLGATHERV_SCALEOUT_THRESHOLD changed to be 1048576 (default:1073741824)
+2026:11:05-20:47:05:   76 |CCL_WARN| value of CCL_TOPO_P2P_ACCESS changed to be 1 (default:-1)
+2026:11:05-20:47:05:   76 |CCL_WARN| value of CCL_TOPO_FABRIC_VERTEX_CONNECTION_CHECK changed to be 0 (default:1)
+2026:11:05-20:47:05:   76 |CCL_WARN| could not get local_idx/count from environment variables, trying to get them from ATL
+2026:11:05-20:47:06:   77 |CCL_WARN| did not find MPI-launcher specific variables, switch to ATL/OFI, to force enable ATL/MPI set CCL_ATL_TRANSPORT=mpi
+2026:11:05-20:47:06:   77 |CCL_WARN| could not get local_idx/count from environment variables, trying to get them from ATL
+FP8AR_PROBE rank0 remote_write4   64.00 MB width= 4B :    9.85 GB/s (6.815 ms/rep)
+FP8AR_PROBE rank1 remote_write4   64.00 MB width= 4B :    9.84 GB/s (6.818 ms/rep)
+FP8AR_PROBE rank0 remote_write8   64.00 MB width= 8B :    9.85 GB/s (6.814 ms/rep)
+FP8AR_PROBE rank1 remote_write8   64.00 MB width= 8B :    9.84 GB/s (6.818 ms/rep)
+FP8AR_PROBE rank0 remote_write16  64.00 MB width=16B :    9.85 GB/s (6.814 ms/rep)
+FP8AR_PROBE rank1 remote_write16  64.00 MB width=16B :    9.89 GB/s (6.783 ms/rep)
+FP8AR_PROBE rank0 remote_read4    64.00 MB width= 4B :    4.54 GB/s (14.789 ms/rep)
+FP8AR_PROBE rank1 remote_read4    64.00 MB width= 4B :    4.53 GB/s (14.821 ms/rep)
+FP8AR_PROBE rank0 remote_read8    64.00 MB width= 8B :    4.08 GB/s (16.466 ms/rep)
+FP8AR_PROBE rank1 remote_read8    64.00 MB width= 8B :    4.07 GB/s (16.486 ms/rep)
+FP8AR_PROBE rank0 remote_read16   64.00 MB width=16B :    3.44 GB/s (19.530 ms/rep)
+FP8AR_PROBE rank1 remote_read16   64.00 MB width=16B :    3.44 GB/s (19.526 ms/rep)
+FP8AR_PROBE rank0 remote_rw4      64.00 MB width= 4B :    1.49 GB/s (45.046 ms/rep)
+FP8AR_PROBE rank1 remote_rw4      64.00 MB width= 4B :    1.49 GB/s (44.957 ms/rep)
+FP8AR_PROBE rank0 local_write4    64.00 MB width= 4B :  380.61 GB/s (0.176 ms/rep)
+FP8AR_PROBE rank1 local_write4    64.00 MB width= 4B :  380.41 GB/s (0.176 ms/rep)
+FP8AR_PROBE rank0 local_read4     64.00 MB width= 4B :  197.26 GB/s (0.340 ms/rep)
+FP8AR_PROBE rank1 local_read4     64.00 MB width= 4B :  200.22 GB/s (0.335 ms/rep)
+[PASS] numerics randn (cos 1.004954 rel-rms 0.02287) rank0
+[PASS] numerics randn (cos 1.004954 rel-rms 0.02287) rank1
+ ARC-PROBE S= 73MiB( 76677120B):    4.699 ms   16.32 GB/rank/s
+wrote /work/r100_probe.json

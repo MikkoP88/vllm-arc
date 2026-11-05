@@ -1,0 +1,44 @@
+[
+ {
+  "bytes": 150994944,
+  "label": "arc-probe-ctrl",
+  "ms": 9.073,
+  "stock_ms": 9.073,
+  "link_gbs": 16.64
+ },
+ {
+  "bytes": 83886080,
+  "label": "arc-probe-ctrl",
+  "ms": 5.146,
+  "stock_ms": 5.146,
+  "link_gbs": 16.3
+ },
+ {
+  "bytes": 76677120,
+  "label": "arc-probe-ctrl",
+  "ms": 4.731,
+  "stock_ms": 4.731,
+  "link_gbs": 16.21
+ },
+ {
+  "bytes": 68157440,
+  "label": "arc-probe-ctrl",
+  "ms": 4.195,
+  "stock_ms": 4.195,
+  "link_gbs": 16.25
+ },
+ {
+  "bytes": 15779840,
+  "label": "arc-probe-ctrl",
+  "ms": 1.046,
+  "stock_ms": 1.046,
+  "link_gbs": 15.08
+ },
+ {
+  "bytes": 2621440,
+  "label": "arc-probe-ctrl",
+  "ms": 0.357,
+  "stock_ms": 0.357,
+  "link_gbs": 7.34
+ }
+]

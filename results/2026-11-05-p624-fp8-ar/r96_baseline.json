@@ -1,0 +1,44 @@
+[
+ {
+  "bytes": 150994944,
+  "label": "stock",
+  "ms": 15.302,
+  "stock_ms": 15.302,
+  "link_gbs": 9.87
+ },
+ {
+  "bytes": 83886080,
+  "label": "stock",
+  "ms": 8.51,
+  "stock_ms": 8.51,
+  "link_gbs": 9.86
+ },
+ {
+  "bytes": 76677120,
+  "label": "stock",
+  "ms": 7.782,
+  "stock_ms": 7.782,
+  "link_gbs": 9.85
+ },
+ {
+  "bytes": 68157440,
+  "label": "stock",
+  "ms": 6.92,
+  "stock_ms": 6.92,
+  "link_gbs": 9.85
+ },
+ {
+  "bytes": 15779840,
+  "label": "stock",
+  "ms": 1.626,
+  "stock_ms": 1.626,
+  "link_gbs": 9.71
+ },
+ {
+  "bytes": 2621440,
+  "label": "stock",
+  "ms": 0.35,
+  "stock_ms": 0.35,
+  "link_gbs": 7.48
+ }
+]
