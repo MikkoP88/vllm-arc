@@ -1,3 +1,71 @@
+# P6.24 r100 — bottleneck scan: ALL DOORS CLOSED, v4 stands (2026-11-05)
+
+Owner directive: beat the cert9 baseline on every face with the highest
+possible margin; find bottlenecks end-to-end until no options remain.
+r99 already beats every banked face (U32k −3.8%, C32k −4.6%, U8k −13.0%,
+U64k −8.2%); r100 measured the remaining optimization doors directly over
+the REAL peer IPC mapping (arc-fp8-probe.patch, one-shot env-gated suite
+inside the shipped kernel path; probe build = v4 + additive probe).
+
+## Wire-rate probe (leg P, dominant size, both ranks agree)
+
+| pattern | rate | note |
+|---|---:|---|
+| remote_write4 / 8 / 16 | 9.85 / 9.85 / 9.89 GB/s | **FLAT in width** |
+| remote_read4 / 8 / 16 | 4.54 / 4.08 / 3.44 GB/s | reads DEGRADE with width |
+| remote_rw4 (concurrent) | 1.49 GB/s | shared-link contention |
+| local_write4 | 380.6 GB/s | 38× the wire |
+| local_read4 | 198.7 GB/s | |
+
+Control (leg C, full census on the probe build): reproduces the r97 v4
+bank at every size — 4.731 ms exactly at 76,677,120 B (drift +0.0%),
+≤+1.6% elsewhere (sub-threshold jitter faces) — the probe patch is purely
+additive; the build is v4-faithful.
+
+## Door closes (each measured or measured-backed)
+
+1. **v5 read-reduce — CLOSED**: remote loads run 4.54 GB/s vs stores
+   9.85 GB/s (2.2× slower); moving the same bytes as reads strictly
+   lengthens the wire time. v4's all-writes dataflow is directionally
+   optimal.
+2. **Wider stores — CLOSED**: write scaling 4→8→16 B is 1.00×; the
+   9.85 GB/s ceiling is the fabric/link, not instruction issue. (Stock
+   fp16 full-sector stores also measured ~9.85 GB/s — the ceiling is the
+   medium, independent of payload encoding.)
+3. **Chunk pipelining / overlap — CLOSED**: a single direction already
+   saturates the shared link (9.85); concurrent traffic collapses to
+   1.49 GB/s. K2→barrier→K4 serialization is algorithmically required
+   (K4 consumes what K2 published); overlap cannot create bandwidth.
+4. **e5m2 / byte-shaving — CLOSED**: the wire payload is already e4m3
+   (1 B/elem); e5m2 moves identical bytes with a worse numerics floor.
+5. **Local-side kernels — CLOSED**: local fabric headroom is 38×; K5's
+   only alternative (peer ships fp16 result directly) ADDS 19.2 MB
+   remote = +1.95 ms. K1 amax is an irreducible pre-pass for the scale
+   (150 GB/s effective vs 199 local-read floor — within family).
+6. **MIN_COUNT threshold — CLOSED**: r97 census measured fp8 SLOWER
+   below threshold (0.353 vs 0.327 ms at 2.6 MB); the 2M-element default
+   sits on the correct side. K1 grid tune remains the only theoretical
+   residue (~0.2 ms = 4% of one AR ≈ 0.3% of a TTFT face — below the
+   day-drift band; a kernel change + full re-gate cannot pay for itself).
+
+**Floor arithmetic**: e4m3 minimum wire traffic is 38.4 MB/rank
+(19.2 reduce-scatter + 19.2 allgather); at the measured 9.85 GB/s ceiling
+that is 3.90 ms. v4 runs 4.731 ms = **82% of the wire-bound optimum**,
+and the remaining 0.83 ms is K1 + K3 + K5 + barriers, each at its
+measured local/latency floor. No door above the noise floor remains —
+the directive's stop condition is met with measurement, not fatigue.
+
+v4 (sha effe9a27…) is FINAL for cert10. The probe build never enters a
+cert image (env-gated diagnostic; manifest row probe sha
+cd66f2385f4693567f2348747365a8b82d927475d0bc0e09997264e7ba0aec4c).
+
+Evidence: `r100/` (probe log + legP/legC outs + ctrl census json + probe
+manifest), `r100_probe_bench.log`, runner `tools/ar/r100_probe_bench.sh`,
+`external_patches/oneccl/patches/arc-fp8-probe.patch`. W14 restored by
+trap (verified running 20:47Z).
+
+---
+
 # P6.24 r99 — cert10 release gate: PASS (2026-11-05)
 
 Certified image `vllm-arc:v0.30.0-b70-cert10` (id 2f86fc2411fb) = cert9 +
