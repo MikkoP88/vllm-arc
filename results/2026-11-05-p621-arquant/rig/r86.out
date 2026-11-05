@@ -1,0 +1,207 @@
+=================== [phase arq1] ar_quant=1 minelems=default 22:45:55 ===================
+6789df503be3d3cd9d9e9724d4e224629bcb88cefe8c8d05a07dd70b7a14542b
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert9 name=arc-test graph=1 spec=3 gmu=0.8 mnbt=8192 seqs=64 xgc=0 port=8000 22:46:20
+HEALTH=OK after ~300s
+(APIServer pid=13) WARNING 11-04 22:47:20 [ar_quant.py:197] ar_quant: quantized-transport all-reduce patch installed (VLLM_ARC_AR_QUANT=1, W13H donor port, p621)
+(Worker pid=930) WARNING 11-04 22:48:05 [ar_quant.py:197] ar_quant: quantized-transport all-reduce patch installed (VLLM_ARC_AR_QUANT=1, W13H donor port, p621)
+--- battery: integrity+det ---
+A-gates: integrity_5of5=1 det_3of3=1
+--- battery: longprobe full (coherence under e4m3 peer noise) ---
+[essay] t0_identical=True hashes=['1d415a15e11d', '1d415a15e11d', '1d415a15e11d'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=2145 chars=[4103, 4103, 4103]
+[code] t0_identical=True hashes=['507d389dc258', '507d389dc258', '507d389dc258'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=5051 chars=[2746, 2746, 2746]
+[multi] t0_identical=True hashes=['636e4ffdbb04', '636e4ffdbb04', '636e4ffdbb04'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=3400 chars=[1147, 1147, 1147]
+[simple] t0_identical=True hashes=['84efc84cc142', '84efc84cc142', '84efc84cc142'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=38 chars=[1510, 1510, 1510]
+LONGPROBE p621arq1 full: CLEAN
+GARBLE-INFO: class_lines=4 empty_garble=0 in longprobe_full.out
+--- battery: spec gate ---
+SPEC_GATE {"wall_s": 3.11, "streams_ok": "4/4", "drafts": 229, "draft_tokens": 687, "accepted": 575, "pos": {"0": 0.9258, "1": 0.8384, "2": 0.7467, "3": 0.0}, "pos1": 0.9258, "acceptance": 0.837, "mean_acceptance_length": 3.51, "hard": 0.5, "target": 0.85}
+SPEC_GATE log_window: (APIServer pid=13) INFO 11-04 22:55:24 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 3.33, Accepted throughput: 79.89 tokens/s, Drafted throughput: 102.88 tokens/s, Accepted: 799 tokens, Drafted: 1029 tokens, Per-position acceptance rate: 0.910, 0.770, 0.650, Avg Draft acceptance rate: 77.6%
+SPEC_GATE PASS: pos1=0.9258 >= 0.5 hard, acceptance=0.8370 vs 0.85 target (TARGET MISS — recorded, --strict-target for certification)
+--- battery: run7n t0 ---
+agg4x256#1 wall=3.80s aggregate=269.68 tok/s ok_streams=4/4 [256tok/3.7s 256tok/3.8s 256tok/3.7s 256tok/3.8s]
+agg4x256#2 wall=3.47s aggregate=294.84 tok/s ok_streams=4/4 [256tok/3.4s 256tok/3.4s 256tok/3.4s 256tok/3.5s]
+solo200 n=200 dt=2.39s tps=83.72
+solo200 n=200 dt=2.39s tps=83.62
+--- battery: p65 timeline faces ---
+=== bystander inter-chunk gaps (12 streams, greedy, k3)
+  baseline: n=2328 p50=   53.7ms p95=   55.0ms
+  window                 n    p50 ms    p95 ms    max ms #>2xb95  stall_s
+  W_base              2328      53.7      55.0     794.2      30    10.22
+  W_U32k_start         150      59.3    4187.4    4511.8      42   110.19
+  W_U32k_end           420      55.5      59.4      60.3       0     0.00
+  W_C32k_start(cached)    38      77.7    1030.2    1031.9      12    10.30
+  W_C32k_end            64      52.2      81.1     147.2       1     0.09
+  W_U8k_start          126      55.1     961.2    2943.0      18    23.30
+  W_U8k_end            246      54.9     291.6    1032.0      24     9.31
+  W_U64k_start         140      94.8    5490.8    5816.8      66   257.70
+  W_U64k_end            50      70.1     123.8     126.4       6     0.42
+
+P65_CAPTURE: DONE
+--- post-traffic posture proof + bank ---
+(Worker_TP0 pid=930) WARNING 11-04 22:48:46 [ar_quant.py:148] ar_quant: quantized-transport all-reduce active (peer e4m3 per-row, local exact; 65536x1152 payloads)
+(Worker_TP1 pid=1030) WARNING 11-04 22:48:46 [ar_quant.py:148] ar_quant: quantized-transport all-reduce active (peer e4m3 per-row, local exact; 65536x1152 payloads)
+0
+=================== [phase off1] ar_quant=0 minelems=default 22:58:29 ===================
+95b772d7a21987dbc7369a29951d6848bac14d25ebd7c6d8439d2dc9564a82b7
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert9 name=arc-test graph=1 spec=3 gmu=0.8 mnbt=8192 seqs=64 xgc=0 port=8000 22:58:53
+HEALTH=OK after ~300s
+--- battery: integrity+det ---
+A-gates: integrity_5of5=1 det_3of3=1
+--- battery: longprobe full (coherence under e4m3 peer noise) ---
+[essay] t0_identical=True hashes=['648d66ae32c9', '648d66ae32c9', '648d66ae32c9'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=2145 chars=[3885, 3885, 3885]
+[code] t0_identical=True hashes=['417360351e6a', '417360351e6a', '417360351e6a'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=5051 chars=[1734, 1734, 1734]
+[multi] t0_identical=True hashes=['0627e973e7b1', '0627e973e7b1', '0627e973e7b1'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=3400 chars=[1096, 1096, 1096]
+[simple] t0_identical=True hashes=['84efc84cc142', '84efc84cc142', '84efc84cc142'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=38 chars=[1510, 1510, 1510]
+LONGPROBE p621off1 full: CLEAN
+GARBLE-INFO: class_lines=4 empty_garble=0 in longprobe_full.out
+--- battery: spec gate ---
+SPEC_GATE {"wall_s": 3.04, "streams_ok": "4/4", "drafts": 229, "draft_tokens": 687, "accepted": 575, "pos": {"0": 0.9258, "1": 0.8384, "2": 0.7467, "3": 0.0}, "pos1": 0.9258, "acceptance": 0.837, "mean_acceptance_length": 3.51, "hard": 0.5, "target": 0.85}
+SPEC_GATE log_window: (APIServer pid=13) INFO 11-04 23:07:35 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 3.44, Accepted throughput: 59.29 tokens/s, Drafted throughput: 72.89 tokens/s, Accepted: 593 tokens, Drafted: 729 tokens, Per-position acceptance rate: 0.938, 0.807, 0.695, Avg Draft acceptance rate: 81.3%
+SPEC_GATE PASS: pos1=0.9258 >= 0.5 hard, acceptance=0.8370 vs 0.85 target (TARGET MISS — recorded, --strict-target for certification)
+--- battery: run7n t0 ---
+agg4x256#1 wall=3.78s aggregate=270.61 tok/s ok_streams=4/4 [256tok/3.8s 256tok/3.7s 256tok/3.7s 256tok/3.7s]
+agg4x256#2 wall=3.41s aggregate=300.30 tok/s ok_streams=4/4 [256tok/3.4s 256tok/3.4s 256tok/3.4s 256tok/3.4s]
+solo200 n=200 dt=2.37s tps=84.53
+solo200 n=200 dt=2.37s tps=84.53
+--- battery: p65 timeline faces ---
+=== bystander inter-chunk gaps (12 streams, greedy, k3)
+  baseline: n=2310 p50=   53.7ms p95=   55.0ms
+  window                 n    p50 ms    p95 ms    max ms #>2xb95  stall_s
+  W_base              2310      53.7      55.0    1057.1      24    10.50
+  W_U32k_start         150      59.3    3910.3    4231.4      42   104.47
+  W_U32k_end           414      55.5      59.4      60.2       0     0.00
+  W_C32k_start(cached)    32      66.8     996.8     998.6       6     5.65
+  W_C32k_end            20      60.0      86.0      86.0       0     0.00
+  W_U8k_start          126      55.1     920.3    2719.6      18    21.64
+  W_U8k_end            275      54.7     129.7    1042.3      18     7.89
+  W_U64k_start          81    3084.6    5528.3    5530.4      51   207.25
+  W_U64k_end             0        —         —         —       —        —
+
+P65_CAPTURE: DONE
+--- post-traffic posture proof + bank ---
+0
+=================== [phase arq2] ar_quant=1 minelems=default 23:10:28 ===================
+6fe1790b360ef8c3e9c1288cdaa6d643459b23a3cac585e96ee01a7bf857c957
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert9 name=arc-test graph=1 spec=3 gmu=0.8 mnbt=8192 seqs=64 xgc=0 port=8000 23:10:53
+HEALTH=OK after ~295s
+(APIServer pid=13) WARNING 11-04 23:11:53 [ar_quant.py:197] ar_quant: quantized-transport all-reduce patch installed (VLLM_ARC_AR_QUANT=1, W13H donor port, p621)
+(Worker pid=930) WARNING 11-04 23:12:38 [ar_quant.py:197] ar_quant: quantized-transport all-reduce patch installed (VLLM_ARC_AR_QUANT=1, W13H donor port, p621)
+--- battery: integrity+det ---
+A-gates: integrity_5of5=1 det_3of3=1
+--- battery: longprobe full (coherence under e4m3 peer noise) ---
+[essay] t0_identical=True hashes=['1d415a15e11d', '1d415a15e11d', '1d415a15e11d'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=2145 chars=[4103, 4103, 4103]
+[code] t0_identical=True hashes=['9b6b8fef308e', '9b6b8fef308e', '9b6b8fef308e'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=5051 chars=[4021, 4021, 4021]
+[multi] t0_identical=True hashes=['d5debd056972', 'd5debd056972', 'd5debd056972'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=3400 chars=[797, 797, 797]
+[simple] t0_identical=True hashes=['84efc84cc142', '84efc84cc142', '84efc84cc142'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=38 chars=[1510, 1510, 1510]
+LONGPROBE p621arq2 full: CLEAN
+GARBLE-INFO: class_lines=4 empty_garble=0 in longprobe_full.out
+--- battery: spec gate ---
+SPEC_GATE {"wall_s": 2.94, "streams_ok": "4/4", "drafts": 231, "draft_tokens": 693, "accepted": 573, "pos": {"0": 0.9221, "1": 0.8312, "2": 0.7273, "3": 0.0}, "pos1": 0.9221, "acceptance": 0.8268, "mean_acceptance_length": 3.48, "hard": 0.5, "target": 0.85}
+SPEC_GATE log_window: (APIServer pid=13) INFO 11-04 23:19:52 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 3.48, Accepted throughput: 61.59 tokens/s, Drafted throughput: 74.39 tokens/s, Accepted: 616 tokens, Drafted: 744 tokens, Per-position acceptance rate: 0.952, 0.819, 0.714, Avg Draft acceptance rate: 82.8%
+SPEC_GATE PASS: pos1=0.9221 >= 0.5 hard, acceptance=0.8268 vs 0.85 target (TARGET MISS — recorded, --strict-target for certification)
+--- battery: run7n t0 ---
+agg4x256#1 wall=3.75s aggregate=272.91 tok/s ok_streams=4/4 [256tok/3.8s 256tok/3.7s 256tok/3.7s 256tok/3.6s]
+agg4x256#2 wall=3.41s aggregate=299.97 tok/s ok_streams=4/4 [256tok/3.4s 256tok/3.4s 256tok/3.4s 256tok/3.4s]
+solo200 n=200 dt=2.36s tps=84.58
+solo200 n=200 dt=2.37s tps=84.51
+--- battery: p65 timeline faces ---
+=== bystander inter-chunk gaps (12 streams, greedy, k3)
+  baseline: n=2328 p50=   53.7ms p95=   55.1ms
+  window                 n    p50 ms    p95 ms    max ms #>2xb95  stall_s
+  W_base              2328      53.7      55.1     814.9      18    10.37
+  W_U32k_start         150      59.3    4189.9    4520.2      42   110.27
+  W_U32k_end           414      55.5      59.6      68.5       0     0.00
+  W_C32k_start(cached)    38      67.3    1030.6    1032.5      12    10.36
+  W_C32k_end            52      52.2      74.9     145.2       1     0.09
+  W_U8k_start          126      55.1     959.2    2949.4      18    23.26
+  W_U8k_end            252      55.0     297.7     793.4      30     9.24
+  W_U64k_start         135      65.2    5495.3    5821.0      60   243.09
+  W_U64k_end            45      63.4      65.6      66.0       0     0.00
+
+P65_CAPTURE: DONE
+--- post-traffic posture proof + bank ---
+(Worker_TP0 pid=930) WARNING 11-04 23:13:22 [ar_quant.py:148] ar_quant: quantized-transport all-reduce active (peer e4m3 per-row, local exact; 65536x1152 payloads)
+(Worker_TP1 pid=1030) WARNING 11-04 23:13:22 [ar_quant.py:148] ar_quant: quantized-transport all-reduce active (peer e4m3 per-row, local exact; 65536x1152 payloads)
+0
+=================== [phase off2] ar_quant=0 minelems=default 23:22:57 ===================
+dff9424492957579f8136efd777d6587624b8e9da9f73365b644c34b8eb02158
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert9 name=arc-test graph=1 spec=3 gmu=0.8 mnbt=8192 seqs=64 xgc=0 port=8000 23:23:21
+HEALTH=OK after ~290s
+--- battery: integrity+det ---
+A-gates: integrity_5of5=1 det_3of3=1
+--- battery: longprobe full (coherence under e4m3 peer noise) ---
+[essay] t0_identical=True hashes=['648d66ae32c9', '648d66ae32c9', '648d66ae32c9'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=2145 chars=[3885, 3885, 3885]
+[code] t0_identical=True hashes=['4f325fc43c8d', '4f325fc43c8d', '4f325fc43c8d'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=5051 chars=[2922, 2922, 2922]
+[multi] t0_identical=True hashes=['87292214d5e7', '87292214d5e7', '87292214d5e7'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=3400 chars=[1069, 1069, 1069]
+[simple] t0_identical=True hashes=['84efc84cc142', '84efc84cc142', '84efc84cc142'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=38 chars=[1510, 1510, 1510]
+LONGPROBE p621off2 full: CLEAN
+GARBLE-INFO: class_lines=4 empty_garble=0 in longprobe_full.out
+--- battery: spec gate ---
+SPEC_GATE {"wall_s": 3.04, "streams_ok": "4/4", "drafts": 229, "draft_tokens": 687, "accepted": 575, "pos": {"0": 0.9258, "1": 0.8384, "2": 0.7467, "3": 0.0}, "pos1": 0.9258, "acceptance": 0.837, "mean_acceptance_length": 3.51, "hard": 0.5, "target": 0.85}
+SPEC_GATE log_window: (APIServer pid=13) INFO 11-04 23:32:05 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 3.43, Accepted throughput: 60.09 tokens/s, Drafted throughput: 74.09 tokens/s, Accepted: 601 tokens, Drafted: 741 tokens, Per-position acceptance rate: 0.943, 0.802, 0.688, Avg Draft acceptance rate: 81.1%
+SPEC_GATE PASS: pos1=0.9258 >= 0.5 hard, acceptance=0.8370 vs 0.85 target (TARGET MISS — recorded, --strict-target for certification)
+--- battery: run7n t0 ---
+agg4x256#1 wall=3.78s aggregate=270.90 tok/s ok_streams=4/4 [256tok/3.8s 256tok/3.7s 256tok/3.6s 256tok/3.7s]
+agg4x256#2 wall=3.45s aggregate=296.52 tok/s ok_streams=4/4 [256tok/3.5s 256tok/3.4s 256tok/3.4s 256tok/3.4s]
+solo200 n=200 dt=2.37s tps=84.33
+solo200 n=200 dt=2.37s tps=84.49
+--- battery: p65 timeline faces ---
+=== bystander inter-chunk gaps (12 streams, greedy, k3)
+  baseline: n=2316 p50=   53.7ms p95=   55.1ms
+  window                 n    p50 ms    p95 ms    max ms #>2xb95  stall_s
+  W_base              2316      53.7      55.1    1257.9      18    10.19
+  W_U32k_start         150      59.1    3907.0    4228.8      42   105.95
+  W_U32k_end           414      55.4      59.2      64.9       0     0.00
+  W_C32k_start(cached)    33      68.6     991.9     993.6       6     5.62
+  W_C32k_end            21      60.3      95.0      95.6       0     0.00
+  W_U8k_start          126      55.1     904.6    2730.3      18    21.61
+  W_U8k_end            276      53.8     128.9    1018.5      18     7.72
+  W_U64k_start          82    3075.2    5526.6    5526.7      52   208.48
+  W_U64k_end             0        —         —         —       —        —
+
+P65_CAPTURE: DONE
+--- post-traffic posture proof + bank ---
+0
+=================== [phase cf1] ar_quant=1 minelems=1000000000 23:35:07 ===================
+587242c859d3909d9753356c281272fb12042211e8bdc12facf4a0421610c1e3
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert9 name=arc-test graph=1 spec=3 gmu=0.8 mnbt=8192 seqs=64 xgc=0 port=8000 23:35:32
+HEALTH=OK after ~290s
+(APIServer pid=13) WARNING 11-04 23:36:31 [ar_quant.py:197] ar_quant: quantized-transport all-reduce patch installed (VLLM_ARC_AR_QUANT=1, W13H donor port, p621)
+(Worker pid=930) WARNING 11-04 23:37:16 [ar_quant.py:197] ar_quant: quantized-transport all-reduce patch installed (VLLM_ARC_AR_QUANT=1, W13H donor port, p621)
+--- battery: integrity+det ---
+A-gates: integrity_5of5=1 det_3of3=1
+--- battery: longprobe full (coherence under e4m3 peer noise) ---
+[essay] t0_identical=True hashes=['648d66ae32c9', '648d66ae32c9', '648d66ae32c9'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=2145 chars=[3885, 3885, 3885]
+[code] t0_identical=True hashes=['417360351e6a', '417360351e6a', '417360351e6a'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=5051 chars=[1734, 1734, 1734]
+[multi] t0_identical=True hashes=['2243a4099b6f', '2243a4099b6f', '2243a4099b6f'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=3400 chars=[1052, 1052, 1052]
+[simple] t0_identical=True hashes=['84efc84cc142', '84efc84cc142', '84efc84cc142'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=38 chars=[1510, 1510, 1510]
+LONGPROBE p621cf1 full: CLEAN
+GARBLE-INFO: class_lines=4 empty_garble=0 in longprobe_full.out
+--- battery: spec gate ---
+SPEC_GATE {"wall_s": 3.04, "streams_ok": "4/4", "drafts": 229, "draft_tokens": 687, "accepted": 575, "pos": {"0": 0.9258, "1": 0.8384, "2": 0.7467, "3": 0.0}, "pos1": 0.9258, "acceptance": 0.837, "mean_acceptance_length": 3.51, "hard": 0.5, "target": 0.85}
+SPEC_GATE log_window: (APIServer pid=13) INFO 11-04 23:43:55 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 3.50, Accepted throughput: 61.19 tokens/s, Drafted throughput: 73.49 tokens/s, Accepted: 612 tokens, Drafted: 735 tokens, Per-position acceptance rate: 0.951, 0.833, 0.714, Avg Draft acceptance rate: 83.3%
+SPEC_GATE PASS: pos1=0.9258 >= 0.5 hard, acceptance=0.8370 vs 0.85 target (TARGET MISS — recorded, --strict-target for certification)
+--- battery: run7n t0 ---
+agg4x256#1 wall=3.81s aggregate=268.70 tok/s ok_streams=4/4 [256tok/3.8s 256tok/3.8s 256tok/3.7s 256tok/3.7s]
+agg4x256#2 wall=3.45s aggregate=296.79 tok/s ok_streams=4/4 [256tok/3.4s 256tok/3.4s 256tok/3.4s 256tok/3.4s]
+solo200 n=200 dt=2.37s tps=84.48
+solo200 n=200 dt=2.37s tps=84.48
+--- battery: p65 timeline faces ---
+=== bystander inter-chunk gaps (12 streams, greedy, k3)
+  baseline: n=2316 p50=   53.7ms p95=   55.1ms
+  window                 n    p50 ms    p95 ms    max ms #>2xb95  stall_s
+  W_base              2316      53.7      55.1    1030.8      24     9.97
+  W_U32k_start         150      59.3    3910.2    4233.4      42   104.65
+  W_U32k_end           414      55.5      59.3      60.2       0     0.00
+  W_C32k_start(cached)    32      66.4     993.7     995.3       6     5.62
+  W_C32k_end            20      59.9      88.6      88.6       0     0.00
+  W_U8k_start          126      55.1     906.0    2704.7      18    21.48
+  W_U8k_end            302      53.8     288.5     550.4      24     6.33
+  W_U64k_start          49      60.0    4233.1    4234.5      19    67.75
+  W_U64k_end             0        —         —         —       —        —
+
+P65_CAPTURE: DONE
+--- post-traffic posture proof + bank ---
+CF-OK: installed but inert under MIN_ELEMS=1e9
+0
+=================== P621 R86 DONE 2026-11-04 23:46:53 ===================

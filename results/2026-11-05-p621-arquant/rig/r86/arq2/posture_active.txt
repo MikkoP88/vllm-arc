@@ -1,0 +1,2 @@
+(Worker_TP0 pid=930) WARNING 11-04 23:13:22 [ar_quant.py:148] ar_quant: quantized-transport all-reduce active (peer e4m3 per-row, local exact; 65536x1152 payloads)
+(Worker_TP1 pid=1030) WARNING 11-04 23:13:22 [ar_quant.py:148] ar_quant: quantized-transport all-reduce active (peer e4m3 per-row, local exact; 65536x1152 payloads)

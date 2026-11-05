@@ -1,0 +1,2 @@
+(APIServer pid=13) WARNING 11-04 22:47:20 [ar_quant.py:197] ar_quant: quantized-transport all-reduce patch installed (VLLM_ARC_AR_QUANT=1, W13H donor port, p621)
+(Worker pid=930) WARNING 11-04 22:48:05 [ar_quant.py:197] ar_quant: quantized-transport all-reduce patch installed (VLLM_ARC_AR_QUANT=1, W13H donor port, p621)
