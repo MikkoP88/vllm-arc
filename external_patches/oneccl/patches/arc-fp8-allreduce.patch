@@ -127,7 +127,7 @@
   * @details Set the threshold in bytes to specify the small size algorithm in the allreduce
 --- /dev/null
 +++ b/deps/libccl/src/coll/algorithms/allreduce/sycl/allreduce_large_sycl_ring_fp8.hpp
-@@ -0,0 +1,375 @@
+@@ -0,0 +1,478 @@
 +/*
 + Copyright 2016-2020 Intel Corporation
 +
@@ -164,9 +164,25 @@
 + * rotation and barrier count (K3 rides between chunk 0's barrier and K4).
 + * Graph-capture safe: no host reads of device data unless FP8_STATS=1
 + * (declared diagnostic perturbation).
++ *
++ * r97v2/v3 post-mortem (2026-11-05, results/2026-11-05-p624-fp8-ar):
++ * numerics were green throughout (rel-rms 0.0229 == the offline bit-exact
++ * noise floor, fp8_noise_sim.py). v2's scalar branchy converters and K1 CAS
++ * storm were real but secondary; v3's stage telemetry convicted the wire
++ * writes: K2/K4 moved ~19 MB to the peer's IPC-mapped memory at 0.41 GB/s
++ * (45-47 ms each) while K5's identical-converter all-local pass ran 0.31 ms
++ * (124 GB/s). Byte-granular stores to uncached peer memory pay a
++ * read-modify-write per sub-sector fragment; stock's fp16 writes are full
++ * 32B sectors and sustain 9.85 GB/rank/s. LAW: peer-memory stores must be
++ * packed >= full sectors. v4 packs 4 e4m3 codes per u32 store (64B per
++ * 16-lane subgroup) in K2 and K4; K1 widens to 16384 threads (v3: 2048 was
++ * latency-bound at 12 GB/s, 3.2 ms; 64 CAS stay negligible). Converters
++ * since v3: branchless fp32-native (~8 ops, exact rare path below 2^-6 —
++ * zeros must encode to 0 for sparse activations).
 + */
 +
 +#pragma once
++#include <chrono>
 +#include "oneapi/ccl.hpp"
 +#include "common/global/global.hpp"
 +
@@ -180,46 +196,62 @@
 +/* e4m3 constants: largest finite value 448, no infinity. */
 +#define FP8AR_E4M3_MAX 448.0f
 +
-+/* fp32 -> e4m3 (round-to-nearest-even, saturating). The value passes through
-+ * fp16 first (one extra rounding step near ties; measured end-to-end by the
-+ * quality ladder, see results/2026-11-05-p624-fp8-ar). fp16 subnormals flush
-+ * to zero, matching the e4m3 subnormal floor of 2^-9. */
++/* fp32 -> e4m3, round-to-nearest-even, saturating at 448.
++ *
++ * Fast path is branchless on the raw fp32 word: re-bias the exponent field
++ * by -120 (bias 127 -> 7), round the low 20 mantissa bits with the standard
++ * add (2^19 - 1) + lsb trick, then shift out [e4:m3]. Inputs are bounded by
++ * construction (callers scale by 448/amax or 1/res_scale <= 1), so the
++ * clamp only catches the RTNE carry into the NaN pattern. Values below
++ * 2^-6 — including exact zeros, which the shift path would corrupt — take
++ * the rare exact path: subnormal codes are RTNE(v*512) in [0..8], where 8
++ * is the min-normal code. NaN encodes to 0x7f, inf saturates to 448. */
 +static inline uint8_t fp8ar_float_to_e4m3(float v) {
-+    sycl::half h = (sycl::half)v;
-+    uint16_t bits = sycl::bit_cast<uint16_t>(h);
-+    uint16_t sign = (uint16_t)((bits & 0x8000u) >> 8);
-+    uint16_t exp = (bits >> 10) & 0x1Fu;
-+    uint16_t man = bits & 0x3FFu;
-+    if (exp == 0x1Fu) {
-+        /* inf saturates, NaN stays NaN */
-+        return (uint8_t)(sign | (man ? 0x7Fu : 0x7Eu));
++    uint32_t x = sycl::bit_cast<uint32_t>(v);
++    uint32_t sign = (x >> 24) & 0x80u;
++    uint32_t ae = x & 0x7fffffffu;
++    if (ae < (121u << 23)) {
++        if (ae == 0) {
++            return (uint8_t)sign; /* exact zero (sparse-tensor law) */
++        }
++        if (ae >= 0x7f800000u) {
++            return (uint8_t)(sign | (ae > 0x7f800000u ? 0x7fu : 0x7eu)); /* NaN / inf */
++        }
++        float scaled = sycl::fabs(v) * 512.0f;
++        uint32_t q = (uint32_t)sycl::rint(scaled); /* RTNE via HW rint */
++        if (q > 8u) {
++            q = 8u; /* |v| >= 2^-6 rounds onto the min-normal code */
++        }
++        return (uint8_t)(sign | q);
 +    }
-+    if (exp == 0) {
-+        /* zero or fp16 subnormal (|v| < 2^-14 << 2^-9 e4m3 subnormal floor) */
-+        return (uint8_t)sign;
++    uint32_t y = ae - (120u << 23);
++    uint32_t z = y + 0x7ffffu + ((y >> 20) & 1u);
++    uint32_t code = (z >> 20) & 0x7fu;
++    if (code >= 0x7fu) {
++        code = 0x7eu; /* carries into the NaN pattern: saturate at 448 */
 +    }
-+    /* re-bias (e5:m10 -> e4:m3) with RTNE on the concatenated 15-bit field */
-+    uint32_t concat = ((uint32_t)exp << 10) | man;
-+    uint32_t rounded = (concat + 0x40u + ((concat >> 7) & 1u)) >> 7;
-+    if (rounded >= 0x7Fu) {
-+        rounded = 0x7Eu; /* >= 464 would round to the NaN pattern: saturate */
-+    }
-+    return (uint8_t)(sign | rounded);
++    return (uint8_t)(sign | code);
 +}
 +
-+/* e4m3 -> fp32, exact. */
-+static inline float fp8ar_e4m3_to_float(uint8_t q) {
-+    if ((q & 0x7Fu) == 0x7Fu) {
-+        return sycl::bit_cast<float>(0x7fc00000u); /* NaN */
-+    }
-+    uint32_t e = (q >> 3) & 0xFu;
++/* e4m3 -> fp32, exact: bit-assembled normal (e32 = e4 + 120, m3 << 20),
++ * selected against the subnormal m * 2^-9. No branches, no ldexp (the r97v2
++ * decode cost a library call per element). NaN only from a NaN code, which
++ * the encoder never emits for finite inputs. */
++static inline float fp8ar_e4m3_to_float(uint8_t q8) {
++    uint32_t q = (uint32_t)q8;
++    uint32_t e = (q >> 3) & 0xfu;
 +    uint32_t m = q & 0x7u;
-+    float mag = (e == 0) ? (float)m * 0.001953125f /* m * 2^-9 */
-+                         : sycl::ldexp((float)(8u + m), (int)e - 10);
++    float normal = sycl::bit_cast<float>(((e + 120u) << 23) | (m << 20));
++    float sub = (float)m * 0.001953125f;
++    float mag = (e == 0) ? sub : normal;
 +    return (q & 0x80u) ? -mag : mag;
 +}
 +
-+/* K1: amax over the outgoing (peer-owned) half of send_buf. */
++/* K1: amax over the outgoing (peer-owned) half of send_buf. Fixed grid of
++ * 16384 threads (v3's 2048 was latency-bound: 38 MB in 3.2 ms = 12 GB/s),
++ * grid-stride loop, register max, one atomic per thread — 64 contended CAS
++ * stay microscale. r97v1 did an atomic per element (~100 ms); r97v2's
++ * 262144-thread cap still paid ~15 ms of CAS; banked 2026-11-05. */
 +template <typename T>
 +void fp8ar_amax_kernel(const void *send_half, size_t recv_count, float *amax_ptr) {
 +    sycl::atomic_ref<float,
@@ -230,23 +262,30 @@
 +    const sycl::nd_item<1> it = syclext::this_work_item::get_nd_item<1>();
 +    const size_t num_threads = it.get_global_range(0);
 +    const size_t gid = it.get_global_linear_id();
++    float local_max = 0.0f;
 +    for (size_t offset = 0; offset < recv_count; offset += num_threads) {
 +        const size_t idx = gid + offset;
 +        if (idx < recv_count) {
-+            amax_atom.fetch_max(sycl::fabs((float)((const T *)send_half)[idx]));
++            const float v = sycl::fabs((float)((const T *)send_half)[idx]);
++            local_max = local_max > v ? local_max : v;
 +        }
++    }
++    if (local_max > 0.0f) {
++        amax_atom.fetch_max(local_max);
 +    }
 +}
 +
-+/* K2: quantize a chunk of the outgoing half into the peer's slot (first half
-+ * of the slot); the first thread of chunk 0 also publishes my scale into the
-+ * peer's slot-0 scale area. */
++/* K2: quantize a chunk of the outgoing half into the peer's slot (first
++ * half of the slot), FOUR e4m3 codes packed per u32 store — byte-granular
++ * stores to the peer's IPC-mapped memory cost a sub-sector RMW each (v3
++ * measured 0.41 GB/s; the packing law is banked above). The first thread of
++ * chunk 0 also publishes my scale into the peer's slot-0 scale area. */
 +template <typename T>
 +void fp8ar_quant_kernel(const void *send_buf,
 +                        size_t send_half_off, /* element offset of outgoing half */
 +                        size_t chunk_elem_off,
-+                        size_t data_count,
-+                        uint8_t *remote_slot,
++                        size_t data_count,    /* elements, multiple of 4 for the bulk */
++                        uint32_t *remote_slot32, /* peer slot, u32-packed e4m3 */
 +                        float *my_amax_ptr,   /* my slot0 tail [chunk_size-16] */
 +                        float *peer_scale_ptr, /* peer slot0 tail [chunk_size-12] */
 +                        size_t chunk_id) {
@@ -256,14 +295,30 @@
 +    const float amax = *my_amax_ptr;
 +    const float mul = (amax > 0.0f) ? FP8AR_E4M3_MAX / amax : 0.0f;
 +    const T *src = (const T *)send_buf + send_half_off + chunk_elem_off;
-+    for (size_t offset = 0; offset < data_count; offset += num_threads) {
-+        const size_t idx = gid + offset;
-+        if (idx < data_count) {
-+            remote_slot[idx] = fp8ar_float_to_e4m3((float)src[idx] * mul);
++    const size_t words = data_count / 4;
++    for (size_t offset = 0; offset < words; offset += num_threads) {
++        const size_t w = gid + offset;
++        if (w < words) {
++            const float v0 = (float)src[w * 4] * mul;
++            const float v1 = (float)src[w * 4 + 1] * mul;
++            const float v2 = (float)src[w * 4 + 2] * mul;
++            const float v3 = (float)src[w * 4 + 3] * mul;
++            const uint32_t packed = (uint32_t)fp8ar_float_to_e4m3(v0) |
++                                    ((uint32_t)fp8ar_float_to_e4m3(v1) << 8) |
++                                    ((uint32_t)fp8ar_float_to_e4m3(v2) << 16) |
++                                    ((uint32_t)fp8ar_float_to_e4m3(v3) << 24);
++            remote_slot32[w] = packed;
 +        }
 +    }
-+    if (gid == 0 && chunk_id == 0) {
-+        *peer_scale_ptr = amax / FP8AR_E4M3_MAX;
++    if (gid == 0) {
++        /* tail (data_count % 4, at most 3 elements) — one thread, scalar */
++        uint8_t *tail = (uint8_t *)remote_slot32 + words * 4;
++        for (size_t i = words * 4; i < data_count; i++) {
++            tail[i - words * 4] = fp8ar_float_to_e4m3((float)src[i] * mul);
++        }
++        if (chunk_id == 0) {
++            *peer_scale_ptr = amax / FP8AR_E4M3_MAX;
++        }
 +    }
 +}
 +
@@ -276,12 +331,13 @@
 +}
 +
 +/* K4: reduce my chunk (fp16) with the peer's quantized chunk, emit the fp16
-+ * result locally and the quantized result into the peer's slot tail. */
++ * result locally and the quantized result into the peer's slot tail, four
++ * codes packed per u32 remote store (the v3 packing law). */
 +template <typename T>
 +void fp8ar_reduce_kernel(void *out1,        /* fp16, my recv chunk */
 +                         const void *in1,   /* fp16, my send chunk */
 +                         const uint8_t *in2, /* e4m3, peer's quantized chunk */
-+                         uint8_t *out2,     /* e4m3, peer's slot tail */
++                         uint32_t *out2_32, /* e4m3 u32-packed, peer's slot tail */
 +                         size_t data_count,
 +                         float *peer_scale_ptr,
 +                         float *res_ptr) {
@@ -293,12 +349,30 @@
 +    const float inv_res = 1.0f / res;
 +    T *dst1 = (T *)out1;
 +    const T *src1 = (const T *)in1;
-+    for (size_t offset = 0; offset < data_count; offset += num_threads) {
-+        const size_t idx = gid + offset;
-+        if (idx < data_count) {
-+            const float sum = (float)src1[idx] + fp8ar_e4m3_to_float(in2[idx]) * s_peer;
++    const size_t words = data_count / 4;
++    for (size_t offset = 0; offset < words; offset += num_threads) {
++        const size_t w = gid + offset;
++        if (w < words) {
++            uint32_t packed = 0;
++            for (uint32_t j = 0; j < 4; j++) {
++                const size_t idx = w * 4 + j;
++                const float sum =
++                    (float)src1[idx] + fp8ar_e4m3_to_float(in2[idx]) * s_peer;
++                const uint8_t q = fp8ar_float_to_e4m3(sum * inv_res);
++                packed |= (uint32_t)q << (8 * j);
++                dst1[idx] = (T)(fp8ar_e4m3_to_float(q) * res);
++            }
++            out2_32[w] = packed;
++        }
++    }
++    if (gid == 0) {
++        /* tail (data_count % 4) — one thread, scalar */
++        uint8_t *tail = (uint8_t *)out2_32 + words * 4;
++        for (size_t idx = words * 4; idx < data_count; idx++) {
++            const float sum =
++                (float)src1[idx] + fp8ar_e4m3_to_float(in2[idx]) * s_peer;
 +            const uint8_t q = fp8ar_float_to_e4m3(sum * inv_res);
-+            out2[idx] = q;
++            tail[idx - words * 4] = q;
 +            dst1[idx] = (T)(fp8ar_e4m3_to_float(q) * res);
 +        }
 +    }
@@ -389,24 +463,48 @@
 +
 +    invoke_barrier(node_comm, q, dep_events, is_cpu_barrier);
 +
-+    auto launch_threads = [&](size_t elem_count) {
++    auto launch_threads = [&](size_t elem_count, size_t hard_cap = 0) {
 +        size_t kernel_threads = elem_count;
++        if (hard_cap) {
++            kernel_threads = std::min(kernel_threads, hard_cap);
++        }
 +        if (num_threads) {
 +            kernel_threads = std::min(kernel_threads, num_threads);
 +        }
 +        return ((kernel_threads + work_group_size - 1) / work_group_size) * work_group_size;
 +    };
 +
-+    /* K1: amax of my outgoing half */
++    /* r97v3 stage telemetry (FP8_STATS=1 only — declared perturbation: the
++     * q.wait() between stages drains the pipeline; numbers attribute cost,
++     * they do not race). */
++    const bool fp8_stats = ccl::global_data::env().sycl_allreduce_fp8_stats;
++    std::chrono::steady_clock::time_point stage_t0;
++    auto stage_mark = [&](const char *name) {
++        if (!fp8_stats) {
++            return;
++        }
++        q.wait();
++        auto t1 = std::chrono::steady_clock::now();
++        double ms = std::chrono::duration<double, std::milli>(t1 - stage_t0).count();
++        fprintf(stderr, "CCL fp8 stage %-10s %8.3f ms\n", name, ms);
++        fflush(stderr);
++        stage_t0 = t1;
++    };
++    if (fp8_stats) {
++        stage_t0 = std::chrono::steady_clock::now();
++    }
++
++    /* K1: amax of my outgoing half — fixed grid wide enough to hide latency */
 +    {
 +        const void *send_half = (const char *)send_buf + s * recv_count * sizeof(T);
-+        const size_t kernel_size = launch_threads(recv_count);
++        const size_t kernel_size = launch_threads(recv_count, 16384);
 +        q.memset(my_amax_ptr, 0, sizeof(float));
 +        q.parallel_for(sycl::nd_range<1>(kernel_size, work_group_size),
 +                       [=](sycl::nd_item<1> it) [[sycl::reqd_sub_group_size(16)]] {
 +                           fp8ar_amax_kernel<T>(send_half, recv_count, my_amax_ptr);
 +                       });
 +    }
++    stage_mark("k1_amax");
 +
 +    /* chunk loop: K2 -> p2p barrier -> (K3 once) -> K4 */
 +    for (size_t nc = 0; nc < num_chunks; nc++) {
@@ -415,22 +513,24 @@
 +            (nc < recv_count / fp8_chunk_elems) ? fp8_chunk_elems
 +                                                : recv_count % fp8_chunk_elems;
 +        const int slot = nc % pipeline_size;
-+        const size_t kernel_size = launch_threads(data_count);
++        const size_t kernel_size = launch_threads((data_count + 3) / 4);
 +
-+        uint8_t *remote_slot = (uint8_t *)remote_work_bufs[slot];
++        uint32_t *remote_slot32 = (uint32_t *)remote_work_bufs[slot];
 +        q.parallel_for(sycl::nd_range<1>(kernel_size, work_group_size),
 +                       [=](sycl::nd_item<1> it) [[sycl::reqd_sub_group_size(16)]] {
 +                           fp8ar_quant_kernel<T>(send_buf,
 +                                                 s * recv_count,
 +                                                 chunk_elem_off,
 +                                                 data_count,
-+                                                 remote_slot,
++                                                 remote_slot32,
 +                                                 my_amax_ptr,
 +                                                 remote_scale_ptr,
 +                                                 nc);
 +                       });
++        stage_mark("k2_quant");
 +
 +        invoke_p2p_barrier(node_comm, q, {}, is_cpu_barrier);
++        stage_mark("barrier");
 +
 +        if (nc == 0) {
 +            q.parallel_for(sycl::nd_range<1>(work_group_size, work_group_size),
@@ -439,25 +539,28 @@
 +                                   fp8ar_res_kernel(my_amax_ptr, peer_scale_ptr, res_ptr);
 +                               }
 +                           });
++            stage_mark("k3_res");
 +        }
 +
 +        T *out1 = (T *)recv_buf + rank * recv_count + chunk_elem_off;
 +        const T *in1 = (const T *)send_buf + rank * recv_count + chunk_elem_off;
 +        const uint8_t *in2 = (const uint8_t *)work_bufs[slot];
-+        uint8_t *out2 = (uint8_t *)remote_work_bufs[slot] + half_bytes;
++        uint32_t *out2_32 = (uint32_t *)((char *)remote_work_bufs[slot] + half_bytes);
 +        q.parallel_for(sycl::nd_range<1>(kernel_size, work_group_size),
 +                       [=](sycl::nd_item<1> it) [[sycl::reqd_sub_group_size(16)]] {
 +                           fp8ar_reduce_kernel<T>(out1,
 +                                                  in1,
 +                                                  in2,
-+                                                  out2,
++                                                  out2_32,
 +                                                  data_count,
 +                                                  peer_scale_ptr,
 +                                                  res_ptr);
 +                       });
++        stage_mark("k4_reduce");
 +    }
 +
 +    invoke_p2p_barrier(node_comm, q, {}, is_cpu_barrier);
++    stage_mark("barrier");
 +
 +    /* K5: dequantize peer results from my slot tails into my recv */
 +    for (size_t nc = 0; nc < num_chunks; nc++) {
@@ -475,23 +578,23 @@
 +                           fp8ar_dequant_kernel<T>(src, dst, data_count, res_ptr);
 +                       });
 +    }
++    stage_mark("k5_dequant");
 +
 +    invoke_p2p_barrier(node_comm, q, {}, is_cpu_barrier);
++    stage_mark("barrier");
 +
-+    if (ccl::global_data::env().sycl_allreduce_fp8_stats) {
-+        /* diagnostic only: synchronizes the queue (declared perturbation) */
++    if (fp8_stats) {
 +        float stats[3];
 +        q.memcpy(stats, my_amax_ptr, 3 * sizeof(float)).wait();
-+        LOG_INFO("fp8 allreduce: count ",
-+                 count,
-+                 ", chunks ",
-+                 num_chunks,
-+                 ", amax ",
-+                 stats[0],
-+                 ", peer scale ",
-+                 stats[1],
-+                 ", res scale ",
-+                 stats[2]);
++        fprintf(stderr,
++                "CCL fp8 allreduce: count %zu, chunks %zu, amax %g, "
++                "peer scale %g, res scale %g\n",
++                count,
++                num_chunks,
++                stats[0],
++                stats[1],
++                stats[2]);
++        fflush(stderr);
 +    }
 +
 +    {

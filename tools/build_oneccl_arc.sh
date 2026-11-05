@@ -63,14 +63,17 @@ else
 fi
 
 # --- 3. builder container (reused when present) ---------------------------
+# Mount the STABLE p624 root (not $STAGE itself): container mounts are frozen
+# at creation, and the first-run builder was created with stage-stock:/stage —
+# the arc run then staged into stage-stock while stage-arc stayed empty and
+# the r97 legs silently raced the stock lib (banked 2026-11-05). A stable
+# root mount makes /p624/stage-<mode> always correct.
 mkdir -p "$STAGE"
 if ! docker inspect "$BUILDER" >/dev/null 2>&1; then
   echo "(creating fresh builder)"
-  docker run -d --name "$BUILDER" -v "$SRC":/src -v "$STAGE":/stage "$BASE" sleep infinity >/dev/null
+  docker run -d --name "$BUILDER" -v "$(dirname "$SRC")":/p624 "$BASE" sleep infinity >/dev/null
 fi
 docker start "$BUILDER" >/dev/null 2>&1 || true
-# mounts refresh in case $STAGE was created after container birth
-docker restart "$BUILDER" >/dev/null
 
 # --- 4. build inside the builder ------------------------------------------
 # DLE image cmake is 3.22 and has no pip; oneCCL 2022.0.0 requires >=3.24 —
@@ -83,14 +86,19 @@ docker exec "$BUILDER" bash -eux -c '
   }
   /opt/cmake/bin/cmake --version | head -1
 '
-docker exec "$BUILDER" bash -eux -c '
+# In-container paths ride the STABLE root mount: /p624/oneccl-src (the
+# first /p624-mount revision still said /src — the stale builder's mount —
+# and cmake "source directory does not exist" hid behind `| tail` because
+# the inner bash had no pipefail; banked 2026-11-05).
+docker exec "$BUILDER" bash -euxo pipefail -c '
   source /opt/intel/oneapi/setvars.sh >/dev/null 2>&1 || true
   export PATH=/opt/cmake/bin:$PATH
-  rm -rf /src/build
-  cmake -S /src -B /src/build -DCMAKE_CXX_COMPILER=icpx -DCMAKE_C_COMPILER=icx \
+  rm -rf /p624/oneccl-src/build
+  cmake -S /p624/oneccl-src -B /p624/oneccl-src/build \
+        -DCMAKE_CXX_COMPILER=icpx -DCMAKE_C_COMPILER=icx \
         -DCMAKE_BUILD_TYPE=Release -DENABLE_MPI=OFF \
         -DBUILD_EXAMPLES=OFF -DBUILD_TESTS=OFF 2>&1 | tail -8
-  cmake --build /src/build --parallel $(nproc) 2>&1 | tail -8
+  cmake --build /p624/oneccl-src/build --parallel $(nproc) 2>&1 | tail -8
 '
 
 # --- 5. inventory + verify + stage ----------------------------------------
@@ -99,8 +107,8 @@ docker exec "$BUILDER" bash -eux -c '
 # find|cp — banked 2026-11-05; the SYCL fat is ./libccl/src):
 #   ./libccl/src/libccl.so.1.0   fat SYCL library (SONAME libccl.so.1)
 #   ./src/libccl.so.2.0          thin C-API shim (SONAME libccl.so.2)
-docker exec "$BUILDER" bash -eu -c '
-  cd /src/build
+docker exec "$BUILDER" bash -euo pipefail -c '
+  cd /p624/oneccl-src/build
   FAT=./libccl/src/libccl.so.1.0
   THIN=./src/libccl.so.2.0
   [ -f "$FAT" ] || { echo "FATAL: SYCL fat $FAT not produced"; exit 1; }
@@ -117,15 +125,17 @@ docker exec "$BUILDER" bash -eu -c '
   nm -DC "$FAT" 2>/dev/null | c++filt | grep -c fp8_ring || true
 '
 
-# stage canonical artifacts + manifest
-docker exec "$BUILDER" bash -eu -c '
-  cd /src/build
-  cp -v ./libccl/src/libccl.so.1.0 /stage/
-  cp -v ./libccl/src/libccl.a /stage/ 2>/dev/null || true
-  cp -v ./src/libccl.so.2.0 /stage/
-  cp -v ./plugins/legacy_cpu/libccl_legacy_cpu.so /stage/ 2>/dev/null || true
-  cp -v ./libccl_cpu/src/ext/openmp/libccl_openmp.so.0 /stage/ 2>/dev/null || true
-'
+# stage canonical artifacts + manifest (via the stable root mount)
+docker exec "$BUILDER" bash -euo pipefail -c "
+  cd /p624/oneccl-src/build
+  D=/p624/stage-$MODE
+  rm -rf \$D; mkdir -p \$D
+  cp -v ./libccl/src/libccl.so.1.0 \$D/
+  cp -v ./libccl/src/libccl.a \$D/ 2>/dev/null || true
+  cp -v ./src/libccl.so.2.0 \$D/
+  cp -v ./plugins/legacy_cpu/libccl_legacy_cpu.so \$D/ 2>/dev/null || true
+  cp -v ./libccl_cpu/src/ext/openmp/libccl_openmp.so.0 \$D/ 2>/dev/null || true
+"
 {
   echo "mode=$MODE date=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
   echo "superproject=$(git rev-parse HEAD) tag=2022.0.0"

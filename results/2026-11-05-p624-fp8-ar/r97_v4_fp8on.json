@@ -1,0 +1,44 @@
+[
+ {
+  "bytes": 150994944,
+  "label": "arc-fp8-on",
+  "ms": 9.076,
+  "stock_ms": 9.076,
+  "link_gbs": 16.64
+ },
+ {
+  "bytes": 83886080,
+  "label": "arc-fp8-on",
+  "ms": 5.149,
+  "stock_ms": 5.149,
+  "link_gbs": 16.29
+ },
+ {
+  "bytes": 76677120,
+  "label": "arc-fp8-on",
+  "ms": 4.731,
+  "stock_ms": 4.731,
+  "link_gbs": 16.21
+ },
+ {
+  "bytes": 68157440,
+  "label": "arc-fp8-on",
+  "ms": 4.196,
+  "stock_ms": 4.196,
+  "link_gbs": 16.24
+ },
+ {
+  "bytes": 15779840,
+  "label": "arc-fp8-on",
+  "ms": 1.03,
+  "stock_ms": 1.03,
+  "link_gbs": 15.32
+ },
+ {
+  "bytes": 2621440,
+  "label": "arc-fp8-on",
+  "ms": 0.353,
+  "stock_ms": 0.353,
+  "link_gbs": 7.43
+ }
+]

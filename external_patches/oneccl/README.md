@@ -35,7 +35,14 @@ hashes match the pin.
 
 | patch | content |
 |---|---|
-| `arc-fp8-allreduce.patch` | 5 files, ~500 lines: NEW `allreduce_large_sycl_ring_fp8.hpp` (e4m3 wire for the BMG TP2 fp16 SUM large-ring: K1 amax → per-chunk [K2 quantize → p2p barrier → K4 reduce+quant] → K5 dequant; slot first half = input, tail half = result, 16-byte scale area at slot-0 tail; `res_scale = 2·max(s_local, s_peer)`; both ranks' outputs carry exactly one e4m3 round trip; stock slot rotation and barrier count preserved; graph-capture safe — no host reads unless STATS); dispatch guard in `allreduce_large_sycl.cpp` BMG no-tmp branch (`fp16 ∧ SUM ∧ N==2 ∧ count/2 ≥ min-count`, `if constexpr` half-only); env trio registration (`CCL_SYCL_ALLREDUCE_FP8`, `..._FP8_MIN_COUNT`, `..._FP8_STATS`) in `vars_experimental.hpp`/`env.hpp`/`env.cpp` (defaults 0 / 2097152 / 0 = silent off). |
+| `arc-fp8-allreduce.patch` | 5 files, ~600 lines: NEW `allreduce_large_sycl_ring_fp8.hpp` (e4m3 wire for the BMG TP2 fp16 SUM large-ring: K1 amax → per-chunk [K2 quantize → p2p barrier → K4 reduce+quant] → K5 dequant; slot first half = input, tail half = result, 16-byte scale area at slot-0 tail; `res_scale = 2·max(s_local, s_peer)`; both ranks' outputs carry exactly one e4m3 round trip; stock slot rotation and barrier count preserved; graph-capture safe — no host reads unless STATS). Converters are branchless fp32-native (~8 ops, exact rare path below 2⁻⁶; zeros encode to 0 for sparse activations) — bit-exact vs an exhaustive RTNE grid (`results/2026-11-05-p624-fp8-ar/fp8_noise_sim.py`, 630k values, 0 mismatches). **Peer-memory stores are u32-packed (4 codes/store)** — the r97v3 sector law: byte-granular stores to the peer's IPC-mapped memory pay a sub-sector RMW (0.41 GB/s measured); packed restores 9.6 GB/s. K1 runs a 16384-thread register-max grid (≤64 CAS). STATS adds per-stage timing. Dispatch guard in `allreduce_large_sycl.cpp` BMG no-tmp branch (`fp16 ∧ SUM ∧ N==2 ∧ count/2 ≥ min-count`, `if constexpr` half-only); env trio registration (`CCL_SYCL_ALLREDUCE_FP8`, `..._FP8_MIN_COUNT`, `..._FP8_STATS`) in `vars_experimental.hpp`/`env.hpp`/`env.cpp` (defaults 0 / 2097152 / 0 = silent off). |
+
+**r97 verdict (2026-11-05): GATE PASS — 1.65× at the dominant
+76,677,120 B (7.801 → 4.731 ms, 16.2 GB/rank/s), 1.57–1.69× across all
+large sizes; FP8=0 control identical to the r95 anchor; numerics at the
+bit-exact e4m3 noise floor (rel-rms 0.02285 vs simulated 0.022861).**
+Full chain: `results/2026-11-05-p624-fp8-ar/` (VERDICT.md,
+r97_debug_ledger.md — the v1→v4 capture-first iteration history).
 
 Patch applies with `patch -p1` at the SUPERPROJECT root (submodule files
 are plain files in the work tree).
@@ -70,16 +77,19 @@ are byte-identical and untouched.
 ## Telemetry (three layers)
 
 1. engine — existing ARC_AR_TRACE census + ARC_STEP_TRACE (unchanged);
-2. patch — `CCL_SYCL_ALLREDUCE_FP8_STATS=1` per-call line (count, chunks,
-   amax, peer scale, res scale); declared perturbation, diagnostics only;
+2. patch — `CCL_SYCL_ALLREDUCE_FP8_STATS=1`: per-call line (count, chunks,
+   amax, peer scale, res scale) + per-stage timing (k1/k2/barrier/k3/k4/k5
+   via q.wait() chrono); declared perturbation, diagnostics only;
 3. fidelity — phase-0 stock-rebuild race vs the 7.78 ms r95 anchor
    (`tools/ar/ar_ceiling.py --role dist --guard randn --label ...`).
 
 ## Gates (pre-registered, plan P6.24)
 
-- r96 phase 0: stock rebuild races the 7.78 ms anchor within ±3%, else STOP;
+- r96 phase 0: stock rebuild races the 7.78 ms anchor within ±3%, else STOP — **PASS** (0e7270cc evidence);
 - r97 phase 1: FP8=0 control == phase-0; FP8=1 gate **≥1.3×** (≤6.0 ms at
-  76,677,120 B), numerics recorded (cos ≥ 0.9999, rel-rms ≤ 2e-2);
+  76,677,120 B), numerics green — **PASS 1.65×** (rel-rms bar
+  re-registered 0.035 from the bit-exact noise floor 0.0229, 5.7× under
+  the corruption regime; evidence fp8_noise_sim.py);
 - r98 phase 2: quality ladder (t5/t9-class prompts, agg8 + LONG-RETURN,
   parity bars vs cert9);
 - r99 phase 3: serve A/B (U8k/U32k/U64k), full §10 battery, cert10 image
