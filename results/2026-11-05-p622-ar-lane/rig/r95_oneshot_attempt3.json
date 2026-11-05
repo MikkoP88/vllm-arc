@@ -1,0 +1,50 @@
+[
+ {
+  "bytes": 150994944,
+  "oneshot_ms": 30.962,
+  "copies_ms": 30.211,
+  "add_ms": 1.375,
+  "copy_gbs_each_dir": 5.0,
+  "numerics": true
+ },
+ {
+  "bytes": 83886080,
+  "oneshot_ms": 17.471,
+  "copies_ms": 16.952,
+  "add_ms": 0.997,
+  "copy_gbs_each_dir": 4.95,
+  "numerics": true
+ },
+ {
+  "bytes": 76677120,
+  "oneshot_ms": 16.028,
+  "copies_ms": 15.58,
+  "add_ms": 0.953,
+  "copy_gbs_each_dir": 4.92,
+  "numerics": true
+ },
+ {
+  "bytes": 68157440,
+  "oneshot_ms": 14.344,
+  "copies_ms": 13.864,
+  "add_ms": 1.093,
+  "copy_gbs_each_dir": 4.92,
+  "numerics": true
+ },
+ {
+  "bytes": 15779840,
+  "oneshot_ms": 3.77,
+  "copies_ms": 3.606,
+  "add_ms": 0.792,
+  "copy_gbs_each_dir": 4.38,
+  "numerics": true
+ },
+ {
+  "bytes": 2621440,
+  "oneshot_ms": 1.206,
+  "copies_ms": 1.047,
+  "add_ms": 0.808,
+  "copy_gbs_each_dir": 2.5,
+  "numerics": true
+ }
+]
