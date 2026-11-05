@@ -16,7 +16,8 @@
 set -eo pipefail
 
 MODE="${1:-}"
-[ "$MODE" = "stock" ] || [ "$MODE" = "arc" ] || { echo "usage: $0 stock|arc"; exit 1; }
+[ "$MODE" = "stock" ] || [ "$MODE" = "arc" ] || [ "$MODE" = "probe" ] \
+  || { echo "usage: $0 stock|arc|probe"; exit 1; }
 
 KIT=/root/build/p624-kit            # this kit pushed to the rig
 SRC=/root/build/p624/oneccl-src     # pinned clone (persisted across modes)
@@ -43,7 +44,7 @@ got_lib=$(git -C deps/libccl rev-parse HEAD)
 echo "PIN_OK super=$got_super libccl=$got_lib"
 
 # --- 2. patch state per mode (marker-proven, E-law) -----------------------
-if [ "$MODE" = "arc" ]; then
+if [ "$MODE" = "arc" ] || [ "$MODE" = "probe" ]; then
   if ! grep -q allreduce_large_fp8_ring deps/libccl/src/coll/algorithms/allreduce/sycl/allreduce_large_sycl.cpp; then
     patch -p1 --forward < "$KIT/patches/arc-fp8-allreduce.patch"
   fi
@@ -53,7 +54,30 @@ if [ "$MODE" = "arc" ]; then
     || { echo "FATAL: env registration marker missing"; exit 1; }
   grep -q "fp8ar_float_to_e4m3" deps/libccl/src/coll/algorithms/allreduce/sycl/allreduce_large_sycl_ring_fp8.hpp \
     || { echo "FATAL: fp8 header marker missing"; exit 1; }
-  echo "PATCH_MARKERS_OK (mode arc)"
+  if [ "$MODE" = "probe" ]; then
+    # r100 bottleneck scan: v4 + one-shot IPC wire-rate probe (additive,
+    # env-gated CCL_SYCL_ALLREDUCE_FP8_PROBE=1; never enters a cert image).
+    # State machine: the probe patch touches 4 files (3 tracked env files +
+    # the v4-added hpp); arc mode reverse-applies it whole.
+    if ! grep -q fp8ar_run_probe deps/libccl/src/coll/algorithms/allreduce/sycl/allreduce_large_sycl_ring_fp8.hpp; then
+      patch -p1 --forward < "$KIT/patches/arc-fp8-probe.patch"
+    fi
+    grep -q fp8ar_run_probe deps/libccl/src/coll/algorithms/allreduce/sycl/allreduce_large_sycl_ring_fp8.hpp \
+      || { echo "FATAL: probe marker missing"; exit 1; }
+    grep -q "CCL_SYCL_ALLREDUCE_FP8_PROBE" deps/libccl/src/common/env/env.cpp \
+      || { echo "FATAL: probe env registration marker missing"; exit 1; }
+    echo "PATCH_MARKERS_OK (mode probe: v4 + wire-rate probe)"
+  else
+    # back to plain v4 if the probe patch is present (oneCCL_SRC shared)
+    if grep -q fp8ar_run_probe deps/libccl/src/coll/algorithms/allreduce/sycl/allreduce_large_sycl_ring_fp8.hpp; then
+      patch -p1 -R --forward < "$KIT/patches/arc-fp8-probe.patch"
+    fi
+    ! grep -q fp8ar_run_probe deps/libccl/src/coll/algorithms/allreduce/sycl/allreduce_large_sycl_ring_fp8.hpp \
+      || { echo "FATAL: probe marker still present in arc mode"; exit 1; }
+    ! grep -q "CCL_SYCL_ALLREDUCE_FP8_PROBE" deps/libccl/src/common/env/env.cpp \
+      || { echo "FATAL: probe env marker still present in arc mode"; exit 1; }
+    echo "PATCH_MARKERS_OK (mode arc)"
+  fi
 else
   # tracked-tree pristine check (the build generates an ignored
   # include/oneapi/ccl/config.h inside the submodule — untracked by design)
@@ -142,6 +166,7 @@ docker exec "$BUILDER" bash -euo pipefail -c "
   echo "libccl=$(git -C deps/libccl rev-parse HEAD)"
   echo "builder=$BASE (DPC++ 2026.0.0)"
   [ "$MODE" = "arc" ] && echo "patch=arc-fp8-allreduce.patch (sha256 $(sha256sum "$KIT/patches/arc-fp8-allreduce.patch" | cut -d" " -f1))"
+  [ "$MODE" = "probe" ] && echo "patch=arc-fp8-allreduce.patch + arc-fp8-probe.patch (probe sha256 $(sha256sum "$KIT/patches/arc-fp8-probe.patch" | cut -d" " -f1))"
   echo "--- staged artifacts ---"
   ( cd "$STAGE" && sha256sum * 2>/dev/null )
 } > "$STAGE/BUILD-MANIFEST.txt"
