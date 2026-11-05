@@ -1,0 +1,124 @@
+// dpas_probe.sycl — P6.21 v2 round 6 (r92_dbg6 evidence): the v2 QK'
+// N=8 dpas behaves as if the B VNNI word map is NOT word(kp,n)@kp*N+n
+// (v1 only ever proved N=16; the PV's N=16 is verified in-kernel by
+// the round-4 dictionary fit). This probe measures the ACTUAL layout:
+// B halves carry unique integer ids (word f: LO=f, HI=f+128), three
+// known A matrices (row0-ones / delta(j==t) / delta(j==8+t)), C lanes
+// stored raw; the python driver decodes (lane, k) -> (word, half).
+//
+// Variants: (a) N=8 raw-register B; (b) N=8 B round-tripped through
+// SLM exactly as fa_dense_v2.fp8.h stages QV (slm_block_store<uint32,1>
+// at (dp*8+m)*4, slm_block_load<fp16,128> of the 256-B block) —
+// discriminates a layout-law deviation from an SLM addressing bug;
+// (c) N=16 raw B control (expected: the v1-proven law). One thread,
+// no barriers. Out: float[768] = [a 192 | b 192 | c 384].
+#include <torch/extension.h>
+#include <c10/xpu/XPUStream.h>
+#include <sycl/sycl.hpp>
+#include <sycl/ext/intel/esimd.hpp>
+#include <sycl/ext/intel/esimd/xmx/dpas.hpp>
+
+using namespace sycl;
+using namespace sycl::ext::intel::esimd;
+using namespace sycl::ext::intel::experimental::esimd;
+using fp16 = sycl::half;
+
+class DpasProbeK;
+
+template <int WORDS, int HI_BASE>
+static ESIMD_INLINE simd<fp16, WORDS * 2> makeB() {
+  simd<fp16, WORDS * 2> b;
+#pragma unroll
+  for (int f = 0; f < WORDS; f++) {
+    b[2 * f] = (fp16)f;
+    b[2 * f + 1] = (fp16)(HI_BASE + f);
+  }
+  return b;
+}
+
+static ESIMD_INLINE void makeA(simd<fp16, 128>& a0, simd<fp16, 128>& a1,
+                               simd<fp16, 128>& a2) {
+  a0 = 0;
+  a1 = 0;
+  a2 = 0;
+#pragma unroll
+  for (int j = 0; j < 16; j++) a0[j] = 1.0f;  // A row 0 = ones
+#pragma unroll
+  for (int t = 0; t < 8; t++) a1[t * 16 + t] = 1.0f;      // k = t
+#pragma unroll
+  for (int t = 0; t < 8; t++) a2[t * 16 + 8 + t] = 1.0f;  // k = 8+t
+}
+
+template <int N, int WORDS>
+static ESIMD_INLINE void run3(float* o, const simd<fp16, WORDS * 2>& b) {
+  simd<fp16, 128> a0, a1, a2;
+  makeA(a0, a1, a2);
+  simd<float, 8 * N> z = 0;
+  simd<float, 8 * N> c0 = xmx::dpas<8, 8, float, float, fp16, fp16,
+      xmx::dpas_argument_type::fp16, xmx::dpas_argument_type::fp16>(z, b, a0);
+  simd<float, 8 * N> c1 = xmx::dpas<8, 8, float, float, fp16, fp16,
+      xmx::dpas_argument_type::fp16, xmx::dpas_argument_type::fp16>(z, b, a1);
+  simd<float, 8 * N> c2 = xmx::dpas<8, 8, float, float, fp16, fp16,
+      xmx::dpas_argument_type::fp16, xmx::dpas_argument_type::fp16>(z, b, a2);
+  // lsc block stores cap at 64 elements (probe build-1): chunk the
+  // N=16 results (the N=8 chunk is the whole 64-lane result).
+  lsc_block_store<float, 64, lsc_data_size::default_size,
+                  cache_hint::write_back, cache_hint::write_back>(
+      o + 0, c0.template select<64, 1>(0));
+  lsc_block_store<float, 64, lsc_data_size::default_size,
+                  cache_hint::write_back, cache_hint::write_back>(
+      o + 8 * N, c1.template select<64, 1>(0));
+  lsc_block_store<float, 64, lsc_data_size::default_size,
+                  cache_hint::write_back, cache_hint::write_back>(
+      o + 16 * N, c2.template select<64, 1>(0));
+  if constexpr (N == 16) {
+    lsc_block_store<float, 64, lsc_data_size::default_size,
+                    cache_hint::write_back, cache_hint::write_back>(
+        o + 64, c0.template select<64, 1>(64));
+    lsc_block_store<float, 64, lsc_data_size::default_size,
+                    cache_hint::write_back, cache_hint::write_back>(
+        o + 8 * N + 64, c1.template select<64, 1>(64));
+    lsc_block_store<float, 64, lsc_data_size::default_size,
+                    cache_hint::write_back, cache_hint::write_back>(
+        o + 16 * N + 64, c2.template select<64, 1>(64));
+  }
+}
+
+void dpas_probe(torch::Tensor out) {
+  TORCH_CHECK(out.is_xpu() && out.dtype() == torch::kFloat32 &&
+              out.numel() == 768, "out must be xpu fp32[768]");
+  float* o = (float*)out.data_ptr();
+  sycl::queue& queue = c10::xpu::getCurrentXPUStream(0).queue();
+  queue.submit([&](sycl::handler& cgh) {
+    float* op = o;
+    cgh.parallel_for<class DpasProbeK>(
+        sycl::nd_range<1>(sycl::range<1>(1), sycl::range<1>(1)),
+        [=](sycl::nd_item<1>) SYCL_ESIMD_KERNEL {
+          slm_init<2048>();
+          // (a) N=8, raw-register B.
+          run3<8, 64>(op + 0, makeB<64, 128>());
+          // (b) N=8, B staged through SLM with the v2 QV addressing:
+          // word (dp, m) -> byte (dp*8+m)*4 of the 256-B block, loaded
+          // back as one fp16,128 tile.
+          simd<fp16, 128> bs = makeB<64, 128>();
+          {
+            auto w = bs.template bit_cast_view<uint32_t>();
+#pragma unroll
+            for (int dp = 0; dp < 8; dp++)
+#pragma unroll
+              for (int m = 0; m < 8; m++)
+                slm_block_store<uint32_t, 1>((dp * 8 + m) * 4,
+                                             simd<uint32_t, 1>(w[dp * 8 + m]));
+          }
+          simd<fp16, 128> bsl = slm_block_load<fp16, 128>(0);
+          run3<8, 64>(op + 192, bsl);
+          // (c) N=16 control.
+          run3<16, 128>(op + 384, makeB<128, 256>());
+        });
+  });
+}
+
+PYBIND11_MODULE(TORCH_EXTENSION_NAME, m) {
+  m.def("dpas_probe", &dpas_probe,
+        "xmx dpas layout probe (P6.21 r92, N=8 + SLM variant + N=16 ctl)");
+}
