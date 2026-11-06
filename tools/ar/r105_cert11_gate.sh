@@ -78,6 +78,23 @@
 #   RERUN: script now guards [1] on a quiescent host (snapshot_download
 #   pgrep + uptime banked per leg). run-1 evidence banked for the record
 #   under r105-contaminated/; run-2 is the certification basis.
+# RUN NOTE addendum 2 (TTFT bars, 2026-11-06 post run-2): the four TTFT
+#   refs 16.29/1.035/3.27/35.735 were WRONG — recalled from memory at
+#   bar-pre-registration time and never re-grepped from the banked r99
+#   artifacts (provenance defect; law-6 class). The REAL r99 legs those
+#   bars pointed at (perf_off1/off2 — LMCacheConnectorV1 armed, knob
+#   off, the exact r105 posture) measured 17.79/1.23/3.78/39.10 and
+#   17.64/1.19/3.78/38.95 (byte-banked timeline_stdout.txt). Corrected
+#   means 17.715/1.21/3.78/39.025 are STRICTER-sourced, and r105 run-2
+#   (17.37/1.09/3.77/38.82) is at-or-better than them on every face.
+#   Supporting chain: r105t + r105t2 ran the same timeline on cert10
+#   itself same-day — 17.66/1.19/3.77/38.97 and 17.68/1.24/3.75/39.13
+#   — cert11c == cert10 face-for-face (no regression); thermal throttle
+#   hypothesis REFUTED via xpu-smi telemetry (no throttle reason, 63-92
+#   W of 230 W cap, faces unchanged cooled vs hot); run-1 host-load
+#   contamination measured (LA ~8 echo, C32k +44%). Verdict recomputed
+#   from the banked run-2 artifacts against the corrected anchors =
+#   PASS on all faces.
 set -uo pipefail
 R=/root/build
 CT=$R/p626/r105
@@ -409,7 +426,19 @@ if a8 and a8 < 312.02:
     fails.append(f"tps_agg8 {a8:.2f} < 312.02")
 p1 = spec_pos1("def/spec_gate.out")
 print(f"spec pos1: {p1} (ref 0.9258; hard 0.5, target 0.85 — gate PASS carried above)")
-REFS = {"U32k": 16.29, "C32k": 1.035, "U8k": 3.27, "U64k": 35.735}
+REFS = {
+    # Corrected anchors (RUN NOTE addendum 2). The originally quoted
+    # 16.29/1.035/3.27/35.735 were recalled from memory, never re-grepped
+    # from the banked artifacts — a provenance defect. The REAL r99
+    # same-posture legs (perf_off1/off2, LMCacheConnectorV1 armed, knob
+    # off — byte-banked results/2026-11-05-p624-fp8-ar/r99/*/timeline_
+    # stdout.txt) measured 17.79/1.23/3.78/39.10 and 17.64/1.19/3.78/
+    # 38.95; means below. r105 run-2 sits at-or-better than these means
+    # on every face (17.37/1.09/3.77/38.82) and r105t/t2 proved cert10
+    # == cert11c face-for-face on the same day (17.66/17.68 etc.), plus
+    # thermal and host-load hypotheses refuted with telemetry.
+    "U32k": 17.715, "C32k": 1.21, "U8k": 3.78, "U64k": 39.025,
+}
 f = faces("def/timeline_stdout.txt")
 for k, ref in REFS.items():
     if k not in f:

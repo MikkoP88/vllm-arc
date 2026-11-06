@@ -118,7 +118,46 @@ r105 guard the default lane).
 - `phaseB/{rhmxfp4,qurk}/` — serve.log (boot telemetry), serve_end.log
   (end-of-leg), g1_probes.txt, spec_gate.txt, timeline.json +
   timeline_stdout.txt (p65 faces + bystander gaps).
-- Host-address redaction: `results/REDACTION-2026-11-06-p626.md`.
+- `r105/` — cert11 engine battery. `r105-contaminated/` = run-1
+  (FAIL, void: a concurrent 30 GB HF-xet model download ran on the
+  host through the window — C32k +44%, all TTFT faces inflated,
+  bystander decode 53.7 ms at ref; archived for the record). Clean
+  top level = run-2 (quiescence-guarded): all steady-state faces AT
+  cert10 refs, LONGRETURN PASS, ERROR=0, `verdict.txt` (raw FAIL vs
+  the wrong anchors) + `verdict_recomputed.txt` (**PASS** vs the
+  provenance-corrected anchors — see below).
+- `r105t/`, `r105t2/` — cert10-today discriminator legs (same
+  timeline harness, same day/host). `r105t/def` artifacts belong to
+  the t2 pass (shared script CT — both runs' faces are in their
+  respective run logs). Findings: cert10 == cert11c face-for-face
+  (17.66/1.19/3.77/38.97 vs 17.37/1.09/3.77/38.82); thermal-throttle
+  hypothesis REFUTED with xpu-smi telemetry (no throttle reason,
+  63–92 W of 230 W cap, faces identical hot vs cooled).
+- `r105t-void/` — attempt-1 (killed mid-bench by an operator pkill
+  that matched the script itself; trap correctly restored W14; the
+  orphan warm bench banked pure HTTP 500s — void).
+- Host-address redaction: `results/REDACTION-2026-11-06-p626.md`
+  (r105 trees: 16 rig + 14 client +194 bytes; r105t trees: 1 rig +
+  7 client; residual 0 everywhere).
+
+## r105 anchor correction (gate defect, disclosed)
+
+The four TTFT bars pre-registered in r105 (16.29/1.035/3.27/35.735,
+"r99 off1/off2 means") were **quoted from memory and never re-grepped
+from the banked artifacts**. The actual r99 same-posture legs
+(`results/2026-11-05-p624-fp8-ar/r99/perf_off{1,2}/timeline_stdout.txt`,
+LMCacheConnectorV1 armed, knob off — the exact r105 posture) measured
+17.79/1.23/3.78/39.10 and 17.64/1.19/3.78/38.95. Corrected means:
+17.715/1.21/3.78/39.025. Against them, r105 run-2 = **PASS on every
+face** (TTFT −0.3…−9.9% vs means; run7n agg 300.48 vs bar 285.37;
+solo200 84.55 vs 80.28; tps agg8 326.43 vs 312.02; spec pos1 0.9258;
+LONGRETURN PASS; ERROR=0) — see `r105/verdict_recomputed.txt`,
+regenerable mechanically from the banked run-2 artifacts. The
+correction is an anchor-provenance fix, not a bar relaxation: the
+corrected anchors are byte-banked and grep-cited; the chain that
+caught it (run-1 contamination → run-2 clean → same-day cert10
+discriminator → thermal telemetry → artifact re-grep) is itself the
+evidence law working as designed.
 
 ## Verdict
 
