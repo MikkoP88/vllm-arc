@@ -57,7 +57,43 @@ history, r98/r99/r100 evidence dirs).
 Patch applies with `patch -p1` at the SUPERPROJECT root (submodule files
 are plain files in the work tree).
 
-| `arc-fp8-probe.patch` | **Diagnostic only — NEVER enters a cert image.** 4 files: the one-shot IPC wire-rate probe (`CCL_SYCL_ALLREDUCE_FP8_PROBE=1`) inside `allreduce_large_fp8_ring` before the first algorithm run — remote stores at 4/8/16 B widths, remote loads at the same widths, concurrent rd+wr, local write/read references; 5 warm + 20 timed reps over the REAL peer IPC mapping; loads accumulate into device scratch with a never-taken store (elision-proof). The r100 decision instrument. |
+## res-scale invariant — precise domain (audit 2026-11-06)
+
+`res_scale = 2*max(s_local, s_peer)` exists for TWO reasons; only the
+first is stated in the patch header:
+
+1. **Cross-rank agreement (the load-bearing one):** each output chunk is
+   quantized by exactly ONE rank and dequantized by both (producer
+   `dst1`, consumer K5) — so both ranks must derive the bit-identical
+   res. `s_local` = my OUTGOING-half amax, `s_peer` = the peer's
+   published outgoing-half amax; the max over the same two numbers is
+   symmetric, so both ranks agree by construction.
+2. **Magnitude bound (the imprecise one):** the sum each rank quantizes
+   is `my KEPT half (raw fp16) + peer's outgoing half (dequantized)`.
+   The bound `448*res ≥ |a+b|` holds while each rank's KEPT-half amax
+   stays within the envelope of the two outgoing amaxes — if a kept
+   half's max exceeded ≈2× both outgoing maxes, those elements would
+   saturate (clip) at `±448*res`. No gate could expose this by
+   construction: the offline twin (fp8_noise_sim.py) models the same
+   outgoing-half law, and every gate (r97 randn, r98/r99 real-model
+   batteries — LONG-RETURN, integrity, determinism, byte-identical
+   classes) ran halves that are statistically homogeneous at the
+   ≥1.9M-element sizes the min-count law admits.
+
+**If this patch is ever generalized** (other models, TP4+, or a
+distribution with per-half outliers): the one-pass fix is amax over the
+FULL send buffer instead of the outgoing half — `res = 2*max(fullA,
+fullB)` keeps the symmetric agreement AND covers every half pairing at
+identical K1 cost (K2 still needs the outgoing half's own amax for its
+mul, so K1 then produces two atomics). Until measured otherwise on the
+target workload, v4's bound is valid and v4 stays FINAL.
+
+**Frozen-artifact law (audit ruling):** gated + manifested patch files
+are never edited after the fact — their sha256s ARE the evidence chain
+(v4 `effe9a27…` in three places, probe `cd66f238…` in the manifests).
+Corrections and clarifications land here, in the explanation layer.
+
+| `arc-fp8-probe.patch` | **Diagnostic only — NEVER enters a cert image.** 4 files: the one-shot IPC wire-rate probe (`CCL_SYCL_ALLREDUCE_FP8_PROBE=1`) inside `allreduce_large_fp8_ring` before the first algorithm run — remote stores at 4/8/16 B widths, remote loads at the same widths, concurrent rd+wr, local write/read references; 5 warm + 20 timed reps over the REAL peer IPC mapping; loads accumulate into device scratch with a never-taken store (elision-proof). The r100 decision instrument. sha256 `cd66f2385f4693567f2348747365a8b82d927475d0bc0e09997264e7ba0aec4c` (= the as-built rig file; the tracked copy was reconciled to these exact bytes 2026-11-06 after a trailing-newline delta broke sha reproduction — audit finding 1, VERDICT patch-audit section). |
 
 ## Runtime knobs (silent-off; serve chain sets nothing by default)
 

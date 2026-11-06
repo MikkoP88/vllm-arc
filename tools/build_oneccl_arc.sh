@@ -1,8 +1,11 @@
 #!/bin/bash
 # SPDX-License-Identifier: Apache-2.0
 # build_oneccl_arc.sh — P6.24: same-version oneCCL 2022.0.0 rebuild on the
-# rig (mode stock = phase-0 fidelity build; mode arc = fp8 patch applied).
-# Driven from the RIG HOST:  bash tools/build_oneccl_arc.sh stock|arc
+# rig. Three modes (patch state machine, marker-proven both directions):
+#   stock = phase-0 fidelity build (pristine tracked tree)
+#   arc   = v4 fp8 patch (the shipped overlay product)
+#   probe = v4 + one-shot wire-rate probe patch (diagnostic only)
+# Driven from the RIG HOST:  bash tools/build_oneccl_arc.sh stock|arc|probe
 #
 # Pairing law (torch 2.13.0+xpu pins oneccl==2022.0.0 EXACTLY; same-version
 # rebuild ONLY — identical tag/C-API/sonames/sycl-rt generation; never
@@ -102,7 +105,9 @@ docker start "$BUILDER" >/dev/null 2>&1 || true
 # --- 4. build inside the builder ------------------------------------------
 # DLE image cmake is 3.22 and has no pip; oneCCL 2022.0.0 requires >=3.24 —
 # bootstrap the pinned Kitware binary (~3.31: cmake 4 removes old policies).
-docker exec "$BUILDER" bash -eux -c '
+# (audit 2026-11-06: this step gained the pipefail the lane banked twice —
+# a silent curl|tar failure previously surfaced only at the missing binary)
+docker exec "$BUILDER" bash -euxo pipefail -c '
   [ -x /opt/cmake/bin/cmake ] || {
     curl -sL https://github.com/Kitware/CMake/releases/download/v3.31.6/cmake-3.31.6-linux-x86_64.tar.gz \
       | tar xz -C /opt
