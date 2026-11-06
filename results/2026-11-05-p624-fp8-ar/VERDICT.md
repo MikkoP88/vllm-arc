@@ -1,3 +1,79 @@
+# P6.24 patch audit — in-line-best-practice review of the landed lane (2026-11-06)
+
+Post-release deep audit of everything in the P6.24 squash (`5bc65482`):
+patch format/content, env registration, build script, Dockerfile, docs
+parity, and the sha evidence chain — against upstream oneCCL conventions,
+the repo's external_patches pattern (lmcache/vxk lineage), and law 6.
+
+## Verified clean
+
+- v4 patch sha chain: tracked == VERDICT r97 == rig kit == manifest
+  (`effe9a27…`); probe manifest row reconciled (below). Series ships
+  only the arc patch; the probe patch is deliberately outside it.
+- Env registration mirrors the upstream `sycl_allreduce_*` pattern in
+  all three files (ctor init, `env_2_type` parse, `LOG_INFO_PROFILED`),
+  doxygen headers in upstream `vars_experimental.hpp` format; defaults
+  0 / 2097152 / 0 match CONFIGURATION/envs/README byte-for-byte.
+- Dispatch guard placement + `if constexpr` half-specialization +
+  `LOG_DEBUG` are stock-style; graph-capture safe (no host reads unless
+  STATS, the declared perturbation).
+- Kernel patterns: grid-stride register-max amax with one
+  `atomic_ref`/thread; queue-ordered scale dependencies; barrier-ordered
+  scale exchange; the symmetric `2*max` is what makes both ranks derive
+  the IDENTICAL res (required — the consumer's K5 dequant must match the
+  producer's K4 scale); slot geometry collision-free (16-byte scale area
+  reserved out of both halves' data regions); u32-packed remote stores
+  per the banked sector law.
+- Build script: pins hard-fail-verified, marker-proven patch state
+  machine BOTH directions, stable-root mount + canonical artifact paths
+  with the banked lessons in comments; `set -eo pipefail`.
+- `cert10.Dockerfile`: external_patches copy == banked r99 evidence copy
+  (byte-identical); build gates on `LIB_SHA`.
+- r98 runner two-copy convention: `tools/ar/` = living corrected copy
+  (RUN NOTE documents the two analysis-layer fixes), `results/…/r98/` =
+  frozen as-run. All patches/scripts CRLF-clean.
+- Docs parity (config-parity standard): knob table, envs naming map,
+  README fork-adds row, tag paragraph — all match the implementation and
+  the banked evidence numbers.
+
+## Findings + dispositions
+
+1. **Probe-patch sha mismatch — FIXED.** The tracked
+   `arc-fp8-probe.patch` differed from the as-built rig file by exactly
+   one trailing newline at EOF (content otherwise byte-identical), so
+   its sha (`ac2afc01…`) could not reproduce the manifest/VERDICT row
+   (`cd66f238…`). Tracked file reconciled to the as-built bytes
+   (2026-11-06); sha now `cd66f238…` everywhere. No rebuild warranted —
+   zero content delta.
+2. **res-scale invariant documented precisely (docs-only, wire code
+   BYTE-FROZEN).** The v4 header's "res_scale = 2*max(s_local,s_peer)
+   bounds |a+b| by construction" is imprecise: `s_local`/`s_peer` are
+   the two OUTGOING-half amaxes, so the bound covers the summed terms
+   only while each rank's KEPT-half amax stays within the same envelope
+   (saturation-clip possible if a kept half's max exceeded ≈2× the
+   outgoing maxes). No gate could expose this by construction — the
+   offline twin (fp8_noise_sim.py:104-118) models the same outgoing-half
+   law, and every r97/r98/r99 gate ran statistically symmetric halves
+   (≥1.9M elements per half; r98 full task battery + r99 release battery
+   green on real model data). Full ruling + the v5 formula (full-buffer
+   amax, same single pass, preserves cross-rank agreement) recorded in
+   `external_patches/oneccl/README.md`. The patch FILES stay
+   byte-frozen: their shas are the evidence chain (v4 in three places,
+   probe in the manifests); the README is the living explanation layer.
+3. **Build-script polish — FIXED.** Header comment predating probe mode
+   updated to the three modes; the cmake-bootstrap step gained the
+   pipefail the lane itself banked twice (curl|tar pipe). Cosmetic nit
+   dispositioned no-action: a doubled quote in the frozen
+   `vars_experimental.hpp` doc comment (upstream-format nit, inside the
+   byte-frozen patch).
+
+Ruling (frozen-artifact law): shipped patches, once gated and
+manifested, are never edited for cosmetics or doc-clarity — corrections
+land in the README/VERDICT explanation layer so the sha chain stays
+reproducible.
+
+---
+
 # P6.24 r100 — bottleneck scan: ALL DOORS CLOSED, v4 stands (2026-11-05)
 
 Owner directive: beat the cert9 baseline on every face with the highest
