@@ -1,0 +1,41 @@
+=== warmup (first-traffic law; warms p12b interlock + first graphs)
+prompt sizes: U32k=31805 U64k=63784 U8k=7961 tok
+raw -> /root/build/p626/phaseB/qurk/timeline.json (6135 chunks, 68 events)
+  text[warmup] 20ch: 'Counting from 1 to 1'
+  text[U32k] 135ch: 'Based on the notes provided, here is the information requested:\n\n**Note 0:**\n*   **Stage:** 9476\n*  '
+  text[C32k] 138ch: 'Based on the data provided, here is the summary of the measurements:\n\n**Note 0:**\n*   **Stage:** 947'
+  text[U8k] 170ch: 'Based on the provided notes, here is the data extracted and organized into a table for clarity:\n\n| N'
+  text[U64k] 168ch: 'Based on the provided notes, here is the information for each requested stage:\n\n*   **Stage 8622:** '
+  text[byst1] 240ch: 'Counting from 1 to 1000 is a long list, but here it is:\n\n1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, '
+  text[byst0] 240ch: 'Counting from 1 to 1000 would result in a very long list. Here is the sequence:\n\n1, 2, 3, 4, 5, 6, 7'
+  text[byst2] 240ch: 'Counting from 1 to 1000 would result in a very long list. Here is the sequence:\n\n1, 2, 3, 4, 5, 6, 7'
+  text[byst3] 240ch: 'Counting from 1 to 1000 would result in a very long list. Here is the sequence:\n\n1, 2, 3, 4, 5, 6, 7'
+  text[byst4] 240ch: 'Counting from 1 to 1000 would result in a very long list. Here is the sequence:\n\n1, 2, 3, 4, 5, 6, 7'
+  text[byst5] 240ch: 'Counting from 1 to 1000 would result in a very long list. Here is the sequence:\n\n1, 2, 3, 4, 5, 6, 7'
+  text[bys20] 240ch: 'Counting from 1 to 1000 would result in a very long list. Here is the sequence:\n\n1, 2, 3, 4, 5, 6, 7'
+  text[bys21] 240ch: 'Counting from 1 to 1000 would result in a very long list. Here is the sequence:\n\n1, 2, 3, 4, 5, 6, 7'
+  text[bys22] 240ch: 'Counting from 1 to 1000 would result in a very long list. Here is the sequence:\n\n1, 2, 3, 4, 5, 6, 7'
+  text[bys24] 240ch: 'Counting from 1 to 1000 would result in a very long list. Here is the sequence:\n\n1, 2, 3, 4, 5, 6, 7'
+  text[bys23] 240ch: 'Counting from 1 to 1000 would result in a very long list. Here is the sequence:\n\n1, 2, 3, 4, 5, 6, 7'
+  text[bys25] 240ch: 'Counting from 1 to 1000 would result in a very long list. Here is the sequence:\n\n1, 2, 3, 4, 5, 6, 7'
+
+=== long-stream faces (perf_counter, wave-relative)
+  U32k: TTFT=  32.28s total=  34.88s (start @ wave+  25.0s)
+  C32k: TTFT=   3.84s total=   5.11s (start @ wave+  55.0s)
+  U8k: TTFT=   7.73s total=   9.31s (start @ wave+  70.0s)
+  U64k: TTFT=  70.61s total=  72.64s (start @ wave+  85.0s)
+
+=== bystander inter-chunk gaps (12 streams, greedy, k3)
+  baseline: n=1956 p50=   68.8ms p95=   69.9ms
+  window                 n    p50 ms    p95 ms    max ms #>2xb95  stall_s
+  W_base              1956      68.8      69.9     123.2       0     0.00
+  W_U32k_start          65    1507.0    7872.9    7873.2      42   198.67
+  W_U32k_end           390     103.8     106.3     239.7      12     1.74
+  W_C32k_start(cached)    90      78.0    1563.4    1563.5      24    25.49
+  W_C32k_end           408     103.8     105.6     239.7       6     1.02
+  W_U8k_start          156     107.1    5937.5    5938.3      36    89.90
+  W_U8k_end            456     103.3     107.9     108.8       0     0.00
+  W_U64k_start         264     128.2    8929.5    9262.3     120   834.31
+  W_U64k_end           432     104.0     128.4     178.1      12     1.31
+
+P65_CAPTURE: DONE

@@ -1,0 +1,41 @@
+=== warmup (first-traffic law; warms p12b interlock + first graphs)
+prompt sizes: U32k=31805 U64k=63784 U8k=7961 tok
+raw -> /root/build/p626/phaseB/rhmxfp4/timeline.json (6145 chunks, 68 events)
+  text[warmup] 8ch: '1, 2, 3,'
+  text[U32k] 169ch: 'Based on the notes provided, here are the stages and their corresponding loads that were recorded by'
+  text[C32k] 169ch: 'Based on the notes provided, here is the analysis of the data:\n\n**1. Identification of Specific Data'
+  text[U8k] 171ch: 'Based on the notes provided, here is the data extracted and organized into a table for clarity.\n\n| N'
+  text[byst1] 240ch: '1, 2, 3, 4, 5, 6, 7, 8, 9, 10,\n11, 12, 13, 14, 15, 16, 17, 18, 19, 20,\n21, 22, 23, 24, 25, 26, 27, 2'
+  text[byst2] 240ch: '1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 2'
+  text[byst5] 240ch: '1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 2'
+  text[byst0] 240ch: '1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 2'
+  text[byst4] 240ch: '1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 2'
+  text[byst3] 240ch: 'Counting from 1 to 1000 is a straightforward task, but listing all 1,000 numbers in a single respons'
+  text[U64k] 151ch: 'To find the answer, we need to identify the note where **sensor 2216** recorded a measurement.\n\n1.  '
+  text[bys20] 240ch: '1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 2'
+  text[bys21] 240ch: '1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 2'
+  text[bys22] 240ch: '1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 2'
+  text[bys23] 240ch: '1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 2'
+  text[bys24] 240ch: '1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 2'
+  text[bys25] 240ch: '1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 2'
+
+=== long-stream faces (perf_counter, wave-relative)
+  U32k: TTFT=  29.01s total=  31.68s (start @ wave+  25.0s)
+  C32k: TTFT=   1.68s total=   3.38s (start @ wave+  55.0s)
+  U8k: TTFT=   7.37s total=   8.76s (start @ wave+  70.0s)
+  U64k: TTFT=  62.46s total=  63.99s (start @ wave+  85.0s)
+
+=== bystander inter-chunk gaps (12 streams, greedy, k3)
+  baseline: n=2034 p50=   64.7ms p95=   65.8ms
+  window                 n    p50 ms    p95 ms    max ms #>2xb95  stall_s
+  W_base              2034      64.7      65.8     574.0       6     3.06
+  W_U32k_start         142      69.9    6628.0    6959.3      36   170.30
+  W_U32k_end           216      69.4     573.9    1489.3      12    11.59
+  W_C32k_start(cached)    96      70.2    1484.5    1489.3       6     8.53
+  W_C32k_end           326      77.0     107.9     574.3      12     4.06
+  W_U8k_start          156     100.3    5143.6    5145.4      36    86.41
+  W_U8k_end            492      96.9     100.4     101.2       0     0.00
+  W_U64k_start         172     131.4    7956.9    8287.3      79   438.48
+  W_U64k_end           330      65.0      88.5     324.0      12     2.02
+
+P65_CAPTURE: DONE

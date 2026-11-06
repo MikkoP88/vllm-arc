@@ -1,0 +1,6 @@
+[factual] finish=length tok=24
+  'We need answer user\'s request: "Say the number seven in words, then stop." Need final only "seven"|'
+[reason] finish=length tok=96
+  "We need answer user's simple math. Need compute. Train1 leaves 3pm speed 60. Train2 leaves 4pm speed 90 same direction. Let t hours after 3pm. First distance =60t. Second distance =90(t-1) for t>=1. Catch when 60t=90(t-1) =>60t=90t-90 =>30t=90 =>|"
+[code] finish=length tok=64
+  'We need answer user: "Write a Python one-liner that reverses a string s. Output only the code." Need output only code. Need final only code. Could be print(s[::-1])? They ask reverses a string s. One-liner. Output only code. Likely `print(s[::-1|'
