@@ -33,6 +33,18 @@
 #   ARC_MNBT    --max-num-batched-tokens (default 8192, D champion)
 #   ARC_MAXSEQS --max-num-seqs (default 64, D champion)
 #   ARC_PORT    serve port (default 8000)
+#   ARC_MODEL   host model dir mounted at /models/target (default
+#               /models/qwen3.8-27b-fp8 — the certified incumbent). P6.26:
+#               mxfp4 legs point this at their staged checkpoints. Changing
+#               it force-recreates the container (mount is part of the
+#               freshness law below — a stale /models/target silently serves
+#               the wrong weights).
+#   ARC_SERVED  --served-model-name (default qwen3.8-27b-fp8)
+#   ARC_QUANT   --quantization value (default fp8 = the incumbent's native
+#               method). EMPTY STRING = omit the flag entirely so the
+#               checkpoint's own quantization_config drives resolution
+#               (P6.26 mxfp4 legs: compressed-tensors / quark must come
+#               from the checkpoint, not a CLI override).
 #   ARC_FP8     0 (default) = stock allreduce — the certified posture | 1 =
 #               export CCL_SYCL_ALLREDUCE_FP8=1: the P6.24 cert10 oneCCL
 #               overlay opt-in (e4m3-wire large-ring AR — 1.65x at the
@@ -71,6 +83,11 @@ ARC_GMU=${ARC_GMU:-0.8}
 ARC_MNBT=${ARC_MNBT:-8192}
 ARC_MAXSEQS=${ARC_MAXSEQS:-64}
 ARC_PORT=${ARC_PORT:-8000}
+ARC_MODEL=${ARC_MODEL:-/models/qwen3.8-27b-fp8}
+ARC_SERVED=${ARC_SERVED:-qwen3.8-27b-fp8}
+# NOTE: unset-only default (`-`, not `:-`) — an explicitly EMPTY ARC_QUANT is
+# the config-driven posture (P6.26) and must not collapse to fp8.
+ARC_QUANT=${ARC_QUANT-fp8}
 ARC_FP8=${ARC_FP8:-0}
 ARC_SPEC_METHOD=${ARC_SPEC_METHOD:-}
 RIG=/root/build
@@ -105,7 +122,11 @@ esac
 # differs from the requested one.
 WANT_IMG_ID=$(docker image inspect "$ARC_IMAGE" --format '{{.Id}}') || {
   echo "REFUSE: image $ARC_IMAGE not present" >&2; exit 2; }
+# Model-mount freshness (P6.26): the /models/target bind source is part of
+# the container identity — a container built for another ARC_MODEL serves
+# the wrong weights just as silently as a stale image does.
 HAVE_IMG_ID=$(docker inspect "$ARC_NAME" --format '{{.Image}}' 2>/dev/null || true)
+HAVE_MODEL_SRC=$(docker inspect "$ARC_NAME" --format '{{range .Mounts}}{{if eq .Destination "/models/target"}}{{.Source}}{{end}}{{end}}' 2>/dev/null || true)
 # Chat template (OPTIONAL, in-repo copy at assets/chat_template_qwen38_high.jinja):
 # without it the engine uses the checkpoint's own template — default xhigh
 # thinking is identical; only OpenAI-style reasoning_effort high/max/none
@@ -121,11 +142,11 @@ else
   echo "NOTE: chat template not found at $CT_SRC — serving WITHOUT it (optional"
   echo "OpenAI reasoning_effort compat; in-repo copy: assets/chat_template_qwen38_high.jinja)"
 fi
-if [ "$HAVE_IMG_ID" != "$WANT_IMG_ID" ]; then
+if [ "$HAVE_IMG_ID" != "$WANT_IMG_ID" ] || [ "$HAVE_MODEL_SRC" != "$ARC_MODEL" ]; then
   HAVE_SRC=${HAVE_IMG_ID:7:12}
   [ -n "$HAVE_SRC" ] || HAVE_SRC=none
   docker rm -f "$ARC_NAME" >/dev/null 2>&1 || true
-  echo "ARC_CONTAINER_FRESH image=$ARC_IMAGE id=${WANT_IMG_ID:7:12} (recreated from $HAVE_SRC)"
+  echo "ARC_CONTAINER_FRESH image=$ARC_IMAGE id=${WANT_IMG_ID:7:12} model=$ARC_MODEL (recreated from $HAVE_SRC)"
   # Boot block = the validated bytes (rig r46t_campaign.sh:54-63 /
   # r42/r46_soak.sh:33-42): --privileged --network host --ipc host,
   # --shm-size 64g, 5 mounts, and the 2 boot-layer -e vars of the 25-var
@@ -133,7 +154,7 @@ if [ "$HAVE_IMG_ID" != "$WANT_IMG_ID" ]; then
   docker run -d --name "$ARC_NAME" \
     --privileged --network host --ipc host \
     --shm-size 64g \
-    -v /models/qwen3.8-27b-fp8:/models/target:ro \
+    -v "$ARC_MODEL":/models/target:ro \
     $CT_MOUNT \
     -v /root/build/neo_cache:/root/.neo_cache \
     -v /root/build/triton_cache:/root/.triton_cache \
@@ -166,6 +187,16 @@ fi
 XG_FLAG=""
 if [ "${VLLM_ARC_XG_COMPACT:-0}" = 1 ]; then
   XG_FLAG="--structured-outputs-config '{\"backend\":\"xgrammar\",\"disable_any_whitespace\":true}'"
+fi
+
+# Quantization flag (P6.26): default emits the incumbent's certified
+# --quantization fp8. ARC_QUANT="" (empty) omits the flag so the
+# checkpoint's quantization_config resolves the method itself — required
+# for compressed-tensors/quark legs where a CLI override would either
+# misresolve or bypass the checkpoint's own scheme map.
+QUANT_FLAG="--quantization $ARC_QUANT"
+if [ -z "$ARC_QUANT" ]; then
+  QUANT_FLAG=""
 fi
 
 # P6.24 opt-in pass-through (cert10 overlay): default 0 emits NO env line —
@@ -240,7 +271,7 @@ export ARC_TRACE_FLIP=1
 $LMC_ENV
 $GRAPH_ENV
 exec /opt/venv/bin/vllm serve --model /models/target \
-  --served-model-name qwen3.8-27b-fp8 \
+  --served-model-name $ARC_SERVED \
   --tensor-parallel-size 2 \
   --gpu-memory-utilization $ARC_GMU \
   --max-model-len 262144 \
@@ -248,7 +279,7 @@ exec /opt/venv/bin/vllm serve --model /models/target \
   --max-num-seqs $ARC_MAXSEQS \
   --block-size 64 \
   --dtype float16 \
-  --quantization fp8 \
+  $QUANT_FLAG \
   --kv-cache-dtype fp8_e4m3 \
   --mamba-ssm-cache-dtype float16 \
   --mamba-cache-mode=align \
@@ -266,4 +297,4 @@ exec /opt/venv/bin/vllm serve --model /models/target \
   --port $ARC_PORT \
   > /root/serve_full.log 2>&1"
 
-echo "ARC_SERVE_LAUNCHED image=$ARC_IMAGE name=$ARC_NAME graph=$ARC_GRAPH spec=$ARC_SPEC gmu=$ARC_GMU mnbt=$ARC_MNBT seqs=$ARC_MAXSEQS fp8=$ARC_FP8 xgc=${VLLM_ARC_XG_COMPACT:-0} port=$ARC_PORT $(date +%H:%M:%S)"
+echo "ARC_SERVE_LAUNCHED image=$ARC_IMAGE name=$ARC_NAME model=$ARC_MODEL served=$ARC_SERVED quant=${ARC_QUANT:-<config-driven>} graph=$ARC_GRAPH spec=$ARC_SPEC gmu=$ARC_GMU mnbt=$ARC_MNBT seqs=$ARC_MAXSEQS fp8=$ARC_FP8 xgc=${VLLM_ARC_XG_COMPACT:-0} port=$ARC_PORT $(date +%H:%M:%S)"
