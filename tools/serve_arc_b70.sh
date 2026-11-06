@@ -33,6 +33,15 @@
 #   ARC_MNBT    --max-num-batched-tokens (default 8192, D champion)
 #   ARC_MAXSEQS --max-num-seqs (default 64, D champion)
 #   ARC_PORT    serve port (default 8000)
+#   ARC_FP8     0 (default) = stock allreduce — the certified posture | 1 =
+#               export CCL_SYCL_ALLREDUCE_FP8=1: the P6.24 cert10 oneCCL
+#               overlay opt-in (e4m3-wire large-ring AR — 1.65x at the
+#               dominant AR, every p65 TTFT face beats cert9; decode/spec
+#               neutral, task-level quality parity). No-op on images
+#               without the overlay (<= cert9). Default adds NO env line
+#               (the expansion slot expands blank; the served process env
+#               is byte-identical to the pre-knob script).
+#               Evidence: results/2026-11-05-p624-fp8-ar/ (r96-r100).
 #   VLLM_ARC_XG_COMPACT=1  appends --structured-outputs-config
 #               {"backend":"xgrammar","disable_any_whitespace":true}
 #               (port of D's V1227_XGCOMPACT; core-0.30 native surface —
@@ -62,6 +71,7 @@ ARC_GMU=${ARC_GMU:-0.8}
 ARC_MNBT=${ARC_MNBT:-8192}
 ARC_MAXSEQS=${ARC_MAXSEQS:-64}
 ARC_PORT=${ARC_PORT:-8000}
+ARC_FP8=${ARC_FP8:-0}
 ARC_SPEC_METHOD=${ARC_SPEC_METHOD:-}
 RIG=/root/build
 
@@ -158,6 +168,15 @@ if [ "${VLLM_ARC_XG_COMPACT:-0}" = 1 ]; then
   XG_FLAG="--structured-outputs-config '{\"backend\":\"xgrammar\",\"disable_any_whitespace\":true}'"
 fi
 
+# P6.24 opt-in pass-through (cert10 overlay): default 0 emits NO env line —
+# the certified default posture serves the stock allreduce (proven
+# FP8_ENV_SET=0 at the cert10 gate). =1 appends the single overlay env to
+# the exec block (read by the patched libccl at the first large AR).
+FP8_ENV=""
+if [ "$ARC_FP8" = 1 ]; then
+  FP8_ENV="export CCL_SYCL_ALLREDUCE_FP8=1;"
+fi
+
 # MTP (p30): spec config, CLI flag not env — rig /root/serve_lmc_v133.sh:53
 # parity. Depth = ARC_SPEC — default 3 (r46t recommendation), 4 = the certified
 # D value (plan Appendix F champion chain). The draft side resolves entirely inside
@@ -216,6 +235,7 @@ export CCL_SYCL_ALLGATHERV_SMALL_THRESHOLD=131072
 export CCL_SYCL_ALLGATHERV_SCALEOUT_THRESHOLD=1048576
 export CCL_SYCL_ALLGATHERV_TMP_BUF=0
 export CCL_SYCL_ALLREDUCE_TMP_BUF=0
+$FP8_ENV
 export ARC_TRACE_FLIP=1
 $LMC_ENV
 $GRAPH_ENV
@@ -246,4 +266,4 @@ exec /opt/venv/bin/vllm serve --model /models/target \
   --port $ARC_PORT \
   > /root/serve_full.log 2>&1"
 
-echo "ARC_SERVE_LAUNCHED image=$ARC_IMAGE name=$ARC_NAME graph=$ARC_GRAPH spec=$ARC_SPEC gmu=$ARC_GMU mnbt=$ARC_MNBT seqs=$ARC_MAXSEQS xgc=${VLLM_ARC_XG_COMPACT:-0} port=$ARC_PORT $(date +%H:%M:%S)"
+echo "ARC_SERVE_LAUNCHED image=$ARC_IMAGE name=$ARC_NAME graph=$ARC_GRAPH spec=$ARC_SPEC gmu=$ARC_GMU mnbt=$ARC_MNBT seqs=$ARC_MAXSEQS fp8=$ARC_FP8 xgc=${VLLM_ARC_XG_COMPACT:-0} port=$ARC_PORT $(date +%H:%M:%S)"

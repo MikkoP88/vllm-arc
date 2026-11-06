@@ -10,8 +10,9 @@ the current certified image `vllm-arc:v0.30.0-b70-cert10`, where
 byte-identical (exhaustive md5 walk at the cert10 gate) + the P6.24
 oneCCL fp8-wire overlay, which is **default-OFF** and adds NO certified
 serve-line var — opting into the e4m3-wire allreduce is the single
-uncertified-line addition `CCL_SYCL_ALLREDUCE_FP8=1` (knob table in
-`CONFIGURATION-arc.md`; proven env-absent at the cert10 gate with
+uncertified-line addition `CCL_SYCL_ALLREDUCE_FP8=1` (rows in the
+overlay table below + `CONFIGURATION-arc.md`'s knob table; proven
+env-absent at the cert10 gate with
 FP8_ENV_SET=0 and default-posture numbers cert9-identical);
 cert9 = cert6-era
 compute bytes under the certified fp8 line — the P6.19 TQ fix never
@@ -121,6 +122,22 @@ next engine-touching item.)
 | `VLLM_ARC_LMC_ASYNC_STORE` | `1` = ON (**cert9 certified default**, p620) | L3 off-thread store: the per-step lagged-flush dispatcher hands (pending, engine stream) to the `arc-lmc-store` daemon — device ops stay on the engine stream (in-order law), only the HOST wait (sync + D2H gathers + store insert) moves off the engine thread. r81 A/B/A/B (cert8 base): U32k TTFT −0.74 s mean, U64k −1.64 s, U8k −0.08 s (both interleave pairs), zero error delta; r82/r83 full gate batteries green incl. LONG-RETURN (zero-KV proof under async store). `=0` = the cert≤8 inline posture (kill switch) | lmcint `vllm_v1_adapter.py` `_lmc_flush_pending`/`_lmc_store_machinery` (p620 L3; L6 dispatch-late = same flush handed at wfs end) |
 | `VLLM_ARC_LMC_EVSYNC` | `1` | L1 flush-scoped event sync inside the store body (vs `torch.xpu.synchronize()`); r80: neutral ALONE — on the in-order XPU stream the event sits behind the just-submitted chunk forward; kept as the cheap default inside the L3 worker body | lmcint `vllm_v1_adapter.py` `_lmc_flush_body` (p620 L1) |
 
+**oneCCL overlay envs (cert10; consumed by the patched `libccl`, NOT by
+engine code — registered by `arc-fp8-allreduce.patch`, deliberately
+outside every namespace above; full knob rows with measured semantics in
+CONFIGURATION-arc.md's knob table, posture guide in its
+"Best-performance postures" section):**
+
+| var | default | semantics |
+|---|---|---|
+| `CCL_SYCL_ALLREDUCE_FP8` | `0` = OFF (**the certified default** — proven env-absent at the cert10 gate, FP8_ENV_SET=0) | `=1` opts the TP2 fp16 large ring into the e4m3-wire allreduce (1.65× at the dominant 76,677,120 B AR; every p65 TTFT face beats cert9 — r99 A/B/A/B; decode/spec neutral, r98 task-level quality parity; sub-`_MIN_COUNT` allreduces take the stock path — the `simple`-class byte-identity proof) |
+| `CCL_SYCL_ALLREDUCE_FP8_MIN_COUNT` | `2097152` elements/rank | only messages ≥ this count use the fp8 wire (measured crossover — fp8 is slower below ~2M elements: 0.353 vs 0.327 ms at 2.6 MB); leave at default |
+| `CCL_SYCL_ALLREDUCE_FP8_STATS` | `0` = silent-off | `=1` per-stage kernel telemetry to stderr — diagnostic only, declared perturbation (drains the pipeline between stages; numbers attribute cost, they do not race) |
+
+Host-script pass-through: `ARC_FP8=1` on `tools/serve_arc_b70.sh` appends
+the opt-in env to the exec block (default emits no line — the served
+process env is byte-identical to the pre-knob script).
+
 **Tuning ints** (default-ON logging/caps, donor v136 lineage names):
 
 | knob | default | meaning |
@@ -170,8 +187,10 @@ library, not the engine; registered by `arc-fp8-allreduce.patch`, all
 default-off, documented in `CONFIGURATION-arc.md`'s knob table),
 `NN-category/pNN-slug` patch dirs,
 `feat/arc-pNN-<slug>` branches, `vllm-arc:v0.30.0-b70[-pNN]` image tags,
-`ARC_*` **host-side script vars** (10, `tools/serve_arc_b70.sh` — a
-different layer from engine envs; the 10th is `ARC_SPEC_METHOD`, the
+`ARC_*` **host-side script vars** (11, `tools/serve_arc_b70.sh` — a
+different layer from engine envs; the 11th is `ARC_FP8`, the P6.24
+cert10 overlay pass-through: `1` appends the oneCCL opt-in env above,
+default emits no line; the 10th is `ARC_SPEC_METHOD`, the
 draft-sampling posture knob: P6.17 — unset = `probabilistic` = the
 CERTIFIED default (appends the upstream
 spec-config key `draft_sample_method`), `greedy` = the opt-out
