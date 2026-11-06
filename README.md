@@ -201,6 +201,8 @@ docker run -d --name arc-test --privileged --network host --ipc host \
 #    docs/CONFIGURATION-arc.md Step 2 (that file is canonical; per-var
 #    semantics there + docs/envs.md). The rig pattern: script + docker cp
 #    + exec; logs land in /root/serve_full.log.
+#    (Best-TTFT opt-in on cert10: add export CCL_SYCL_ALLREDUCE_FP8=1 to
+#    the env block — first bullet in Optional postures below.)
 cat > serve_k3.sh <<'EOF'
 #!/bin/bash
 # --- serve environment: 23 of the certified 25-var chain (2 set at boot) ---
@@ -272,6 +274,7 @@ curl -s -o /dev/null -w "%{http_code}\n" -m 5 http://127.0.0.1:8000/health
 Optional postures (all documented in full in
 [`docs/CONFIGURATION-arc.md`](docs/CONFIGURATION-arc.md)):
 
+- **Best TTFT / prefill — the recommended perf opt-in (P6.24, cert10)** — one env line in the serve block: `export CCL_SYCL_ALLREDUCE_FP8=1` (e4m3-wire allreduce on the dominant prefill ARs — every p65 TTFT face beats cert9: U8k −13 %, U64k −8.2 %, U32k −3.8 %, C32k −4.6 %; decode/spec neutral, task-level quality parity; silent no-op on images without the overlay; CONFIGURATION "Best-performance postures")
 - **OpenAI `reasoning_effort` compatibility** — mount + pass
   `assets/chat_template_qwen38_high.jinja` (high/max→xhigh aliasing,
   none→thinking-off; default path identical either way).

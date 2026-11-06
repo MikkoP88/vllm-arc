@@ -235,6 +235,39 @@ block:
 and to the serve line:
 `--chat-template /root/chat_template_qwen38_high.jinja`.
 
+### Best-performance postures (P6.24: opt-in — what to enable when)
+
+The Step 2 block above is the certified default posture — best steady
+sampled throughput, zero opt-ins. One measured lever improves a specific
+objective on top of it; each recipe is a single delta, each links to its
+full section, and **no two opt-ins were measured combined** (the
+mechanisms are orthogonal — wire format / chunk size — but un-measured
+combinations are unvalidated; one lever at a time, the matrix law):
+
+| Objective | Recipe (delta on Step 2) | Measured effect |
+|---|---|---|
+| **Best TTFT / prefill — the recommended perf opt-in** | add `export CCL_SYCL_ALLREDUCE_FP8=1` to the serve env block (**cert10 image only** — silent no-op on ≤ cert9, which lack the overlay) | e4m3-wire allreduce on the dominant prefill ARs: **U8k 3.76→3.27 s (−13 %), U64k 38.93→35.73 (−8.2 %), U32k 16.93→16.29 (−3.8 %), C32k 1.09→1.04 (−4.6 %)** — every p65 face beats the cert9 baseline (r99 A/B/A/B interleave); 1.65× at the dominant AR; decode/spec neutral (r98: tps 0.998–1.005, spec +0.008 ≪ 0.03 bar); task-level quality parity |
+| Best steady sampled throughput | **none — Step 2 as-is** (MTP k3 + probabilistic drafting is the measured optimum; the FP8 line changes nothing decode-side) | t0 agg 291.4–303.1 / solo 83.7–84.9 tok/s family |
+| Lowest bystander stalls (balanced) | `ARC_MNBT=4096` | stalls −49/−51 % at TTFT +8–13 %, KV +6.8 %, decode-neutral — "fp8 stall levers" below |
+| Deeper stall floor (≥48k prompts) | p65 profile: `--long-prefill-token-threshold 2048` + `LMC_DEFER_CHUNK_STORE=1` + `LMC_DEFER_MIN_TOKENS=40960` | U64k bystander p95/max 1580/1599 ms — below |
+| Max KV capacity (trades speed) | `--kv-cache-dtype turboquant_*` (all four presets servable since cert8) | up to 3.68× KV capacity, slower aggregate — "KV-cache dtype" below |
+
+FP8 line placement — anywhere in the serve env block (it is read by the
+**overlaid oneCCL** at the first large allreduce, not by engine code —
+so it also works as a `docker run -e`, but the env block next to the
+other `CCL_*` exports is the canonical spot):
+
+```bash
+# in serve_k3.sh, alongside the other CCL_* exports:
+export CCL_SYCL_ALLREDUCE_FP8=1
+```
+
+On the uniform boot interface: `ARC_FP8=1` (cert10 image; default
+unset = the certified posture, exec-block bytes unchanged). The
+companion knobs (`_MIN_COUNT` crossover, `_STATS` diagnostics) are
+diagnostics-class — leave them unset; rows in the knob table below.
+Evidence: `results/2026-11-05-p624-fp8-ar/` (r96–r100).
+
 ### MTP depth (num_speculative_tokens) — recommended 3
 
 Data-driven recommendation from the r46t campaign
@@ -597,7 +630,7 @@ fp8 default the levers below are the whole menu** (P6.17l guide):
 |---|---|---|
 | **Balanced — first choice (P6.15/P6.17l)** | `fp8_e4m3` + `ARC_MNBT=4096` | stalls −49/−51 % (bystander p95 2030/2587 ms vs 3986/5295 default), KV +6.8 %, TTFT +8–13 %, decode-neutral |
 | Long-context stall floor (p65 profile, P6.17l) | fp8 + `--long-prefill-token-threshold 2048` + `LMC_DEFER_CHUNK_STORE=1` + `LMC_DEFER_MIN_TOKENS=40960` | U64k TTFT 51.16 s, bystander p95/max 1580/1599 ms; all three together — never lower the min-tokens gate below 40960 (32k-class prompts regress +4.2 s) |
-| Max TTFT / max throughput | certified defaults as-is | fp8 true-default bystander p95 3.99/5.30 s (worst stall face, best sampled throughput) |
+| Max sampled throughput | certified defaults as-is | fp8 true-default bystander p95 3.99/5.30 s (worst stall face, best sampled throughput); **best TTFT overall on cert10 = the P6.24 FP8 opt-in** (one env line, prefill-only, decode-neutral — "Best-performance postures" above) |
 
 The 2026-11-03 completion set (B6–B8, `results/2026-11-02-p615-b{6,7,8}-*/`)
 had generalized the balanced row across the then-servable presets
@@ -719,7 +752,10 @@ concurrency 1.55x→1.27x) and U8k +10 % — a conditional long-prompt-only
 lever, **never** combined with `--long-prefill-token-threshold` (the
 threshold pins chunk size; only the KV loss would remain); see
 PERFORMANCE-arc "Prefill anatomy"), `ARC_MAXSEQS` (64), `ARC_PORT`
-(8000).
+(8000), `ARC_FP8` (0 = the certified stock allreduce; `1` = the P6.24
+cert10 overlay opt-in — appends `export CCL_SYCL_ALLREDUCE_FP8=1` to
+the exec env, "Best-performance postures" above; no-op on images
+without the overlay; default emits no env line).
 
 ## Posture laws (never change in production)
 
