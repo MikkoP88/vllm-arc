@@ -60,6 +60,24 @@
 #   final image = r105b. r105 keeps running unchanged as the engine
 #   battery: its [1] bars/verdict apply to the platform.py content
 #   either construction serves.
+# RUN NOTE addendum (run-1 [1] verdict, 09:40:53): FAIL carried SIX
+# faces — decomposed:
+#   - run7n_t0 "0.00 < 285.37": VERDICT-PARSER DEFECT (re.match anchored
+#     at line start; the battery line is "agg4x256#2 wall=..s
+#     aggregate=294.76"). Measured 294.76 >= 285.37 = PASS. Fixed to
+#     re.search for the rerun.
+#   - TTFT faces U32k +9.8% / C32k +44% / U8k +15% / U64k +9.2% with
+#     bystander decode p50 53.7ms == ref 53.5 and solo200/agg within
+#     1-2%: MEASUREMENT CONTAMINATION — a host model download (HF xet,
+#     CPU-heavy chunk hashing + disk, 30 GB for P6.27 staging) ran
+#     concurrently through the whole battery window. Host-side latency
+#     faces inflated, GPU-bound steady-state untouched. Run-1 [1] is
+#     INVALID as certification evidence (archived as r105-contaminated).
+#   - tps agg8 311.90 vs 312.02 (-0.04%): inside the same noise
+#     signature; re-measured clean in the rerun.
+#   RERUN: script now guards [1] on a quiescent host (snapshot_download
+#   pgrep + uptime banked per leg). run-1 evidence banked for the record
+#   under r105-contaminated/; run-2 is the certification basis.
 set -uo pipefail
 R=/root/build
 CT=$R/p626/r105
@@ -284,6 +302,16 @@ echo "PIP FREEZE diff lines vs cert10: $NFZ (expect 0)"
 echo "=== [1] release battery, default certified posture $(date +%H:%M:%S) ==="
 LEG=$CT/def
 mkdir -p $LEG
+# Contamination guard (r105 run-1 lesson: a concurrent host model download
+# (xet chunk hashing, CPU+disk) inflated every TTFT face +9..+44% while
+# GPU-bound decode stayed at ref — battery invalid, rerun clean). The rig
+# must be quiescent for certification measurement.
+if pgrep -f "snapshot_download" >/dev/null 2>&1; then
+  echo "FATAL: host model download in flight — quiesce the rig before [1]"
+  exit 1
+fi
+uptime > $LEG/host_load.txt
+cat $LEG/host_load.txt
 kill_arc
 ( cd $LEG && ARC_IMAGE=$IMG ARC_NAME=arc-test ARC_GRAPH=1 ARC_SPEC=3 ARC_LMC=1 ARC_FP8=0 \
     bash $R/serve_arc_b70.sh > boot.out 2>&1 )
@@ -337,7 +365,7 @@ import re
 
 def agg_tps(p):
     vals = [float(m.group(1)) for line in open(p, errors="replace")
-            for m in [re.match(r"aggregate=([0-9.]+)", line)] if m]
+            for m in [re.search(r"aggregate=([0-9.]+)", line)] if m]
     return vals
 
 def faces(p):
