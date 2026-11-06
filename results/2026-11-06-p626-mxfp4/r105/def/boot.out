@@ -1,0 +1,4 @@
+ARC_CONTAINER_FRESH image=vllm-arc:v0.30.0-b70-cert11c id=8e190308f900 model=/models/qwen3.8-27b-fp8 (recreated from none)
+c9adff9ad58da6b39cf283c1405696a8773d6bb7d42ae566bd8d24631dcbe742
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert11c name=arc-test model=/models/qwen3.8-27b-fp8 served=qwen3.8-27b-fp8 quant=fp8 graph=1 spec=3 gmu=0.8 mnbt=8192 seqs=64 fp8=0 xgc=0 port=8000 09:51:03
+HEALTH=OK after ~315s

@@ -1,0 +1,6 @@
+ 10:11:22 up 22:36,  4 users,  load average: 15.72, 15.39, 10.25
+=== R105T CERT10-TODAY TIMELINE START 2026-11-06 10:11:42 ===
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert10 name=arc-test model=/models/qwen3.8-27b-fp8 served=qwen3.8-27b-fp8 quant=fp8 graph=1 spec=3 gmu=0.8 mnbt=8192 seqs=64 fp8=0 xgc=0 port=8000 10:11:45
+HEALTH=OK after ~295s
+(APIServer pid=13) INFO 11-06 10:12:48 [platform.py:313] ArcXpuPlatform: Intel Arc Xe2 posture active (Intel(R) Graphics [0xe223]).
+(EngineCore pid=698) INFO 11-06 10:14:30 [kv_cache_utils.py:2395] XPU KV cache size: 398,363 tokens, Maximum concurrency for 262,144 tokens per request: 1.52x

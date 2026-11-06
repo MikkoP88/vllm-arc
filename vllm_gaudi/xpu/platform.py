@@ -264,6 +264,36 @@ class ArcXpuPlatform(XPUPlatform):
     checks that treat the platform as XPU keep working unchanged.
     """
 
+    # P6.26 (2026-11-06): quark joins the supported set. Core's XPU list
+    # omits it — upstream, the quark export format is AMD/ROCm-targeted —
+    # but the wheel's QuarkConfig routes its OCP-MX (W4A4 mxfp4) scheme
+    # through init_mxfp4_linear_kernel, the same platform-neutral entry
+    # CompressedTensorsW4A4Mxfp4 uses, which resolves to the native Xe2
+    # XPUMxFp4LinearKernel (fp4_gemm, vllm-xpu-kernels) on this platform —
+    # proven live by the RedHatAI MXFP4xFP8 phase-A boot ("Using
+    # XPUMxFp4LinearKernel for MXFP4 GEMM", results/2026-11-06-p626-mxfp4/).
+    # Without this override Platform.verify_quantization
+    # (platforms/interface.py:988) rejects quant_method=quark checkpoints
+    # before any scheme code runs. Same pattern as HpuPlatform's own
+    # supported_quantization (vllm_gaudi/platform.py).
+    supported_quantization = [*XPUPlatform.supported_quantization, "quark"]
+
+    @classmethod
+    def supports_mx(cls) -> bool:
+        # Truthful Xe2 capability statement (this class is only ever
+        # selected on BMG parts — the register gate checks the 0xE200
+        # device-id range): BMG computes MX types natively —
+        # float4_e2m1fn_x2 weights + e8m0 scales + the vxk fp4_gemm kernel
+        # the XPU MXFP4 linear table resolves to. Upstream platforms
+        # declare this the same way (rocm.py returns True on gfx95).
+        # Effect on this stack: quark_ocp_mx.py:73's "Simulated weight
+        # dequantization" warning (false on Arc — kernel selection is
+        # table-keyed, _POSSIBLE_MXFP4_KERNELS[XPU] = [XPUMxFp4LinearKernel],
+        # and never consults supports_mx; r102 recon, plan §P6.26) stops
+        # firing and the honest mismatch warning at :81 takes over for
+        # genuinely unsupported weight/act dtype combos.
+        return True
+
     @classmethod
     def check_and_update_config(cls, vllm_config: VllmConfig) -> None:
         # Core XPU posture first: XPU-graph env law, fusion-pass disabling,

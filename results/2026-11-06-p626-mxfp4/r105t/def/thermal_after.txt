@@ -1,0 +1,4 @@
+Timestamp, DeviceId, power.draw (W), power.draw.gpu (W), energy.consumed (J), power.limit (W), power.max_limit (W), temperature.gpu (C), temperature.memory (C), clocks.current.graphics (MHz), clocks.current.media (MHz), clocks.throttle.reason, clocks.max.graphics (MHz), clocks.max.media (MHz)
+11:00:50.126, 0, 92.65, 0.00, 262144.00, 230.00, N/A, 63.00, 74.00, 1950, 400, None, 2800, 1500
+Timestamp, DeviceId, power.draw (W), power.draw.gpu (W), energy.consumed (J), power.limit (W), power.max_limit (W), temperature.gpu (C), temperature.memory (C), clocks.current.graphics (MHz), clocks.current.media (MHz), clocks.throttle.reason, clocks.max.graphics (MHz), clocks.max.media (MHz)
+11:00:51.487, 1, 63.56, 0.00, 262144.00, 230.00, N/A, 62.00, 74.00, 1000, 400, None, 2800, 1500

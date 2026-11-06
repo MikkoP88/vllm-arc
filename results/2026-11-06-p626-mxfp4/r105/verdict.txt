@@ -1,0 +1,9 @@
+run7n t0 aggregate: [271.94, 300.48] (max 300.48) vs bar 285.37 (ref 300.39 steady, -5%)
+run7n solo200: [84.56, 84.55] (min 84.55) vs bar 80.28 (ref 84.51-84.52, -5%)
+tps agg8: 326.43 vs bar 312.02 (ref 328.44, -5%) — REPORT face
+spec pos1: 0.9258 (ref 0.9258; hard 0.5, target 0.85 — gate PASS carried above)
+U32k: TTFT=  17.37s vs ref  16.290s bar<=17.105 (+6.6%)
+C32k: TTFT=   1.09s vs ref   1.035s bar<=1.087 (+5.3%)
+U8k: TTFT=   3.77s vs ref   3.270s bar<=3.433 (+15.3%)
+U64k: TTFT=  38.82s vs ref  35.735s bar<=37.522 (+8.6%)
+R105_CERT11: FAIL ['U32k 17.37 > 17.105 (+5% block law)', 'C32k 1.09 > 1.087 (+5% block law)', 'U8k 3.77 > 3.433 (+5% block law)', 'U64k 38.82 > 37.522 (+5% block law)']

@@ -1,0 +1,7 @@
+=== bench_run7n (cert16s4 methodology replica) temp=0.0 thinking=off sampling=top_p0.95/top_k20/min_p0/pp0/rp1.0 ===
+agg4x256#1 wall=12.01s aggregate=85.24 tok/s ok_streams=4/4 [256tok/11.5s 256tok/12.0s 256tok/11.5s 256tok/11.6s]
+agg4x256#2 wall=3.45s aggregate=296.44 tok/s ok_streams=4/4 [256tok/3.5s 256tok/3.4s 256tok/3.4s 256tok/3.5s]
+solo200 n=200 dt=2.37s tps=84.54
+call_FAIL HTTPError: HTTP Error 500: Internal Server Error
+solo200 n=0 dt=0.01s tps=0.00
+BENCH_RUN7N_DONE
