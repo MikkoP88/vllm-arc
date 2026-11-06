@@ -112,7 +112,26 @@ grep -hE 'aggregate=|solo200' warm_run7n.out | head -4
 echo "loadavg at timeline start: $(cat /proc/loadavg)"
 
 echo "--- p65 TTFT face (cert10 today) $(date +%H:%M:%S) ---"
+# Thermal/power telemetry capture points (r105t2 cooldown leg): bank
+# device state around the faces to test the sustained-load throttle
+# hypothesis for the prefill-TTFT drift (decode at ref, prefill +6-15%).
+if command -v xpu-smi >/dev/null 2>&1; then
+  : > thermal_before.txt
+  for d in 0 1; do
+    xpu-smi dump --device $d --metrics POWER,TEMPERATURE,CLOCK --number 1 2>/dev/null | tail -2 >> thermal_before.txt || true
+  done
+  cat thermal_before.txt
+else
+  echo "xpu-smi absent" > thermal_before.txt
+fi
 python3 $R/p65/p65_timeline.py timeline.json > timeline_stdout.txt 2>&1 || echo "timeline exit=$?"
+if command -v xpu-smi >/dev/null 2>&1; then
+  : > thermal_after.txt
+  for d in 0 1; do
+    xpu-smi dump --device $d --metrics POWER,TEMPERATURE,CLOCK --number 1 2>/dev/null | tail -2 >> thermal_after.txt || true
+  done
+  tail -4 thermal_after.txt
+fi
 grep -A5 'long-stream faces' timeline_stdout.txt || tail -15 timeline_stdout.txt
 grep -A2 'bystander inter-chunk' timeline_stdout.txt | head -3
 docker exec arc-test sh -c 'echo ERROR=$(grep -c ERROR /root/serve_full.log); echo TRACEBACK=$(grep -c Traceback /root/serve_full.log)' > erraudit.txt 2>/dev/null || true
