@@ -1,0 +1,8 @@
+{
+ "label": "fp8",
+ "rank": 0,
+ "m": 7488,
+ "mode": "async",
+ "enqueue_ms_med": 0.263,
+ "verdict": "async-enqueue (overlap viable at the API level)"
+}

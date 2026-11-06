@@ -1,0 +1,12 @@
+{
+ "label": "fp8",
+ "rank": 0,
+ "m": 7488,
+ "mode": "coten",
+ "gemm_solo_ms": 9.204,
+ "ar_solo_ms": 4.598,
+ "gemm_conc_ms": 14.539,
+ "ar_conc_ms": 5.314,
+ "gemm_inflation": 1.58,
+ "ar_inflation": 1.156
+}

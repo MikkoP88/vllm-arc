@@ -1,0 +1,104 @@
+=== [05:45:53] mode=async label=fp8 ===
+
+*****************************************
+Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. 
+*****************************************
+2026:11:06-05:45:58:   75 |CCL_WARN| did not find MPI-launcher specific variables, switch to ATL/OFI, to force enable ATL/MPI set CCL_ATL_TRANSPORT=mpi
+2026:11:06-05:45:58:   75 |CCL_WARN| value of CCL_SYCL_ALLREDUCE_FP8 changed to be 1 (default:0)
+2026:11:06-05:45:58:   75 |CCL_WARN| value of CCL_SYCL_ALLGATHERV_SCALEOUT_THRESHOLD changed to be 1048576 (default:1073741824)
+2026:11:06-05:45:58:   75 |CCL_WARN| value of CCL_TOPO_P2P_ACCESS changed to be 1 (default:-1)
+2026:11:06-05:45:58:   75 |CCL_WARN| value of CCL_TOPO_FABRIC_VERTEX_CONNECTION_CHECK changed to be 0 (default:1)
+2026:11:06-05:45:58:   75 |CCL_WARN| could not get local_idx/count from environment variables, trying to get them from ATL
+2026:11:06-05:45:58:   76 |CCL_WARN| did not find MPI-launcher specific variables, switch to ATL/OFI, to force enable ATL/MPI set CCL_ATL_TRANSPORT=mpi
+2026:11:06-05:45:58:   76 |CCL_WARN| could not get local_idx/count from environment variables, trying to get them from ATL
+/opt/venv/lib/python3.12/site-packages/torch/distributed/c10d_logger.py:83: UserWarning: barrier(): using the device under current context. You can specify `device_id` in `init_process_group` to mute this warning.
+  return func(*args, **kwargs)
+{
+ "label": "fp8",
+ "rank": 0,
+ "m": 7488,
+ "mode": "async",
+ "enqueue_ms_med": 0.263,
+ "verdict": "async-enqueue (overlap viable at the API level)"
+}
+=== [05:46:01] mode=ar label=fp8 ===
+
+*****************************************
+Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. 
+*****************************************
+2026:11:06-05:46:06:  155 |CCL_WARN| did not find MPI-launcher specific variables, switch to ATL/OFI, to force enable ATL/MPI set CCL_ATL_TRANSPORT=mpi
+2026:11:06-05:46:06:  155 |CCL_WARN| value of CCL_SYCL_ALLREDUCE_FP8 changed to be 1 (default:0)
+2026:11:06-05:46:06:  155 |CCL_WARN| value of CCL_SYCL_ALLGATHERV_SCALEOUT_THRESHOLD changed to be 1048576 (default:1073741824)
+2026:11:06-05:46:06:  155 |CCL_WARN| value of CCL_TOPO_P2P_ACCESS changed to be 1 (default:-1)
+2026:11:06-05:46:06:  155 |CCL_WARN| value of CCL_TOPO_FABRIC_VERTEX_CONNECTION_CHECK changed to be 0 (default:1)
+2026:11:06-05:46:06:  155 |CCL_WARN| could not get local_idx/count from environment variables, trying to get them from ATL
+2026:11:06-05:46:06:  156 |CCL_WARN| did not find MPI-launcher specific variables, switch to ATL/OFI, to force enable ATL/MPI set CCL_ATL_TRANSPORT=mpi
+2026:11:06-05:46:06:  156 |CCL_WARN| could not get local_idx/count from environment variables, trying to get them from ATL
+/opt/venv/lib/python3.12/site-packages/torch/distributed/c10d_logger.py:83: UserWarning: barrier(): using the device under current context. You can specify `device_id` in `init_process_group` to mute this warning.
+  return func(*args, **kwargs)
+{
+ "label": "fp8",
+ "rank": 0,
+ "m": 7488,
+ "mode": "ar",
+ "ar_ms": 4.597
+}
+=== [05:46:08] mode=coten label=fp8 ===
+
+*****************************************
+Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. 
+*****************************************
+2026:11:06-05:46:14:  235 |CCL_WARN| did not find MPI-launcher specific variables, switch to ATL/OFI, to force enable ATL/MPI set CCL_ATL_TRANSPORT=mpi
+2026:11:06-05:46:14:  235 |CCL_WARN| value of CCL_SYCL_ALLREDUCE_FP8 changed to be 1 (default:0)
+2026:11:06-05:46:14:  235 |CCL_WARN| value of CCL_SYCL_ALLGATHERV_SCALEOUT_THRESHOLD changed to be 1048576 (default:1073741824)
+2026:11:06-05:46:14:  235 |CCL_WARN| value of CCL_TOPO_P2P_ACCESS changed to be 1 (default:-1)
+2026:11:06-05:46:14:  235 |CCL_WARN| value of CCL_TOPO_FABRIC_VERTEX_CONNECTION_CHECK changed to be 0 (default:1)
+2026:11:06-05:46:14:  235 |CCL_WARN| could not get local_idx/count from environment variables, trying to get them from ATL
+2026:11:06-05:46:14:  236 |CCL_WARN| did not find MPI-launcher specific variables, switch to ATL/OFI, to force enable ATL/MPI set CCL_ATL_TRANSPORT=mpi
+2026:11:06-05:46:14:  236 |CCL_WARN| could not get local_idx/count from environment variables, trying to get them from ATL
+/opt/venv/lib/python3.12/site-packages/torch/distributed/c10d_logger.py:83: UserWarning: barrier(): using the device under current context. You can specify `device_id` in `init_process_group` to mute this warning.
+  return func(*args, **kwargs)
+{
+ "label": "fp8",
+ "rank": 0,
+ "m": 7488,
+ "mode": "coten",
+ "gemm_solo_ms": 9.204,
+ "ar_solo_ms": 4.598,
+ "gemm_conc_ms": 14.539,
+ "ar_conc_ms": 5.314,
+ "gemm_inflation": 1.58,
+ "ar_inflation": 1.156
+}
+=== [05:46:16] mode=mock label=fp8 ===
+
+*****************************************
+Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. 
+*****************************************
+2026:11:06-05:46:24:  315 |CCL_WARN| did not find MPI-launcher specific variables, switch to ATL/OFI, to force enable ATL/MPI set CCL_ATL_TRANSPORT=mpi
+2026:11:06-05:46:24:  315 |CCL_WARN| value of CCL_SYCL_ALLREDUCE_FP8 changed to be 1 (default:0)
+2026:11:06-05:46:24:  315 |CCL_WARN| value of CCL_SYCL_ALLGATHERV_SCALEOUT_THRESHOLD changed to be 1048576 (default:1073741824)
+2026:11:06-05:46:24:  315 |CCL_WARN| value of CCL_TOPO_P2P_ACCESS changed to be 1 (default:-1)
+2026:11:06-05:46:24:  315 |CCL_WARN| value of CCL_TOPO_FABRIC_VERTEX_CONNECTION_CHECK changed to be 0 (default:1)
+2026:11:06-05:46:24:  315 |CCL_WARN| could not get local_idx/count from environment variables, trying to get them from ATL
+2026:11:06-05:46:24:  316 |CCL_WARN| did not find MPI-launcher specific variables, switch to ATL/OFI, to force enable ATL/MPI set CCL_ATL_TRANSPORT=mpi
+2026:11:06-05:46:24:  316 |CCL_WARN| could not get local_idx/count from environment variables, trying to get them from ATL
+/opt/venv/lib/python3.12/site-packages/torch/distributed/c10d_logger.py:83: UserWarning: barrier(): using the device under current context. You can specify `device_id` in `init_process_group` to mute this warning.
+  return func(*args, **kwargs)
+{
+ "label": "fp8",
+ "rank": 0,
+ "m": 7488,
+ "mode": "mock",
+ "serial_ms": 222.78,
+ "overlap_k2_ms": 232.17,
+ "overlap_k2_speedup": 0.96,
+ "overlap_k3_ms": 230.55,
+ "overlap_k3_speedup": 0.966,
+ "overlap_k4_ms": 235.83,
+ "overlap_k4_speedup": 0.945,
+ "best_k": 3,
+ "best_speedup": 0.966,
+ "gate_1p08": "FAIL",
+ "overlap_bitwise": false
+}

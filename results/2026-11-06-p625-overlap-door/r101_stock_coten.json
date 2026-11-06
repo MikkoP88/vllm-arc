@@ -1,0 +1,12 @@
+{
+ "label": "stock",
+ "rank": 0,
+ "m": 7488,
+ "mode": "coten",
+ "gemm_solo_ms": 9.013,
+ "ar_solo_ms": 7.8,
+ "gemm_conc_ms": 17.792,
+ "ar_conc_ms": 8.518,
+ "gemm_inflation": 1.974,
+ "ar_inflation": 1.092
+}

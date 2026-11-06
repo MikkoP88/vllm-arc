@@ -1,0 +1,31 @@
+{
+ "label": "stock",
+ "rank": 0,
+ "m": 7488,
+ "mode": "census",
+ "gemms": {
+  "qkv": {
+   "ms": 2.093,
+   "tflops": 150.1,
+   "pct_peak": 204.2
+  },
+  "o": {
+   "ms": 1.618,
+   "tflops": 145.5,
+   "pct_peak": 198.0
+  },
+  "gate_up": {
+   "ms": 9.002,
+   "tflops": 148.3,
+   "pct_peak": 201.7
+  },
+  "down": {
+   "ms": 4.46,
+   "tflops": 149.6,
+   "pct_peak": 203.6
+  }
+ },
+ "layer_gemm_ms": 17.173,
+ "layer_gemm_tfs": 148.6,
+ "pct_peak": 202.2
+}

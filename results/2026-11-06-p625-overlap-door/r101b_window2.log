@@ -1,0 +1,6 @@
+=== r101b window start 05:45:32 ===
+leg stock done: r101_stock_ar.json r101_stock_async.json r101_stock_census.json r101_stock_coten.json r101_stock_mock.json 
+leg fp8 done: r101_fp8_ar.json r101_fp8_async.json r101_fp8_coten.json r101_fp8_mock.json 
+=== r101b window end 05:46:34 ===
+--- summary ---
+r101b_overlap_bench.sh: line 65: warning: here-document at line 65 delimited by end-of-file (wanted `PY')
