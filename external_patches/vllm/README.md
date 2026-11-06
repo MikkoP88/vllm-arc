@@ -1,6 +1,18 @@
-# vllm — B70 prefill launch-config table for the triton unified-attention launcher
+# vllm — B70 prefill launch-config table + engine warmup gate for the triton unified-attention launcher
 
-## What
+Kit of two wheel patches (both mark-tagged, idempotent, `--audit` mode,
+`.arcxpubak` backup, stock wheel files — no source rebuild, staged pins
+stay pristine):
+
+- **patch #1 `patch_arc_xpu_attn_launcher.py`** → cert12: the per-platform
+  prefill launch-config table (this file's original content).
+- **patch #2 `patch_arc_xpu_warmup_gate.py`** → cert13: rank-serialized
+  boot warmup for every kernel point the table can produce — fixes the
+  engine wedge the table exposed (below).
+
+## Patch 1 — launch-config table (cert12)
+
+### What
 
 `patch_arc_xpu_attn_launcher.py` inserts a per-platform prefill
 launch-config table into the vllm wheel's
@@ -36,7 +48,73 @@ exactly what the sweep measured. TILE=64 at head 512 is infeasible on
 B70 (all T64@512 sweep points die pre-print — SM-side memory wall, the
 same LDS boundary class vllm#52585 documented for TILE=128 on gfx1100).
 
-## Why
+## Patch 2 — engine warmup gate (cert13)
+
+### What
+
+`patch_arc_xpu_warmup_gate.py` patches
+`vllm/v1/worker/gpu_worker.py` with two insertions, mark
+`[ARC-P628-XPU-WARMUP]`:
+
+1. two module-level helpers after the `kernel_warmup` import
+   (`_arc_xpu_warm_tuned_prefill_kernels`: table presence check, model
+   geometry walk, TP rank serialization; `_arc_xpu_warm_points`: the
+   dummy-tensor load calls)
+2. one guarded call at the top of the stock warmup section of
+   `Worker.compile_or_warm_up_model`, immediately before the wheel's own
+   `kernel_warmup(self)` ("Warmup and tune the kernels used during model
+   execution before cuda graph capture") — i.e. before cuda-graph
+   capture and before any dummy run can reach a tuned config.
+
+The warmup loads one kernel module per (geometry, band, divisibility,
+window-style) combination a serving step can produce: geometries are
+collected from the loaded model's attention modules (head sizes covered
+by the table only — no model-name hardcoding); points are the
+max_num_batched_tokens chunk (high band, div16) and the 98-class chunk
+remainder (mid band, non-div16), each against div16 and non-div16 KV
+lengths, for full `(-1,-1)` and sliding `(1023,0)` windows. Loads run
+rank-by-rank behind `torch.distributed.barrier()` so no two TP ranks
+module-create concurrently; the helper frees its tensors and is
+fail-loud (a failed warmup aborts boot rather than serving an engine
+whose tuned kernels would wedge on first prefill). No-op when the table
+is absent (stock wheel) or the model has no covered geometry.
+
+### Why
+
+cert12's table makes each tuned config a kernel specialization the
+engine has never loaded. r108o (py-spy, banked
+`results/2026-11-06-p628-gemma4/phaseC/hang_capture_c12/`) proved the
+first in-engine module creation of such a config
+(`CompiledKernel._init_handles` → `SpirvUtils.load_binary` →
+`zeModuleCreate` + IGC compile) wedges BOTH TP ranks — identical stacks,
+GIL held, ~166% CPU each, indefinitely:
+
+- certified graph posture: wedge at the first real prefill request
+  (98-token warmup) → engine rpc watchdog kills the step — the P6.28
+  "engine freeze" G2 row;
+- default eager posture: wedge inside `compile_or_warm_up_model`'s own
+  dummy run ("Compile and warming up model for size 8192") — the engine
+  never reaches health.
+
+Single-process loads of the exact same binaries are clean (r108n micro
+at the exact shapes; r108p micro for the concurrency split), and vLLM's
+own jit-monitor names the fix class when it fires at request time:
+*"consider extending warmup to cover this shape/config"*
+(`vllm/utils/jit_monitor.py`). Moving every first-load into
+`compile_or_warm_up_model` is precisely that.
+
+### Provenance
+
+Placement follows the wheel's own structure (the stock
+`kernel_warmup(self)` section exists for exactly this purpose and the
+jit-monitor expects warmup coverage after
+`compile_or_warm_up_model`); rank serialization mirrors vLLM's
+existing rank-ordered boot collectives. No upstream file exists with
+this exact logic because no upstream platform ships the tuned table —
+the two patches are one fix: a tuning table is only servable if the
+engine pre-loads what it adds.
+
+## Patch 1 — why the table exists
 
 P6.28 gemma-4 serving "froze" on any real prompt. Root cause (r108j
 bare-kernel discriminator, banked micro_disc/): NOT a deadlock — the 2D
@@ -54,7 +132,7 @@ head-512 ntok=1024: stock 2.002 s → (64, 32, w8) **0.428 s = 4.67×**
 (warps=8 is load-bearing: M64w4 = 2.02× only); head-256 sliding ntok=1024:
 stock 0.0461 s → (64, 64, w8) **0.0222 s = 2.08×**.
 
-## Provenance / upstream lineage
+## Provenance / upstream lineage (patch 1)
 
 The fix pattern is upstream's own, applied to the platform upstream
 doesn't tune yet:
@@ -83,18 +161,35 @@ Scope law (plan §3/App I): generic shared-component fix (whole launcher
 file, platform-gated, model-agnostic config table), no donor code —
 pattern is upstream vLLM's, values are our own rig measurements.
 
-## Validation (§10 gates before cert12 pin)
+## Validation (§10 gates before cert13 pin)
+
+**Patch 1 (cert12, all green r108l):**
 
 1. patcher: `--audit` PATCHABLE → patch → `ALREADY_PATCHED` on re-run →
    `py_compile` clean (local, pristine wheel file extracted from cert11).
 2. rig in-container: patched launcher imports, MARK present, table
    entries readable; bare-kernel full-shape (ntok=8192) timing matches
    sweep winners (grid now shrinks with BLOCK_Q — same or better).
-3. engine G2: both gemma legs re-measured vs the fp8 incumbent row
+3. numeric sanity: same-seed output dumps vs stock — bitwise identical
+   at head-512 (launch params only), max_abs 4.9e-4 allclose(1e-2) at
+   head-256 (tile change); per-step prefill time @kv16k 24.85 s → 4.51 s
+   = 5.51× (freeze budget math: worst chunk-step ~53 s at kv16k, ~98 s
+   at kv32k — no timeout knob needed).
+
+**Patch 2 (cert13):**
+
+1. patcher: `--audit` → patch → idempotent re-run → `py_compile` clean
+   (local, pristine cert12 wheel file).
+2. rig engine boot, certified graph posture: warmup log lines present
+   ("ARC XPU tune warmup: load …", "… complete on rank 0/2"), boot
+   reaches health, first-request warmup interlock passes, jit-monitor
+   silent on unified_attention during G1/G2 traffic.
+3. eager-posture boot (ARC_GRAPH=0) reaches health (the r108o e0
+   counterfactual).
+4. engine G2: both gemma legs re-measured vs the fp8 incumbent row
    (17.715 s e2e / 39.025 s 32k prefill face @ 53.5 ms decode); decode
    unchanged (kernel/config path untouched for max_seqlen_q ≤ 64).
-4. numeric sanity: r108k output dumps allclose(1e-2) vs stock at both
-   head sizes.
 
 Evidence: `results/2026-11-06-p628-gemma4/` (r108j micro_disc/, r108k
-tile_sweep/, G2 legs, write-up).
+tile_sweep/, r108o hang_capture_c12/, r108p micro_concurrency/, G2
+legs, write-up).
