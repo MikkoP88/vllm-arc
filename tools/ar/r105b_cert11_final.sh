@@ -83,7 +83,9 @@ docker run --rm --entrypoint bash $IMG   -c \
 CH10=$(wc -l < tree_cert10.md5); CH11=$(wc -l < tree_cert11.md5)
 NDEL=$(diff tree_cert10.md5 tree_cert11.md5 | grep -c '^<' || true)
 NADD=$(diff tree_cert10.md5 tree_cert11.md5 | grep -c '^>' || true)
-CHG=$(diff tree_cert10.md5 tree_cert11.md5 | grep '^>' | awk '{print $2}' | sort | tr '\n' ' ')
+# '>'-prefixed diff lines are '> <md5>  <path>' — the path is field 3
+# (field 2 is the md5; r105b run-1 FAIL'd on this column, RUN NOTE).
+CHG=$(diff tree_cert10.md5 tree_cert11.md5 | grep '^>' | awk '{print $3}' | sort | tr '\n' ' ')
 echo "TREE vllm_gaudi/: files $CH10 -> $CH11, changed=$NDEL"
 echo "  changed set: $CHG"
 if [ "$NDEL" = "2" ] && [ "$NADD" = "2" ] && [ "$CH10" = "$CH11" ] && \
