@@ -24,7 +24,8 @@ definitions and hardware in [`TESTING-arc.md`](TESTING-arc.md)).
    posture matrices (the P6.16 prob matrix; the TurboQuant dtype faces,
    P6.14, **servable again since cert8, re-gated on cert9, k8v4 carry
    proven on cert10**; the MXFP4 checkpoint faces, P6.26, **certified on
-   cert11**) and the current-era analyses
+   cert11**; the MXFP8 AutoRound faces, P6.27, ride the same cert11
+   image zero-change) and the current-era analyses
    (prefill anatomy, op-class trace). The pre-P6.17 greedy-lane record
    (r70, cert4-native) is retained as labeled history.
 3. **History** — every pre-P6.17 measurement, labeled by image and
@@ -208,6 +209,20 @@ fp8 incumbent — under the 2× collapse trigger. Disposition: mxfp4 =
 certified weight-constrained lane (weights 9.03 GiB/rank on qurk vs
 ~13.6 fp8); **fp8 stays the performance default** —
 `results/2026-11-06-p626-mxfp4/`.
+**MXFP8 lane faces (P6.27, r106b, full posture on cert11 — zero
+engine change)**: intel-ai AutoRound checkpoint (W8A8-dynamic,
+group-32 E8M0, quantized MTP drafter) on the native
+`XPUMxFp8LinearKernel` (oneDNN `fp8_gemm`): TTFT U32k 26.67 / C32k
+1.52 / U8k 6.36 / U64k 59.52 s — **below both mxfp4 lanes on every
+TTFT face**; bystander decode p50 81.8 ms (1.53× vs fp8 — above both
+mxfp4 lanes: decode is weight-byte-bound and W8 reads 2× the W4
+bytes, plus per-linear `xpu_mxfp8_quantize` + E8M0 scale handling vs
+the incumbent's fused block-scaled lane; prefill amortizes the quant
+pass); spec pos1 0.9626 / acceptance 0.9174 on the QUANTIZED drafter;
+health 285 s incumbent-identical; 0/0 erraudit. Under the 2× trigger
+everywhere → REPORT lane: the AutoRound-import route (weights 14.74
+GiB/rank ≈ fp8, no capacity win, no quality loss) —
+`results/2026-11-06-p627-mxfp8/`.
 The opt-in prefill faces are in the TTFT section below. Nothing validated
 beats the certified default (the two faster-on-paper postures are
 rejected: k5-depth dropped — its greedy edge inverts under sampling;

@@ -406,23 +406,26 @@ gone), `63232`-class **0** / `3328`×38 exact, U32k unchanged
 face in-family (U64k TTFT 51.66 s, `63232`-class 0, `3328` signature
 exact — `results/2026-11-02-p614-cert6/`).
 
-## MXFP4 weight lane — owner-named checkpoints (P6.26; certified on cert11)
+## MXFP4 / MXFP8 weight lanes — owner-named checkpoints (P6.26/P6.27; certified on cert11)
 
-cert11 opens a second weight-format lane: OCP-MX FP4 checkpoints boot
-and serve under the full certified posture (XPU graph FULL_DECODE_ONLY,
-MTP k3 probabilistic, LMCache on) on the native `XPUMxFp4LinearKernel`
-(vllm-xpu-kernels fp4_gemm). The lane is **certified for
-weight-constrained deployments**; fp8 stays the certified performance
-default — no posture change, and the incumbent fp8 regression battery
-(r105) passed at cert10 refs on the same image.
+cert11 opens the non-default weight-format lanes: OCP-MX FP4 (P6.26)
+and MXFP8 W8A8 (P6.27) checkpoints boot and serve under the full
+certified posture (XPU graph FULL_DECODE_ONLY,
+MTP k3 probabilistic, LMCache on) on the native kernels
+(`XPUMxFp4LinearKernel` / `XPUMxFp8LinearKernel`). mxfp4 is the
+**certified weight-constrained lane**; fp8 stays the certified
+performance default — no posture change, and the incumbent fp8
+regression battery (r105) passed at cert10 refs on the same image.
 
-Two owner-named checkpoints validated (phase-A boot + phase-B full
-posture; evidence `results/2026-11-06-p626-mxfp4/`):
+Three owner-named checkpoints validated (phase-A boot + phase-B full
+posture; evidence `results/2026-11-06-p626-mxfp4/`,
+`results/2026-11-06-p627-mxfp8/`):
 
 | checkpoint | quant surface | weights/rank | KV pool | U32k TTFT | bystander p50 |
 |---|---|---|---|---|---|
 | `qwen3.8-27b-mxfp4xfp8` (RedHatAI) | CT W8A8-fp8 attn + W4A4-mxfp4 MLP | — | 10.38 GiB | 29.01 s | 64.7 ms |
 | `qwen3.8-27b-quark-awq-mxfp4` (amd) | quark OCP-MX W4A4, all quantized linears | **9.03 GiB** | 12.16 GiB | 32.28 s | 68.8 ms |
+| `qwen3.8-27b-mxfp8` (intel-ai AutoRound, P6.27) | CT W8A8 MXFP8-dynamic group-32 E8M0 + quantized MTP drafter | 14.74 GiB | 6.25 GiB | **26.67 s** | 81.8 ms |
 | (fp8 incumbent, ref) | W8A8-fp8 block-scaled | ~13.6 GiB | — | 16.13–16.45 s | 53.5 ms |
 
 Prefill/TTFT pays 1.6–2.4× (per-call dynamic activation quant; qurk's
@@ -431,6 +434,16 @@ is 1.21–1.29× — under the pre-registered 2× decode-collapse trigger.
 In exchange, weights drop to 9.03 GiB/rank and KV headroom rises ~2
 GiB/rank. Spec gate PASS on both (pos1 0.9853 / 0.9951 — above the fp8
 incumbent's 0.9258).
+
+The **mxfp8** lane (P6.27, same knobs) inverts that split: every TTFT
+face sits BELOW both mxfp4 lanes (26.67 s U32k — prefill amortizes the
+per-call quant pass), while decode p50 81.8 ms (1.53×) sits above both
+(W8 weights read 2× the W4 bytes per decode step + group-32 E8M0 scale
+handling vs the incumbent's fused block-scaled lane). Weights 14.74
+GiB/rank ≈ fp8 — no capacity win; the lane's value is running the
+AutoRound import as-is: spec pos1 0.9626 / acceptance 0.9174 on the
+QUANTIZED MTP drafter, health 285 s incumbent-identical, 0/0 erraudit,
+zero engine change (rides cert11 unmodified).
 
 Boot = the same uniform interface; three knobs route a non-default
 model (host dir, served name, quant flag):
