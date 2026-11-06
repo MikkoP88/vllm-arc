@@ -1,0 +1,2 @@
+(APIServer pid=13) INFO 11-06 09:26:14 [platform.py:345] ArcXpuPlatform: Intel Arc Xe2 posture active (Intel(R) Graphics [0xe223]).
+(EngineCore pid=698) INFO 11-06 09:28:12 [kv_cache_utils.py:2395] XPU KV cache size: 400,739 tokens, Maximum concurrency for 262,144 tokens per request: 1.53x

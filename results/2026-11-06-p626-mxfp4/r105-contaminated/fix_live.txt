@@ -1,0 +1,11 @@
+INFO 11-06 09:24:42 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+INFO 11-06 09:24:42 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+INFO 11-06 09:24:42 [__init__.py:54] - hpu -> vllm_gaudi:register
+INFO 11-06 09:24:42 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+/opt/venv/lib/python3.12/site-packages/torch/xpu/__init__.py:251: UserWarning: Can't initialize Level Zero Sysman
+  return _enum_zes_device_infos(visible_mask)
+/opt/venv/lib/python3.12/site-packages/torch/xpu/__init__.py:278: UserWarning: XPU device count is zero! (Triggered internally at /__w/pytorch/pytorch/c10/xpu/XPUFunctions.cpp:117.)
+  count = torch._C._xpu_getDeviceCount() if zes_count < 0 else zes_count
+/opt/venv/lib/python3.12/site-packages/torch/xpu/__init__.py:251: UserWarning: Can't initialize Level Zero Sysman
+  return _enum_zes_device_infos(visible_mask)
+FIX_LIVE quark=True supports_mx=True

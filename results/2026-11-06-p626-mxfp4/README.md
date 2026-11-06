@@ -136,6 +136,14 @@ r105 guard the default lane).
 - `r105t-void/` — attempt-1 (killed mid-bench by an operator pkill
   that matched the script itself; trap correctly restored W14; the
   orphan warm bench banked pure HTTP 500s — void).
+- `r105b/` — final-image gate on `vllm-arc:v0.30.0-b70-cert11`
+  (overlay built from the tag archive, FORK_SHA c987c2cd): raw
+  `r105b_run.log` GATE_FAIL=1 was the awk column bug (path is field
+  3 of a `>`-diff line, fixed in PR #79); `verdict_recomputed.txt`
+  = **PASS** on every gate from the banked artifacts (manifest +
+  oneccl rows, 294→294 walk with changed set exactly platform.py +
+  pyc, overlay shas ×2, thin shim, freeze 0, HEALTH 295 s, FLIP_FIRST
+  9.1 s clean, SPEC_GATE PASS pos1 0.9217, ERROR=0).
 - Host-address redaction: `results/REDACTION-2026-11-06-p626.md`
   (r105 trees: 16 rig + 14 client +194 bytes; r105t trees: 1 rig +
   7 client; residual 0 everywhere).
@@ -165,5 +173,7 @@ Both owner-named MXFP4 checkpoints boot, serve, speculate (k3), and
 measure clean under the full certified posture on the patched platform.
 Fix is minimal, upstream-patterned (HpuPlatform precedent), wheel-free,
 and carries no dispatch change for existing lanes (table-keyed
-selection). Certification: r105 tree-identity + incumbent regression
-battery on cert11c → `rel/v0.30.0-b70-cert11` (see plan §P6.26 outcome).
+selection). **SHIPPED**: PRs #77/#78/#79 → main (both remotes); tag
+`rel/v0.30.0-b70-cert11` (c987c2cd); cert11 = overlay on cert10 from
+the tag archive, r105b PASS — the certified image (mxfp4 lane open,
+fp8 performance default unchanged).

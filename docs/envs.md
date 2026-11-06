@@ -5,15 +5,20 @@ at the r46t close-out) from `vllm_gaudi/envs.py` arc-lane markers + the
 certified serve line (`r43_serve_k5.sh`, spec depth 3 per the r46t
 recommendation — a serve-time CLI change — on image
 `vllm-arc:v0.30.0-b70-cert`; unchanged since — the chain is identical on
-the current certified image `vllm-arc:v0.30.0-b70-cert10`, where
-`LMCACHE_TRACK_USAGE=false` (P6.3) made it 25; cert10 = cert9's engine
+the current certified image `vllm-arc:v0.30.0-b70-cert11`, where
+`LMCACHE_TRACK_USAGE=false` (P6.3) made it 25; cert11 = cert10 + the
+P6.26 platform patch ONLY (`vllm_gaudi/xpu/platform.py` — quark/mxfp4
+lane, config-validation surface; r105b walk-proven byte-identical
+everywhere else, and the fp8 posture proven env- and face-identical at
+the r105 gate); cert10 = cert9's engine
 byte-identical (exhaustive md5 walk at the cert10 gate) + the P6.24
 oneCCL fp8-wire overlay, which is **default-OFF** and adds NO certified
 serve-line var — opting into the e4m3-wire allreduce is the single
 uncertified-line addition `CCL_SYCL_ALLREDUCE_FP8=1` (rows in the
 overlay table below + `CONFIGURATION-arc.md`'s knob table; proven
 env-absent at the cert10 gate with
-FP8_ENV_SET=0 and default-posture numbers cert9-identical);
+FP8_ENV_SET=0 and default-posture numbers cert9-identical; the overlay
+rows carry into cert11);
 cert9 = cert6-era
 compute bytes under the certified fp8 line — the P6.19 TQ fix never
 engages there (control-proven t7/t9 + cert8 gate) and the P6.20
@@ -122,7 +127,7 @@ next engine-touching item.)
 | `VLLM_ARC_LMC_ASYNC_STORE` | `1` = ON (**cert9 certified default**, p620) | L3 off-thread store: the per-step lagged-flush dispatcher hands (pending, engine stream) to the `arc-lmc-store` daemon — device ops stay on the engine stream (in-order law), only the HOST wait (sync + D2H gathers + store insert) moves off the engine thread. r81 A/B/A/B (cert8 base): U32k TTFT −0.74 s mean, U64k −1.64 s, U8k −0.08 s (both interleave pairs), zero error delta; r82/r83 full gate batteries green incl. LONG-RETURN (zero-KV proof under async store). `=0` = the cert≤8 inline posture (kill switch) | lmcint `vllm_v1_adapter.py` `_lmc_flush_pending`/`_lmc_store_machinery` (p620 L3; L6 dispatch-late = same flush handed at wfs end) |
 | `VLLM_ARC_LMC_EVSYNC` | `1` | L1 flush-scoped event sync inside the store body (vs `torch.xpu.synchronize()`); r80: neutral ALONE — on the in-order XPU stream the event sits behind the just-submitted chunk forward; kept as the cheap default inside the L3 worker body | lmcint `vllm_v1_adapter.py` `_lmc_flush_body` (p620 L1) |
 
-**oneCCL overlay envs (cert10; consumed by the patched `libccl`, NOT by
+**oneCCL overlay envs (cert10+; carried into cert11; consumed by the patched `libccl`, NOT by
 engine code — registered by `arc-fp8-allreduce.patch`, deliberately
 outside every namespace above; full knob rows with measured semantics in
 CONFIGURATION-arc.md's knob table, posture guide in its
