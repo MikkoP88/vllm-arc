@@ -2,12 +2,22 @@
 
 Migration addendum banked at P5 close-out (2026-10-30) per the banking
 directive; identities re-pointed at each certification close-out — most
-recently **cert10 (P6.24, 2026-11-05; the oneCCL fp8-wire overlay —
+recently **cert11 (P6.26, 2026-11-06; the MXFP4/quark lane opened —
+`vllm_gaudi/xpu/platform.py` gains `quark` in `supported_quantization`
++ `supports_mx() → True`, commit 7ea0f27b; two owner-named MXFP4
+checkpoints validated end-to-end under the full posture with the
+native `XPUMxFp4LinearKernel`; overlay on cert10 — every byte carries
+except platform.py + its pyc (r105b walk 294→294, freeze diff 0), so
+the fp8 default posture is byte-identical: r105 engine battery PASS at
+cert10 refs + r105t/t2 same-day face-for-face discriminator;
+weight-constrained lane, fp8 stays the performance default)**, after
+cert10 (P6.24, 2026-11-05; the oneCCL fp8-wire overlay —
 same-version 2022.0.0 rebuild + e4m3-wire large-ring allreduce,
 default OFF env `CCL_SYCL_ALLREDUCE_FP8`; opt-in 1.65× at the
 dominant AR, every p65 TTFT face beats cert9: U32k −3.8 % / U64k
 −8.2 % / U8k −13.0 % / C32k −4.6 %; default posture = cert9-identical,
-proven at the gate)**, after cert9 (P6.20, 2026-11-04; the prefill
+proven at the gate; its overlay rows carry into cert11), after cert9
+(P6.20, 2026-11-04; the prefill
 host-path patch — L3
 off-thread LMCache store default-ON + L6 dispatch-late + step_trace
 diagnostics; U32k/U64k/U8k TTFT −0.74/−1.64/−0.08 s, spec/identity
@@ -20,7 +30,7 @@ refusal was the interim mitigation, lifted at P6.19), cert6 (P6.14,
 certified line is `ARC_SPEC_METHOD=probabilistic` — the serve script
 default flipped). Target: serve **qwen3.8-27b-fp8**
 (dense hybrid-GDN, **MTP k3 recommended** — r46t real-world campaign) on
-`vllm-arc:v0.30.0-b70-cert10`, replacing the W14 incumbent
+`vllm-arc:v0.30.0-b70-cert11`, replacing the W14 incumbent
 (`radiance-test`, flash-next k3) as the rig's serving stack. Everything
 below is rig-proven; the full phase-by-phase evidence table is §6.
 
@@ -28,10 +38,10 @@ below is rig-proven; the full phase-by-phase evidence table is §6.
 
 | item | value |
 |---|---|
-| image | `vllm-arc:v0.30.0-b70-cert10` (tag-built engine from `rel/v0.30.0-b70-cert10` + the P6.24 two-file oneCCL overlay — cert9's engine (exhaustive `vllm_gaudi/` md5 walk diff_lines=0) + `external_patches/oneccl` build product [same-version 2022.0.0 rebuild + `arc-fp8-allreduce.patch` v4]; manifest row `oneccl=2022.0.0+arc1`, fat-lib sha pinned at both SONAME paths; overlay default-OFF — opt-in `CCL_SYCL_ALLREDUCE_FP8=1`; gate evidence `results/2026-11-05-p624-fp8-ar/`) |
-| fork SHA baked | `aa2ee17d` (IMAGE_MANIFEST `fork_sha=aa2ee17d11612d9292684cbcbd2825bde4c7a65d` — preserved from cert9, the vllm tree is byte-identical; annotated tag `rel/v0.30.0-b70-cert10` on main; image id `2f86fc2411fb`) |
-| validation image | `vllm-arc:v0.30.0-b70-cert10` itself (r99 cert10 gate: identity gates incl. the tree walk; default-posture battery with the FP8 env proven absent — t0 300.39 steady/84.52–84.51, integrity 5/5 + det 3/3, spec pos1 0.9258, long-return t0 clean + one measured t1 disposition (r99c annex); k8v4 TQ carry byte-identity; FP8=1 leg + in-situ wire proof; A/B/A/B perf interleave beating cert9 on every p65 face — `results/2026-11-05-p624-fp8-ar/`; lineage: cert9 `results/2026-11-04-p620-prefill-opt/`, cert8 `results/2026-11-04-p619-tqverify/`, p617 prob-lane `results/2026-11-03-p617a-probcert/`, r70 comprehensive `results/2026-10-31-p70-r70-cert4-comprehensive/`, default faces cert4-native `results/2026-10-31-p65-cert4/`) |
-| canonical serve script | rig `/root/build/serve_arc_b70.sh` (the uniform boot interface; carries the **25-var chain** incl. `LMCACHE_TRACK_USAGE=false` — P6.3; run with `ARC_IMAGE=vllm-arc:v0.30.0-b70-cert10 ARC_GRAPH=1 ARC_SPEC=3`; P6.24 opt-in = add ONE env line `export CCL_SYCL_ALLREDUCE_FP8=1` to the serve env — the r99 [3] pattern, everything else unchanged); since **P6.17 the certified default is the probabilistic draft-sampling posture — unset or `ARC_SPEC_METHOD=probabilistic` appends the upstream spec key `draft_sample_method`**, `ARC_SPEC_METHOD=greedy` = the opt-out historical lane (pre-P6.17 bytes), `ARC_SPEC=0` = no spec; flip validated end-to-end — flag probe 5/5 + default-path boot engine bytes identical to the record legs — `results/2026-11-03-p617a-probcert/`; the pre-flip script is preserved on the rig as `/root/build/serve_arc_b70_p616.sh` (provenance backup) |
+| image | `vllm-arc:v0.30.0-b70-cert11` (overlay on cert10 built from the `rel/v0.30.0-b70-cert11` tag archive via `tools/cert11.Dockerfile` — the ONLY byte changes vs cert10 are `vllm_gaudi/xpu/platform.py` (md5 `e48abe9cd9de0027736f962504e84aa9`, the P6.26 quark+supports_mx patch) + its regenerated pyc; r105b exhaustive walk 294→294 files with changed set exactly those two, pip freeze diff 0; cert10's engine + oneCCL overlay rows (`oneccl=2022.0.0+arc1`, fat-lib shas at both SONAME paths — FP8 opt-in `CCL_SYCL_ALLREDUCE_FP8=1` unchanged) carry byte-identical; gate evidence `results/2026-11-06-p626-mxfp4/` r105/r105b + phase A/B) |
+| fork SHA baked | `c987c2cd` (IMAGE_MANIFEST `cert11_fork_sha=c987c2cd57edf19f0f7a704a29de70d47a2c1264` == annotated tag `rel/v0.30.0-b70-cert11` on main; the base `fork_sha=aa2ee17d…` row preserved from cert9/cert10 — the vllm tree is byte-identical; image manifest `sha256:928a6dfe…`) |
+| validation image | `vllm-arc:v0.30.0-b70-cert11` itself (r105b final-image gate PASS from the banked artifacts: manifest + oneccl rows, tree walk changed-set proof, overlay shas ×2, thin-shim identity, freeze 0, HEALTH 295 s, flip-first 9.1 s clean, SPEC_GATE pos1 0.9217, ERROR=0; r105 engine battery on cert11c run-2 clean PASS at provenance-corrected r99 anchors — t0 300.48 / 84.55–84.56, TTFT 17.37/1.09/3.77/38.82 at-or-better, LONGRETURN PASS; phase-B mxfp4 legs coherent + spec 0.9853/0.9951 — `results/2026-11-06-p626-mxfp4/`; lineage: cert10 `results/2026-11-05-p624-fp8-ar/`, cert9 `results/2026-11-04-p620-prefill-opt/`, cert8 `results/2026-11-04-p619-tqverify/`, p617 prob-lane `results/2026-11-03-p617a-probcert/`, r70 comprehensive `results/2026-10-31-p70-r70-cert4-comprehensive/`, default faces cert4-native `results/2026-10-31-p65-cert4/`) |
+| canonical serve script | rig `/root/build/serve_arc_b70.sh` (the uniform boot interface; carries the **25-var chain** incl. `LMCACHE_TRACK_USAGE=false` — P6.3; run with `ARC_IMAGE=vllm-arc:v0.30.0-b70-cert11 ARC_GRAPH=1 ARC_SPEC=3`; P6.24 opt-in = add ONE env line `export CCL_SYCL_ALLREDUCE_FP8=1` to the serve env — the r99 [3] pattern, everything else unchanged; P6.26 model-lane knobs `ARC_MODEL` / `ARC_SERVED` / `ARC_QUANT` (empty = config-driven quant — the mxfp4 lane, CONFIGURATION-arc "MXFP4 weight lane")); since **P6.17 the certified default is the probabilistic draft-sampling posture — unset or `ARC_SPEC_METHOD=probabilistic` appends the upstream spec key `draft_sample_method`**, `ARC_SPEC_METHOD=greedy` = the opt-out historical lane (pre-P6.17 bytes), `ARC_SPEC=0` = no spec; flip validated end-to-end — flag probe 5/5 + default-path boot engine bytes identical to the record legs — `results/2026-11-03-p617a-probcert/`; the pre-flip script is preserved on the rig as `/root/build/serve_arc_b70_p616.sh` (provenance backup) |
 | long-context profile | rig `/root/build/serve_arc_b70_defer2.sh` (the canonical chain + `--long-prefill-token-threshold 2048` + `LMC_DEFER_CHUNK_STORE=1` + `LMC_DEFER_MIN_TOKENS=40960` — P6.5; opt-in, see CONFIGURATION-arc "fp8 stall levers") |
 | A/B fallback | same script with `ARC_SPEC=4` (MTP k4 — documented alternative for near-deterministic workloads) |
 | golden reference | rig `/root/build/p25/golden_ref.json` (md5 `e02cbb07…`; covers k4 AND k5 — r42/r43 proved byte-identical) |
@@ -44,6 +54,19 @@ installs (lmcache 0.5.6+arc1 closure vendored; in-build import gate +
 the in-image `_WHEEL_HOOKS` registry (r45 wiring + `_load_wheel_patch`
 standalone loader — r42 Fix B).
 
+**cert11 migration note (P6.26, 2026-11-06)**: for an existing cert10
+deployment there is **no action and no behavior change** — the only
+byte deltas are `vllm_gaudi/xpu/platform.py` (+pyc), and the patch is
+config-validation-surface only (kernel selection is table-keyed and
+never consults the changed paths; r105 battery + r105t/t2 same-day
+discriminator prove the fp8 posture face-for-face identical). What
+cert11 adds: quark-format checkpoints (`amd/Qwen3.8-27B-Quark-AWQ
+-MXFP4`) boot instead of failing config validation, and the false
+"Simulated weight dequantization" warning is gone. Serving knobs are
+unchanged; the mxfp4 lane is a model-route choice
+(`ARC_MODEL`/`ARC_SERVED`/`ARC_QUANT=`, CONFIGURATION-arc "MXFP4
+weight lane"). Evidence: `results/2026-11-06-p626-mxfp4/`.
+
 ## 2. Boot procedure (from W14-serving state)
 
 ```bash
@@ -52,7 +75,7 @@ standalone loader — r42 Fix B).
 #                  export SSH_ASKPASS=/tmp/askpass.sh
 #                  SSH_ASKPASS_REQUIRE=force DISPLAY=:0)
 docker stop radiance-test                      # frees port 8000 + both GPUs
-ARC_IMAGE=vllm-arc:v0.30.0-b70-cert10 ARC_NAME=arc-test ARC_GRAPH=1 ARC_SPEC=3 \
+ARC_IMAGE=vllm-arc:v0.30.0-b70-cert11 ARC_NAME=arc-test ARC_GRAPH=1 ARC_SPEC=3 \
   bash /root/build/serve_arc_b70.sh            # boot + serve as one unit
 # draft posture: unset/probabilistic = CERTIFIED (P6.17); the certified
 # line can be written explicitly as ARC_SPEC_METHOD=probabilistic (same
@@ -67,7 +90,7 @@ pidfd IPC law, r30 defect #1; `--network host --ipc host`, the model
 mount, cache mounts, and the 2 boot-layer `-e` vars) and execs the
 serve line with the full 25-var chain — env + CLI as one unit by
 construction. Boot takes ~5 min to health 200 (285–295 s at the
-cert7–cert10 gates; ~290 s measured at the cert10 gate). Verify in
+cert7–cert11 gates; 295 s measured at the cert11 gate, r105b). Verify in
 `/root/serve_full.log`: wheel hooks install (zero `FAILED`, silent
 defer is DEBUG), `fp8 reroute ACTIVE`, `kvfmt TWO_HS`, the p40c re-pin
 line both workers (`alloc/free_pinned_ptr re-pinned to the pageable
@@ -86,7 +109,8 @@ cert9 the P6.20 store-worker line after the FIRST request
    `golden_ref.json` (0-drift law).
 4. **run7n ×2**: conservative floors solo ≥ 79.74, agg#2 ≥ 274.41;
    certified steady family at k3, prob lane (p617 + release gates):
-   solo **83.7–84.9** / agg **291.4–303.1** (cert10 gate: 300.39 /
+   solo **83.7–84.9** / agg **291.4–303.1** (cert11 gate: 300.48 /
+   84.55–84.56, r105 run-2; cert10 gate: 300.39 /
    84.52–84.51; cert9 gate: 296.91 /
    84.54–84.48; cert8 gate: 300.65 / 84.53–84.57; cert4-native greedy
    family 294.7–300.5 in-band — the
@@ -165,4 +189,5 @@ PERFORMANCE-arc / TESTING-arc. All paths relative to `results/`.
 | P6.24d README status-ledger move (2026-11-06) | `docs/STATUS-arc.md` (new detail holder) | docs-only — the certified image is UNCHANGED (tag stays at the cert10 release commit): the three README front-page narrative paragraphs (certified-release detail, project status, improvement-lane status) moved content-faithful to `docs/STATUS-arc.md` (lead-ins became the section headings, docs-internal links made relative — zero factual edits, diff-audited); README keeps the headline + links, currency anchors preserved (check_currency clean); no re-gate required |
 | P6.24e best-performance-postures audit (2026-11-06: docs + serve-interface pass on cert10 truth) | CONFIGURATION "Best-performance postures" (new) + envs.md overlay table + `tools/serve_arc_b70.sh` | docs/tooling-only — the certified image is UNCHANGED (tag stays at the cert10 release commit; the FP8 env itself is the r96–r100-certified opt-in): consolidated objective→recipe table (best TTFT = the one-line `CCL_SYCL_ALLREDUCE_FP8=1` opt-in w/ exact placement, best throughput = Step 2 as-is, stall levers, KV-capacity trade); stale "Max TTFT = certified defaults" menu row fixed (cert10 opt-in beats it on every TTFT face); envs.md gains the oneCCL overlay-env table (trio previously pointer-only); uniform boot interface gains `ARC_FP8` pass-through (default unset emits NO env line — served-process env byte-identical to the pre-knob script; `=1` appends the certified opt-in env); README optional-postures + quick-start hint; no re-gate required (default-path posture unchanged) |
 | P6.25 overlap-door audit (2026-11-06: r101 microbench — tools + docs only) | `results/2026-11-06-p625-overlap-door/` + `tools/ar/ar_overlap_bench.py`, `tools/ar/r101_overlap_bench.sh`, `tools/ar/r101b_overlap_bench.sh` | **closed NEGATIVE measured — the certified image is UNCHANGED (tag stays at the cert10 release commit; no re-gate required)**: the last unmeasured prefill door (cross-stream AR∥GEMM co-tenancy, async-TP class) closed by the pre-registered gate reading FAIL on both wires — mock best-k 0.969× stock / 0.966× fp8 (overlap slower than serial at every k; coten gemm_inflation 1.97×/1.58× = the device time-slices AR vs GEMM, no idle-EU lane; enqueue async 0.18/0.26 ms); GEMM census closes the GEMM lane at ~99 % of the 147–150 TF/s per-card dense ceiling; every prefill door now measured-closed, remaining headroom ≤1–2 % class; no cert11 — a zero-delta re-release would certify no change; docs updated (README/STATUS/PERFORMANCE/TESTING ledger rows) |
+| P6.26 MXFP4 validation + fix + cert11 (2026-11-06) | `results/2026-11-06-p626-mxfp4/` (phase A/B + r105/r105t/r105t2/r105b + REDACTION note; fix commit 7ea0f27b; runners `tools/ar/r10[2-5]*.sh`) | **quark/mxfp4 lane opened; cert11 released** (`vllm-arc:v0.30.0-b70-cert11`, overlay on cert10, tag `rel/v0.30.0-b70-cert11` = c987c2cd): phase-A quark boot failure predicted byte-exact by r102 wheel recon (platform `supported_quantization` omits `quark` → config-validation ValueError) → fix = two `ArcXpuPlatform` overrides (HpuPlatform pattern, wheel-free); phase-B full posture both owner-named checkpoints coherent, spec 0.9853/0.9951 (above the fp8 incumbent's 0.9258), decode penalty 1.21×/1.29× < the 2× trigger — **weight-constrained lane; fp8 stays the performance default**; r105 engine battery run-2 PASS at provenance-corrected r99 anchors (run-1 voided: concurrent host download; disclosed in-tree) + r105t/t2 same-day cert10 discriminator (thermal hypothesis refuted with xpu-smi telemetry) + r105b final-image gate PASS (walk 294→294, changed set exactly platform.py+pyc, freeze 0); docs currency pass README/CONFIGURATION/PERFORMANCE/MIGRATION/envs/STATUS/TESTING |
 | env reference | `docs/envs.md` | complete control surface + naming map |

@@ -1,0 +1,6 @@
+[essay] hashes=['648d66ae32c9'] finish=['stop', 'stop', 'stop'] chars=[3885, 3885, 3885] t1_seed_identical=True garble_empty=True
+[code] hashes=['4f325fc43c8d'] finish=['stop', 'stop', 'stop'] chars=[2922, 2922, 2922] t1_seed_identical=True garble_empty=False
+[multi] hashes=['1d4819646c8c'] finish=['stop', 'stop', 'stop'] chars=[1064, 1064, 1064] t1_seed_identical=True garble_empty=True
+[simple] hashes=['84efc84cc142'] finish=['stop', 'stop', 'stop'] chars=[1510, 1510, 1510] t1_seed_identical=True garble_empty=True
+T1_SEED_MISS_CLASSES: []
+LONGRETURN_BAR_R105DEF: FAIL ["code: garble flags [['REP-LOOP']]"]

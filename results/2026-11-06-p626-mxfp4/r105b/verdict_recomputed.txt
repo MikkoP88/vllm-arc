@@ -1,0 +1,16 @@
+MANIFEST cert11_fork_sha: OK
+MANIFEST oneccl row: OK
+MANIFEST oneccl lib sha row: OK
+TREE: files 294 -> 294, changed set: vllm_gaudi/xpu/__pycache__/platform.cpython-312.pyc vllm_gaudi/xpu/platform.py 
+TREE IDENTITY: OK (platform.py + its regenerated pyc only — cert10 carry basis)
+FIX_LIVE: OK
+OVERLAY SHA rows: 2/2
+THIN SHIM: OK
+FREEZE: OK
+HEALTH: OK
+FLIP_FIRST: OK
+SPEC_GATE: OK
+ERRAUDIT: OK
+
+R105B_CERT11_RECOMPUTED: PASS
+basis: r105b banked artifacts (manifest_cert11.txt, tree walks, fix_live.txt, run log)

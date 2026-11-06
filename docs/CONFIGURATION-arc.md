@@ -10,8 +10,8 @@ complete control surface + naming map); test definitions in
 
 | Item | Value |
 |---|---|
-| Image | `vllm-arc:v0.30.0-b70-cert10` — **the certified release**, tag `rel/v0.30.0-b70-cert10` (cert9's engine — exhaustive `vllm_gaudi/` md5 walk diff_lines=0, so the P6.20 prefill host-path patch and all cert9 vllm-layer certifications carry — + the **P6.24 oneCCL fp8-wire overlay**: two-file fat-lib overlay, same-version oneCCL 2022.0.0 rebuild + `arc-fp8-allreduce.patch` v4, e4m3-wire large-ring allreduce for the TP2 fp16 ring, **default OFF** — opt in with ONE env line `export CCL_SYCL_ALLREDUCE_FP8=1`; opt-in 1.65× at the dominant AR, every p65 TTFT face beats cert9; knob rows in the env table below; build/provenance `external_patches/oneccl/` + `tools/build_oneccl_arc.sh`; gate + door-close evidence `results/2026-11-05-p624-fp8-ar/`) |
-| Manifest | `/etc/vllm-arc/IMAGE_MANIFEST` inside the image — fork SHA (== cert9's `aa2ee17d…`, the vllm tree is unchanged), wheel pins, dependency closure (`lmcache_closure=`), build host, and on cert10 the overlay rows (`oneccl=2022.0.0+arc1` + lib/patch shas) |
+| Image | `vllm-arc:v0.30.0-b70-cert11` — **the certified release**, tag `rel/v0.30.0-b70-cert11` (commit `c987c2cd`; **overlay on cert10** — every byte carries from cert10 (engine, oneCCL fp8-wire overlay rows, venv, freeze) except `vllm_gaudi/xpu/platform.py` + its regenerated pyc, r105b walk-proven 294→294 files, pip freeze diff 0) **+ the P6.26 platform patch**: `ArcXpuPlatform.supported_quantization` gains `quark` + `supports_mx() → True` — opens the **MXFP4 checkpoint lane** (owner-named `amd/Qwen3.8-27B-Quark-AWQ-MXFP4` and `RedHatAI/Qwen3.8-27B-MXFP4xFP8`; both validated end-to-end, spec gates above the fp8 incumbent, decode penalty 1.21×/1.29× — weight-constrained lane, **fp8 stays the performance default**; `results/2026-11-06-p626-mxfp4/`). Existing lanes: zero dispatch change (kernel selection is table-keyed; the patch is config-validation-surface only — runtime-inertness grep-proven + same-day face-for-face discriminator proof r105t/t2) |
+| Manifest | `/etc/vllm-arc/IMAGE_MANIFEST` inside the image — fork SHA (== cert9's `aa2ee17d…`, the vllm tree carries from cert9 through cert10), wheel pins, dependency closure (`lmcache_closure=`), build host, the cert10 overlay rows (`oneccl=2022.0.0+arc1` + lib/patch shas — **carried into cert11**), plus the cert11 rows (`cert11=P6.26 quark quant + supports_mx…`, `cert11_fork_sha=c987c2cd…`, `cert11_built=<utc>`) |
 | Base | upstream vllm-gaudi v0.30.0 + pinned wheels (vllm 0.30.0+xpu, triton 3.7.2+xpu, vllm_xpu_kernels 0.1.14.1+arc3, lmcache 0.5.6+arc1) |
 
 Superseded images (never presented as current — the full lineage table
@@ -19,6 +19,7 @@ with per-image evidence lives in PERFORMANCE-arc "Image lineage"):
 
 | Image | Status |
 |---|---|
+| `v0.30.0-b70-cert10` | superseded by cert11 — fully valid; every byte carries into cert11 except `vllm_gaudi/xpu/platform.py` (+pyc). Its oneCCL overlay rows ride cert11. The MXFP4/quark lane does NOT boot on it (the P6.26 rejection is the pre-fix behavior) |
 | `v0.30.0-b70-cert9` | superseded by cert10 — fully valid; its engine bytes carry unchanged into cert10 (cert10 = this engine + the default-OFF oneCCL overlay; default-posture behavior identical) |
 | `v0.30.0-b70-cert8` | superseded by cert9 — fully valid; all four TQ presets serve clean (P6.19 fix); its prefill TTFT faces carry the pre-P6.20 inline store path (cert9's off-thread store is strictly faster) |
 | `v0.30.0-b70-cert7` | superseded by cert8 — fp8 behavior byte-identical; its `turboquant_*` boot refusal superseded by the P6.19 fix (TQ dtypes serve clean on cert8) — do not serve TQ dtypes on cert7 (refused) |
@@ -58,7 +59,7 @@ docker run -d --name arc-test \
   -v /root/build/inductor_cache:/root/.inductor_cache \
   -e VLLM_ALLOW_LONG_MAX_MODEL_LEN=1 \
   -e VLLM_WORKER_MULTIPROC_METHOD=spawn \
-  --entrypoint /bin/bash vllm-arc:v0.30.0-b70-cert10 -c 'sleep infinity'
+  --entrypoint /bin/bash vllm-arc:v0.30.0-b70-cert11 -c 'sleep infinity'
 ```
 
 These are the validated boot bytes (rig `r46t_campaign.sh:54-63`,
@@ -246,7 +247,7 @@ combinations are unvalidated; one lever at a time, the matrix law):
 
 | Objective | Recipe (delta on Step 2) | Measured effect |
 |---|---|---|
-| **Best TTFT / prefill — the recommended perf opt-in** | add `export CCL_SYCL_ALLREDUCE_FP8=1` to the serve env block (**cert10 image only** — silent no-op on ≤ cert9, which lack the overlay) | e4m3-wire allreduce on the dominant prefill ARs: **U8k 3.76→3.27 s (−13 %), U64k 38.93→35.73 (−8.2 %), U32k 16.93→16.29 (−3.8 %), C32k 1.09→1.04 (−4.6 %)** — every p65 face beats the cert9 baseline (r99 A/B/A/B interleave); 1.65× at the dominant AR; decode/spec neutral (r98: tps 0.998–1.005, spec +0.008 ≪ 0.03 bar); task-level quality parity |
+| **Best TTFT / prefill — the recommended perf opt-in** | add `export CCL_SYCL_ALLREDUCE_FP8=1` to the serve env block (**cert10+ images only** — silent no-op on ≤ cert9, which lack the overlay; the overlay rows carry into cert11) | e4m3-wire allreduce on the dominant prefill ARs: **U8k 3.76→3.27 s (−13 %), U64k 38.93→35.73 (−8.2 %), U32k 16.93→16.29 (−3.8 %), C32k 1.09→1.04 (−4.6 %)** — every p65 face beats the cert9 baseline (r99 A/B/A/B interleave); 1.65× at the dominant AR; decode/spec neutral (r98: tps 0.998–1.005, spec +0.008 ≪ 0.03 bar); task-level quality parity |
 | Best steady sampled throughput | **none — Step 2 as-is** (MTP k3 + probabilistic drafting is the measured optimum; the FP8 line changes nothing decode-side) | t0 agg 291.4–303.1 / solo 83.7–84.9 tok/s family |
 | Lowest bystander stalls (balanced) | `ARC_MNBT=4096` | stalls −49/−51 % at TTFT +8–13 %, KV +6.8 %, decode-neutral — "fp8 stall levers" below |
 | Deeper stall floor (≥48k prompts) | p65 profile: `--long-prefill-token-threshold 2048` + `LMC_DEFER_CHUNK_STORE=1` + `LMC_DEFER_MIN_TOKENS=40960` | U64k bystander p95/max 1580/1599 ms — below |
@@ -262,7 +263,7 @@ other `CCL_*` exports is the canonical spot):
 export CCL_SYCL_ALLREDUCE_FP8=1
 ```
 
-On the uniform boot interface: `ARC_FP8=1` (cert10 image; default
+On the uniform boot interface: `ARC_FP8=1` (cert10+ images; default
 unset = the certified posture, exec-block bytes unchanged). The
 companion knobs (`_MIN_COUNT` crossover, `_STATS` diagnostics) are
 diagnostics-class — leave them unset; rows in the knob table below.
@@ -404,6 +405,60 @@ gone), `63232`-class **0** / `3328`×38 exact, U32k unchanged
 (`results/2026-11-01-p65-cert5/`). The cert6 release gate re-ran the same
 face in-family (U64k TTFT 51.66 s, `63232`-class 0, `3328` signature
 exact — `results/2026-11-02-p614-cert6/`).
+
+## MXFP4 weight lane — owner-named checkpoints (P6.26; certified on cert11)
+
+cert11 opens a second weight-format lane: OCP-MX FP4 checkpoints boot
+and serve under the full certified posture (XPU graph FULL_DECODE_ONLY,
+MTP k3 probabilistic, LMCache on) on the native `XPUMxFp4LinearKernel`
+(vllm-xpu-kernels fp4_gemm). The lane is **certified for
+weight-constrained deployments**; fp8 stays the certified performance
+default — no posture change, and the incumbent fp8 regression battery
+(r105) passed at cert10 refs on the same image.
+
+Two owner-named checkpoints validated (phase-A boot + phase-B full
+posture; evidence `results/2026-11-06-p626-mxfp4/`):
+
+| checkpoint | quant surface | weights/rank | KV pool | U32k TTFT | bystander p50 |
+|---|---|---|---|---|---|
+| `qwen3.8-27b-mxfp4xfp8` (RedHatAI) | CT W8A8-fp8 attn + W4A4-mxfp4 MLP | — | 10.38 GiB | 29.01 s | 64.7 ms |
+| `qwen3.8-27b-quark-awq-mxfp4` (amd) | quark OCP-MX W4A4, all quantized linears | **9.03 GiB** | 12.16 GiB | 32.28 s | 68.8 ms |
+| (fp8 incumbent, ref) | W8A8-fp8 block-scaled | ~13.6 GiB | — | 16.13–16.45 s | 53.5 ms |
+
+Prefill/TTFT pays 1.6–2.4× (per-call dynamic activation quant; qurk's
+all-layer W4A4 pays more than the CT-mixed split); decode-side penalty
+is 1.21–1.29× — under the pre-registered 2× decode-collapse trigger.
+In exchange, weights drop to 9.03 GiB/rank and KV headroom rises ~2
+GiB/rank. Spec gate PASS on both (pos1 0.9853 / 0.9951 — above the fp8
+incumbent's 0.9258).
+
+Boot = the same uniform interface; three knobs route a non-default
+model (host dir, served name, quant flag):
+
+```bash
+ARC_IMAGE=vllm-arc:v0.30.0-b70-cert11 \
+  ARC_MODEL=/models/qwen3.8-27b-quark-awq-mxfp4 \
+  ARC_SERVED=qwen3.8-27b-quark-awq-mxfp4 \
+  ARC_QUANT= \
+  ARC_GRAPH=1 ARC_SPEC=3 ARC_LMC=1 bash /root/build/serve_arc_b70.sh
+```
+
+- `ARC_MODEL` — host model dir mounted at `/models/target`
+  (default `/models/qwen3.8-27b-fp8`).
+- `ARC_SERVED` — `--served-model-name` (default `qwen3.8-27b-fp8`).
+- `ARC_QUANT` — `--quantization` value (unset-default `fp8`); an
+  **explicitly empty** `ARC_QUANT=` omits the flag so the checkpoint's
+  own `quant_config` drives scheme selection — required for quark /
+  CT-MX checkpoints (passing `--quantization fp8` would fight the
+  config).
+
+**Image floor: quark checkpoints need cert11+** — cert10 rejects them
+at config validation (`quark quantization is currently not supported
+in xpu`). cert11's `ArcXpuPlatform` override (commit 7ea0f27b) admits
+the format and states truthful Xe2 MX capability; it is runtime-inert
+for the fp8 lane (kernel selection is table-keyed and never consults
+the changed paths — r105 battery PASS at cert10 refs proves zero
+dispatch change).
 
 ## KV-cache dtype — `fp8_e4m3` default + the four TurboQuant presets (comprehensive; all servable on cert8, re-gated clean on cert9, k8v4 carry proven on cert10)
 
@@ -581,7 +636,7 @@ The certified line on the uniform boot interface (no image change, no
 CLI edit — the env states the default explicitly):
 
 ```bash
-ARC_SPEC_METHOD=probabilistic ARC_IMAGE=vllm-arc:v0.30.0-b70-cert10 \
+ARC_SPEC_METHOD=probabilistic ARC_IMAGE=vllm-arc:v0.30.0-b70-cert11 \
   ARC_GRAPH=1 ARC_SPEC=3 bash /root/build/serve_arc_b70.sh
 # appends "draft_sample_method":"probabilistic" to --speculative-config
 # (P6.17: this is also the DEFAULT when ARC_SPEC_METHOD is unset;
