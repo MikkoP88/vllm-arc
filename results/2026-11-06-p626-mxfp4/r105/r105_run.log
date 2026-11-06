@@ -1,0 +1,117 @@
+=================== P626 R105 CERT11 GATE START 2026-11-06 09:50:25 ===================
+=== [0] content-identity gates on vllm-arc:v0.30.0-b70-cert11c 09:50:25 ===
+MANIFEST oneccl row: FAIL
+MANIFEST: OK (fork_sha 7ea0f27b + oneccl rows)
+TREE vllm_gaudi/: files 294 -> 300, changed=148 (expect 1: xpu/platform.py)
+TREE IDENTITY: FAIL (unexpected delta)
+2,6c2,6
+< df1e485e7123c43b5b5ecea23714b9e4  vllm_gaudi/__pycache__/__init__.cpython-312.pyc
+< 99845b4ed6bccd9cd23aba7c935496c9  vllm_gaudi/__pycache__/envs.cpython-312.pyc
+< 58a83bfe63aeb82f294c3505ad2bf4aa  vllm_gaudi/__pycache__/patches.cpython-312.pyc
+< 124b02215a712d9a59807b0fcfa88125  vllm_gaudi/__pycache__/platform.cpython-312.pyc
+< f7b3231a93d812306bfb06bc2e72a842  vllm_gaudi/__pycache__/utils.cpython-312.pyc
+---
+> 5c4f55a55d59191f1cebd2cbf9931376  vllm_gaudi/__pycache__/__init__.cpython-312.pyc
+> be20e02d6cf7c5a017835fdc41961ff9  vllm_gaudi/__pycache__/envs.cpython-312.pyc
+> 4970ff0a0d6efc1d19808e598726101c  vllm_gaudi/__pycache__/patches.cpython-312.pyc
+INFO 11-06 09:50:29 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+INFO 11-06 09:50:29 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+INFO 11-06 09:50:29 [__init__.py:54] - hpu -> vllm_gaudi:register
+INFO 11-06 09:50:29 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+/opt/venv/lib/python3.12/site-packages/torch/xpu/__init__.py:251: UserWarning: Can't initialize Level Zero Sysman
+  return _enum_zes_device_infos(visible_mask)
+/opt/venv/lib/python3.12/site-packages/torch/xpu/__init__.py:278: UserWarning: XPU device count is zero! (Triggered internally at /__w/pytorch/pytorch/c10/xpu/XPUFunctions.cpp:117.)
+  count = torch._C._xpu_getDeviceCount() if zes_count < 0 else zes_count
+/opt/venv/lib/python3.12/site-packages/torch/xpu/__init__.py:251: UserWarning: Can't initialize Level Zero Sysman
+  return _enum_zes_device_infos(visible_mask)
+FIX_LIVE quark=True supports_mx=True
+OVERLAY SHA FAIL /opt/venv/lib/libccl.so.1 (733980ab6a6eb15d2d3da0649b92052c64a9597ced48fe9188434face5298b35)
+OVERLAY SHA FAIL /opt/venv/lib/libccl.so.1.0 (733980ab6a6eb15d2d3da0649b92052c64a9597ced48fe9188434face5298b35)
+THIN SHIM: identical (untouched)
+PIP FREEZE diff lines vs cert10: 4 (expect 0)
+FREEZE: FAIL (wheel universe changed)
+77c77
+< kaldi_native_fbank==1.22.5
+---
+> kaldi_native_fbank==1.23.0
+=== [1] release battery, default certified posture 09:50:40 ===
+ 09:50:40 up 22:16,  3 users,  load average: 0.73, 8.35, 7.74
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert11c name=arc-test model=/models/qwen3.8-27b-fp8 served=qwen3.8-27b-fp8 quant=fp8 graph=1 spec=3 gmu=0.8 mnbt=8192 seqs=64 fp8=0 xgc=0 port=8000 09:51:03
+HEALTH=OK after ~315s
+(APIServer pid=13) INFO 11-06 09:52:02 [platform.py:345] ArcXpuPlatform: Intel Arc Xe2 posture active (Intel(R) Graphics [0xe223]).
+(EngineCore pid=698) INFO 11-06 09:54:00 [kv_cache_utils.py:2395] XPU KV cache size: 400,739 tokens, Maximum concurrency for 262,144 tokens per request: 1.53x
+FP8_ENV_SET=0 (expect 0 — silent-off default posture)
+FLIP_FIRST: stop 9.3s head: '\n\n1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20'
+A-gates: integrity_5of5=1 det_3of3=1
+--- run7n t0 + t1.0-xhigh (run7n x2 archived) 09:57:42 ---
+agg4x256#1 wall=3.77s aggregate=271.94 tok/s ok_streams=4/4 [256tok/3.8s 256tok/3.7s 256tok/3.8s 256tok/3.8s]
+agg4x256#2 wall=3.41s aggregate=300.48 tok/s ok_streams=4/4 [256tok/3.4s 256tok/3.4s 256tok/3.4s 256tok/3.4s]
+solo200 n=200 dt=2.37s tps=84.56
+solo200 n=200 dt=2.37s tps=84.55
+agg4x256#1 wall=7.60s aggregate=134.82 tok/s ok_streams=4/4 [256tok/7.6s 256tok/7.6s 256tok/7.1s 256tok/6.9s]
+agg4x256#2 wall=4.36s aggregate=234.79 tok/s ok_streams=4/4 [256tok/4.4s 256tok/4.2s 256tok/4.3s 256tok/4.3s]
+solo200 n=200 dt=2.87s tps=69.79
+solo200 n=200 dt=2.96s tps=67.64
+SPEC_GATE {"wall_s": 3.04, "streams_ok": "4/4", "drafts": 229, "draft_tokens": 687, "accepted": 575, "pos": {"0": 0.9258, "1": 0.8384, "2": 0.7467, "3": 0.0}, "pos1": 0.9258, "acceptance": 0.837, "mean_acceptance_length": 3.51, "hard": 0.5, "target": 0.85}
+SPEC_GATE log_window: (APIServer pid=13) INFO 11-06 09:58:09 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 2.92, Accepted throughput: 113.59 tokens/s, Drafted throughput: 177.28 tokens/s, Accepted: 1136 tokens, Drafted: 1773 tokens, Per-position acceptance rate: 0.826, 0.616, 0.481, Avg Draft acceptance rate: 64.1%
+SPEC_GATE PASS: pos1=0.9258 >= 0.5 hard, acceptance=0.8370 vs 0.85 target (TARGET MISS — recorded, --strict-target for certification)
+solo1: tps=61.08 tok=512 dt=8.4s finish=length
+solo2: tps=61.24 tok=512 dt=8.4s finish=length
+agg8: tps=326.43 tok=4096 wall=12.5s per_stream=['40.8', '41.3', '41.5', '41.5', '41.5', '41.0', '40.8', '40.8']
+--- LONG-RETURN full + 3 churn cycles (owner hard gate) 09:58:44 ---
+[essay] t0_identical=True hashes=['648d66ae32c9', '648d66ae32c9', '648d66ae32c9'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=2145 chars=[3885, 3885, 3885]
+[code] t0_identical=True hashes=['f9192d849270', 'f9192d849270', 'f9192d849270'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=5051 chars=[2004, 2004, 2004]
+[multi] t0_identical=True hashes=['1d4819646c8c', '1d4819646c8c', '1d4819646c8c'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=3400 chars=[1064, 1064, 1064]
+[simple] t0_identical=True hashes=['84efc84cc142', '84efc84cc142', '84efc84cc142'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=38 chars=[1510, 1510, 1510]
+LONGPROBE r105def full: CLEAN
+GARBLE: class_lines=4 empty_garble=4 (expect equal, >=4) in longprobe_full.out
+CHURN 4x256 done: ['5.0s/256tok', '5.1s/256tok', '5.1s/256tok', '5.4s/256tok']
+[essay] post_churn_rehit_identical=True hashes=['648d66ae32c9', '648d66ae32c9'] garble={'r1': [], 'r2': []}
+[code] post_churn_rehit_identical=True hashes=['f9192d849270', 'f9192d849270'] garble={'r1': [], 'r2': []}
+[multi] post_churn_rehit_identical=True hashes=['1d4819646c8c', '1d4819646c8c'] garble={'r1': [], 'r2': []}
+[simple] post_churn_rehit_identical=True hashes=['84efc84cc142', '84efc84cc142'] garble={'r1': [], 'r2': []}
+LONGPROBE r105defr1 rehit: CLEAN
+GARBLE: class_lines=4 empty_garble=4 (expect equal, >=4) in longprobe_rehit1.out
+CHURN 4x256 done: ['4.9s/256tok', '5.2s/256tok', '5.4s/256tok', '5.4s/256tok']
+[essay] post_churn_rehit_identical=True hashes=['648d66ae32c9', '648d66ae32c9'] garble={'r1': [], 'r2': []}
+[code] post_churn_rehit_identical=True hashes=['f9192d849270', 'f9192d849270'] garble={'r1': [], 'r2': []}
+[multi] post_churn_rehit_identical=True hashes=['1d4819646c8c', '1d4819646c8c'] garble={'r1': [], 'r2': []}
+[simple] post_churn_rehit_identical=True hashes=['84efc84cc142', '84efc84cc142'] garble={'r1': [], 'r2': []}
+LONGPROBE r105defr2 rehit: CLEAN
+GARBLE: class_lines=4 empty_garble=4 (expect equal, >=4) in longprobe_rehit2.out
+CHURN 4x256 done: ['4.9s/256tok', '5.3s/256tok', '5.3s/256tok', '5.4s/256tok']
+[essay] post_churn_rehit_identical=True hashes=['648d66ae32c9', '648d66ae32c9'] garble={'r1': [], 'r2': []}
+[code] post_churn_rehit_identical=True hashes=['f9192d849270', 'f9192d849270'] garble={'r1': [], 'r2': []}
+[multi] post_churn_rehit_identical=True hashes=['1d4819646c8c', '1d4819646c8c'] garble={'r1': [], 'r2': []}
+[simple] post_churn_rehit_identical=True hashes=['84efc84cc142', '84efc84cc142'] garble={'r1': [], 'r2': []}
+LONGPROBE r105defr3 rehit: CLEAN
+GARBLE: class_lines=4 empty_garble=4 (expect equal, >=4) in longprobe_rehit3.out
+[essay] hashes=['648d66ae32c9'] finish=['stop', 'stop', 'stop'] chars=[3885, 3885, 3885] t1_seed_identical=True garble_empty=True
+[code] hashes=['f9192d849270'] finish=['stop', 'stop', 'stop'] chars=[2004, 2004, 2004] t1_seed_identical=True garble_empty=True
+[multi] hashes=['1d4819646c8c'] finish=['stop', 'stop', 'stop'] chars=[1064, 1064, 1064] t1_seed_identical=True garble_empty=True
+[simple] hashes=['84efc84cc142'] finish=['stop', 'stop', 'stop'] chars=[1510, 1510, 1510] t1_seed_identical=True garble_empty=True
+T1_SEED_MISS_CLASSES: []
+LONGRETURN_BAR_R105DEF: PASS
+ERROR=0
+TRACEBACK=0
+--- p65 TTFT face (default posture) 10:04:15 ---
+=== long-stream faces (perf_counter, wave-relative)
+  U32k: TTFT=  17.37s total=  18.25s (start @ wave+  25.0s)
+  C32k: TTFT=   1.09s total=   1.72s (start @ wave+  55.0s)
+  U8k: TTFT=   3.77s total=   4.64s (start @ wave+  70.0s)
+  U64k: TTFT=  38.82s total=  39.46s (start @ wave+  85.0s)
+
+=== bystander inter-chunk gaps (12 streams, greedy, k3)
+  baseline: n=2322 p50=   53.7ms p95=   55.0ms
+  window                 n    p50 ms    p95 ms    max ms #>2xb95  stall_s
+=== [V] verdict vs cert10 bars 10:06:23 ===
+run7n t0 aggregate: [271.94, 300.48] (max 300.48) vs bar 285.37 (ref 300.39 steady, -5%)
+run7n solo200: [84.56, 84.55] (min 84.55) vs bar 80.28 (ref 84.51-84.52, -5%)
+tps agg8: 326.43 vs bar 312.02 (ref 328.44, -5%) — REPORT face
+spec pos1: 0.9258 (ref 0.9258; hard 0.5, target 0.85 — gate PASS carried above)
+U32k: TTFT=  17.37s vs ref  16.290s bar<=17.105 (+6.6%)
+C32k: TTFT=   1.09s vs ref   1.035s bar<=1.087 (+5.3%)
+U8k: TTFT=   3.77s vs ref   3.270s bar<=3.433 (+15.3%)
+U64k: TTFT=  38.82s vs ref  35.735s bar<=37.522 (+8.6%)
+R105_CERT11: FAIL ['U32k 17.37 > 17.105 (+5% block law)', 'C32k 1.09 > 1.087 (+5% block law)', 'U8k 3.77 > 3.433 (+5% block law)', 'U64k 38.82 > 37.522 (+5% block law)']
+=================== P626 R105 COMPLETE 2026-11-06 10:06:23 GATE_FAIL=1 ===================
