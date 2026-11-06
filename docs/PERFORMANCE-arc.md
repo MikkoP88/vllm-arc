@@ -293,6 +293,40 @@ gate + r100 scan). How to enable: one env line
 (`CCL_SYCL_ALLREDUCE_FP8=1`) — knob table in
 [`CONFIGURATION-arc.md`](CONFIGURATION-arc.md); certified default OFF.
 
+### P6.25 — the co-tenancy audit (r101, 2026-11-06): the last door closed MEASURED
+
+The one door no leg had measured: whether a side **stream** can hide the AR
+behind GEMM EUs (async-TP class — r83 closed same-stream overlap, r100
+closed fabric-level concurrency, neither EU-vs-wire co-tenancy). Microbench
+on the serve engine's own stack (cert10 image, torchrun TP2, backend xccl,
+real per-rank shapes at M=7488 incl. the GLU; `tools/ar/ar_overlap_bench.py`):
+
+- **API permits it**: `dist.all_reduce` is async-enqueue — 0.182 ms stock /
+  0.263 ms fp8.
+- **The device does not**: a concurrent AR stream inflates GEMM latency
+  **1.974× stock / 1.580× fp8** (AR side 1.09×/1.16×) — AR and GEMM
+  kernels time-slice the same execution resources; there is no idle-EU
+  lane to hide the wire in.
+- **Mock-layer A/B** (L=8 layers, real GEMM+GLU+AR structure, serial vs
+  k=2/3/4 sub-batch interleaved on a side stream): best-k **0.969× stock
+  (k=2) / 0.966× fp8 (k=3)** — overlap is SLOWER than serial at every k on
+  both wires. Pre-registered gate (≥1.08×) FAIL; the k-sweep is flat and
+  both wires fail → closed as a **class**, schedule- and wire-independent.
+  No r102; no engine change; cert10 stands.
+- **Census bonus**: the four per-rank linears take 17.173 ms/layer =
+  148.6 TF/s rank-local — ~99 % of the p66 devprobe's 147–150 TF/s
+  per-card practical dense fp16 ceiling (the audit draft's 73.5 TF/s/rank
+  reference was wrong — that figure was per-card already halved once).
+  The GEMM lane closes as already-optimal.
+- Anchors re-validated in-window: stock AR 7.809 ms (== the r94/r100
+  ceiling), fp8 AR 4.597 ms (1.70×; in-family with r97's 4.731/1.65×).
+
+Residue after r101: every prefill critical-path door is measured-closed
+(GEMM ~99 % of ceiling, AR at the fabric ceiling + fp8 opt-in, same-stream
+r83, fabric concurrency r100, AR-internal pipelining ~1 % r100,
+co-tenancy r101, FA P6.21, host P6.20); remaining headroom bounded
+≤1–2 % class. Evidence: `results/2026-11-06-p625-overlap-door/`.
+
 ### Prefix reuse — warm faces with tier attribution
 
 | Face | cold t1 | warm t2 | served by |

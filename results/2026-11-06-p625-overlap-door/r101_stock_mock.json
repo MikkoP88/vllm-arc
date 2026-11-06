@@ -1,0 +1,17 @@
+{
+ "label": "stock",
+ "rank": 0,
+ "m": 7488,
+ "mode": "mock",
+ "serial_ms": 273.11,
+ "overlap_k2_ms": 281.88,
+ "overlap_k2_speedup": 0.969,
+ "overlap_k3_ms": 282.61,
+ "overlap_k3_speedup": 0.966,
+ "overlap_k4_ms": 287.06,
+ "overlap_k4_speedup": 0.951,
+ "best_k": 2,
+ "best_speedup": 0.969,
+ "gate_1p08": "FAIL",
+ "overlap_bitwise": false
+}

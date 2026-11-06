@@ -1,0 +1,8 @@
+{
+ "label": "stock",
+ "rank": 0,
+ "m": 7488,
+ "mode": "async",
+ "enqueue_ms_med": 0.182,
+ "verdict": "async-enqueue (overlap viable at the API level)"
+}

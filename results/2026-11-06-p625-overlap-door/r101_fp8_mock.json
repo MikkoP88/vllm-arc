@@ -1,0 +1,17 @@
+{
+ "label": "fp8",
+ "rank": 0,
+ "m": 7488,
+ "mode": "mock",
+ "serial_ms": 222.78,
+ "overlap_k2_ms": 232.17,
+ "overlap_k2_speedup": 0.96,
+ "overlap_k3_ms": 230.55,
+ "overlap_k3_speedup": 0.966,
+ "overlap_k4_ms": 235.83,
+ "overlap_k4_speedup": 0.945,
+ "best_k": 3,
+ "best_speedup": 0.966,
+ "gate_1p08": "FAIL",
+ "overlap_bitwise": false
+}
