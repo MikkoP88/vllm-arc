@@ -1,0 +1,48 @@
+r108ae cert18 boot crash — descale storage form (v2 patch, fixed in v3)
+======================================================================
+Window: r108ae_cert18.sh, image vllm-arc:v0.30.0-b70-cert18 (build gate
+green: fa2 marks 3/3, tune marks 3/3, manifest cert18 rows, fork_sha
+d55631d0). Boot 16:07:01, gemma-4-31b fp8 maxlen 120000 lmc=0 rpc=1200.
+
+Outcome: the FA2 route FIRED at the first warm-gate hd512 full-attention
+fp8 point and the boot died at 16:18:57 (EngineCore failed to start) —
+proof the dispatch triggers at exactly the intended geometry:
+
+  (Worker_TP0 pid=781) [ARC-P628-FA2] hd512 full-attn -> vxk FA2
+      (r108ac 34x prefill)
+
+  File ".../vllm/v1/worker/gpu_worker.py", line 174, in _arc_xpu_warm_points
+      _tua.unified_attention(
+  File ".../vllm/v1/attention/ops/triton_unified_attention.py",
+      line 979, in unified_attention
+      _arc_fa2(q=q, k=k, v=v, out=out, ...)
+  File ".../vllm_xpu_kernels/flash_attn_interface.py", line 478,
+      in flash_attn_varlen_func
+      k_descale = _normalize_descale_tensor(k_descale, "k_descale")
+  File ".../vllm_xpu_kernels/flash_attn_interface.py", line 157,
+      in _normalize_descale_tensor
+      assert descale.untyped_storage().nbytes() == descale.element_size()
+  AssertionError: k_descale must be view of single scalar tensor
+
+Root cause — two caller forms, one kernel contract:
+  - vxk _normalize_descale_tensor asserts the descale has 1-element
+    storage (per-tensor scalar; dtype fp32 passes the shape through
+    as-is, bf16/fp16 get flattened+cast+re-expanded).
+  - ENGINE path (triton_attn.py:637): k_descale = layer._k_scale.expand(
+    descale_shape) — scalar storage -> PASSES untouched.
+  - WARM gate (gpu_worker.py _arc_xpu_warm_points, cert12 kit):
+    kd = torch.ones(nkvh, device=dev).expand((1, nkvh)) — nkvh-element
+    storage -> REJECTED (microbenches r108ac/ad used the expand-of-
+    scalar form, so this caller form was never exercised).
+
+Fix (patch v3, commit 0a9b2c34): _arc_fa2_scalar(ds) helper at module
+level — pass-through when storage is already 1 element (engine path,
+zero cost), else ds.reshape(-1)[:1].clone() (element 0 into fresh
+storage). Exact for per-tensor scales: per-token-head kv modes are
+guarded off in the dispatch condition, so the descale is uniform by
+construction. Local verify: applied to cert17 base, 3 marks, AST-valid,
+dispatch at line 993 between def (869) and sinks (1002), idempotent.
+
+Evidence: rig /root/build/p628/phaseC/cert18_l1/serve_crash.log
+(marker line + both Worker/EngineCore tracebacks; container paths only,
+no host addresses).

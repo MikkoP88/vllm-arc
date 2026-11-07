@@ -1,0 +1,100 @@
+r108ac + r108ad — P6.28 PERF FIX LANE: ESVD FA2 vs triton unified
+A/B at REAL gemma-4 full-attention geometry (THE 34x RESULT)
+=====================================================================
+Date: 2026-11-07, windows 15:28-15:35 (ac) + 15:41-15:48 (ad) rig.
+Scripts: /root/build/r108ac_fa2_ab.sh (md5 cb922c52) +
+/root/build/r108ad_fa2_guards.sh (md5 0db6b1a7). Image:
+vllm-arc:v0.30.0-b70-cert17 (arc-micro container, no serve).
+Owner directive: "RUN FULL DIAGNOSTIG AND ANALYZE OF PERFORMANCE
+ISSUES AND FIX ROOT ISSUE" — supersedes the r108ab "kernel-structural,
+research-class, out of scope" disposition.
+
+Mechanism amendment (this campaign)
+-----------------------------------
+The r108ab close-out story ("L2-bandwidth wall") is REFUTED by its own
+fp16-KV control: 10.28 s (fp16) vs 10.81 s (fp8) — 2x KV bytes, same
+time. A byte-bound kernel cannot be indifferent to 2x bytes. The triton
+kernel is slow PER K-TILE ITERATION (~10.3 us vs 2.4 us windowed at the
+same tile shape): the kernel, not the memory system, is the defect. The
+engine ships a second, far faster attention kernel — vllm_xpu_kernels
+ESVD FA2 (_vllm_fa2_C.abi3.so; P6.21b measured ~37 TF/s for it in qwen
+production prefill) — but the triton backend has NO fa2 dispatch, so
+gemma-4's hd512 full-attention layers never reach it.
+
+Method
+------
+Bare-kernel A/B at the REAL per-rank full-layer geometry (16Q/2KV
+hd512, q=8192 varlen, paged KV [nblk,64,2,512] e4m3 + 1-elem-storage
+scalar descales — the engine's exact form (layer._k_scale.expand),
+causal, block_table, engine kwargs). FA2 lane calls
+vllm_xpu_kernels.flash_attn_interface.flash_attn_varlen_func directly
+(paged, descales, softcap, window). Triton lane = the certified cert12
+config (64,32,8) via the stock wrapper.
+
+Results (ac_results.txt / ad_results.txt)
+-----------------------------------------
+PREFILL hd512 fp8-KV k32768 q8192:
+    TRITON  10.81 s/call = 0.71 TF/s   (r108ab, same recipe)
+    FA2      0.3197 s   = 24.1 TF/s    fp16-q sc50   == sc0
+    FA2      0.3351 s   = 23.0 TF/s    bf16-q sc50 (ENGINE DTYPE)
+    FA2      0.2090 s   = 36.8 TF/s    fp16-KV control
+    => 34x (fp8), 33x (bf16 engine form); 52x if KV were fp16
+k98304 fp8 sc50:  FA2 1.0637 s = 23.8 TF/s  (~30x vs triton ~32 s)
+DECODE hd512 fp8 S8 x k32768: FA2 0.0015 s/call (auto splits,
+device seqused_k — the production form). Triton bare-decode cost is
+in-engine-visible (~3 tok/s ceiling at k=32k, r108v2 note b).
+SLIDING hd256 win1023 k32k fp8: FA2 0.0087 s (vs triton 0.156 s,
+r108aa — 18x, but triton already healthy; routed only if it shares
+the full-attn signature — it does not (window 1023), so triton keeps
+it in cert18).
+Compile matrix: head-512 + fp8-e4m3-KV + descales + softcap-50 +
+bf16-q are ALL compiled in the stock .so — no "not compiled"
+fallback fired anywhere (so_heads.txt: strings precheck inconclusive,
+symbols stripped; the runs are the proof).
+
+Numeric guards (ad_results.txt)
+-------------------------------
+triton vs FA2 max_abs: 6e-5 (fp16 sc0) / 6e-5 (fp8 sc0) / 2e-3 (sc50)
+/ 5e-4 (bf16-q fp8) / 1.2e-4 (decode fp16 + fp8); allclose(1e-2)=True
+everywhere. DECODE guard vs a block-table-faithful GQA torch
+reference: BOTH kernels anchor at 1e-4 (ref_t 0.00009 / ref_f 0.00008
+fp16; 0.00007/0.00008 fp8) — correctness closed against an independent
+reference. Honesty note: r108ad's PREFILL torch ref had a bug (it
+ignored the REVERSED block_table — ref_t~3.4 in the pre guards is the
+ref's fault); the prefill proof rests on the t-vs-f agreement plus the
+table-faithful decode ref (same kernels, same indexing path).
+
+Warts (why some triton anchors are absent here)
+-----------------------------------------------
+r108ac: EVERY triton child died fast — descales were passed as
+expanded stride-0 views; r108ab's contiguous (1,nkvh) tensors work
+(r108ad guards prove the triton lane runs with contiguous descales).
+r108ad: the triton anchor configs missed "kern":"triton" (KeyError
+after banner) and the FA2 split32 variant misused the API
+(host_kv_lens and seqused_k are mutually exclusive). Neither affects
+the verdict: triton references carry from r108aa/r108ab (banked), and
+the production decode form is the measured seqused_k-only "auto" one.
+model_cfg(2).txt: gemma config.json not found by the precheck greps
+(the serve script indirection $MP) — softcap 50.0 is the family value
+and BOTH kernels were exercised at 50.0 with agreement; the cert18
+face battery (quality probes) is the end-to-end numeric gate.
+
+The fix (cert18)
+----------------
+external_patches/vllm/patch_arc_xpu_fa2_route.py + tools/
+cert18.Dockerfile: wrapper-level dispatch in unified_attention —
+full-attention head-512 calls (window left < 0, scalar causal,
+per-tensor fp8-KV scalar descales or fp16-KV, paged block_table, none
+of the triton-only features) call flash_attn_varlen_func; everything
+else keeps triton. ARC_ATTN_FA2=0 = escape hatch; boot marker
+[ARC-P628-FA2]. Expected from the A/B: face32k 283 s -> ~30-40 s
+class, face120k 2950 s -> ~4-6 min class, long-context decode ceiling
+lifted. Validation ladder: cert18 build/boot gate -> L1 face battery +
+decode battery vs cert17 record -> qwen U8k/U32k discriminator ->
+docs/tag rel/v0.30.0-b70-cert18.
+
+Files (this dir)
+----------------
+ac_results.txt, ad_results.txt, so_heads.txt, model_cfg.txt (empty),
+model_cfg2.txt, r108ac_window.txt, r108ad_window.txt. No host
+addresses (grep 0) — no redaction note needed.

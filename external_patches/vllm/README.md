@@ -1,6 +1,6 @@
-# vllm — B70 prefill launch-config table + engine warmup gate for the triton unified-attention launcher
+# vllm — triton unified-attention launcher table/warmup kit + ESVD FA2 route
 
-Kit of four wheel patches (all mark-tagged, idempotent, `--audit` mode,
+Kit of five wheel patches (all mark-tagged, idempotent, `--audit` mode,
 `.arcxpubak` backup, stock wheel files — no source rebuild, staged pins
 stay pristine; #3 and #4 are DIAGNOSTIC overlays, never cert pins):
 
@@ -34,6 +34,52 @@ stay pristine; #3 and #4 are DIAGNOSTIC overlays, never cert pins):
   warps/stages. One boot yields the warm key-set and the request key in
   a single serve log; the r108u residual's differing dimension reads
   straight off the diff.
+- **patch #5 `patch_arc_xpu_fa2_route.py`** → cert18: routes
+  full-attention head-512 calls (gemma-4's 10 global layers) off the
+  triton 2D path onto the vllm_xpu_kernels ESVD FA2 kernel — 34x
+  prefill / 1.5 ms-class decode at production geometry (r108ac/r108ad,
+  `results/2026-11-06-p628-gemma4/phaseC/micro_fa2ab/`). Same wrapper
+  surface as patch #1; every triton-only feature keeps triton;
+  `ARC_ATTN_FA2=0` escape hatch.
+
+## Patch 5 — ESVD FA2 route for full-attention head-512 (cert18)
+
+### What
+
+Wrapper-level dispatch in `unified_attention`: when a call is
+full-attention head-512 (window left < 0, scalar causal, paged
+block_table, per-tensor fp8-KV scalar descales or fp16-KV, and none of
+the triton-only features — sliding windows, INT4/per-token-head KV,
+alibi, sinks, mm_prefix, rswa, chunked attention, per-seq causal,
+q_descale — are in play), call
+`vllm_xpu_kernels.flash_attn_interface.flash_attn_varlen_func`
+directly with the same paged-KV tensors (`[num_blocks, block_size,
+num_kv_heads, head_size]`) the triton path already consumes. Descale
+form normalized patch-side (v3): the engine's 1-element-storage views
+(`layer._k_scale.expand(...)`) pass `_normalize_descale_tensor`
+untouched (zero cost); full-storage callers (the cert12 warm gate's
+`torch.ones(nkvh).expand((1, nkvh))` — rejected at the first warm hd512
+fp8 point in r108ae) get element 0 cloned into fresh 1-element storage,
+exact for per-tensor scales (per-token-head kv modes are guarded off).
+Boot marker `[ARC-P628-FA2]`; env `ARC_ATTN_FA2=0` restores the
+pure-triton path.
+
+### Why
+
+r108ab closed the launch-config lane at the ceiling (certified
+(64,32,8) optimal; M128 cannot launch — SLM) and the fp16-KV control
+(10.28 s vs 10.81 s at 2x bytes) refuted byte-boundedness: the triton
+kernel is slow per K-tile iteration. The engine already ships a fast
+kernel for exactly this shape class — the ESVD FA2 kernel — but the
+triton backend never dispatches to it. Measured (r108ac/r108ad):
+0.3197 s vs 10.81 s per k32k fp8-KV call (24.1 vs 0.71 TF/s, 34x;
+bf16-q engine form 0.3351 s), k98k ~30x, decode S8x32k 1.5 ms/call;
+numeric guards vs a block-table-faithful GQA torch reference anchor
+both kernels at 1e-4. Not an upstream import: upstream vllm HEAD has
+no such dispatch either (its triton wrapper carries the same slow 2D
+path with newer band tables pinning the same wall); the routing
+pattern mirrors what the qwen/GDN lane's own XPU backend already does
+(`vllm/_xpu_ops.py` → the same `flash_attn_varlen_func`).
 
 ## Patch 1 — launch-config table (cert12)
 

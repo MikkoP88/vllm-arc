@@ -1,0 +1,24 @@
+W14 health before stop: 200
+=== [ad] micro container boot (NO serve) 15:41:42 ===
+ARC_MODEL=$MP
+== guards (fixed ref; contiguous triton descales) ==
+[GUARD pre fp16 sc0 s2048k8192         ] GUARD_OK triton=0.6037s max_abs(t,f)=0.00006 allclose(1e-2)=True ref_t=3.40172 ref_f=3.40172
+[GUARD pre fp8  sc0 s2048k8192         ] GUARD_OK triton=0.7498s max_abs(t,f)=0.00006 allclose(1e-2)=True ref_t=3.46756 ref_f=3.46756
+[GUARD pre fp16 sc50 s2048k8192        ] GUARD_OK triton=0.6707s max_abs(t,f)=0.00195 allclose(1e-2)=True ref_t=3.40152 ref_f=3.40159
+[GUARD pre bf16q fp8 sc0 s2048k8192    ] GUARD_OK triton=0.7589s max_abs(t,f)=0.00049 allclose(1e-2)=True ref_t=3.46722 ref_f=3.46722
+[GUARD dec fp16 mixlens                ] GUARD_OK triton=0.0362s max_abs(t,f)=0.00012 allclose(1e-2)=True ref_t=0.00009 ref_f=0.00008
+[GUARD dec fp8  mixlens                ] GUARD_OK triton=0.0648s max_abs(t,f)=0.00012 allclose(1e-2)=True ref_t=0.00007 ref_f=0.00008
+== bf16-q prefill (engine dtype) ==
+[PRE k32k bf16q fp8 sc50 FA2           ] SYNC_OK wall=0.3351s x2 tflops=22.970
+[PRE k32k bf16q fp8 sc50 TRITON        ] FAIL INFO 11-07 15:47:42 [__init__.py:272] Platform plugin arc is activated | Traceback (most recent call last): ||   File "<string>", line 146, in <module> || KeyError: 'kern'
+== triton anchors (redo of r108ac dead lanes) ==
+[PRE k32k fp8 sc50 TRITON              ] FAIL INFO 11-07 15:47:50 [__init__.py:272] Platform plugin arc is activated | Traceback (most recent call last): ||   File "<string>", line 146, in <module> || KeyError: 'kern'
+[PRE k32k fp8 sc0  TRITON              ] FAIL INFO 11-07 15:47:57 [__init__.py:272] Platform plugin arc is activated | Traceback (most recent call last): ||   File "<string>", line 146, in <module> || KeyError: 'kern'
+[PRE k98k fp8 sc50 TRITON              ] FAIL INFO 11-07 15:48:04 [__init__.py:272] Platform plugin arc is activated | Traceback (most recent call last): ||   File "<string>", line 146, in <module> || KeyError: 'kern'
+[DEC S8x32k fp8 TRITON                 ] FAIL INFO 11-07 15:48:12 [__init__.py:272] Platform plugin arc is activated | Traceback (most recent call last): ||   File "<string>", line 155, in <module> || KeyError: 'kern'
+[DEC S8mix fp8 TRITON                  ] FAIL INFO 11-07 15:48:19 [__init__.py:272] Platform plugin arc is activated | Traceback (most recent call last): ||   File "<string>", line 155, in <module> || KeyError: 'kern'
+[DEC S8mix fp8 FA2 split32             ] FAIL INFO 11-07 15:48:27 [__init__.py:272] Platform plugin arc is activated |   File "/opt/venv/lib/python3.12/site-packages/vllm_xpu_kernels/flash_attn_interface.py", line 463, in flash_attn_varlen_func ||     raise ValueError("Provide only one of host_kv_lens and seqused_k") || ValueError: Provide only one of host_kv_lens and seqused_k
+[DEC S8x32k fp8 FA2 split32            ] FAIL INFO 11-07 15:48:34 [__init__.py:272] Platform plugin arc is activated |   File "/opt/venv/lib/python3.12/site-packages/vllm_xpu_kernels/flash_attn_interface.py", line 463, in flash_attn_varlen_func ||     raise ValueError("Provide only one of host_kv_lens and seqused_k") || ValueError: Provide only one of host_kv_lens and seqused_k
+[SLIDE k32k fp8 TRITON                 ] FAIL INFO 11-07 15:48:41 [__init__.py:272] Platform plugin arc is activated | Traceback (most recent call last): ||   File "<string>", line 146, in <module> || KeyError: 'kern'
+AD_DONE
+=== [ad] window done 15:48:46 ===
