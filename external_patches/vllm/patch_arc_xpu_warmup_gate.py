@@ -141,7 +141,11 @@ def _arc_xpu_warm_points(worker, geoms) -> None:
 
     dev = torch.device("xpu", torch.xpu.current_device())
     for head, nqh, nkvh in geoms:
-        cache = caches.get((64, nkvh, head)) or caches.get((128, nkvh, head))
+        # dict.get-or-get must use explicit None checks: a hit returns the
+        # cache tensor, and `tensor or ...` would call bool(tensor).
+        cache = caches.get((64, nkvh, head))
+        if cache is None:
+            cache = caches.get((128, nkvh, head))
         if cache is None:
             # Fall back to any cache with matching (nkvh, head).
             match = [c for (p, n, h), c in caches.items()
