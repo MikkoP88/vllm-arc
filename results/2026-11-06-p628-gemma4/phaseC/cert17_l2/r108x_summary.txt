@@ -1,0 +1,51 @@
+r108x — L2 leg: gemma-4-31B MXFP8-FP8KV-CT-AutoRound on cert17
+================================================================
+Date: 2026-11-07, window 10:35–11:48 (rig). Script:
+/root/build/r108x_cert17_l2.sh (shipped md5 a5a3f0ad + rig-side LEG
+rename cert16_l2->cert17_l2). Image: vllm-arc:v0.30.0-b70-cert17.
+Model: /models/gemma4-31b-mxfp8fp8kv (intel-ai AutoRound MXFP8 weights
++ FP8 KV), config-driven quant (ARC_QUANT empty), maxlen 95000, TP2,
+graph=1, spec=0, ARC_LMC=0, ARC_RPC_TIMEOUT=1200.
+
+Boot + battery — ALL GREEN (freeze-class)
+-----------------------------------------
+- Boot: warm gate 32/32 load-lines (10:37–10:57), health 11:09,
+  model id gemma-4-31b.
+- probe98: OK wall=35 s, coherent ("Hi! How can I help you today").
+- G1: factual OK ("seven"), code OK ("s[::-1]"), **reason MISS**:
+  "5:30 pm" — the L1 fp8 leg answers the identical prompt correctly
+  ("4:40 pm"). Single-probe arithmetic miss under W8 weight quant;
+  not freeze-class, but the lane's quality posture needs a broader
+  battery before any "quality parity" claim (flagged to the perf
+  campaign; spec gates do not apply — gemma runs spec=0).
+- G2 faces (client walls, maxlen 95000):
+    face8k    wall=35.4 s   finish=length ptok= 8028 ctok=16  OK
+    face32k   wall=297.4 s  finish=length ptok=32028 ctok=16  OK
+    face90k   wall=1819.5 s finish=length ptok=87528 ctok=16  OK
+    face32k_2 wall=10.3 s   finish=length ptok=32028 ctok=16  OK
+- erraudit: 0 ERROR / 0 Traceback. jit_warn_count: 1 (probe-time
+  kernel_unified_attention, same residue class as L1).
+
+Reading
+-------
+- Prefill tracks the L1 fp8 leg within ~5–12 % at every face — the
+  long-prefill cost is attention-kernel-bound, not weight-quant-bound
+  (consistent with the P6.28 perf finding that the triton 2D prefill
+  path runs far below peak for gemma's head geometries; the perf
+  diagnostic r108aa is running as this leg banks).
+- face90k 1819.5 s vs the L1 k²-interpolation estimate ~2100 s
+  (283.4 × (87528/32028)²): slightly under — same curve family.
+- face32k_2 10.3 s = prefix caching (identical prompt), same as L1.
+- ARC_RPC_TIMEOUT=1200 was required here too (face90k's late chunks
+  exceed the 300 s stock watchdog — same mechanism as L1 face120k).
+
+Files (this dir)
+----------------
+battery.txt (G1+G2), probe98.out, model_id.txt, jit_lines.txt,
+jit_warn_count.txt, erraudit.txt, serve.log (health-time snapshot),
+serve_tail.txt, serve_live_snap.log (LIVE battery-window capture via
+the external 60 s snapshot loop — the script's own docker-cp ran at
+health time and would have missed the battery, the r108y lesson; the
+loop caught the final state at window-done 11:48), r108x_window.log.
+serve.log/serve_tail.txt/serve_live_snap.log perl-redacted (1+1+29 rig,
+28 client occurrences — results/REDACTION-2026-11-07-p628.md).
