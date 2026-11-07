@@ -1,0 +1,78 @@
+r108y — cert16 + ARC_LMC=0 counterfactual (layer-3 attribution proof)
+=====================================================================
+Date: 2026-11-07, window 07:43–08:30:59 (rig). Script:
+/root/build/r108y_cert16_nolmc.sh (md5 6c59c8ef2af25dd70340e3faf42d5405).
+Image: vllm-arc:v0.30.0-b70-cert16 (warm-gate v4, commit 5d895fef).
+Model: gemma-4-31b BF16 online-fp8, maxlen 120000, TP2, graph=1,
+spec=0, LMC=0 — the counterfactual leg for the r108w wedge.
+
+Purpose
+-------
+r108w (cert16, LMC=1) froze at probe98: py-spy showed both ranks'
+MainThreads at wait_for_save -> _lmc_lock_guard while the arc-lmc-store
+worker held _lmc_store_lock stuck in lmcache's stock
+multi_layer_kv_transfer fallback — layer 3 (LMCache store path). This
+window removes LMCache entirely (ARC_LMC=0) on the same image to prove
+the attribution: if the freeze disappears, the store path is the wedge.
+
+Results
+-------
+- Boot to health: ~7 min (kv_connector lines in boot log: 0 — LMC off
+  posture confirmed; no warm-gate regression, gate v4 completed).
+- probe98: OK, wall=31 s, content "Hi!<end_of_turn>" — the r108w
+  freeze is GONE with LMC=0 on the same cert16 image. Layer-3
+  attribution proven.
+- G1 correctness: all three green — factual ("seven"), reason (train
+  catch-up -> 4:40 pm, correct arithmetic), code ("s[::-1]").
+- G2 faces:
+    face8k    wall=31.7 s  finish=length ptok=8028  ctok=16  OK
+    face32k   wall=283.2 s finish=length ptok=32028 ctok=16  OK
+    face120k  FAILED after 300.5 s: HTTP 500
+    face32k_2 FAILED after 0.0 s: HTTP 500 (cascade — engine already
+              dead from the face120k hit)
+- erraudit: 57 ERROR / 3 Traceback lines in the serve log (the 500
+  pair + EngineCore death).
+- jit_warn_count: 1 (the 08:20:07 probe-time compile warn only).
+
+face120k analysis (layer 2b, unresolved here)
+---------------------------------------------
+Death at 300.5 s matches the execute-model RPC watchdog
+(VLLM_EXECUTE_MODEL_TIMEOUT_SECONDS, default 300 — vllm/envs.py:242,
+multiproc_executor) to within measurement noise, same signature as the
+pre-cert16 G2 deaths. Two candidate mechanisms, not discriminated by
+this window:
+  a) cold compile (~290 s tier) of a warm-v4-missed triton class on a
+     late prefill chunk — the (high band, q non-div-16, k non-div-16)
+     point is absent from the warm matrix;
+  b) pure late-chunk compute: a single chunk at k~115 k taking >300 s
+     of kernel time.
+Evidence gap (fixed in r108z): the serve log was docker-cp'd at HEALTH
+time, so the battery-window log lines were lost with the container.
+r108z raises the watchdog to 1200 s via the new ARC_RPC_TIMEOUT knob
+(serve_arc_b70.sh, line 296) so the battery completes under either
+mechanism, and captures the live serve tail + wedge-time py-spy on any
+face failure — per-chunk scheduler timing from that tail discriminates
+(a) vs (b): a ~290 s stall followed by fast chunks = compile; uniformly
+slow chunks = compute.
+
+Disposition
+-----------
+- Freeze layer 3 (LMCache store) CLOSED: LMC=0 removes it; cert17
+  (commit e5e725b4) makes the LMC=1 wedge a boot-time refusal via the
+  uniform-KV-row gate. Certified gemma-4 posture: ARC_LMC=0.
+- Layer 2b (face120k watchdog) OPEN — r108z running with
+  ARC_RPC_TIMEOUT=1200 as the discriminator window.
+- face32k at 283.2 s is within 17 s of the same 300 s cliff — the
+  battery only cleared it because 283 < 300; any workload nudging a
+  single chunk over 300 s dies regardless of mechanism. The knob is
+  therefore also the production mitigation candidate for long-prefill
+  gemma-4 deployments (document with cert17).
+
+Files (this dir)
+----------------
+probe98.out, g1_probes.txt, g2_faces.txt, jit_lines.txt,
+jit_warn_count.txt, erraudit.txt, serve.log (health-time snapshot;
+see analysis note), serve_tail.txt (same snapshot, tail),
+r108y_window.log (window driver log). serve.log/serve_tail.txt were
+perl-redacted (1 rig-address occurrence each — see
+results/REDACTION-2026-11-07-p628.md).

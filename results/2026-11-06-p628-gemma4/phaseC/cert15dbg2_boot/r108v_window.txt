@@ -1,0 +1,81 @@
+=== [1] cert15dbg2 build 05:38:14 ===
+#8 naming to docker.io/library/vllm-arc:v0.30.0-b70-cert15dbg2 done
+#8 unpacking to docker.io/library/vllm-arc:v0.30.0-b70-cert15dbg2 0.1s done
+#8 DONE 0.2s
+CERT15DBG2_BUILD_GATE_OK
+W14 health before stop: 200
+=== [2] cert15dbg2 boot start 05:38:48 (graph=1 lmc=1 spec=0) ===
+ARC_CONTAINER_FRESH image=vllm-arc:v0.30.0-b70-cert15dbg2 id=1cf9abdc039c model=/models/gemma4-31b (recreated from none)
+ba86562e5abfd884f55de411c89a2e0daad902f6b423c2ae033b2080473cc9d2
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert15dbg2 name=arc-test model=/models/gemma4-31b served=gemma-4-31b quant=fp8 graph=1 spec=0 gmu=0.8 maxlen=120000 mnbt=8192 seqs=64 fp8=0 xgc=0 tmpl=/root/build/chat_template_gemma4.jinja rp= tp= port=8000 05:38:51
+[boot] warm progress: 1 load-lines at 05:41:38
+[boot] warm progress: 2 load-lines at 05:46:13
+[boot] warm progress: 9 load-lines at 05:50:59
+[boot] warm progress: 10 load-lines at 05:56:32
+[boot] warm progress: 11 load-lines at 06:01:08
+[boot] warm progress: 26 load-lines at 06:01:13
+[boot] warm progress: 32 load-lines at 06:01:18
+--- HEALTH UP 06:14:45; warm summary: ---
+32
+(Worker_TP1 pid=796) INFO 11-07 06:01:15 [gpu_worker.py:247] ARC XPU tune warmup complete on rank 1/2 in 1178.9s (2 geometries)
+(Worker_TP0 pid=795) INFO 11-07 06:01:15 [gpu_worker.py:247] ARC XPU tune warmup complete on rank 0/2 in 1178.9s (2 geometries)
+(EngineCore pid=527) INFO 11-07 05:39:48 [core.py:123] Initializing a V1 LLM engine (v0.30.0) with config: model='/models/target', speculative_config=None, tokenizer='/models/target', skip_tokenizer_init=False, tokenizer_mode=auto, revision=None, tokenizer_revision=None, trust_remote_code=True, dtype=torch.float16, max_seq_len=120000, download_dir=None, load_format=auto, tensor_parallel_size=2, pipeline_parallel_size=1, data_parallel_size=1, decode_context_parallel_size=1, dcp_comm_backend=ag_rs, disable_custom_all_reduce=True, quantization=fp8, quantization_config=None, enforce_eager=False, enable_return_routed_experts=False, kv_cache_dtype=fp8_e4m3, device_config=xpu, structured_outputs_config=StructuredOutputsConfig(backend='auto', disable_any_whitespace=False, disable_additional_properties=False, reasoning_parser='', reasoning_parser_plugin='', enable_in_reasoning=False), observability_config=ObservabilityConfig(show_hidden_metrics_for_version=None, otlp_traces_endpoint=None, collect_detailed_traces=None, per_request_spec_decode_metrics='none', kv_cache_metrics=False, kv_cache_metrics_sample=0.01, cudagraph_metrics=False, enable_layerwise_nvtx_tracing=False, enable_mfu_metrics=False, enable_mm_processor_stats=False, enable_logging_iteration_details=False, jit_monitor_mode='warn', jit_monitor_verbose=False), seed=0, served_model_name=gemma-4-31b, enable_prefix_caching=True, enable_chunked_prefill=True, pooler_config=None, compilation_config={'mode': <CompilationMode.NONE: 0>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': ['all'], 'ir_enable_torch_wrap': False, 'splitting_ops': [], 'compile_mm_encoder': False, 'cudagraph_mm_encoder': False, 'encoder_cudagraph_token_budgets': [], 'encoder_cudagraph_max_vision_items_per_batch': 0, 'encoder_cudagraph_max_frames_per_batch': None, 'compile_sizes': [], 'compile_ranges_endpoints': [8192], 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.FULL_DECODE_ONLY: (2, 0)>, 'cudagraph_num_of_warmups': 1, 'cudagraph_capture_sizes': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 20, 25, 30, 35, 40, 45, 48, 50, 55, 60, 64, 65, 70, 75, 80, 85, 90, 95, 96, 100, 105, 110, 112, 115, 120, 125, 128, 130, 135, 140, 145, 150, 155, 160, 165, 170, 175, 180, 185, 190, 192, 195, 200, 205, 210, 215, 220, 224, 225, 230, 235, 240, 245, 250, 255, 256, 260, 265, 270, 275, 280, 285, 290, 295, 300, 305, 310, 315, 320], 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': False, 'pass_config': {'fuse_norm_quant': True, 'fuse_act_quant': True, 'fuse_attn_quant': False, 'enable_sp': False, 'fuse_gemm_comms': False, 'fuse_allreduce_rms': False, 'enable_qk_norm_rope_fusion': False, 'fuse_rope_kvcache_cat_mla': False, 'fuse_act_padding': False, 'fuse_qk_norm_rope_kvcache': False}, 'max_cudagraph_capture_size': 320, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': False}, 'local_cache_dir': None, 'fast_moe_cold_start': False, 'static_all_moe_layers': []}, kernel_config=KernelConfig(ir_op_priority=IrOpPriorityConfig(rms_norm=['vllm_c', 'native'], fused_add_rms_norm=['vllm_c', 'native'], gelu_and_mul_sparse=['native']), enable_flashinfer_autotune=True, enable_cutedsl_warmup=True, enable_jit_warmup=True, moe_backend='auto', sparse_indexer_topk_backend='auto', linear_backend='auto', linear_backend_per_quant=None)
+(Worker_TP1 pid=796) INFO 11-07 06:14:35 [jit_monitor.py:85] Kernel JIT monitor activated; monitored JIT compilations during inference will use mode=warn.
+(Worker_TP0 pid=795) INFO 11-07 06:14:35 [jit_monitor.py:85] Kernel JIT monitor activated; monitored JIT compilations during inference will use mode=warn.
+--- [3] wait 120s for the engine's internal 98-tok warmup 06:14:45 ---
+18184
+--- probe98 (wedge repro) 06:16:46 ---
+probe98 wall=300s
+{"error":{"message":"EngineCore encountered an issue. See stack trace (above) for the root cause.","type":"InternalServerError","param":null,"code":500}}
+PROBE98_STALLED — wedge-time py-spy
+===== py-spy dump pid=795 =====
+Process 795: VLLM::Worker_TP0
+Python v3.12.3 (/usr/bin/python3.12)
+
+Thread 795 (active+gil): "MainThread"
+    SpirvUtils.load_binary (triton/backends/intel/driver.py:232)
+    CompiledKernel._init_handles (triton/compiler/compiler.py:488)
+    CompiledKernel.launch_metadata (triton/compiler/compiler.py:515)
+    JITFunction.run (triton/runtime/jit.py:822)
+    KernelInterface.__getitem__.<locals>.<lambda> (triton/runtime/jit.py:375)
+    unified_attention (vllm/v1/attention/ops/triton_unified_attention.py:1179)
+    TritonAttentionImpl.forward (vllm/v1/attention/backends/triton_attn.py:656)
+    unified_attention_with_output (vllm/model_executor/layers/attention/attention.py:777)
+    maybe_transfer_kv_layer.<locals>.wrapper (vllm/model_executor/layers/attention/kv_transfer_utils.py:54)
+    OpOverloadPacket.__call__ (torch/_ops.py:1279)
+    Attention.forward (vllm/model_executor/layers/attention/attention.py:569)
+    Module._call_impl (torch/nn/modules/module.py:1789)
+    Module._wrapped_call_impl (torch/nn/modules/module.py:1778)
+    Gemma4Attention.forward (vllm/model_executor/models/gemma4.py:567)
+    Module._call_impl (torch/nn/modules/module.py:1789)
+    Module._wrapped_call_impl (torch/nn/modules/module.py:1778)
+    Gemma4DecoderLayer.forward (vllm/model_executor/models/gemma4.py:732)
+    Module._call_impl (torch/nn/modules/module.py:1789)
+    Module._wrapped_call_impl (torch/nn/modules/module.py:1778)
+    Gemma4Model.forward (vllm/model_executor/models/gemma4.py:1363)
+    _support_torch_compile.<locals>.__call__ (vllm/compilation/decorators.py:509)
+    Gemma4ForConditionalGeneration.forward (vllm/model_executor/models/gemma4_mm.py:2142)
+    Module._call_impl (torch/nn/modules/module.py:1789)
+    Module._wrapped_call_impl (torch/nn/modules/module.py:1778)
+    GPUModelRunner.execute_model (vllm/v1/worker/gpu/model_runner.py:1948)
+    context_decorator.<locals>.decorate_context (torch/utils/_contextlib.py:124)
+    _wrap_runner_entry.<locals>._arc_execute_model (vllm_gaudi/xpu/patches/graph_safe_output.py:876)
+    Worker.execute_model (vllm/v1/worker/gpu_worker.py:1406)
+    context_decorator.<locals>.decorate_context (torch/utils/_contextlib.py:124)
+    WorkerWrapperBase.execute_model (vllm/v1/worker/worker_base.py:375)
+    WorkerProc._execute_worker_rpc (vllm/v1/executor/multiproc_executor.py:1047)
+    WorkerProc.worker_busy_loop (vllm/v1/executor/multiproc_executor.py:1033)
+    WorkerProc.worker_main (vllm/v1/executor/multiproc_executor.py:935)
+    BaseProcess.run (multiprocessing/process.py:108)
+    BaseProcess._bootstrap (multiprocessing/process.py:314)
+(EngineCore pid=527) INFO 11-07 05:39:48 [core.py:123] Initializing a V1 LLM engine (v0.30.0) with config: model='/models/target', speculative_config=None, tokenizer='/models/target', skip_tokenizer_init=False, tokenizer_mode=auto, revision=None, tokenizer_revision=None, trust_remote_code=True, dtype=torch.float16, max_seq_len=120000, download_dir=None, load_format=auto, tensor_parallel_size=2, pipeline_parallel_size=1, data_parallel_size=1, decode_context_parallel_size=1, dcp_comm_backend=ag_rs, disable_custom_all_reduce=True, quantization=fp8, quantization_config=None, enforce_eager=False, enable_return_routed_experts=False, kv_cache_dtype=fp8_e4m3, device_config=xpu, structured_outputs_config=StructuredOutputsConfig(backend='auto', disable_any_whitespace=False, disable_additional_properties=False, reasoning_parser='', reasoning_parser_plugin='', enable_in_reasoning=False), observability_config=ObservabilityConfig(show_hidden_metrics_for_version=None, otlp_traces_endpoint=None, collect_detailed_traces=None, per_request_spec_decode_metrics='none', kv_cache_metrics=False, kv_cache_metrics_sample=0.01, cudagraph_metrics=False, enable_layerwise_nvtx_tracing=False, enable_mfu_metrics=False, enable_mm_processor_stats=False, enable_logging_iteration_details=False, jit_monitor_mode='warn', jit_monitor_verbose=False), seed=0, served_model_name=gemma-4-31b, enable_prefix_caching=True, enable_chunked_prefill=True, pooler_config=None, compilation_config={'mode': <CompilationMode.NONE: 0>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': ['all'], 'ir_enable_torch_wrap': False, 'splitting_ops': [], 'compile_mm_encoder': False, 'cudagraph_mm_encoder': False, 'encoder_cudagraph_token_budgets': [], 'encoder_cudagraph_max_vision_items_per_batch': 0, 'encoder_cudagraph_max_frames_per_batch': None, 'compile_sizes': [], 'compile_ranges_endpoints': [8192], 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.FULL_DECODE_ONLY: (2, 0)>, 'cudagraph_num_of_warmups': 1, 'cudagraph_capture_sizes': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 20, 25, 30, 35, 40, 45, 48, 50, 55, 60, 64, 65, 70, 75, 80, 85, 90, 95, 96, 100, 105, 110, 112, 115, 120, 125, 128, 130, 135, 140, 145, 150, 155, 160, 165, 170, 175, 180, 185, 190, 192, 195, 200, 205, 210, 215, 220, 224, 225, 230, 235, 240, 245, 250, 255, 256, 260, 265, 270, 275, 280, 285, 290, 295, 300, 305, 310, 315, 320], 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': False, 'pass_config': {'fuse_norm_quant': True, 'fuse_act_quant': True, 'fuse_attn_quant': False, 'enable_sp': False, 'fuse_gemm_comms': False, 'fuse_allreduce_rms': False, 'enable_qk_norm_rope_fusion': False, 'fuse_rope_kvcache_cat_mla': False, 'fuse_act_padding': False, 'fuse_qk_norm_rope_kvcache': False}, 'max_cudagraph_capture_size': 320, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': False}, 'local_cache_dir': None, 'fast_moe_cold_start': False, 'static_all_moe_layers': []}, kernel_config=KernelConfig(ir_op_priority=IrOpPriorityConfig(rms_norm=['vllm_c', 'native'], fused_add_rms_norm=['vllm_c', 'native'], gelu_and_mul_sparse=['native']), enable_flashinfer_autotune=True, enable_cutedsl_warmup=True, enable_jit_warmup=True, moe_backend='auto', sparse_indexer_topk_backend='auto', linear_backend='auto', linear_backend_per_quant=None)
+(Worker_TP1 pid=796) INFO 11-07 06:14:35 [jit_monitor.py:85] Kernel JIT monitor activated; monitored JIT compilations during inference will use mode=warn.
+(Worker_TP0 pid=795) INFO 11-07 06:14:35 [jit_monitor.py:85] Kernel JIT monitor activated; monitored JIT compilations during inference will use mode=warn.
+(Worker_TP0 pid=795) WARNING 11-07 06:16:50 [jit_monitor.py:141] Triton kernel JIT compilation during inference: kernel_unified_attention. This causes a latency spike; consider extending warmup to cover this shape/config.
+(EngineCore pid=527) ERROR 11-07 06:21:46 [dump_input.py:72] Dumping input data for V1 LLM engine (v0.30.0) with config: model='/models/target', speculative_config=None, tokenizer='/models/target', skip_tokenizer_init=False, tokenizer_mode=auto, revision=None, tokenizer_revision=None, trust_remote_code=True, dtype=torch.float16, max_seq_len=120000, download_dir=None, load_format=auto, tensor_parallel_size=2, pipeline_parallel_size=1, data_parallel_size=1, decode_context_parallel_size=1, dcp_comm_backend=ag_rs, disable_custom_all_reduce=True, quantization=fp8, quantization_config=None, enforce_eager=False, enable_return_routed_experts=False, kv_cache_dtype=fp8_e4m3, device_config=xpu, structured_outputs_config=StructuredOutputsConfig(backend='auto', disable_any_whitespace=False, disable_additional_properties=False, reasoning_parser='', reasoning_parser_plugin='', enable_in_reasoning=False), observability_config=ObservabilityConfig(show_hidden_metrics_for_version=None, otlp_traces_endpoint=None, collect_detailed_traces=None, per_request_spec_decode_metrics='none', kv_cache_metrics=False, kv_cache_metrics_sample=0.01, cudagraph_metrics=False, enable_layerwise_nvtx_tracing=False, enable_mfu_metrics=False, enable_mm_processor_stats=False, enable_logging_iteration_details=False, jit_monitor_mode='warn', jit_monitor_verbose=False), seed=0, served_model_name=gemma-4-31b, enable_prefix_caching=True, enable_chunked_prefill=True, pooler_config=None, compilation_config={'mode': <CompilationMode.NONE: 0>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': ['all'], 'ir_enable_torch_wrap': False, 'splitting_ops': [], 'compile_mm_encoder': False, 'cudagraph_mm_encoder': False, 'encoder_cudagraph_token_budgets': [], 'encoder_cudagraph_max_vision_items_per_batch': 0, 'encoder_cudagraph_max_frames_per_batch': None, 'compile_sizes': [], 'compile_ranges_endpoints': [8192], 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.FULL_DECODE_ONLY: (2, 0)>, 'cudagraph_num_of_warmups': 1, 'cudagraph_capture_sizes': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 20, 25, 30, 35, 40, 45, 48, 50, 55, 60, 64, 65, 70, 75, 80, 85, 90, 95, 96, 100, 105, 110, 112, 115, 120, 125, 128, 130, 135, 140, 145, 150, 155, 160, 165, 170, 175, 180, 185, 190, 192, 195, 200, 205, 210, 215, 220, 224, 225, 230, 235, 240, 245, 250, 255, 256, 260, 265, 270, 275, 280, 285, 290, 295, 300, 305, 310, 315, 320], 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': False, 'pass_config': {'fuse_norm_quant': True, 'fuse_act_quant': True, 'fuse_attn_quant': False, 'enable_sp': False, 'fuse_gemm_comms': False, 'fuse_allreduce_rms': False, 'enable_qk_norm_rope_fusion': False, 'fuse_rope_kvcache_cat_mla': False, 'fuse_act_padding': False, 'fuse_qk_norm_rope_kvcache': False}, 'max_cudagraph_capture_size': 320, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': False}, 'local_cache_dir': None, 'fast_moe_cold_start': False, 'static_all_moe_layers': []}, kernel_config=KernelConfig(ir_op_priority=IrOpPriorityConfig(rms_norm=['vllm_c', 'native'], fused_add_rms_norm=['vllm_c', 'native'], gelu_and_mul_sparse=['native']), enable_flashinfer_autotune=True, enable_cutedsl_warmup=True, enable_jit_warmup=True, moe_backend='auto', sparse_indexer_topk_backend='auto', linear_backend='auto', linear_backend_per_quant=None), 
+total: 18226
+ua_total: 0
+ua_misses: 0
+58
+3243
+=== [r108v] window done 06:21:50 ===

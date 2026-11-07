@@ -1,0 +1,22 @@
+11072 /tmp/ua_norm.txt
+=== first appearance per unique class key ===
+05:41:37 n=8 [('*fp16', 'D'), ('*fp16', 'D'), ('*fp8e4nv', 'D'), ('*fp8e4nv', 'D'), ('constexpr', None), ('*i32', 'D'), ('*i32', 'D'), ('constexpr', None), ('const
+05:46:12 n=8 [('*fp16', 'D'), ('*fp16', 'D'), ('*fp8e4nv', 'D'), ('*fp8e4nv', 'D'), ('constexpr', None), ('*i32', 'D'), ('*i32', 'D'), ('constexpr', None), ('const
+05:50:59 n=8 [('*fp16', 'D'), ('*fp16', 'D'), ('*fp8e4nv', 'D'), ('*fp8e4nv', 'D'), ('constexpr', None), ('*i32', 'D'), ('*i32', 'D'), ('constexpr', None), ('const
+05:56:30 n=8 [('*fp16', 'D'), ('*fp16', 'D'), ('*fp8e4nv', 'D'), ('*fp8e4nv', 'D'), ('constexpr', None), ('*i32', 'D'), ('*i32', 'D'), ('constexpr', None), ('const
+06:01:21 n=600 [('*fp16', 'D'), ('*fp16', 'D'), ('*fp8e4nv', 'D'), ('*fp8e4nv', 'D'), ('constexpr', None), ('*i32', 'D'), ('*i32', 'D'), ('constexpr', None), ('const
+06:02:41 n=120 [('*fp16', 'D'), ('*fp16', 'D'), ('*fp8e4nv', 'D'), ('*fp8e4nv', 'D'), ('constexpr', None), ('*i32', 'D'), ('*i32', 'D'), ('constexpr', None), ('const
+06:09:27 n=2900 [('*fp16', 'D'), ('*fp16', 'D'), ('*fp8e4nv', 'D'), ('*fp8e4nv', 'D'), ('constexpr', None), ('*i32', 'D'), ('*i32', 'D'), ('constexpr', None), ('const
+06:10:53 n=2900 [('*fp16', 'D'), ('*fp32', 'D'), ('*fp32', 'D'), ('*fp32', 'D'), ('*i32', 'D'), ('i32', ''), ('constexpr', 16), ('fp32', None), ('i64', 'D'), ('i64', 
+06:11:01 n=580 [('*fp16', 'D'), ('*fp16', 'D'), ('*fp8e4nv', 'D'), ('*fp8e4nv', 'D'), ('constexpr', None), ('*i32', 'D'), ('*i32', 'D'), ('constexpr', None), ('const
+06:12:50 n=580 [('*fp16', 'D'), ('*fp32', 'D'), ('*fp32', 'D'), ('*fp32', 'D'), ('*i32', 'D'), ('i32', ''), ('constexpr', 16), ('fp32', None), ('i64', 'D'), ('i64', 
+06:12:59 n=300 [('*fp16', 'D'), ('*fp16', 'D'), ('*fp8e4nv', 'D'), ('*fp8e4nv', 'D'), ('constexpr', None), ('*i32', 'D'), ('*i32', 'D'), ('constexpr', None), ('const
+06:13:01 n=300 [('*fp16', 'D'), ('*fp32', 'D'), ('*fp32', 'D'), ('*fp32', 'D'), ('*i32', 'D'), ('constexpr', 1), ('constexpr', 16), ('fp32', None), ('i64', 'D'), ('i
+06:13:02 n=60 [('*fp16', 'D'), ('*fp16', 'D'), ('*fp8e4nv', 'D'), ('*fp8e4nv', 'D'), ('constexpr', None), ('*i32', 'D'), ('*i32', 'D'), ('constexpr', None), ('const
+06:13:04 n=60 [('*fp16', 'D'), ('*fp32', 'D'), ('*fp32', 'D'), ('*fp32', 'D'), ('*i32', 'D'), ('constexpr', 1), ('constexpr', 16), ('fp32', None), ('i64', 'D'), ('i
+06:13:28 n=1800 [('*fp16', 'D'), ('*fp16', 'D'), ('*fp8e4nv', 'D'), ('*fp8e4nv', 'D'), ('constexpr', None), ('*i32', 'D'), ('*i32', 'D'), ('constexpr', None), ('const
+06:13:31 n=360 [('*fp16', 'D'), ('*fp16', 'D'), ('*fp8e4nv', 'D'), ('*fp8e4nv', 'D'), ('constexpr', None), ('*i32', 'D'), ('*i32', 'D'), ('constexpr', None), ('const
+06:14:11 n=200 [('*fp16', 'D'), ('*fp16', 'D'), ('*fp8e4nv', 'D'), ('*fp8e4nv', 'D'), ('constexpr', None), ('*i32', 'D'), ('*i32', 'D'), ('constexpr', None), ('const
+06:14:13 n=200 [('*fp16', 'D'), ('*fp32', 'D'), ('*fp32', 'D'), ('*fp32', 'D'), ('*i32', 'D'), ('i32', 'D'), ('constexpr', 16), ('fp32', None), ('i64', 'D'), ('i64',
+06:14:13 n=40 [('*fp16', 'D'), ('*fp16', 'D'), ('*fp8e4nv', 'D'), ('*fp8e4nv', 'D'), ('constexpr', None), ('*i32', 'D'), ('*i32', 'D'), ('constexpr', None), ('const
+06:14:16 n=40 [('*fp16', 'D'), ('*fp32', 'D'), ('*fp32', 'D'), ('*fp32', 'D'), ('*i32', 'D'), ('i32', 'D'), ('constexpr', 16), ('fp32', None), ('i64', 'D'), ('i64',

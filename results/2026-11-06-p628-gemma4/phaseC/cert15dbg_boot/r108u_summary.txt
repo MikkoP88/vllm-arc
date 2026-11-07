@@ -1,0 +1,78 @@
+r108u — cert15dbg boot (unified-attention launch-key trace ON), 2026-11-07
+=============================================================================
+
+Image: vllm-arc:v0.30.0-b70-cert15dbg = cert15 (v3 engine-exact warm,
+fork e130a477) + kit patch #3 (ARCXPU_TRACE per-call wrapper trace).
+Posture: certified graph (VLLM_XPU_ENABLE_XPU_GRAPH=1), TP2, maxlen
+120000, gemma-4-31b online fp8, lmc=1.
+
+Result: boot HEALTHY with all 32 warm loads; the engine's internal
+98-token warmup request STILL wedged (probe98 -> 500 after EngineCore
+watchdog death). Two launch failures preceded the clean run (log-dir
+mkdir before setsid redirect; both silent no-ops — see launch-trap
+notes) and one early EngineCore death-check false positive (grace < 24
+polls fixed). The window closed with the W14 restore trap verified
+(radiance-test up, health 200, generation probe clean).
+
+DECISIVE FINDING — the residual miss is real and untraced by the wrapper
+-----------------------------------------------------------------------------
+Timeline (serve log, Worker_TP0; TP1 mirrors with pid-shifted fnid):
+
+  04:33:51  warm (8192,8192) full    head-256  ~280 s fresh compile
+  04:38:28  warm (8192,8192) sliding head-256  ~277 s fresh compile
+  04:43:15  warm (8192,8193) full    head-256  ~287 s fresh compile
+  04:43:16  warm (8192,8193) sliding head-256  ~1 s (IGC-cache-served)
+  04:43:16  warm (98,98)     full    head-256  ~1 s (IGC-cache-served)
+  04:43:16  warm (98,98)     sliding head-256  ~1 s (IGC-cache-served)
+  ... warm completes 32/32; cuda-graph capture sweeps 05:01-05:07
+  05:07:08  jit monitor activated (mode=warn)
+  05:09:15  REQUEST layer-0 call: hs=256 nqh=16 nkvh=8 qshape=(98,16,256)
+            qstride=(4096,256,1) kstride=(262144,4096,512,1) btstride=1876
+            bs=64 mxq=98 mxk=98 BM=64 BQ=32 TILE=64 warps=8 grid=(4,8)
+            3d=False td=True tdqo=True win=(1023,0) swv=1024 csw=True
+            useg=1 ... — BYTE-IDENTICAL on every traced field to the warm
+            04:43:16 (98,98) sliding call — same fnid (same JITFunction
+            object), same process.
+  05:09:19  jit-monitor warn: kernel_unified_attention compiling during
+            inference  -> the 05:09:15 call CACHE-MISSED inside
+            JITFunction.run.
+  05:09:15 -> 05:14:03  silence: fresh compile (~288 s) on both ranks.
+  05:14:03  rank1 finishes, resumes layers; 05:14:12 rank0 follows (fast
+            streak = cache hits for the remaining head-256 layers).
+  05:14:12  first head-512 layer call (98-class, full window) enters its
+            own fresh compile (py-spy: XPUBackend.optimize_llvm_mod <-
+            make_llir <- _do_compile <- JITFunction.run:756 <-
+            unified_attention:1179 <- TritonAttentionImpl.forward:656).
+  05:14:15  EngineCore watchdog dumps input (300 s execute-model timeout:
+            05:09:15 + 300 s exactly); probe98 -> HTTP 500.
+
+Conclusion: a request-time call that differs from a warm-loaded call in
+NO wrapper-traced dimension still cache-misses and recompiles ~288 s.
+The differing triton cache-key input is UNTRACED by patch #3: binder
+specialization attrs (pointer data_ptr() alignment, integer
+divisibility-by-16 / ==1) or the options object. Allocator context read
+the same day (wheel source): allocate_kv_cache pools every KV group into
+ONE int8 backing buffer with as_strided views at multiples of >=1024
+bytes — KV-pointer alignment classes are uniform across layer groups,
+weakening the per-group-alignment theory and leaving per-call activation
+/descale/block-table pointer alignments and integer attrs as the live
+suspects. Next: kit patch #4 (cert15dbg2) traces the computed key,
+hit/miss, spec attrs and data_ptr()%16 at the kernel_cache lookup itself
+(triton/runtime/jit.py run()); one boot reads the differing dimension
+off the warm-vs-request diff.
+
+Artifacts (this dir; *.log originals stay on the rig,
+/root/build/p628/phaseC/cert15dbg_boot/):
+  trace_warm_head.txt       first 4 warm ARCXPU_TRACE lines (rank0)
+  trace_request_tail.txt    last 80 ARCXPU_TRACE lines: capture-burst
+                            05:07:07 tail + full request window
+  jit_lines.txt             jit-monitor activation + warn + watchdog dump
+  pyspy_wedge.txt           both-rank wedge stacks (compile in progress)
+  probe98.out               HTTP 500 (EngineCore died)
+  erraudit.txt              ERROR/Traceback counts (3243 "Tracebacks" are
+                            logging-emit failures of the trace patch's
+                            long lines — diagnostic side-effect, not
+                            engine errors)
+  trace_count_postwarm.txt  ARCXPU_TRACE line count at +120 s post-health
+  cert15dbg_manifest.txt    image manifest (cert15dbg row, fork sha)
+  r108u_summary.txt         this file

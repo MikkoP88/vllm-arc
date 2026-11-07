@@ -1,0 +1,107 @@
+r108ab — P6.28 PERF DIAGNOSTIC: head-512 full-attention launch-config
+sweep + controls (ROOT-CAUSE CLOSE-OUT)
+=====================================================================
+Date: 2026-11-07, window 12:11-12:54 (rig). Script:
+/root/build/r108ab_micro_sweep.sh (shipped md5 4c3d42a4). Image:
+vllm-arc:v0.30.0-b70-cert17 (launcher table live, arc-micro container,
+no serve). Bench = bare triton_unified_attention 2D-prefill calls at
+the REAL per-rank full-layer geometry (16Q/2KV hd512, q=8192,
+k=32768/98304, fp8 KV + descales, bs=64, causal, engine-faithful
+kwargs), env-override sweep hook installed AFTER the ARC table
+(never repo). Prior evidence: r108aa (micro_realshape/) — sliding
+window ENGAGES and is cheap (0.156 s/call, flat in k); ful512 TABLE =
+10.81 s/call = 0.712 TF/s = the whole face32k budget.
+
+Questions and answers
+---------------------
+Q  fp8-KV/descale path the drag?  NO — fp16-KV control 10.28 s vs
+   fp8 10.81 s (5 % class).
+Q  KV-head parallelism (nkvh)?    NO — nkvh=8 10.91 s vs nkvh=2
+   10.81 s (real geometry is 2; insensitive).
+Q  fp32-acc register spill?       NO (secondary at best) — hd256
+   control with 2x q-heads (same FLOPs, half acc width) only 1.32x
+   faster (8.16 s); and SMALLER M (less spill) is monotonically
+   WORSE (below).
+Q  num_stages?                    Marginal: s2 10.67 s vs default
+   11.01 s vs s1 11.04 / s3 11.13 (<=3 %). Upstream HEAD's newest
+   table pins hd512 prefill to (64,32,8,1) — same family.
+Q  warps?                         w8 optimal: M64 T64 w4 20.34 s ->
+   w8 11.55 s; w16 17.50 s (too many warps hurt).
+Q  TILE (BLOCK_N)?                Not a lever (as predicted — does
+   not change K/V traffic): T64 ~= T32 within noise.
+Q  BLOCK_M?                       THE lever, in the WRONG direction
+   being closed: time is monotonically ~ 1/BLOCK_Q (K/V re-reads per
+   q-block):
+     M16 T32 w4   58.48 s (0.13 TF/s)   M32 T32 w4   29.15 s
+     M16 T64 w8   45.66 s               M32 T32 w8   21.06 s
+                                      M32 T64 w8   20.27 s
+     M64 T32 w8   10.97-11.02 s (0.70 TF/s)  <- certified table
+     M128 T32 w8 / T64 w8   LAUNCH FAILURE (child died at platform
+     banner — SLM overflow: Q tile 128x512 fp16 = 128 KB + K/V
+     stages > B70 SLM; the kernel holds the whole Q block).
+
+Root cause (evidence-complete)
+------------------------------
+The 10/60 FULL-attention layers (hd512, no window) are bound by the
+L2/HBM-bandwidth wall, structurally:
+- Per call (q=8192, k=32768): 2048 programs (1024 q-blocks x 2 KV
+  heads), each program re-walks its causal K/V span (~18 MB avg
+  fp8)  -> ~37 GB of K/V reads per 10.8 s call = 3.4 TB/s effective
+  = the L2 bandwidth class (B70 HBM is ~1.1 TB/s; the working set
+  64 MB mostly fits L2). The same arithmetic reproduces every
+  measurement: k98k rate drops (0.676 TF/s) exactly when the 192 MB
+  K/V footprint outruns L2; time ~ 1/BLOCK_Q from M16->M64; all
+  non-BLOCK_M knobs are noise.
+- Why not more reuse? BLOCK_M (q rows sharing each K/V load) is
+  SLM-capped at 64 by the 64x512 fp16 Q tile (+ K/V stage buffers);
+  M128 cannot even launch. The (BLOCK_M x 512) fp32 accumulator
+  additionally ties registers at M64 (spill exists but is secondary
+  per the hd256 control).
+- Upstream parity: upstream vllm HEAD (vllm/v1/attention/ops/
+  triton_unified_attention.py @ f98575e, 2026-11-07) has the SAME
+  acc structure (tl.zeros([BLOCK_M, HEAD_SIZE_PADDED], fp32)) and
+  its newest per-band tables pin hd512 big-q prefill to (64,32,8,1)
+  — i.e. upstream sits on the same wall; there is NO newer fixed
+  shared component to lawfully import (radiance/line-C/line-D
+  donors do not carry this file). Stock upstream config (M16
+  class) would be ~5.3x WORSE than our cert12 table — the fork's
+  launcher table already recovers everything config-recoverable.
+- Sweep verdict: certified (64,32,8,None) is AT the ceiling —
+  best found (64,32,8,s2) = 10.67 s = 1.01x. Numeric guard: TABLE
+  vs winner max_abs=0.00000, allclose(1e-2)=True. No cert18 table
+  change is warranted.
+
+Attribution & hardware framing
+------------------------------
+face32k (283.4 s): ~10 full layers x ~22-24 chunk-calls x k-scaled
+~10.8 s ~= 240-250 s + healthy remainder (sliding 0.15 s/call x 50
+layers, GEMMs, overheads ~35 s). face8k 31.5 s and face120k 2950 s
+follow the same k^2 curve. The kernel runs at 0.5-0.7 % of the
+147 TF/s DPAS peak on these layers because it is BANDWIDTH-bound,
+not because the config is wrong.
+qwen3.8-27b comparison (U32k 16.93 s): qwen3.8 is a GDN hybrid —
+linear-complexity attention dominates; it does not execute 10
+quadratic hd512 layers at 32k+. The 8-17x face gap is therefore
+ARCHITECTURAL (quadratic hd512 full attention vs linear GDN) on top
+of the kernel's structural bandwidth wall; the L2 mxfp8 leg
+tracking L1 within 5-12 % (r108x) confirms weight quant is not a
+factor.
+
+Disposition
+-----------
+- Config lane: CLOSED (this evidence). The certified table is
+  optimal within the kernel's structure; stock/M16 is 5.3x worse.
+- Kernel-restructure lane (potential ~2-4x via M128-equivalent
+  traffic with SMEM-managed acc / k-outer q-inner tiling): research-
+  class kernel engineering; no lawful donor exists (upstream also
+  capped); out of P6.28 patch scope — documented here as the
+  known next step with the motivating arithmetic.
+- Engine-side levers: none (chunk size does not change K/V traffic;
+  prefix caching already active; TP2 already halves heads; KV
+  already fp8).
+
+Files (this dir)
+----------------
+ab_results.txt (full sweep + controls + winner/guard), hook_install.txt,
+r108ab_window.log. No host addresses in any file (grep 0) — no
+redaction note needed. Prior leg: ../micro_realshape/ (r108aa).

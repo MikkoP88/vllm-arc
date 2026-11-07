@@ -4,9 +4,15 @@ Generated at P5 hardening (r45, 2026-10-30; serve-line identity updated
 at the r46t close-out) from `vllm_gaudi/envs.py` arc-lane markers + the
 certified serve line (`r43_serve_k5.sh`, spec depth 3 per the r46t
 recommendation — a serve-time CLI change — on image
-`vllm-arc:v0.30.0-b70-cert`; unchanged since — the chain is identical on
-the current certified image `vllm-arc:v0.30.0-b70-cert11`, where
-`LMCACHE_TRACK_USAGE=false` (P6.3) made it 25; cert11 = cert10 + the
+`vllm-arc:v0.30.0-b70-cert`; unchanged since — the qwen fp8 chain is identical on
+the current certified image `vllm-arc:v0.30.0-b70-cert17`, where
+`LMCACHE_TRACK_USAGE=false` (P6.3) made it 25; cert17 = the cert11
+engine + the P6.28 chain (cert12 launcher-table points, cert16 warm-gate
+v4, cert17 lmcint kit — none adds a qwen serve-line var; the gemma-4
+lane rides the same script with `ARC_LMC=0` + `ARC_RPC_TIMEOUT=1200`
+(→ `VLLM_EXECUTE_MODEL_TIMEOUT_SECONDS`; REQUIRED for gemma-4
+long-prefill faces — the stock 300 s execute-model watchdog kills late
+chunks) + `ARC_TEMPLATE`); cert11 = cert10 + the
 P6.26 platform patch ONLY (`vllm_gaudi/xpu/platform.py` — quark/mxfp4
 lane, config-validation surface; r105b walk-proven byte-identical
 everywhere else, and the fp8 posture proven env- and face-identical at

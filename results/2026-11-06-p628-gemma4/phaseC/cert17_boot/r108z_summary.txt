@@ -1,0 +1,100 @@
+r108z — cert17 certified window: build, gate-fire proof, full L1 battery
+=========================================================================
+Date: 2026-11-07, window 08:46–10:27 (rig; first launch FATAL'd on the
+too-blunt absence gate, fixed e06d5db9, clean relaunch 08:51). Script:
+/root/build/r108z_cert17.sh (md5 91506f8c239c943a58561f72cf87fd6a).
+Image: vllm-arc:v0.30.0-b70-cert17 = cert16 + lmcint kit hardening
+(fork commit e5e725b4). Model: gemma-4-31b BF16 online-fp8, maxlen
+120000, TP2, graph=1, spec=0, ARC_LMC=0, ARC_RPC_TIMEOUT=1200.
+
+[1] cert17 build — PASS
+----------------------
+CERT17_BUILD_GATE_OK at 08:51 (manifest row, KVGATE marker ^1,
+detector BS-floor markers, absence gate on the code patterns
+'int(t.shape[1]) >= 256' / 'int(t.shape[2]) >= 256' — note: the first
+attempt's substring gate false-FATAL'd on the kit's own evidence
+comment mentioning ">= 256"; fixed in e06d5db9, both in the Dockerfile
+assert and the window script gate).
+
+[2] gate-fire proof — PASS (the r108w wedge class is now a boot refusal)
+------------------------------------------------------------------------
+Boot with ARC_LMC=1 refused at 08:55:06 inside register_kv_caches:
+
+  ValueError: arc p628: LMCache store requires a uniform per-layer KV
+  row width across attention layers; got [512, 1024]. A two-head-size
+  attention hybrid cannot be addressed by single-hidden-size KV_2LTD
+  memory objects -- boot with ARC_LMC=0 for this model.
+
+Both Worker_TP ranks refused identically; EngineCore died loudly at
+boot (2.5 min in) instead of wedging at the first request inside the
+300 s execute-model watchdog. "got [512, 1024]" is the two-head-size
+structure measured live (sliding vs full attention row widths). Full
+traceback in gate_fire.txt.
+
+[3] certified L1 battery on cert17, LMC=0 — ALL GREEN
+-----------------------------------------------------
+Boot: warm gate v4 32/32 load-lines (08:58–09:17, triton-cache mounts
+warm from r108y so points 26–32 landed in seconds), health up, settle
+120 s.
+- probe98: OK ("Hi!<end_of_turn>"), one jit warn during it —
+  kernel_unified_attention compiled at 09:31:54 (~IGC tier; the
+  layer-2 perf residue, ~31 s once).
+- G1 correctness: all three green — factual ("seven"), reason (train
+  catch-up -> 4:40 pm), code ("s[::-1]"). Byte-identical outputs to
+  r108y (same image behavior minus the store path).
+- G2 faces (client walls, maxlen 120000, ARC_RPC_TIMEOUT=1200):
+    face8k     wall=31.5 s   finish=length ptok= 8028 ctok=16  OK
+    face32k    wall=283.4 s  finish=length ptok=32028 ctok=16  OK
+    face120k   wall=2950.3 s finish=length ptok=110028 ctok=16  OK
+    face32k_2  wall=9.8 s    finish=length ptok=32028 ctok=16  OK
+- erraudit: 0 ERROR / 0 Traceback across the whole battery boot.
+- jit_warn_count: 1 (probe-time only; ZERO during the 49-minute
+  face120k).
+
+Layer-2b RESOLVED: face120k is compute, not compile
+---------------------------------------------------
+The two candidate mechanisms from r108y are now discriminated by the
+serve_end.log timeline (captured live from the container at evidence
+time — the r108y evidence-gap fix):
+  (a) cold compile of a warm-missed class: REFUTED — the jit monitor
+      (mode=warn, active) fired zero times during face120k's 49 min.
+      A compile-dominated run would have warned per compilation (it
+      warned for the probe compile 30 min earlier).
+  (b) pure late-chunk compute: CONFIRMED — prefill throughput scales
+      with k exactly as attention should: 255 tok/s @ 8k, 113 tok/s @
+      32k, 37 tok/s @ 120k (50/60 layers are sliding-window capped;
+      the 10 full-attention layers carry the O(k) growth). Late
+      8192-token chunks at k~110k take ~200–300+ s each; the stock
+      300 s execute-model RPC watchdog kills the request at the first
+      chunk that crosses 300 s (r108y's 300.5 s HTTP 500).
+face32k_2 at 9.8 s is NOT warm-cache compile avoidance — it is
+prefix caching (enable_prefix_caching=True; the identical prompt is a
+near-full prefix hit, hit rate 37.7 % fleet-wide at that tick). Do not
+cite it as compile evidence.
+
+Disposition
+-----------
+- ARC_RPC_TIMEOUT=1200 (serve_arc_b70.sh knob ->
+  VLLM_EXECUTE_MODEL_TIMEOUT_SECONDS) is REQUIRED and SUFFICIENT for
+  maxlen 120000: the full battery passes with it, zero errors.
+- Warm v5 is DEAD as a face120k fix: there is no compile stall left
+  to warm (zero jit events during the 49 min). The only compile
+  residue is the single probe-time kernel_unified_attention class
+  (IGC ~31 s once per fresh container) — acceptable; not worth a
+  cert18 on its own.
+- The long-prefill wall-time itself (49 min for a 110k-token prefill)
+  is hardware/kernel throughput on dual B70 TP2, not a defect;
+  document the throughput-vs-k curve with the perf battery.
+- Certified gemma-4 L1 posture: cert17, ARC_LMC=0, maxlen 120000,
+  ARC_RPC_TIMEOUT=1200, graph=1.
+
+Files (this dir)
+----------------
+cert17_build.log, cert17_manifest.txt, gate_fire.txt (boot refusal
+tracebacks both ranks), probe98.out, g1_probes.txt, g2_faces.txt,
+jit_lines.txt, jit_warn_count.txt, erraudit.txt, serve.log
+(health-time snapshot), serve_tail.txt + serve_end.log (live-captured
+full battery window — the discriminator evidence),
+r108z_window.log. serve.log/serve_tail.txt/serve_end.log were
+perl-redacted (1+43+43 rig, 42+42 client occurrences — see
+results/REDACTION-2026-11-07-p628.md).

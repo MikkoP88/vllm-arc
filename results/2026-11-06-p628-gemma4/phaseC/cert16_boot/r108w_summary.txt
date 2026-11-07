@@ -1,0 +1,112 @@
+r108w — cert16 validation window (2026-11-07 06:37-07:26 UTC): WARM FIX v4
+CONFIRMED LIVE, FREEZE STILL REPRODUCES, LAYER-3 ROOT CAUSE FOUND
+===================================================================
+
+VERDICT
+-------
+cert16 (warm gate v4, int softcap — commit 5d895fef) boots clean, warm
+32/32 loads, health reached, BUT probe98 still 500s (wall=329s). The
+freeze moved: it is no longer the attention compile (layer 2 is fixed at
+the trigger — the forward pass now completes through sampling); the
+engine now dies in the LMCache STORE path. Wedge-time py-spy of both
+Worker_TP ranks names the exact lock and thread.
+
+THE WEDGE (pyspy_wedge.txt, captured ~07:21, both ranks)
+--------------------------------------------------------
+MainThread (both ranks), parked:
+  WorkerProc._execute_worker_rpc (multiproc_executor.py:1047)
+  <- Worker.sample_tokens (gpu_worker.py:1351)
+  <- GPUModelRunner.sample_tokens (model_runner.py:2177)
+  <- ActiveKVConnector.post_forward
+  <- LMCacheConnectorV1Impl.wait_for_save (vllm_v1_adapter.py:2344)
+  <- _lmc_lock_guard (:2931)          <-- waiting on _lmc_store_lock
+
+Thread 6141 "arc-lmc-store" (ACTIVE), holding _lmc_store_lock:
+  multi_layer_kv_transfer (lmcache/v1/platform/torch_ops/mem_kernels.py:155)
+  <- _arc_multi_layer_kv_transfer (vllm_gaudi/xpu/patches/lmcint/lmc_twohs_transfer.py:68)
+  <- VLLMPagedMemXPUConnectorV2.from_gpu (xpu_connectors.py:258)
+  <- batched_from_gpu (:289)
+  <- LMCacheEngine.store (cache_engine.py:573)
+  <- _lmc_flush_body (vllm_v1_adapter.py:3071)
+  <- _lmc_store_loop (:2915)
+
+lmc_twohs_transfer.py:68 IS THE _ORIG PASSTHROUGH — the call took the
+STOCK lmcache python fallback, not our TWO_HS fast path. mem_kernels.py
+155 is the fallback's per-layer BLOCKING cross-device copy
+(gathered.to(kv_device, non_blocking=False)); it never returned, the
+store lock is held for the whole flush body, both engine MainThreads
+block at wait_for_save, and the 300s execute-model RPC watchdog kills
+EngineCore -> HTTP 500 (watchdog dump 07:26:01).
+
+WHY THE FAST PATH NEVER RAN (whole-boot proof)
+----------------------------------------------
+r43xfer count in serve.log: 0   (kit transfer fast-path announce print)
+r43kvfmt count in serve.log: 0  (kit detector announce print)
+
+The kit detector (lmc_kvfmt_detector.py) guards the hybrid-pool branch
+with a BS >= 256 bound on the handed 5-D view. gemma-4 boots with
+engine block_size = 64 (boot args line 18 of serve log), so the adapter
+hands (NB, 64, 1, 2, kvdim) views which the guard REJECTS -> discovery
+falls to stock lmcache -> wrong format -> stock transfer misaddresses
+the per-token-interleaved hybrid pool -> the observed blocking-copy
+hang. The p614 TQ comment in vllm_v1_adapter.py already documented this
+exact trap class on the 4bit leg ("the kit detector's BS >= 256 bound
+rejects a 128-token block face") and dodged it by merging kernel blocks
+to 1664; on gemma-4 the slot mapping indexes 64-token pages, so merging
+cannot be used — the bound itself is the defect (overfit to the r43
+model's page size).
+
+WHY NO DETECTOR FIX CAN SAVE THE STORE ON GEMMA-4 (structural)
+--------------------------------------------------------------
+gemma-4-31b is a TWO-HEAD-SIZE attention hybrid (config text_config):
+  50 sliding_attention layers: head_dim 256, 16 kv heads
+       -> TP2 per-rank kvdim 8*256 = 2048
+  10 full_attention layers: global_head_dim 512, 4 global kv heads
+       -> TP2 per-rank kvdim 2*512 = 1024
+The LMCache KV_2LTD memory-object is single-hidden-size by design. The
+adapter builds it from model_config.get_num_kv_heads() (8 — the sliding
+group) x get_head_size() (512 — the GLOBAL head dim): logged
+"kv shape: (60, 2, 1024, 8, 512)" — a frankenstein 4096-wide row that
+matches NEITHER pool group (2048 / 1024). With the detector guard fixed
+our fast path would reshape per-layer pools to the memobj hidden and
+misaddress (list branch) or wrap 2x-too-large pointer views (ptr
+branch) — corruption, not correctness. Stock lmcache cannot express
+this model's store at all. Conclusion: LMCache store/load on a
+two-head-size attention hybrid is structurally unsupported by the
+KV_2LTD format; on gemma-4 the certified posture must run ARC_LMC=0,
+and the kit must FAIL LOUDLY at register time instead of wedging at
+first request.
+
+LAYER LEDGER (three-layer stack, now fully mapped)
+--------------------------------------------------
+L1 warm-gate cache-key split (softcap float vs int)  FIXED cert16
+   (r108v, banked cert15dbg2_boot/)
+L2 residual kernel_unified_attention compile at request time
+   jit warn 07:21:03 (+31s post-probe, IGC-served ~31s, FITS the
+   window — forward completed to sampling; perf residue only)
+L3 LMCache store wedge                                ROOT CAUSE HERE
+   detector BS bound rejects gemma block 64 -> stock fallback ->
+   wrong-shape blocking copy hangs under the store lock -> watchdog
+
+FIX PLAN
+--------
+- r108y (running): counterfactual cert16 + ARC_LMC=0 — probe98 + full
+  L1 G2 battery. Proves L1+L2 sufficient with the store path absent;
+  this window doubles as the L1 leg if green.
+- cert17 (next): kit update — (a) detector BS bound 256 -> 16 (generic
+  correctness: any uniform-HS model with block < 256 gets the byte-true
+  TWO_HS path instead of the stock hang), (b) two-HS fail-loud gate at
+  register_kv_caches (distinct per-layer kvdim -> ValueError at boot,
+  never a request-time wedge). gemma legs certified on ARC_LMC=0.
+
+FILES
+-----
+r108w_window.txt     full window transcript (build gates, boot, wedge)
+cert16_build.txt     CERT16_BUILD_GATE_OK chain
+cert16_manifest.txt  image manifest row
+probe98.out          the 500 (EngineCore death, 329s wall)
+pyspy_wedge.txt      both ranks + thread 6141 stacks (the money file)
+jit_lines.txt        07:21:03 warn + 07:26:01 watchdog dump
+jit_warn_count.txt   1
+erraudit.txt         0 / 0 pre-wedge
+serve_tail.txt       400KB serve log tail (wedge window)

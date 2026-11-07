@@ -1,0 +1,14 @@
+=== [l2_mxfp8] boot start 14:01:46 (model=/models/gemma4-31b-mxfp8fp8kv maxlen=95000 quant='') ===
+ARC_CONTAINER_FRESH image=vllm-arc:v0.30.0-b70-cert17 id=754eca090a45 model=/models/gemma4-31b-mxfp8fp8kv (recreated from none)
+2e846d19e348f9b111aefc1666b897561f74805b90ef43b349689aa44a56e980
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert17 name=arc-test model=/models/gemma4-31b-mxfp8fp8kv served=gemma-4-31b quant=<config-driven> graph=1 spec=0 gmu=0.8 maxlen=95000 mnbt=8192 seqs=64 fp8=0 xgc=0 tmpl=/root/build/chat_template_gemma4.jinja rp= tp= port=8000 14:01:49
+--- [l2_mxfp8] HEALTH UP 14:36:01; settle 120s ---
+solo conc1 rep1 wall=21.5s ctok=256 tps=11.9
+solo conc1 rep2 wall=21.6s ctok=256 tps=11.9
+solo conc1 rep3 wall=21.5s ctok=256 tps=11.9
+agg8 conc8 rep1 wall=47.3s ctok=2048 tps=43.3
+agg8 conc8 rep2 wall=37.5s ctok=2048 tps=54.6
+agg8 conc8 rep3 wall=37.5s ctok=2048 tps=54.6
+DECODE_BATTERY_DONE
+0
+0

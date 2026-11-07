@@ -1,0 +1,7 @@
+=== cert12 baked table: warmup-98 repro + 1024 controls ===
+[c12-w98-F5] SYNC_OK wall=0.0047s x2
+[c12-w98-S2] SYNC_OK wall=0.0026s x2
+[c12-ctrl1024-F5] SYNC_OK wall=0.4909s x2
+[c12-ctrl1024-S2] SYNC_OK wall=0.0203s x2
+[c12-w8192-F5] SYNC_OK wall=1.4889s x1
+CERT12_REPRO_DONE

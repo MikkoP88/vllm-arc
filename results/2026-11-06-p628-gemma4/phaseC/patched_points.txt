@@ -1,0 +1,11 @@
+[patched-dump-f5-1k] DUMP_OK /phaseC/patched_f5_1k.pt
+[patched-dump-f5-8k] DUMP_OK /phaseC/patched_f5_8k.pt
+[patched-dump-s2-8k] DUMP_OK /phaseC/patched_s2_8k.pt
+[patched-f5-8k] SYNC_OK wall=1.5007s x3
+[patched-s2-8k] SYNC_OK wall=0.1465s x3
+[patched-f5-kv16k] SYNC_OK wall=4.5095s x2
+[patched-s2-kv16k] SYNC_OK wall=0.1541s x2
+NUMERIC[f5_1k] max_abs=0.00000 rel_vs_peak=0.00000 allclose(1e-2)=True
+NUMERIC[f5_8k] max_abs=0.00000 rel_vs_peak=0.00000 allclose(1e-2)=True
+NUMERIC[s2_8k] max_abs=0.00049 rel_vs_peak=0.00014 allclose(1e-2)=True
+PATCHED_DONE

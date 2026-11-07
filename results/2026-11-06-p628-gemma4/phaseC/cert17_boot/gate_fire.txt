@@ -1,0 +1,19 @@
+(Worker_TP1 pid=722) ERROR 11-07 08:55:06 [multiproc_executor.py:1055] ValueError: arc p628: LMCache store requires a uniform per-layer KV row width across attention layers; got [512, 1024]. A two-head-size attention hybrid cannot be addressed by single-hidden-size KV_2LTD memory objects -- boot with ARC_LMC=0 for this model.
+(Worker_TP1 pid=722) ERROR 11-07 08:55:06 [multiproc_executor.py:1055] Traceback (most recent call last):
+(Worker_TP1 pid=722) ERROR 11-07 08:55:06 [multiproc_executor.py:1055]   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/executor/multiproc_executor.py", line 1047, in _execute_worker_rpc
+--
+(Worker_TP1 pid=722) ERROR 11-07 08:55:06 [multiproc_executor.py:1055] ValueError: arc p628: LMCache store requires a uniform per-layer KV row width across attention layers; got [512, 1024]. A two-head-size attention hybrid cannot be addressed by single-hidden-size KV_2LTD memory objects -- boot with ARC_LMC=0 for this model.
+(Worker_TP1 pid=722) ERROR 11-07 08:55:06 [multiproc_executor.py:1055] 
+(Worker_TP0 pid=721) [32;20m[2026-11-07 08:55:06,943] LMCache INFO:[0m Registering KV caches [3m(vllm_v1_adapter.py:1774:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.vllm_v1_adapter)[0m
+--
+(Worker_TP0 pid=721) ERROR 11-07 08:55:06 [multiproc_executor.py:1055] ValueError: arc p628: LMCache store requires a uniform per-layer KV row width across attention layers; got [512, 1024]. A two-head-size attention hybrid cannot be addressed by single-hidden-size KV_2LTD memory objects -- boot with ARC_LMC=0 for this model.
+(Worker_TP0 pid=721) ERROR 11-07 08:55:06 [multiproc_executor.py:1055] Traceback (most recent call last):
+(Worker_TP0 pid=721) ERROR 11-07 08:55:06 [multiproc_executor.py:1055]   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/executor/multiproc_executor.py", line 1047, in _execute_worker_rpc
+--
+(Worker_TP0 pid=721) ERROR 11-07 08:55:06 [multiproc_executor.py:1055] ValueError: arc p628: LMCache store requires a uniform per-layer KV row width across attention layers; got [512, 1024]. A two-head-size attention hybrid cannot be addressed by single-hidden-size KV_2LTD memory objects -- boot with ARC_LMC=0 for this model.
+(Worker_TP0 pid=721) ERROR 11-07 08:55:06 [multiproc_executor.py:1055] 
+(EngineCore pid=471) ERROR 11-07 08:55:06 [core.py:1366] EngineCore failed to start.
+--
+(EngineCore pid=471) ERROR 11-07 08:55:06 [core.py:1366] RuntimeError: Worker failed with error 'arc p628: LMCache store requires a uniform per-layer KV row width across attention layers; got [512, 1024]. A two-head-size attention hybrid cannot be addressed by single-hidden-size KV_2LTD memory objects -- boot with ARC_LMC=0 for this model.', please check the stack trace above for the root cause
+(Worker_TP0 pid=721) INFO 11-07 08:55:06 [xpu_worker.py:228] XPUWorker shutdown: cleaning up (rank=0, local_rank=0)
+(Worker_TP1 pid=722) INFO 11-07 08:55:06 [xpu_worker.py:228] XPUWorker shutdown: cleaning up (rank=1, local_rank=1)

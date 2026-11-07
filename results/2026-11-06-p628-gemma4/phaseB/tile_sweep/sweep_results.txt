@@ -1,0 +1,44 @@
+=== head-512 full-attn sweep (ntok=1024) ===
+[base-M16w4T32         ] SYNC_OK wall=2.0018s x2
+[M32w4T32              ] SYNC_OK wall=1.0660s x2
+[M32w8T32              ] SYNC_OK wall=0.7432s x2
+[M32w8T64              ] INFO 11-06 21:14:36 [__init__.py:272] Platform plugin arc is activated
+[M32w4T64              ] INFO 11-06 21:14:51 [__init__.py:272] Platform plugin arc is activated
+[M64w8T64              ] INFO 11-06 21:15:07 [__init__.py:272] Platform plugin arc is activated
+[M64w8T32              ] SYNC_OK wall=0.4280s x2
+[M64w4T64              ] INFO 11-06 21:16:17 [__init__.py:272] Platform plugin arc is activated
+[M64w4T32              ] SYNC_OK wall=0.9906s x2
+[M32w8T64s2            ] INFO 11-06 21:18:41 [__init__.py:272] Platform plugin arc is activated
+[M64w8T64s2            ] INFO 11-06 21:18:52 [__init__.py:272] Platform plugin arc is activated
+[M64w8T64s1            ] INFO 11-06 21:19:03 [__init__.py:272] Platform plugin arc is activated
+=== head-256 sliding sweep (ntok=1024) ===
+[base-M16w4T32         ] SYNC_OK wall=0.0461s x2
+[M32w8T32              ] SYNC_OK wall=0.0313s x2
+[M32w8T64              ] SYNC_OK wall=0.0371s x2
+[M64w8T64              ] SYNC_OK wall=0.0222s x2
+[M64w4T64              ] SYNC_OK wall=0.0327s x2
+[M128w8T64             ] SYNC_OK wall=0.0204s x2
+=== full-shape validation (ntok=8192, engine chunk band) ===
+[full512-base          ] SYNC_OK wall=8.2734s x3
+[full512-M64w8T32      ] SYNC_OK wall=1.4971s x3
+[full512-M64w4T32      ] SYNC_OK wall=3.1329s x3
+[full512-M32w8T64      ] INFO 11-06 21:27:09 [__init__.py:272] Platform plugin arc is activated
+[slide256-base         ] SYNC_OK wall=0.3326s x3
+[slide256-M32w8T64     ] SYNC_OK wall=0.2657s x3
+[slide256-M64w8T64     ] SYNC_OK wall=0.1481s x3
+=== numeric sanity: base vs tuned candidates (head 512) ===
+[dump-base             ] SYNC_OK dump wall=1.9936s
+[dump-M32w8T64         ] INFO 11-06 21:28:14 [__init__.py:272] Platform plugin arc is activated
+[dump-M64w8T32         ] SYNC_OK dump wall=0.3940s
+Traceback (most recent call last):
+  File "<stdin>", line 115, in <module>
+  File "/opt/venv/lib/python3.12/site-packages/torch/serialization.py", line 1561, in load
+    with _open_file_like(f, "rb") as opened_file:
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/torch/serialization.py", line 795, in _open_file_like
+    return _open_file(name_or_buffer, mode)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/torch/serialization.py", line 776, in __init__
+    super().__init__(open(name, mode))  # noqa: SIM115
+                     ^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/root/out_a.pt'
