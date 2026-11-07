@@ -124,9 +124,12 @@ def _arc_xpu_warm_points(worker, geoms) -> None:
     windows = (((-1, -1), False), ((1023, 0), True))
 
     # Distinct engine cache tensors keyed by (page, nkvh, head_size).
+    # kv_caches is a list in this wheel (model_runner.py:755) — accept
+    # list or dict for robustness across versions.
+    kv_raw = getattr(worker.model_runner, "kv_caches", None) or []
+    kv_iter = kv_raw.values() if isinstance(kv_raw, dict) else kv_raw
     caches = {}
-    for cache in (getattr(worker.model_runner, "kv_caches", None)
-                  or {}).values():
+    for cache in kv_iter:
         try:
             page, nkvh_c, two_hs = int(cache.shape[2]), int(
                 cache.shape[1]), int(cache.shape[3])
