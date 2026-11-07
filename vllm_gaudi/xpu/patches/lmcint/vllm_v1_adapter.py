@@ -1777,6 +1777,43 @@ class LMCacheConnectorV1Impl:
         assert len(self.kv_caches) == 0 and len(kv_caches) > 0
         self.kv_caches = kv_caches
         if self.lmcache_engine is not None:
+            # [ARC-P628-LMC-KVGATE] fail-loud uniform-KV-row gate. The
+            # KV_2LTD memory object is single-hidden-size by design, so a
+            # store can only be byte-true when every attention layer's
+            # per-token row width (kv_heads * head_size -- the last axis of
+            # the pool view this kit hands the connector) is the same.
+            # Two-head-size attention hybrids violate that structurally
+            # (gemma-4: 50 sliding hd256 -> 2048/rank + 10 full hd512 ->
+            # 1024/rank): the engine's get_num_kv_heads()/get_head_size()
+            # mix the groups (logged kv shape (60,2,1024,8,512) -- a row
+            # matching neither pool), and the first real store misaddresses
+            # the pool and wedges inside the store lock until the
+            # execute-model watchdog kills EngineCore (r108w wedge-time
+            # py-spy: results/2026-11-06-p628-gemma4/phaseC/cert16_boot/).
+            # Refuse at boot, never at request time. Uniform models are
+            # unaffected; equal-row-width groups (8x256 + 4x512) pass and
+            # are byte-true by construction.
+            _gate_names = (
+                self._attn_layer_names
+                if self._attn_layer_names
+                else list(kv_caches)
+            )
+            _rows = set()
+            for _n in _gate_names:
+                if _n not in kv_caches:
+                    continue
+                _t = kv_caches[_n]
+                for _x in _t if isinstance(_t, (list, tuple)) else (_t,):
+                    if isinstance(_x, torch.Tensor) and _x.dim() > 0:
+                        _rows.add(int(_x.shape[-1]))
+            if len(_rows) > 1:
+                raise ValueError(
+                    "arc p628: LMCache store requires a uniform per-layer "
+                    f"KV row width across attention layers; got {sorted(_rows)}. "
+                    "A two-head-size attention hybrid cannot be addressed by "
+                    "single-hidden-size KV_2LTD memory objects -- boot with "
+                    "ARC_LMC=0 for this model."
+                )
             if self._mamba_group_idx is not None:
                 # Hybrid: attention tensors in group order (layer count must
                 # match the engine's kv_shape[0]).

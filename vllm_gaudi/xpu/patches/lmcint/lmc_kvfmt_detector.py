@@ -39,9 +39,16 @@ def _arc_discover(self, kv_caches, layout_hints):
             t = kv_caches[0]
             if (t.dim() == 5 and t.is_contiguous() and int(t.shape[0]) >= 16 and int(t.shape[3]) == 2
                     and int(t.shape[4]) >= 128):
-                if int(t.shape[2]) == 1 and int(t.shape[1]) >= 256:
+                # BS floor is the vLLU block-size minimum (16), not the
+                # r43 model's page size: the original >= 256 bound was
+                # overfit and rejected every small-block engine (gemma-4
+                # boots block_size 64), which dropped uniform hybrids into
+                # stock discovery and the mem_kernels fallback wedge
+                # (r108w: results/2026-11-06-p628-gemma4/phaseC/
+                # cert16_boot/).
+                if int(t.shape[2]) == 1 and int(t.shape[1]) >= 16:
                     bs = int(t.shape[1])
-                elif int(t.shape[1]) == 1 and int(t.shape[2]) >= 256:
+                elif int(t.shape[1]) == 1 and int(t.shape[2]) >= 16:
                     bs = int(t.shape[2])
                 else:
                     bs = 0
