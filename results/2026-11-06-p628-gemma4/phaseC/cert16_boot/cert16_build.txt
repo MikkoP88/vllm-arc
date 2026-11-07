@@ -1,0 +1,37 @@
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from cert16.Dockerfile
+#1 transferring dockerfile: 3.37kB done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/vllm-arc:v0.30.0-b70-cert12
+#2 DONE 0.0s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [1/3] FROM docker.io/library/vllm-arc:v0.30.0-b70-cert12@sha256:db620e8c6b96d38fff1c421d8b0049ab84f8454f69e39f726d09675bfcce8d6c
+#4 resolve docker.io/library/vllm-arc:v0.30.0-b70-cert12@sha256:db620e8c6b96d38fff1c421d8b0049ab84f8454f69e39f726d09675bfcce8d6c 0.0s done
+#4 DONE 0.0s
+
+#5 [internal] load build context
+#5 transferring context: 51B done
+#5 DONE 0.0s
+
+#6 [2/3] COPY patch_arc_xpu_warmup_gate.py /tmp/patch_arc_xpu_warmup_gate.py
+#6 CACHED
+
+#7 [3/3] RUN GW=/opt/venv/lib/python3.12/site-packages/vllm/v1/worker/gpu_worker.py &&     /opt/venv/bin/python3 /tmp/patch_arc_xpu_warmup_gate.py "$GW" &&     grep -c "\[ARC-P628-XPU-WARMUP\]" "$GW" | grep -q "^2$" &&     rm -f /opt/venv/lib/python3.12/site-packages/vllm/v1/worker/__pycache__/gpu_worker.cpython-312.pyc &&     /opt/venv/bin/python3 -c "import py_compile; src = '/opt/venv/lib/python3.12/site-packages/vllm/v1/worker/gpu_worker.py'; py_compile.compile(src, doraise=True); s = open(src, encoding='utf-8').read(); assert s.count('[ARC-P628-XPU-WARMUP]') == 2, 'mark count'; assert '_arc_xpu_warm_tuned_prefill_kernels(self)' in s, 'warmup call'; assert 'kernel_warmup(self)' in s, 'stock anchor intact'; assert 'kv_caches' in s, 'engine-cache warm'; assert 'transpose(1, 2)' in s, 'engine view derivation'; assert 'softcap=0,' in s, 'v4 int softcap'; assert 'softcap=0.0' not in s, 'v3 float softcap purged'; print('CERT16_WARMUP_V4_LIVE')" &&     rm -f /tmp/patch_arc_xpu_warmup_gate.py &&     MF=/etc/vllm-arc/IMAGE_MANIFEST &&     echo "cert16=P6.28 cert12 + ARC prefill-tune warmup gate v4 (v3 + engine-exact int softcap: float-vs-int scalar type split the triton cache key, leaving every warm kernel in an unused key space and the first prefill fresh-compiling inside the watchdog; r108v root cause; supersedes interim cert13/cert14/cert15)" >> "$MF" &&     echo "cert16_fork_sha=${FORK_SHA}" >> "$MF" &&     echo "cert16_built=${BUILT}" >> "$MF"
+#7 CACHED
+
+#8 exporting to image
+#8 exporting layers 0.0s done
+#8 exporting manifest sha256:171d87b870239cf36cd22af24de9f2f1aa5da905093e83c840c3e8e28806da1d done
+#8 exporting config sha256:92753ad26058c574ade2ddd261c847f5f36bbc09ca31b9ab77fcdd041b020767 done
+#8 exporting attestation manifest sha256:770172b0f7a26f99336f1e016f8ee1752b2cf1d2df3cf3dfe58d08344a11abf1
+#8 exporting attestation manifest sha256:770172b0f7a26f99336f1e016f8ee1752b2cf1d2df3cf3dfe58d08344a11abf1 done
+#8 exporting manifest list sha256:8235cafd8b26791654acadc3b464fbf5aab16030f93fc8f7bcb6084b3fde7306 done
+#8 naming to docker.io/library/vllm-arc:v0.30.0-b70-cert16 done
+#8 unpacking to docker.io/library/vllm-arc:v0.30.0-b70-cert16 0.0s done
+#8 DONE 0.1s
