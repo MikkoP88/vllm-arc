@@ -1,0 +1,4 @@
+(Worker_TP0 pid=794) [ARC-P629-SLIDE] hd256 sliding -> vxk FA2 windowed (r109 18x prefill)
+(Worker_TP0 pid=794) [ARC-P628-FA2] hd512 full-attn -> vxk FA2 (r108ac 34x prefill)
+(Worker_TP1 pid=795) [ARC-P629-SLIDE] hd256 sliding -> vxk FA2 windowed (r109 18x prefill)
+(Worker_TP1 pid=795) [ARC-P628-FA2] hd512 full-attn -> vxk FA2 (r108ac 34x prefill)

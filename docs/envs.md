@@ -5,13 +5,17 @@ at the r46t close-out) from `vllm_gaudi/envs.py` arc-lane markers + the
 certified serve line (`r43_serve_k5.sh`, spec depth 3 per the r46t
 recommendation — a serve-time CLI change — on image
 `vllm-arc:v0.30.0-b70-cert`; unchanged since — the qwen fp8 chain is identical on
-the current certified image `vllm-arc:v0.30.0-b70-cert18`, where
-`LMCACHE_TRACK_USAGE=false` (P6.3) made it 25; cert18 = cert17 + the
-P6.28 FA2 route (one wheel file, `triton_unified_attention.py` — adds
-NO serve-line var; its engine env `ARC_ATTN_FA2` defaults 1 = the
-hd512 full-attention route ON, `=0` = the pure-triton escape hatch —
-a serve-ENV knob, not part of the 25-var chain; qwen3.8 never hits
-the route, marker-proven at r108ae); cert17 = the cert11
+the current certified image `vllm-arc:v0.30.0-b70-cert19`, where
+`LMCACHE_TRACK_USAGE=false` (P6.3) made it 25; cert19 = cert18 + the
+P6.29 sliding-window FA2 route (the same wheel file,
+`triton_unified_attention.py` — adds NO serve-line var; the shared
+engine env `ARC_ATTN_FA2` defaults 1 = the hd512 full-attention route
+AND the hd256 sliding-window route ON, `=0` = the pure-triton escape
+hatch — a serve-ENV knob, not part of the 25-var chain; gemma-4 hits
+both routes, qwen3.8's full-attn never hits the hd512 route
+marker-proven at r108ae/r111); cert18 = cert17 + the
+P6.28 FA2 route (one wheel file — adds
+NO serve-line var); cert17 = the cert11
 engine + the P6.28 chain (cert12 launcher-table points, cert16 warm-gate
 v4, cert17 lmcint kit — none adds a qwen serve-line var; the gemma-4
 lane rides the same script with `ARC_LMC=0` + `ARC_RPC_TIMEOUT=1200`

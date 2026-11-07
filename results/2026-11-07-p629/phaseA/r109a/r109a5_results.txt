@@ -1,0 +1,17 @@
+INFO 11-07 18:38:15 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+INFO 11-07 18:38:15 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+INFO 11-07 18:38:15 [__init__.py:54] - hpu -> vllm_gaudi:register
+INFO 11-07 18:38:15 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+INFO 11-07 18:38:16 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+INFO 11-07 18:38:16 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+INFO 11-07 18:38:16 [__init__.py:54] - hpu -> vllm_gaudi:register
+INFO 11-07 18:38:16 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+INFO 11-07 18:38:16 [__init__.py:272] Platform plugin arc is activated
+INFO 11-07 18:38:16 [__init__.py:272] Platform plugin arc is activated
+Traceback (most recent call last):
+  File "<stdin>", line 73, in <module>
+  File "<stdin>", line 26, in run_case
+  File "/opt/venv/lib/python3.12/site-packages/vllm/v1/attention/ops/triton_unified_attention.py", line 1254, in unified_attention
+    USE_SOFTCAP=(softcap > 0),
+                 ^^^^^^^^^^^
+TypeError: '>' not supported between instances of 'NoneType' and 'int'

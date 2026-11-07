@@ -1,0 +1,23 @@
+INFO 11-07 18:45:46 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+INFO 11-07 18:45:46 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+INFO 11-07 18:45:46 [__init__.py:54] - hpu -> vllm_gaudi:register
+INFO 11-07 18:45:46 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+INFO 11-07 18:45:47 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+INFO 11-07 18:45:47 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+INFO 11-07 18:45:47 [__init__.py:54] - hpu -> vllm_gaudi:register
+INFO 11-07 18:45:47 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+INFO 11-07 18:45:47 [__init__.py:272] Platform plugin arc is activated
+INFO 11-07 18:45:47 [__init__.py:272] Platform plugin arc is activated
+== r109a6 global-softmax refs (chunked-softmax ref bug closed) ==
+GUARD_OK slide fp16           t_f=0.00012 ref_t=0.00014 ref_f=0.00014
+GUARD_OK slide fp8            t_f=0.00012 ref_t=0.00014 ref_f=0.00014
+GUARD_OK slide fp8 k8192      t_f=0.00024 ref_t=0.00013 ref_f=0.00013
+GUARD_OK slide bf16q fp8      t_f=0.00195 ref_t=0.00114 ref_f=0.00114
+GUARD_OK full hd512 fp8       t_f=0.00006 ref_t=0.00004 ref_f=0.00004
+Traceback (most recent call last):
+  File "<stdin>", line 172, in <module>
+  File "<stdin>", line 156, in guard_dec
+  File "/opt/venv/lib/python3.12/site-packages/torch/functional.py", line 372, in einsum
+    return _VF.einsum(equation, operands)  # type: ignore[attr-defined]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: einsum(): subscript d has size 256 for operand 1 which does not broadcast with previously seen size 16

@@ -1,0 +1,52 @@
+r111 cert19 validation ladder -- 2026-11-07 18:55-19:42 rig window
+===================================================================
+Image: vllm-arc:v0.30.0-b70-cert19 (cert18 + patch_arc_xpu_fa2_slide_route.py)
+FORK_SHA 904a3de880585a643930a10c21a4340d42314c87 (feat/arc-p629-slide-route)
+Window log: rig /root/build/p629/logs/r111_window.log (unbanked)
+
+[0] image gates: slide marks=2 fa2 marks=3 tune marks=3; manifest rows
+    cert19 / cert19_fork_sha / cert19_built=2026-11-07T18:51:59Z. GREEN.
+
+[1] gemma L1 leg (graph=1 lmc=0 spec=0 rpc=1200):
+    - boot 18:55:41 -> HEALTH 19:08:33; warm gate 32/32 load-lines. GREEN.
+    - markers: [ARC-P628-FA2] 2 lines (1/rank), [ARC-P629-SLIDE] 2 lines
+      (1/rank) -- BOTH routes live. GREEN (gate was >=1 each).
+    - probe98: clean completion ("Hi!"). GREEN.
+    - G1 3/3 (factual/reason/code all finish=length, coherent).
+    - faces (TTFT-dominated wall, 16 max_tokens):
+        face8k    4.9 s   (cert18 14.2 s  -> 2.9x)
+        face32k  17.2 s   (cert18 41.5 s  -> 2.4x; qwen U32k record 16.93
+                          => 1.016x -- PARITY)
+        face120k 110.9 s  (cert18 181.5 s -> 1.64x; the 70.6 s saved matches
+                          the projection 7.4 s x ~9.5 q8192 chunks)
+        face32k_2 0.9 s   (cert18 4.7 s -> 5.2x cached re-hit)
+    - decode battery (temp=0, 256 max_tokens):
+        solo x3: 28.4 / 28.4 / 28.5 tok/s  (cert18 19.6 -> +45%)
+        agg8 x3: 195.5 / 195.4 / 194.5 tok/s (cert18 73.8 -> 2.64x)
+    - erraudit 0/0; JIT-during-inference 0. GREEN.
+
+[1b] r110 ngram leg (spec ngram k3 lookup 2-4): boot + health + slide
+    markers fine, but EngineCore dies on FIRST request -- both ranks:
+    gpu_model_runner.py:4347 _get_mamba_bufs() -> AssertionError
+    "no mamba layers in the model" (ngram_crash_excerpt.txt; 160 ERRORs /
+    6 Tracebacks). First-ever spec attempt on gemma-4: the v1 spec path
+    requires mamba/GDN bufs for this hybrid; qwen3.8 (hybrid-GDN) has
+    them, gemma-4 (pure sliding/full attention) does not. Upstream vllm
+    core behavior, out of kit scope. NGRAM LANE CLOSED NEGATIVE for
+    gemma-4 on this stack; decode posture stays ARC_SPEC=0.
+
+[2] qwen discriminator (graph=1 spec=3 lmc=1):
+    - U8k  TTFT 3.83 s (record 3.76, +-5% band 3.57-3.95) IN BAND (+1.9%)
+    - U32k TTFT 17.58 s (record 16.93, band 16.08-17.78) IN BAND (+3.8%)
+    - markers: fa2=0 (expected), slide=2 -- the guarded sliding-hd256
+      class also occurs in qwen traffic/tune-warmup; TTFT in band +
+      erraudit 0/0 => no regression (documented behavior delta vs the
+      cert18 expectation note).
+    - erraudit 0/0. GREEN.
+
+Verdict: cert19 CERTIFIED-worthy. Prefill/TTFT: face32k at qwen parity;
+face8k 1.30x of qwen U8k; face120k 1.7x per-token of qwen U64k (full-attn
+layers + GEMM floor). Decode: no-spec posture 28.4 solo / 195 agg8 --
+1.57x qwen's own no-spec agg (124); spec parity unreachable (no MTP head,
+ngram structurally rejected). W14 restored 19:42, health 200 + generation
+probe green 19:49.

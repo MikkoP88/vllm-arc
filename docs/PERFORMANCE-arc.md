@@ -8,7 +8,7 @@ definitions and hardware in [`TESTING-arc.md`](TESTING-arc.md)).
 1. **Measurement methodology** — defines every face, the protocol laws,
    the two prefix-cache tiers, and the provenance rule. Read it first.
 2. **Current record** — the **probabilistic draft lane on
-   `vllm-arc:v0.30.0-b70-cert18`** (the certified posture since P6.17 —
+   `vllm-arc:v0.30.0-b70-cert19`** (the certified posture since P6.17 —
    the serve-script default; every record
    face measured natively on that lane by the p617 campaign, and the
    cert7–cert11 release gates re-verified the key faces on the tag-built
@@ -33,7 +33,13 @@ definitions and hardware in [`TESTING-arc.md`](TESTING-arc.md)).
    cert18 discriminator re-ran U8k/U32k green at 3.77/17.49 s with the
    route marker 0, so the qwen rows below carry both the cert11-era
    records and the cert18 discriminator proof that the incumbent lane is
-   untouched)**) and the current-era analyses
+   untouched)**; **cert19 (P6.29) adds the sliding-window FA2 route —
+   gemma's 50/60 sliding hd256 layers → the same ESVD FA2 kernel
+   windowed: 2.4–2.9× more gemma prefill on top of cert18 (face32k at
+   qwen-parity), decode +45 % solo / 2.64× agg8; the qwen discriminator
+   re-ran green in-band at 3.83/17.58 s (the guarded sliding-hd256 class
+   also occurs in qwen traffic — no regression, erraudit 0/0)**) and the
+   current-era analyses
    (prefill anatomy, op-class trace). The pre-P6.17 greedy-lane record
    (r70, cert4-native) is retained as labeled history.
 3. **History** — every pre-P6.17 measurement, labeled by image and
@@ -75,7 +81,7 @@ current-record tables.
 | Layer | Identity |
 |---|---|
 | Hardware | dual Intel Arc Pro B70 (48 GB each), TP2, one card per socket (`ZE_AFFINITY_MASK=0,1`) |
-| Engine image | **current**: `vllm-arc:v0.30.0-b70-cert18` — tag `rel/v0.30.0-b70-cert18` (cert17 + the P6.28 FA2 route: `external_patches/vllm/patch_arc_xpu_fa2_route.py` via `tools/cert18.Dockerfile` — full-attention head-512 calls dispatch to the `vllm_xpu_kernels` ESVD FA2 kernel in the triton unified-attention wrapper; `ARC_ATTN_FA2=0` escape hatch; IMAGE_MANIFEST carries the cert18 row + `cert18_fork_sha`; gate evidence `results/2026-11-06-p628-gemma4/phaseC/cert18_l1/` — the FA2 marker fired on both TP ranks in production serving, gemma faces 2.2–16.3× faster, qwen discriminator marker 0). Prior-cert context: cert17 — tag `rel/v0.30.0-b70-cert17` (the cert11 engine + the P6.28 chain: cert12 launcher table `a964e047` + cert16 warm-gate v4 `5d895fef` + cert17 lmcint kit `e5e725b4`; built via the `tools/cert16/17.Dockerfile` lineage with the external_patches kit; IMAGE_MANIFEST carries the cert12 row + cert16/17 description rows — their fork_sha/built stamps are empty in the shipped manifest, a cosmetic build-script wart proven around by the banked build logs + the r108z gate-fire boot). Prior-cert context: cert11 — tag `rel/v0.30.0-b70-cert11` (commit `c987c2cd`), overlay on cert10 from the tag archive (`tools/cert11.Dockerfile`, platform.py md5 `e48abe9cd9de`), image manifest `sha256:928a6dfe…`; `IMAGE_MANIFEST` rows: `fork_sha == aa2ee17d…` + `oneccl=2022.0.0+arc1` overlay rows (both carried from cert10) + `cert11_fork_sha == c987c2cd…`; **exhaustive `vllm_gaudi/` md5 walk vs cert10: 294→294 files, changed set EXACTLY `vllm_gaudi/xpu/platform.py` + its regenerated pyc** (r105b gate, `results/2026-11-06-p626-mxfp4/`); pip freeze diff 0. Prior-cert context: **cert10** (tag `rel/v0.30.0-b70-cert10`, image `2f86fc2411fb`, `IMAGE_MANIFEST.fork_sha == aa2ee17d…` preserved from cert9 + the `oneccl=2022.0.0+arc1` overlay rows; **exhaustive `vllm_gaudi/` md5 walk vs cert9: diff_lines = 0** — cert9's vllm-layer certifications carried; only the comm lib changed), two-file fat-lib overlay sha-pinned at both SONAME paths (cert10 gate, `results/2026-11-05-p624-fp8-ar/`). The current-record numbers below were measured natively on cert6 under the certified probabilistic draft posture (p617 campaign) and the key faces re-verified at the cert7–cert10 release gates (t0 in-family — cert10 default-posture gate 300.39 steady / 84.52–84.51 solo with the FP8 env proven absent — integrity/det/spec green — cert10 spec pos1 0.9258 byte-exact on BOTH the default and FP8=1 legs — long-return t0 lanes 100 % clean on every dtype; the one t1-seed window flag dispositioned benign with the W14 incumbent control at cert8; the cert9-gate TQ identity faces carry the cross-cert dominant-hash proof — same variant families as the cert8 gate). cert10 = cert9 engine + the **P6.24 oneCCL fp8-wire overlay** (same-version 2022.0.0 rebuild + e4m3-wire large-ring allreduce, **default OFF** — `CCL_SYCL_ALLREDUCE_FP8=1` opts in; opt-in faces below). cert9 = cert8 engine + the **P6.20 prefill host-path patch** (L3 off-thread LMCache store, default ON via `VLLM_ARC_LMC_ASYNC_STORE` — device ops stay on the engine's in-order stream, only the host wait moves to the `arc-lmc-store` worker; L6 dispatch-late handoff; `patches/step_trace.py` diagnostics, silent-off). Under `fp8_e4m3` the compute bytes are identical to cert6–cert9 — the P6.20 delta is WHERE the store body's D2H gathers + CPU insert run (off-thread), worth **−0.74 s U32k / −1.64 s U64k / −0.08 s U8k TTFT**; KV pool 400,739 == cert7 byte-value, run7n t0 296.91/84.54/84.48 in-family. cert8 (`e47739b0`, image `b212fbca59ec`) remains fully valid |
+| Engine image | **current**: `vllm-arc:v0.30.0-b70-cert19` — tag `rel/v0.30.0-b70-cert19` (cert18 + the P6.29 sliding-window FA2 route: `external_patches/vllm/patch_arc_xpu_fa2_slide_route.py` via `tools/cert19.Dockerfile` — sliding-window head-256 calls (window (1023,0) class) dispatch to the `vllm_xpu_kernels` ESVD FA2 kernel windowed in the same triton unified-attention wrapper; `ARC_ATTN_FA2=0` disables both routes; IMAGE_MANIFEST carries the cert19 row + `cert19_fork_sha`; gate evidence `results/2026-11-07-p629/cert19_l1/` — BOTH markers fired on both TP ranks in production serving, gemma faces 2.4–2.9× faster than cert18 (face32k at qwen-parity), decode +45 % solo / 2.64× agg8, qwen discriminator in-band). Prior-cert context: cert18 — tag `rel/v0.30.0-b70-cert18` (cert17 + the P6.28 FA2 route: `external_patches/vllm/patch_arc_xpu_fa2_route.py` via `tools/cert18.Dockerfile` — full-attention head-512 calls dispatch to the `vllm_xpu_kernels` ESVD FA2 kernel in the triton unified-attention wrapper; `ARC_ATTN_FA2=0` escape hatch; IMAGE_MANIFEST carries the cert18 row + `cert18_fork_sha`; gate evidence `results/2026-11-06-p628-gemma4/phaseC/cert18_l1/` — the FA2 marker fired on both TP ranks in production serving, gemma faces 2.2–16.3× faster, qwen discriminator marker 0). Prior-cert context: cert17 — tag `rel/v0.30.0-b70-cert17` (the cert11 engine + the P6.28 chain: cert12 launcher table `a964e047` + cert16 warm-gate v4 `5d895fef` + cert17 lmcint kit `e5e725b4`; built via the `tools/cert16/17.Dockerfile` lineage with the external_patches kit; IMAGE_MANIFEST carries the cert12 row + cert16/17 description rows — their fork_sha/built stamps are empty in the shipped manifest, a cosmetic build-script wart proven around by the banked build logs + the r108z gate-fire boot). Prior-cert context: cert11 — tag `rel/v0.30.0-b70-cert11` (commit `c987c2cd`), overlay on cert10 from the tag archive (`tools/cert11.Dockerfile`, platform.py md5 `e48abe9cd9de`), image manifest `sha256:928a6dfe…`; `IMAGE_MANIFEST` rows: `fork_sha == aa2ee17d…` + `oneccl=2022.0.0+arc1` overlay rows (both carried from cert10) + `cert11_fork_sha == c987c2cd…`; **exhaustive `vllm_gaudi/` md5 walk vs cert10: 294→294 files, changed set EXACTLY `vllm_gaudi/xpu/platform.py` + its regenerated pyc** (r105b gate, `results/2026-11-06-p626-mxfp4/`); pip freeze diff 0. Prior-cert context: **cert10** (tag `rel/v0.30.0-b70-cert10`, image `2f86fc2411fb`, `IMAGE_MANIFEST.fork_sha == aa2ee17d…` preserved from cert9 + the `oneccl=2022.0.0+arc1` overlay rows; **exhaustive `vllm_gaudi/` md5 walk vs cert9: diff_lines = 0** — cert9's vllm-layer certifications carried; only the comm lib changed), two-file fat-lib overlay sha-pinned at both SONAME paths (cert10 gate, `results/2026-11-05-p624-fp8-ar/`). The current-record numbers below were measured natively on cert6 under the certified probabilistic draft posture (p617 campaign) and the key faces re-verified at the cert7–cert10 release gates (t0 in-family — cert10 default-posture gate 300.39 steady / 84.52–84.51 solo with the FP8 env proven absent — integrity/det/spec green — cert10 spec pos1 0.9258 byte-exact on BOTH the default and FP8=1 legs — long-return t0 lanes 100 % clean on every dtype; the one t1-seed window flag dispositioned benign with the W14 incumbent control at cert8; the cert9-gate TQ identity faces carry the cross-cert dominant-hash proof — same variant families as the cert8 gate). cert10 = cert9 engine + the **P6.24 oneCCL fp8-wire overlay** (same-version 2022.0.0 rebuild + e4m3-wire large-ring allreduce, **default OFF** — `CCL_SYCL_ALLREDUCE_FP8=1` opts in; opt-in faces below). cert9 = cert8 engine + the **P6.20 prefill host-path patch** (L3 off-thread LMCache store, default ON via `VLLM_ARC_LMC_ASYNC_STORE` — device ops stay on the engine's in-order stream, only the host wait moves to the `arc-lmc-store` worker; L6 dispatch-late handoff; `patches/step_trace.py` diagnostics, silent-off). Under `fp8_e4m3` the compute bytes are identical to cert6–cert9 — the P6.20 delta is WHERE the store body's D2H gathers + CPU insert run (off-thread), worth **−0.74 s U32k / −1.64 s U64k / −0.08 s U8k TTFT**; KV pool 400,739 == cert7 byte-value, run7n t0 296.91/84.54/84.48 in-family. cert8 (`e47739b0`, image `b212fbca59ec`) remains fully valid |
 | Wheels | md5-pinned at build (`tools/wheel_guard.sh`, 4 pins: vllm/triton/vxk/lmcache 0.5.6+arc1) |
 | Serve line | the certified 25-var env chain + CLI ([`CONFIGURATION-arc.md`](CONFIGURATION-arc.md)): MTP k3 **+ probabilistic drafting (the P6.17 certified default)**, `mode:none`, FULL_DECODE_ONLY graphs (85 capture sizes, 1–320), MNBT 8192, LMCacheConnectorV1 `kv_both` |
 | p617 campaign (the comprehensive prob-lane certification) | 5 fresh boots on cert6 — prob comprehensive leg (a), prob family leg (b), no-spec A/B leg (c), default-path validation boot (d), greedy opt-out boot (e) — evidence `results/2026-11-03-p617a-probcert/` |
@@ -138,9 +144,15 @@ accepted/drafts + 1** (the +1 bonus token). Windows are counter deltas
 snapshotted before/after each battery, so each face's acceptance covers
 that face's traffic only.
 
-## Current certified image — cert18 (`rel/v0.30.0-b70-cert18`) + probabilistic draft lane (P6.17): the current record
+## Current certified image — cert19 (`rel/v0.30.0-b70-cert19`) + probabilistic draft lane (P6.17): the current record
 
-**Current release = cert18; current certified posture = probabilistic
+**Current release = cert19 (= cert18 + the P6.29 sliding-window FA2
+route; every cert18 byte carries plus one more wheel-file patch — the
+gemma-4 numbers below are cert19-native from the r111 ladder:
+faces 4.9 / 17.2 / 110.9 / 0.9 s, decode 28.4 solo / 195 agg8; qwen
+discriminator in-band 3.83/17.58 s, erraudit 0/0;
+`results/2026-11-07-p629/cert19_l1/`). Current certified posture =
+probabilistic
 drafting (P6.17, the serve-script default).** Every record number below
 was measured natively on the cert6 image under
 `ARC_SPEC_METHOD=probabilistic` (p617 campaign, 2026-11-03, fresh boot
@@ -243,7 +255,7 @@ table is below; re-gated clean on cert9 — dominant identity hashes
 byte-identical across the two gates). How to run: the 25-var chain in
 [`CONFIGURATION-arc.md`](CONFIGURATION-arc.md).
 
-### Gemma-4-31B validation faces (P6.28; cert18 L1 current — r108ae — with the cert17-native columns kept as labeled history)
+### Gemma-4-31B validation faces (P6.28+P6.29; cert19 L1 current — r111 — with the cert18/cert17-native columns kept as labeled history)
 
 Second-model lane (owner directive 2026-11-06/07): gemma-4-31B (60-layer
 two-head-size hybrid — 50 sliding-window hd256 layers + 10 full-attention
@@ -251,61 +263,97 @@ hd512 layers per rank 16Q/8KV hd256 win1024 and 16Q/2KV hd512) on the
 certified posture `graph=1 spec=0 ARC_LMC=0 ARC_RPC_TIMEOUT=1200`, TP2,
 chat template gemma4. Client walls, temperature 0, solo, finish=length.
 
-| face | **L1 fp8 cert18 (FA2 route)** | L1 fp8 cert17 (history) | L2 mxfp8 cert17 (maxlen 95000) |
-|---|---|---|---|
-| probe98 (98-token gen probe) | **13 s** OK coherent | 35 s OK coherent | 35 s OK coherent |
-| G1 factual / code / reason | 3/3 (reason "4:40 pm") | 3/3 | 2/3 — **reason MISS** (single arithmetic probe, W8 quant; broader L2 quality battery = follow-up) |
-| face8k (8,028 ptok / 16 ctok) | **14.2 s** | 31.5 s | 35.4 s |
-| face32k (32,028 ptok) | **41.5 s** (6.8×) | 283.4 s | 297.4 s |
-| face120k / face90k (maxlen-bound) | **181.5 s** (face120k, 16.3×) | 2950.3 s (face120k) | 1819.5 s (face90k) |
-| face32k_2 (identical prompt, prefix re-hit) | **4.7 s** | 9.8 s | 10.3 s |
-| decode solo 1×256 (×3 reps) | **19.6 tok/s** | 18.4–18.5 tok/s | 11.9 tok/s |
-| decode agg8×256 (steady rep) | **73.8 tok/s** | 69.9 tok/s | 54.6 tok/s |
-| erraudit (whole battery boot) | 0 ERROR / 0 Traceback | 0 ERROR / 0 Traceback | 0 ERROR / 0 Traceback |
+| face | **L1 fp8 cert19 (slide route)** | L1 fp8 cert18 (history) | L1 fp8 cert17 (history) | L2 mxfp8 cert17 (maxlen 95000) |
+|---|---|---|---|---|
+| probe98 (98-token gen probe) | **5 s** OK coherent | 13 s OK coherent | 35 s OK coherent | 35 s OK coherent |
+| G1 factual / code / reason | 3/3 | 3/3 (reason "4:40 pm") | 3/3 | 2/3 — **reason MISS** (single arithmetic probe, W8 quant; broader L2 quality battery = follow-up) |
+| face8k (8,028 ptok / 16 ctok) | **4.9 s** | 14.2 s | 31.5 s | 35.4 s |
+| face32k (32,028 ptok) | **17.2 s** — **qwen-parity** (1.016× of the U32k 16.93 record) | 41.5 s (6.8×) | 283.4 s | 297.4 s |
+| face120k / face90k (maxlen-bound) | **110.9 s** (face120k) | 181.5 s (face120k, 16.3×) | 2950.3 s (face120k) | 1819.5 s (face90k) |
+| face32k_2 (identical prompt, prefix re-hit) | **0.9 s** | 4.7 s | 9.8 s | 10.3 s |
+| decode solo 1×256 (×3 reps) | **28.4–28.5 tok/s** | 19.6 tok/s | 18.4–18.5 tok/s | 11.9 tok/s |
+| decode agg8×256 (steady rep) | **194.5–195.5 tok/s** | 73.8 tok/s | 69.9 tok/s | 54.6 tok/s |
+| erraudit (whole battery boot) | 0 ERROR / 0 Traceback, JIT 0 | 0 ERROR / 0 Traceback | 0 ERROR / 0 Traceback | 0 ERROR / 0 Traceback |
 
-L2 mxfp8 was not re-run on cert18 (listed follow-up with the broader L2
-quality battery); the FA2 route is engine-level and model-agnostic for
-the hd512 full-attention class, so L2 is expected to benefit
+cert19 parity analysis vs the qwen3.8-27b fp8 incumbent records:
+face32k is AT parity (17.2 vs 16.93 s = 1.016×); face8k is 1.30× of U8k
+(4.9 vs 3.76 s — the remaining delta is the 10 full-attention hd512
+layers' k-dependence + GEMM floor); face120k runs 1.008 ms/prompt-token
+vs qwen U64k's 0.594 (110,028 vs 65,536 ptok faces — the hd512 quadratic
+share grows with k); face32k_2 re-hit 0.9 s beats the qwen C32k 1.09 s
+record. Decode: cert19 agg8 195 tok/s is 1.57× qwen's own NO-SPEC agg
+(124–127); vs qwen's MTP-k3 spec lane (solo 83.7–84.9 / agg8 326–328)
+the gap is 2.9×/1.7× and is **structurally closed to parity work**:
+gemma-4's checkpoint ships no MTP/draft head (nothing to draft from),
+and the draft-free ngram lane is refused by the upstream v1 spec path —
+`_get_mamba_bufs()` asserts "no mamba layers in the model" on
+pure-attention hybrids (both ranks, first request; banked
+`results/2026-11-07-p629/cert19_l1/ngram_crash_excerpt.txt`). Spec
+parity for gemma-4 on this stack is therefore not reachable by any
+lawful lane; the certified decode posture is `ARC_SPEC=0`.
+
+L2 mxfp8 was not re-run on cert18/cert19 (listed follow-up with the
+broader L2 quality battery); both FA2 routes are engine-level and
+model-agnostic for their classes, so L2 is expected to benefit
 identically — unmeasured until that leg runs.
 
-**Prefill root cause (owner MAJOR ISSUE — FIXED at cert18; history of the
-close).** The prefill cost is the 10/60 full-attention hd512 layers: the
-shared triton unified-attention 2D path runs them at 10.81 s/call
-(0.71 TF/s) at q=8192/k=32768 fp8-KV. r108aa/r108ab first read this as
-a structural L2-bandwidth wall (~37 GB of L2-side reads per call = 3.4
-TB/s effective; BLOCK_M SLM-capped at 64 — M128 launch-fails; time ∝
-1/BLOCK_Q; TILE/stages/dtype/nkvh noise; the cert12 table measured AT
-the ceiling, sweep winner 1.01×, numeric guard 0.00000). r108ac's
-fp16-KV control then REFUTED the bandwidth story — 10.28 s at 2× the
-bytes: the kernel is slow PER K-TILE ITERATION (~10.3 µs vs 2.4 µs
-windowed), a kernel defect, not a memory-system wall. The engine
-already ships the fast kernel for exactly this shape class — the
-`vllm_xpu_kernels` ESVD FA2 kernel (`_vllm_fa2_C.abi3.so`) — but the
-triton backend never dispatches to it. r108ac/r108ad measured the route
-at production geometry: **FA2 0.3197 s/call = 24.1 TF/s = 34× (k98k
-~30×; decode S8×32k 1.5 ms/call), numeric guards green** (t-vs-f 6e-5…
-2e-3; both kernels anchor at 1e-4 vs a block-table-faithful GQA torch
-reference). cert18 = the wrapper-level dispatch (hd512 + full-attention
-guards; every triton-only feature keeps triton; descale storage
-normalized for the warm-gate caller form — r108ae v3), validated
-end-to-end: probe98 13 s, face8k 14.2 / face32k 41.5 / face120k 181.5 /
-face32k_2 4.7 s, decode 19.6 / 73.8 tok/s (the table above), G1 3/3,
-erraudit 0/0, one benign first-request triton compile; and the qwen3.8
-discriminator proves the incumbent lane untouched (U8k 3.77 / U32k
-17.49 s vs the 3.76/16.93 records — inside the ±5 % cross-boot band;
-route marker 0). The residual 2.5× face32k gap vs the qwen3.8 incumbent
-(U32k 16.93 s) is architectural: qwen3.8 is a GDN hybrid (linear
-attention) and does not execute 10 quadratic hd512 layers at 32k+. The
-50/60 sliding-window layers stay on the healthy triton path (0.156
-s/call, pruning engaged). Decode notes: cert18 lifted L1 solo 18.4→19.6
-and agg8 69.9→73.8 tok/s (the 10 full layers' decode attention now runs
-FA2's paged path); the long-context decode ceiling observation
-(~3 tok/s at 32k in-face, r108v2) was the same triton walk cost. Listed
-follow-ups: the L2 mxfp8 cert18 re-run + broader L2 quality battery.
-Evidence: `results/2026-11-06-p628-gemma4/phaseC/` (`cert17_boot/`,
-`cert17_l2/`, `cert17_decode/`, `micro_realshape/`, `micro_sweep/`,
-`micro_fa2ab/` = the 34× A/B + guards, `cert18_l1/` = the image-level
-validation incl. the v2 descale-crash forensics).
+**Prefill root cause, layers 1–2 (owner MAJOR ISSUE — FIXED at cert18;
+history of the close).** The first prefill cost was the 10/60
+full-attention hd512 layers: the shared triton unified-attention 2D path
+runs them at 10.81 s/call (0.71 TF/s) at q=8192/k=32768 fp8-KV.
+r108aa/r108ab first read this as a structural L2-bandwidth wall (~37 GB
+of L2-side reads per call = 3.4 TB/s effective; BLOCK_M SLM-capped at
+64 — M128 launch-fails; time ∝ 1/BLOCK_Q; TILE/stages/dtype/nkvh noise;
+the cert12 table measured AT the ceiling, sweep winner 1.01×, numeric
+guard 0.00000). r108ac's fp16-KV control then REFUTED the bandwidth
+story — 10.28 s at 2× the bytes: the kernel is slow PER K-TILE
+ITERATION (~10.3 µs vs 2.4 µs windowed), a kernel defect, not a
+memory-system wall. The engine already ships the fast kernel for exactly
+this shape class — the `vllm_xpu_kernels` ESVD FA2 kernel
+(`_vllm_fa2_C.abi3.so`) — but the triton backend never dispatches to it.
+r108ac/r108ad measured the route at production geometry: **FA2 0.3197
+s/call = 24.1 TF/s = 34× (k98k ~30×; decode S8×32k 1.5 ms/call)**,
+numeric guards green. cert18 = the wrapper-level dispatch (hd512 +
+full-attention guards; descale storage normalized — r108ae v3),
+validated end-to-end (faces 14.2/41.5/181.5/4.7 s, decode 19.6/73.8,
+qwen discriminator marker-0 green).
+
+**Prefill root cause, layer 3 — the remaining wall (P6.29; FIXED at
+cert19).** After cert18, the dominant residual was the 50/60
+SLIDING hd256 layers: the triton path costs 0.147–0.158 s/call at
+q8192 fp8-KV and is **k-INDEPENDENT** (0.1466 k8192 / 0.1580 k32k /
+0.1576 k98k, r109a3) — i.e. the kernel never amortizes its window
+pruning across K, while the same vxk ESVD FA2 kernel WINDOWED runs
+0.006–0.009 s (window-bounded) = 18–25×, decode S8×32k 4.38→0.3–0.4 ms
+= 11–15× (r109a/r109a3). 50 layers × ~0.148 s ≈ 7.4 s per q8192 chunk —
+the bulk of cert18's face8k 14.2 s. cert19 = the second wrapper-level
+dispatch (hd256 + causal sliding window (left ≥ 0, right ≤ 0) + every
+cert18 triton-only exclusion; window passed as `[left, 0]`;
+`external_patches/vllm/patch_arc_xpu_fa2_slide_route.py` — asserts the
+cert18 v3 state byte-exact before patching). Numeric guards: kernels
+agree 1.2e-4…9.8e-4 (fp16/fp8/bf16-q, prefill+decode) and BOTH match
+global-softmax table-faithful window-masked GQA torch refs at
+1.3e-4…1.1e-3 prefill / 8e-5 decode (r109a6) — note the r108ad…r109a4
+"ref misses ~4" (full class too) were a harness bug in the TEST refs
+(per-chunk softmax normalization), not a kernel issue; the softcap
+theory was eliminated separately (the triton wrapper cannot receive
+`None` — TypeError at r109a5; production passes 0.0 and
+`USE_SOFTCAP=(0.0>0)` skips it). Validated end-to-end on cert19 (r111):
+faces 4.9/17.2/110.9/0.9 s (the 70.6 s face120k saving matches the 7.4 s
+× ~9.5 chunks projection exactly), decode 28.4 solo / 195 agg8 tok/s,
+G1 3/3, erraudit 0/0, JIT 0, BOTH route markers live per rank, qwen
+discriminator U8k 3.83 / U32k 17.58 s in-band (±5 % of 3.76/16.93; fa2
+marker 0; the slide marker's 2 lines on the qwen leg = the guarded
+sliding-hd256 class occurs in qwen traffic/tune-warmup too — in-band +
+erraudit 0/0, no regression). Decode notes: the slide route lifted L1
+solo 19.6→28.4 and agg8 73.8→195 tok/s (50 layers' decode attention now
+runs FA2's windowed paged path under the graphs). Listed follow-ups:
+the L2 mxfp8 cert19 re-run + broader L2 quality battery. Evidence:
+`results/2026-11-07-p629/` (`phaseA/r109a/` = the A/B + guards +
+k-independence anchors + the ref-bug closure legs, `cert19_l1/` = the
+r111 ladder incl. `r111_summary.txt` and the ngram refusal excerpt);
+cert18-era evidence `results/2026-11-06-p628-gemma4/phaseC/`
+(`micro_fa2ab/`, `cert18_l1/`).
 
 ### Throughput — t0, thinking off (chat battery; posture-invariant face)
 

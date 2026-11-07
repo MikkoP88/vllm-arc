@@ -1,0 +1,25 @@
+INFO 11-07 18:22:20 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+INFO 11-07 18:22:20 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+INFO 11-07 18:22:20 [__init__.py:54] - hpu -> vllm_gaudi:register
+INFO 11-07 18:22:20 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+INFO 11-07 18:22:21 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+INFO 11-07 18:22:21 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+INFO 11-07 18:22:21 [__init__.py:54] - hpu -> vllm_gaudi:register
+INFO 11-07 18:22:21 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+INFO 11-07 18:22:21 [__init__.py:272] Platform plugin arc is activated
+INFO 11-07 18:22:21 [__init__.py:272] Platform plugin arc is activated
+== r109a3 sliding PRE guards (chunk-position-fixed ref) ==
+GUARD_OK slide pre fp16         max_abs(t,f)=0.00012 allclose(1e-2)=True ref_t=3.76807 ref_f=3.76807
+GUARD_OK slide pre fp8          max_abs(t,f)=0.00012 allclose(1e-2)=True ref_t=4.06821 ref_f=4.06821
+GUARD_OK slide pre bf16q fp8    max_abs(t,f)=0.00098 allclose(1e-2)=True ref_t=4.03058 ref_f=4.03058
+GUARD_OK slide pre fp8 k8192    max_abs(t,f)=0.00024 allclose(1e-2)=True ref_t=4.27206 ref_f=4.27206
+GUARD_OK slide pre fp16 short   max_abs(t,f)=0.00024 allclose(1e-2)=True ref_t=3.63342 ref_f=3.63342
+GUARD_OK slide dec fp16 mix     max_abs(t,f)=0.00012 allclose(1e-2)=True ref_t=0.00008 ref_f=0.00009
+GUARD_OK slide dec fp8 mix      max_abs(t,f)=0.00012 allclose(1e-2)=True ref_t=0.00008 ref_f=0.00008
+== r109a3 triton anchors (contiguous descales) ==
+TIME_OK slide pre k8k q8192      triton wall=0.1466s x2
+TIME_OK slide pre k32k q8192     triton wall=0.1580s x2
+TIME_OK slide pre k98k q8192     triton wall=0.1576s x1
+TIME_OK slide dec S8x32k         triton wall=0.00438s x5 S=8 kmax=32768
+TIME_OK slide dec S8mix          triton wall=0.00450s x5 S=8 kmax=32768
+R109A3_DONE
