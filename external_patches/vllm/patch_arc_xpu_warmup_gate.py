@@ -71,13 +71,18 @@ HELPER_BLOCK = '''
 
 def _arc_xpu_warm_points(worker, geoms) -> None:
     """Load one kernel module per (geometry, band, divisibility, window)
-    combination a serving step can produce (see triton_unified_attention
-    _ARC_XPU_PREFILL_CONFIGS). Points mirror the shapes real traffic
-    hits: the high band is a max_num_batched_tokens chunk (div16 query),
-    the mid band is an arbitrary chunk remainder (98-class, non-div16),
-    each against div16 and non-div16 KV lengths, and both window styles
-    the wrapper forwards (full (-1,-1), sliding (1023,0)) map to
-    different specialization buckets."""
+    combination a serving prefill produces (see triton_unified_attention
+    _ARC_XPU_PREFILL_CONFIGS), replicating TritonAttentionImpl.forward's
+    call pattern EXACTLY: the backend allocates the softmax segment
+    tensors unconditionally and passes them on every call, XPU enables
+    tensor-descriptor mode by default, per-head descales arrive as
+    expanded views, and Gemma-4-style layers pair the sliding window
+    with mm_prefix_clamp_sliding_window=True. r108q proved a warm that
+    omits any of these leaves a fresh variant for the first request to
+    load — which wedges. Points: high band = max_num_batched_tokens
+    chunk (div16 query), mid band = 98-class chunk remainder (non-div16),
+    each against div16 and non-div16 KV lengths, for full and sliding
+    windows."""
     import torch
 
     from vllm.v1.attention.ops import triton_unified_attention as _tua
@@ -89,29 +94,41 @@ def _arc_xpu_warm_points(worker, geoms) -> None:
         pass
     mnbt = max(128, min(mnbt, 32768))
     mid = min(98, mnbt - 1)
-    windows = ((-1, -1), (1023, 0))
+    nseg = 16  # triton_attn.NUM_PAR_SOFTMAX_SEGMENTS
     points = (
         (mnbt, mnbt),      # high band: q div16, k div16
         (mnbt, mnbt + 1),  # high band: q div16, k non-div16
         (mid, mid),        # mid band: q non-div16, k non-div16
         (mid, mnbt),       # mid band over long div16 KV (prefix cache)
     )
+    # (window, mm_prefix_clamp_sliding_window) — engine pairing: sliding
+    # layers set the clamp flag, full-attention layers do not (gemma4.py).
+    windows = (((-1, -1), False), ((1023, 0), True))
 
     dev = torch.device("xpu", torch.xpu.current_device())
     for head, nqh, nkvh in geoms:
+        head_pow2 = 1 << (head - 1).bit_length()
+        segm_out = torch.empty((16, nqh, nseg, head_pow2),
+                               dtype=torch.float32, device=dev)
+        segm_max = torch.empty((16, nqh, nseg),
+                               dtype=torch.float32, device=dev)
+        segm_sum = torch.empty((16, nqh, nseg),
+                               dtype=torch.float32, device=dev)
+        kd = torch.ones(nkvh, device=dev).expand((1, nkvh))
+        vd = torch.ones(nkvh, device=dev).expand((1, nkvh))
         for ntok, seqlen in points:
-            for win in windows:
-                nblk = (seqlen + 63) // 64
-                q = torch.randn(ntok, nqh, head, dtype=torch.float16, device=dev)
-                kc = torch.randn(nblk, 64, nkvh, head, dtype=torch.float16,
-                                 device=dev).to(torch.float8_e4m3fn)
-                vc = torch.randn(nblk, 64, nkvh, head, dtype=torch.float16,
-                                 device=dev).to(torch.float8_e4m3fn)
-                out = torch.empty_like(q)
-                bt = torch.arange(nblk - 1, -1, -1, dtype=torch.int32,
-                                  device=dev).reshape(1, nblk)
-                cuq = torch.tensor([0, ntok], dtype=torch.int32, device=dev)
-                sq = torch.tensor([seqlen], dtype=torch.int32, device=dev)
+            nblk = (seqlen + 63) // 64
+            q = torch.randn(ntok, nqh, head, dtype=torch.float16, device=dev)
+            kc = torch.randn(nblk, 64, nkvh, head, dtype=torch.float16,
+                             device=dev).to(torch.float8_e4m3fn)
+            vc = torch.randn(nblk, 64, nkvh, head, dtype=torch.float16,
+                             device=dev).to(torch.float8_e4m3fn)
+            out = torch.empty_like(q)
+            bt = torch.arange(nblk - 1, -1, -1, dtype=torch.int32,
+                              device=dev).reshape(1, nblk)
+            cuq = torch.tensor([0, ntok], dtype=torch.int32, device=dev)
+            sq = torch.tensor([seqlen], dtype=torch.int32, device=dev)
+            for win, clamp in windows:
                 logger.info(
                     "ARC XPU tune warmup: load head=%d nqh=%d nkvh=%d "
                     "ntok=%d kv=%d win=%s", head, nqh, nkvh, ntok, seqlen, win)
@@ -121,14 +138,15 @@ def _arc_xpu_warm_points(worker, geoms) -> None:
                     softmax_scale=head ** -0.5, causal=True, alibi_slopes=None,
                     window_size=win, block_table=bt, softcap=0.0,
                     q_descale=None, kv_quant_mode=1,
-                    k_descale=torch.ones(1, nkvh, device=dev),
-                    v_descale=torch.ones(1, nkvh, device=dev),
-                    seq_threshold_3D=16, num_par_softmax_segments=16,
-                    softmax_segm_output=None, softmax_segm_max=None,
-                    softmax_segm_expsum=None, sinks=None, output_scale=None,
-                    mm_prefix_range=None)
+                    k_descale=kd, v_descale=vd,
+                    seq_threshold_3D=16, num_par_softmax_segments=nseg,
+                    softmax_segm_output=segm_out, softmax_segm_max=segm_max,
+                    softmax_segm_expsum=segm_sum, sinks=None,
+                    output_scale=None, mm_prefix_range=None,
+                    use_td=True, mm_prefix_clamp_sliding_window=clamp)
                 torch.xpu.synchronize()
-                del q, kc, vc, out, bt, cuq, sq
+            del q, kc, vc, out, bt, cuq, sq
+        del segm_out, segm_max, segm_sum, kd, vd
     torch.xpu.empty_cache()
 
 
@@ -136,12 +154,13 @@ def _arc_xpu_warm_tuned_prefill_kernels(worker) -> None:
     """''' + MARK + ''' rank-serialized pre-load of the tuned prefill
     kernels (companion of the _ARC_XPU_PREFILL_CONFIGS table). The first
     in-engine module creation of a tuned config wedges both TP ranks in
-    SpirvUtils.load_binary (r108o: identical py-spy stacks, graph and
-    eager boots alike); single-process loads are clean and the jit-monitor
-    prescribes covering the shapes with warmup. Loads every table-covered
-    geometry rank-by-rank inside compile_or_warm_up_model, before the
-    stock kernel_warmup and cuda-graph capture. No-op when the table is
-    absent (stock wheel) or the model has no covered geometry."""
+    SpirvUtils.load_binary (r108o/r108q: identical py-spy stacks; the
+    wedge strikes whenever both ranks concurrently load a variant that is
+    fresh for the engine — solo and cache-hit loads are clean, so the
+    warm loads every engine-exact variant rank-by-rank inside
+    compile_or_warm_up_model, before the stock kernel_warmup and
+    cuda-graph capture). No-op when the table is absent (stock wheel) or
+    the model has no covered geometry."""
     import torch
 
     if not getattr(torch, "xpu", None) or not torch.xpu.is_available():

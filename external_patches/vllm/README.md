@@ -6,9 +6,12 @@ stay pristine):
 
 - **patch #1 `patch_arc_xpu_attn_launcher.py`** → cert12: the per-platform
   prefill launch-config table (this file's original content).
-- **patch #2 `patch_arc_xpu_warmup_gate.py`** → cert13: rank-serialized
-  boot warmup for every kernel point the table can produce — fixes the
-  engine wedge the table exposed (below).
+- **patch #2 `patch_arc_xpu_warmup_gate.py`** → cert14: rank-serialized
+  boot warmup for every kernel point the table can produce, replicating
+  the engine's exact call signature — fixes the engine wedge the table
+  exposed (below). cert13 carried the same patch in a first revision
+  whose warm called a variant the engine never produces; it is
+  interim/superseded (manifest chain cert12 → cert14).
 
 ## Patch 1 — launch-config table (cert12)
 
@@ -48,7 +51,7 @@ exactly what the sweep measured. TILE=64 at head 512 is infeasible on
 B70 (all T64@512 sweep points die pre-print — SM-side memory wall, the
 same LDS boundary class vllm#52585 documented for TILE=128 on gfx1100).
 
-## Patch 2 — engine warmup gate (cert13)
+## Patch 2 — engine warmup gate (cert14)
 
 ### What
 
@@ -67,17 +70,37 @@ same LDS boundary class vllm#52585 documented for TILE=128 on gfx1100).
    capture and before any dummy run can reach a tuned config.
 
 The warmup loads one kernel module per (geometry, band, divisibility,
-window-style) combination a serving step can produce: geometries are
-collected from the loaded model's attention modules (head sizes covered
-by the table only — no model-name hardcoding); points are the
-max_num_batched_tokens chunk (high band, div16) and the 98-class chunk
-remainder (mid band, non-div16), each against div16 and non-div16 KV
-lengths, for full `(-1,-1)` and sliding `(1023,0)` windows. Loads run
-rank-by-rank behind `torch.distributed.barrier()` so no two TP ranks
-module-create concurrently; the helper frees its tensors and is
-fail-loud (a failed warmup aborts boot rather than serving an engine
-whose tuned kernels would wedge on first prefill). No-op when the table
-is absent (stock wheel) or the model has no covered geometry.
+window-style) combination a serving step can produce, **replicating
+`TritonAttentionImpl.forward`'s call signature exactly** (the r108q
+lesson — a warm that deviates leaves a fresh specialization for the
+first request to load, and that load wedges):
+
+- `softmax_segm_output` `(16, nqh, 16, head_pow2)` fp32 and
+  `softmax_segm_max`/`softmax_segm_expsum` `(16, nqh, 16)` fp32 — the
+  backend allocates these unconditionally and passes them on every
+  call (never None); `seq_threshold_3D=16`,
+  `num_par_softmax_segments=16` = `triton_attn.NUM_PAR_SOFTMAX_SEGMENTS`;
+- `use_td=True` — the XPU default of the tri-state
+  (`envs.VLLM_TRITON_USE_TD` unset);
+- `k_descale`/`v_descale` = `ones(nkvh).expand((1, nkvh))` — the
+  engine's stride-0 expanded views (fp8-KV per-tensor:
+  `kv_quant_mode=1`, `q_descale=None`);
+- `mm_prefix_clamp_sliding_window` paired with the window style —
+  sliding layers `(1023, 0)` + clamp=True, full-attention layers
+  `(-1, -1)` + clamp=False (Gemma-4 `is_sliding`);
+- `softcap=0.0` (Gemma-4 ships no `attn_logit_softcapping` — the
+  config's `final_logit_softcapping` is the logits head only).
+
+Geometries are collected from the loaded model's attention modules
+(head sizes covered by the table only — no model-name hardcoding);
+points are the max_num_batched_tokens chunk (high band, div16) and the
+98-class chunk remainder (mid band, non-div16), each against div16 and
+non-div16 KV lengths. Loads run rank-by-rank behind
+`torch.distributed.barrier()` so no two TP ranks module-create
+concurrently; the helper frees its tensors and is fail-loud (a failed
+warmup aborts boot rather than serving an engine whose tuned kernels
+would wedge on first prefill). No-op when the table is absent (stock
+wheel) or the model has no covered geometry.
 
 ### Why
 
@@ -102,6 +125,19 @@ own jit-monitor names the fix class when it fires at request time:
 *"consider extending warmup to cover this shape/config"*
 (`vllm/utils/jit_monitor.py`). Moving every first-load into
 `compile_or_warm_up_model` is precisely that.
+
+cert13 proved the warm mechanics in-engine — boot reached health, the
+rank-serialized warm ran to completion on both ranks (214.9 s) — yet
+the first 98-token request STILL wedged (r108q, banked
+`phaseC/cert13_boot/`): the jit-monitor re-fired at request time and
+py-spy showed the identical `SpirvUtils.load_binary` frame, because the
+warm had passed `None` segment tensors, `use_td` unset and plain
+descales — each a distinct triton specialization from what the engine
+actually calls. The wedge requires only that the request-time load be
+FRESH; the warm must be engine-exact, not merely shape-covering
+(unified theory across r108o/p/q: in the oneCCL-resident engine, two
+ranks doing fresh module-create concurrently wedge; solo fresh loads
+and cache-hit loads are clean).
 
 ### Provenance
 
@@ -161,7 +197,7 @@ Scope law (plan §3/App I): generic shared-component fix (whole launcher
 file, platform-gated, model-agnostic config table), no donor code —
 pattern is upstream vLLM's, values are our own rig measurements.
 
-## Validation (§10 gates before cert13 pin)
+## Validation (§10 gates before cert14 pin)
 
 **Patch 1 (cert12, all green r108l):**
 
@@ -176,14 +212,16 @@ pattern is upstream vLLM's, values are our own rig measurements.
    = 5.51× (freeze budget math: worst chunk-step ~53 s at kv16k, ~98 s
    at kv32k — no timeout knob needed).
 
-**Patch 2 (cert13):**
+**Patch 2 (cert13 interim → cert14):**
 
 1. patcher: `--audit` → patch → idempotent re-run → `py_compile` clean
-   (local, pristine cert12 wheel file).
+   (local, pristine cert12 wheel file; cert14 gate additionally asserts
+   the engine-exact warm signature — segments, use_td, clamp pairing).
 2. rig engine boot, certified graph posture: warmup log lines present
    ("ARC XPU tune warmup: load …", "… complete on rank 0/2"), boot
-   reaches health, first-request warmup interlock passes, jit-monitor
-   silent on unified_attention during G1/G2 traffic.
+   reaches health, the 98-token first request passes (the r108o g1
+   wedge repro — cert13's remaining failure), jit-monitor silent on
+   unified_attention during G1/G2 traffic.
 3. eager-posture boot (ARC_GRAPH=0) reaches health (the r108o e0
    counterfactual).
 4. engine G2: both gemma legs re-measured vs the fp8 incumbent row
@@ -191,5 +229,5 @@ pattern is upstream vLLM's, values are our own rig measurements.
    unchanged (kernel/config path untouched for max_seqlen_q ≤ 64).
 
 Evidence: `results/2026-11-06-p628-gemma4/` (r108j micro_disc/, r108k
-tile_sweep/, r108o hang_capture_c12/, r108p micro_concurrency/, G2
-legs, write-up).
+tile_sweep/, r108o hang_capture_c12/, r108p micro_concurrency/, r108q
+cert13_boot/, G2 legs, write-up).
