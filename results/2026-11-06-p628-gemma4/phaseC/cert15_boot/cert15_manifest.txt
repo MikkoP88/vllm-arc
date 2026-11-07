@@ -1,0 +1,25 @@
+image=vllm-arc:v0.30.0-b70
+fork_sha=aa2ee17d11612d9292684cbcbd2825bde4c7a65d
+build_host=ainode01
+base_image=vllm-iexperimental:base-v0.26.0
+vllm_core=0.30.0+xpu 1f14d00ba178540b85c8ccc29883e3fb  /wheels/arc/vllm-0.30.0+xpu-cp38-abi3-manylinux_2_34_x86_64.whl
+triton=3.7.2+xpu 708e93ed4392da98ab071b507050abc7  /wheels/arc/triton-3.7.2+xpu-py3-none-any.whl
+vxk=0.1.14.1+arc3 (int64 wedge fix, §6) a51df187aae8efa3871b0cb9b7d3f3c7  /wheels/arc/vllm_xpu_kernels-0.1.14.1+arc3-cp312-cp312-linux_x86_64.whl
+lmcache=0.5.6+arc1 (SYCL XPU build + 5-file patch kit, external_patches/lmcache P6.2) 352295b4af1e2c58da8a2363b05a4f0c  /wheels/arc/lmcache-0.5.6+arc1-cp312-cp312-manylinux_2_35_x86_64.whl
+lmcache_closure=aiofile redis (Requires-Dist; gds_backend.py:19 module-level import, r42 fix)
+stack_freeze=/etc/vllm-arc/venv-freeze.txt
+dpcpp=none (esimd-build stage lands at P2, plan §8)
+built=2026-11-04T20:21:31Z
+oneccl=2022.0.0+arc1 (fp8-wire allreduce overlay, P6.24; env trio CCL_SYCL_ALLREDUCE_FP8/_MIN_COUNT/_STATS default 0/2097152/0 = silent off)
+oneccl_lib_sha256=3a120e8b352fbd6be45ab61a7f4e927d80c9bc6618ff646e6db68b0263eca4a7 (fat libccl.so.1 + .so.1.0, both replaced; .so.2 untouched)
+oneccl_patch_sha256=effe9a27fae37ff596a43f25cfb9cc504f8e4ab5889bebcb0a92fdce7e14a07d (external_patches/oneccl/patches/arc-fp8-allreduce.patch v4)
+oneccl_built=2026-11-05T18:56:21Z
+cert11=P6.26 quark quant + supports_mx on ArcXpuPlatform (MXFP4 lane; vllm_gaudi/xpu/platform.py replaced, commit 7ea0f27b)
+cert11_fork_sha=c987c2cd57edf19f0f7a704a29de70d47a2c1264
+cert11_built=2026-11-06T11:20:00Z
+cert12=P6.28 B70 prefill launch-config table in triton unified-attention launcher (upstream PR#60418 pattern; external_patches/vllm/patch_arc_xpu_attn_launcher.py)
+cert12_fork_sha=a964e047
+cert12_built=20261106T214358Z
+cert15=P6.28 cert12 + ARC prefill-tune warmup gate v3 (engine-cache warm points from model_runner.kv_caches: real page sizes/strides/dtypes per hybrid layer group; r108s BLOCK_SIZE-constexpr fix; supersedes interim cert13/cert14)
+cert15_fork_sha=
+cert15_built=
