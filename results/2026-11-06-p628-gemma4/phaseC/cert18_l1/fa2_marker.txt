@@ -1,0 +1,2 @@
+(Worker_TP0 pid=781) [ARC-P628-FA2] hd512 full-attn -> vxk FA2 (r108ac 34x prefill)
+(Worker_TP1 pid=782) [ARC-P628-FA2] hd512 full-attn -> vxk FA2 (r108ac 34x prefill)

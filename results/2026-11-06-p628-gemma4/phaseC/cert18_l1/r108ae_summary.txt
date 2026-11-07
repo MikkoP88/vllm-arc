@@ -1,0 +1,64 @@
+r108ae — cert18 validation window: the FA2 route end-to-end (P6.28 fix)
+=====================================================================
+Image: vllm-arc:v0.30.0-b70-cert18 (cert17 + patch_arc_xpu_fa2_route.py
+v3; build gate green — fa2 marks 3/3, tune marks 3/3, manifest rows,
+fork_sha 3136adfe; Dockerfile gates incl. env-only route flag + lazy
+XPU check + vxk import). Window v3 run 2026-11-07 16:47-17:35 rig.
+(The v2 run crashed at boot on the warm gate's descale storage form —
+see r108ae_crash_descale.txt; v3 adds _arc_fa2_scalar.)
+
+LEG 1 — gemma-4-31b fp8, maxlen 120000, graph=1 spec=0 lmc=0 rpc=1200
+--------------------------------------------------------------------
+Boot: warm gate 32/32 (past the v2 crash point 10/32), health, and the
+route is LIVE in production serving — marker on BOTH TP ranks:
+  fa2 marker lines = 2 (gate: >=1)
+
+Quality: probe98 wall 13s (cert17: 35s), coherent "Hi!"; G1 3/3 with
+correct arithmetic (train catch-up "4:40 pm"; code "s[::-1]").
+
+Faces (cert17 record -> cert18):
+  probe98    35 s   -> 13 s      (2.7x)
+  face8k     31.5 s -> 14.2 s    (2.2x)
+  face32k    283.4 s-> 41.5 s    (6.8x)
+  face120k   2950.3s-> 181.5 s   (16.3x)
+  face32k_2  9.8 s  -> 4.7 s     (2.1x, warm)
+
+Decode battery (256 tok, temp 0):
+  solo  19.6 / 19.6 / 19.6 tok/s   (cert17: 18.4-18.5 -> +6%)
+  agg8  62.3 (first, graph warm-up) then 73.6 / 73.8 tok/s
+        (cert17: 69.9 -> +6%)
+
+Audit: erraudit ERROR/Traceback 0/0. One (1) jit_monitor event all
+window: a kernel_unified_attention triton class compiled during the
+FIRST request (probe98, 17:10:23) — with hd512 full-attn routed to
+FA2, one small-geometry triton class left the warm table's coverage;
+one-time, never refired through faces + decode, no watchdog risk
+(rpc=1200). Accepted with this note.
+
+LEG 2 — qwen discriminator (default model qwen3.8-27b-fp8, graph=1
+spec=3 lmc=1): the incumbent lane is UNTOUCHED.
+  U8k  TTFT 3.77 s   (cert11-era record 3.76 s — noise)
+  U32k TTFT 17.49 s  (record 16.93 s — +3.3%, inside the +/-5%
+                      cross-boot band)
+  qwen fa2 marker lines = 0  (the dispatch never fires for qwen —
+                      exactly as designed; qwen full-attn uses its own
+                      FA2 backend, not this wrapper)
+  erraudit 0/0
+
+W14 incumbent restored by the window EXIT trap: health 200 at 17:42:56,
+restore log w14_restore_p628ae3.log.
+
+VERDICT: ALL GATES GREEN. The P6.28 root-cause fix is validated at the
+image level — gemma-4 prefill 2.2-16.3x faster (the hd512 full-attn
+layers now run the ESVD FA2 kernel), decode +6%, quality intact, and
+the qwen3.8-27b-fp8 certified lane is provably byte-untouched by the
+route (marker 0, TTFT within band). cert18 is the release candidate.
+
+Evidence files (this dir): g2_faces.txt, l1_decode.txt, g1_probes.txt,
+fa2_marker.txt, probe98.out, qwen_faces.txt, qwen_erraudit.txt,
+erraudit.txt, jit_warn_count.txt, manifest.txt, model_cfg3.txt (gemma
+config softcap truth: sliding_window 1024 only),
+r108ae_v3_window.txt, r108ae_crash_descale.txt (v2 crash forensics).
+Rig originals: /root/build/p628/phaseC/cert18_l1/ (serve logs kept
+rig-side; no host addresses in the banked extracts — verified 0
+matches across all banked files).

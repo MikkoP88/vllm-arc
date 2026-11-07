@@ -1,0 +1,2 @@
+SO=/opt/venv/lib/python3.12/site-packages/vllm_xpu_kernels/_vllm_fa2_C.abi3.so
+0

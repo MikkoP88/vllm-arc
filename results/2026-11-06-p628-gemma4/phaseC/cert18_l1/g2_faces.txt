@@ -1,0 +1,5 @@
+face8k wall=14.2s finish=length ptok=8028 ctok=16
+face32k wall=41.5s finish=length ptok=32028 ctok=16
+face120k wall=181.5s finish=length ptok=110028 ctok=16
+face32k_2 wall=4.7s finish=length ptok=32028 ctok=16
+G2_DONE

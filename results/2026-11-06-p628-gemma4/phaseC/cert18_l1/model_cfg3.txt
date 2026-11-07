@@ -1,0 +1,2 @@
+MODEL_PATH=/models/gemma4-31b
+"sliding_window": 1024

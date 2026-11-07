@@ -1,0 +1,30 @@
+W14 health before stop: 200
+=== [ac] micro container boot (NO serve) 15:28:31 ===
+SO=/opt/venv/lib/python3.12/site-packages/vllm_xpu_kernels/_vllm_fa2_C.abi3.so
+0
+== guards (small, triton vs fa2 vs torch ref) ==
+[GUARD pre fp16 sc0 s2048k8192         ] INFO 11-07 15:28:40 [__init__.py:272] Platform plugin arc is activated
+[GUARD pre fp8  sc0 s2048k8192         ] INFO 11-07 15:29:32 [__init__.py:272] Platform plugin arc is activated
+[GUARD pre fp16 sc50 s2048k8192        ] INFO 11-07 15:30:30 [__init__.py:272] Platform plugin arc is activated
+[GUARD dec fp16 mixlens                ] INFO 11-07 15:31:14 [__init__.py:272] Platform plugin arc is activated
+[GUARD dec fp8  mixlens                ] INFO 11-07 15:31:57 [__init__.py:272] Platform plugin arc is activated
+== prefill k32k (production-faithful softcap 50) ==
+[PRE k32k fp8 sc50 TRITON              ] INFO 11-07 15:33:24 [__init__.py:272] Platform plugin arc is activated
+[PRE k32k fp8 sc50 FA2                 ] SYNC_OK wall=0.3197s x2 tflops=24.075
+[PRE k32k fp8 sc0  TRITON              ] INFO 11-07 15:33:40 [__init__.py:272] Platform plugin arc is activated
+[PRE k32k fp8 sc0  FA2                 ] SYNC_OK wall=0.3197s x2 tflops=24.072
+[PRE k32k fp16 sc0 FA2                 ] SYNC_OK wall=0.2090s x2 tflops=36.826
+== prefill k98k ==
+[PRE k98k fp8 sc50 TRITON              ] INFO 11-07 15:34:04 [__init__.py:272] Platform plugin arc is activated
+[PRE k98k fp8 sc50 FA2                 ] SYNC_OK wall=1.0637s x1 tflops=23.774
+== decode hd512 ==
+[DEC S8x32k fp8 TRITON                 ] INFO 11-07 15:34:21 [__init__.py:272] Platform plugin arc is activated
+[DEC S8x32k fp8 FA2 auto               ] SYNC_OK wall=0.0015s x5 S=8 kmax=32768
+[DEC S8x32k fp8 FA2 split32            ] INFO 11-07 15:34:36 [__init__.py:272] Platform plugin arc is activated
+[DEC S8mix fp8 TRITON                  ] INFO 11-07 15:34:44 [__init__.py:272] Platform plugin arc is activated
+[DEC S8mix fp8 FA2 split32             ] INFO 11-07 15:34:51 [__init__.py:272] Platform plugin arc is activated
+== sliding hd256 win1023 control ==
+[SLIDE k32k fp8 TRITON                 ] INFO 11-07 15:34:58 [__init__.py:272] Platform plugin arc is activated
+[SLIDE k32k fp8 FA2                    ] SYNC_OK wall=0.0087s x2 tflops=439.820
+AC_DONE
+=== [ac] window done 15:35:10 ===
