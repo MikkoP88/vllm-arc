@@ -10,8 +10,8 @@ complete control surface + naming map); test definitions in
 
 | Item | Value |
 |---|---|
-| Image | `vllm-arc:v0.30.0-b70-cert11` — **the certified release**, tag `rel/v0.30.0-b70-cert11` (commit `c987c2cd`; **overlay on cert10** — every byte carries from cert10 (engine, oneCCL fp8-wire overlay rows, venv, freeze) except `vllm_gaudi/xpu/platform.py` + its regenerated pyc, r105b walk-proven 294→294 files, pip freeze diff 0) **+ the P6.26 platform patch**: `ArcXpuPlatform.supported_quantization` gains `quark` + `supports_mx() → True` — opens the **MXFP4 checkpoint lane** (owner-named `amd/Qwen3.8-27B-Quark-AWQ-MXFP4` and `RedHatAI/Qwen3.8-27B-MXFP4xFP8`; both validated end-to-end, spec gates above the fp8 incumbent, decode penalty 1.21×/1.29× — weight-constrained lane, **fp8 stays the performance default**; `results/2026-11-06-p626-mxfp4/`). Existing lanes: zero dispatch change (kernel selection is table-keyed; the patch is config-validation-surface only — runtime-inertness grep-proven + same-day face-for-face discriminator proof r105t/t2) |
-| Manifest | `/etc/vllm-arc/IMAGE_MANIFEST` inside the image — fork SHA (== cert9's `aa2ee17d…`, the vllm tree carries from cert9 through cert10), wheel pins, dependency closure (`lmcache_closure=`), build host, the cert10 overlay rows (`oneccl=2022.0.0+arc1` + lib/patch shas — **carried into cert11**), plus the cert11 rows (`cert11=P6.26 quark quant + supports_mx…`, `cert11_fork_sha=c987c2cd…`, `cert11_built=<utc>`) |
+| Image | `vllm-arc:v0.30.0-b70-cert17` — **the certified release**, tag `rel/v0.30.0-b70-cert17` (the cert11 engine + the P6.28 gemma-4 chain: cert12 B70 prefill launch-config table for the triton unified-attention launcher — head-256/512 keyed points, upstream PR#60418 pattern, `external_patches/vllm/patch_arc_xpu_attn_launcher.py`; cert16 warm-gate v4 — the engine-exact int-softcap triton cache-key fix, G2 freeze layer 1; cert17 lmcint kit hardening — detector BS floor 16 + the fail-loud two-head-size `[ARC-P628-LMC-KVGATE]` boot gate, r108z gate-fire proven; **certified gemma posture: `ARC_LMC=0` + `ARC_RPC_TIMEOUT=1200`**; the qwen3.8 fp8 engine bytes carry from cert11 and its record faces remain the cert11-era measurements — a same-day cert17 discriminator is the listed follow-up; evidence `results/2026-11-06-p628-gemma4/`). Prior certified image: `vllm-arc:v0.30.0-b70-cert11` (P6.26 platform patch; **overlay on cert10** — every byte carries from cert10 (engine, oneCCL fp8-wire overlay rows, venv, freeze) except `vllm_gaudi/xpu/platform.py` + its regenerated pyc, r105b walk-proven 294→294 files, pip freeze diff 0) **+ the P6.26 platform patch**: `ArcXpuPlatform.supported_quantization` gains `quark` + `supports_mx() → True` — opens the **MXFP4 checkpoint lane** (owner-named `amd/Qwen3.8-27B-Quark-AWQ-MXFP4` and `RedHatAI/Qwen3.8-27B-MXFP4xFP8`; both validated end-to-end, spec gates above the fp8 incumbent, decode penalty 1.21×/1.29× — weight-constrained lane, **fp8 stays the performance default**; `results/2026-11-06-p626-mxfp4/`). Existing lanes: zero dispatch change (kernel selection is table-keyed; the patch is config-validation-surface only — runtime-inertness grep-proven + same-day face-for-face discriminator proof r105t/t2) |
+| Manifest | `/etc/vllm-arc/IMAGE_MANIFEST` inside the image — fork SHA (== cert9's `aa2ee17d…`, the vllm tree carries from cert9 through cert10), wheel pins, dependency closure (`lmcache_closure=`), build host, the cert10 overlay rows (`oneccl=2022.0.0+arc1` + lib/patch shas — **carried into cert11**), plus the cert11 rows (`cert11=P6.26 quark quant + supports_mx…`, `cert11_fork_sha=c987c2cd…`, `cert11_built=<utc>`) and the P6.28 rows (`cert12=…launch-config table`, `cert12_fork_sha=a964e047`, plus the cert16/cert17 description rows — their fork_sha/built stamps ship EMPTY, a cosmetic build-script wart; content proven by the banked build logs + the r108z gate-fire boot) |
 | Base | upstream vllm-gaudi v0.30.0 + pinned wheels (vllm 0.30.0+xpu, triton 3.7.2+xpu, vllm_xpu_kernels 0.1.14.1+arc3, lmcache 0.5.6+arc1) |
 
 Superseded images (never presented as current — the full lineage table
@@ -59,7 +59,7 @@ docker run -d --name arc-test \
   -v /root/build/inductor_cache:/root/.inductor_cache \
   -e VLLM_ALLOW_LONG_MAX_MODEL_LEN=1 \
   -e VLLM_WORKER_MULTIPROC_METHOD=spawn \
-  --entrypoint /bin/bash vllm-arc:v0.30.0-b70-cert11 -c 'sleep infinity'
+  --entrypoint /bin/bash vllm-arc:v0.30.0-b70-cert17 -c 'sleep infinity'
 ```
 
 These are the validated boot bytes (rig `r46t_campaign.sh:54-63`,
@@ -449,7 +449,7 @@ Boot = the same uniform interface; three knobs route a non-default
 model (host dir, served name, quant flag):
 
 ```bash
-ARC_IMAGE=vllm-arc:v0.30.0-b70-cert11 \
+ARC_IMAGE=vllm-arc:v0.30.0-b70-cert17 \
   ARC_MODEL=/models/qwen3.8-27b-quark-awq-mxfp4 \
   ARC_SERVED=qwen3.8-27b-quark-awq-mxfp4 \
   ARC_QUANT= \
@@ -649,7 +649,7 @@ The certified line on the uniform boot interface (no image change, no
 CLI edit — the env states the default explicitly):
 
 ```bash
-ARC_SPEC_METHOD=probabilistic ARC_IMAGE=vllm-arc:v0.30.0-b70-cert11 \
+ARC_SPEC_METHOD=probabilistic ARC_IMAGE=vllm-arc:v0.30.0-b70-cert17 \
   ARC_GRAPH=1 ARC_SPEC=3 bash /root/build/serve_arc_b70.sh
 # appends "draft_sample_method":"probabilistic" to --speculative-config
 # (P6.17: this is also the DEFAULT when ARC_SPEC_METHOD is unset;
