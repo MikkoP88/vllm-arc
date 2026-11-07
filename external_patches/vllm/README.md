@@ -12,6 +12,14 @@ stay pristine):
   exposed (below). cert13 carried the same patch in a first revision
   whose warm called a variant the engine never produces; it is
   interim/superseded (manifest chain cert12 → cert14).
+- **patch #3 `patch_arc_xpu_attn_trace.py`** → cert14dbg (DIAGNOSTIC
+  overlay, never a cert pin): env-gated per-call launch-key trace for
+  the wrapper — every triton cache-key-relevant value plus the
+  JITFunction object id, logged before each kernel launch. Exists
+  because cert14's warm STILL left one fresh compile at the first
+  request (r108r) while a static diff of the wrapper's full launch
+  list finds no differing dimension; the trace settles it empirically
+  (warm key-set and engine request-time key land in one serve log).
 
 ## Patch 1 — launch-config table (cert12)
 
