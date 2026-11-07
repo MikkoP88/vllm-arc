@@ -1,0 +1,21 @@
+W14 health before stop: 200
+=== [aa] micro container boot (NO serve) 11:54:16 ===
+HOOK_INSTALLED
+=== Q1: sliding pruning at real shapes (win 1024 vs full) ===
+[sld256 k32k win1024 TABLE         ] SYNC_OK wall=0.1561s x2 tflops=24.660
+[sld256 k32k NOwin TABLE           ] SYNC_OK wall=4.7911s x2 tflops=0.803
+[sld256 k98k win1024 TABLE         ] SYNC_OK wall=0.1526s x2 tflops=82.841
+[sld256 k98k NOwin TABLE           ] SYNC_OK wall=16.3107s x2 tflops=0.775
+=== Q2: head-512 full at REAL geometry (nkvh=2) table vs stock ===
+[ful512 k32k TABLE                 ] SYNC_OK wall=10.8115s x2 tflops=0.712
+Traceback (most recent call last):
+  File "<stdin>", line 81, in <module>
+  File "<stdin>", line 59, in run
+  File "/usr/lib/python3.12/subprocess.py", line 550, in run
+    stdout, stderr = process.communicate(input, timeout=timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/subprocess.py", line 1204, in communicate
+    endtime = _time() + timeout
+              ~~~~~~~~^~~~~~~~~
+TypeError: unsupported operand type(s) for +: 'float' and 'dict'
+=== [aa] window done 11:59:21 ===

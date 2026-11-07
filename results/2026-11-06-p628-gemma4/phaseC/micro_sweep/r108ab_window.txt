@@ -1,0 +1,41 @@
+W14 health before stop: 200
+=== [ab] micro container boot (NO serve) 12:11:38 ===
+HOOK_INSTALLED
+=== fix-up: missed r108aa points ===
+[ful512 k98k TABLE                 ] SYNC_OK wall=37.4112s x2 tflops=0.676
+[ful512 k32k nkvh8 TABLE           ] SYNC_OK wall=10.9117s x2 tflops=0.705
+=== controls ===
+[ful512 k32k TABLE fp16KV          ] SYNC_OK wall=10.2760s x2 tflops=0.749
+[hd256 nqh32 nkvh4 (same FLOPs)    ] SYNC_OK wall=8.1610s x2 tflops=0.943
+=== P1 sweep: M x TILE x warps (k=32768, nkvh=2, stages=default) ===
+[ful512 k32k TABLE (ref)           ] SYNC_OK wall=11.0153s x2 tflops=0.699
+[M16 T32 w4                        ] SYNC_OK wall=58.4782s x2 tflops=0.132
+[M16 T64 w8                        ] SYNC_OK wall=45.6588s x2 tflops=0.169
+[M32 T32 w4                        ] SYNC_OK wall=29.1504s x2 tflops=0.264
+[M32 T32 w8                        ] SYNC_OK wall=21.0604s x2 tflops=0.365
+[M32 T64 w4                        ] SYNC_OK wall=29.2721s x2 tflops=0.263
+[M32 T64 w8                        ] SYNC_OK wall=20.2723s x2 tflops=0.380
+[M32 T128 w8                       ] SYNC_OK wall=20.8981s x2 tflops=0.368
+[M64 T32 w8                        ] SYNC_OK wall=10.9652s x2 tflops=0.702
+[M64 T64 w4                        ] SYNC_OK wall=20.3358s x2 tflops=0.378
+[M64 T64 w8                        ] SYNC_OK wall=11.5498s x2 tflops=0.666
+[M64 T32 w16                       ] SYNC_OK wall=17.5038s x2 tflops=0.440
+[M128 T32 w8                       ] INFO 11-07 12:42:18 [__init__.py:272] Platform plugin arc is activated
+[M128 T64 w8                       ] INFO 11-07 12:42:32 [__init__.py:272] Platform plugin arc is activated
+=== P2: top-3 configs x num_stages {1,2,3} ===
+[M64 T32 w8 s1                     ] SYNC_OK wall=11.0431s x2 tflops=0.697
+[M64 T32 w8 s2                     ] SYNC_OK wall=10.6740s x2 tflops=0.721
+[M64 T32 w8 s3                     ] SYNC_OK wall=11.1291s x2 tflops=0.692
+[M64 T64 w8 s1                     ] SYNC_OK wall=11.1214s x2 tflops=0.692
+[M64 T64 w8 s2                     ] SYNC_OK wall=11.2415s x2 tflops=0.685
+[M64 T64 w8 s3                     ] SYNC_OK wall=11.5504s x2 tflops=0.666
+[M64 T32 w16 s1                    ] SYNC_OK wall=16.8759s x2 tflops=0.456
+[M64 T32 w16 s2                    ] SYNC_OK wall=16.5341s x2 tflops=0.465
+[M64 T32 w16 s3                    ] SYNC_OK wall=16.5528s x2 tflops=0.465
+WINNER M64 T32 w8 s1 wall=10.6740s (vs TABLE 10.8115s = 1.01x)
+[WINNER k98k                       ] SYNC_OK wall=37.2304s x2 tflops=0.679
+[dump-TABLE                        ] SYNC_OK dump wall=10.7836s tflops=0.714
+[dump-WINNER                       ] SYNC_OK dump wall=11.0956s tflops=0.694
+NUMERIC max_abs=0.00000 allclose(1e-2)=True
+AB_DONE
+=== [ab] window done 12:54:00 ===
