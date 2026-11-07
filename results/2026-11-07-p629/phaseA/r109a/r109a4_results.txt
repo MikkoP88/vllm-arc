@@ -1,0 +1,26 @@
+INFO 11-07 18:31:28 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+INFO 11-07 18:31:28 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+INFO 11-07 18:31:28 [__init__.py:54] - hpu -> vllm_gaudi:register
+INFO 11-07 18:31:28 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+INFO 11-07 18:31:29 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+INFO 11-07 18:31:29 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+INFO 11-07 18:31:29 [__init__.py:54] - hpu -> vllm_gaudi:register
+INFO 11-07 18:31:29 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+INFO 11-07 18:31:29 [__init__.py:272] Platform plugin arc is activated
+INFO 11-07 18:31:29 [__init__.py:272] Platform plugin arc is activated
+CASE degenerate ntok=1024 seqlen=1024  t_vs_f=0.00049
+  A off+win+causal       ref_t=4.09539 ref_f=4.09539
+  B zeropos+win+causal   ref_t=4.09539 ref_f=4.09539
+  C off+causal(nowin)    ref_t=4.09539 ref_f=4.09539
+  D zeropos+causal(nowin) ref_t=4.09539 ref_f=4.09539
+CASE chunk small ntok=256 seqlen=1024  t_vs_f=0.00012
+  A off+win+causal       ref_t=0.35477 ref_f=0.35477
+  B zeropos+win+causal   ref_t=3.78043 ref_f=3.78043
+  C off+causal(nowin)    ref_t=0.35477 ref_f=0.35477
+  D zeropos+causal(nowin) ref_t=3.78043 ref_f=3.78043
+CASE chunk ntok=1024 seqlen=4096  t_vs_f=0.00012
+  A off+win+causal       ref_t=3.53393 ref_f=3.53393
+  B zeropos+win+causal   ref_t=3.95650 ref_f=3.95650
+  C off+causal(nowin)    ref_t=3.61641 ref_f=3.61640
+  D zeropos+causal(nowin) ref_t=3.95650 ref_f=3.95650
+R109A4_DONE

@@ -1,0 +1,22 @@
+== sliding guards (table-faithful, window-masked) ==
+[GUARD slide pre fp16 s1024k4096       ] INFO 11-07 18:02:15 [__init__.py:272] Platform plugin arc is activated
+[GUARD slide pre fp8  s1024k4096       ] INFO 11-07 18:03:03 [__init__.py:272] Platform plugin arc is activated
+[GUARD slide pre bf16q fp8 s1024k4096  ] INFO 11-07 18:04:05 [__init__.py:272] Platform plugin arc is activated
+[GUARD slide dec fp16 mixlens          ] INFO 11-07 18:05:00 [__init__.py:272] Platform plugin arc is activated
+[GUARD slide dec fp8  mixlens          ] INFO 11-07 18:05:22 [__init__.py:272] Platform plugin arc is activated
+== sliding prefill q8192 (production: softcap None==0) ==
+[SLIDE k8k  fp8 TRITON                 ] INFO 11-07 18:05:58 [__init__.py:272] Platform plugin arc is activated
+[SLIDE k8k  fp8 FA2                    ] SYNC_OK wall=0.0062s x2
+[SLIDE k32k fp8 TRITON                 ] INFO 11-07 18:06:13 [__init__.py:272] Platform plugin arc is activated
+[SLIDE k32k fp8 FA2                    ] SYNC_OK wall=0.0093s x2
+[SLIDE k98k fp8 TRITON                 ] INFO 11-07 18:06:29 [__init__.py:272] Platform plugin arc is activated
+[SLIDE k98k fp8 FA2                    ] SYNC_OK wall=0.0062s x1
+[SLIDE k32k fp16 TRITON                ] INFO 11-07 18:06:44 [__init__.py:272] Platform plugin arc is activated
+[SLIDE k32k fp16 FA2                   ] SYNC_OK wall=0.0033s x2
+[SLIDE k32k bf16q fp8 FA2              ] SYNC_OK wall=0.0066s x2
+== sliding decode ==
+[SLDEC S8x32k fp8 TRITON               ] INFO 11-07 18:07:07 [__init__.py:272] Platform plugin arc is activated
+[SLDEC S8x32k fp8 FA2                  ] SYNC_OK wall=0.0004s x5 S=8 kmax=32768
+[SLDEC S8mix fp8 TRITON                ] INFO 11-07 18:07:22 [__init__.py:272] Platform plugin arc is activated
+[SLDEC S8mix fp8 FA2                   ] SYNC_OK wall=0.0003s x5 S=8 kmax=32768
+R109A_DONE

@@ -1,0 +1,23 @@
+(APIServer pid=13) WARNING 11-07 19:28:38 [input_processor.py:315] Passing raw prompts to InputProcessor is deprecated and will be removed in the future. You should instead pass the outputs of Renderer.render_cmpl() or Renderer.render_chat().
+(Worker_TP1 pid=782) ERROR 11-07 19:28:40 [multiproc_executor.py:1055] WorkerProc hit an exception.
+(Worker_TP1 pid=782) ERROR 11-07 19:28:40 [multiproc_executor.py:1055] Traceback (most recent call last):
+(Worker_TP1 pid=782) ERROR 11-07 19:28:40 [multiproc_executor.py:1055]   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/executor/multiproc_executor.py", line 1047, in _execute_worker_rpc
+(Worker_TP1 pid=782) ERROR 11-07 19:28:40 [multiproc_executor.py:1055]     output = func(*args, **kwargs)
+(Worker_TP1 pid=782) ERROR 11-07 19:28:40 [multiproc_executor.py:1055]              ^^^^^^^^^^^^^^^^^^^^^
+(Worker_TP1 pid=782) ERROR 11-07 19:28:40 [multiproc_executor.py:1055]   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/worker/worker_base.py", line 375, in execute_model
+(Worker_TP1 pid=782) ERROR 11-07 19:28:40 [multiproc_executor.py:1055]     return self.worker.execute_model(scheduler_output)
+(Worker_TP1 pid=782) ERROR 11-07 19:28:40 [multiproc_executor.py:1055]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(Worker_TP1 pid=782) ERROR 11-07 19:28:40 [multiproc_executor.py:1055]   File "/opt/venv/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+(Worker_TP1 pid=782) ERROR 11-07 19:28:40 [multiproc_executor.py:1055]     return func(*args, **kwargs)
+(Worker_TP1 pid=782) ERROR 11-07 19:28:40 [multiproc_executor.py:1055]            ^^^^^^^^^^^^^^^^^^^^^
+(Worker_TP1 pid=782) ERROR 11-07 19:28:40 [multiproc_executor.py:1055]   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/worker/gpu_worker.py", line 1416, in execute_model
+(Worker_TP1 pid=782) ERROR 11-07 19:28:40 [multiproc_executor.py:1055]     output = self.model_runner.execute_model(
+(Worker_TP1 pid=782) ERROR 11-07 19:28:40 [multiproc_executor.py:1055]              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(Worker_TP1 pid=782) ERROR 11-07 19:28:40 [multiproc_executor.py:1055]   File "/opt/venv/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+(Worker_TP1 pid=782) ERROR 11-07 19:28:40 [multiproc_executor.py:1055]     return func(*args, **kwargs)
+(Worker_TP1 pid=782) ERROR 11-07 19:28:40 [multiproc_executor.py:1055]            ^^^^^^^^^^^^^^^^^^^^^
+(Worker_TP1 pid=782) ERROR 11-07 19:28:40 [multiproc_executor.py:1055]   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/worker/gpu_model_runner.py", line 4347, in execute_model
+(Worker_TP1 pid=782) ERROR 11-07 19:28:40 [multiproc_executor.py:1055]     mamba_bufs = self._get_mamba_bufs()
+(Worker_TP1 pid=782) ERROR 11-07 19:28:40 [multiproc_executor.py:1055]                  ^^^^^^^^^^^^^^^^^^^^^^
+(Worker_TP1 pid=782) ERROR 11-07 19:28:40 [multiproc_executor.py:1055]   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/worker/gpu_model_runner.py", line 1061, in _get_mamba_bufs
+(Worker_TP1 pid=782) ERROR 11-07 19:28:40 [multiproc_executor.py:1055]     copy_funcs=self._get_mamba_state_copy_funcs(),

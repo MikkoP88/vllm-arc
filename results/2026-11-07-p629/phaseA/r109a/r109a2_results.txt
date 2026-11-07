@@ -1,0 +1,22 @@
+INFO 11-07 18:13:57 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+INFO 11-07 18:13:57 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+INFO 11-07 18:13:57 [__init__.py:54] - hpu -> vllm_gaudi:register
+INFO 11-07 18:13:57 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+INFO 11-07 18:13:58 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+INFO 11-07 18:13:58 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+INFO 11-07 18:13:58 [__init__.py:54] - hpu -> vllm_gaudi:register
+INFO 11-07 18:13:58 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+INFO 11-07 18:13:58 [__init__.py:272] Platform plugin arc is activated
+INFO 11-07 18:13:58 [__init__.py:272] Platform plugin arc is activated
+== r109a2 sliding guards (fixed table-faithful window-masked refs) ==
+GUARD_OK slide pre fp16         max_abs(t,f)=0.00012 allclose(1e-2)=True ref_t=3.51187 ref_f=3.51187
+GUARD_OK slide pre fp8          max_abs(t,f)=0.00012 allclose(1e-2)=True ref_t=3.68858 ref_f=3.68858
+GUARD_OK slide pre bf16q fp8    max_abs(t,f)=0.00098 allclose(1e-2)=True ref_t=4.03421 ref_f=4.03421
+GUARD_OK slide pre fp8 k8192    max_abs(t,f)=0.00024 allclose(1e-2)=True ref_t=4.64935 ref_f=4.64935
+Traceback (most recent call last):
+  File "<stdin>", line 221, in <module>
+  File "<stdin>", line 172, in guard_dec
+  File "/opt/venv/lib/python3.12/site-packages/torch/functional.py", line 372, in einsum
+    return _VF.einsum(equation, operands)  # type: ignore[attr-defined]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: einsum(): subscript d has size 256 for operand 1 which does not broadcast with previously seen size 16
