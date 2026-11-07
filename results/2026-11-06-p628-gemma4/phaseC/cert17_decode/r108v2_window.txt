@@ -1,0 +1,16 @@
+=== [l1_fp8] boot start 13:00:50 (model=/models/gemma4-31b maxlen=120000 quant='fp8') ===
+ARC_CONTAINER_FRESH image=vllm-arc:v0.30.0-b70-cert17 id=754eca090a45 model=/models/gemma4-31b (recreated from none)
+392f802f5264a8adabc25fa039259ce71cbaff9f668cdf6914fc1c03bfbf3781
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert17 name=arc-test model=/models/gemma4-31b served=gemma-4-31b quant=fp8 graph=1 spec=0 gmu=0.8 maxlen=120000 mnbt=8192 seqs=64 fp8=0 xgc=0 tmpl=/root/build/chat_template_gemma4.jinja rp= tp= port=8000 13:00:52
+--- [l1_fp8] HEALTH UP 13:35:09; settle 120s ---
+solo conc1 rep1 wall=13.9s ctok=256 tps=18.4
+solo conc1 rep2 wall=13.9s ctok=256 tps=18.5
+solo conc1 rep3 wall=13.8s ctok=256 tps=18.5
+agg8 conc8 rep1 wall=40.6s ctok=2048 tps=50.5
+agg8 conc8 rep2 wall=29.3s ctok=2048 tps=69.9
+agg8 conc8 rep3 wall=29.3s ctok=2048 tps=69.9
+DECODE_BATTERY_DONE
+0
+0
+--- W14 between legs: health=000 ---
+FATAL [l2_mxfp8]: W14 not healthy (000)

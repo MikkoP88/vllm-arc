@@ -1,0 +1,51 @@
+r108v2 + r108v2b — P6.28: decode-throughput battery, both gemma-4 legs
+on cert17 (the last missing perf metric)
+=====================================================================
+Date: 2026-11-07. Scripts: /root/build/r108v2_decode.sh (md5 19ad4e73,
+leg 1) + /root/build/r108v2b_decode_l2.sh (md5 f89cb24d, leg-2 re-run:
+r108v2's between-legs W14 wait 60x15s expired just short of the ~17-20
+min restore and leg 2 FATAL'd its entry gate; leg-1 evidence was
+already banked; v2b runs the l2 leg alone with the same battery).
+Image: vllm-arc:v0.30.0-b70-cert17. Posture: TP2, graph=1, spec=0,
+ARC_LMC=0, ARC_RPC_TIMEOUT=1200. Battery per leg (client-side walls,
+temperature 0, fixed 512-tok prompt, one 32-tok warm request first):
+solo decode (1 x 256 tok) x3, agg8 (8 concurrent x 256 tok) x3;
+tok/s = completion_tokens sum / wall. Boot health walls: l1 13:00:50->
+13:35:09 (34 min, warm gate v4 32/32), l2 14:01:46->14:36:01 (34 min).
+
+Results (cert17, both legs)
+---------------------------
+L1 leg — gemma-4-31b BF16 online-fp8 (maxlen 120000):
+    solo conc1   18.4 / 18.5 / 18.5 tok/s   (13.9 s per 256-tok req)
+    agg8 conc8   50.5 (warm-up) / 69.9 / 69.9 tok/s aggregate
+L2 leg — gemma-4-31b MXFP8-FP8KV-CT-AutoRound (maxlen 95000):
+    solo conc1   11.9 / 11.9 / 11.9 tok/s   (21.5 s per 256-tok req)
+    agg8 conc8   43.3 (warm-up) / 54.6 / 54.6 tok/s aggregate
+erraudit both legs: 0 ERROR / 0 Traceback.
+
+Reading
+-------
+- fp8 vs mxfp8 decode: W8 weight quant costs 1.55x solo (18.5 -> 11.9)
+  and 1.28x aggregate (69.9 -> 54.6) — the mxfp8 lane is (as at P6.26
+  for qwen) a weight-constrained lane, not a perf lane.
+- Context vs the qwen3.8-27b fp8 incumbent (same rig, W14 posture):
+  solo 84.5 tok/s (solo200 face) and ~300 tok/s agg4x256 — gemma-4-31b
+  fp8 decodes 4.6x slower solo / ~4.3x per-stream agg. gemma-4 is a
+  60-layer 31B two-head-size hybrid; the ratio is reported as-measured.
+- Roofline note (observation, no campaign opened): L1 solo at 18.5
+  tok/s moves ~15.5 GB/rank of weights per token = ~287 GB/s effective
+  vs the ~1.1 TB/s the qwen lane demonstrably achieves — the hd512
+  full-attention layers' decode path is the same suspect family as the
+  r108ab prefill finding (KV/weight traffic at low arithmetic
+  intensity); a decode-side diagnostic would be new work beyond P6.28.
+- Long-context decode is the SAME wall as prefill (r108ab): the 10
+  full-attn layers walk the entire KV per token — at 32k context that
+  is ~335 MB/rank/token of KV reads (10 layers x 32k keys x 512 x 2
+  kvh x 1 B), i.e. a bandwidth ceiling of ~3 tok/s at k=32k, matching
+  the face batteries' effective decode rates inside face walls.
+
+Files (this dir)
+----------------
+l1_fp8_decode.txt, l2_mxfp8_decode.txt (battery outputs), per-leg
+erraudit, r108v2_window.txt (leg 1 + between-legs FATAL), r108v2b_
+window.txt (leg 2). No host addresses (grep 0) — no redaction note.
