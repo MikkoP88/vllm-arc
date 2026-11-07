@@ -28,10 +28,18 @@ kernels ... before cuda graph capture" section). The helper:
   * walks the model's attention modules to collect the real per-rank
     (head_dim, num_heads, num_kv_heads) tuples — no model-name
     hardcoding;
+  * takes the engine's per-layer KV caches from model_runner.kv_caches
+    and derives k/v exactly like TritonAttentionImpl.forward does
+    (transpose(1, 2) + split(head) views, fp8 retyped when needed) —
+    r108s proved synthetic caches break the triton cache key: the
+    hybrid KV-cache manager gives different layer groups different page
+    sizes (Gemma-4: 128-token pages for head-512 global layers, 64 for
+    head-256 sliding) and BLOCK_SIZE is a constexpr;
   * loads every (geometry, band, divisibility, window-style) kernel a
     serving step can produce: high band = max_num_batched_tokens chunk,
     mid band = arbitrary remainder (98-class), each against div16 and
-    non-div16 KV lengths, for full (-1,-1) and sliding (1023,0) windows;
+    non-div16 KV lengths, for full (-1,-1) and sliding (1023,0) windows,
+    with the block table sized at the engine's real stride bucket;
   * serializes the loads across TP ranks (rank 0 first, barrier between
     ranks) so no two ranks ever module-create concurrently;
   * runs before cuda-graph capture and before the stock kernel_warmup,
@@ -72,24 +80,34 @@ HELPER_BLOCK = '''
 def _arc_xpu_warm_points(worker, geoms) -> None:
     """Load one kernel module per (geometry, band, divisibility, window)
     combination a serving prefill produces (see triton_unified_attention
-    _ARC_XPU_PREFILL_CONFIGS), replicating TritonAttentionImpl.forward's
-    call pattern EXACTLY: the backend allocates the softmax segment
-    tensors unconditionally and passes them on every call, XPU enables
-    tensor-descriptor mode by default, per-head descales arrive as
-    expanded views, and Gemma-4-style layers pair the sliding window
-    with mm_prefix_clamp_sliding_window=True. r108q proved a warm that
-    omits any of these leaves a fresh variant for the first request to
-    load — which wedges. Points: high band = max_num_batched_tokens
-    chunk (div16 query), mid band = 98-class chunk remainder (non-div16),
-    each against div16 and non-div16 KV lengths, for full and sliding
-    windows."""
+    _ARC_XPU_PREFILL_CONFIGS), using THE ENGINE'S OWN KV-CACHE
+    ALLOCATIONS. r108s (launch-key trace, banked cert14dbg_boot/) proved
+    synthetic caches cannot replicate the engine's cache key: the hybrid
+    KV-cache manager hands different layer groups different page sizes
+    (Gemma-4: 128-token pages for head-512 global layers, 64 for
+    head-256 sliding) and BLOCK_SIZE is a triton constexpr — a page-64
+    warm compiles head-512 kernels the engine never calls, and the
+    engine's first head-512 prefill is a fresh compile that wedges both
+    TP ranks. This revision takes the per-layer caches from
+    model_runner.kv_caches and derives k/v exactly like
+    TritonAttentionImpl.forward (transpose(1, 2) + split(head) views,
+    fp8 retyped when the cache dtype differs), and sizes the block
+    table at the engine's real stride bucket (max_model_len // page +
+    1), so warm calls differ from engine calls only in tensor VALUES —
+    never in cache keys. Remaining call pattern as before: softmax
+    segment tensors always passed, use_td=True, expanded descales,
+    window/clamp pairing. Points: the max_num_batched_tokens chunk
+    (div16 query) and a 98-class remainder (non-div16), each against
+    div16 and non-div16 KV lengths, for full and sliding windows."""
     import torch
 
     from vllm.v1.attention.ops import triton_unified_attention as _tua
 
     mnbt = 8192
+    maxlen = 0
     try:
         mnbt = int(worker.vllm_config.scheduler_config.max_num_batched_tokens)
+        maxlen = int(worker.vllm_config.model_config.max_model_len)
     except Exception:
         pass
     mnbt = max(128, min(mnbt, 32768))
@@ -105,8 +123,45 @@ def _arc_xpu_warm_points(worker, geoms) -> None:
     # layers set the clamp flag, full-attention layers do not (gemma4.py).
     windows = (((-1, -1), False), ((1023, 0), True))
 
+    # Distinct engine cache tensors keyed by (page, nkvh, head_size).
+    caches = {}
+    for cache in (getattr(worker.model_runner, "kv_caches", None)
+                  or {}).values():
+        try:
+            page, nkvh_c, two_hs = int(cache.shape[2]), int(
+                cache.shape[1]), int(cache.shape[3])
+        except Exception:
+            continue
+        if two_hs % 2:
+            continue
+        caches[(page, nkvh_c, two_hs // 2)] = cache
+
     dev = torch.device("xpu", torch.xpu.current_device())
     for head, nqh, nkvh in geoms:
+        cache = caches.get((64, nkvh, head)) or caches.get((128, nkvh, head))
+        if cache is None:
+            # Fall back to any cache with matching (nkvh, head).
+            match = [c for (p, n, h), c in caches.items()
+                     if n == nkvh and h == head]
+            if not match:
+                logger.warning(
+                    "ARC XPU tune warmup: no engine KV cache for "
+                    "head=%d nkvh=%d — skipping geometry", head, nkvh)
+                continue
+            cache = match[0]
+        page = int(cache.shape[2])
+        nb = int(cache.shape[0])
+        # Engine view derivation, byte-for-byte triton_attn.forward.
+        kv = cache.transpose(1, 2)
+        kc, vc = kv.split(head, dim=-1)
+        fp8 = torch.float8_e4m3fn
+        if kc.dtype != fp8:
+            kc = kc.view(fp8)
+            vc = vc.view(fp8)
+        # Engine block-table stride bucket: (max_model_len // page) + 1.
+        bts = max(1, (maxlen // page + 1) if maxlen else nb)
+        bt = (torch.arange(bts, dtype=torch.int32, device=dev) % nb) \\
+            .reshape(1, bts)
         head_pow2 = 1 << (head - 1).bit_length()
         segm_out = torch.empty((16, nqh, nseg, head_pow2),
                                dtype=torch.float32, device=dev)
@@ -117,21 +172,15 @@ def _arc_xpu_warm_points(worker, geoms) -> None:
         kd = torch.ones(nkvh, device=dev).expand((1, nkvh))
         vd = torch.ones(nkvh, device=dev).expand((1, nkvh))
         for ntok, seqlen in points:
-            nblk = (seqlen + 63) // 64
             q = torch.randn(ntok, nqh, head, dtype=torch.float16, device=dev)
-            kc = torch.randn(nblk, 64, nkvh, head, dtype=torch.float16,
-                             device=dev).to(torch.float8_e4m3fn)
-            vc = torch.randn(nblk, 64, nkvh, head, dtype=torch.float16,
-                             device=dev).to(torch.float8_e4m3fn)
             out = torch.empty_like(q)
-            bt = torch.arange(nblk - 1, -1, -1, dtype=torch.int32,
-                              device=dev).reshape(1, nblk)
             cuq = torch.tensor([0, ntok], dtype=torch.int32, device=dev)
             sq = torch.tensor([seqlen], dtype=torch.int32, device=dev)
             for win, clamp in windows:
                 logger.info(
                     "ARC XPU tune warmup: load head=%d nqh=%d nkvh=%d "
-                    "ntok=%d kv=%d win=%s", head, nqh, nkvh, ntok, seqlen, win)
+                    "page=%d ntok=%d kv=%d win=%s", head, nqh, nkvh,
+                    page, ntok, seqlen, win)
                 _tua.unified_attention(
                     q=q, k=kc, v=vc, out=out, cu_seqlens_q=cuq,
                     max_seqlen_q=ntok, seqused_k=sq, max_seqlen_k=seqlen,
@@ -145,8 +194,8 @@ def _arc_xpu_warm_points(worker, geoms) -> None:
                     output_scale=None, mm_prefix_range=None,
                     use_td=True, mm_prefix_clamp_sliding_window=clamp)
                 torch.xpu.synchronize()
-            del q, kc, vc, out, bt, cuq, sq
-        del segm_out, segm_max, segm_sum, kd, vd
+            del q, out, cuq, sq
+        del kv, kc, vc, bt, segm_out, segm_max, segm_sum, kd, vd
     torch.xpu.empty_cache()
 
 
@@ -154,13 +203,15 @@ def _arc_xpu_warm_tuned_prefill_kernels(worker) -> None:
     """''' + MARK + ''' rank-serialized pre-load of the tuned prefill
     kernels (companion of the _ARC_XPU_PREFILL_CONFIGS table). The first
     in-engine module creation of a tuned config wedges both TP ranks in
-    SpirvUtils.load_binary (r108o/r108q: identical py-spy stacks; the
-    wedge strikes whenever both ranks concurrently load a variant that is
-    fresh for the engine — solo and cache-hit loads are clean, so the
-    warm loads every engine-exact variant rank-by-rank inside
+    SpirvUtils.load_binary (r108o/r108q/r108s: identical py-spy stacks;
+    the wedge strikes whenever both ranks concurrently load a variant
+    that is fresh for the engine — solo and cache-hit loads are clean).
+    The warm loads every engine-exact variant rank-by-rank inside
     compile_or_warm_up_model, before the stock kernel_warmup and
-    cuda-graph capture). No-op when the table is absent (stock wheel) or
-    the model has no covered geometry."""
+    cuda-graph capture, using the engine's own KV-cache tensors so the
+    triton cache keys are exact (r108s: hybrid page sizes make the
+    BLOCK_SIZE constexpr differ per layer group). No-op when the table
+    is absent (stock wheel) or the model has no covered geometry."""
     import torch
 
     if not getattr(torch, "xpu", None) or not torch.xpu.is_available():
