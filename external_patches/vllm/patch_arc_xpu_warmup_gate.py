@@ -17,6 +17,17 @@ size 8192"). Single-process loads of the exact same binaries are clean
 (r108n micro). vLLM's own jit-monitor names the fix class at warn time:
 "consider extending warmup to cover this shape/config".
 
+v4 (r108v, banked in results/2026-11-06-p628-gemma4/phaseC/
+cert15dbg2_boot/): the warm call passed softcap=0.0 (float) while the
+engine impl normalizes None -> int 0 (triton_attn.py:505-508). Triton
+maps float -> ('fp32', None) vs int -> ('i32', 'D'): different
+signature, different cache key — every warm-compiled kernel landed in a
+key space the engine never looked up, so the first real prefill still
+fresh-compiled inside the watchdog window (the r108o wedge class this
+gate exists to prevent). v4 passes softcap=0 (int); all other
+constexpr-relevant args were already engine-exact (verified
+field-by-field, r108v class-matrix census).
+
 What this patch does: inserts one module-level helper pair plus a single
 guarded call at the top of the stock kernel-warmup section of
 Worker.compile_or_warm_up_model (vllm/v1/worker/gpu_worker.py, right
@@ -192,7 +203,17 @@ def _arc_xpu_warm_points(worker, geoms) -> None:
                     q=q, k=kc, v=vc, out=out, cu_seqlens_q=cuq,
                     max_seqlen_q=ntok, seqused_k=sq, max_seqlen_k=seqlen,
                     softmax_scale=head ** -0.5, causal=True, alibi_slopes=None,
-                    window_size=win, block_table=bt, softcap=0.0,
+                    # softcap MUST be int 0, not 0.0: the engine impl
+                    # normalizes None -> int 0 (triton_attn.py:505-508) and
+                    # triton maps float -> ('fp32', None) vs int ->
+                    # ('i32', 'D') — different signature, different cache
+                    # key. With 0.0 every warm-compiled kernel lands in a
+                    # key space the engine never looks up and the first
+                    # real request fresh-compiles ~288 s inside the 300 s
+                    # execute-model watchdog (r108v class-matrix proof:
+                    # results/2026-11-06-p628-gemma4/phaseC/
+                    # cert15dbg2_boot/r108v_summary.txt).
+                    window_size=win, block_table=bt, softcap=0,
                     q_descale=None, kv_quant_mode=1,
                     k_descale=kd, v_descale=vd,
                     seq_threshold_3D=16, num_par_softmax_segments=nseg,

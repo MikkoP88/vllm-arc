@@ -1,0 +1,112 @@
+r108v — cert15dbg2 boot (triton cache-key trace ON at the kernel_cache
+lookup), 2026-11-07
+=============================================================================
+
+Image: vllm-arc:v0.30.0-b70-cert15dbg2 = cert15 (v3 engine-exact warm,
+fork e130a477) + kit patch #3 (ARCXPU_TRACE wrapper) + kit patch #4
+(ARCJIT_KEY per-lookup trace: key tuple, hit flag, spec attrs,
+per-arg data_ptr()%16, options). Posture: certified graph
+(VLLM_XPU_ENABLE_XPU_GRAPH=1), TP2, maxlen 120000, gemma-4-31b online
+fp8, lmc=1. Boot healthy (warm 32/32 loads, 1178.9 s, health 06:14:45),
+probe98 wedged identically to r108u (jit warn +4 s, EngineCore watchdog
+at probe+300 s exactly, HTTP 500). W14 restored + probed clean.
+
+ROOT CAUSE — SOLVED AT SOURCE LEVEL (the G2 long-prefill engine freeze)
+-----------------------------------------------------------------------------
+The v3 warm gate and the engine compile DIFFERENT TRITON CACHE KEYS for
+the same kernel because they pass the `softcap` scalar with different
+Python types:
+
+  warm gate   (patch_arc_xpu_warmup_gate.py:195):  softcap=0.0   float
+  engine      (triton_attn.py:505-508):            None -> 0     int
+
+Triton maps a Python float to an fp32 runtime arg ('fp32', None) and a
+Python int to an i32 specialization candidate ('i32', 'D' — 0 is
+div-16). The arg type is part of the kernel signature, the signature is
+part of the cache key (jit.py compute_cache_key: key = specialization +
+str(options)). Every kernel the warm gate compiles therefore lives in a
+key space the engine never looks up, and every engine attention call
+cache-misses regardless of geometry coverage.
+
+Class-matrix proof (class_matrix.txt; 11072 traced lookups, 20 unique
+cache-key classes, first-appearance per class):
+  * warm gate 05:41-05:56: exactly 4 classes, ALL with softcap fp32/
+    None — prefill-shaped (BLOCK_M=64, BLOCK_Q=32/8, non-3D), covering
+    hd256 full+sliding and hd512 full+sliding.
+  * engine init 06:01-06:14: 16 further classes, ALL with softcap
+    ('i32','D') — decode/capture-shaped only (BLOCK_M=16, BLOCK_Q=8/2,
+    IS_3D segmented variants + reduce_segments twins). The engine's own
+    boot path never compiles a prefill-shaped class with the int-softcap
+    signature.
+  * first real request (probe98, 06:16:46): needs the hd256-sliding
+    PREFILL class with ('i32','D') softcap — compiled NOWHERE in the
+    boot. Fresh IGC compile ~288 s (+ first-launch module _init_handles)
+    > the 300 s execute-model RPC watchdog (VLLM_EXECUTE_MODEL_TIMEOUT
+    _SECONDS, envs.py:242) -> EngineCore dies -> HTTP 500.
+
+This also resolves r108u's "byte-identical yet cache-missing" puzzle:
+the patch #3 wrapper trace did not print `softcap`, and that one
+untraced field is exactly the divergence. r108u's inference "the
+05:09:15 layer-0 call missed" was imprecise — the jit-monitor warn is a
+POST-compile hook, so the +4 s warn marks a fast (IGC-disk-served)
+compile of one class; the fatal ~288 s fresh compile is the
+never-before-compiled prefill class. r108v's py-spy adds the second
+face of the same miss: CompiledKernel._init_handles
+(compiler.py:488) <- launch_metadata (:515) <- run (jit.py:822) —
+first-launch module-handle init of the freshly compiled class, still
+inside the watchdog window.
+
+Diagnostics notes (for the record):
+  * ARCJIT_KEY trace lines stop after 06:14:34 — wedge-window lookups
+    failed to emit through the logging pipeline (599 logging-error
+    dumps cluster at 06:14 during the capture burst). The request-side
+    miss class identity is therefore inferred from the class matrix +
+    jit warn, not read off a lost line. Future trace patches should
+    write via file append, not the logging pipeline.
+  * The extraction script's fn= grep pattern missed (fn values contain
+    digits); superseded by the awk census in class_matrix.txt.
+  * jit_monitor (vllm/utils/jit_monitor.py) is ELIMINATED as a key
+    input: it only sets knobs.autotuning.print and post-compile hooks,
+    none of which feed compute_cache_key. Its activation between warm
+    and request was coincidental ordering, not cause.
+
+Wheel-side context confirmed this session (image grep inspection):
+triton = intel triton_xpu 3.7.2 (+xpu); the upstream #39914 allocator
+wedge is NOT our bug — our wheel already carries the #40946
+_max_admission_blocks_per_request admission cap (single_type_kv_cache
+_manager.py:114,212,223) and unify_kv_cache_spec_page_size
+(kv_cache_utils.py:1365,2312). Our config.py is FA4-era for gemma4
+(heterogeneous head dims; XPU reports no FA4 -> forces TRITON_ATTN
+globally, config.py:251) — the 100 %-triton attention burden is why
+kernel-compile latency is on the request path at all.
+
+FIX (kit patch, next image): patch_arc_xpu_warmup_gate.py:195
+softcap=0.0 -> softcap=0 (int), making the warm-gate key space equal to
+the engine's. All other constexpr-relevant args already match the
+engine marshaling (verified field-by-field against triton_attn.py:655-
+690: window/clamp pairing, descale shapes, kv_quant_mode, use_td, seq
+threshold, sinks/output_scale/mm_prefix_range). With the fix, the
+request-path classes (hd256-sliding prefill BQ=32/BM=64/TILE=64,
+hd512-full prefill BQ=8/BM=64/TILE=32) are compiled and launched during
+warm; the decode/capture classes compile during engine init (pre-
+health, IGC-disk-assisted) as observed; the first request becomes pure
+cache hits with handles already initialized.
+
+Artifacts (this dir; serve.log/serve_end.log originals stay on the rig
+at /root/build/p628/phaseC/cert15dbg2_boot/):
+  class_matrix.txt          unique-class census + first appearance
+  jitkey_tail.txt           last 40 per-lookup key-trace lines
+  jitkey_counts.txt         lookup counts (extraction-grep note above)
+  jitkey_count_postwarm.txt line count at +120 s post-health
+  jit_lines.txt             jit-monitor activation + warn + watchdog
+  pyspy_wedge.txt           wedge stacks (both ranks; _init_handles)
+  probe98.out               HTTP 500 body (EngineCore died)
+  trace_warm_head.txt       first warm wrapper-trace lines
+  trace_request_tail.txt    capture-burst + request window wrapper tail
+  serve_head_extract.txt    first 60 key/trace lines of serve.log
+  serve_jitkey_tail.txt     last 40 ARCJIT_KEY lines of serve.log
+  erraudit.txt              error/Traceback counts
+  r108v_window.log          boot/window log (config dumps included)
+  cert15dbg2_manifest.txt   image manifest (cert15dbg2 row, fork sha)
+  cert15dbg2_build.log      image build + gate log
+  r108v_summary.txt         this file
