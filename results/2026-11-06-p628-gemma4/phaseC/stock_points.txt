@@ -1,0 +1,6 @@
+[stock-dump-f5-1k] DUMP_OK /phaseC/stock_f5_1k.pt
+[stock-dump-f5-8k] DUMP_OK /phaseC/stock_f5_8k.pt
+[stock-dump-s2-8k] DUMP_OK /phaseC/stock_s2_8k.pt
+[stock-f5-kv16k] SYNC_OK wall=24.8529s x2
+[stock-s2-kv16k] SYNC_OK wall=0.3539s x2
+STOCK_DONE
