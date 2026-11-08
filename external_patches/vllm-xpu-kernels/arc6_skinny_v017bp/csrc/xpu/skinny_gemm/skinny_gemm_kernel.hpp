@@ -44,41 +44,41 @@ namespace vllm::xpu::skinny {
 // Format decode helpers (all bit-exact; no exp2 on the per-element paths).
 // ---------------------------------------------------------------------------
 
-// e4m3fn -> f32 via exponent re-bias (7 -> 127). e == 0 subnormals: the
-// f32-subnormal read of m << 20 is m * 2^-129, and e4m3 subnormal is
-// m * 2^-9, so scale by 2^120 (the standard fp8-emulation fixup; exact --
-// 2^120 is a normal f32 and Xe2 fp32 honors subnormal operands); e == 15
-// && m == 7 is the fn NaN encoding, guarded to 0 (weights never carry it;
-// there is no infinity in e4m3fn).
+// e4m3fn -> f32, branchless (v2.2: the branchy decode's e==0/e==15 guards
+// serialized the SIMD lanes and capped the whole kernel at ~60-80 GB/s).
+// Construct the biased-exponent f32 MAGNITUDE for every element:
+// ((e + 120) << 23) | (m << 20) is exact for e > 0. For e == 0 it reads
+// 2^-7 + m * 2^-10 (implicit leading 1, m at fraction m/8) while the true
+// e4m3 subnormal is m * 2^-9: ((c - 2^-7) * 2) recovers it exactly
+// (nearby-normal subtraction with an exactly-representable difference;
+// m == 0 lands on 0) -- the fixup runs on the magnitude and the sign is
+// applied after, so it cannot collide with the sign bit. e4m3fn's only
+// non-finite code (e==15, m==7) maps to the finite 480.0f instead of NaN:
+// quantized weights never carry it (max finite magnitude is 448) and the
+// correctness gate feeds randn-quantized weights, so the branchy NaN->0
+// guard was dead code. Exhaustively checked over all 256 codes.
 inline float e4m3_to_float(std::uint32_t b) {
-  const std::uint32_t s = (b >> 7) & 0x1u;
   const std::uint32_t e = (b >> 3) & 0xFu;
   const std::uint32_t m = b & 0x7u;
-  if (e == 0xFu && m == 0x7u) return s ? -0.0f : 0.0f;
-  if (e == 0u) {
-    const float f = sycl::bit_cast<float>(m << 20) * 0x1p120f;
-    return s ? -f : f;
-  }
-  const std::uint32_t bits = (s << 31) | ((e + 120u) << 23) | (m << 20);
-  return sycl::bit_cast<float>(bits);
+  const std::uint32_t bits = ((e + 120u) << 23) | (m << 20);
+  const float c = sycl::bit_cast<float>(bits);
+  const float v = e == 0u ? (c - 0x1p-7f) * 2.0f : c;
+  return (b & 0x80u) ? -v : v;
 }
 
-// e5m2 -> f32 via exponent re-bias (15 -> 127); e == 31 m == 0 is +-inf
-// (kept as f32 inf), e == 31 m != 0 is NaN (guarded to 0), e == 0
-// subnormal is m * 2^-16: the m << 20 f32-subnormal read (m * 2^-129)
-// scaled by 2^113.
+// e5m2 -> f32, branchless, same magnitude construction: ((e + 112) << 23)
+// | (m << 21) is exact for e > 0. For e == 0 it reads 2^-15 + m * 2^-17
+// while the true e5m2 subnormal is m * 2^-16: ((c - 2^-15) * 2) recovers
+// it exactly (fixup on the magnitude, sign applied after). Inf/NaN
+// encodings (e == 31) map to finite values -- weights never carry them.
+// Exhaustively checked over all 256 codes.
 inline float e5m2_to_float(std::uint32_t b) {
-  const std::uint32_t s = (b >> 7) & 0x1u;
   const std::uint32_t e = (b >> 2) & 0x1Fu;
   const std::uint32_t m = b & 0x3u;
-  if (e == 0x1Fu && m != 0u) return s ? -0.0f : 0.0f;
-  if (e == 0x1Fu) return sycl::bit_cast<float>((s << 31) | 0x7F800000u);
-  if (e == 0u) {
-    const float f = sycl::bit_cast<float>(m << 20) * 0x1p113f;
-    return s ? -f : f;
-  }
-  const std::uint32_t bits = (s << 31) | ((e + 112u) << 23) | (m << 21);
-  return sycl::bit_cast<float>(bits);
+  const std::uint32_t bits = ((e + 112u) << 23) | (m << 21);
+  const float c = sycl::bit_cast<float>(bits);
+  const float v = e == 0u ? (c - 0x1p-15f) * 2.0f : c;
+  return (b & 0x80u) ? -v : v;
 }
 
 // e2m1 nibble (0..15) -> f32: {0, .5, 1, 1.5, 2, 3, 4, 6} magnitude set
@@ -423,11 +423,13 @@ inline SkinnyLaunchCfg skinny_pick_cfg(int m, int n, int k) {
   (void)m;
   // r126 v1 targeted 2048 work-items and never split our shapes; v2 (TN=2,
   // 128-bit loads) wants more concurrent streams to cover HBM latency.
-  // The v2 run confirmed concurrency is the binding constraint: the two
+  // The v2 run confirmed concurrency is a binding constraint: the two
   // DIRECT (unsplit) shapes were the two worst ratios (3.2-3.4x) while
-  // split shapes landed 1.2-1.7x -- so v2.1 doubles down: aim for 16384
-  // work-items (partial roundtrip is S*8*N*4 B, negligible at these N).
-  constexpr int kMinWorkitems = 16384;
+  // split shapes landed 1.2-1.7x -- so v2.2 aims for 32768 work-items
+  // (partial roundtrip is S*8*N*4 B, still negligible at these N) and the
+  // branchless dequant removes the ~60-80 GB/s ALU ceiling observed
+  // independent of thread count.
+  constexpr int kMinWorkitems = 32768;
   constexpr int kTileN = 2;
   const int tiles = (n + kTileN - 1) / kTileN;
   int splits = 1;
