@@ -217,14 +217,14 @@ class SkinnyGemmStage1Kernel {
 #pragma unroll
           for (int v = 0; v < AW; ++v) {
             const sycl::uint4 pv = av[v];
+            // each 32-bit lane holds TWO halves: x=(0,1) y=(2,3) z=(4,5)
+            // w=(6,7) -- lane h>>1, half h&1 (r126 v2.1: the h<4 gate
+            // shifted lanes by >=32 and garbled elements 2,3,6,7)
+            const std::uint32_t alane[4] = {pv.x(), pv.y(), pv.z(), pv.w()};
 #pragma unroll
             for (int h = 0; h < 8; ++h) {
               const std::uint32_t hw =
-                  (v % 2 == 0)
-                      ? ((h < 4) ? (pv.x() >> (16 * h)) & 0xFFFFu
-                                 : (pv.y() >> (16 * (h - 4))) & 0xFFFFu)
-                      : ((h < 4) ? (pv.z() >> (16 * h)) & 0xFFFFu
-                                 : (pv.w() >> (16 * (h - 4))) & 0xFFFFu);
+                  (alane[h >> 1] >> (16 * (h & 1))) & 0xFFFFu;
               ah[mi][v * 8 + h] =
                   A_BF16 ? bf16_to_float(hw) : f16_to_float(hw);
             }
@@ -288,14 +288,13 @@ class SkinnyGemmStage1Kernel {
 #pragma unroll
             for (int v = 0; v < AW; ++v) {
               const sycl::uint4 pv = av[v];
+              // two halves per 32-bit lane (see the hoisted-path comment)
+              const std::uint32_t alane[4] = {pv.x(), pv.y(), pv.z(),
+                                              pv.w()};
 #pragma unroll
               for (int h = 0; h < 8; ++h) {
                 const std::uint32_t hw =
-                    (v % 2 == 0)
-                        ? ((h < 4) ? (pv.x() >> (16 * h)) & 0xFFFFu
-                                   : (pv.y() >> (16 * (h - 4))) & 0xFFFFu)
-                        : ((h < 4) ? (pv.z() >> (16 * h)) & 0xFFFFu
-                                   : (pv.w() >> (16 * (h - 4))) & 0xFFFFu);
+                    (alane[h >> 1] >> (16 * (h & 1))) & 0xFFFFu;
                 a[v * 8 + h] =
                     A_BF16 ? bf16_to_float(hw) : f16_to_float(hw);
               }
@@ -423,10 +422,12 @@ struct SkinnyLaunchCfg {
 inline SkinnyLaunchCfg skinny_pick_cfg(int m, int n, int k) {
   (void)m;
   // r126 v1 targeted 2048 work-items and never split our shapes; v2 (TN=2,
-  // 128-bit loads) wants more concurrent streams to cover HBM latency:
-  // aim for 8192 work-items, group-aligned split-K when N alone falls
-  // short (partial roundtrip is S*8*N*4 B, negligible at these N).
-  constexpr int kMinWorkitems = 8192;
+  // 128-bit loads) wants more concurrent streams to cover HBM latency.
+  // The v2 run confirmed concurrency is the binding constraint: the two
+  // DIRECT (unsplit) shapes were the two worst ratios (3.2-3.4x) while
+  // split shapes landed 1.2-1.7x -- so v2.1 doubles down: aim for 16384
+  // work-items (partial roundtrip is S*8*N*4 B, negligible at these N).
+  constexpr int kMinWorkitems = 16384;
   constexpr int kTileN = 2;
   const int tiles = (n + kTileN - 1) / kTileN;
   int splits = 1;
