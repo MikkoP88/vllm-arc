@@ -1,0 +1,1 @@
+mode=w8a8 quant=mxfp8 model=qwen3.8-27b gmu=0.85 spec=3 lmc=1 rpc=def qcfg={"ignore":["*visual*","*linear_attn*","mtp.fc"]} img=vllm-arc:v0.30.0-b70-arc5test

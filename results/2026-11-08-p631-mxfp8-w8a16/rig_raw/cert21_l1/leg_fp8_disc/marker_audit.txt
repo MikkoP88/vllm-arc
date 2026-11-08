@@ -1,0 +1,2 @@
+fa2_marker=0
+slide_marker=2

@@ -1,0 +1,1 @@
+(APIServer pid=13) INFO 11-08 12:49:37 [mxfp8_w8a16.py:59] ArcXpuPlatform: mxfp8 w8a16 reroute OFF (ARC_MXFP8_MODE=w8a8 — stock W8A8)

@@ -1,0 +1,7 @@
+[factual] finish=length tok=24
+  '\n\n\n\n\n\n|'
+[reason] finish=length tok=96
+  'To solve this problem, we need to determine the relative speed between the two trains and then calculate the time it takes for the second train to catch the first.\nFirst, we need to find the relative speed between the two trains. The relative speed is the difference between the speeds of the two trains.\nRelative speed = Speed of second train - Speed of first train\nRelative speed = 90 km/h - 60 km/'
+[code] finish=length tok=64
+  '\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n|'
+G1_DONE

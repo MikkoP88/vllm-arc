@@ -1,0 +1,1 @@
+(Worker_TP0 pid=913) INFO 11-08 15:21:04 [base_loader.py:121] Quantized 240 layers of types: mlp.down_proj: 60 (from linear: mxfp8); mlp.gate_up_proj: 60 (from linear: mxfp8); self_attn.o_proj: 60 (from linear: mxfp8); self_attn.qkv_proj: 60 (from linear: mxfp8)

@@ -1,0 +1,10 @@
+A U8k: TTFT=3.78s bar<=3.99 (-5.3%)
+A U32k: TTFT=17.47s bar<=18.43 (-5.2%)
+A solo min=60.10 bar>=56.5; agg8 min=302.50 bar>=286.7
+B U8k: TTFT=3.61s bar<=3.79 (-4.7%)
+B U32k: TTFT=17.09s bar<=17.92 (-4.6%)
+B solo min=54.30 bar>=51.1; agg8 min=266.80 bar>=252.6
+C U8k: TTFT=3.66s bar<=3.81 (-3.9%)
+C U32k: TTFT=17.10s bar<=17.89 (-4.4%)
+C solo min=61.80 bar>=58.4; agg8 min=299.60 bar>=286.0
+R125_CERT21: PASS

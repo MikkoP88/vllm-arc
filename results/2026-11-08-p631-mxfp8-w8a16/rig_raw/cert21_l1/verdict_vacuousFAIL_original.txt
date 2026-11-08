@@ -1,0 +1,4 @@
+A solo min=0.00 bar>=56.5; agg8 min=0.00 bar>=286.7
+B solo min=0.00 bar>=51.1; agg8 min=0.00 bar>=252.6
+C solo min=0.00 bar>=58.4; agg8 min=0.00 bar>=286.0
+R125_CERT21: FAIL ['A U8k face missing', 'A U32k face missing', 'A solo 0 < 56.5', 'A agg8 0 < 286.7', 'A spec gate', 'B U8k face missing', 'B U32k face missing', 'B solo 0 < 51.1', 'B agg8 0 < 252.6', 'B spec gate', 'C U8k face missing', 'C U32k face missing', 'C solo 0 < 58.4', 'C agg8 0 < 286.0', 'C spec gate']

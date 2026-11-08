@@ -126,7 +126,10 @@ battery() {  # battery <legdir> <served>
 }
 
 erraudit() {  # $1 = leg dir
-  docker exec arc-test bash -c "grep -c ERROR /root/serve_full.log; grep -c Traceback /root/serve_full.log" \
+  # inner greps get || true: zero matches exits 1 and would fail docker exec,
+  # firing the || branch and clobbering the good "0" output with "?" (the
+  # r125 original-run defect; counts recomputed from serve.log leg-side)
+  docker exec arc-test bash -c "grep -c ERROR /root/serve_full.log || true; grep -c Traceback /root/serve_full.log || true" \
     > "$1/erraudit.txt" 2>/dev/null || echo "?" > "$1/erraudit.txt"
   cat "$1/erraudit.txt"
   grep -q "^0$" "$1/erraudit.txt" || { echo "ERRAUDIT: FAIL ($1)"; GATE_FAIL=1; }
@@ -292,7 +295,12 @@ kill_arc
 echo "=== [leg C] done $(date +%H:%M:%S) ==="
 
 echo "=== [V] verdict vs pre-registered bars $(date +%H:%M:%S) ==="
-python3 - > verdict.txt 2>&1 << 'PYEOF' || true
+# CWD law (r125 original-run defect): the verdict python reads leg files by
+# RELATIVE path — cd $G or every read misses and the gate fails vacuously
+# (the original run inherited the launch CWD /root/build; verdict recomputed
+# PASS from the banked leg artifacts, r105b precedent)
+cd "$G" || { echo "GATE_FAIL: no $G"; exit 1; }
+python3 - > "$G/verdict.txt" 2>&1 << 'PYEOF' || true
 import re
 
 def faces(p):
@@ -371,8 +379,8 @@ if amin < 286.0: fails.append(f"C agg8 {amin} < 286.0")
 if not spec_pass("leg_w4a16/spec_gate.txt"): fails.append("C spec gate")
 print("R125_CERT21:", "PASS" if not fails else f"FAIL {fails}")
 PYEOF
-cat verdict.txt
-grep -q "R125_CERT21: PASS" verdict.txt || GATE_FAIL=1
+cat "$G/verdict.txt"
+grep -q "R125_CERT21: PASS" "$G/verdict.txt" || GATE_FAIL=1
 
 echo "=== [r125] window done $(date +%F\ %H:%M:%S); W14 restoring; GATE_FAIL=$GATE_FAIL ==="
 exit $GATE_FAIL

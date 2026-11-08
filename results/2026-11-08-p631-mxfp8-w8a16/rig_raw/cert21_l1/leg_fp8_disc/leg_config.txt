@@ -1,0 +1,1 @@
+leg=A model=qwen3.8-27b-fp8 img=vllm-arc:v0.30.0-b70-cert21 gmu=0.85 graph=1 spec=3 lmc=1 (default posture, no lane envs)
