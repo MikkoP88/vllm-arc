@@ -1,0 +1,1 @@
+SPEC_GATE FAIL: no spec counters on a spec leg — telemetry absent (D fail-law: absence = telemetry break, not silence-by-design)

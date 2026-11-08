@@ -5,8 +5,15 @@ at the r46t close-out) from `vllm_gaudi/envs.py` arc-lane markers + the
 certified serve line (`r43_serve_k5.sh`, spec depth 3 per the r46t
 recommendation — a serve-time CLI change — on image
 `vllm-arc:v0.30.0-b70-cert`; unchanged since — the qwen fp8 chain is identical on
-the current certified image `vllm-arc:v0.30.0-b70-cert19`, where
-`LMCACHE_TRACK_USAGE=false` (P6.3) made it 25; cert19 = cert18 + the
+the current certified image `vllm-arc:v0.30.0-b70-cert20`, where
+`LMCACHE_TRACK_USAGE=false` (P6.3) made it 25; cert20 = cert19 + the
+P6.30 online-quant W4A16 lane (arc4 `vllm_xpu_kernels` wheel swap +
+the `mxfp4_w4a16` patch — adds NO serve-line var; the lane rides the
+existing model-lane envs `ARC_QUANT=mxfp4` + `ARC_QUANTCFG` (the
+hybrid ignore list) + the engine env `ARC_MXFP4_MODE` (unset/`w4a16` =
+the W4A16 route — default; `w4a4` = stock control; a serve-ENV knob,
+not part of the 25-var chain, like `ARC_ATTN_FA2`); the fp8/checkpoint
+lanes are byte-untouched — r121 discriminator); cert19 = cert18 + the
 P6.29 sliding-window FA2 route (the same wheel file,
 `triton_unified_attention.py` — adds NO serve-line var; the shared
 engine env `ARC_ATTN_FA2` defaults 1 = the hd512 full-attention route

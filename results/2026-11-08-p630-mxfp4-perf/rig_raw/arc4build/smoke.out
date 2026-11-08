@@ -1,0 +1,42 @@
+onednn_verbose,v1,info,oneDNN v3.13.0 (commit 0e2a5bfeef1bfbffc3137464606540233086ce9b)
+onednn_verbose,v1,info,gpu,runtime:SYCL
+onednn_verbose,v1,info,gpu,engine,sycl gpu device count:1 
+onednn_verbose,v1,info,gpu,engine,0,backend:Level Zero,name:Intel(R) Graphics [0xe223],driver_version:1.15.37833,binary_kernels:enabled
+onednn_verbose,v1,info,graph,backend,0:dnnl_backend
+onednn_verbose,v1,info,experimental features are enabled
+onednn_verbose,v1,info,use batch_normalization stats one pass is enabled
+onednn_verbose,v1,info,GPU convolution v2 is disabled
+onednn_verbose,v1,primitive,info,template:operation,engine,primitive,implementation,prop_kind,memory_descriptors,attributes,auxiliary,problem_desc,exec_time
+onednn_verbose,v1,graph,info,template:operation,engine,partition_id,partition_kind,op_names,data_formats,logical_tensors,fpmath_mode,implementation,backend,exec_time
+onednn_verbose,v1,primitive,create:cache_miss,gpu,gemm,jit:gemm:any,undef,src_a:bf16::blocked:ab::f0 src_b:f4_e2m1::blocked:ba::f0 dst:bf16::blocked:ab::f0,attr-fpmath:bf16:true attr-scales:wei:3:e8m0:32x1,,1x5376:5376x5376,38.6282
+onednn_verbose,v1,primitive,create:nested_primitive_cache_hit,gpu,matmul,jit:gemm:any,undef,src:bf16::blocked:ab::f0 wei:f4_e2m1::blocked:ba::f0 dst:bf16::blocked:ab::f0,attr-scratchpad:user attr-fpmath:bf16:true attr-scales:wei:3:e8m0:32x1,,1x5376:5376x5376,0.149902
+onednn_verbose,v1,primitive,warning,exec,SYCL queue does not have profiling enabled. Verbose profiling is paused and execution times will not be reported.,src/gpu/intel/sycl/stream.cpp:105
+onednn_verbose,v1,primitive,exec,gpu,matmul,jit:gemm:any,undef,src:bf16::blocked:ab::f0 wei:f4_e2m1::blocked:ba::f0 dst:bf16::blocked:ab::f0,attr-scratchpad:user attr-fpmath:bf16:true attr-scales:wei:3:e8m0:32x1,,1x5376:5376x5376,0
+onednn_verbose,v1,primitive,create:kernel_cache_hit,gpu,gemm,jit:gemm:any,undef,src_a:bf16::blocked:ab::f0 src_b:f4_e2m1::blocked:ba::f0 dst:bf16::blocked:ab::f0,attr-fpmath:bf16:true attr-scales:wei:3:e8m0:32x1,,8x5376:5376x5376,0.0119629
+onednn_verbose,v1,primitive,create:nested_primitive_cache_hit,gpu,matmul,jit:gemm:any,undef,src:bf16::blocked:ab::f0 wei:f4_e2m1::blocked:ba::f0 dst:bf16::blocked:ab::f0,attr-scratchpad:user attr-fpmath:bf16:true attr-scales:wei:3:e8m0:32x1,,8x5376:5376x5376,0.0629883
+onednn_verbose,v1,primitive,exec,gpu,matmul,jit:gemm:any,undef,src:bf16::blocked:ab::f0 wei:f4_e2m1::blocked:ba::f0 dst:bf16::blocked:ab::f0,attr-scratchpad:user attr-fpmath:bf16:true attr-scales:wei:3:e8m0:32x1,,8x5376:5376x5376,0
+onednn_verbose,v1,primitive,create:cache_miss,gpu,gemm,jit:gemm:any,undef,src_a:bf16::blocked:ab::f0 src_b:f4_e2m1::blocked:ba::f0 dst:bf16::blocked:ab::f0,attr-fpmath:bf16:true attr-scales:wei:3:e8m0:32x1,,4096x5376:5376x5376,115.72
+onednn_verbose,v1,primitive,create:nested_primitive_cache_hit,gpu,matmul,jit:gemm:any,undef,src:bf16::blocked:ab::f0 wei:f4_e2m1::blocked:ba::f0 dst:bf16::blocked:ab::f0,attr-scratchpad:user attr-fpmath:bf16:true attr-scales:wei:3:e8m0:32x1,,4096x5376:5376x5376,0.0429688
+onednn_verbose,v1,primitive,exec,gpu,matmul,jit:gemm:any,undef,src:bf16::blocked:ab::f0 wei:f4_e2m1::blocked:ba::f0 dst:bf16::blocked:ab::f0,attr-scratchpad:user attr-fpmath:bf16:true attr-scales:wei:3:e8m0:32x1,,4096x5376:5376x5376,0
+onednn_verbose,v1,primitive,create:kernel_cache_hit,gpu,gemm,jit:gemm:any,undef,src_a:bf16::blocked:ab::f0 src_b:f4_e2m1::blocked:ba::f0 dst:bf16::blocked:ab::f0,attr-fpmath:bf16:true attr-scales:wei:3:e8m0:32x1,,32768x5376:5376x5376,0.013916
+onednn_verbose,v1,primitive,create:nested_primitive_cache_hit,gpu,matmul,jit:gemm:any,undef,src:bf16::blocked:ab::f0 wei:f4_e2m1::blocked:ba::f0 dst:bf16::blocked:ab::f0,attr-scratchpad:user attr-fpmath:bf16:true attr-scales:wei:3:e8m0:32x1,,32768x5376:5376x5376,0.0581055
+onednn_verbose,v1,primitive,exec,gpu,matmul,jit:gemm:any,undef,src:bf16::blocked:ab::f0 wei:f4_e2m1::blocked:ba::f0 dst:bf16::blocked:ab::f0,attr-scratchpad:user attr-fpmath:bf16:true attr-scales:wei:3:e8m0:32x1,,32768x5376:5376x5376,0
+onednn_verbose,v1,primitive,exec,gpu,matmul,jit:gemm:any,undef,src:bf16::blocked:ab::f0 wei:f4_e2m1::blocked:ba::f0 dst:bf16::blocked:ab::f0,attr-scratchpad:user attr-fpmath:bf16:true attr-scales:wei:3:e8m0:32x1,,8x5376:5376x5376,0
+onednn_verbose,v1,info,oneDNN v3.12.0 (commit 80afa71049cd69a3df32adcccb623b12cd7baa22)
+onednn_verbose,v1,info,gpu,runtime:SYCL
+onednn_verbose,v1,info,gpu,engine,sycl gpu device count:1 
+onednn_verbose,v1,info,gpu,engine,0,backend:Level Zero,name:Intel(R) Graphics [0xe223],driver_version:1.15.37833,binary_kernels:enabled
+onednn_verbose,v1,info,graph,backend,0:dnnl_backend
+onednn_verbose,v1,primitive,info,template:operation,engine,primitive,implementation,prop_kind,memory_descriptors,attributes,auxiliary,problem_desc,exec_time
+onednn_verbose,v1,graph,info,template:operation,engine,partition_id,partition_kind,op_names,data_formats,logical_tensors,fpmath_mode,implementation,backend,exec_time
+onednn_verbose,v1,primitive,create:cache_miss,gpu,gemm,jit:gemm:any,undef,src_a:f32::blocked:ab::f0 src_b:f32::blocked:ba::f0 dst:f32::blocked:ab::f0,,,8x5376:5376x5376,42.0339
+onednn_verbose,v1,primitive,create:nested_primitive_cache_hit,gpu,matmul,jit:gemm:any,undef,src:f32::blocked:ab::f0 wei:f32::blocked:ba::f0 dst:f32::blocked:ab::f0,attr-scratchpad:user,,8x5376:5376x5376,0.600098
+onednn_verbose,v1,primitive,exec,gpu,matmul,jit:gemm:any,undef,src:f32::blocked:ab::f0 wei:f32::blocked:ba::f0 dst:f32::blocked:ab::f0,attr-scratchpad:user,,8x5376:5376x5376,1.77002
+xpu: Intel(R) Graphics [0xe223]
+fp4_gemm_w4a16 PRESENT
+M=1: OK shape=(1, 5376)
+M=8: OK shape=(8, 5376)
+M=4096: OK shape=(4096, 5376)
+M=32768: OK shape=(32768, 5376)
+numerics relerr vs fp32 dequant ref (M=8): 1.6581e-03
+SMOKE_OK

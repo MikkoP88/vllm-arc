@@ -1,0 +1,1 @@
+mode=w4a4 quant=mxfp4 model=gemma-4-31b gmu=0.8 lmc=0 rpc=1200 img=vllm-arc:v0.30.0-b70-arc4test

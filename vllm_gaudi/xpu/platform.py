@@ -64,6 +64,9 @@ _XPU_PATCH_MODULES = (
     # silent-off diagnostic — envs.md diagnostics class)
     "ar_trace",  # p622: per-call collective census (ARC_AR_TRACE,
     # silent-off diagnostic — message sizes for the TP2-AR lane)
+    "mxfp4_w4a16",  # p630 FIX-P: mxfp4 linear -> fp4_gemm_w4a16 with bf16
+    # activations, per-call activation quant skipped (r118/r119b: quant op
+    # ~= gemm cost at decode Ms; ARC_MXFP4_MODE gate, stock w4a4 kept)
 )
 
 

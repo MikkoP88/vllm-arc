@@ -1,0 +1,88 @@
+=== [0] env ===
+xpu: True Intel(R) Graphics [0xe223]
+vllm_xpu_kernels OK
+INFO 11-07 22:06:15 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+INFO 11-07 22:06:15 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+INFO 11-07 22:06:15 [__init__.py:54] - hpu -> vllm_gaudi:register
+INFO 11-07 22:06:15 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+INFO 11-07 22:06:15 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+INFO 11-07 22:06:15 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+INFO 11-07 22:06:15 [__init__.py:54] - hpu -> vllm_gaudi:register
+INFO 11-07 22:06:15 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+INFO 11-07 22:06:15 [__init__.py:272] Platform plugin arc is activated
+INFO 11-07 22:06:15 [__init__.py:272] Platform plugin arc is activated
+[gemma.up M=1 mxfp8] FAILED: AttributeError: type object 'VllmConfig' has no attribute 'get_default'
+[gemma.up M=1 mxfp4] FAILED: AttributeError: type object 'VllmConfig' has no attribute 'get_default'
+gemma.up    M=1      bf16=   0.355  | fp8 q=  0.000 g=   0.000 a=   0.000 | fp4 q=  0.000 g=   0.000 a=   0.000  (PARTIAL)
+[gemma.up M=8 mxfp8] FAILED: AttributeError: type object 'VllmConfig' has no attribute 'get_default'
+[gemma.up M=8 mxfp4] FAILED: AttributeError: type object 'VllmConfig' has no attribute 'get_default'
+gemma.up    M=8      bf16=   0.304  | fp8 q=  0.000 g=   0.000 a=   0.000 | fp4 q=  0.000 g=   0.000 a=   0.000  (PARTIAL)
+[gemma.up M=4096 mxfp8] FAILED: AttributeError: type object 'VllmConfig' has no attribute 'get_default'
+[gemma.up M=4096 mxfp4] FAILED: AttributeError: type object 'VllmConfig' has no attribute 'get_default'
+gemma.up    M=4096   bf16=   3.123  | fp8 q=  0.000 g=   0.000 a=   0.000 | fp4 q=  0.000 g=   0.000 a=   0.000  (PARTIAL)
+[gemma.up M=32768 mxfp8] FAILED: AttributeError: type object 'VllmConfig' has no attribute 'get_default'
+[gemma.up M=32768 mxfp4] FAILED: AttributeError: type object 'VllmConfig' has no attribute 'get_default'
+gemma.up    M=32768  bf16=  29.458  | fp8 q=  0.000 g=   0.000 a=   0.000 | fp4 q=  0.000 g=   0.000 a=   0.000  (PARTIAL)
+[gemma.down M=1 mxfp8] FAILED: AttributeError: type object 'VllmConfig' has no attribute 'get_default'
+[gemma.down M=1 mxfp4] FAILED: AttributeError: type object 'VllmConfig' has no attribute 'get_default'
+gemma.down  M=1      bf16=   0.306  | fp8 q=  0.000 g=   0.000 a=   0.000 | fp4 q=  0.000 g=   0.000 a=   0.000  (PARTIAL)
+[gemma.down M=8 mxfp8] FAILED: AttributeError: type object 'VllmConfig' has no attribute 'get_default'
+[gemma.down M=8 mxfp4] FAILED: AttributeError: type object 'VllmConfig' has no attribute 'get_default'
+gemma.down  M=8      bf16=   0.390  | fp8 q=  0.000 g=   0.000 a=   0.000 | fp4 q=  0.000 g=   0.000 a=   0.000  (PARTIAL)
+[gemma.down M=4096 mxfp8] FAILED: AttributeError: type object 'VllmConfig' has no attribute 'get_default'
+[gemma.down M=4096 mxfp4] FAILED: AttributeError: type object 'VllmConfig' has no attribute 'get_default'
+gemma.down  M=4096   bf16=   3.310  | fp8 q=  0.000 g=   0.000 a=   0.000 | fp4 q=  0.000 g=   0.000 a=   0.000  (PARTIAL)
+[gemma.down M=32768 mxfp8] FAILED: AttributeError: type object 'VllmConfig' has no attribute 'get_default'
+[gemma.down M=32768 mxfp4] FAILED: AttributeError: type object 'VllmConfig' has no attribute 'get_default'
+gemma.down  M=32768  bf16=  29.283  | fp8 q=  0.000 g=   0.000 a=   0.000 | fp4 q=  0.000 g=   0.000 a=   0.000  (PARTIAL)
+[gemma.o M=1 mxfp8] FAILED: AttributeError: type object 'VllmConfig' has no attribute 'get_default'
+[gemma.o M=1 mxfp4] FAILED: AttributeError: type object 'VllmConfig' has no attribute 'get_default'
+gemma.o     M=1      bf16=   0.332  | fp8 q=  0.000 g=   0.000 a=   0.000 | fp4 q=  0.000 g=   0.000 a=   0.000  (PARTIAL)
+[gemma.o M=8 mxfp8] FAILED: AttributeError: type object 'VllmConfig' has no attribute 'get_default'
+[gemma.o M=8 mxfp4] FAILED: AttributeError: type object 'VllmConfig' has no attribute 'get_default'
+gemma.o     M=8      bf16=   0.345  | fp8 q=  0.000 g=   0.000 a=   0.000 | fp4 q=  0.000 g=   0.000 a=   0.000  (PARTIAL)
+[gemma.o M=4096 mxfp8] FAILED: AttributeError: type object 'VllmConfig' has no attribute 'get_default'
+[gemma.o M=4096 mxfp4] FAILED: AttributeError: type object 'VllmConfig' has no attribute 'get_default'
+gemma.o     M=4096   bf16=   1.739  | fp8 q=  0.000 g=   0.000 a=   0.000 | fp4 q=  0.000 g=   0.000 a=   0.000  (PARTIAL)
+[gemma.o M=32768 mxfp8] FAILED: AttributeError: type object 'VllmConfig' has no attribute 'get_default'
+[gemma.o M=32768 mxfp4] FAILED: AttributeError: type object 'VllmConfig' has no attribute 'get_default'
+gemma.o     M=32768  bf16=  14.442  | fp8 q=  0.000 g=   0.000 a=   0.000 | fp4 q=  0.000 g=   0.000 a=   0.000  (PARTIAL)
+[qwen.up M=1 mxfp8] FAILED: AttributeError: type object 'VllmConfig' has no attribute 'get_default'
+[qwen.up M=1 mxfp4] FAILED: AttributeError: type object 'VllmConfig' has no attribute 'get_default'
+qwen.up     M=1      bf16=   0.358  | fp8 q=  0.000 g=   0.000 a=   0.000 | fp4 q=  0.000 g=   0.000 a=   0.000  (PARTIAL)
+[qwen.up M=8 mxfp8] FAILED: AttributeError: type object 'VllmConfig' has no attribute 'get_default'
+[qwen.up M=8 mxfp4] FAILED: AttributeError: type object 'VllmConfig' has no attribute 'get_default'
+qwen.up     M=8      bf16=   0.345  | fp8 q=  0.000 g=   0.000 a=   0.000 | fp4 q=  0.000 g=   0.000 a=   0.000  (PARTIAL)
+[qwen.up M=4096 mxfp8] FAILED: AttributeError: type object 'VllmConfig' has no attribute 'get_default'
+[qwen.up M=4096 mxfp4] FAILED: AttributeError: type object 'VllmConfig' has no attribute 'get_default'
+qwen.up     M=4096   bf16=   2.463  | fp8 q=  0.000 g=   0.000 a=   0.000 | fp4 q=  0.000 g=   0.000 a=   0.000  (PARTIAL)
+[qwen.up M=32768 mxfp8] FAILED: AttributeError: type object 'VllmConfig' has no attribute 'get_default'
+[qwen.up M=32768 mxfp4] FAILED: AttributeError: type object 'VllmConfig' has no attribute 'get_default'
+qwen.up     M=32768  bf16=  22.459  | fp8 q=  0.000 g=   0.000 a=   0.000 | fp4 q=  0.000 g=   0.000 a=   0.000  (PARTIAL)
+[qwen.down M=1 mxfp8] FAILED: AttributeError: type object 'VllmConfig' has no attribute 'get_default'
+[qwen.down M=1 mxfp4] FAILED: AttributeError: type object 'VllmConfig' has no attribute 'get_default'
+qwen.down   M=1      bf16=   0.351  | fp8 q=  0.000 g=   0.000 a=   0.000 | fp4 q=  0.000 g=   0.000 a=   0.000  (PARTIAL)
+[qwen.down M=8 mxfp8] FAILED: AttributeError: type object 'VllmConfig' has no attribute 'get_default'
+[qwen.down M=8 mxfp4] FAILED: AttributeError: type object 'VllmConfig' has no attribute 'get_default'
+qwen.down   M=8      bf16=   0.374  | fp8 q=  0.000 g=   0.000 a=   0.000 | fp4 q=  0.000 g=   0.000 a=   0.000  (PARTIAL)
+[qwen.down M=4096 mxfp8] FAILED: AttributeError: type object 'VllmConfig' has no attribute 'get_default'
+[qwen.down M=4096 mxfp4] FAILED: AttributeError: type object 'VllmConfig' has no attribute 'get_default'
+qwen.down   M=4096   bf16=   2.479  | fp8 q=  0.000 g=   0.000 a=   0.000 | fp4 q=  0.000 g=   0.000 a=   0.000  (PARTIAL)
+[qwen.down M=32768 mxfp8] FAILED: AttributeError: type object 'VllmConfig' has no attribute 'get_default'
+[qwen.down M=32768 mxfp4] FAILED: AttributeError: type object 'VllmConfig' has no attribute 'get_default'
+qwen.down   M=32768  bf16=  22.264  | fp8 q=  0.000 g=   0.000 a=   0.000 | fp4 q=  0.000 g=   0.000 a=   0.000  (PARTIAL)
+[qwen.o M=1 mxfp8] FAILED: AttributeError: type object 'VllmConfig' has no attribute 'get_default'
+[qwen.o M=1 mxfp4] FAILED: AttributeError: type object 'VllmConfig' has no attribute 'get_default'
+qwen.o      M=1      bf16=   0.357  | fp8 q=  0.000 g=   0.000 a=   0.000 | fp4 q=  0.000 g=   0.000 a=   0.000  (PARTIAL)
+[qwen.o M=8 mxfp8] FAILED: AttributeError: type object 'VllmConfig' has no attribute 'get_default'
+[qwen.o M=8 mxfp4] FAILED: AttributeError: type object 'VllmConfig' has no attribute 'get_default'
+qwen.o      M=8      bf16=   0.352  | fp8 q=  0.000 g=   0.000 a=   0.000 | fp4 q=  0.000 g=   0.000 a=   0.000  (PARTIAL)
+[qwen.o M=4096 mxfp8] FAILED: AttributeError: type object 'VllmConfig' has no attribute 'get_default'
+[qwen.o M=4096 mxfp4] FAILED: AttributeError: type object 'VllmConfig' has no attribute 'get_default'
+qwen.o      M=4096   bf16=   1.571  | fp8 q=  0.000 g=   0.000 a=   0.000 | fp4 q=  0.000 g=   0.000 a=   0.000  (PARTIAL)
+[qwen.o M=32768 mxfp8] FAILED: AttributeError: type object 'VllmConfig' has no attribute 'get_default'
+[qwen.o M=32768 mxfp4] FAILED: AttributeError: type object 'VllmConfig' has no attribute 'get_default'
+qwen.o      M=32768  bf16=  13.057  | fp8 q=  0.000 g=   0.000 a=   0.000 | fp4 q=  0.000 g=   0.000 a=   0.000  (PARTIAL)
+
+=== [summary] fp4/fp8 medians ===
+=== r116_kbench done ===

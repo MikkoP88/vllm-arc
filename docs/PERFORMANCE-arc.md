@@ -38,7 +38,12 @@ definitions and hardware in [`TESTING-arc.md`](TESTING-arc.md)).
    windowed: 2.4–2.9× more gemma prefill on top of cert18 (face32k at
    qwen-parity), decode +45 % solo / 2.64× agg8; the qwen discriminator
    re-ran green in-band at 3.83/17.58 s (the guarded sliding-hd256 class
-   also occurs in qwen traffic — no regression, erraudit 0/0)**) and the
+   also occurs in qwen traffic — no regression, erraudit 0/0)**);
+   **cert20 (P6.30) adds the online-quant W4A16 lane — the arc4
+   `vllm_xpu_kernels` wheel + the `mxfp4_w4a16` reroute behind
+   `ARC_MXFP4_MODE`; the fp8/checkpoint lanes are byte-untouched (qwen
+   fp8 discriminator re-ran green at the r121 gate), and the online
+   mxfp4/mxfp8 faces are a new P6.30 table below**) and the
    current-era analyses
    (prefill anatomy, op-class trace). The pre-P6.17 greedy-lane record
    (r70, cert4-native) is retained as labeled history.
@@ -81,7 +86,7 @@ current-record tables.
 | Layer | Identity |
 |---|---|
 | Hardware | dual Intel Arc Pro B70 (48 GB each), TP2, one card per socket (`ZE_AFFINITY_MASK=0,1`) |
-| Engine image | **current**: `vllm-arc:v0.30.0-b70-cert19` — tag `rel/v0.30.0-b70-cert19` (cert18 + the P6.29 sliding-window FA2 route: `external_patches/vllm/patch_arc_xpu_fa2_slide_route.py` via `tools/cert19.Dockerfile` — sliding-window head-256 calls (window (1023,0) class) dispatch to the `vllm_xpu_kernels` ESVD FA2 kernel windowed in the same triton unified-attention wrapper; `ARC_ATTN_FA2=0` disables both routes; IMAGE_MANIFEST carries the cert19 row + `cert19_fork_sha`; gate evidence `results/2026-11-07-p629/cert19_l1/` — BOTH markers fired on both TP ranks in production serving, gemma faces 2.4–2.9× faster than cert18 (face32k at qwen-parity), decode +45 % solo / 2.64× agg8, qwen discriminator in-band). Prior-cert context: cert18 — tag `rel/v0.30.0-b70-cert18` (cert17 + the P6.28 FA2 route: `external_patches/vllm/patch_arc_xpu_fa2_route.py` via `tools/cert18.Dockerfile` — full-attention head-512 calls dispatch to the `vllm_xpu_kernels` ESVD FA2 kernel in the triton unified-attention wrapper; `ARC_ATTN_FA2=0` escape hatch; IMAGE_MANIFEST carries the cert18 row + `cert18_fork_sha`; gate evidence `results/2026-11-06-p628-gemma4/phaseC/cert18_l1/` — the FA2 marker fired on both TP ranks in production serving, gemma faces 2.2–16.3× faster, qwen discriminator marker 0). Prior-cert context: cert17 — tag `rel/v0.30.0-b70-cert17` (the cert11 engine + the P6.28 chain: cert12 launcher table `a964e047` + cert16 warm-gate v4 `5d895fef` + cert17 lmcint kit `e5e725b4`; built via the `tools/cert16/17.Dockerfile` lineage with the external_patches kit; IMAGE_MANIFEST carries the cert12 row + cert16/17 description rows — their fork_sha/built stamps are empty in the shipped manifest, a cosmetic build-script wart proven around by the banked build logs + the r108z gate-fire boot). Prior-cert context: cert11 — tag `rel/v0.30.0-b70-cert11` (commit `c987c2cd`), overlay on cert10 from the tag archive (`tools/cert11.Dockerfile`, platform.py md5 `e48abe9cd9de`), image manifest `sha256:928a6dfe…`; `IMAGE_MANIFEST` rows: `fork_sha == aa2ee17d…` + `oneccl=2022.0.0+arc1` overlay rows (both carried from cert10) + `cert11_fork_sha == c987c2cd…`; **exhaustive `vllm_gaudi/` md5 walk vs cert10: 294→294 files, changed set EXACTLY `vllm_gaudi/xpu/platform.py` + its regenerated pyc** (r105b gate, `results/2026-11-06-p626-mxfp4/`); pip freeze diff 0. Prior-cert context: **cert10** (tag `rel/v0.30.0-b70-cert10`, image `2f86fc2411fb`, `IMAGE_MANIFEST.fork_sha == aa2ee17d…` preserved from cert9 + the `oneccl=2022.0.0+arc1` overlay rows; **exhaustive `vllm_gaudi/` md5 walk vs cert9: diff_lines = 0** — cert9's vllm-layer certifications carried; only the comm lib changed), two-file fat-lib overlay sha-pinned at both SONAME paths (cert10 gate, `results/2026-11-05-p624-fp8-ar/`). The current-record numbers below were measured natively on cert6 under the certified probabilistic draft posture (p617 campaign) and the key faces re-verified at the cert7–cert10 release gates (t0 in-family — cert10 default-posture gate 300.39 steady / 84.52–84.51 solo with the FP8 env proven absent — integrity/det/spec green — cert10 spec pos1 0.9258 byte-exact on BOTH the default and FP8=1 legs — long-return t0 lanes 100 % clean on every dtype; the one t1-seed window flag dispositioned benign with the W14 incumbent control at cert8; the cert9-gate TQ identity faces carry the cross-cert dominant-hash proof — same variant families as the cert8 gate). cert10 = cert9 engine + the **P6.24 oneCCL fp8-wire overlay** (same-version 2022.0.0 rebuild + e4m3-wire large-ring allreduce, **default OFF** — `CCL_SYCL_ALLREDUCE_FP8=1` opts in; opt-in faces below). cert9 = cert8 engine + the **P6.20 prefill host-path patch** (L3 off-thread LMCache store, default ON via `VLLM_ARC_LMC_ASYNC_STORE` — device ops stay on the engine's in-order stream, only the host wait moves to the `arc-lmc-store` worker; L6 dispatch-late handoff; `patches/step_trace.py` diagnostics, silent-off). Under `fp8_e4m3` the compute bytes are identical to cert6–cert9 — the P6.20 delta is WHERE the store body's D2H gathers + CPU insert run (off-thread), worth **−0.74 s U32k / −1.64 s U64k / −0.08 s U8k TTFT**; KV pool 400,739 == cert7 byte-value, run7n t0 296.91/84.54/84.48 in-family. cert8 (`e47739b0`, image `b212fbca59ec`) remains fully valid |
+| Engine image | **current**: `vllm-arc:v0.30.0-b70-cert20` — tag `rel/v0.30.0-b70-cert20` (cert19 + the P6.30 online-MXFP4 W4A16 route: arc4 `vllm_xpu_kernels` wheel `0.1.14.1+arc4` (adds `_xpu_C.fp4_gemm_w4a16` — bf16 activations × f4 weights, group-32 e8m0 weight scales → oneDNN `jit:gemm` DPAS via weight decomposition; sha256 `c675f1a3…d14c08`, 352 MB — rig-only per the 100 MB artifact law) + `vllm_gaudi/xpu/patches/mxfp4_w4a16.py` reroute + the platform `_XPU_PATCH_MODULES` entry, via `tools/cert20.Dockerfile`; knob `ARC_MXFP4_MODE` (unset/`w4a16` = route, `w4a4` = stock control); IMAGE_MANIFEST carries the cert20 row + `cert20_fork_sha`/`cert20_built`/`cert20_vxk_wheel_sha256`; gate evidence `results/2026-11-08-p630-mxfp4-perf/cert20_l1/` — r121: qwen fp8 discriminator in-band + the w4a16 leg markers/dispatch/battery green). Prior-cert context: cert19 — tag `rel/v0.30.0-b70-cert19` (cert18 + the P6.29 sliding-window FA2 route: `external_patches/vllm/patch_arc_xpu_fa2_slide_route.py` via `tools/cert19.Dockerfile` — sliding-window head-256 calls (window (1023,0) class) dispatch to the `vllm_xpu_kernels` ESVD FA2 kernel windowed in the same triton unified-attention wrapper; `ARC_ATTN_FA2=0` disables both routes; IMAGE_MANIFEST carries the cert19 row + `cert19_fork_sha`; gate evidence `results/2026-11-07-p629/cert19_l1/` — BOTH markers fired on both TP ranks in production serving, gemma faces 2.4–2.9× faster than cert18 (face32k at qwen-parity), decode +45 % solo / 2.64× agg8, qwen discriminator in-band). Prior-cert context: cert18 — tag `rel/v0.30.0-b70-cert18` (cert17 + the P6.28 FA2 route: `external_patches/vllm/patch_arc_xpu_fa2_route.py` via `tools/cert18.Dockerfile` — full-attention head-512 calls dispatch to the `vllm_xpu_kernels` ESVD FA2 kernel in the triton unified-attention wrapper; `ARC_ATTN_FA2=0` escape hatch; IMAGE_MANIFEST carries the cert18 row + `cert18_fork_sha`; gate evidence `results/2026-11-06-p628-gemma4/phaseC/cert18_l1/` — the FA2 marker fired on both TP ranks in production serving, gemma faces 2.2–16.3× faster, qwen discriminator marker 0). Prior-cert context: cert17 — tag `rel/v0.30.0-b70-cert17` (the cert11 engine + the P6.28 chain: cert12 launcher table `a964e047` + cert16 warm-gate v4 `5d895fef` + cert17 lmcint kit `e5e725b4`; built via the `tools/cert16/17.Dockerfile` lineage with the external_patches kit; IMAGE_MANIFEST carries the cert12 row + cert16/17 description rows — their fork_sha/built stamps are empty in the shipped manifest, a cosmetic build-script wart proven around by the banked build logs + the r108z gate-fire boot). Prior-cert context: cert11 — tag `rel/v0.30.0-b70-cert11` (commit `c987c2cd`), overlay on cert10 from the tag archive (`tools/cert11.Dockerfile`, platform.py md5 `e48abe9cd9de`), image manifest `sha256:928a6dfe…`; `IMAGE_MANIFEST` rows: `fork_sha == aa2ee17d…` + `oneccl=2022.0.0+arc1` overlay rows (both carried from cert10) + `cert11_fork_sha == c987c2cd…`; **exhaustive `vllm_gaudi/` md5 walk vs cert10: 294→294 files, changed set EXACTLY `vllm_gaudi/xpu/platform.py` + its regenerated pyc** (r105b gate, `results/2026-11-06-p626-mxfp4/`); pip freeze diff 0. Prior-cert context: **cert10** (tag `rel/v0.30.0-b70-cert10`, image `2f86fc2411fb`, `IMAGE_MANIFEST.fork_sha == aa2ee17d…` preserved from cert9 + the `oneccl=2022.0.0+arc1` overlay rows; **exhaustive `vllm_gaudi/` md5 walk vs cert9: diff_lines = 0** — cert9's vllm-layer certifications carried; only the comm lib changed), two-file fat-lib overlay sha-pinned at both SONAME paths (cert10 gate, `results/2026-11-05-p624-fp8-ar/`). The current-record numbers below were measured natively on cert6 under the certified probabilistic draft posture (p617 campaign) and the key faces re-verified at the cert7–cert10 release gates (t0 in-family — cert10 default-posture gate 300.39 steady / 84.52–84.51 solo with the FP8 env proven absent — integrity/det/spec green — cert10 spec pos1 0.9258 byte-exact on BOTH the default and FP8=1 legs — long-return t0 lanes 100 % clean on every dtype; the one t1-seed window flag dispositioned benign with the W14 incumbent control at cert8; the cert9-gate TQ identity faces carry the cross-cert dominant-hash proof — same variant families as the cert8 gate). cert10 = cert9 engine + the **P6.24 oneCCL fp8-wire overlay** (same-version 2022.0.0 rebuild + e4m3-wire large-ring allreduce, **default OFF** — `CCL_SYCL_ALLREDUCE_FP8=1` opts in; opt-in faces below). cert9 = cert8 engine + the **P6.20 prefill host-path patch** (L3 off-thread LMCache store, default ON via `VLLM_ARC_LMC_ASYNC_STORE` — device ops stay on the engine's in-order stream, only the host wait moves to the `arc-lmc-store` worker; L6 dispatch-late handoff; `patches/step_trace.py` diagnostics, silent-off). Under `fp8_e4m3` the compute bytes are identical to cert6–cert9 — the P6.20 delta is WHERE the store body's D2H gathers + CPU insert run (off-thread), worth **−0.74 s U32k / −1.64 s U64k / −0.08 s U8k TTFT**; KV pool 400,739 == cert7 byte-value, run7n t0 296.91/84.54/84.48 in-family. cert8 (`e47739b0`, image `b212fbca59ec`) remains fully valid |
 | Wheels | md5-pinned at build (`tools/wheel_guard.sh`, 4 pins: vllm/triton/vxk/lmcache 0.5.6+arc1) |
 | Serve line | the certified 25-var env chain + CLI ([`CONFIGURATION-arc.md`](CONFIGURATION-arc.md)): MTP k3 **+ probabilistic drafting (the P6.17 certified default)**, `mode:none`, FULL_DECODE_ONLY graphs (85 capture sizes, 1–320), MNBT 8192, LMCacheConnectorV1 `kv_both` |
 | p617 campaign (the comprehensive prob-lane certification) | 5 fresh boots on cert6 — prob comprehensive leg (a), prob family leg (b), no-spec A/B leg (c), default-path validation boot (d), greedy opt-out boot (e) — evidence `results/2026-11-03-p617a-probcert/` |
@@ -144,14 +149,16 @@ accepted/drafts + 1** (the +1 bonus token). Windows are counter deltas
 snapshotted before/after each battery, so each face's acceptance covers
 that face's traffic only.
 
-## Current certified image — cert19 (`rel/v0.30.0-b70-cert19`) + probabilistic draft lane (P6.17): the current record
+## Current certified image — cert20 (`rel/v0.30.0-b70-cert20`) + probabilistic draft lane (P6.17): the current record
 
-**Current release = cert19 (= cert18 + the P6.29 sliding-window FA2
-route; every cert18 byte carries plus one more wheel-file patch — the
-gemma-4 numbers below are cert19-native from the r111 ladder:
-faces 4.9 / 17.2 / 110.9 / 0.9 s, decode 28.4 solo / 195 agg8; qwen
-discriminator in-band 3.83/17.58 s, erraudit 0/0;
-`results/2026-11-07-p629/cert19_l1/`). Current certified posture =
+**Current release = cert20 (= cert19 + the P6.30 online-MXFP4 W4A16
+route: the arc4 wheel swap + the `mxfp4_w4a16` reroute patch behind
+`ARC_MXFP4_MODE`; every cert19 byte carries — the incumbent-lane record
+numbers below are the cert6–cert11-era measurements (re-verified
+through the cert11 gate, discriminated in-band at cert19), re-discriminated
+green at the r121 cert20 gate; the P6.30 online-quant lane tables are
+further down;
+`results/2026-11-08-p630-mxfp4-perf/`). Current certified posture =
 probabilistic
 drafting (P6.17, the serve-script default).** Every record number below
 was measured natively on the cert6 image under
@@ -354,6 +361,64 @@ k-independence anchors + the ref-bug closure legs, `cert19_l1/` = the
 r111 ladder incl. `r111_summary.txt` and the ngram refusal excerpt);
 cert18-era evidence `results/2026-11-06-p628-gemma4/phaseC/`
 (`micro_fa2ab/`, `cert18_l1/`).
+
+### Online-quantization lanes (P6.30; cert20-native — r120c/r120g/r120h2)
+
+The P6.30 owner directive: make online MXFP4/MXFP8 quantization of BASE
+bf16 checkpoints work, and make mxfp4 perf SUPERIOR to fp8. The lane
+runs `ARC_QUANT=mxfp4|mxfp8` on the base model (qwen ignores
+`*visual*`/`*linear_attn*`/`mtp.fc` via `ARC_QUANTCFG`; gemma
+auto-skips its GDN layers, no ignore list); mxfp4 rides the W4A16
+reroute (`ARC_MXFP4_MODE`, cert20). Same-image A/B legs, certified
+postures (qwen GMU 0.85 / MTP k3 / graph / LMC; gemma GMU 0.8 /
+spec 0 / LMC 0 / RPC 1200):
+
+| qwen3.8-27b online lane | U8k TTFT | U32k TTFT | decode solo | decode agg8 | spec pos1 |
+|---|---|---|---|---|---|
+| mxfp4 stock (W4A4) | 6.84 s | 29.74 s | 43.3–43.6 | 204–218 | 0.8813 |
+| **mxfp4 W4A16 (cert20 lane)** | **3.66 s** | **17.12 s** | **62.5–65.2** | **301–311** | **1.0000** |
+| mxfp8 online (e8m0) | 5.59 s | 25.20 s | 35.6–36.3 | 195–199 | 0.9597 |
+| native-fp8 checkpoint (champion) | 3.76 s | 16.93 s | 84.5 | ~300 | 0.9258 |
+
+**W4A16 is superior to online mxfp8 on every axis (1.47–1.75×)** and
+1.74–1.87× TTFT / 1.43–1.45× decode over the W4A4 control. Vs the
+native-fp8 champion (a pre-quantized checkpoint — a different
+comparison class): U8k + agg8 superior, U32k par (17.12 vs 16.93), solo
+74 % — kernel-level proof the residual is NOT in the GEMM (w4a16 M=1
+0.17–0.25 ms beats even the e8m0-fp8 GEMM's 0.33–0.41); the delta
+lives in per-step overheads across ~200 linear calls/token (honest
+ledger, full analysis in the results README; named next lane: W4A8 —
+e4m3 activations pass the same oneDNN gate).
+
+| gemma-4-31b online lane | U8k TTFT | U32k TTFT | decode solo | decode agg8 |
+|---|---|---|---|---|
+| mxfp4 stock (W4A4) | 8.70 s | 40.25 s | 18.6 | 135.1–135.7 |
+| **mxfp4 W4A16 (cert20 lane)** | **3.94 s** | 21.16 s | **40.5** | **261.8–262.1** |
+| online fp8 (classic dynamic, P6.28 record) | 4.9 s | **17.2 s** | 28.4 | 195.5 |
+
+Gemma W4A16: 1.90–2.21× over the same-window W4A4 control and faster
+than gemma's plain-fp8 online lane on 3 of 4 axes — the U32k exception
+is the W4A16 prefill physics ceiling (bf16-DPAS-par; Xe2 has no fp4
+MMA) against fp8's static-class lane. The qwen plain-fp8 online lane is
+an upstream interface dead-end on this vLLM (`fp8` is not an online
+shorthand; `--quantization-config` is consumed by the online framework,
+which requires linear/moe/targets — gemma's QCFG-unset classic lane has
+no ignore channel for qwen's hybrid layers) — banked r120h traceback +
+the r120h2 `fp8_per_channel`+QCFG probe in the results README.
+
+Kernel-level matrix (r120d kbench, wheel-exact layouts): decode Ms —
+w4a16 the FASTEST lane on every shape (0.17–0.25 ms; 2.53× faster than
+w4a4-apply, ~2× than the e8m0-fp8 GEMM, 3–4× than bf16); prefill
+M=32768 — par to 1.24× slower than bf16 (the physics ceiling) but
+2.1–2.7× faster than the e8m0-fp8 GEMM and 3.0–3.8× faster than w4a4
+(ref kernel: 108 ms at gemma.up). The v3.13 verdict on online-fp8: its
+GEMM rides `jit:gemm` with bidirectional e8m0 group scales — NOT a ref
+fallback — yet still 2.6–2.8× slower than bf16 at prefill: the penalty
+is group-scale handling inside the DPAS kernel (plus the per-call act
+quant on top); mxfp8-online stays the slow lane. Evidence:
+`results/2026-11-08-p630-mxfp4-perf/` (verdict tables + kernel matrix
++ the jit:gemm verbose proof + four engineering laws incl. the
+`vllm_xpu_kernels._xpu_C` dlopen law).
 
 ### Throughput — t0, thinking off (chat battery; posture-invariant face)
 

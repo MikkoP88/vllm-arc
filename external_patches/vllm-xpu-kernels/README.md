@@ -99,3 +99,71 @@ torch pin 2.13.0+xpu (donor built 2.11.0+xpu); wheel version
 
 Results in results/2026-10-27-p1-vxk-wedge-audit/ and the follow-up wheel
 leg dir.
+
+---
+
+# arc4 — MXFP4 W4A16 GEMM route (p630 FIX-P)
+
+## What
+
+New op `_xpu_C.fp4_gemm_w4a16`: MXFP4 GEMM with **bf16/f16 activations**
+(weights stay packed f4_e2m1 + group-32 e8m0 scales). Sources in
+`arc4_fp4_gemm_w4a16/csrc/` (5 files, csrc-relative layout, byte-exact
+copies of the rig build tree — md5s in the p630 results dir):
+
+- `xpu/onednn/fp4_gemm_w4a16.h` — the oneDNN dispatch (mirrors
+  `int4_gemm_w4a16.h`'s weight-decomposition route: fpmath f16/bf16,
+  scales bound as `DNNL_ARG_WEIGHTS` group-32 e8m0, scratchpad user).
+- `xpu/onednn/onednn_ext.h` — joint dtypes `bf16_mxfp4` / `f16_mxfp4` +
+  mappers + 2 dispatch cases in the runtime switch.
+- `xpu/onednn/onednn_matmul.cpp`, `xpu/ops.h`, `xpu/torch_bindings.cpp` —
+  op wrapper, declaration, schema + XPU impl.
+
+Wheel `0.1.14.1+arc4` = arc3 tree + these 5 files, rebuilt in the SAME
+`vxk-arc3-builder` container/venv (oneAPI 2026.0.0, torch 2.13.0+xpu —
+ABI law unchanged). oneDNN runtime = the tree's rls-v3.13 (arc3 carried
+v3.12's build; `.deps` KEPT, only `build/` cleaned — no toolchain change).
+
+## Why (perf root cause, p630)
+
+Stock MXFP4 = W4A4: every call quantizes activations to mxfp4 (per-call
+cost ≈ the GEMM itself at decode M) and the (f4 acts, f4 weights) joint
+dtype fails oneDNN gemmstone's JIT eligibility gate (v3.13
+`pd.cpp:wei_decomp()` counter-operand list lacks f4) → matmul `ref`
+kernel. W4A16 passes the gate — banked verbose line from the arc4test
+smoke (r120c):
+
+```
+onednn_verbose,v1,primitive,create:cache_miss,gpu,gemm,jit:gemm:any,
+  src_a:bf16::blocked:ab::f0 src_b:f4_e2m1::blocked:ba::f0 dst:bf16,
+  attr-fpmath:bf16:true attr-scales:wei:3:e8m0:32x1, 1x5376:5376x5376
+```
+
+`jit:gemm` where stock W4A4 lands `matmul:ref`. Kernel-level (arc4
+kbench, wheel-exact layouts): decode M=1 w4a16 ≈ **1.7–2.5× faster than
+the bf16 GEMM** (e.g. qwen.o 0.377 vs 0.625 ms), M=8 ≈ 2.3–3.8×;
+prefill M=32768 ≈ par (±25%) with bf16. Numerics vs fp32 dequant ref
+rel ≈ 1.66e-3 (activation-quant error removed vs stock W4A4).
+
+## Build law additions (arc4 postmortems)
+
+- **≤24 jobs with W14 live**: 52-job icpx build starved the incumbent
+  W14 checkpoint load (42–58 s/it) into WorkerProc crash and OOM-killed
+  the linker (`unable to execute command: Killed`, zero source
+  diagnostics). 24 jobs still spawns ~95 icpx workers but both survive.
+- **`import vllm_xpu_kernels` does NOT dlopen the extension**: the
+  package `__init__` only re-exports flash-attn. A bare package import
+  leaves `torch.ops._xpu_C` EMPTY (even stock `fp4_gemm` reads absent —
+  verified in-image). Always `import vllm_xpu_kernels._xpu_C` before
+  op-presence probes; and `import vllm._xpu_ops` (AFTER `_xpu_C`, its
+  `hasattr` probes are order-sensitive) before calling the
+  `torch.ops.vllm::xpu_mxfp*_quantize` wrappers from
+  `mxfp4_utils`/`mxfp8_utils` standalone.
+
+## Validation
+
+r120c window (arc4test = cert19 + arc4 wheel + overlay): smoke SMOKE_OK
+(all Ms, rel 1.66e-3, jit:gemm verdict), kbench, 4 e2e legs
+(qwen w4a4 control / qwen w4a16 / gemma w4a16 / qwen mxfp8 ref),
+r120d fixed kbench (fp8 + w4a4 cells). Evidence:
+`results/2026-11-08-p630-mxfp4-perf/`.
