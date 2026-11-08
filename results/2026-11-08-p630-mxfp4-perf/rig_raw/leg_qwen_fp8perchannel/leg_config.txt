@@ -1,0 +1,1 @@
+quant=fp8_per_channel model=qwen3.8-27b gmu=0.85 img=vllm-arc:v0.30.0-b70-arc4test qcfg={"ignore":["*visual*","*linear_attn*","mtp.fc"]}

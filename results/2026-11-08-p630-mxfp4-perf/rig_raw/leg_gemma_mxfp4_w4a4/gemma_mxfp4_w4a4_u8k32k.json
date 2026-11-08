@@ -1,0 +1,18 @@
+[
+ {
+  "face": "U8k",
+  "prompt_tokens": 8159,
+  "cached": null,
+  "ttft_s": 8.700803105995874,
+  "wall_s": 10.4073531920003,
+  "prefill_tok_s": 937.7295291715649
+ },
+ {
+  "face": "U32k",
+  "prompt_tokens": 32554,
+  "cached": null,
+  "ttft_s": 40.252979417011375,
+  "wall_s": 41.983088191002025,
+  "prefill_tok_s": 808.7351662282744
+ }
+]

@@ -1,0 +1,1 @@
+(APIServer pid=13) INFO 11-08 02:14:30 [mxfp4_w4a16.py:59] ArcXpuPlatform: mxfp4 w4a16 reroute OFF (ARC_MXFP4_MODE=w4a4 — stock W4A4)

@@ -1,0 +1,38 @@
+image=vllm-arc:v0.30.0-b70
+fork_sha=aa2ee17d11612d9292684cbcbd2825bde4c7a65d
+build_host=ainode01
+base_image=vllm-iexperimental:base-v0.26.0
+vllm_core=0.30.0+xpu 1f14d00ba178540b85c8ccc29883e3fb  /wheels/arc/vllm-0.30.0+xpu-cp38-abi3-manylinux_2_34_x86_64.whl
+triton=3.7.2+xpu 708e93ed4392da98ab071b507050abc7  /wheels/arc/triton-3.7.2+xpu-py3-none-any.whl
+vxk=0.1.14.1+arc3 (int64 wedge fix, §6) a51df187aae8efa3871b0cb9b7d3f3c7  /wheels/arc/vllm_xpu_kernels-0.1.14.1+arc3-cp312-cp312-linux_x86_64.whl
+lmcache=0.5.6+arc1 (SYCL XPU build + 5-file patch kit, external_patches/lmcache P6.2) 352295b4af1e2c58da8a2363b05a4f0c  /wheels/arc/lmcache-0.5.6+arc1-cp312-cp312-manylinux_2_35_x86_64.whl
+lmcache_closure=aiofile redis (Requires-Dist; gds_backend.py:19 module-level import, r42 fix)
+stack_freeze=/etc/vllm-arc/venv-freeze.txt
+dpcpp=none (esimd-build stage lands at P2, plan §8)
+built=2026-11-04T20:21:31Z
+oneccl=2022.0.0+arc1 (fp8-wire allreduce overlay, P6.24; env trio CCL_SYCL_ALLREDUCE_FP8/_MIN_COUNT/_STATS default 0/2097152/0 = silent off)
+oneccl_lib_sha256=3a120e8b352fbd6be45ab61a7f4e927d80c9bc6618ff646e6db68b0263eca4a7 (fat libccl.so.1 + .so.1.0, both replaced; .so.2 untouched)
+oneccl_patch_sha256=effe9a27fae37ff596a43f25cfb9cc504f8e4ab5889bebcb0a92fdce7e14a07d (external_patches/oneccl/patches/arc-fp8-allreduce.patch v4)
+oneccl_built=2026-11-05T18:56:21Z
+cert11=P6.26 quark quant + supports_mx on ArcXpuPlatform (MXFP4 lane; vllm_gaudi/xpu/platform.py replaced, commit 7ea0f27b)
+cert11_fork_sha=c987c2cd57edf19f0f7a704a29de70d47a2c1264
+cert11_built=2026-11-06T11:20:00Z
+cert12=P6.28 B70 prefill launch-config table in triton unified-attention launcher (upstream PR#60418 pattern; external_patches/vllm/patch_arc_xpu_attn_launcher.py)
+cert12_fork_sha=a964e047
+cert12_built=20261106T214358Z
+cert16=P6.28 cert12 + ARC prefill-tune warmup gate v4 (v3 + engine-exact int softcap: float-vs-int scalar type split the triton cache key, leaving every warm kernel in an unused key space and the first prefill fresh-compiling inside the watchdog; r108v root cause; supersedes interim cert13/cert14/cert15)
+cert16_fork_sha=
+cert16_built=
+cert17=P6.28 cert16 + lmcint kit hardening (detector BS floor 256->16 so small-block engines take the byte-true TWO_HS path instead of stock lmcache; [ARC-P628-LMC-KVGATE] uniform-KV-row gate fails loudly at boot on two-head-size attention hybrids like gemma-4 whose KV_2LTD store is structurally unsupported — r108w wedge root cause; certified gemma posture ARC_LMC=0)
+cert17_fork_sha=
+cert17_built=
+cert18=P6.28 FA2 route: full-attention head-512 calls (gemma-4 global layers) dispatch to the vllm_xpu_kernels ESVD FA2 kernel in the triton unified-attention wrapper — 34x prefill / 1.5 ms-class decode vs the triton 2D path at production geometry (r108ac/r108ad, results/2026-11-06-p628-gemma4/phaseC/micro_fa2ab/); ARC_ATTN_FA2=0 escape hatch; external_patches/vllm/patch_arc_xpu_fa2_route.py
+cert18_fork_sha=3136adfe564c3694c81139a560a6be5dd7d45b08
+cert18_built=2026-11-07T16:47:07Z
+cert19=P6.29 FA2 route: sliding-window head-256 calls (gemma-4's 50/60 local layers, window (1023,0)) dispatch to the vllm_xpu_kernels ESVD FA2 kernel windowed in the triton unified-attention wrapper — 18-25x prefill / 11-15x decode vs the triton path at production geometry, k-independent (r109a/r109a3, results/2026-11-07-p629/phaseA/); guards green vs global-softmax refs (r109a6); ARC_ATTN_FA2=0 disables both routes; external_patches/vllm/patch_arc_xpu_fa2_slide_route.py
+cert19_fork_sha=904a3de880585a643930a10c21a4340d42314c87
+cert19_built=2026-11-07T18:51:59Z
+cert20=P6.30 MXFP4 W4A16 route: vllm-xpu-kernels 0.1.14.1+arc4 (new _xpu_C.fp4_gemm_w4a16 — bf16 activations, f4 weights, group-32 e8m0 weight scales, oneDNN jit:gemm weight-decomp path where stock W4A4 lands matmul:ref) + vllm_gaudi/xpu/patches/mxfp4_w4a16.py reroute (ARC_MXFP4_MODE gate, w4a4 control preserved); e2e vs same-image online-mxfp8: U8k 1.53x / U32k 1.47x / solo 1.75x / agg8 1.55x faster (r120c, results/2026-11-08-p630-mxfp4-perf/)
+cert20_fork_sha=a918bee91ced4ad826ebe617bba665b1e7fa9f0b
+cert20_built=2026-11-08T03:50:07Z
+cert20_vxk_wheel_sha256=c675f1a34619302edb118abbe72b9fd928157beb3508193c2afa8a0f58d14c08

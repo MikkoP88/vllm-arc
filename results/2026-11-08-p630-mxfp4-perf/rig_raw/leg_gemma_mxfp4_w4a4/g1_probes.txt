@@ -1,0 +1,7 @@
+[factual] finish=length tok=24
+  '<|im_start|>user\n<|im_end>\n<|im_start|>assistant\n<|'
+[reason] finish=length tok=96
+  '<|im_start|>user\nIf a train leaves at 3pm traveling 60 km/h and another at 4pm traveling 90 km/th the same direction, when does the second catch the first? Answer with just the time.\n<|im_end|>\n<|im_start|>assistant\n\n<tex> \\text{Distance} = \\text{Speed} \\times \\text{Time} </|'
+[code] finish=length tok=64
+  '<step>\n<step>\n\n<step>\n\n<step>\n\n<step>\n\n<step>\n\n<step>\n\n<step>\n\n<step>\n\n<step>\n\n<step>\n\n<step>\n\n<step>\n\n<step>\n\n<step>\n\n<step>\n\n|'
+G1_DONE
