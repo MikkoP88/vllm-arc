@@ -35,11 +35,16 @@ sleep 10
 docker rm -f arc-kbench >/dev/null 2>&1 || true
 
 echo "=== [r126] kbench boot $(date +%H:%M:%S) ==="
+# The image ENTRYPOINT is what establishes the oneAPI runtime env (setvars
+# + oneCCL vars) before any python; overriding it with a bare interpreter
+# died at torch import on the first run (libsycl.so.9 vs stale UR loader:
+# urDeviceWaitExp). Mirror the entrypoint's env chain, then exec kbench.
 docker run --rm --name arc-kbench \
   --device /dev/dri --group-add video \
   -e ZES_ENABLE_SYSMAN=1 -e DISABLE_VECLIB=1 \
   -v "$P":/work \
-  $IMG6 /opt/venv/bin/python /work/r126_kbench.py \
+  --entrypoint bash \
+  $IMG6 -c 'source /opt/intel/oneapi/setvars.sh --force >/dev/null 2>&1; source /opt/intel/oneapi/ccl/2021.15/env/vars.sh --force >/dev/null 2>&1; exec /opt/venv/bin/python /work/r126_kbench.py' \
   > "$P/r126_kbench.out" 2>&1
 rc=$?
 echo "=== [r126] kbench exit rc=$rc $(date +%H:%M:%S) ==="
