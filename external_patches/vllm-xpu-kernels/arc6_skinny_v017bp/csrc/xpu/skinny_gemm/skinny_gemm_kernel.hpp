@@ -77,6 +77,14 @@
 // ah[2][CHUNK] -- the 32-register hoist sat at a scheduling cliff
 // (combo-interleaved refine: p10/p90 spread 1.6x on this path vs 1.15x
 // on the M>=2 lookahead path). No env reads anywhere: constants only.
+//
+// v2.5.1: per-tensor checkpoint scales pass as a device POINTER with
+// N-stride 0 instead of a host .item<float>() -- that .item() was a
+// device-to-host sync on every w16pt call (window8b round-interleaved
+// p90s: 14-30 ms tails on the lane; the p50 carried the pipeline-stall
+// tax that made w16pt look 1.16-3.03x behind stock when the kernel body
+// was never the problem). Kernels read scale[n * pc_stride] (stride 0 =
+// the same cached float for every column).
 
 #include <torch/all.h>
 #include <sycl/sycl.hpp>
@@ -190,7 +198,8 @@ class SkinnyGemmStage1Kernel {
       float pt_scale,            // per-tensor scalar (1.f if none)
       int m_rows, int n_cols, int k_elems, int splits, int k_per_split,
       int64_t sc_n_stride,       // group-scale strides (GROUP32)
-      int64_t sc_g_stride, bool swizzle)
+      int64_t sc_g_stride, bool swizzle,
+      int64_t pc_stride)         // checkpoint-scale N stride (0 = scalar)
       : a_(static_cast<const std::uint8_t*>(a)),
         b_(b),
         bsc_(bsc),
@@ -206,7 +215,8 @@ class SkinnyGemmStage1Kernel {
         k_(k_elems),
         s_(splits),
         kc_(k_per_split),
-        swzl_(swizzle) {}
+        swzl_(swizzle),
+        pcs_(pc_stride) {}
 
   void operator()(sycl::nd_item<1> it) const {
     const int tid = static_cast<int>(it.get_global_linear_id());
@@ -369,7 +379,7 @@ class SkinnyGemmStage1Kernel {
         // RAW fp32 -- stage 2 applies the epilogue scale exactly once
         // after the fixed-order sum (scaling here too would apply it
         // splits-times on the split-K path).
-        if (DIRECT && !GROUP32) v *= pc_ ? pc_[n] : pt_;
+        if (DIRECT && !GROUP32) v *= pc_ ? pc_[n * pcs_] : pt_;
         if (DIRECT) {
           if (bias_) v += bias_[n];
           if (A_BF16) {
@@ -472,6 +482,7 @@ class SkinnyGemmStage1Kernel {
   int64_t sc_ns_, sc_gs_;
   int m_, n_, k_, s_, kc_;
   bool swzl_;
+  int64_t pcs_;
 };
 
 // ---------------------------------------------------------------------------
@@ -484,7 +495,7 @@ class SkinnyGemmReduceKernel {
   SkinnyGemmReduceKernel(
       const float* partials, void* out, const float* bias,
       const float* pc_scale, float pt_scale, int m_rows, int n_cols,
-      int splits, bool out_bf16)
+      int splits, bool out_bf16, int64_t pc_stride)
       : p_(partials),
         out_(static_cast<std::uint8_t*>(out)),
         bias_(bias),
@@ -493,7 +504,8 @@ class SkinnyGemmReduceKernel {
         m_(m_rows),
         n_(n_cols),
         s_(splits),
-        bf16_(out_bf16) {}
+        bf16_(out_bf16),
+        pcs_(pc_stride) {}
 
   void operator()(sycl::nd_item<1> it) const {
     const int n = static_cast<int>(it.get_global_linear_id());
@@ -503,7 +515,7 @@ class SkinnyGemmReduceKernel {
       for (int slice = 0; slice < s_; ++slice) {  // fixed order: deterministic
         v += p_[(static_cast<std::size_t>(slice) * 8 + mi) * n_ + n];
       }
-      v *= pc_ ? pc_[n] : pt_;
+      v *= pc_ ? pc_[n * pcs_] : pt_;
       if (bias_) v += bias_[n];
       if (bf16_) {
         const std::uint32_t bits = sycl::bit_cast<std::uint32_t>(v) >> 16;
@@ -525,6 +537,7 @@ class SkinnyGemmReduceKernel {
   float pt_;
   int m_, n_, s_;
   bool bf16_;
+  int64_t pcs_;
 };
 
 // ---------------------------------------------------------------------------
@@ -578,14 +591,16 @@ inline SkinnyLaunchCfg skinny_pick_cfg(int m, int n, int k) {
 
 // wf: 0 = e4m3, 1 = e5m2, 2 = f4 (f4 requires group32). sc_ns/sc_gs are
 // the group-scale byte strides (unused for non-group callers; defaults keep
-// the canonical [N, K/32] order). out/partials are unused in the
-// direct/two-stage counterpart (pass nullptr).
+// the canonical [N, K/32] order). pc_stride is the checkpoint-scale N
+// stride (0 = broadcast scalar, 1+ = per-channel; no host sync either
+// way). out/partials are unused in the direct/two-stage counterpart
+// (pass nullptr).
 inline void skinny_launch(
     sycl::queue& q, WeightFormat wf, bool group32, bool a_bf16, const void* a,
     const std::uint8_t* b, const std::uint8_t* bsc, float* partials,
     void* out, const float* bias, const float* pc_scale, float pt_scale,
     bool out_bf16, int m, int n, int k, int64_t sc_ns = 0,
-    int64_t sc_gs = 1) {
+    int64_t sc_gs = 1, int64_t pc_stride = 1) {
   TORCH_CHECK(k % 32 == 0, "skinny gemm requires K % 32 == 0, got K=", k);
   TORCH_CHECK(m >= 1 && m <= 8, "skinny gemm requires 1 <= M <= 8, got M=", m);
   if (wf == WeightFormat::kF4E2m1) {
@@ -604,7 +619,7 @@ inline void skinny_launch(
       sycl::nd_range<1>(wgs * lsz, lsz),                                   \
       SkinnyGemmStage1Kernel<WF_C, G32_C, ABF_C, DIR_C, MP_C>(             \
           a, b, bsc, partials, out, bias, pc_scale, pt_scale, m, n, k,     \
-          cfg.splits, cfg.k_per_split, sc_ns, sc_gs, swizzle))
+          cfg.splits, cfg.k_per_split, sc_ns, sc_gs, swizzle, pc_stride))
 
   // M_PAD dispatch: compile-time row bound over {1, 2, 4, 8} -- the decode
   // M=1 case drops the accumulator file and unrolled FMA work 8x (r126 v2
@@ -687,7 +702,7 @@ inline void skinny_launch(
     q.parallel_for<SkinnyGemmReduceKernel>(
         sycl::nd_range<1>(rgs * lsz, lsz),
         SkinnyGemmReduceKernel(partials, out, bias, pc_scale, pt_scale, m, n,
-                               cfg.splits, out_bf16));
+                               cfg.splits, out_bf16, pc_stride));
   }
 }
 

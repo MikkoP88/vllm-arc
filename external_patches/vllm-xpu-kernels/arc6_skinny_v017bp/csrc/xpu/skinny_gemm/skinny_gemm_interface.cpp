@@ -138,11 +138,15 @@ ScaleStrides resolve_group_strides(
       kg);
 }
 
-// Per-tensor / per-channel fp32 scales: nullptr + scalar for per-tensor,
-// column pointer + stride for per-channel.
+// Per-tensor / per-channel fp32 scales: per-channel passes pointer + N
+// stride; a scalar passes the SAME pointer with stride 0 (the kernel reads
+// scale[n * 0] -- one cached 4-byte read per column). The earlier form
+// (.item<float>()) was a device-to-host sync on EVERY per-tensor call:
+// window8b's round-interleaved p90s caught it as 14-30 ms tails on the
+// w16pt lane (the p50 carried a smaller but constant pipeline-stall tax).
 struct EpilogueScale {
-  const float* per_channel;  // nullptr => per-tensor
-  int64_t n_stride;
+  const float* per_channel;  // nullptr => no scale at all
+  int64_t n_stride;          // 0 = scalar (broadcast), 1+ = per-channel
   float per_tensor;
 };
 EpilogueScale resolve_epilogue_scale(
@@ -155,7 +159,7 @@ EpilogueScale resolve_epilogue_scale(
       s.scalar_type() == at::ScalarType::Float,
       "skinny gemm checkpoint scale must be fp32, got ", s.scalar_type());
   if (s.numel() == 1) {
-    return EpilogueScale{nullptr, 0, s.item<float>()};
+    return EpilogueScale{s.const_data_ptr<float>(), 0, 1.0f};
   }
   if (s.dim() == 1 && s.size(0) == n) {
     return EpilogueScale{s.const_data_ptr<float>(), s.stride(0), 1.0f};
@@ -253,9 +257,6 @@ torch::Tensor skinny_fp8_gemm_w8a16(
       B.scalar_type());
 
   const auto esc = resolve_epilogue_scale(B_scale, n);
-  TORCH_CHECK(
-      esc.per_channel == nullptr || esc.n_stride == 1,
-      "skinny w8a16 per-channel scale must be contiguous along N");
   const float* bias_p = bias_ptr_or_null(bias, n);
 
   torch::Tensor result = make_output(A, n, A.scalar_type());
@@ -276,7 +277,8 @@ torch::Tensor skinny_fp8_gemm_w8a16(
       A.const_data_ptr(), reinterpret_cast<const std::uint8_t*>(B.const_data_ptr()),
       /*bsc=*/nullptr, partials_p, result.data_ptr(), bias_p,
       esc.per_channel, esc.per_tensor,
-      /*out_bf16=*/A.scalar_type() == at::ScalarType::BFloat16, m_i, n_i, k_i);
+      /*out_bf16=*/A.scalar_type() == at::ScalarType::BFloat16, m_i, n_i,
+      k_i, /*sc_ns=*/0, /*sc_gs=*/1, esc.n_stride);
   return result;
 }
 
@@ -334,7 +336,7 @@ torch::Tensor skinny_fp8_gemm_w8a16_mxfp8(
       partials_p, result.data_ptr(), bias_p,
       /*pc_scale=*/nullptr, /*pt_scale=*/1.0f,
       /*out_bf16=*/odt == at::ScalarType::BFloat16, m_i, n_i, k_i, gs.n_stride,
-      gs.g_stride);
+      gs.g_stride, /*pc_stride=*/1);
   return result;
 }
 
@@ -384,7 +386,7 @@ torch::Tensor skinny_fp4_gemm_w4a16(
       partials_p, result.data_ptr(), bias_p,
       /*pc_scale=*/nullptr, /*pt_scale=*/1.0f,
       /*out_bf16=*/odt == at::ScalarType::BFloat16, m_i, n_i, k_i, gs.n_stride,
-      gs.g_stride);
+      gs.g_stride, /*pc_stride=*/1);
   return result;
 }
 
