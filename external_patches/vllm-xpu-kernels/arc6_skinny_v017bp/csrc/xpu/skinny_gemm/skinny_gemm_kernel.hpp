@@ -15,9 +15,8 @@
 // the only device traffic is the weights themselves (plus an M x K bf16
 // activation panel that stays L2-resident). All dequantization happens in
 // registers -- f8 e4m3/e5m2 via the f32 exponent-rebias bit identity,
-// MXFP4 e2m1 via the 8-entry magnitude set (sign in bit 3), e8m0 group
-// scales via exp2 -- and
-// math accumulates in fp32 with a fixed-order split-K reduction
+// MXFP4 e2m1 via the same magnitude construction, e8m0 group scales via
+// exp2 -- and math accumulates in fp32 with a fixed-order split-K reduction
 // (deterministic across runs, unlike atomics).
 //
 // Weight-format coverage mirrors the three serving lanes:
@@ -32,6 +31,34 @@
 // tensors the stock oneDNN ops receive -- [K, N] k-contiguous views for the
 // f8 lanes, packed [N, K/2] row-major for the f4 lane -- so the python
 // M-split patch swaps the call 1:1.
+//
+// r126 postmortem (the v1 kernel measured 7-30x SLOWER than stock at M<=8,
+// ~20 GB/s effective on 600+ GB/s parts): the v1 inner loop streamed weights
+// with 32-bit scalar loads while holding acc[TN][M_PAD]=32 fp32 registers
+// live and unrolling M_PAD=8 even at runtime M=1 -- too few bytes in flight
+// per thread and heavy register pressure serialized the load pipeline; time
+// came out exactly proportional to weight bytes at 3% of bandwidth.
+//
+// v2 memory design (window4): 128-bit weight/activation loads (one uint4 =
+// CHUNK elements), launch-time M_PAD dispatch {1,2,4,8}, TN=2, decode-and-
+// consume transient w[CHUNK], [S][8][N] partials, 32768-workitem target
+// with group-aligned split-K; v2.2 made the f8 decoders branchless.
+//
+// v2.3 (window6 targets, from the v2.2 GATE-2 residue):
+//   * weight-panel restructure for every M_PAD: decode BOTH TN columns
+//     first, then each row's activation chunk ONCE per k step. v2.2
+//     re-decoded activations inside the j loop (per column), so M=8 paid
+//     TN x M x CHUNK a-decodes where M x CHUNK suffice -- the M=8 lanes
+//     lost to stock 1.0-2.35x on ALU that was half redundant.
+//   * M=1 (the decode hot lane) runs a dual-chunk software pipeline: all
+//     TN x 2 weight loads plus both activation loads issue BEFORE the
+//     first decode -- twice the bytes in flight per thread without more
+//     threads. v2.2's M=1 left bandwidth on the table on the short-K
+//     shapes (qwen.o 142 GB/s effective vs gemma.o's 224 at the same
+//     splits/stream length).
+//   * branchless e2m1 (same biased-exponent f32 magnitude construction as
+//     the f8 decoders) replaces the 8-entry LUT select chain that left the
+//     f4 g16 lane 1.14-1.23x behind stock on the long-K gemma shapes.
 
 #include <torch/all.h>
 #include <sycl/sycl.hpp>
@@ -81,13 +108,20 @@ inline float e5m2_to_float(std::uint32_t b) {
   return (b & 0x80u) ? -v : v;
 }
 
-// e2m1 nibble (0..15) -> f32: {0, .5, 1, 1.5, 2, 3, 4, 6} magnitude set
-// (and doubles), sign in bit 3. An 8-entry table select is register-cheap
-// and branch-free.
+// e2m1 nibble (0..15) -> f32, branchless (v2.3): the same biased-exponent
+// f32 magnitude construction as the f8 decoders -- ((e + 126) << 23) |
+// (m << 22) is exact for e > 0 ({1, 1.5, 2, 3, 4, 6}; the mantissa bit
+// sits at the f32 fraction MSB, bit 22 -- the host exhaustive check caught
+// an m << 30 draft that landed on the exponent field). For e == 0 it reads
+// 2^-1 + m * 2^-2 while the true e2m1 subnormal is m * 2^-1 ({0, 0.5}):
+// ((c - 0.5) * 2) recovers it exactly (m == 0 lands on 0). Replaces the
+// v2 8-entry LUT select chain. Exhaustively checked over all 16 codes.
 inline float e2m1_to_float(std::uint32_t nib) {
-  static constexpr float kMag[8] = {0.0f, 0.5f, 1.0f, 1.5f,
-                                    2.0f, 3.0f, 4.0f, 6.0f};
-  const float v = kMag[nib & 0x7u];
+  const std::uint32_t e = (nib >> 1) & 0x3u;
+  const std::uint32_t m = nib & 0x1u;
+  const std::uint32_t bits = ((e + 126u) << 23) | (m << 22);
+  const float c = sycl::bit_cast<float>(bits);
+  const float v = e == 0u ? (c - 0.5f) * 2.0f : c;
   return (nib & 0x8u) ? -v : v;
 }
 
@@ -123,28 +157,6 @@ enum class WeightFormat : int { kF8E4m3 = 0, kF8E5m2 = 1, kF4E2m1 = 2 };
 //   scales (GROUP32): byte (n, g) at bsc_[n * sc_ns + g * sc_gs] -- either
 //     [N, K/32] (sc_ns = K/32, sc_gs = 1) or [K/32, N] (sc_ns = 1,
 //     sc_gs = N) order, whichever the layer hands the stock op.
-//
-// r126 postmortem (the v1 kernel measured 7-30x SLOWER than stock at M<=8,
-// ~20 GB/s effective on 600+ GB/s parts): the v1 inner loop streamed weights
-// with 32-bit scalar loads while holding acc[TN][M_PAD]=32 fp32 registers
-// live and unrolling M_PAD=8 even at runtime M=1 -- too few bytes in flight
-// per thread and heavy register pressure serialized the load pipeline; time
-// came out exactly proportional to weight bytes at 3% of bandwidth.
-//
-// v2 memory design:
-//   * weights stream in 128-bit loads: one sycl::uint4 covers CHUNK=16 f8
-//     elements or CHUNK=32 f4 nibbles (f4 chunk = exactly one e8m0 group);
-//     activations load as uint4 too (8 bf16 halves per load)
-//   * M_PAD is dispatched at launch over {1, 2, 4, 8}: at decode M=1 the
-//     accumulator file and FMA work drop 8x and the freed registers let the
-//     compiler software-pipeline more weight loads per thread
-//   * TN=2 (was 4) doubles the work-item count; skinny_pick_cfg targets
-//     8192 work-items and group-aligned split-K reaches it on narrow N
-//   * decode-and-consume: each column's decoded w[CHUNK] registers live
-//     only inside its j iteration; for M_PAD <= 2 the activation chunk is
-//     hoisted out of the j loop (loaded once per k step)
-//   * partials keep the [S][8][N] layout (literal-8 stride) for every
-//     M_PAD instantiation -- stage 2 and the interface alloc agree on 8
 template <WeightFormat WF, bool GROUP32, bool A_BF16, bool DIRECT,
           int M_PAD = 8, int TN = 2>
 class SkinnyGemmStage1Kernel {
@@ -198,110 +210,93 @@ class SkinnyGemmStage1Kernel {
     const int k_hi = sycl::min(k_lo + kc_, k_);
     // k_lo, kc_ and CHUNK are group-aligned by the launcher/template, so
     // every chunk sits inside one e8m0 group: (k0 >> 5) is its group id.
-    for (int k0 = k_lo; k0 < k_hi; k0 += CHUNK) {
-      // Hoisted activation chunk for small M_PAD: decode a[mi][CHUNK] once
-      // per k step instead of once per column (registers afford it at
-      // M_PAD <= 2; larger M_PAD re-decodes inside the j loop).
-      [[maybe_unused]] float ah[M_PAD <= 2 ? M_PAD : 1]
-                           [M_PAD <= 2 ? CHUNK : 1];
-      if constexpr (M_PAD <= 2) {
+
+    if constexpr (M_PAD == 1) {
+      // v2.3 M=1 lane: dual-chunk software pipeline. All TN*2 weight loads
+      // and both activation loads issue before the first decode, so each
+      // thread keeps ~2x the bytes in flight of the single-chunk loop
+      // without more threads (the 32768-workitem target already saturates
+      // concurrency; v2.2's single-chunk M=1 left 40%+ bandwidth on the
+      // table on the short-K shapes). Spans are multiples of 32 (kc, k
+      // group-aligned), so the f8 pair loop covers every chunk and only
+      // the f4 lane (CHUNK=32, pair=64) can carry a one-chunk tail.
+      constexpr int C2 = CHUNK * 2;
+      const int k_pair_end = k_lo + ((k_hi - k_lo) / C2) * C2;
+      for (int k0 = k_lo; k0 < k_pair_end; k0 += C2) {
+        sycl::uint4 pv[TN][2];
 #pragma unroll
-        for (int mi = 0; mi < M_PAD; ++mi) {
-          if (mi >= m_) {
-#pragma unroll
-            for (int c = 0; c < CHUNK; ++c) ah[mi][c] = 0.0f;
-            continue;
+        for (int j = 0; j < TN; ++j) {
+          const int n = n0 + j;
+          if (n >= n_) continue;  // FMA loop skips j; pv[j] never read
+          if constexpr (WF == WeightFormat::kF4E2m1) {
+            pv[j][0] = *reinterpret_cast<const sycl::uint4*>(
+                b_ + n * (k_ / 2) + (k0 >> 1));
+            pv[j][1] = *reinterpret_cast<const sycl::uint4*>(
+                b_ + n * (k_/ 2) + ((k0 + CHUNK) >> 1));
+          } else {
+            pv[j][0] = *reinterpret_cast<const sycl::uint4*>(
+                b_ + n * k_ + k0);
+            pv[j][1] = *reinterpret_cast<const sycl::uint4*>(
+                b_ + n * k_ + k0 + CHUNK);
           }
-          const sycl::uint4* av = reinterpret_cast<const sycl::uint4*>(
-              a_ + (mi * k_ + k0) * 2);
+        }
+        float ah[2][CHUNK];
 #pragma unroll
-          for (int v = 0; v < AW; ++v) {
-            const sycl::uint4 pv = av[v];
-            // each 32-bit lane holds TWO halves: x=(0,1) y=(2,3) z=(4,5)
-            // w=(6,7) -- lane h>>1, half h&1 (r126 v2.1: the h<4 gate
-            // shifted lanes by >=32 and garbled elements 2,3,6,7)
-            const std::uint32_t alane[4] = {pv.x(), pv.y(), pv.z(), pv.w()};
+        for (int h = 0; h < 2; ++h) decode_a_chunk(k0 + h * CHUNK, 0, ah[h]);
 #pragma unroll
-            for (int h = 0; h < 8; ++h) {
-              const std::uint32_t hw =
-                  (alane[h >> 1] >> (16 * (h & 1))) & 0xFFFFu;
-              ah[mi][v * 8 + h] =
-                  A_BF16 ? bf16_to_float(hw) : f16_to_float(hw);
-            }
+        for (int h = 0; h < 2; ++h) {
+#pragma unroll
+          for (int j = 0; j < TN; ++j) {
+            const int n = n0 + j;
+            if (n >= n_) continue;
+            float w[CHUNK];
+            decode_w_chunk(pv[j][h], group_scale(n, k0 + h * CHUNK), w);
+#pragma unroll
+            for (int c = 0; c < CHUNK; ++c) acc[j][0] += ah[h][c] * w[c];
           }
         }
       }
-
+      // f4 tail: span an odd multiple of 32 (e.g. kc=672) leaves one chunk
+      for (int k0 = k_pair_end; k0 < k_hi; k0 += CHUNK) {
+        float a[CHUNK];
+        decode_a_chunk(k0, 0, a);
 #pragma unroll
-      for (int j = 0; j < TN; ++j) {
-        const int n = n0 + j;
-        if (n >= n_) continue;  // acc[j] stays 0; epilogue skips the store
-
-        // One 128-bit weight load -> decode CHUNK values (transient regs).
-        float w[CHUNK];
-        if constexpr (WF == WeightFormat::kF4E2m1) {
-          float gsc = 1.0f;
-          if constexpr (GROUP32) {
-            gsc = e8m0_to_float(bsc_[n * sc_ns_ + (k0 >> 5) * sc_gs_]);
-          }
-          const sycl::uint4 pv = *reinterpret_cast<const sycl::uint4*>(
-              b_ + n * (k_ / 2) + (k0 >> 1));
-          const std::uint32_t lane[4] = {pv.x(), pv.y(), pv.z(), pv.w()};
+        for (int j = 0; j < TN; ++j) {
+          const int n = n0 + j;
+          if (n >= n_) continue;
+          float w[CHUNK];
+          decode_w_chunk(load_w(n, k0), group_scale(n, k0), w);
 #pragma unroll
-          for (int c = 0; c < CHUNK; ++c) {
-            const std::uint32_t byte = lane[c >> 3] >> (8 * ((c >> 1) & 3));
-            const std::uint32_t nib = (byte >> (4 * (c & 1))) & 0xFu;
-            w[c] = e2m1_to_float(nib) * gsc;
-          }
-        } else {
-          float gsc = 1.0f;
-          if constexpr (GROUP32) {
-            gsc = e8m0_to_float(bsc_[n * sc_ns_ + (k0 >> 5) * sc_gs_]);
-          }
-          const sycl::uint4 pv = *reinterpret_cast<const sycl::uint4*>(
-              b_ + n * k_ + k0);
-          const std::uint32_t lane[4] = {pv.x(), pv.y(), pv.z(), pv.w()};
-#pragma unroll
-          for (int c = 0; c < CHUNK; ++c) {
-            const std::uint32_t bits = (lane[c >> 2] >> (8 * (c & 3))) & 0xFFu;
-            const float v = (WF == WeightFormat::kF8E4m3)
-                                ? e4m3_to_float(bits)
-                                : e5m2_to_float(bits);
-            w[c] = v * gsc;
-          }
+          for (int c = 0; c < CHUNK; ++c) acc[j][0] += a[c] * w[c];
         }
-
-        // Accumulate M rows against the decoded chunk.
-        if constexpr (M_PAD <= 2) {
+      }
+    } else {
+      // v2.3 generic body (M_PAD >= 2): decode the TN-column weight PANEL
+      // first, then each row's activation chunk ONCE per k step and FMA it
+      // against every column (v2.2 re-decoded the activations inside the j
+      // loop -- TN x redundant a-decode ALU that cost the M=8 lanes their
+      // GATE-2 parity: 1.0-2.35x behind stock).
+      for (int k0 = k_lo; k0 < k_hi; k0 += CHUNK) {
+        float wp[TN][CHUNK];
 #pragma unroll
-          for (int mi = 0; mi < M_PAD; ++mi) {
+        for (int j = 0; j < TN; ++j) {
+          const int n = n0 + j;
+          if (n >= n_) {
 #pragma unroll
-            for (int c = 0; c < CHUNK; ++c) acc[j][mi] += ah[mi][c] * w[c];
+            for (int c = 0; c < CHUNK; ++c) wp[j][c] = 0.0f;
+            continue;  // FMA against zeros; epilogue skips the store
           }
-        } else {
+          decode_w_chunk(load_w(n, k0), group_scale(n, k0), wp[j]);
+        }
 #pragma unroll
-          for (int mi = 0; mi < M_PAD; ++mi) {
-            if (mi >= m_) break;
-            float a[CHUNK];
-            const sycl::uint4* av = reinterpret_cast<const sycl::uint4*>(
-                a_ + (mi * k_ + k0) * 2);
+        for (int mi = 0; mi < M_PAD; ++mi) {
+          if (mi >= m_) break;
+          float a[CHUNK];
+          decode_a_chunk(k0, mi, a);
 #pragma unroll
-            for (int v = 0; v < AW; ++v) {
-              const sycl::uint4 pv = av[v];
-              // two halves per 32-bit lane (see the hoisted-path comment)
-              const std::uint32_t alane[4] = {pv.x(), pv.y(), pv.z(),
-                                              pv.w()};
+          for (int j = 0; j < TN; ++j)
 #pragma unroll
-              for (int h = 0; h < 8; ++h) {
-                const std::uint32_t hw =
-                    (alane[h >> 1] >> (16 * (h & 1))) & 0xFFFFu;
-                a[v * 8 + h] =
-                    A_BF16 ? bf16_to_float(hw) : f16_to_float(hw);
-              }
-            }
-#pragma unroll
-            for (int c = 0; c < CHUNK; ++c) acc[j][mi] += a[c] * w[c];
-          }
+            for (int c = 0; c < CHUNK; ++c) acc[j][mi] += a[c] * wp[j][c];
         }
       }
     }
@@ -344,6 +339,73 @@ class SkinnyGemmStage1Kernel {
   }
 
  private:
+  // One 128-bit weight load for column n at k0 (format layout dispatched at
+  // compile time).
+  sycl::uint4 load_w(int n, int k0) const {
+    if constexpr (WF == WeightFormat::kF4E2m1) {
+      return *reinterpret_cast<const sycl::uint4*>(b_ + n * (k_ / 2) +
+                                                   (k0 >> 1));
+    } else {
+      return *reinterpret_cast<const sycl::uint4*>(b_ + n * k_ + k0);
+    }
+  }
+
+  // Group-32 e8m0 scale for column n / chunk k0 (1.f for checkpoint lanes).
+  float group_scale(int n, int k0) const {
+    if constexpr (GROUP32) {
+      return e8m0_to_float(bsc_[n * sc_ns_ + (k0 >> 5) * sc_gs_]);
+    } else {
+      (void)n;
+      (void)k0;
+      return 1.0f;
+    }
+  }
+
+  // One uint4 of weights -> CHUNK decoded values (transient registers),
+  // multiplied by the (group) scale.
+  static void decode_w_chunk(const sycl::uint4& pv, float gsc, float* w) {
+    constexpr int CHUNK = (WF == WeightFormat::kF4E2m1) ? 32 : 16;
+    const std::uint32_t lane[4] = {pv.x(), pv.y(), pv.z(), pv.w()};
+    if constexpr (WF == WeightFormat::kF4E2m1) {
+#pragma unroll
+      for (int c = 0; c < CHUNK; ++c) {
+        const std::uint32_t byte = lane[c >> 3] >> (8 * ((c >> 1) & 3));
+        const std::uint32_t nib = (byte >> (4 * (c & 1))) & 0xFu;
+        w[c] = e2m1_to_float(nib) * gsc;
+      }
+    } else {
+#pragma unroll
+      for (int c = 0; c < CHUNK; ++c) {
+        const std::uint32_t bits = (lane[c >> 2] >> (8 * (c & 3))) & 0xFFu;
+        const float v = (WF == WeightFormat::kF8E4m3)
+                            ? e4m3_to_float(bits)
+                            : e5m2_to_float(bits);
+        w[c] = v * gsc;
+      }
+    }
+  }
+
+  // One CHUNK of row mi's activations at k0 -> decoded values. Each 32-bit
+  // lane of the uint4 holds TWO halves: x=(0,1) y=(2,3) z=(4,5) w=(6,7) --
+  // lane h>>1, half h&1 (r126 v2.1: the h<4 gate shifted lanes by >=32 and
+  // garbled elements 2,3,6,7).
+  void decode_a_chunk(int k0, int mi, float* out) const {
+    constexpr int CHUNK = (WF == WeightFormat::kF4E2m1) ? 32 : 16;
+    constexpr int AW = (CHUNK + 7) / 8;
+    const sycl::uint4* av = reinterpret_cast<const sycl::uint4*>(
+        a_ + (static_cast<std::size_t>(mi) * k_ + k0) * 2);
+#pragma unroll
+    for (int v = 0; v < AW; ++v) {
+      const sycl::uint4 ap = av[v];
+      const std::uint32_t alane[4] = {ap.x(), ap.y(), ap.z(), ap.w()};
+#pragma unroll
+      for (int h = 0; h < 8; ++h) {
+        const std::uint32_t hw = (alane[h >> 1] >> (16 * (h & 1))) & 0xFFFFu;
+        out[v * 8 + h] = A_BF16 ? bf16_to_float(hw) : f16_to_float(hw);
+      }
+    }
+  }
+
   const std::uint8_t* a_;
   const std::uint8_t* b_;
   const std::uint8_t* bsc_;
@@ -428,7 +490,9 @@ inline SkinnyLaunchCfg skinny_pick_cfg(int m, int n, int k) {
   // split shapes landed 1.2-1.7x -- so v2.2 aims for 32768 work-items
   // (partial roundtrip is S*8*N*4 B, still negligible at these N) and the
   // branchless dequant removes the ~60-80 GB/s ALU ceiling observed
-  // independent of thread count.
+  // independent of thread count. v2.3's M=1 dual-chunk pipeline doubles
+  // per-thread bytes in flight, so 32768 stays the target (it is a floor
+  // for concurrency, not a cap).
   constexpr int kMinWorkitems = 32768;
   constexpr int kTileN = 2;
   const int tiles = (n + kTileN - 1) / kTileN;
