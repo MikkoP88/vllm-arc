@@ -69,12 +69,19 @@
 // power-of-two column-stride suspect behind qwen.o's 1.6x deficit vs
 // gemma.o), and minimum split length. Winners get baked as constants in
 // the certified wheel (no env reads on the serving path).
+//
+// v2.5 (baked; window8): swizzle always on; splits capped so each stream
+// stays >= 1024 elements; kc rounded to 64 (kills the f4 single-chunk
+// tail on every span); and the M=1 pair path decodes each half-chunk's
+// activations transiently (a[CHUNK] in the h loop) instead of hoisting
+// ah[2][CHUNK] -- the 32-register hoist sat at a scheduling cliff
+// (combo-interleaved refine: p10/p90 spread 1.6x on this path vs 1.15x
+// on the M>=2 lookahead path). No env reads anywhere: constants only.
 
 #include <torch/all.h>
 #include <sycl/sycl.hpp>
 
 #include <cstdint>
-#include <cstdlib>
 
 namespace vllm::xpu::skinny {
 
@@ -204,14 +211,14 @@ class SkinnyGemmStage1Kernel {
   void operator()(sycl::nd_item<1> it) const {
     const int tid = static_cast<int>(it.get_global_linear_id());
     const int tiles = (n_ + TN - 1) / TN;
-    // Optional column swizzle (ARC_SKINNY_SWIZZLE probe): natural tile
-    // order maps adjacent work items to adjacent columns whose base
-    // addresses differ by exactly K bytes -- power-of-two-ish K (qwen.o
-    // 5120 = 2^10 * 5) aligns every concurrent stream to the same
-    // L2-set/channel pattern, and qwen.o benched 1.6x below the
-    // near-identical gemma.o (5376) across two windows. (t * A) % tiles
-    // is a bijection (A = 0x9E3779B1 is prime and tiles < A), so every
-    // column stays owned exactly once; deterministic.
+    // Column swizzle (v2.5, always on): natural tile order maps adjacent
+    // work items to adjacent columns whose base addresses differ by
+    // exactly K bytes -- power-of-two-ish K (qwen.o 5120 = 2^10 * 5)
+    // aligns every concurrent stream to the same L2-set/channel pattern,
+    // and qwen.o benched 1.6x below the near-identical gemma.o (5376)
+    // across two windows. (t * A) % tiles is a bijection
+    // (A = 0x9E3779B1 is prime and tiles < A), so every column stays
+    // owned exactly once; deterministic.
     const std::uint32_t t = static_cast<std::uint32_t>(tid % tiles);
     const int ctile =
         swzl_ ? static_cast<int>((t * 2654435761ull) % tiles)
@@ -264,11 +271,16 @@ class SkinnyGemmStage1Kernel {
                 b_ + n * k_ + k0 + CHUNK);
           }
         }
-        float ah[2][CHUNK];
-#pragma unroll
-        for (int h = 0; h < 2; ++h) decode_a_chunk(k0 + h * CHUNK, 0, ah[h]);
+        // v2.5: decode each half-chunk's activations just before its FMA
+        // pass (a[CHUNK] transient) instead of hoisting ah[2][CHUNK] --
+        // the 32-register hoist sat at a scheduling cliff: combo-interleaved
+        // refine measured p10/p90 spreads of 1.6x on this path vs 1.15x on
+        // the M>=2 lookahead path. The four weight loads still issue first
+        // and cover the activation load latency.
 #pragma unroll
         for (int h = 0; h < 2; ++h) {
+          float a[CHUNK];
+          decode_a_chunk(k0 + h * CHUNK, 0, a);
 #pragma unroll
           for (int j = 0; j < TN; ++j) {
             const int n = n0 + j;
@@ -276,7 +288,7 @@ class SkinnyGemmStage1Kernel {
             float w[CHUNK];
             decode_w_chunk(pv[j][h], group_scale(n, k0 + h * CHUNK), w);
 #pragma unroll
-            for (int c = 0; c < CHUNK; ++c) acc[j][0] += ah[h][c] * w[c];
+            for (int c = 0; c < CHUNK; ++c) acc[j][0] += a[c] * w[c];
           }
         }
       }
@@ -518,16 +530,6 @@ class SkinnyGemmReduceKernel {
 // ---------------------------------------------------------------------------
 // Launcher: picks splits, instantiates the format matrix, runs the stages.
 // ---------------------------------------------------------------------------
-
-// Probe-knob helper (r126 sweep): unset/empty env = default. Read per call
-// (NOT cached) so one kbench process can sweep combos; the certified wheel
-// bakes constants and drops the env reads.
-inline int skinny_env_int(const char* key, int dflt) {
-  const char* v = std::getenv(key);
-  if (v == nullptr || *v == '\0') return dflt;
-  return std::atoi(v);
-}
-
 struct SkinnyLaunchCfg {
   int splits;
   int k_per_split;
@@ -537,26 +539,18 @@ struct SkinnyLaunchCfg {
 
 inline SkinnyLaunchCfg skinny_pick_cfg(int m, int n, int k) {
   (void)m;
-  // Probe knobs (r126 sweep; read per call so one process can sweep them):
-  // unset = the baked v2.3 constants. The certified wheel ships
-  // constants-only -- the sweep banks the evidence and the winner gets
-  // baked in the final arc6 build.
-  const int kMinWorkitems = skinny_env_int("ARC_SKINNY_WI", 32768);
-  const int kc_min = skinny_env_int("ARC_SKINNY_KC_MIN", 0);
   // r126 v1 targeted 2048 work-items and never split our shapes; v2 (TN=2,
-  // 128-bit loads) wants more concurrent streams to cover HBM latency.
-  // The v2 run confirmed concurrency is a binding constraint: the two
-  // DIRECT (unsplit) shapes were the two worst ratios (3.2-3.4x) while
-  // split shapes landed 1.2-1.7x -- so v2.2 aims for 32768 work-items
-  // (partial roundtrip is S*8*N*4 B, still negligible at these N) and the
-  // branchless dequant removes the ~60-80 GB/s ALU ceiling observed
-  // independent of thread count. v2.3's M=1 dual-chunk pipeline doubles
-  // per-thread bytes in flight, so 32768 stays the default (a floor for
-  // concurrency, not a cap). KC_MIN caps splits so each stream stays at
-  // least KC_MIN elements -- the 32768 target forced splits=8 with the
-  // shortest streams on qwen.o (K=5120 -> 640 elements) while long-stream
-  // shapes (gemma.down, kc=1344) hit the best BW of the window.
-  const int kTileN = 2;
+  // 128-bit loads) wants concurrent streams to cover HBM latency -- the v2
+  // run showed the two DIRECT (unsplit) shapes were the two worst ratios
+  // (3.2-3.4x). 32768 is a floor for concurrency, not a cap (the refine
+  // WI sweep at 16k/64k changed nothing real: splits cap at 8 on our
+  // shapes either way). v2.5 additionally caps splits so each stream
+  // stays at least 1024 elements -- the sweep showed short-stream cells
+  // regressing (kc2048 mean ratio 1.21) while kc1024 swept gemma.up's
+  // all-four-lane residue.
+  constexpr int kMinWorkitems = 32768;
+  constexpr int kTileN = 2;
+  constexpr int kMinSplitLen = 1024;
   const int tiles = (n + kTileN - 1) / kTileN;
   int splits = 1;
   if (tiles < kMinWorkitems) {
@@ -565,15 +559,20 @@ inline SkinnyLaunchCfg skinny_pick_cfg(int m, int n, int k) {
     const int groups = k / 32;
     while (splits > 1 && (groups % splits) != 0) --splits;
     if (splits > groups) splits = groups < 1 ? 1 : groups;
-  }
-  if (kc_min > 0) {
-    const int s_max = k / kc_min;
+    const int s_max = k / kMinSplitLen;
     if (splits > s_max) {
       splits = s_max < 1 ? 1 : s_max;
       while (splits > 1 && ((k / 32) % splits) != 0) --splits;
     }
   }
-  const int kc = ((k / splits) + 31) / 32 * 32;
+  // 64-aligned slice length: every K we serve is a multiple of 64, so
+  // rounding kc up to 64 keeps EVERY span -- including the shorter last
+  // slice -- a multiple of 64. The f4 pair loop then never drops to the
+  // single-chunk tail (base kc=672 on K=5376 is an odd multiple of 32:
+  // every stream paid a tail iteration; the sweep measured gemma.up g16
+  // -51% from this alone) and f8 spans always decompose into whole
+  // dual-chunk pairs.
+  const int kc = ((k / splits) + 63) / 64 * 64;
   return SkinnyLaunchCfg{splits, kc, splits == 1 ? 1 : 0, tiles * splits};
 }
 
@@ -593,8 +592,10 @@ inline void skinny_launch(
     TORCH_CHECK(group32, "f4 skinny gemm requires group-32 e8m0 scales");
   }
   const auto cfg = skinny_pick_cfg(m, n, k);
-  // swizzle probe knob (see the kernel's tile comment); read per call
-  const bool swizzle = skinny_env_int("ARC_SKINNY_SWIZZLE", 0) != 0;
+  // column swizzle always on (refine: best mean at M=2/4/8 with tight
+  // 1.15-1.25x p10/p90 spreads; composes with kc1024 for the best M=1
+  // mean -- see the kernel's tile comment for the bijection proof)
+  constexpr bool swizzle = true;
   const int lsz = 32;
   const int wgs = (cfg.n_workitems + lsz - 1) / lsz;
 
