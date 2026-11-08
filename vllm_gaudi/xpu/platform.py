@@ -71,6 +71,12 @@ _XPU_PATCH_MODULES = (
     # activations, per-call activation quant + f8xf8 joint rate skipped
     # (r122: f8xf8 2.1-2.6x bf16 at prefill Ms, quant ~= gemm at decode;
     # ARC_MXFP8_MODE gate, stock w8a8 kept)
+    "skinny_m",  # p633: M<=8 decode GEMMs -> arc6 skinny kernels (GEMV
+    # regime: one work-item streams TN weight columns, dequant in
+    # registers, fixed-order split-K) when the wheel carries the ops;
+    # LAST in the chain — captures the apply_weights the lanes above
+    # installed and only intercepts M<=8 (r123: stock routes 3-10x the
+    # bytes floor at decode Ms; ARC_SKINNY_M gate, per-lane fallback)
 )
 
 
