@@ -192,16 +192,19 @@ void check_activation(const torch::Tensor& a) {
       a.scalar_type() == at::ScalarType::BFloat16 ||
           a.scalar_type() == at::ScalarType::Half,
       "skinny gemm requires bf16/f16 activations, got ", a.scalar_type());
-  // the kernel issues aligned 32-bit activation loads
+  // the kernel issues aligned 128-bit activation loads
   TORCH_CHECK(
-      reinterpret_cast<std::uintptr_t>(a.const_data_ptr()) % 4 == 0,
-      "skinny gemm activation pointer must be 4-byte aligned");
+      reinterpret_cast<std::uintptr_t>(a.const_data_ptr()) % 16 == 0,
+      "skinny gemm activation pointer must be 16-byte aligned");
 }
 
-void check_weights_aligned4(const torch::Tensor& b) {
+void check_weights_aligned16(const torch::Tensor& b) {
+  // 128-bit weight loads (r126 v2): K is a multiple of 32 so every column
+  // base is 16-byte aligned iff the storage is; a misaligned view falls
+  // back to the stock route via the python wrapper's try/except.
   TORCH_CHECK(
-      reinterpret_cast<std::uintptr_t>(b.const_data_ptr()) % 4 == 0,
-      "skinny gemm weight pointer must be 4-byte aligned (k-contiguous "
+      reinterpret_cast<std::uintptr_t>(b.const_data_ptr()) % 16 == 0,
+      "skinny gemm weight pointer must be 16-byte aligned (k-contiguous "
       "layout with odd storage offset -- call .contiguous())");
 }
 
@@ -239,7 +242,7 @@ torch::Tensor skinny_fp8_gemm_w8a16(
   check_m_small(m);
   TORCH_CHECK(k % 32 == 0, "skinny gemm requires K % 32 == 0, got K=", k);
   const int64_t n = resolve_f8_n(B, k);
-  check_weights_aligned4(B);
+  check_weights_aligned16(B);
   const auto wf = B.scalar_type() == at::ScalarType::Float8_e5m2
                       ? WeightFormat::kF8E5m2
                       : WeightFormat::kF8E4m3;
@@ -293,7 +296,7 @@ torch::Tensor skinny_fp8_gemm_w8a16_mxfp8(
   check_m_small(m);
   TORCH_CHECK(k % 32 == 0, "skinny gemm requires K % 32 == 0, got K=", k);
   const int64_t n = resolve_f8_n(B, k);
-  check_weights_aligned4(B);
+  check_weights_aligned16(B);
   const auto wf = B.scalar_type() == at::ScalarType::Float8_e5m2
                       ? WeightFormat::kF8E5m2
                       : WeightFormat::kF8E4m3;
@@ -351,7 +354,7 @@ torch::Tensor skinny_fp4_gemm_w4a16(
   check_m_small(m);
   TORCH_CHECK(k % 32 == 0, "skinny gemm requires K % 32 == 0, got K=", k);
   const int64_t n = resolve_f4_n(B, k);
-  check_weights_aligned4(B);
+  check_weights_aligned16(B);
 
   const auto gs = resolve_group_strides(B_scale, n, k / 32);
   const float* bias_p = bias_ptr_or_null(bias, n);

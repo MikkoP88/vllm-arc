@@ -237,9 +237,16 @@ for M in MS_SKINNY:
         print(f"  {tag:12s} " + " ".join(parts))
 
 print("\n=== gates ===")
+# attempted gate cells (a cell sets row[name] even when it throws -- None);
+# printed as failed/total so a clean pass cannot read as "0 cells ran"
+gate_total = sum(
+    1 for r in rows if r["M"] in MS_SKINNY
+    for k in ("w16pt", "w16pc", "skinny_w16pt", "skinny_w16pc",
+              "skinny_m816", "skinny_g16")
+    if k in r)
 print(f"GATE-1 correctness (rel < {REL_GATE}): "
       f"{'PASS' if not failures else 'FAIL'} "
-      f"({len(failures)} cells)")
+      f"({len(failures)}/{gate_total} gate cells failed)")
 for f in failures:
     print("   ", f)
 sp1 = [(r["tag"], round(r["skinny_w16pc"] / r["w16pc"], 3)) for r in rows
@@ -248,7 +255,7 @@ print(f"GATE-2 skinny_w16pc M=1 vs stock: "
       f"{('PASS' if all(s < 1.0 for _, s in sp1) else 'REPORT') if sp1 else 'FAIL (no cells ran)'} {sp1}")
 print(f"GATE-3 w4a8 dispatch (arc6 arms): {w4a8_gate_open}")
 
-with open("/root/build/p633/r126_rows.json", "w") as f:
+with open("/work/r126_rows.json", "w") as f:
     json.dump({"rows": rows, "w4a8_gate_open": w4a8_gate_open,
                "failures": [list(x) for x in failures]}, f, indent=1)
-print("[ok] rows banked to /root/build/p633/r126_rows.json")
+print("[ok] rows banked to /work/r126_rows.json (host: p633 dir)")

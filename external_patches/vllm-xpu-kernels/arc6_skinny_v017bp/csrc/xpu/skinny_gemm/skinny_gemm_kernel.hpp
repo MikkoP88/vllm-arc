@@ -124,18 +124,36 @@ enum class WeightFormat : int { kF8E4m3 = 0, kF8E5m2 = 1, kF4E2m1 = 2 };
 //     [N, K/32] (sc_ns = K/32, sc_gs = 1) or [K/32, N] (sc_ns = 1,
 //     sc_gs = N) order, whichever the layer hands the stock op.
 //
-// TN: columns per work-item; CHUNK: k-elements per inner step (multiple of
-// 2 for the f4 nibble pairing); M_PAD: compile-time activation-row bound
-// (runtime M may be smaller; padded rows load 0).
+// r126 postmortem (the v1 kernel measured 7-30x SLOWER than stock at M<=8,
+// ~20 GB/s effective on 600+ GB/s parts): the v1 inner loop streamed weights
+// with 32-bit scalar loads while holding acc[TN][M_PAD]=32 fp32 registers
+// live and unrolling M_PAD=8 even at runtime M=1 -- too few bytes in flight
+// per thread and heavy register pressure serialized the load pipeline; time
+// came out exactly proportional to weight bytes at 3% of bandwidth.
+//
+// v2 memory design:
+//   * weights stream in 128-bit loads: one sycl::uint4 covers CHUNK=16 f8
+//     elements or CHUNK=32 f4 nibbles (f4 chunk = exactly one e8m0 group);
+//     activations load as uint4 too (8 bf16 halves per load)
+//   * M_PAD is dispatched at launch over {1, 2, 4, 8}: at decode M=1 the
+//     accumulator file and FMA work drop 8x and the freed registers let the
+//     compiler software-pipeline more weight loads per thread
+//   * TN=2 (was 4) doubles the work-item count; skinny_pick_cfg targets
+//     8192 work-items and group-aligned split-K reaches it on narrow N
+//   * decode-and-consume: each column's decoded w[CHUNK] registers live
+//     only inside its j iteration; for M_PAD <= 2 the activation chunk is
+//     hoisted out of the j loop (loaded once per k step)
+//   * partials keep the [S][8][N] layout (literal-8 stride) for every
+//     M_PAD instantiation -- stage 2 and the interface alloc agree on 8
 template <WeightFormat WF, bool GROUP32, bool A_BF16, bool DIRECT,
-          int TN = 4, int CHUNK = 8, int M_PAD = 8>
+          int M_PAD = 8, int TN = 2>
 class SkinnyGemmStage1Kernel {
  public:
   SkinnyGemmStage1Kernel(
       const void* a,             // [M, K] contiguous activations
       const std::uint8_t* b,     // weights, k-contiguous (above)
       const std::uint8_t* bsc,   // e8m0 group scales [N, K/32] or nullptr
-      float* partials,           // [S][M_PAD][N] fp32 (not DIRECT)
+      float* partials,           // [S][8][N] fp32 (not DIRECT)
       void* out,                 // [M, N] activation dtype (DIRECT)
       const float* bias,         // [N] (DIRECT, may be nullptr)
       const float* pc_scale,     // [N] per-channel or nullptr
@@ -166,7 +184,9 @@ class SkinnyGemmStage1Kernel {
     const int slice = tid / tiles;
     if (n0 >= n_ || slice >= s_) return;
 
-    const int k_bytes = (WF == WeightFormat::kF4E2m1) ? k_ / 2 : k_;
+    constexpr int CHUNK = (WF == WeightFormat::kF4E2m1) ? 32 : 16;
+    // f8: 16 elems = 1 uint4; f4: 32 nibbles = 1 uint4; bf16: 8 elems
+    constexpr int AW = (CHUNK + 7) / 8;  // activation uint4 loads
 
     float acc[TN][M_PAD];
 #pragma unroll
@@ -176,90 +196,113 @@ class SkinnyGemmStage1Kernel {
 
     const int k_lo = slice * kc_;
     const int k_hi = sycl::min(k_lo + kc_, k_);
-    // k_lo and kc_ are group-aligned by the launcher, so the group id of a
-    // chunk base is simply (k >> 5) and e8m0 reloads happen every
-    // 32 / CHUNK chunks.
+    // k_lo, kc_ and CHUNK are group-aligned by the launcher/template, so
+    // every chunk sits inside one e8m0 group: (k0 >> 5) is its group id.
     for (int k0 = k_lo; k0 < k_hi; k0 += CHUNK) {
-      float gsc[TN];
-      if (GROUP32) {
+      // Hoisted activation chunk for small M_PAD: decode a[mi][CHUNK] once
+      // per k step instead of once per column (registers afford it at
+      // M_PAD <= 2; larger M_PAD re-decodes inside the j loop).
+      [[maybe_unused]] float ah[M_PAD <= 2 ? M_PAD : 1]
+                           [M_PAD <= 2 ? CHUNK : 1];
+      if constexpr (M_PAD <= 2) {
 #pragma unroll
-        for (int j = 0; j < TN; ++j) {
-          const int n = n0 + j;
-          gsc[j] = (n < n_)
-                       ? e8m0_to_float(
-                             bsc_[n * sc_ns_ + (k0 >> 5) * sc_gs_])
-                       : 0.0f;
+        for (int mi = 0; mi < M_PAD; ++mi) {
+          if (mi >= m_) {
+#pragma unroll
+            for (int c = 0; c < CHUNK; ++c) ah[mi][c] = 0.0f;
+            continue;
+          }
+          const sycl::uint4* av = reinterpret_cast<const sycl::uint4*>(
+              a_ + (mi * k_ + k0) * 2);
+#pragma unroll
+          for (int v = 0; v < AW; ++v) {
+            const sycl::uint4 pv = av[v];
+#pragma unroll
+            for (int h = 0; h < 8; ++h) {
+              const std::uint32_t hw =
+                  (v % 2 == 0)
+                      ? ((h < 4) ? (pv.x() >> (16 * h)) & 0xFFFFu
+                                 : (pv.y() >> (16 * (h - 4))) & 0xFFFFu)
+                      : ((h < 4) ? (pv.z() >> (16 * h)) & 0xFFFFu
+                                 : (pv.w() >> (16 * (h - 4))) & 0xFFFFu);
+              ah[mi][v * 8 + h] =
+                  A_BF16 ? bf16_to_float(hw) : f16_to_float(hw);
+            }
+          }
         }
-      } else {
-#pragma unroll
-        for (int j = 0; j < TN; ++j) gsc[j] = 1.0f;
       }
 
-      // Decode TN columns x CHUNK weights into registers.
-      float w[TN][CHUNK];
 #pragma unroll
       for (int j = 0; j < TN; ++j) {
         const int n = n0 + j;
-        if (n >= n_) {
-#pragma unroll
-          for (int c = 0; c < CHUNK; ++c) w[j][c] = 0.0f;
-          continue;
-        }
-        if (WF == WeightFormat::kF4E2m1) {
-          // CHUNK nibbles = CHUNK/2 bytes, one aligned 32-bit load.
-          const std::uint32_t packed = *reinterpret_cast<const std::uint32_t*>(
-              b_ + n * k_bytes + (k0 >> 1));
+        if (n >= n_) continue;  // acc[j] stays 0; epilogue skips the store
+
+        // One 128-bit weight load -> decode CHUNK values (transient regs).
+        float w[CHUNK];
+        if constexpr (WF == WeightFormat::kF4E2m1) {
+          float gsc = 1.0f;
+          if constexpr (GROUP32) {
+            gsc = e8m0_to_float(bsc_[n * sc_ns_ + (k0 >> 5) * sc_gs_]);
+          }
+          const sycl::uint4 pv = *reinterpret_cast<const sycl::uint4*>(
+              b_ + n * (k_ / 2) + (k0 >> 1));
+          const std::uint32_t lane[4] = {pv.x(), pv.y(), pv.z(), pv.w()};
 #pragma unroll
           for (int c = 0; c < CHUNK; ++c) {
-            const std::uint32_t nib = (packed >> (4 * c)) & 0xFu;
-            w[j][c] = e2m1_to_float(nib) * gsc[j];
+            const std::uint32_t byte = lane[c >> 3] >> (8 * ((c >> 1) & 3));
+            const std::uint32_t nib = (byte >> (4 * (c & 1))) & 0xFu;
+            w[c] = e2m1_to_float(nib) * gsc;
           }
         } else {
-          // CHUNK f8 bytes as two aligned 32-bit words.
-          const std::uint32_t pk0 = *reinterpret_cast<const std::uint32_t*>(
+          float gsc = 1.0f;
+          if constexpr (GROUP32) {
+            gsc = e8m0_to_float(bsc_[n * sc_ns_ + (k0 >> 5) * sc_gs_]);
+          }
+          const sycl::uint4 pv = *reinterpret_cast<const sycl::uint4*>(
               b_ + n * k_ + k0);
-          const std::uint32_t pk1 = *reinterpret_cast<const std::uint32_t*>(
-              b_ + n * k_ + k0 + 4);
+          const std::uint32_t lane[4] = {pv.x(), pv.y(), pv.z(), pv.w()};
 #pragma unroll
           for (int c = 0; c < CHUNK; ++c) {
-            const std::uint32_t bits = (c < 4)
-                                           ? ((pk0 >> (8 * c)) & 0xFFu)
-                                           : ((pk1 >> (8 * (c - 4))) & 0xFFu);
+            const std::uint32_t bits = (lane[c >> 2] >> (8 * (c & 3))) & 0xFFu;
             const float v = (WF == WeightFormat::kF8E4m3)
                                 ? e4m3_to_float(bits)
                                 : e5m2_to_float(bits);
-            w[j][c] = v * gsc[j];
+            w[c] = v * gsc;
           }
         }
-      }
 
-      // Accumulate M rows against the decoded panel (padded rows load 0).
+        // Accumulate M rows against the decoded chunk.
+        if constexpr (M_PAD <= 2) {
 #pragma unroll
-      for (int mi = 0; mi < M_PAD; ++mi) {
-        float a[CHUNK];
-        if (mi < m_) {
-          // bf16/f16 are both 2 bytes; two elements per aligned word.
-          const std::uint8_t* ap = a_ + (mi * k_ + k0) * 2;
+          for (int mi = 0; mi < M_PAD; ++mi) {
 #pragma unroll
-          for (int c = 0; c < CHUNK; c += 2) {
-            const std::uint32_t word =
-                *reinterpret_cast<const std::uint32_t*>(ap + 2 * c);
-            if (A_BF16) {
-              a[c] = bf16_to_float(word & 0xFFFFu);
-              a[c + 1] = bf16_to_float(word >> 16);
-            } else {
-              a[c] = f16_to_float(word & 0xFFFFu);
-              a[c + 1] = f16_to_float(word >> 16);
-            }
+            for (int c = 0; c < CHUNK; ++c) acc[j][mi] += ah[mi][c] * w[c];
           }
         } else {
 #pragma unroll
-          for (int c = 0; c < CHUNK; ++c) a[c] = 0.0f;
-        }
+          for (int mi = 0; mi < M_PAD; ++mi) {
+            if (mi >= m_) break;
+            float a[CHUNK];
+            const sycl::uint4* av = reinterpret_cast<const sycl::uint4*>(
+                a_ + (mi * k_ + k0) * 2);
 #pragma unroll
-        for (int j = 0; j < TN; ++j) {
+            for (int v = 0; v < AW; ++v) {
+              const sycl::uint4 pv = av[v];
 #pragma unroll
-          for (int c = 0; c < CHUNK; ++c) acc[j][mi] += a[c] * w[j][c];
+              for (int h = 0; h < 8; ++h) {
+                const std::uint32_t hw =
+                    (v % 2 == 0)
+                        ? ((h < 4) ? (pv.x() >> (16 * h)) & 0xFFFFu
+                                   : (pv.y() >> (16 * (h - 4))) & 0xFFFFu)
+                        : ((h < 4) ? (pv.z() >> (16 * h)) & 0xFFFFu
+                                   : (pv.w() >> (16 * (h - 4))) & 0xFFFFu);
+                a[v * 8 + h] =
+                    A_BF16 ? bf16_to_float(hw) : f16_to_float(hw);
+              }
+            }
+#pragma unroll
+            for (int c = 0; c < CHUNK; ++c) acc[j][mi] += a[c] * w[c];
+          }
         }
       }
     }
@@ -292,7 +335,9 @@ class SkinnyGemmStage1Kernel {
                 sycl::bit_cast<std::uint16_t>(h);
           }
         } else {
-          partials_[((static_cast<std::size_t>(slice) * M_PAD + mi) * n_) + n] =
+          // literal-8 pad stride: partials are [S][8][N] for every M_PAD
+          // instantiation (interface alloc + stage-2 read agree on 8)
+          partials_[((static_cast<std::size_t>(slice) * 8 + mi) * n_) + n] =
               v;
         }
       }
@@ -314,7 +359,8 @@ class SkinnyGemmStage1Kernel {
 
 // ---------------------------------------------------------------------------
 // Stage 2: fixed-order split-K reduce + epilogue (not-DIRECT path).
-// M_PAD literal 8 mirrors the stage-1 instantiation bound.
+// Partials are [S][8][N] regardless of the stage-1 M_PAD instantiation
+// (literal-8 pad stride; the interface allocates the same shape).
 // ---------------------------------------------------------------------------
 class SkinnyGemmReduceKernel {
  public:
@@ -376,11 +422,12 @@ struct SkinnyLaunchCfg {
 
 inline SkinnyLaunchCfg skinny_pick_cfg(int m, int n, int k) {
   (void)m;
-  // Target ~2 work-items per hardware thread on a 256-XMX B70 (2048
-  // threads): N alone fills the device for our layer shapes (6912/4 = 1728
-  // tiles at TN=4 for qwen.up), so the split only kicks in for narrow N.
-  constexpr int kMinWorkitems = 2048;
-  constexpr int kTileN = 4;
+  // r126 v1 targeted 2048 work-items and never split our shapes; v2 (TN=2,
+  // 128-bit loads) wants more concurrent streams to cover HBM latency:
+  // aim for 8192 work-items, group-aligned split-K when N alone falls
+  // short (partial roundtrip is S*8*N*4 B, negligible at these N).
+  constexpr int kMinWorkitems = 8192;
+  constexpr int kTileN = 2;
   const int tiles = (n + kTileN - 1) / kTileN;
   int splits = 1;
   if (tiles < kMinWorkitems) {
@@ -413,68 +460,85 @@ inline void skinny_launch(
   const int lsz = 32;
   const int wgs = (cfg.n_workitems + lsz - 1) / lsz;
 
-#define SKINNY_LAUNCH(WF_C, G32_C, ABF_C, DIR_C)                           \
-  q.parallel_for<SkinnyGemmStage1Kernel<WF_C, G32_C, ABF_C, DIR_C>>(       \
+#define SKINNY_LAUNCH(WF_C, G32_C, ABF_C, DIR_C, MP_C)                     \
+  q.parallel_for<SkinnyGemmStage1Kernel<WF_C, G32_C, ABF_C, DIR_C, MP_C>>( \
       sycl::nd_range<1>(wgs * lsz, lsz),                                   \
-      SkinnyGemmStage1Kernel<WF_C, G32_C, ABF_C, DIR_C>(                   \
+      SkinnyGemmStage1Kernel<WF_C, G32_C, ABF_C, DIR_C, MP_C>(             \
           a, b, bsc, partials, out, bias, pc_scale, pt_scale, m, n, k,     \
           cfg.splits, cfg.k_per_split, sc_ns, sc_gs))
+
+  // M_PAD dispatch: compile-time row bound over {1, 2, 4, 8} -- the decode
+  // M=1 case drops the accumulator file and unrolled FMA work 8x (r126 v2
+  // postmortem: v1's fixed M_PAD=8 was half the register-pressure story).
+#define SKINNY_LAUNCH_M(WF_C, G32_C, ABF_C, DIR_C)                         \
+  do {                                                                     \
+    if (m <= 1) {                                                          \
+      SKINNY_LAUNCH(WF_C, G32_C, ABF_C, DIR_C, 1);                         \
+    } else if (m <= 2) {                                                   \
+      SKINNY_LAUNCH(WF_C, G32_C, ABF_C, DIR_C, 2);                         \
+    } else if (m <= 4) {                                                   \
+      SKINNY_LAUNCH(WF_C, G32_C, ABF_C, DIR_C, 4);                         \
+    } else {                                                               \
+      SKINNY_LAUNCH(WF_C, G32_C, ABF_C, DIR_C, 8);                         \
+    }                                                                      \
+  } while (0)
 
   if (wf == WeightFormat::kF8E4m3) {
     if (!group32) {
       if (a_bf16 && cfg.direct) {
-        SKINNY_LAUNCH(WeightFormat::kF8E4m3, false, true, true);
+        SKINNY_LAUNCH_M(WeightFormat::kF8E4m3, false, true, true);
       } else if (a_bf16 && !cfg.direct) {
-        SKINNY_LAUNCH(WeightFormat::kF8E4m3, false, true, false);
+        SKINNY_LAUNCH_M(WeightFormat::kF8E4m3, false, true, false);
       } else if (!a_bf16 && cfg.direct) {
-        SKINNY_LAUNCH(WeightFormat::kF8E4m3, false, false, true);
+        SKINNY_LAUNCH_M(WeightFormat::kF8E4m3, false, false, true);
       } else {
-        SKINNY_LAUNCH(WeightFormat::kF8E4m3, false, false, false);
+        SKINNY_LAUNCH_M(WeightFormat::kF8E4m3, false, false, false);
       }
     } else {
       if (a_bf16 && cfg.direct) {
-        SKINNY_LAUNCH(WeightFormat::kF8E4m3, true, true, true);
+        SKINNY_LAUNCH_M(WeightFormat::kF8E4m3, true, true, true);
       } else if (a_bf16 && !cfg.direct) {
-        SKINNY_LAUNCH(WeightFormat::kF8E4m3, true, true, false);
+        SKINNY_LAUNCH_M(WeightFormat::kF8E4m3, true, true, false);
       } else if (!a_bf16 && cfg.direct) {
-        SKINNY_LAUNCH(WeightFormat::kF8E4m3, true, false, true);
+        SKINNY_LAUNCH_M(WeightFormat::kF8E4m3, true, false, true);
       } else {
-        SKINNY_LAUNCH(WeightFormat::kF8E4m3, true, false, false);
+        SKINNY_LAUNCH_M(WeightFormat::kF8E4m3, true, false, false);
       }
     }
   } else if (wf == WeightFormat::kF8E5m2) {
     if (!group32) {
       if (a_bf16 && cfg.direct) {
-        SKINNY_LAUNCH(WeightFormat::kF8E5m2, false, true, true);
+        SKINNY_LAUNCH_M(WeightFormat::kF8E5m2, false, true, true);
       } else if (a_bf16 && !cfg.direct) {
-        SKINNY_LAUNCH(WeightFormat::kF8E5m2, false, true, false);
+        SKINNY_LAUNCH_M(WeightFormat::kF8E5m2, false, true, false);
       } else if (!a_bf16 && cfg.direct) {
-        SKINNY_LAUNCH(WeightFormat::kF8E5m2, false, false, true);
+        SKINNY_LAUNCH_M(WeightFormat::kF8E5m2, false, false, true);
       } else {
-        SKINNY_LAUNCH(WeightFormat::kF8E5m2, false, false, false);
+        SKINNY_LAUNCH_M(WeightFormat::kF8E5m2, false, false, false);
       }
     } else {
       if (a_bf16 && cfg.direct) {
-        SKINNY_LAUNCH(WeightFormat::kF8E5m2, true, true, true);
+        SKINNY_LAUNCH_M(WeightFormat::kF8E5m2, true, true, true);
       } else if (a_bf16 && !cfg.direct) {
-        SKINNY_LAUNCH(WeightFormat::kF8E5m2, true, true, false);
+        SKINNY_LAUNCH_M(WeightFormat::kF8E5m2, true, true, false);
       } else if (!a_bf16 && cfg.direct) {
-        SKINNY_LAUNCH(WeightFormat::kF8E5m2, true, false, true);
+        SKINNY_LAUNCH_M(WeightFormat::kF8E5m2, true, false, true);
       } else {
-        SKINNY_LAUNCH(WeightFormat::kF8E5m2, true, false, false);
+        SKINNY_LAUNCH_M(WeightFormat::kF8E5m2, true, false, false);
       }
     }
   } else {  // kF4E2m1 (group32 asserted above)
     if (a_bf16 && cfg.direct) {
-      SKINNY_LAUNCH(WeightFormat::kF4E2m1, true, true, true);
+      SKINNY_LAUNCH_M(WeightFormat::kF4E2m1, true, true, true);
     } else if (a_bf16 && !cfg.direct) {
-      SKINNY_LAUNCH(WeightFormat::kF4E2m1, true, true, false);
+      SKINNY_LAUNCH_M(WeightFormat::kF4E2m1, true, true, false);
     } else if (!a_bf16 && cfg.direct) {
-      SKINNY_LAUNCH(WeightFormat::kF4E2m1, true, false, true);
+      SKINNY_LAUNCH_M(WeightFormat::kF4E2m1, true, false, true);
     } else {
-      SKINNY_LAUNCH(WeightFormat::kF4E2m1, true, false, false);
+      SKINNY_LAUNCH_M(WeightFormat::kF4E2m1, true, false, false);
     }
   }
+#undef SKINNY_LAUNCH_M
 #undef SKINNY_LAUNCH
 
   if (!cfg.direct) {
