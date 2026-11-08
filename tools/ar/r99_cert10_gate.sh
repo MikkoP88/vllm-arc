@@ -17,7 +17,7 @@
 #       posture; r84 [1]+[2] pattern): boot, env-absent proof, flip-first,
 #       L3 store-worker ACTIVE post-traffic, trace silent-off, integrity/det,
 #       run7n t0 + t1.0-xhigh, spec gate, tps solo+agg8, LONG-RETURN full +
-#       3 churn cycles (owner hard gate), erraudit.
+#       3 churn cycles (hard gate), erraudit.
 #   [2] TQ carry block: k8v4 boot + posture + flip + longprobe full +
 #       garble + erraudit (tree-identity carries the remaining dtype faces).
 #   [3] FP8 knob block ON cert10 (the shipped image with the knob ON):
@@ -305,7 +305,7 @@ python3 $R/arc_spec_gate.py > $LEG/spec_gate.out 2>&1
 tail -3 $LEG/spec_gate.out
 grep -q "SPEC_GATE PASS" $LEG/spec_gate.out || { echo "SPEC_GATE: FAIL"; GATE_FAIL=1; }
 tps_probe $LEG/tps.out; cat $LEG/tps.out
-echo "--- LONG-RETURN full + 3 churn cycles (owner hard gate) $(date +%H:%M:%S) ---"
+echo "--- LONG-RETURN full + 3 churn cycles (hard gate) $(date +%H:%M:%S) ---"
 python3 $R/p618/p618_longprobe.py r99def full > $LEG/longprobe_full.out 2>&1
 grep -E "^\[|LONGPROBE" $LEG/longprobe_full.out
 garble_check $LEG/longprobe_full.out

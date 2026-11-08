@@ -355,7 +355,7 @@ python3 $R/arc_spec_gate.py > $LEG/spec_gate.out 2>&1
 tail -3 $LEG/spec_gate.out
 grep -q "SPEC_GATE PASS" $LEG/spec_gate.out || { echo "SPEC_GATE: FAIL"; GATE_FAIL=1; }
 tps_probe $LEG/tps.out; cat $LEG/tps.out
-echo "--- LONG-RETURN full + 3 churn cycles (owner hard gate) $(date +%H:%M:%S) ---"
+echo "--- LONG-RETURN full + 3 churn cycles (hard gate) $(date +%H:%M:%S) ---"
 python3 $R/p618/p618_longprobe.py r105def full > $LEG/longprobe_full.out 2>&1
 grep -E "^\[|LONGPROBE" $LEG/longprobe_full.out
 garble_check $LEG/longprobe_full.out

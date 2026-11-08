@@ -1,8 +1,8 @@
 #!/bin/bash
 # r71a_ccl_diag.sh — p71 lane-1 confirm: which transport/IPC path does
 # the image's oneCCL 2022.0 actually select on the certified TP2 boot?
-# Owner directive 2026-10-31: "oneCCL never selected the P2P path (most
-# common, pure config) — check: boot log with CCL_LOG_LEVEL=2".
+# Question under test (2026-10-31): "oneCCL never selected the P2P path
+# (most common, pure config) — check: boot log with CCL_LOG_LEVEL=2".
 #
 # LEVEL LAW (attempt-1 evidence, 2026-10-31): this oneCCL build takes
 # ENUM NAMES, not numbers — `CCL_LOG_LEVEL=2` throws at env parse

@@ -67,6 +67,10 @@ _XPU_PATCH_MODULES = (
     "mxfp4_w4a16",  # p630 FIX-P: mxfp4 linear -> fp4_gemm_w4a16 with bf16
     # activations, per-call activation quant skipped (r118/r119b: quant op
     # ~= gemm cost at decode Ms; ARC_MXFP4_MODE gate, stock w4a4 kept)
+    "mxfp8_w8a16",  # p631: mxfp8 linear -> fp8_gemm_w8a16_mxfp8 with bf16
+    # activations, per-call activation quant + f8xf8 joint rate skipped
+    # (r122: f8xf8 2.1-2.6x bf16 at prefill Ms, quant ~= gemm at decode;
+    # ARC_MXFP8_MODE gate, stock w8a8 kept)
 )
 
 

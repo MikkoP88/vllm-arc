@@ -3,7 +3,7 @@
 dtypes (P6.19, 2026-11-04).
 
 Without this patch, any ``turboquant_*`` kv-cache dtype corrupts under
-MTP speculative decoding whenever XPU graphs are on (owner report
+MTP speculative decoding whenever XPU graphs are on (reported
 2026-11-03, P6.18 campaign; reopened as P6.19): deterministic repetition
 attractors / "blank message" generations, dtype-wide, while the same
 posture with spec off or graphs off serves clean.

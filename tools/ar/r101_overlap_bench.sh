@@ -3,7 +3,7 @@
 # r101_overlap_bench.sh — P6.25 GPU window 1: the overlap-door microbench
 # (ceiling-first law — no integration code before the bound is measured).
 #
-# Owner directive (2026-11-06): eliminate ALL remaining prefill bottlenecks,
+# Goal (2026-11-06): eliminate ALL remaining prefill bottlenecks,
 # code optimization work. The one door P6.20-P6.24 did NOT measure-close:
 # cross-stream AR(comm)-vs-GEMM(compute) co-tenancy (async-TP class).
 # r83 closed same-stream overlap; r100 closed fabric rd+wr + AR-internal

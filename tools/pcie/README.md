@@ -63,7 +63,7 @@ journalctl -u disable-acs.service --no-pager -n 20   # per-device log + final ve
 ## Open P2P items (status after the 2026-10-31 p71 analysis + executed
 ## idle-window legs — ALL LANES CLOSED, verdicts below)
 
-Owner question: is the TP2 allreduce on the direct P2P path or
+Open question: is the TP2 allreduce on the direct P2P path or
 host-bounced — and is each cause solvable? Evidence:
 `results/2026-10-31-p71-r71-p2p-analysis/` (VERDICT + transcripts +
 full CCL-diag logs).
@@ -106,7 +106,7 @@ full CCL-diag logs).
    thresholds — posture changes, own evidence-gated A/B legs), not
    config or host state.
 
-Bottom line (owner's diagram): traffic moves like the **P2P (direct)**
+Bottom line: traffic moves like the **P2P (direct)**
 row — one hop, ~10 GB/s class — not the host-bounce row. The
 PCIe/Gen4/Gen5 lane is closed and prefill remains compute-bound (fp8
 GEMM rung closed negative on r40; FA2 varlen 20.3 % is the live rung;

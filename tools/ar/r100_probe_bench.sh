@@ -3,7 +3,7 @@
 # r100_probe_bench.sh — P6.24b bottleneck scan, GPU window 1: IPC wire-rate
 # probe + v4-rate control on the probe build.
 #
-# Owner directive (2026-11-05): beat the cert9 baseline on EVERY p65 face
+# Goal (2026-11-05): beat the cert9 baseline on EVERY p65 face
 # with the highest possible margin; find bottlenecks end-to-end until no
 # options remain. E-law: every door gets a measured close.
 #

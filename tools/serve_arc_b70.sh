@@ -30,6 +30,12 @@
 #               LMCACHE_* chain, keep as a set)
 #   ARC_GMU     --gpu-memory-utilization (default 0.8, D-champion certified
 #               posture — V1227_GMU lineage, plan Appendix F)
+#   ARC_MAXLEN  --max-model-len (default 262144 = the certified incumbent
+#               context, exact fit for qwen3.8's KV/token). P6.28: gemma-4's
+#               heterogeneous head dims (full_attention 512 vs sliding 256)
+#               double the per-token KV on full layers — at GMU 0.8 the pool
+#               supports only ~120k. Legs needing a lower cap set this knob;
+#               all G2 faces top out at U64k so a 120k cap costs nothing.
 #   ARC_MNBT    --max-num-batched-tokens (default 8192, D champion)
 #   ARC_MAXSEQS --max-num-seqs (default 64, D champion)
 #   ARC_PORT    serve port (default 8000)
@@ -74,12 +80,15 @@
 # 85-entry capture list — [1..320] shorthand is INVALID JSON, never ship it.
 set -euo pipefail
 
+#   ARC_MXFP4_MODE  passed into the serve env when set (p630 FIX-P A/B:
+#                  w4a4 = stock W4A4 control; unset = patch default w4a16)
 ARC_IMAGE=${ARC_IMAGE:-vllm-arc:v0.30.0-b70}
 ARC_NAME=${ARC_NAME:-arc-test}
 ARC_GRAPH=${ARC_GRAPH:-0}
 ARC_SPEC=${ARC_SPEC:-3}
 ARC_LMC=${ARC_LMC:-1}
 ARC_GMU=${ARC_GMU:-0.8}
+ARC_MAXLEN=${ARC_MAXLEN:-262144}
 ARC_MNBT=${ARC_MNBT:-8192}
 ARC_MAXSEQS=${ARC_MAXSEQS:-64}
 ARC_PORT=${ARC_PORT:-8000}
@@ -127,22 +136,44 @@ WANT_IMG_ID=$(docker image inspect "$ARC_IMAGE" --format '{{.Id}}') || {
 # the wrong weights just as silently as a stale image does.
 HAVE_IMG_ID=$(docker inspect "$ARC_NAME" --format '{{.Image}}' 2>/dev/null || true)
 HAVE_MODEL_SRC=$(docker inspect "$ARC_NAME" --format '{{range .Mounts}}{{if eq .Destination "/models/target"}}{{.Source}}{{end}}{{end}}' 2>/dev/null || true)
+# skin label: template changes with same image+model must also recreate
+# (P6.28 — label-based, mirrors the model-mount freshness law)
+HAVE_SKIN=$(docker inspect "$ARC_NAME" --format '{{index .Config.Labels "arc_skin"}}' 2>/dev/null || true)
 # Chat template (OPTIONAL, in-repo copy at assets/chat_template_qwen38_high.jinja):
 # without it the engine uses the checkpoint's own template — default xhigh
 # thinking is identical; only OpenAI-style reasoning_effort high/max/none
 # requests differ (they 400 without the shim). On the rig the template is
 # present and the certified line mounts it (r43_serve_k5.sh parity).
+#
+# P6.28 serving-skin knobs (ARC_TEMPLATE / ARC_RPARSER / ARC_TPARSER):
+# UNSET = the certified qwen skin, byte-identical (defaults below). EMPTY
+# (e.g. `ARC_RPARSER= `) omits the flag so the model-native skin applies —
+# gemma-4 has no reasoning channel and ships no chat template. A PATH in
+# ARC_TEMPLATE mounts that file for --chat-template (gemma-4 route:
+# assets/chat_template_gemma4.jinja, canonical start_of_turn format).
+ARC_TEMPLATE=${ARC_TEMPLATE-__qwen_default__}
 CT_SRC="$RIG/v127_stage/chat_template_qwen38_high.jinja"
 CT_MOUNT=""
 CT_FLAG=""
-if [ -f "$CT_SRC" ]; then
-  CT_MOUNT="-v $CT_SRC:/root/chat_template_qwen38_high.jinja:ro"
-  CT_FLAG="--chat-template /root/chat_template_qwen38_high.jinja"
-else
-  echo "NOTE: chat template not found at $CT_SRC — serving WITHOUT it (optional"
-  echo "OpenAI reasoning_effort compat; in-repo copy: assets/chat_template_qwen38_high.jinja)"
-fi
-if [ "$HAVE_IMG_ID" != "$WANT_IMG_ID" ] || [ "$HAVE_MODEL_SRC" != "$ARC_MODEL" ]; then
+case "$ARC_TEMPLATE" in
+  __qwen_default__)
+    if [ -f "$CT_SRC" ]; then
+      CT_MOUNT="-v $CT_SRC:/root/chat_template_qwen38_high.jinja:ro"
+      CT_FLAG="--chat-template /root/chat_template_qwen38_high.jinja"
+    else
+      echo "NOTE: chat template not found at $CT_SRC — serving WITHOUT it (optional"
+      echo "OpenAI reasoning_effort compat; in-repo copy: assets/chat_template_qwen38_high.jinja)"
+    fi ;;
+  "") : ;;  # explicitly no template — checkpoint-native skin
+  *)  if [ -f "$ARC_TEMPLATE" ]; then
+        CT_BASE=$(basename "$ARC_TEMPLATE")
+        CT_MOUNT="-v $ARC_TEMPLATE:/root/$CT_BASE:ro"
+        CT_FLAG="--chat-template /root/$CT_BASE"
+      else
+        echo "FATAL: ARC_TEMPLATE path not found: $ARC_TEMPLATE"; exit 1
+      fi ;;
+esac
+if [ "$HAVE_IMG_ID" != "$WANT_IMG_ID" ] || [ "$HAVE_MODEL_SRC" != "$ARC_MODEL" ] || [ "$HAVE_SKIN" != "$ARC_TEMPLATE" ]; then
   HAVE_SRC=${HAVE_IMG_ID:7:12}
   [ -n "$HAVE_SRC" ] || HAVE_SRC=none
   docker rm -f "$ARC_NAME" >/dev/null 2>&1 || true
@@ -152,6 +183,7 @@ if [ "$HAVE_IMG_ID" != "$WANT_IMG_ID" ] || [ "$HAVE_MODEL_SRC" != "$ARC_MODEL" ]
   # --shm-size 64g, 5 mounts, and the 2 boot-layer -e vars of the 25-var
   # chain (the other 23 are exported in the exec block below).
   docker run -d --name "$ARC_NAME" \
+    --label arc_skin="$ARC_TEMPLATE" \
     --privileged --network host --ipc host \
     --shm-size 64g \
     -v "$ARC_MODEL":/models/target:ro \
@@ -198,6 +230,29 @@ QUANT_FLAG="--quantization $ARC_QUANT"
 if [ -z "$ARC_QUANT" ]; then
   QUANT_FLAG=""
 fi
+
+# Online-quant ignore list (P6.30): upstream-native --quantization-config
+# JSON passed through to the engine (resolve_quantization_config merges
+# quantization_config.ignore over the online shorthand base,
+# config/quantization.py:276). Used by online-MX legs on the qwen VL
+# checkpoint: the vision tower MLP (linear_fc2 input 4304 -> 2152 @TP2)
+# violates the MX block-32 rule (online/mxfp4.py:102); the validated
+# offline mxfp8 checkpoint additionally keeps all GDN linear_attn
+# projections and mtp.fc in bf16 — this knob mirrors that exclusion set.
+# JSON quoting mirrors SPEC_FLAG (single quotes survive the bash -c layer).
+QUANTCFG_FLAG=""
+if [ -n "${ARC_QUANTCFG:-}" ]; then
+  QUANTCFG_FLAG="--quantization-config '${ARC_QUANTCFG}'"
+fi
+
+# Parser skin (P6.28): unset = the certified qwen3 parsers; EMPTY
+# (`ARC_RPARSER= ` / `ARC_TPARSER= `) omits the flag(s) for models with
+# no reasoning channel / tool format (gemma-4). Tool-choice rides the
+# tool parser (enable-auto-tool-choice requires one).
+RP_FLAG="--reasoning-parser ${ARC_RPARSER-qwen3}"
+if [ -z "${ARC_RPARSER-unset}" ]; then RP_FLAG=""; fi
+TP_FLAG="--tool-call-parser ${ARC_TPARSER-qwen3_coder} --enable-auto-tool-choice"
+if [ -z "${ARC_TPARSER-unset}" ]; then TP_FLAG=""; fi
 
 # P6.24 opt-in pass-through (cert10 overlay): default 0 emits NO env line —
 # the certified default posture serves the stock allreduce (proven
@@ -254,6 +309,7 @@ fi
 
 docker exec -d "$ARC_NAME" bash -c "
 export PYTHONHASHSEED=0
+export VLLM_EXECUTE_MODEL_TIMEOUT_SECONDS=${ARC_RPC_TIMEOUT:-300}  # p628: ARC_RPC_TIMEOUT knob (300 stock; envs.py:242 execute-model RPC watchdog; r108y face120k died at 300.5s)
 export ZE_AFFINITY_MASK=0,1
 export LD_LIBRARY_PATH=/opt/venv/lib:/opt/venv/lib/python3.12/site-packages/torch/lib
 # oneCCL TP2 block — identical in W14 incumbent and D lsv-test (validated
@@ -268,26 +324,28 @@ export CCL_SYCL_ALLGATHERV_TMP_BUF=0
 export CCL_SYCL_ALLREDUCE_TMP_BUF=0
 $FP8_ENV
 export ARC_TRACE_FLIP=1
+${ARC_MXFP4_MODE:+export ARC_MXFP4_MODE=${ARC_MXFP4_MODE};}
+${ARC_MXFP8_MODE:+export ARC_MXFP8_MODE=${ARC_MXFP8_MODE};}
 $LMC_ENV
 $GRAPH_ENV
 exec /opt/venv/bin/vllm serve --model /models/target \
   --served-model-name $ARC_SERVED \
   --tensor-parallel-size 2 \
   --gpu-memory-utilization $ARC_GMU \
-  --max-model-len 262144 \
+  --max-model-len $ARC_MAXLEN \
   --max-num-batched-tokens $ARC_MNBT \
   --max-num-seqs $ARC_MAXSEQS \
   --block-size 64 \
   --dtype float16 \
   $QUANT_FLAG \
+  $QUANTCFG_FLAG \
   --kv-cache-dtype fp8_e4m3 \
   --mamba-ssm-cache-dtype float16 \
   --mamba-cache-mode=align \
   --enable-prefix-caching \
   --trust-remote-code \
-  --reasoning-parser qwen3 \
-  --tool-call-parser qwen3_coder \
-  --enable-auto-tool-choice \
+  $RP_FLAG \
+  $TP_FLAG \
   $CT_FLAG \
   --no-disable-hybrid-kv-cache-manager \
   $LMC_FLAG \
@@ -297,4 +355,4 @@ exec /opt/venv/bin/vllm serve --model /models/target \
   --port $ARC_PORT \
   > /root/serve_full.log 2>&1"
 
-echo "ARC_SERVE_LAUNCHED image=$ARC_IMAGE name=$ARC_NAME model=$ARC_MODEL served=$ARC_SERVED quant=${ARC_QUANT:-<config-driven>} graph=$ARC_GRAPH spec=$ARC_SPEC gmu=$ARC_GMU mnbt=$ARC_MNBT seqs=$ARC_MAXSEQS fp8=$ARC_FP8 xgc=${VLLM_ARC_XG_COMPACT:-0} port=$ARC_PORT $(date +%H:%M:%S)"
+echo "ARC_SERVE_LAUNCHED image=$ARC_IMAGE name=$ARC_NAME model=$ARC_MODEL served=$ARC_SERVED quant=${ARC_QUANT:-<config-driven>} qcfg=${ARC_QUANTCFG:-} graph=$ARC_GRAPH spec=$ARC_SPEC gmu=$ARC_GMU maxlen=$ARC_MAXLEN mnbt=$ARC_MNBT seqs=$ARC_MAXSEQS fp8=$ARC_FP8 xgc=${VLLM_ARC_XG_COMPACT:-0} tmpl=${ARC_TEMPLATE-__qwen_default__} rp=${ARC_RPARSER-<qwen3>} tp=${ARC_TPARSER-<qwen3_coder>} port=$ARC_PORT $(date +%H:%M:%S)"
