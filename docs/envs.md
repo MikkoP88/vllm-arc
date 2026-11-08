@@ -5,8 +5,17 @@ at the r46t close-out) from `vllm_gaudi/envs.py` arc-lane markers + the
 certified serve line (`r43_serve_k5.sh`, spec depth 3 per the r46t
 recommendation — a serve-time CLI change — on image
 `vllm-arc:v0.30.0-b70-cert`; unchanged since — the qwen fp8 chain is identical on
-the current certified image `vllm-arc:v0.30.0-b70-cert20`, where
-`LMCACHE_TRACK_USAGE=false` (P6.3) made it 25; cert20 = cert19 + the
+the current certified image `vllm-arc:v0.30.0-b70-cert21`, where
+`LMCACHE_TRACK_USAGE=false` (P6.3) made it 25; cert21 = cert20 + the
+P6.31 online-MXFP8 W8A16 lane (arc5 `vllm_xpu_kernels` wheel swap +
+the `mxfp8_w8a16` patch — adds NO serve-line var; the lane rides the
+model-lane env `ARC_QUANT=mxfp8` + the engine env `ARC_MXFP8_MODE`
+(unset/`w8a16` = the W8A16 route — default; `w8a8` = stock control; a
+serve-ENV knob, not part of the 25-var chain, like `ARC_ATTN_FA2`) +
+the script arg `ARC_MAXLEN` (default 262144; 40960 on gemma
+online-mxfp8 legs — the 8-bit-weights KV capacity law); the
+fp8/checkpoint/mxfp4 lanes are byte-untouched — r125 three-lane gate);
+cert20 = cert19 + the
 P6.30 online-quant W4A16 lane (arc4 `vllm_xpu_kernels` wheel swap +
 the `mxfp4_w4a16` patch — adds NO serve-line var; the lane rides the
 existing model-lane envs `ARC_QUANT=mxfp4` + `ARC_QUANTCFG` (the
@@ -119,6 +128,8 @@ kill-switch to disable):
 | `VLLM_MAMBA_FP16_SEED_REPAIR` | `1` → repair ACTIVE | `patches/mamba_lmcache_glue.py:69` | p41 | `=0` |
 | `VLLM_ARC_R35_TAIL_SPLIT` | `1` → tail-split v4 ACTIVE | `patches/sched_tail_split.py:59` | p43/r35 | `=0` |
 | `VLLM_ARC_FP8_W8A16_DISABLE` | `0` → W8A16 reroute ACTIVE | `patches/fp8_block_w8a16.py:65` | p44 | `=1` (stock W8A8) |
+| `ARC_MXFP4_MODE` | `w4a16` → certified route (bf16 acts → `fp4_gemm_w4a16`, zero per-call act quant; cert20) | `patches/mxfp4_w4a16.py:65` | p630 | `=w4a8` P6.31 probe lane (per-token e4m3 acts); `=w4a4` stock control |
+| `ARC_MXFP8_MODE` | `w8a16` → new route (bf16 acts → `fp8_gemm_w8a16_mxfp8`, group-32 e8m0 weight scales, zero runtime act quant; P6.31) | `patches/mxfp8_w8a16.py:57` | p631 | `=w8a8` stock control |
 | `VLLM_ARC_TQ_SPEC_FIX` | `1` → spec-verify fix ACTIVE on every `turboquant_*` dtype (fp8 never imports the hooked module — control proof t7/t9) | `patches/tq_spec_fix.py:99` | p619 | `=0` (pre-fix TQ spec-verify — corrupt under graphs, diagnosis only) |
 
 Dead since r47b (kept OUT of the live tables — no-unevidenced law):
@@ -203,10 +214,13 @@ twin of the live `VLLM_COMPACT_GDN` above).
 
 ## Naming map (r45g naming audit; completed r45h/r45i full sweep)
 
-In-line with best practice: `VLLM_ARC_*` engine-env namespace (**15 live
+In-line with best practice: `VLLM_ARC_*` engine-env namespace (**17 live
 vars** — the r45g audit's 10 + `VLLM_ARC_TQ_SPEC_FIX`/`VLLM_ARC_TQ_VERIFY_MODE`/`VLLM_ARC_TQ_MQ_SPLITS` (p619) +
-`VLLM_ARC_LMC_ASYNC_STORE`/`VLLM_ARC_LMC_EVSYNC` (p620); grep-verified
-against code consumers at the P6.23 docs audit — + 3 dropped at r45d +
+`VLLM_ARC_LMC_ASYNC_STORE`/`VLLM_ARC_LMC_EVSYNC` (p620) +
+`ARC_MXFP4_MODE` (p630) + `ARC_MXFP8_MODE` (p631); grep-verified
+against code consumers at the P6.23 docs audit + the 2026-11-08 P6.31
+registry catch-up (the p619 trio and the p630 gate had gone live
+docs-only; the `vllm_gaudi/envs.py` registry now mirrors the docs) — + 3 dropped at r45d +
 1 dead since r47b, below), the P6.24 `CCL_SYCL_ALLREDUCE_FP8`/
 `_MIN_COUNT`/`_STATS` trio (cert10 oneCCL overlay — oneCCL-runtime envs,
 deliberately OUTSIDE the `VLLM_ARC_` namespace: they configure the comm
@@ -214,7 +228,13 @@ library, not the engine; registered by `arc-fp8-allreduce.patch`, all
 default-off, documented in `CONFIGURATION-arc.md`'s knob table),
 `NN-category/pNN-slug` patch dirs,
 `feat/arc-pNN-<slug>` branches, `vllm-arc:v0.30.0-b70[-pNN]` image tags,
-`ARC_*` **host-side script vars** (11, `tools/serve_arc_b70.sh` — a
+`ARC_*` **host-side script vars** (22 — recounted at the P6.31
+close-out: the base 11 plus the P6.28–P6.31 lane knobs
+`ARC_MODEL`/`ARC_SERVED`/`ARC_QUANT`/`ARC_QUANTCFG`/`ARC_TEMPLATE`/
+`ARC_RPARSER`/`ARC_TPARSER`/`ARC_RPC_TIMEOUT`/`ARC_MXFP4_MODE`/
+`ARC_MXFP8_MODE`/`ARC_MAXLEN`, most as set-only passthroughs (default
+emits no line) or defaulted-overridable script args;
+`tools/serve_arc_b70.sh` — a
 different layer from engine envs; the 11th is `ARC_FP8`, the P6.24
 cert10 overlay pass-through: `1` appends the oneCCL opt-in env above,
 default emits no line; the 10th is `ARC_SPEC_METHOD`, the

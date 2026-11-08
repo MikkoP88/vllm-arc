@@ -1,0 +1,7 @@
+[factual] finish=length tok=24
+  '\n\n\n\n\n\n|'
+[reason] finish=length tok=96
+  'The first train travels 60 km/h for 1 hour, so it travels 60 km.\nThe second train travels 90 km/h for 1 hour, so it travels 90 km.\nThe second train needs to catch up to the first train, so we need to find out how much distance it needs to cover.\nThe distance between the two trains is 60 km - 0 km = 60 km.|'
+[code] finish=length tok=64
+  '\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n|'
+G1_DONE

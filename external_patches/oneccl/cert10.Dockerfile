@@ -23,7 +23,7 @@
 #
 # Runtime posture: the env trio CCL_SYCL_ALLREDUCE_FP8 / _MIN_COUNT /
 # _STATS defaults 0 / 2097152 / 0 — silent OFF in the certified chain
-# (knob documented in docs/envs.md; adoption = owner's decision on the
+# (knob documented in docs/envs.md; default-off — opt-in per the
 # r99 A/B table).
 ARG BASE=vllm-arc:v0.30.0-b70-cert9
 FROM ${BASE}

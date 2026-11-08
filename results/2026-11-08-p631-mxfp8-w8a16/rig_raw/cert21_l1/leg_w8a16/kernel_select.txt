@@ -1,0 +1,1 @@
+(Worker_TP0 pid=1239) INFO 11-08 16:17:52 [__init__.py:923] Using XPUMxFp8LinearKernel for MXFP8 GEMM

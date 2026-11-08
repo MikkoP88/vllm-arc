@@ -1,7 +1,7 @@
 #!/bin/bash
 # r103_mxfp4_boot.sh — P6.26 phase-A boot legs (quant-path isolation).
 #
-# Two owner-named mxfp4 checkpoints, first boots on the cert10 image
+# Two pre-quantized mxfp4 checkpoints, first boots on the cert10 image
 # (plan §P6.26, gates G0). Isolation posture — eager, MTP off, LMC off —
 # so the ONLY new variable vs the certified fp8 incumbent is the weight
 # quant path. Full-posture legs (graph+spec3+lmc) run as phase B after a

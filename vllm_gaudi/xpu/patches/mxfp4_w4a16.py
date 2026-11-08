@@ -28,10 +28,17 @@ PWAL layouts are unchanged — stock W4A4 and this route share them
 (weight = packed f4 ``.t()`` view, weight_scale = [k/32, n] e8m0).
 
 Gate: ``ARC_MXFP4_MODE`` — unset/``w4a16`` installs (when the op exists
-in the loaded wheel), ``w4a4`` keeps stock (A/B control), any other value
-WARNs and keeps stock. On wheels without the op (pre-arc4) the install
-WARNs and keeps stock — a silent non-install is indistinguishable from
-the deferred patch (visibility law).
+in the loaded wheel), ``w4a8`` installs the P6.31 probe lane (e4m3
+per-token activations + packed f4 weights via ``_xpu_C.fp4_gemm_w4a8``,
+arc5 wheel; the W4A8 gate question — r122 cell arithmetic
+predicts it is dominated by w4a16 because the per-token e4m3 quant
+costs ~= a decode GEMM at M=1 while the best-case (e4m3, f4) JIT would
+still land f8-rate at prefill; the lane exists to be MEASURED, and a
+oneDNN md-validation refusal at primitive-create time is the clean
+closed-negative answer), ``w4a4`` keeps stock (A/B control), any other
+value WARNs and keeps stock. On wheels without the op (pre-arc5 for
+w4a8) the install WARNs and keeps stock — a silent non-install is
+indistinguishable from the deferred patch (visibility law).
 """
 
 from __future__ import annotations
@@ -45,6 +52,7 @@ from vllm.logger import init_logger
 logger = init_logger("vllm.platforms.arc")
 
 _MODE_ENV = "ARC_MXFP4_MODE"
+_E4M3_MAX = 448.0
 
 
 def _install(mod=None) -> None:
@@ -60,10 +68,10 @@ def _install(mod=None) -> None:
             "ArcXpuPlatform: mxfp4 w4a16 reroute OFF (%s=w4a4 — stock W4A4)",
             _MODE_ENV)
         return
-    if mode != "w4a16":
+    if mode not in ("w4a16", "w4a8"):
         logger.warning(
             "ArcXpuPlatform: unknown %s=%r — keeping stock W4A4 (valid: "
-            "w4a16, w4a4)", _MODE_ENV, mode)
+            "w4a16, w4a8, w4a4)", _MODE_ENV, mode)
         return
 
     # ``vllm_xpu_kernels.__init__`` does NOT dlopen the extension — a bare
@@ -85,6 +93,74 @@ def _install(mod=None) -> None:
             "ArcXpuPlatform: mxfp4 w4a16 reroute SKIPPED — "
             "_xpu_C.fp4_gemm_w4a16 absent from the loaded wheel (pre-arc4); "
             "stock W4A4 stays")
+        return
+
+    if mode == "w4a8":
+        # P6.31 probe lane — only on explicit request. Weight/scale PWAL
+        # layouts are shared with w4a16; the difference is the activation
+        # class: per-token e4m3 + [M,1] f32 scales feed the new
+        # (e4m3, f4) joint GEMM. The quant here mirrors the r122/r123
+        # kbench qtok cell exactly (clamp-1e-6, divide, clamp +/-448,
+        # cast; scale kept [M,1] f32 contiguous) so e2e legs compare
+        # against the cell arithmetic without a hidden kernel swap.
+        # Shape contract: apply_weights receives x at any rank (stock
+        # kernels pass it raw into the op, whose C++ flattens leading
+        # dims) -- but the [M,1] per-token scale check is 2D, so the
+        # quant runs on the flattened [M, K] view (the same internal
+        # reshape vllm's own quant helpers do) and the output is
+        # reshaped back to x's rank.
+        try:
+            torch.ops._xpu_C.fp4_gemm_w4a8  # noqa: B018 — presence probe
+        except AttributeError:
+            logger.warning(
+                "ArcXpuPlatform: mxfp4 w4a8 probe SKIPPED — "
+                "_xpu_C.fp4_gemm_w4a8 absent from the loaded wheel "
+                "(pre-arc5); stock W4A4 stays")
+            return
+
+        if mod is not None:
+            XPUMxFp4LinearKernel = mod.XPUMxFp4LinearKernel
+        else:
+            from vllm.model_executor.kernels.linear.mxfp4.xpu import (
+                XPUMxFp4LinearKernel, )
+
+        if getattr(XPUMxFp4LinearKernel, "_arc_w4a8_patched", False):
+            return  # idempotent (same law as the w4a16 flag)
+
+        def apply_weights_w4a8(
+            self,
+            layer: torch.nn.Module,
+            x: torch.Tensor,
+            bias: torch.Tensor | None = None,
+        ) -> torch.Tensor:
+            orig_shape = x.shape
+            x2 = x.reshape(-1, orig_shape[-1])
+            a = (
+                x2.detach().abs().amax(dim=-1, keepdim=True).float()
+                .clamp(min=1e-6) / _E4M3_MAX
+            )  # [M, 1] f32, M = product of x's leading dims
+            x8 = (
+                (x2.float() / a).clamp(-_E4M3_MAX, _E4M3_MAX)
+                .to(torch.float8_e4m3fn)
+            )
+            out = torch.ops._xpu_C.fp4_gemm_w4a8(
+                x8,
+                a.contiguous(),
+                layer.weight,
+                layer.weight_scale,
+                x.dtype,
+                bias,
+            )
+            return out.reshape(orig_shape[:-1] + (out.shape[-1],))
+
+        XPUMxFp4LinearKernel.apply_weights = apply_weights_w4a8
+        XPUMxFp4LinearKernel._arc_w4a8_patched = True
+        logger.info(
+            "ArcXpuPlatform: mxfp4 w4a8 probe ACTIVE — "
+            "XPUMxFp4LinearKernel.apply_weights -> "
+            "_xpu_C.fp4_gemm_w4a8 (per-token e4m3 acts; probe lane, "
+            "r122 predicts dominated by w4a16 — measuring the probe lane; "
+            "stock w4a4 via %s=w4a4)", _MODE_ENV)
         return
 
     if mod is not None:

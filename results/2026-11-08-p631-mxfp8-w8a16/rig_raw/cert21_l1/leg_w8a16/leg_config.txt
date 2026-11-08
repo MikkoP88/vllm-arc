@@ -1,0 +1,1 @@
+leg=B model=qwen3.8-27b quant=mxfp8-w8a16 img=vllm-arc:v0.30.0-b70-cert21 gmu=0.85 graph=1 spec=3 lmc=1 qcfg={"ignore":["*visual*","*linear_attn*","mtp.fc"]} mode=w8a16(default-route)

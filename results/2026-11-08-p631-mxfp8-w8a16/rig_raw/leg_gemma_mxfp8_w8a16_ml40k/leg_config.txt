@@ -1,0 +1,1 @@
+mode=w8a16 quant=mxfp8 model=gemma-4-31b gmu=0.8 spec=0 lmc=0 rpc=1200 maxlen=40960 qcfg=none img=vllm-arc:v0.30.0-b70-arc5test

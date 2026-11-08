@@ -1,0 +1,2 @@
+(APIServer pid=13) INFO 11-08 16:17:05 [mxfp8_w8a16.py:120] ArcXpuPlatform: mxfp8 w8a16 reroute ACTIVE — XPUMxFp8LinearKernel.apply_weights -> _xpu_C.fp8_gemm_w8a16_mxfp8 (no per-call activation quant; stock w8a8 via ARC_MXFP8_MODE=w8a8)
+(Worker pid=1239) INFO 11-08 16:17:49 [mxfp8_w8a16.py:120] ArcXpuPlatform: mxfp8 w8a16 reroute ACTIVE — XPUMxFp8LinearKernel.apply_weights -> _xpu_C.fp8_gemm_w8a16_mxfp8 (no per-call activation quant; stock w8a8 via ARC_MXFP8_MODE=w8a8)

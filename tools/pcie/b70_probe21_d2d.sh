@@ -1,6 +1,6 @@
 #!/bin/bash
-# b70_probe21_d2d.sh — p71 D2D peer-copy probe (owner directive
-# 2026-10-31: "check do this solvable — driver/IOMMU refusing P2P DMA").
+# b70_probe21_d2d.sh — p71 D2D peer-copy probe (2026-10-31
+# question: "is this solvable — driver/IOMMU refusing P2P DMA?").
 # Extends the rig's b70_probe* family with the one decisive measurement:
 # effective GPU0<->GPU1 copy bandwidth (direct P2P vs host-bounce vs
 # degraded link). IDLE WINDOW ONLY — never while a bench leg or soak is

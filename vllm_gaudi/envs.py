@@ -48,6 +48,13 @@ if TYPE_CHECKING:
     VLLM_ARC_GMU_RELAX: float = 0.0
     VLLM_ARC_LMC_ASYNC_STORE: bool = True
     VLLM_ARC_LMC_EVSYNC: bool = True
+    # registry catch-up 2026-11-08 (P6.31 audit — p619/p630 lanes went
+    # live docs-only; see the registry tail note)
+    VLLM_ARC_TQ_SPEC_FIX: bool = True
+    VLLM_ARC_TQ_VERIFY_MODE: str = "split"
+    VLLM_ARC_TQ_MQ_SPLITS: int = 32
+    ARC_MXFP4_MODE: str = "w4a16"
+    ARC_MXFP8_MODE: str = "w8a16"
 
 # The begin-* and end* here are used by the documentation generator
 # to extract the used env vars.
@@ -240,7 +247,7 @@ environment_variables: dict[str, Callable[[], Any]] = {
     # gpu-memory-utilization conditional relax: when free device memory at
     # engine start is below the requested utilization, relax the utilization
     # to this fraction instead of aborting the boot (0 disables; 0.8 is the
-    # sanctioned B70 rig posture — standing directive Appendix I #11).
+    # sanctioned B70 rig posture — standing rule, Appendix I #11).
     # Consumed by p05.
     "VLLM_ARC_GMU_RELAX":
     lambda: float(os.environ.get("VLLM_ARC_GMU_RELAX", "0")),
@@ -261,6 +268,43 @@ environment_variables: dict[str, Callable[[], Any]] = {
     # patches/lmcint/vllm_v1_adapter.py (_lmc_flush_body).
     "VLLM_ARC_LMC_EVSYNC":
     lambda: os.environ.get("VLLM_ARC_LMC_EVSYNC", "1") != "0",
+
+    # ---- registry catch-up (P6.31 audit, 2026-11-08): the p619 TQ trio
+    # and the p630/p631 MXFP mode gates went live docs-only — docs/envs.md
+    # tabled them, this registry did not. Same r45g law as above: the
+    # registry documents the surface, it is not the read path; defaults
+    # mirror the consumer os.environ default exactly.
+
+    # p619 TQ spec-verify graph fix master gate: =0 passthrough (pre-fix
+    # behavior — corrupt under graphs, diagnosis only). P6.19 legs
+    # t4f-t9. patches/tq_spec_fix.py:99.
+    "VLLM_ARC_TQ_SPEC_FIX":
+    lambda: os.environ.get("VLLM_ARC_TQ_SPEC_FIX", "1") != "0",
+
+    # p619 TQ verify dispatch mode: split (certified, t5/t9-proven) | mq
+    # (single-pass MQ kernel, MQVAL5-proven, experimental) | synth
+    # (pre-fix, t4f-proven replay-broken; diagnosis only).
+    # patches/tq_spec_fix.py:100.
+    "VLLM_ARC_TQ_VERIFY_MODE":
+    lambda: os.environ.get("VLLM_ARC_TQ_VERIFY_MODE", "split"),
+
+    # p619 MQ kernel KV split count (mq mode only).
+    # patches/tq_mq_aos.py:78.
+    "VLLM_ARC_TQ_MQ_SPLITS":
+    lambda: int(os.environ.get("VLLM_ARC_TQ_MQ_SPLITS", "32") or 32),
+
+    # p630 FIX-P/cert20 mxfp4 linear lane: w4a16 (certified route, bf16
+    # acts -> fp4_gemm_w4a16, zero per-call act quant) | w4a8 (P6.31
+    # first-class probe lane, per-token e4m3 acts -> fp4_gemm_w4a8) |
+    # w4a4 (stock control). patches/mxfp4_w4a16.py:65.
+    "ARC_MXFP4_MODE":
+    lambda: os.environ.get("ARC_MXFP4_MODE", "w4a16").strip().lower(),
+
+    # p631 mxfp8 linear lane: w8a16 (new route, bf16 acts ->
+    # fp8_gemm_w8a16_mxfp8, group-32 e8m0 weight scales, zero runtime
+    # act quant) | w8a8 (stock control). patches/mxfp8_w8a16.py:57.
+    "ARC_MXFP8_MODE":
+    lambda: os.environ.get("ARC_MXFP8_MODE", "w8a16").strip().lower(),
 }
 
 # end-env-vars-definition

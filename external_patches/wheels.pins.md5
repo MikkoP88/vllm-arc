@@ -6,6 +6,23 @@
 # §6 contingency wheel (p13): int64 wedge fix, oneAPI 2026.0-built, device-gated
 # CLEAN 2026-10-27 (results/2026-10-27-p13-vxk-wheel/)
 a51df187aae8efa3871b0cb9b7d3f3c7  vllm_xpu_kernels-0.1.14.1+arc3-cp312-cp312-linux_x86_64.whl
+# P6.30 FIX-P (cert20 ship): arc3 tree + csrc/xpu/onednn/fp4_gemm_w4a16.h +
+# joint dtypes bf16_mxfp4/f16_mxfp4 + op fp4_gemm_w4a16 (kit:
+# external_patches/vllm-xpu-kernels/arc4_fp4_gemm_w4a16/, byte-exact
+# anchor patcher + build law in its README; evidence
+# results/2026-11-08-p630-mxfp4-perf/). md5 from the rig wheel
+# /root/build/wheels-arc-vxk/ (2026-11-08 audit catch-up — the cert20
+# close-out banked the wheel rig-side only; pin added here per the
+# ground-truth-file law).
+8fae9905359384e292740aa97f3c4924  vllm_xpu_kernels-0.1.14.1+arc4-cp312-cp312-linux_x86_64.whl
+# P6.31 (cert21 ship): arc4 tree + ops fp8_gemm_w8a16_mxfp8 +
+# fp4_gemm_w4a8 (W4A8 = banked oneDNN-refused closed-negative, r123)
+# (kit: external_patches/vllm-xpu-kernels/arc5_mxfp8_lanes/; evidence
+# results/2026-11-08-p631-mxfp8-w8a16/). md5 from the rig wheel
+# /root/build/wheels-arc-vxk/; sha256
+# 219268cf7d24ebc7a99e5afec5097edd63d88ef26255511c589da71f3615399a
+# (the sha256 is the cert21 IMAGE_MANIFEST / Dockerfile pin).
+eadc44a106a2de1dce8699de699d9774  vllm_xpu_kernels-0.1.14.1+arc5-cp312-cp312-linux_x86_64.whl
 # P6.2: internal lmcache wheel — upstream 0.5.6 sdist (PyPI, official-wheel
 # reference md5 1f96765db1d7b02ecdd3852794e400a1; all 5 patched files
 # byte-verified sdist-vs-wheel) + the 4-patch arc kit (e-adapter-vllm-056-

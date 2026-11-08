@@ -1,0 +1,7 @@
+[factual] finish=length tok=24
+  'We need answer user: "Say the number seven in words, then stop." Need final just "seven" likely.|'
+[reason] finish=length tok=96
+  'We need answer user: "If a train leaves at 3pm traveling 60 km/h and another at 4pm traveling 90 km/h the same direction, when does the second catch the first? Answer with just the time."\n\nWe need solve. First train leaves 3pm at 60 km/h. Second leaves 4pm at 90 km/h same direction. At 4pm first has 60 km head start. Relative|'
+[code] finish=length tok=64
+  'We need answer user: "Write a Python one-liner that reverses a string s. Output only the code." Need final only code. Need likely `print(s[::-1])`? They ask reverses a string s. One-liner. Could be `s = s[::-1]`? If output|'
+G1_DONE

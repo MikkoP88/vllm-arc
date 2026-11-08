@@ -1,6 +1,6 @@
 #!/bin/bash
 # SPDX-License-Identifier: Apache-2.0
-# r99c_annex.sh — P6.24 r99 t1 REP-LOOP disposition annex (owner hard-gate
+# r99c_annex.sh — P6.24 r99 t1 REP-LOOP disposition annex (hard-gate
 # evidence law: a FAIL face gets a measured disposition, not an argued one).
 #
 # Facts (2026-11-05): r99 [1] default-posture LONG-RETURN recomputed from
