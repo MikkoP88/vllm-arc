@@ -35,16 +35,19 @@ sleep 10
 docker rm -f arc-kbench >/dev/null 2>&1 || true
 
 echo "=== [r126] kbench boot $(date +%H:%M:%S) ==="
-# The image ENTRYPOINT is what establishes the oneAPI runtime env (setvars
-# + oneCCL vars) before any python; overriding it with a bare interpreter
-# died at torch import on the first run (libsycl.so.9 vs stale UR loader:
-# urDeviceWaitExp). Mirror the entrypoint's env chain, then exec kbench.
+# Env law (serve_arc_b70.sh exec block precedent): python in this image
+# needs LD_LIBRARY_PATH=venv/lib:torch/lib. Two earlier attempts died at
+# torch import (libsycl.so.9 undefined urDeviceWaitExp): bare interpreter
+# with NO env, and the oneAPI setvars chain (setvars' own libsycl/UR pair
+# does not satisfy torch's bundled sycl). The cert22 build assert proves
+# this exact chain imports torch + the skinny ops.
 docker run --rm --name arc-kbench \
   --device /dev/dri --group-add video \
   -e ZES_ENABLE_SYSMAN=1 -e DISABLE_VECLIB=1 \
+  -e LD_LIBRARY_PATH=/opt/venv/lib:/opt/venv/lib/python3.12/site-packages/torch/lib \
   -v "$P":/work \
-  --entrypoint bash \
-  $IMG6 -c 'source /opt/intel/oneapi/setvars.sh --force >/dev/null 2>&1; source /opt/intel/oneapi/ccl/2021.15/env/vars.sh --force >/dev/null 2>&1; exec /opt/venv/bin/python /work/r126_kbench.py' \
+  --entrypoint /opt/venv/bin/python \
+  $IMG6 /work/r126_kbench.py \
   > "$P/r126_kbench.out" 2>&1
 rc=$?
 echo "=== [r126] kbench exit rc=$rc $(date +%H:%M:%S) ==="
