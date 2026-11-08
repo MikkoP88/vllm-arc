@@ -206,10 +206,13 @@ void check_weights_aligned4(const torch::Tensor& b) {
 }
 
 // The SYCL queue of the current torch XPU stream -- the same acquisition
-// pattern the stock onednn headers use (c10::xpu::getCurrentXPUStream);
-// submitting on it keeps the skinny kernels ordered with torch work.
-sycl::queue& current_sycl_queue() {
-  return *c10::xpu::getCurrentXPUStream().queue();
+// pattern the stock onednn headers use (c10::xpu::getCurrentXPUStream).
+// torch 2.13's XPUStream::queue() yields the sycl queue directly (not a
+// pointer); sycl::queue is a shared handle, so the copy submits to the
+// same underlying in-order queue and the skinny kernels stay ordered
+// with torch work on this stream.
+sycl::queue current_sycl_queue() {
+  return c10::xpu::getCurrentXPUStream().queue();
 }
 
 void check_m_small(int64_t m) {
@@ -253,7 +256,7 @@ torch::Tensor skinny_fp8_gemm_w8a16(
   const float* bias_p = bias_ptr_or_null(bias, n);
 
   torch::Tensor result = make_output(A, n, A.scalar_type());
-  auto& queue = current_sycl_queue();
+  auto queue = current_sycl_queue();
   const int m_i = static_cast<int>(m), n_i = static_cast<int>(n),
             k_i = static_cast<int>(k);
   const auto cfg = skinny_pick_cfg(m_i, n_i, k_i);
@@ -308,7 +311,7 @@ torch::Tensor skinny_fp8_gemm_w8a16_mxfp8(
       "skinny mxfp8 out_dtype must be bf16/f16, got ", odt);
 
   torch::Tensor result = make_output(A, n, odt);
-  auto& queue = current_sycl_queue();
+  auto queue = current_sycl_queue();
   const int m_i = static_cast<int>(m), n_i = static_cast<int>(n),
             k_i = static_cast<int>(k);
   const auto cfg = skinny_pick_cfg(m_i, n_i, k_i);
@@ -358,7 +361,7 @@ torch::Tensor skinny_fp4_gemm_w4a16(
       "skinny mxfp4 out_dtype must be bf16/f16, got ", odt);
 
   torch::Tensor result = make_output(A, n, odt);
-  auto& queue = current_sycl_queue();
+  auto queue = current_sycl_queue();
   const int m_i = static_cast<int>(m), n_i = static_cast<int>(n),
             k_i = static_cast<int>(k);
   const auto cfg = skinny_pick_cfg(m_i, n_i, k_i);
