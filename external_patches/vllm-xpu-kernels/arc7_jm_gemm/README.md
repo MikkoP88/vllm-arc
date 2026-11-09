@@ -91,4 +91,9 @@ calibration live in results/…-jm-ladder/ Parts 5-7 and memory
 | `vxk_arc9_inner.sh` (tools/ar/) | build9 in-container build script (resume mode via `VXK_ARC9_CLEAN=0`) |
 
 Any future custom-GEMM lane must beat stock's 60–90%-of-floor bar
-before it is worth a wheel build.
+before it is worth a wheel build — and, per the r129 register-DPAS
+probe (same day, results README Part 8), through **joint_matrix only**:
+every register-fed lowering (raw-asm `XE_DPAS_TT`, builtin/
+`__spirv_SubgroupMatrixMultiplyAccumulateINTEL`, AOT and JIT) traps on
+bmg/oneAPI-2026.0; register-input dpas is unimplementable on this
+stack. Custom skinny-GEMM is CLOSED on all vehicles.
