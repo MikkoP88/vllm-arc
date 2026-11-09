@@ -55,6 +55,7 @@ if TYPE_CHECKING:
     VLLM_ARC_TQ_MQ_SPLITS: int = 32
     ARC_MXFP4_MODE: str = "w4a16"
     ARC_MXFP8_MODE: str = "w8a16"
+    ARC_SKINNY_M: str = "on"
 
 # The begin-* and end* here are used by the documentation generator
 # to extract the used env vars.
@@ -305,6 +306,13 @@ environment_variables: dict[str, Callable[[], Any]] = {
     # act quant) | w8a8 (stock control). patches/mxfp8_w8a16.py:57.
     "ARC_MXFP8_MODE":
     lambda: os.environ.get("ARC_MXFP8_MODE", "w8a16").strip().lower(),
+
+    # p633 skinny-M decode lane: on (M<=8 linear GEMMs route to the arc6
+    # skinny kernels when the loaded wheel carries the ops; per-lane
+    # WARN+fallback on any runtime failure) | off (A/B control, current
+    # routes at all Ms). patches/skinny_m.py:133.
+    "ARC_SKINNY_M":
+    lambda: os.environ.get("ARC_SKINNY_M", "on").strip().lower(),
 }
 
 # end-env-vars-definition

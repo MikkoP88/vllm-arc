@@ -1,0 +1,1 @@
+(Worker_TP0 pid=913) INFO 11-09 02:12:42 [__init__.py:969] Using XPUMxFp4LinearKernel for MXFP4 GEMM

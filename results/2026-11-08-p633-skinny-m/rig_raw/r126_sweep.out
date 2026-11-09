@@ -1,0 +1,159 @@
+=== [0] env ===
+xpu: True Intel(R) Graphics [0xe223]
+[ok] probe wheel ops present
+=== combo base {} (M=1) ===
+=== combo base (M=8 spot) done ===
+=== combo sw {'ARC_SKINNY_SWIZZLE': '1'} (M=1) ===
+=== combo sw (M=8 spot) done ===
+=== combo wi16k {'ARC_SKINNY_WI': '16384'} (M=1) ===
+=== combo wi16k+sw {'ARC_SKINNY_WI': '16384', 'ARC_SKINNY_SWIZZLE': '1'} (M=1) ===
+=== combo wi64k {'ARC_SKINNY_WI': '65536'} (M=1) ===
+=== combo wi64k+sw {'ARC_SKINNY_WI': '65536', 'ARC_SKINNY_SWIZZLE': '1'} (M=1) ===
+=== combo kc1024 {'ARC_SKINNY_KC_MIN': '1024'} (M=1) ===
+=== combo kc1024 (M=8 spot) done ===
+=== combo kc1024+sw {'ARC_SKINNY_KC_MIN': '1024', 'ARC_SKINNY_SWIZZLE': '1'} (M=1) ===
+=== combo wi16k+kc1024+sw {'ARC_SKINNY_WI': '16384', 'ARC_SKINNY_KC_MIN': '1024', 'ARC_SKINNY_SWIZZLE': '1'} (M=1) ===
+=== combo kc2048 {'ARC_SKINNY_KC_MIN': '2048'} (M=1) ===
+
+=== sweep summary (M=1): best combo per shape/lane ===
+  gemma.up    w16pt:kc1024 0.206ms (281GB/s,r1.32) w16pc:kc1024+sw 0.178ms (325GB/s,r1.13) m816:kc1024 0.198ms (292GB/s,r1.10) g16:kc1024 0.128ms (226GB/s,r0.83)
+  gemma.down  w16pt:kc1024 0.205ms (282GB/s,r1.29) w16pc:base 0.173ms (334GB/s,r1.12) m816:base 0.195ms (296GB/s,r1.18) g16:wi16k 0.133ms (217GB/s,r0.81)
+  gemma.o     w16pt:wi64k+sw 0.154ms (188GB/s,r1.03) w16pc:wi64k 0.121ms (239GB/s,r0.79) m816:wi16k+sw 0.130ms (222GB/s,r0.84) g16:wi64k+sw 0.124ms (117GB/s,r0.80)
+  qwen.up     w16pt:wi64k 0.181ms (247GB/s,r1.17) w16pc:wi64k 0.150ms (297GB/s,r0.98) m816:kc1024 0.162ms (274GB/s,r1.02) g16:kc1024 0.125ms (178GB/s,r0.79)
+  qwen.down   w16pt:wi64k 0.174ms (256GB/s,r1.12) w16pc:wi64k 0.144ms (309GB/s,r0.94) m816:kc1024 0.159ms (279GB/s,r1.01) g16:wi64k+sw 0.124ms (180GB/s,r0.80)
+  qwen.o      w16pt:kc1024+sw 0.153ms (171GB/s,r1.01) w16pc:wi16k+sw 0.125ms (209GB/s,r0.79) m816:kc1024 0.125ms (209GB/s,r0.80) g16:wi64k+sw 0.124ms (105GB/s,r0.81)
+
+=== per-combo M=1 mean skinny ms / mean ratio / wins-out-of-24 ===
+  base              mean_sk=0.2140 mean_ratio=0.890 wins=17/24
+  sw                mean_sk=0.1888 mean_ratio=0.935 wins=16/24
+  wi16k             mean_sk=0.2042 mean_ratio=1.002 wins=16/24
+  wi16k+sw          mean_sk=0.2214 mean_ratio=1.064 wins=15/24
+  wi64k             mean_sk=0.1963 mean_ratio=0.977 wins=15/24
+  wi64k+sw          mean_sk=0.1926 mean_ratio=0.963 wins=15/24
+  kc1024            mean_sk=0.1910 mean_ratio=0.923 wins=15/24
+  kc1024+sw         mean_sk=0.1929 mean_ratio=0.961 wins=14/24
+  wi16k+kc1024+sw   mean_sk=0.2104 mean_ratio=1.024 wins=14/24
+  kc2048            mean_sk=0.2390 mean_ratio=1.209 wins=7/24
+
+correctness: FAIL (120 cells over 0.02)
+    ('base', 'gemma.up', 'm816', 1.4169584512710571)
+    ('base', 'gemma.up', 'g16', 1.411787509918213)
+    ('base', 'gemma.down', 'm816', 1.4040989875793457)
+    ('base', 'gemma.down', 'g16', 1.4209331274032593)
+    ('base', 'gemma.o', 'm816', 1.4111193418502808)
+    ('base', 'gemma.o', 'g16', 1.4153587818145752)
+    ('base', 'qwen.up', 'm816', 1.4006998538970947)
+    ('base', 'qwen.up', 'g16', 1.3975547552108765)
+    ('base', 'qwen.down', 'm816', 1.4108479022979736)
+    ('base', 'qwen.down', 'g16', 1.4054844379425049)
+    ('base', 'qwen.o', 'm816', 1.4186923503875732)
+    ('base', 'qwen.o', 'g16', 1.4164999723434448)
+    ('sw', 'gemma.up', 'm816', 1.4169584512710571)
+    ('sw', 'gemma.up', 'g16', 1.411787509918213)
+    ('sw', 'gemma.down', 'm816', 1.4040989875793457)
+    ('sw', 'gemma.down', 'g16', 1.4209331274032593)
+    ('sw', 'gemma.o', 'm816', 1.4111193418502808)
+    ('sw', 'gemma.o', 'g16', 1.4153587818145752)
+    ('sw', 'qwen.up', 'm816', 1.4006998538970947)
+    ('sw', 'qwen.up', 'g16', 1.3975547552108765)
+    ('sw', 'qwen.down', 'm816', 1.4108479022979736)
+    ('sw', 'qwen.down', 'g16', 1.4054844379425049)
+    ('sw', 'qwen.o', 'm816', 1.4186923503875732)
+    ('sw', 'qwen.o', 'g16', 1.4164999723434448)
+    ('wi16k', 'gemma.up', 'm816', 1.4169584512710571)
+    ('wi16k', 'gemma.up', 'g16', 1.4117876291275024)
+    ('wi16k', 'gemma.down', 'm816', 1.4040989875793457)
+    ('wi16k', 'gemma.down', 'g16', 1.4209331274032593)
+    ('wi16k', 'gemma.o', 'm816', 1.4111193418502808)
+    ('wi16k', 'gemma.o', 'g16', 1.4153587818145752)
+    ('wi16k', 'qwen.up', 'm816', 1.4006998538970947)
+    ('wi16k', 'qwen.up', 'g16', 1.3975552320480347)
+    ('wi16k', 'qwen.down', 'm816', 1.4108479022979736)
+    ('wi16k', 'qwen.down', 'g16', 1.4054844379425049)
+    ('wi16k', 'qwen.o', 'm816', 1.4186923503875732)
+    ('wi16k', 'qwen.o', 'g16', 1.4164999723434448)
+    ('wi16k+sw', 'gemma.up', 'm816', 1.4169584512710571)
+    ('wi16k+sw', 'gemma.up', 'g16', 1.4117876291275024)
+    ('wi16k+sw', 'gemma.down', 'm816', 1.4040989875793457)
+    ('wi16k+sw', 'gemma.down', 'g16', 1.4209331274032593)
+    ('wi16k+sw', 'gemma.o', 'm816', 1.4111193418502808)
+    ('wi16k+sw', 'gemma.o', 'g16', 1.4153587818145752)
+    ('wi16k+sw', 'qwen.up', 'm816', 1.4006998538970947)
+    ('wi16k+sw', 'qwen.up', 'g16', 1.3975552320480347)
+    ('wi16k+sw', 'qwen.down', 'm816', 1.4108479022979736)
+    ('wi16k+sw', 'qwen.down', 'g16', 1.4054844379425049)
+    ('wi16k+sw', 'qwen.o', 'm816', 1.4186923503875732)
+    ('wi16k+sw', 'qwen.o', 'g16', 1.4164999723434448)
+    ('wi64k', 'gemma.up', 'm816', 1.4169584512710571)
+    ('wi64k', 'gemma.up', 'g16', 1.4117859601974487)
+    ('wi64k', 'gemma.down', 'm816', 1.4040989875793457)
+    ('wi64k', 'gemma.down', 'g16', 1.4209331274032593)
+    ('wi64k', 'gemma.o', 'm816', 1.4111193418502808)
+    ('wi64k', 'gemma.o', 'g16', 1.4153587818145752)
+    ('wi64k', 'qwen.up', 'm816', 1.4007008075714111)
+    ('wi64k', 'qwen.up', 'g16', 1.3975552320480347)
+    ('wi64k', 'qwen.down', 'm816', 1.4108479022979736)
+    ('wi64k', 'qwen.down', 'g16', 1.4054844379425049)
+    ('wi64k', 'qwen.o', 'm816', 1.4186923503875732)
+    ('wi64k', 'qwen.o', 'g16', 1.4164999723434448)
+    ('wi64k+sw', 'gemma.up', 'm816', 1.4169584512710571)
+    ('wi64k+sw', 'gemma.up', 'g16', 1.4117859601974487)
+    ('wi64k+sw', 'gemma.down', 'm816', 1.4040989875793457)
+    ('wi64k+sw', 'gemma.down', 'g16', 1.4209331274032593)
+    ('wi64k+sw', 'gemma.o', 'm816', 1.4111193418502808)
+    ('wi64k+sw', 'gemma.o', 'g16', 1.4153587818145752)
+    ('wi64k+sw', 'qwen.up', 'm816', 1.4007008075714111)
+    ('wi64k+sw', 'qwen.up', 'g16', 1.3975552320480347)
+    ('wi64k+sw', 'qwen.down', 'm816', 1.4108479022979736)
+    ('wi64k+sw', 'qwen.down', 'g16', 1.4054844379425049)
+    ('wi64k+sw', 'qwen.o', 'm816', 1.4186923503875732)
+    ('wi64k+sw', 'qwen.o', 'g16', 1.4164999723434448)
+    ('kc1024', 'gemma.up', 'm816', 1.4169584512710571)
+    ('kc1024', 'gemma.up', 'g16', 1.4117876291275024)
+    ('kc1024', 'gemma.down', 'm816', 1.4040989875793457)
+    ('kc1024', 'gemma.down', 'g16', 1.4209331274032593)
+    ('kc1024', 'gemma.o', 'm816', 1.4111193418502808)
+    ('kc1024', 'gemma.o', 'g16', 1.4153587818145752)
+    ('kc1024', 'qwen.up', 'm816', 1.4006998538970947)
+    ('kc1024', 'qwen.up', 'g16', 1.3975547552108765)
+    ('kc1024', 'qwen.down', 'm816', 1.4108479022979736)
+    ('kc1024', 'qwen.down', 'g16', 1.4054844379425049)
+    ('kc1024', 'qwen.o', 'm816', 1.4186923503875732)
+    ('kc1024', 'qwen.o', 'g16', 1.4164999723434448)
+    ('kc1024+sw', 'gemma.up', 'm816', 1.4169584512710571)
+    ('kc1024+sw', 'gemma.up', 'g16', 1.4117876291275024)
+    ('kc1024+sw', 'gemma.down', 'm816', 1.4040989875793457)
+    ('kc1024+sw', 'gemma.down', 'g16', 1.4209331274032593)
+    ('kc1024+sw', 'gemma.o', 'm816', 1.4111193418502808)
+    ('kc1024+sw', 'gemma.o', 'g16', 1.4153587818145752)
+    ('kc1024+sw', 'qwen.up', 'm816', 1.4006998538970947)
+    ('kc1024+sw', 'qwen.up', 'g16', 1.3975547552108765)
+    ('kc1024+sw', 'qwen.down', 'm816', 1.4108479022979736)
+    ('kc1024+sw', 'qwen.down', 'g16', 1.4054844379425049)
+    ('kc1024+sw', 'qwen.o', 'm816', 1.4186923503875732)
+    ('kc1024+sw', 'qwen.o', 'g16', 1.4164999723434448)
+    ('wi16k+kc1024+sw', 'gemma.up', 'm816', 1.4169584512710571)
+    ('wi16k+kc1024+sw', 'gemma.up', 'g16', 1.4117876291275024)
+    ('wi16k+kc1024+sw', 'gemma.down', 'm816', 1.4040989875793457)
+    ('wi16k+kc1024+sw', 'gemma.down', 'g16', 1.4209331274032593)
+    ('wi16k+kc1024+sw', 'gemma.o', 'm816', 1.4111193418502808)
+    ('wi16k+kc1024+sw', 'gemma.o', 'g16', 1.4153587818145752)
+    ('wi16k+kc1024+sw', 'qwen.up', 'm816', 1.4006998538970947)
+    ('wi16k+kc1024+sw', 'qwen.up', 'g16', 1.3975552320480347)
+    ('wi16k+kc1024+sw', 'qwen.down', 'm816', 1.4108479022979736)
+    ('wi16k+kc1024+sw', 'qwen.down', 'g16', 1.4054844379425049)
+    ('wi16k+kc1024+sw', 'qwen.o', 'm816', 1.4186923503875732)
+    ('wi16k+kc1024+sw', 'qwen.o', 'g16', 1.4164999723434448)
+    ('kc2048', 'gemma.up', 'm816', 1.4169584512710571)
+    ('kc2048', 'gemma.up', 'g16', 1.4117876291275024)
+    ('kc2048', 'gemma.down', 'm816', 1.4040989875793457)
+    ('kc2048', 'gemma.down', 'g16', 1.4209284782409668)
+    ('kc2048', 'gemma.o', 'm816', 1.4111193418502808)
+    ('kc2048', 'gemma.o', 'g16', 1.4153587818145752)
+    ('kc2048', 'qwen.up', 'm816', 1.4006998538970947)
+    ('kc2048', 'qwen.up', 'g16', 1.3975552320480347)
+    ('kc2048', 'qwen.down', 'm816', 1.4108479022979736)
+    ('kc2048', 'qwen.down', 'g16', 1.4054844379425049)
+    ('kc2048', 'qwen.o', 'm816', 1.4186923503875732)
+    ('kc2048', 'qwen.o', 'g16', 1.4165018796920776)
+[ok] banked to /work/r126_sweep_rows.json

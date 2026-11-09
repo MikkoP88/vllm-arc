@@ -1,0 +1,7 @@
+[factual] finish=length tok=24
+  '\n\n\n\n\n\n|'
+[reason] finish=length tok=96
+  '<|im_start|>user\n<|im_start|>assistant\n\n<|im_start|>user\n<|im_start|>assistant\n\n<|im_start|>user\n<|im_start|>assistant\n\n<|im_start|>user\n<|im_start|>assistant\n\n<|im_start|>user\n<|im_start|>assistant\n|'
+[code] finish=length tok=64
+  '\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n|'
+G1_DONE

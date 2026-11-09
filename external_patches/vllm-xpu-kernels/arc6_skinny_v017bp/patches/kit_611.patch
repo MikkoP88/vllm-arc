@@ -1,0 +1,101 @@
+diff --git a/csrc/xpu/onednn/fp8_gemm_w8a16.h b/csrc/xpu/onednn/fp8_gemm_w8a16.h
+index 7f8f38708d..42c1b63609 100644
+--- a/csrc/xpu/onednn/fp8_gemm_w8a16.h
++++ b/csrc/xpu/onednn/fp8_gemm_w8a16.h
+@@ -26,11 +26,13 @@ static inline void dnnl_matmul_w8a16_fp8(
+   const int n = o_sz.back();  // presume channel last format
+   const int k = *(src_sz.end() - 1);
+ 
+-  // block quant: m2_sc is 2D with size(0) > 1, i.e. [k/group_size,
+-  // n/group_size] Per-channel scale [1, N] has size(0)==1 and must NOT enter
+-  // this branch.
+-  bool is_block_quant = (m2_sc.dim() == 2) && (m2_sc.size(0) > 1);
+-  int64_t blk_group_size = -1;
++  // block quant: m2_sc is 2D [k/group_k, n/group_n]. [1, N / block_n]
++  // (K == block_k) is still block; per-channel [1, N] must NOT enter here.
++  bool is_block_quant =
++      (m2_sc.dim() == 2) &&
++      ((m2_sc.size(0) > 1) || (m2_sc.size(1) > 1 && m2_sc.size(1) < n));
++  int64_t blk_group_k = -1;
++  int64_t blk_group_n = -1;
+   if (is_block_quant) {
+     TORCH_CHECK(
+         k % m2_sc.size(0) == 0 && n % m2_sc.size(1) == 0,
+@@ -41,8 +43,16 @@ static inline void dnnl_matmul_w8a16_fp8(
+         ", scale shape ",
+         m2_sc.sizes(),
+         ".");
+-    blk_group_size = k / m2_sc.size(0);
++    blk_group_k = k / m2_sc.size(0);
++    blk_group_n = n / m2_sc.size(1);
+   }
++  TORCH_CHECK(
++      is_block_quant || m2_sc.numel() == 1 || m2_sc.numel() == n,
++      "Per-channel weight scale must have N=",
++      n,
++      " elements, got shape ",
++      m2_sc.sizes(),
++      ".");
+ 
+   // get joint dtypes
+   joint_dtypes_t jd;
+@@ -92,7 +102,7 @@ static inline void dnnl_matmul_w8a16_fp8(
+       pattr.set_scales(
+           DNNL_ARG_WEIGHTS,
+           /* mask */ (1 << 0) + (1 << 1),
+-          {blk_group_size, blk_group_size},
++          {blk_group_k, blk_group_n},
+           get_onednn_dtype(m2_sc));
+       /* per block quant */
+     } else if (m2_sc.numel() == 1) {
+@@ -120,8 +130,16 @@ static inline void dnnl_matmul_w8a16_fp8(
+   at::Device curDevice = at::Device(at::kXPU, dev_id);
+   auto engine = GpuEngineManager::Instance().get_engine(curDevice);
+ 
+-  int m2_sc_group_size = m2_sc.numel();
+-  int sc_group_size = (group_size << 8) | m2_sc_group_size;
++  // Scale shape selects the mask and {group_k, group_n}, so it must be keyed:
++  // e.g. [1, 20] and [2, 10] have the same numel but different groups.
++  auto hash_dims = [](const torch::Tensor& tensor) {
++    int hash = tensor.dim();
++    for (const auto size : tensor.sizes()) {
++      hash = hash * 131 + static_cast<int>(size);
++    }
++    return hash;
++  };
++  int sc_group_size = (group_size << 8) ^ hash_dims(m2_sc);
+   auto& matmul_ext = matmul_primitive_create_and_cache(
+       jd, tt, b_type, m, n, k, lda, ldb, ldc, dev_id, f_attr, sc_group_size);
+ 
+diff --git a/csrc/xpu/onednn/fp8_gemm_w8a8.h b/csrc/xpu/onednn/fp8_gemm_w8a8.h
+index ec3b83393c..25c5b3490f 100644
+--- a/csrc/xpu/onednn/fp8_gemm_w8a8.h
++++ b/csrc/xpu/onednn/fp8_gemm_w8a8.h
+@@ -25,7 +25,12 @@ static inline void dnnl_matmul_w8a8_fp8(
+   const int n = o_sz.back();  // presume channel last format
+   const int k = *(src_sz.end() - 1);
+ 
+-  bool is_block_quant = (m1_sc.dim() == 2) && (m1_sc.size(1) > 1);
++  // K == block_k gives m1_sc [M, 1] and m2_sc [1, N / block_n]: still block.
++  bool single_k_block = (m1_sc.dim() == 2) && (m1_sc.size(1) == 1) &&
++                        (m2_sc.dim() == 2) && (m2_sc.size(0) == 1) &&
++                        (m2_sc.size(1) > 1) && (m2_sc.size(1) < n);
++  bool is_block_quant =
++      ((m1_sc.dim() == 2) && (m1_sc.size(1) > 1)) || single_k_block;
+ 
+   int64_t wei_group_k = -1;
+   int64_t wei_group_n = -1;
+@@ -48,6 +53,13 @@ static inline void dnnl_matmul_w8a8_fp8(
+     wei_group_k = k / m2_sc.size(0);
+     wei_group_n = n / m2_sc.size(1);
+   }
++  TORCH_CHECK(
++      is_block_quant || m2_sc.numel() == 1 || m2_sc.numel() == n,
++      "Per-channel weight scale must have N=",
++      n,
++      " elements, got shape ",
++      m2_sc.sizes(),
++      ".");
+ 
+   // get joint dtypes
+   joint_dtypes_t jd;
