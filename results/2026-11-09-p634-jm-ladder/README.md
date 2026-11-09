@@ -401,3 +401,73 @@ Artifacts (all md5-verified rig==repo): `r128b_cut10.log`
 runbook/watcher/inner at `tools/ar/{run_cut10.sh,watch9.sh,vxk_arc9_inner.sh}`
 (`42df6176…`, `5a1136db…`, `bae2cdce…`).
 
+
+## Part 8 — vehicle (a) register-DPAS: instruction unreachable, lane CLOSED (22:00–22:15 UTC)
+
+The cut-10 write-up left one theoretical escape: a **register-fed dpas**
+(vehicle (a)) — decode f8/f4 weights straight into registers, feed
+`dpas` with register operands, never touch memory between decode and
+MMA. That kills vehicle (b)'s staging bill by construction. Probe
+`tools/ar/r129a_regdpas.cpp` (cutlass-sycl cute ops, Marlin repack
+`[nt][kc][t16][16B/8B]`, branchless packed decoders, one SG per
+n-tile, M=8-pad/1-row-store, 3 warmup + 50 profiled launches).
+
+**Verdict: the register-fed instruction does not exist on this stack.**
+Both lowering forms of `SubgroupMatrixMultiplyAccumulate` kill the
+thread at the first fma — every configuration tried:
+
+| form | compile | behavior |
+|---|---|---|
+| raw-asm `XE_DPAS_TT` (`mma_xe.hpp`) | AOT bmg | thread dies at kc=0 fma; kernel "completes" ~4.8 µs, out all zeros, maxrel 1.00 |
+| `XE_8x16x16_F32F16F16F32_TT` → `__spirv_SubgroupMatrixMultiplyAccumulateINTEL` (`mma_xe_legacy.hpp` → `_spirv.hpp`, oneAPI ≥2025.2 route) | AOT bmg | identical: pre-fma DBG prints fire, post-fma never |
+| same + `[[sycl::reqd_sub_group_size(16)]]` | AOT bmg | worse: process **segfaults (exit 139)** |
+| same | JIT (spir64, no AOT flags) | **segfault mid-run** (log ends at a gemma DBG line) |
+
+Controls: the same flags are production's (vxk `CMakeLists.txt:291`
+spirv-ext list incl. `subgroup_matrix_multiply_accumulate`); the
+non-mma control build (`-DR129_NOMMA`, loads kept alive) completes
+fine, so loads/geometry are not the killer; and `joint_matrix`
+(`OpJointMatrixMadINTEL` — a *different* instruction) is proven
+wheel-exact on this exact stack/container at cut-10. XE2/bmg +
+oneAPI 2026.0 simply has no working lowering for the legacy
+subgroup-mma instruction; Intel's own guidance now points Xe2+ at
+joint_matrix, which has **no register-input API** (fragments are
+loaded from memory only) — so "register-DPAS + inline dequant" is
+unimplementable, not merely slow. The perf question (≥516 GB/s?) is
+moot.
+
+**Consequences:**
+1. Vehicle (a) CLOSED, completing the pair: (a) register-fed dpas —
+   unreachable; (b) joint_matrix staging — reachable and 2× stock
+   (cut-10). **Custom skinny-GEMM is CLOSED on all vehicles.** The
+   arc7-README law stands with a harder edge: any future custom-GEMM
+   lane must beat stock's 60–90%-of-floor bar *through joint_matrix
+   only* — i.e. pay the measured ~130 ns/step SLM B-staging — before
+   it earns a wheel build.
+2. One genuinely new residual question surfaced by this probe, cheap
+   and stock-side (no custom kernel): **stock w8a8 vs w16 at M=1 on
+   B70** has never been measured (the P6.26-era w8a8 refusal was our
+   dispatch default, not a perf loss). If oneDNN's e4m3×e4m3 path
+   beats its w16 path at M=1, that's a routing-only win. Next
+   session's first cheap probe.
+3. `mqa_logits_xe2.cpp` (production vxk, raw-asm `XE_DPAS_TT`) is
+   presumptively dead on bmg for the same reason — never exercised by
+   our serving (mqa route unused at cert22). Noted, not actionable.
+
+Artifacts (md5 rig==repo): `r129a_run.log` (`49348c54…43db`, AOT
+intrinsic full run), `r129a_jit.log` (`b234d472…ef07`, JIT segfault),
+`r129a_sg16_aot.log` (`f0b09242…4b906`, exit-139 run); source
+`tools/ar/r129a_regdpas.cpp` (`d3225889…e1b` pre-verdict-header);
+binary path rig `/root/build/r129a/`, builder `/tmp/`. Source md5s:
+executed variant `d3225889a55eef69916b40e49553ae1b` (rig
+`/root/build/r129a/r129a_regdpas.cpp`), repo final `2476ae6e30dc2e9d
+aec03c1cfef95d7d` (= rig `/root/build/r129a/r129a_final.cpp`, adds the
+verdict header). Compile:
+
+```
+source /opt/intel/oneapi/setvars.sh --force   # in vxk-arc3-builder
+icpx -fsycl -O3 -DNDEBUG -DCUTLASS_ENABLE_SYCL -DR129_DEBUG   -fsycl-targets=spir64_gen   -Xsycl-target-backend=spir64_gen "-device bmg,bmg-g31-a0"   -Xspirv-translator "-spirv-ext=+SPV_INTEL_split_barrier,+SPV_INTEL_2d_block_io,+SPV_INTEL_subgroup_matrix_multiply_accumulate"   -I/src/vllm-xpu-kernels/.deps/cutlass-sycl-src/include   /tmp/r129a_regdpas.cpp -o /tmp/r129a.bin
+```
+
+(JIT arm: drop the `-fsycl-targets`/backend/device/spirv-translator
+flag groups.)

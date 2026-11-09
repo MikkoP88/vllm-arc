@@ -1,0 +1,14 @@
+device Intel(R) Graphics [0xe223] sgsize-default
+qwen.up    f8  cA       4.8 us    9284 GB/s  maxrel 1.00e+00
+qwen.up    f8  rA       4.7 us    9482 GB/s  maxrel 1.00e+00
+qwen.up    f4  cA       4.9 us    4505 GB/s  maxrel 1.00e+00
+qwen.up    f4  rA       4.8 us    4612 GB/s  maxrel 1.00e+00
+gemma.up   f8  cA       8.8 us    3279 GB/s  maxrel 1.00e+00
+gemma.up   f8  rA       4.8 us    6037 GB/s  maxrel 1.00e+00
+gemma.up   f4  cA       4.8 us    2982 GB/s  maxrel 1.00e+00
+gemma.up   f4  rA       4.7 us    3080 GB/s  maxrel 1.00e+00
+deepN      f8  cA       5.0 us   13551 GB/s  maxrel 1.00e+00
+deepN      f8  rA       4.8 us   14275 GB/s  maxrel 1.00e+00
+deepN      f4  cA       5.1 us    6640 GB/s  maxrel 1.00e+00
+deepN      f4  rA       8.3 us    4089 GB/s  maxrel 1.00e+00
+R129A_DONE
