@@ -1,0 +1,43 @@
+# r128k_ladder.bin runs (arc-jm7, build6-wheel-era GPU state, 2026-11-09).
+# Binary md5 4fc60f1861760af69a08a1371d3334d1 (rig /root/build/r128a/,
+# arc-jm7:/tmp). Source tools/ar/r128k_ladder.cpp md5 980a18996be6b604df96628efac48157.
+# Host: docker exec arc-jm7 env LD_LIBRARY_PATH=/opt/venv/lib
+#       /tmp/r128k_ladder.bin K N M SGF R VLO VHI
+# One container restart between crashing/hanging variants (L0 device state
+# wedges after DEVICE_LOST/hang; V0 ran again fine after restart).
+
+=== cumulative run (first attempt; crashed at V1) ===
+device: Intel(R) Graphics [0xe223]
+K=5120 N=8704 M=1 SGF=2048 tiles=544 splits=2 kc=2560 subs=1088 steps/WG=160 wgs=17408
+V0 loop               11.1 us/call      69.3 ns/step   out0=0.00
+terminate called after throwing an instance of 'sycl::_V1::exception'
+  what():  level_zero backend failed with error: 20 (UR_RESULT_ERROR_DEVICE_LOST)
+
+=== isolation runs, qwen.up 5120x8704 M=1 (splits=2, 160 steps/WG) ===
+V9  stageA only        9.6 us/call      60.1 ns/step   (8 half loads + 8 half stores/lane/step)
+V10 stageB only        3.9 us/call      24.4 ns/step   (uint4 load + decode + 16 half stores/lane/step)
+V1  stage A+B                        -> DEVICE_LOST (deterministic, 3 warmup submits)
+V2  +2 barriers                      -> DEVICE_LOST
+V3  +loads+mad                       -> HANG (q.wait never returns; killed)
+V5  FULL (current-kernel sequence) 1031.4 us/call   6445.9 ns/step
+V6  ping-pong reorder + zero-once     9.6 us/call      59.7 ns/step  out0=0.00 (matches V5)
+V7  V6 + alt-target accum            10.2 us/call      63.8 ns/step  out0=0.00 (matches V5)
+V8  two-tile shared-ja               14.7 us/call      91.8 ns/step  out0=0.00
+
+=== isolation runs, gemma.o 5376x5376 M=1 ===
+V5  FULL  270.6 us/call   3221.3 ns/step
+V6  reorder  6.5 us/call     78.0 ns/step   out0=0.00 (matches V5)
+
+# out0 caveat: input bytes are fillers (a=0x30, b=0x38), so out0 prints
+# 0.00 for every variant and the "(matches V5)" cross-check is VACUOUS
+# here -- correctness of V6 comes from the r128b gate (full-range f64
+# refs), not from this perf harness.
+# Calibration vs real kernel (r128b cut7, XPUGraph 50-replay):
+# qwen.up w16pt M=1 jm 0.4636 ms = 2898 ns/step. Ladder-V5 harness
+# overhead ~2.2x; the V5->V6 RATIO is the transferable quantity.
+
+=== generality sweep (all-model-types clause), 2026-11-09 ===
+K4096  N11008 M1 (llama-class): tiles=688 splits=2 128 steps  V5 4344.9 -> V6 28.9 ns/step (150x)
+K3584  N18944 M1 (qwen-7b cls): tiles=1184 splits=1 224 steps V5 3098.6 -> V6 45.0 ns/step (69x)
+K2048  N16384 M1 (gemma-class): tiles=1024 splits=2  64 steps V5 5948.1 -> V6 88.1 ns/step (68x)
+K5120   N8704 M2 (qwen.up M2):  tiles=544  splits=2 160 steps V5 2657.0 -> V6 23.8 ns/step (112x)

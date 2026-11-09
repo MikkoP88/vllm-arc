@@ -1,0 +1,430 @@
+xpu: True Intel(R) Graphics [0xe223]
+ARC_JM_SGF default run: 2048
+ARC_JM_VAR default run: 14
+=== stage A: correctness (ARC_JM_VAR 5 + 14) ===
+repack_selftest: PASS (f8 + f4 tile formulas)
+--- ARC_JM_VAR=5
+ok v5 1024x1003 M=1 w16pt: rel=4.63e-04
+ok v5 1024x1003 M=1 w16pc: rel=7.68e-03
+ok v5 1024x1003 M=1 m816: rel=7.57e-03
+ok v5 1024x1003 M=1 g16: rel=7.56e-03
+ok v5 1024x1003 M=2 w16pt: rel=4.50e-03
+ok v5 1024x1003 M=2 w16pc: rel=7.55e-03
+ok v5 1024x1003 M=2 m816: rel=7.59e-03
+ok v5 1024x1003 M=2 g16: rel=7.69e-03
+ok v5 96x517 M=3 w16pt: rel=4.34e-03
+ok v5 96x517 M=3 w16pc: rel=7.54e-03
+ok v5 96x517 M=3 m816: rel=7.22e-03
+ok v5 96x517 M=3 g16: rel=7.59e-03
+ok v5 5376x10752 M=1 w16pt: rel=2.39e-03
+ok v5 5376x10752 M=1 w16pc: rel=7.74e-03
+ok v5 5376x10752 M=1 m816: rel=7.64e-03
+ok v5 5376x10752 M=1 g16: rel=7.66e-03
+ok v5 5120x5120 M=2 w16pt: rel=3.61e-03
+ok v5 5120x5120 M=2 w16pc: rel=7.66e-03
+ok v5 5120x5120 M=2 m816: rel=7.70e-03
+ok v5 5120x5120 M=2 g16: rel=7.67e-03
+ok v5 10752x5376 M=1 w16pt: rel=2.51e-04
+ok v5 10752x5376 M=1 w16pc: rel=7.69e-03
+ok v5 10752x5376 M=1 m816: rel=7.63e-03
+ok v5 10752x5376 M=1 g16: rel=7.64e-03
+ok v5 2048x16384 M=8 w16pt: rel=4.12e-03
+ok v5 2048x16384 M=8 w16pc: rel=7.74e-03
+ok v5 2048x16384 M=8 m816: rel=7.75e-03
+ok v5 2048x16384 M=8 g16: rel=7.75e-03
+ok v5 5120x8704 M=4 w16pt: rel=5.01e-03
+ok v5 5120x8704 M=4 w16pc: rel=7.74e-03
+ok v5 5120x8704 M=4 m816: rel=7.72e-03
+ok v5 5120x8704 M=4 g16: rel=7.77e-03
+ok v5 3584x18944 M=1 w16pt: rel=5.63e-03
+ok v5 3584x18944 M=1 w16pc: rel=7.74e-03
+ok v5 3584x18944 M=1 m816: rel=7.71e-03
+ok v5 3584x18944 M=1 g16: rel=7.74e-03
+ok v5 4096x11008 M=2 w16pt: rel=6.38e-03
+ok v5 4096x11008 M=2 w16pc: rel=7.74e-03
+ok v5 4096x11008 M=2 m816: rel=7.72e-03
+ok v5 4096x11008 M=2 g16: rel=7.72e-03
+--- ARC_JM_VAR=14
+ok v14 1024x1003 M=1 w16pt: rel=3.88e-03
+ok v14 1024x1003 M=1 w16pc: rel=7.31e-03
+ok v14 1024x1003 M=1 m816: rel=7.57e-03
+ok v14 1024x1003 M=1 g16: rel=7.55e-03
+ok v14 1024x1003 M=2 w16pt: rel=2.98e-03
+ok v14 1024x1003 M=2 w16pc: rel=7.67e-03
+ok v14 1024x1003 M=2 m816: rel=7.50e-03
+ok v14 1024x1003 M=2 g16: rel=7.55e-03
+ok v14 96x517 M=3 w16pt: rel=4.78e-03
+ok v14 96x517 M=3 w16pc: rel=7.52e-03
+ok v14 96x517 M=3 m816: rel=7.75e-03
+ok v14 96x517 M=3 g16: rel=7.65e-03
+ok v14 5376x10752 M=1 w16pt: rel=1.91e-03
+ok v14 5376x10752 M=1 w16pc: rel=7.74e-03
+ok v14 5376x10752 M=1 m816: rel=7.68e-03
+ok v14 5376x10752 M=1 g16: rel=7.73e-03
+ok v14 5120x5120 M=2 w16pt: rel=4.02e-03
+ok v14 5120x5120 M=2 w16pc: rel=7.69e-03
+ok v14 5120x5120 M=2 m816: rel=7.63e-03
+ok v14 5120x5120 M=2 g16: rel=7.58e-03
+ok v14 10752x5376 M=1 w16pt: rel=1.22e-03
+ok v14 10752x5376 M=1 w16pc: rel=7.54e-03
+ok v14 10752x5376 M=1 m816: rel=7.69e-03
+ok v14 10752x5376 M=1 g16: rel=7.74e-03
+ok v14 2048x16384 M=8 w16pt: rel=6.85e-03
+ok v14 2048x16384 M=8 w16pc: rel=7.74e-03
+ok v14 2048x16384 M=8 m816: rel=7.74e-03
+ok v14 2048x16384 M=8 g16: rel=7.75e-03
+ok v14 5120x8704 M=4 w16pt: rel=5.98e-03
+ok v14 5120x8704 M=4 w16pc: rel=7.75e-03
+ok v14 5120x8704 M=4 m816: rel=7.74e-03
+ok v14 5120x8704 M=4 g16: rel=7.74e-03
+ok v14 3584x18944 M=1 w16pt: rel=2.70e-03
+ok v14 3584x18944 M=1 w16pc: rel=7.75e-03
+ok v14 3584x18944 M=1 m816: rel=7.70e-03
+ok v14 3584x18944 M=1 g16: rel=7.67e-03
+ok v14 4096x11008 M=2 w16pt: rel=2.21e-03
+ok v14 4096x11008 M=2 w16pc: rel=7.66e-03
+ok v14 4096x11008 M=2 m816: rel=7.74e-03
+ok v14 4096x11008 M=2 g16: rel=7.73e-03
+STAGE_A cells=80 fails=0 []
+GATE1_PASS
+=== stage B: graph50 A/B/C + SGF sweep, jm5 + jm14 ===
+--- ARC_JM_SGF=1024
+gemma.up     w16pt M=1 st -- sk -- jm5 0.5237 (  110 GB/s)
+gemma.up     w16pt M=1 st -- sk -- jm14 0.3600 (  161 GB/s)
+gemma.up     w16pt M=2 st -- sk -- jm5 0.5389 (  107 GB/s)
+gemma.up     w16pt M=2 st -- sk -- jm14 0.3651 (  158 GB/s)
+gemma.up     w16pc M=1 st -- sk -- jm5 0.5285 (  109 GB/s)
+gemma.up     w16pc M=1 st -- sk -- jm14 0.3595 (  161 GB/s)
+gemma.up     w16pc M=2 st -- sk -- jm5 0.5378 (  107 GB/s)
+gemma.up     w16pc M=2 st -- sk -- jm14 0.3642 (  159 GB/s)
+gemma.up     m816  M=1 st -- sk -- jm5 0.5443 (  106 GB/s)
+gemma.up     m816  M=1 st -- sk -- jm14 0.3828 (  151 GB/s)
+gemma.up     m816  M=2 st -- sk -- jm5 0.5795 (  100 GB/s)
+gemma.up     m816  M=2 st -- sk -- jm14 0.3845 (  150 GB/s)
+gemma.up     g16   M=1 st -- sk -- jm5 0.7510 (   38 GB/s)
+gemma.up     g16   M=1 st -- sk -- jm14 0.2560 (  113 GB/s)
+gemma.up     g16   M=2 st -- sk -- jm5 0.7425 (   39 GB/s)
+gemma.up     g16   M=2 st -- sk -- jm14 0.2562 (  113 GB/s)
+gemma.down   w16pt M=1 st -- sk -- jm5 0.5550 (  104 GB/s)
+gemma.down   w16pt M=1 st -- sk -- jm14 0.2557 (  226 GB/s)
+gemma.down   w16pt M=2 st -- sk -- jm5 0.5534 (  104 GB/s)
+gemma.down   w16pt M=2 st -- sk -- jm14 0.2605 (  222 GB/s)
+gemma.down   w16pc M=1 st -- sk -- jm5 0.5577 (  104 GB/s)
+gemma.down   w16pc M=1 st -- sk -- jm14 0.2627 (  220 GB/s)
+gemma.down   w16pc M=2 st -- sk -- jm5 0.5439 (  106 GB/s)
+gemma.down   w16pc M=2 st -- sk -- jm14 0.2564 (  225 GB/s)
+gemma.down   m816  M=1 st -- sk -- jm5 0.5607 (  103 GB/s)
+gemma.down   m816  M=1 st -- sk -- jm14 0.2708 (  213 GB/s)
+gemma.down   m816  M=2 st -- sk -- jm5 0.5513 (  105 GB/s)
+gemma.down   m816  M=2 st -- sk -- jm14 0.2668 (  217 GB/s)
+gemma.down   g16   M=1 st -- sk -- jm5 0.6085 (   47 GB/s)
+gemma.down   g16   M=1 st -- sk -- jm14 0.1846 (  157 GB/s)
+gemma.down   g16   M=2 st -- sk -- jm5 0.6219 (   46 GB/s)
+gemma.down   g16   M=2 st -- sk -- jm14 0.1852 (  156 GB/s)
+gemma.qkv    w16pt M=1 st -- sk -- jm5 0.4167 (  106 GB/s)
+gemma.qkv    w16pt M=1 st -- sk -- jm14 0.1887 (  233 GB/s)
+gemma.qkv    w16pt M=2 st -- sk -- jm5 0.4142 (  106 GB/s)
+gemma.qkv    w16pt M=2 st -- sk -- jm14 0.1895 (  232 GB/s)
+gemma.qkv    w16pc M=1 st -- sk -- jm5 0.4188 (  105 GB/s)
+gemma.qkv    w16pc M=1 st -- sk -- jm14 0.1884 (  234 GB/s)
+gemma.qkv    w16pc M=2 st -- sk -- jm5 0.4253 (  104 GB/s)
+gemma.qkv    w16pc M=2 st -- sk -- jm14 0.1898 (  232 GB/s)
+gemma.qkv    m816  M=1 st -- sk -- jm5 0.4125 (  107 GB/s)
+gemma.qkv    m816  M=1 st -- sk -- jm14 0.1988 (  222 GB/s)
+gemma.qkv    m816  M=2 st -- sk -- jm5 0.4385 (  100 GB/s)
+gemma.qkv    m816  M=2 st -- sk -- jm14 0.1980 (  222 GB/s)
+gemma.qkv    g16   M=1 st -- sk -- jm5 0.4462 (   49 GB/s)
+gemma.qkv    g16   M=1 st -- sk -- jm14 0.1367 (  161 GB/s)
+gemma.qkv    g16   M=2 st -- sk -- jm5 0.4500 (   49 GB/s)
+gemma.qkv    g16   M=2 st -- sk -- jm14 0.1388 (  159 GB/s)
+gemma.o      w16pt M=1 st -- sk -- jm5 0.2823 (  102 GB/s)
+gemma.o      w16pt M=1 st -- sk -- jm14 0.1246 (  232 GB/s)
+gemma.o      w16pt M=2 st -- sk -- jm5 0.2838 (  102 GB/s)
+gemma.o      w16pt M=2 st -- sk -- jm14 0.1255 (  230 GB/s)
+gemma.o      w16pc M=1 st -- sk -- jm5 0.2857 (  101 GB/s)
+gemma.o      w16pc M=1 st -- sk -- jm14 0.1245 (  232 GB/s)
+gemma.o      w16pc M=2 st -- sk -- jm5 0.2774 (  104 GB/s)
+gemma.o      w16pc M=2 st -- sk -- jm14 0.1258 (  230 GB/s)
+gemma.o      m816  M=1 st -- sk -- jm5 0.2837 (  102 GB/s)
+gemma.o      m816  M=1 st -- sk -- jm14 0.1326 (  218 GB/s)
+gemma.o      m816  M=2 st -- sk -- jm5 0.2825 (  102 GB/s)
+gemma.o      m816  M=2 st -- sk -- jm14 0.1333 (  217 GB/s)
+gemma.o      g16   M=1 st -- sk -- jm5 0.3017 (   48 GB/s)
+gemma.o      g16   M=1 st -- sk -- jm14 0.0910 (  159 GB/s)
+gemma.o      g16   M=2 st -- sk -- jm5 0.3095 (   47 GB/s)
+gemma.o      g16   M=2 st -- sk -- jm14 0.0917 (  158 GB/s)
+qwen.up      w16pt M=1 st -- sk -- jm5 0.4468 (  100 GB/s)
+qwen.up      w16pt M=1 st -- sk -- jm14 0.3091 (  144 GB/s)
+qwen.up      w16pt M=2 st -- sk -- jm5 0.4624 (   96 GB/s)
+qwen.up      w16pt M=2 st -- sk -- jm14 0.3094 (  144 GB/s)
+qwen.up      w16pc M=1 st -- sk -- jm5 0.4481 (   99 GB/s)
+qwen.up      w16pc M=1 st -- sk -- jm14 0.3138 (  142 GB/s)
+qwen.up      w16pc M=2 st -- sk -- jm5 0.4614 (   97 GB/s)
+qwen.up      w16pc M=2 st -- sk -- jm14 0.3094 (  144 GB/s)
+qwen.up      m816  M=1 st -- sk -- jm5 0.4773 (   93 GB/s)
+qwen.up      m816  M=1 st -- sk -- jm14 0.3407 (  131 GB/s)
+qwen.up      m816  M=2 st -- sk -- jm5 0.5017 (   89 GB/s)
+qwen.up      m816  M=2 st -- sk -- jm14 0.3406 (  131 GB/s)
+qwen.up      g16   M=1 st -- sk -- jm5 0.6309 (   35 GB/s)
+qwen.up      g16   M=1 st -- sk -- jm14 0.2385 (   93 GB/s)
+qwen.up      g16   M=2 st -- sk -- jm5 0.6342 (   35 GB/s)
+qwen.up      g16   M=2 st -- sk -- jm14 0.2387 (   93 GB/s)
+qwen.down    w16pt M=1 st -- sk -- jm5 0.4104 (  109 GB/s)
+qwen.down    w16pt M=1 st -- sk -- jm14 0.2664 (  167 GB/s)
+qwen.down    w16pt M=2 st -- sk -- jm5 0.4238 (  105 GB/s)
+qwen.down    w16pt M=2 st -- sk -- jm14 0.2665 (  167 GB/s)
+qwen.down    w16pc M=1 st -- sk -- jm5 0.4122 (  108 GB/s)
+qwen.down    w16pc M=1 st -- sk -- jm14 0.2660 (  168 GB/s)
+qwen.down    w16pc M=2 st -- sk -- jm5 0.4240 (  105 GB/s)
+qwen.down    w16pc M=2 st -- sk -- jm14 0.2669 (  167 GB/s)
+qwen.down    m816  M=1 st -- sk -- jm5 0.4295 (  104 GB/s)
+qwen.down    m816  M=1 st -- sk -- jm14 0.2916 (  153 GB/s)
+qwen.down    m816  M=2 st -- sk -- jm5 0.4500 (   99 GB/s)
+qwen.down    m816  M=2 st -- sk -- jm14 0.2929 (  152 GB/s)
+qwen.down    g16   M=1 st -- sk -- jm5 0.5777 (   39 GB/s)
+qwen.down    g16   M=1 st -- sk -- jm14 0.2035 (  109 GB/s)
+qwen.down    g16   M=2 st -- sk -- jm5 0.5696 (   39 GB/s)
+qwen.down    g16   M=2 st -- sk -- jm14 0.2041 (  109 GB/s)
+qwen.o       w16pt M=1 st -- sk -- jm5 0.2553 (  103 GB/s)
+qwen.o       w16pt M=1 st -- sk -- jm14 0.1596 (  164 GB/s)
+qwen.o       w16pt M=2 st -- sk -- jm5 0.2508 (  105 GB/s)
+qwen.o       w16pt M=2 st -- sk -- jm14 0.1598 (  164 GB/s)
+qwen.o       w16pc M=1 st -- sk -- jm5 0.2488 (  105 GB/s)
+qwen.o       w16pc M=1 st -- sk -- jm14 0.1595 (  164 GB/s)
+qwen.o       w16pc M=2 st -- sk -- jm5 0.2543 (  103 GB/s)
+qwen.o       w16pc M=2 st -- sk -- jm14 0.1597 (  164 GB/s)
+qwen.o       m816  M=1 st -- sk -- jm5 0.2570 (  102 GB/s)
+qwen.o       m816  M=1 st -- sk -- jm14 0.1736 (  151 GB/s)
+qwen.o       m816  M=2 st -- sk -- jm5 0.2632 (  100 GB/s)
+qwen.o       m816  M=2 st -- sk -- jm14 0.1733 (  151 GB/s)
+qwen.o       g16   M=1 st -- sk -- jm5 0.3378 (   39 GB/s)
+qwen.o       g16   M=1 st -- sk -- jm14 0.1119 (  117 GB/s)
+qwen.o       g16   M=2 st -- sk -- jm5 0.3300 (   40 GB/s)
+qwen.o       g16   M=2 st -- sk -- jm14 0.1122 (  117 GB/s)
+--- ARC_JM_SGF=2048
+gemma.up     w16pt M=1 st 0.1096 sk 0.1386 jm5 0.5152 (  112 GB/s, 0.21x st)
+gemma.up     w16pt M=1 st 0.1096 sk 0.1386 jm14 0.2075 (  279 GB/s, 0.53x st)
+gemma.up     w16pt M=2 st 0.1114 sk 0.1941 jm5 0.5154 (  112 GB/s, 0.22x st)
+gemma.up     w16pt M=2 st 0.1114 sk 0.1941 jm14 0.2091 (  276 GB/s, 0.53x st)
+gemma.up     w16pc M=1 st 0.1102 sk 0.1387 jm5 0.5144 (  112 GB/s, 0.21x st)
+gemma.up     w16pc M=1 st 0.1102 sk 0.1387 jm14 0.2080 (  278 GB/s, 0.53x st)
+gemma.up     w16pc M=2 st 0.1117 sk 0.1940 jm5 0.5175 (  112 GB/s, 0.22x st)
+gemma.up     w16pc M=2 st 0.1117 sk 0.1940 jm14 0.2090 (  277 GB/s, 0.53x st)
+gemma.up     m816  M=1 st 0.1124 sk 0.1699 jm5 0.5256 (  110 GB/s, 0.21x st)
+gemma.up     m816  M=1 st 0.1124 sk 0.1699 jm14 0.2163 (  267 GB/s, 0.52x st)
+gemma.up     m816  M=2 st 0.1143 sk 0.1835 jm5 0.5311 (  109 GB/s, 0.22x st)
+gemma.up     m816  M=2 st 0.1143 sk 0.1835 jm14 0.2168 (  267 GB/s, 0.53x st)
+gemma.up     g16   M=1 st 0.0479 sk 0.0998 jm5 0.4984 (   58 GB/s, 0.10x st)
+gemma.up     g16   M=1 st 0.0479 sk 0.0998 jm14 0.1469 (  197 GB/s, 0.33x st)
+gemma.up     g16   M=2 st 0.0481 sk 0.1441 jm5 0.5031 (   57 GB/s, 0.10x st)
+gemma.up     g16   M=2 st 0.0481 sk 0.1441 jm14 0.1473 (  196 GB/s, 0.33x st)
+gemma.down   w16pt M=1 st 0.1109 sk 0.1394 jm5 0.5171 (  112 GB/s, 0.21x st)
+gemma.down   w16pt M=1 st 0.1109 sk 0.1394 jm14 0.2091 (  276 GB/s, 0.53x st)
+gemma.down   w16pt M=2 st 0.1121 sk 0.2001 jm5 0.5211 (  111 GB/s, 0.22x st)
+gemma.down   w16pt M=2 st 0.1121 sk 0.2001 jm14 0.2119 (  273 GB/s, 0.53x st)
+gemma.down   w16pc M=1 st 0.1116 sk 0.1393 jm5 0.5171 (  112 GB/s, 0.22x st)
+gemma.down   w16pc M=1 st 0.1116 sk 0.1393 jm14 0.2098 (  276 GB/s, 0.53x st)
+gemma.down   w16pc M=2 st 0.1124 sk 0.2000 jm5 0.5209 (  111 GB/s, 0.22x st)
+gemma.down   w16pc M=2 st 0.1124 sk 0.2000 jm14 0.2118 (  273 GB/s, 0.53x st)
+gemma.down   m816  M=1 st 0.1145 sk 0.1744 jm5 0.5281 (  109 GB/s, 0.22x st)
+gemma.down   m816  M=1 st 0.1145 sk 0.1744 jm14 0.2146 (  269 GB/s, 0.53x st)
+gemma.down   m816  M=2 st 0.1147 sk 0.1826 jm5 0.5331 (  108 GB/s, 0.22x st)
+gemma.down   m816  M=2 st 0.1147 sk 0.1826 jm14 0.2173 (  266 GB/s, 0.53x st)
+gemma.down   g16   M=1 st 0.0554 sk 0.1035 jm5 0.4961 (   58 GB/s, 0.11x st)
+gemma.down   g16   M=1 st 0.0554 sk 0.1035 jm14 0.1454 (  199 GB/s, 0.38x st)
+gemma.down   g16   M=2 st 0.0552 sk 0.1477 jm5 0.5030 (   57 GB/s, 0.11x st)
+gemma.down   g16   M=2 st 0.0552 sk 0.1477 jm14 0.1469 (  197 GB/s, 0.38x st)
+gemma.qkv    w16pt M=1 st 0.0829 sk 0.1104 jm5 0.3885 (  113 GB/s, 0.21x st)
+gemma.qkv    w16pt M=1 st 0.0829 sk 0.1104 jm14 0.1576 (  279 GB/s, 0.53x st)
+gemma.qkv    w16pt M=2 st 0.0837 sk 0.1817 jm5 0.3882 (  113 GB/s, 0.22x st)
+gemma.qkv    w16pt M=2 st 0.0837 sk 0.1817 jm14 0.1588 (  277 GB/s, 0.53x st)
+gemma.qkv    w16pc M=1 st 0.0837 sk 0.1106 jm5 0.3881 (  113 GB/s, 0.22x st)
+gemma.qkv    w16pc M=1 st 0.0837 sk 0.1106 jm14 0.1575 (  280 GB/s, 0.53x st)
+gemma.qkv    w16pc M=2 st 0.0834 sk 0.1819 jm5 0.3878 (  114 GB/s, 0.22x st)
+gemma.qkv    w16pc M=2 st 0.0834 sk 0.1819 jm14 0.1596 (  276 GB/s, 0.52x st)
+gemma.qkv    m816  M=1 st 0.0858 sk 0.1746 jm5 0.3956 (  111 GB/s, 0.22x st)
+gemma.qkv    m816  M=1 st 0.0858 sk 0.1746 jm14 0.1617 (  272 GB/s, 0.53x st)
+gemma.qkv    m816  M=2 st 0.0862 sk 0.1636 jm5 0.3997 (  110 GB/s, 0.22x st)
+gemma.qkv    m816  M=2 st 0.0862 sk 0.1636 jm14 0.1620 (  272 GB/s, 0.53x st)
+gemma.qkv    g16   M=1 st 0.0306 sk 0.0731 jm5 0.3672 (   60 GB/s, 0.08x st)
+gemma.qkv    g16   M=1 st 0.0306 sk 0.0731 jm14 0.1140 (  193 GB/s, 0.27x st)
+gemma.qkv    g16   M=2 st 0.0276 sk 0.1284 jm5 0.3730 (   59 GB/s, 0.07x st)
+gemma.qkv    g16   M=2 st 0.0276 sk 0.1284 jm14 0.1150 (  191 GB/s, 0.24x st)
+gemma.o      w16pt M=1 st 0.0386 sk 0.0990 jm5 0.2653 (  109 GB/s, 0.15x st)
+gemma.o      w16pt M=1 st 0.0386 sk 0.0990 jm14 0.1168 (  247 GB/s, 0.33x st)
+gemma.o      w16pt M=2 st 0.0388 sk 0.1677 jm5 0.2779 (  104 GB/s, 0.14x st)
+gemma.o      w16pt M=2 st 0.0388 sk 0.1677 jm14 0.1161 (  249 GB/s, 0.33x st)
+gemma.o      w16pc M=1 st 0.0388 sk 0.0987 jm5 0.2623 (  110 GB/s, 0.15x st)
+gemma.o      w16pc M=1 st 0.0388 sk 0.0987 jm14 0.1158 (  249 GB/s, 0.34x st)
+gemma.o      w16pc M=2 st 0.0391 sk 0.1672 jm5 0.2774 (  104 GB/s, 0.14x st)
+gemma.o      w16pc M=2 st 0.0391 sk 0.1672 jm14 0.1161 (  249 GB/s, 0.34x st)
+gemma.o      m816  M=1 st 0.0414 sk 0.1353 jm5 0.2685 (  108 GB/s, 0.15x st)
+gemma.o      m816  M=1 st 0.0414 sk 0.1353 jm14 0.1216 (  238 GB/s, 0.34x st)
+gemma.o      m816  M=2 st 0.0417 sk 0.1087 jm5 0.2845 (  102 GB/s, 0.15x st)
+gemma.o      m816  M=2 st 0.0417 sk 0.1087 jm14 0.1221 (  237 GB/s, 0.34x st)
+gemma.o      g16   M=1 st 0.0250 sk 0.0610 jm5 0.2547 (   57 GB/s, 0.10x st)
+gemma.o      g16   M=1 st 0.0250 sk 0.0610 jm14 0.0891 (  162 GB/s, 0.28x st)
+gemma.o      g16   M=2 st 0.0233 sk 0.1226 jm5 0.2696 (   54 GB/s, 0.09x st)
+gemma.o      g16   M=2 st 0.0233 sk 0.1226 jm14 0.0899 (  161 GB/s, 0.26x st)
+qwen.up      w16pt M=1 st 0.0899 sk 0.1278 jm5 0.4396 (  101 GB/s, 0.20x st)
+qwen.up      w16pt M=1 st 0.0899 sk 0.1278 jm14 0.1958 (  228 GB/s, 0.46x st)
+qwen.up      w16pt M=2 st 0.0901 sk 0.1857 jm5 0.4348 (  102 GB/s, 0.21x st)
+qwen.up      w16pt M=2 st 0.0901 sk 0.1857 jm14 0.1960 (  227 GB/s, 0.46x st)
+qwen.up      w16pc M=1 st 0.0898 sk 0.1280 jm5 0.4387 (  102 GB/s, 0.20x st)
+qwen.up      w16pc M=1 st 0.0898 sk 0.1280 jm14 0.1960 (  227 GB/s, 0.46x st)
+qwen.up      w16pc M=2 st 0.0910 sk 0.1861 jm5 0.4233 (  105 GB/s, 0.22x st)
+qwen.up      w16pc M=2 st 0.0910 sk 0.1861 jm14 0.1975 (  226 GB/s, 0.46x st)
+qwen.up      m816  M=1 st 0.0910 sk 0.1602 jm5 0.4421 (  101 GB/s, 0.21x st)
+qwen.up      m816  M=1 st 0.0910 sk 0.1602 jm14 0.2010 (  222 GB/s, 0.45x st)
+qwen.up      m816  M=2 st 0.0920 sk 0.1662 jm5 0.4246 (  105 GB/s, 0.22x st)
+qwen.up      m816  M=2 st 0.0920 sk 0.1662 jm14 0.2022 (  220 GB/s, 0.46x st)
+qwen.up      g16   M=1 st 0.0329 sk 0.0720 jm5 0.4803 (   46 GB/s, 0.07x st)
+qwen.up      g16   M=1 st 0.0329 sk 0.0720 jm14 0.1412 (  158 GB/s, 0.23x st)
+qwen.up      g16   M=2 st 0.0316 sk 0.1110 jm5 0.4597 (   48 GB/s, 0.07x st)
+qwen.up      g16   M=2 st 0.0316 sk 0.1110 jm14 0.1407 (  158 GB/s, 0.22x st)
+qwen.down    w16pt M=1 st 0.0852 sk 0.1133 jm5 0.4172 (  107 GB/s, 0.20x st)
+qwen.down    w16pt M=1 st 0.0852 sk 0.1133 jm14 0.1756 (  254 GB/s, 0.48x st)
+qwen.down    w16pt M=2 st 0.0867 sk 0.1585 jm5 0.4283 (  104 GB/s, 0.20x st)
+qwen.down    w16pt M=2 st 0.0867 sk 0.1585 jm14 0.1767 (  252 GB/s, 0.49x st)
+qwen.down    w16pc M=1 st 0.0866 sk 0.1135 jm5 0.4134 (  108 GB/s, 0.21x st)
+qwen.down    w16pc M=1 st 0.0866 sk 0.1135 jm14 0.1758 (  254 GB/s, 0.49x st)
+qwen.down    w16pc M=2 st 0.0869 sk 0.1582 jm5 0.4175 (  107 GB/s, 0.21x st)
+qwen.down    w16pc M=2 st 0.0869 sk 0.1582 jm14 0.1776 (  251 GB/s, 0.49x st)
+qwen.down    m816  M=1 st 0.0905 sk 0.1398 jm5 0.4185 (  106 GB/s, 0.22x st)
+qwen.down    m816  M=1 st 0.0905 sk 0.1398 jm14 0.1816 (  245 GB/s, 0.50x st)
+qwen.down    m816  M=2 st 0.0909 sk 0.1499 jm5 0.4257 (  105 GB/s, 0.21x st)
+qwen.down    m816  M=2 st 0.0909 sk 0.1499 jm14 0.1826 (  244 GB/s, 0.50x st)
+qwen.down    g16   M=1 st 0.0365 sk 0.0706 jm5 0.4317 (   52 GB/s, 0.08x st)
+qwen.down    g16   M=1 st 0.0365 sk 0.0706 jm14 0.1245 (  179 GB/s, 0.29x st)
+qwen.down    g16   M=2 st 0.0342 sk 0.1110 jm5 0.4196 (   53 GB/s, 0.08x st)
+qwen.down    g16   M=2 st 0.0342 sk 0.1110 jm14 0.1251 (  178 GB/s, 0.27x st)
+qwen.o       w16pt M=1 st 0.0283 sk 0.0762 jm5 0.2482 (  106 GB/s, 0.11x st)
+qwen.o       w16pt M=1 st 0.0283 sk 0.0762 jm14 0.1009 (  260 GB/s, 0.28x st)
+qwen.o       w16pt M=2 st 0.0284 sk 0.1352 jm5 0.2501 (  105 GB/s, 0.11x st)
+qwen.o       w16pt M=2 st 0.0284 sk 0.1352 jm14 0.1017 (  258 GB/s, 0.28x st)
+qwen.o       w16pc M=1 st 0.0288 sk 0.0762 jm5 0.2481 (  106 GB/s, 0.12x st)
+qwen.o       w16pc M=1 st 0.0288 sk 0.0762 jm14 0.1006 (  261 GB/s, 0.29x st)
+qwen.o       w16pc M=2 st 0.0291 sk 0.1350 jm5 0.2487 (  105 GB/s, 0.12x st)
+qwen.o       w16pc M=2 st 0.0291 sk 0.1350 jm14 0.1025 (  256 GB/s, 0.28x st)
+qwen.o       m816  M=1 st 0.0326 sk 0.1081 jm5 0.2511 (  104 GB/s, 0.13x st)
+qwen.o       m816  M=1 st 0.0326 sk 0.1081 jm14 0.1053 (  249 GB/s, 0.31x st)
+qwen.o       m816  M=2 st 0.0328 sk 0.0906 jm5 0.2531 (  104 GB/s, 0.13x st)
+qwen.o       m816  M=2 st 0.0328 sk 0.0906 jm14 0.1059 (  247 GB/s, 0.31x st)
+qwen.o       g16   M=1 st 0.0224 sk 0.0528 jm5 0.2404 (   55 GB/s, 0.09x st)
+qwen.o       g16   M=1 st 0.0224 sk 0.0528 jm14 0.0796 (  165 GB/s, 0.28x st)
+qwen.o       g16   M=2 st 0.0215 sk 0.0974 jm5 0.2428 (   54 GB/s, 0.09x st)
+qwen.o       g16   M=2 st 0.0215 sk 0.0974 jm14 0.0805 (  163 GB/s, 0.27x st)
+--- ARC_JM_SGF=4096
+gemma.up     w16pt M=1 st -- sk -- jm5 0.6106 (   95 GB/s)
+gemma.up     w16pt M=1 st -- sk -- jm14 0.2531 (  228 GB/s)
+gemma.up     w16pt M=2 st -- sk -- jm5 0.6164 (   94 GB/s)
+gemma.up     w16pt M=2 st -- sk -- jm14 0.2543 (  227 GB/s)
+gemma.up     w16pc M=1 st -- sk -- jm5 0.6103 (   95 GB/s)
+gemma.up     w16pc M=1 st -- sk -- jm14 0.2534 (  228 GB/s)
+gemma.up     w16pc M=2 st -- sk -- jm5 0.6165 (   94 GB/s)
+gemma.up     w16pc M=2 st -- sk -- jm14 0.2543 (  227 GB/s)
+gemma.up     m816  M=1 st -- sk -- jm5 0.6215 (   93 GB/s)
+gemma.up     m816  M=1 st -- sk -- jm14 0.2478 (  233 GB/s)
+gemma.up     m816  M=2 st -- sk -- jm5 0.6281 (   92 GB/s)
+gemma.up     m816  M=2 st -- sk -- jm14 0.2490 (  232 GB/s)
+gemma.up     g16   M=1 st -- sk -- jm5 0.5926 (   49 GB/s)
+gemma.up     g16   M=1 st -- sk -- jm14 0.1779 (  162 GB/s)
+gemma.up     g16   M=2 st -- sk -- jm5 0.5983 (   48 GB/s)
+gemma.up     g16   M=2 st -- sk -- jm14 0.1790 (  161 GB/s)
+gemma.down   w16pt M=1 st -- sk -- jm5 0.6119 (   94 GB/s)
+gemma.down   w16pt M=1 st -- sk -- jm14 0.2557 (  226 GB/s)
+gemma.down   w16pt M=2 st -- sk -- jm5 0.6186 (   93 GB/s)
+gemma.down   w16pt M=2 st -- sk -- jm14 0.2569 (  225 GB/s)
+gemma.down   w16pc M=1 st -- sk -- jm5 0.6097 (   95 GB/s)
+gemma.down   w16pc M=1 st -- sk -- jm14 0.2563 (  226 GB/s)
+gemma.down   w16pc M=2 st -- sk -- jm5 0.6173 (   94 GB/s)
+gemma.down   w16pc M=2 st -- sk -- jm14 0.2579 (  224 GB/s)
+gemma.down   m816  M=1 st -- sk -- jm5 0.6198 (   93 GB/s)
+gemma.down   m816  M=1 st -- sk -- jm14 0.2493 (  232 GB/s)
+gemma.down   m816  M=2 st -- sk -- jm5 0.6288 (   92 GB/s)
+gemma.down   m816  M=2 st -- sk -- jm14 0.2515 (  230 GB/s)
+gemma.down   g16   M=1 st -- sk -- jm5 0.5970 (   48 GB/s)
+gemma.down   g16   M=1 st -- sk -- jm14 0.1777 (  163 GB/s)
+gemma.down   g16   M=2 st -- sk -- jm5 0.6026 (   48 GB/s)
+gemma.down   g16   M=2 st -- sk -- jm14 0.1800 (  161 GB/s)
+gemma.qkv    w16pt M=1 st -- sk -- jm5 0.3882 (  113 GB/s)
+gemma.qkv    w16pt M=1 st -- sk -- jm14 0.1583 (  278 GB/s)
+gemma.qkv    w16pt M=2 st -- sk -- jm5 0.3902 (  113 GB/s)
+gemma.qkv    w16pt M=2 st -- sk -- jm14 0.1585 (  278 GB/s)
+gemma.qkv    w16pc M=1 st -- sk -- jm5 0.3912 (  113 GB/s)
+gemma.qkv    w16pc M=1 st -- sk -- jm14 0.1589 (  277 GB/s)
+gemma.qkv    w16pc M=2 st -- sk -- jm5 0.3921 (  112 GB/s)
+gemma.qkv    w16pc M=2 st -- sk -- jm14 0.1596 (  276 GB/s)
+gemma.qkv    m816  M=1 st -- sk -- jm5 0.3957 (  111 GB/s)
+gemma.qkv    m816  M=1 st -- sk -- jm14 0.1619 (  272 GB/s)
+gemma.qkv    m816  M=2 st -- sk -- jm5 0.4013 (  110 GB/s)
+gemma.qkv    m816  M=2 st -- sk -- jm14 0.1625 (  271 GB/s)
+gemma.qkv    g16   M=1 st -- sk -- jm5 0.3695 (   60 GB/s)
+gemma.qkv    g16   M=1 st -- sk -- jm14 0.1142 (  193 GB/s)
+gemma.qkv    g16   M=2 st -- sk -- jm5 0.3754 (   59 GB/s)
+gemma.qkv    g16   M=2 st -- sk -- jm14 0.1152 (  191 GB/s)
+gemma.o      w16pt M=1 st -- sk -- jm5 0.2625 (  110 GB/s)
+gemma.o      w16pt M=1 st -- sk -- jm14 0.1163 (  249 GB/s)
+gemma.o      w16pt M=2 st -- sk -- jm5 0.2753 (  105 GB/s)
+gemma.o      w16pt M=2 st -- sk -- jm14 0.1173 (  246 GB/s)
+gemma.o      w16pc M=1 st -- sk -- jm5 0.2682 (  108 GB/s)
+gemma.o      w16pc M=1 st -- sk -- jm14 0.1167 (  248 GB/s)
+gemma.o      w16pc M=2 st -- sk -- jm5 0.2819 (  103 GB/s)
+gemma.o      w16pc M=2 st -- sk -- jm14 0.1172 (  247 GB/s)
+gemma.o      m816  M=1 st -- sk -- jm5 0.2702 (  107 GB/s)
+gemma.o      m816  M=1 st -- sk -- jm14 0.1221 (  237 GB/s)
+gemma.o      m816  M=2 st -- sk -- jm5 0.2873 (  101 GB/s)
+gemma.o      m816  M=2 st -- sk -- jm14 0.1226 (  236 GB/s)
+gemma.o      g16   M=1 st -- sk -- jm5 0.2568 (   56 GB/s)
+gemma.o      g16   M=1 st -- sk -- jm14 0.0894 (  162 GB/s)
+gemma.o      g16   M=2 st -- sk -- jm5 0.2689 (   54 GB/s)
+gemma.o      g16   M=2 st -- sk -- jm14 0.0900 (  161 GB/s)
+qwen.up      w16pt M=1 st -- sk -- jm5 0.4663 (   96 GB/s)
+qwen.up      w16pt M=1 st -- sk -- jm14 0.1933 (  231 GB/s)
+qwen.up      w16pt M=2 st -- sk -- jm5 0.4742 (   94 GB/s)
+qwen.up      w16pt M=2 st -- sk -- jm14 0.1946 (  229 GB/s)
+qwen.up      w16pc M=1 st -- sk -- jm5 0.4682 (   95 GB/s)
+qwen.up      w16pc M=1 st -- sk -- jm14 0.1927 (  231 GB/s)
+qwen.up      w16pc M=2 st -- sk -- jm5 0.4722 (   94 GB/s)
+qwen.up      w16pc M=2 st -- sk -- jm14 0.1943 (  229 GB/s)
+qwen.up      m816  M=1 st -- sk -- jm5 0.4756 (   94 GB/s)
+qwen.up      m816  M=1 st -- sk -- jm14 0.1878 (  237 GB/s)
+qwen.up      m816  M=2 st -- sk -- jm5 0.4826 (   92 GB/s)
+qwen.up      m816  M=2 st -- sk -- jm14 0.1893 (  235 GB/s)
+qwen.up      g16   M=1 st -- sk -- jm5 0.4468 (   50 GB/s)
+qwen.up      g16   M=1 st -- sk -- jm14 0.1401 (  159 GB/s)
+qwen.up      g16   M=2 st -- sk -- jm5 0.4538 (   49 GB/s)
+qwen.up      g16   M=2 st -- sk -- jm14 0.1411 (  158 GB/s)
+qwen.down    w16pt M=1 st -- sk -- jm5 0.4711 (   95 GB/s)
+qwen.down    w16pt M=1 st -- sk -- jm14 0.2004 (  222 GB/s)
+qwen.down    w16pt M=2 st -- sk -- jm5 0.4806 (   93 GB/s)
+qwen.down    w16pt M=2 st -- sk -- jm14 0.2010 (  222 GB/s)
+qwen.down    w16pc M=1 st -- sk -- jm5 0.4741 (   94 GB/s)
+qwen.down    w16pc M=1 st -- sk -- jm14 0.2005 (  222 GB/s)
+qwen.down    w16pc M=2 st -- sk -- jm5 0.4798 (   93 GB/s)
+qwen.down    w16pc M=2 st -- sk -- jm14 0.2017 (  221 GB/s)
+qwen.down    m816  M=1 st -- sk -- jm5 0.4872 (   91 GB/s)
+qwen.down    m816  M=1 st -- sk -- jm14 0.1977 (  225 GB/s)
+qwen.down    m816  M=2 st -- sk -- jm5 0.4931 (   90 GB/s)
+qwen.down    m816  M=2 st -- sk -- jm14 0.1991 (  224 GB/s)
+qwen.down    g16   M=1 st -- sk -- jm5 0.4602 (   48 GB/s)
+qwen.down    g16   M=1 st -- sk -- jm14 0.1441 (  155 GB/s)
+qwen.down    g16   M=2 st -- sk -- jm5 0.4693 (   47 GB/s)
+qwen.down    g16   M=2 st -- sk -- jm14 0.1454 (  153 GB/s)
+qwen.o       w16pt M=1 st -- sk -- jm5 0.2478 (  106 GB/s)
+qwen.o       w16pt M=1 st -- sk -- jm14 0.1009 (  260 GB/s)
+qwen.o       w16pt M=2 st -- sk -- jm5 0.2521 (  104 GB/s)
+qwen.o       w16pt M=2 st -- sk -- jm14 0.1023 (  256 GB/s)
+qwen.o       w16pc M=1 st -- sk -- jm5 0.2494 (  105 GB/s)
+qwen.o       w16pc M=1 st -- sk -- jm14 0.1007 (  260 GB/s)
+qwen.o       w16pc M=2 st -- sk -- jm5 0.2523 (  104 GB/s)
+qwen.o       w16pc M=2 st -- sk -- jm14 0.1023 (  256 GB/s)
+qwen.o       m816  M=1 st -- sk -- jm5 0.2527 (  104 GB/s)
+qwen.o       m816  M=1 st -- sk -- jm14 0.1060 (  247 GB/s)
+qwen.o       m816  M=2 st -- sk -- jm5 0.2559 (  102 GB/s)
+qwen.o       m816  M=2 st -- sk -- jm14 0.1069 (  245 GB/s)
+qwen.o       g16   M=1 st -- sk -- jm5 0.2427 (   54 GB/s)
+qwen.o       g16   M=1 st -- sk -- jm14 0.0794 (  165 GB/s)
+qwen.o       g16   M=2 st -- sk -- jm5 0.2455 (   53 GB/s)
+qwen.o       g16   M=2 st -- sk -- jm14 0.0800 (  164 GB/s)
+R128B_DONE
