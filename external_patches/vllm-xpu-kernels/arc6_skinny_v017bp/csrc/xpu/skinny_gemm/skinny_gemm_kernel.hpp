@@ -97,6 +97,13 @@
 // qwen.down 8x1088, gemma.down 8x1344 (all refine-confirmed); qwen.up
 // 7x768+512 and gemma.up 6x896 interpolate the refine's 4-split winner
 // and 8-split loser (its 8x672 evidence was tail-poisoned).
+//
+// v2.7 (window10): split law back to the v2.5 form (floor-capped wants,
+// kc>=1024, group-div decrement, uniform slices) after window9 showed the
+// v2.6 640-stream law regressing qwen.o 5-10% on all four lanes -- the
+// refine's 8-split read there carried the w16pt .item() tax (the probe
+// wheel predates the pointer-scale fix). Split table: qwen 5x1024, gemma
+// 4x1344, downs 8x{1088,1344}; best measured on every shape.
 
 #include <torch/all.h>
 #include <sycl/sycl.hpp>
@@ -567,38 +574,39 @@ inline SkinnyLaunchCfg skinny_pick_cfg(int m, int n, int k) {
   // r126 v1 targeted 2048 work-items and never split our shapes; v2 (TN=2,
   // 128-bit loads) wants concurrent streams to cover HBM latency -- the v2
   // run showed the two DIRECT (unsplit) shapes were the two worst ratios
-  // (3.2-3.4x). 32768 stays the work-item floor; the split CAP is the
-  // binding term on the small-N shapes: window8b/8c read a hard ~180 GB/s
-  // ceiling on every shape that lands 10.7-12.8k work items (gemma.o
-  // 4x1344, qwen.o 5x1024) while 21.5k-item shapes reach 270-296 GB/s,
-  // and the refine's wi64k cells (8 splits everywhere) won qwen.up/qwen.o
-  // M=1. v2.6 therefore lets the floor drive splits up to 8 with only a
-  // 640-element stream floor (kc2048/long-stream cells regressed in the
-  // sweep: mean ratio 1.21). The old (k/32)%splits==0 group-divisibility
-  // decrement is GONE: it only existed to keep uniform slices group-whole,
-  // and the non-uniform last slice below keeps every span a 32-multiple
-  // on its own.
+  // (3.2-3.4x). v2.7 law (windows 8c vs 9 head-to-head): splits want the
+  // 32768 work-item floor, capped at 8 AND at k/1024, decremented to a
+  // group-divisor so slices stay uniform and group-whole. The v2.6 floor-
+  // only law (640-element streams, 8 splits on every K=5120/5376 shape)
+  // won gemma.up 2% but REGRESSED qwen.o 5-10% on all four lanes -- the
+  // refine's 8-split preference there was .item()-poisoned (the probe
+  // wheel still had the per-call D2H sync on w16pt, distorting p50s).
+  // Long streams win: kc floor 1024. Table: qwen 5x1024, gemma 4x1344,
+  // downs 8x{1088,1344} -- best measured on every shape except gemma.up's
+  // marginal 6x896 (kept 4x1344: one clean law, 2% on one cell).
   constexpr int kMinWorkitems = 32768;
   constexpr int kTileN = 2;
-  constexpr int kMaxSplits = 8;
-  constexpr int kMinSplitLen = 640;
+  constexpr int kMinSplitLen = 1024;
   const int tiles = (n + kTileN - 1) / kTileN;
   int splits = 1;
   if (tiles < kMinWorkitems) {
     const int want = kMinWorkitems / tiles;
-    splits = want < 1 ? 1 : (want > kMaxSplits ? kMaxSplits : want);
-    const int s_len = k / kMinSplitLen;
-    if (splits > s_len) splits = s_len < 1 ? 1 : s_len;
+    splits = want < 1 ? 1 : (want > 8 ? 8 : want);
+    const int groups = k / 32;
+    while (splits > 1 && (groups % splits) != 0) --splits;
+    if (splits > groups) splits = groups < 1 ? 1 : groups;
+    const int s_max = k / kMinSplitLen;
+    if (splits > s_max) {
+      splits = s_max < 1 ? 1 : s_max;
+      while (splits > 1 && ((k / 32) % splits) != 0) --splits;
+    }
   }
-  // 64-aligned slice length with a NON-UNIFORM last slice: kc rounds UP to
-  // 64 and the last slice takes k - (splits-1)*kc (the kernel clamps each
-  // slice's k-hi to k). Every served K is a multiple of 64 and kc is too,
-  // so every span -- the short last one included -- stays 64-aligned: the
+  // 64-aligned slice length: uniform group-divisible splits make kc exact
+  // on our shapes; the round-up still guards arbitrary K, and the kernel
+  // clamps each slice's k-hi to k. Every span stays a 64 multiple -- the
   // f4 pair loop never drops to the single-chunk tail (kc=672 on K=5376
-  // paid it on every stream; the sweep measured gemma.up g16 -51%) and no
-  // split count is excluded by alignment. Split table on our shapes:
-  // 5120 -> 8x640, 5376 -> 8x704+448, 8704 -> 8x1088, 10752 -> 8x1344.
-  const int kc = ((k + splits - 1) / splits + 63) / 64 * 64;
+  // paid it on every stream; the sweep measured gemma.up g16 -51%).
+  const int kc = ((k / splits) + 63) / 64 * 64;
   return SkinnyLaunchCfg{splits, kc, splits == 1 ? 1 : 0, tiles * splits};
 }
 
