@@ -444,12 +444,18 @@ moot.
    lane must beat stock's 60–90%-of-floor bar *through joint_matrix
    only* — i.e. pay the measured ~130 ns/step SLM B-staging — before
    it earns a wheel build.
-2. One genuinely new residual question surfaced by this probe, cheap
-   and stock-side (no custom kernel): **stock w8a8 vs w16 at M=1 on
-   B70** has never been measured (the P6.26-era w8a8 refusal was our
-   dispatch default, not a perf loss). If oneDNN's e4m3×e4m3 path
-   beats its w16 path at M=1, that's a routing-only win. Next
-   session's first cheap probe.
+2. CORRECTION (initially posted as "next session's probe", withdrawn
+   same evening): **stock w8a8 vs w16 at M=1 was already measured** —
+   r40 (`results/2026-10-29-p4-r40-forward-gemm-capture/`) captured
+   the stock block path (input quant + `_xpu_C.fp8_gemm` W8A8) at a
+   FIXED ~0.33 ms per GEMM at decode Ms (48–268 GB/s) on every layer
+   shape vs W8A16's 0.064–0.167 ms (247–579 GBs) — 3–8× slower at
+   decode Ms, and the champion's own W8A8 probe was the same slow
+   class (routing, not a torch delta). The winning route (fp16
+   activations → `fp8_gemm_w8a16`) has been in our certified stack
+   since the p44 patch (`vllm_gaudi/xpu/patches/fp8_block_w8a16.py`).
+   Nothing left to probe there; the P6.26 "w8a8 refusal" memory was
+   about the W4A8 (MXFP4-weight) lane, a different question.
 3. `mqa_logits_xe2.cpp` (production vxk, raw-asm `XE_DPAS_TT`) is
    presumptively dead on bmg for the same reason — never exercised by
    our serving (mqa route unused at cert22). Noted, not actionable.
