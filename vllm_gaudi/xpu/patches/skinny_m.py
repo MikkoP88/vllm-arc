@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
-"""Skinny-M decode GEMM reroute (p633) -- M <= 8 linear layers go to the
-arc6 custom kernels, everything else keeps the current route.
+"""Skinny-M decode GEMM reroute (p633) -- decode-sized linear-layer
+calls go to the arc6 custom kernels within per-lane M caps (evidence:
+r126 windows 8b/8c/9), everything else keeps the current route.
 
 Root cause this addresses (r123 kernel matrix, banked under
 ``results/2026-11-08-p631-mxfp8-lanes/``): at decode Ms (1..8, batch x
@@ -29,8 +30,8 @@ Lanes (detected from the layer, not the route that produced it):
 
 This module chains AFTER mxfp4_w4a16/mxfp8_w8a16 (it is last in
 ``_XPU_PATCH_MODULES``): it captures whatever ``apply_weights`` is
-installed at import time and only intercepts M <= 8 calls, so large-M
-behavior is bit-identical and each lane A/B-runs via ``ARC_SKINNY_M``.
+installed at import time and only intercepts calls under each lane's
+M cap, so larger-M behavior is bit-identical and each lane A/B-runs via ``ARC_SKINNY_M``.
 
 Gate: ``ARC_SKINNY_M`` -- unset/``on`` installs (when the ops exist in
 the loaded wheel), ``off`` keeps the current routes (A/B control), any
@@ -51,7 +52,20 @@ from vllm.logger import init_logger
 logger = init_logger("vllm.platforms.arc")
 
 _MODE_ENV = "ARC_SKINNY_M"
-_M_MAX = 8  # kernel M_PAD law (csrc/xpu/skinny_gemm instantiation bound)
+# Per-lane route caps (r126 windows 8b/8c/9, round-interleaved paired
+# medians; kernel itself accepts M <= 8 -- csrc instantiation bound):
+#   * w16 (checkpoint-fp8, the qwen champion lane): M=1 only. M=1 wins
+#     10/12 w16pt+w16pc cells (0.83-0.91x; qwen.o w16pt 1.06 and gemma.o
+#     w16pt 2.17 -- stock's scalar-scale gemv special -- are the residue);
+#     at M=2 w16pc drops to 2/6 and w16pt 1/6, M>=4 loses everywhere.
+#   * m816 (online MXFP8, the gemma champion lane): M<=2. M=1 4/6
+#     (losses 1.03 qwen.up/qwen.down -- qwen does not use this lane),
+#     M=2 5/6 (worst 1.045), M=4 1.02-1.31 loses the spec-verify decode.
+#   * g16 (online MXFP4): M<=2. M=1 and M=2 both 6/6 wins (0.81-0.93x);
+#     M=4 1.03-1.40, M=8 up to 4.5x (gemma.down g16 M=8: the scalar-FMA
+#     ALU wall -- decode ops per weight byte scale with M; stock's
+#     tensor-core path wins the M>=4 verify batches).
+_LANE_M_MAX = {"w16": 1, "m816": 2, "g16": 2}
 
 # lane -> (routed once?, fallen back?) -- first-route marker telemetry +
 # permanent per-lane fallback on any runtime failure
@@ -71,14 +85,15 @@ def _flatten_m(x: torch.Tensor) -> int:
 
 def _try_skinny(layer: torch.nn.Module, x: torch.Tensor,
                 bias: torch.Tensor | None) -> torch.Tensor | None:
-    """Route one M <= 8 call; None = caller should use the wrapped route."""
+    """Route one call within the lane's M cap; None = use the wrapped
+    route (M over cap, unsupported format, or permanent lane fallback)."""
     w = layer.weight
     wsc = getattr(layer, "weight_scale", None)
     ops = torch.ops._xpu_C
 
     if w.dtype in (torch.uint8, torch.float4_e2m1fn_x2):
         lane = "g16"
-        if _state[lane][1]:
+        if _flatten_m(x) > _LANE_M_MAX[lane] or _state[lane][1]:
             return None
         try:
             out = ops.skinny_fp4_gemm_w4a16(x, w, wsc, x.dtype, bias)
@@ -91,7 +106,7 @@ def _try_skinny(layer: torch.nn.Module, x: torch.Tensor,
     elif w.dtype in (torch.float8_e4m3fn, torch.float8_e5m2):
         if wsc is not None and wsc.dtype == torch.float8_e8m0fnu:
             lane = "m816"
-            if _state[lane][1]:
+            if _flatten_m(x) > _LANE_M_MAX[lane] or _state[lane][1]:
                 return None
             try:
                 # identical tensor forms as the p631 reroute: weight
@@ -106,7 +121,7 @@ def _try_skinny(layer: torch.nn.Module, x: torch.Tensor,
                 return None
         else:
             lane = "w16"
-            if _state[lane][1]:
+            if _flatten_m(x) > _LANE_M_MAX[lane] or _state[lane][1]:
                 return None
             try:
                 # identical tensor forms as the stock champion caller
@@ -200,7 +215,8 @@ def _install(mod=None) -> None:  # noqa: ARG001 — mod mirrors the patch-module
             continue  # idempotent: platform hooks run twice (config + worker)
         # capture the CURRENT apply_weights — post-mxfp4/mxfp8 when those
         # patches installed first (this module is last in
-        # _XPU_PATCH_MODULES); the wrapper only intercepts M <= 8 calls.
+        # _XPU_PATCH_MODULES); the wrapper defers to _try_skinny, whose
+        # per-lane M caps decide what routes where.
         orig = cls.apply_weights
 
         def make_wrapper(orig_fn):
@@ -210,10 +226,9 @@ def _install(mod=None) -> None:  # noqa: ARG001 — mod mirrors the patch-module
                 x: torch.Tensor,
                 bias: torch.Tensor | None = None,
             ) -> torch.Tensor:
-                if _flatten_m(x) <= _M_MAX:
-                    out = _try_skinny(layer, x, bias)
-                    if out is not None:
-                        return out
+                out = _try_skinny(layer, x, bias)
+                if out is not None:
+                    return out
                 return orig_fn(self, layer, x, bias)
 
             return apply_weights
@@ -222,9 +237,10 @@ def _install(mod=None) -> None:  # noqa: ARG001 — mod mirrors the patch-module
         cls._arc_skinny_patched = True
         installed += 1
         logger.info(
-            "ArcXpuPlatform: skinny-M wrap installed on %s (M <= %d -> "
-            "arc6 skinny kernels, larger M unchanged; %s=off A/Bs)",
-            name, _M_MAX, _MODE_ENV)
+            "ArcXpuPlatform: skinny-M wrap installed on %s (per-lane M "
+            "caps %r -> arc6 skinny kernels, larger M unchanged; "
+            "%s=off A/Bs)",
+            name, _LANE_M_MAX, _MODE_ENV)
 
     if installed == 0:
         logger.warning(
