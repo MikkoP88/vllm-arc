@@ -33,12 +33,29 @@ This module chains AFTER mxfp4_w4a16/mxfp8_w8a16 (it is last in
 installed at import time and only intercepts calls under each lane's
 M cap, so larger-M behavior is bit-identical and each lane A/B-runs via ``ARC_SKINNY_M``.
 
-Gate: ``ARC_SKINNY_M`` -- unset/``on`` installs (when the ops exist in
-the loaded wheel), ``off`` keeps the current routes (A/B control), any
-other value WARNs and keeps. On wheels without the ops (pre-arc6) the
-install WARNs and keeps -- a silent non-install is indistinguishable
-from the deferred patch (visibility law). A skinny op that throws at
-runtime WARNs once and that lane falls back permanently.
+Gate: ``ARC_SKINNY_M`` -- unset/``off`` keeps the current routes (the
+certified default: r127 e2e falsified the reroute -- see below), ``on``
+installs (when the ops exist in the loaded wheel), any other value WARNs
+and keeps. On wheels without the ops (pre-arc6) the install WARNs and
+keeps -- a silent non-install is indistinguishable from the deferred
+patch (visibility law). A skinny op that throws at runtime WARNs once
+and that lane falls back permanently.
+
+Why OFF is the default (r127 e2e battery, 2026-11-09, results/
+2026-11-08-p633-skinny-m/): the serve decode path replays FULL_DECODE_ONLY
+XPU graphs, and under graph replay stock oneDNN runs its tensor-core
+gemmstone paths at 420-680 GB/s device-side (r127f 50-call amortized
+graph probe: gemma m816 M=2 stock 0.043-0.113 ms/call) -- the ~197 GB/s
+"stock level" that motivated the kernel was an eager-launch-bound
+artifact (host dispatch ~0.15-0.3 ms/call caps every op eagerly; the
+round-interleaved kbench compared host rates, not device compute). The
+skinny scalar-FMA streaming design tops at ~300 GB/s, so recorded into
+the replayed decode graph it regressed gemma solo decode -38% (m816,
+17.1 vs 27.7 tps) / -42% (g16, 23.3 vs 40.5 tps) while every over-cap
+path (qwen MTP verify M=4, agg8 M=8, prefill) stayed exactly on ref.
+The size-1 decode graph pads the token dim to 2, so even M=1-capped
+routing executes as M=2 work inside the graph. The kernels stay
+correct (r126 GATE-1) and available opt-in for eager/host-bound use.
 """
 
 from __future__ import annotations
@@ -145,11 +162,14 @@ def _try_skinny(layer: torch.nn.Module, x: torch.Tensor,
 
 
 def _install(mod=None) -> None:  # noqa: ARG001 — mod mirrors the patch-module shape
-    mode = os.environ.get(_MODE_ENV, "on").strip().lower()
+    # Default OFF (r127 e2e falsification — module docstring): unset keeps
+    # the stock routes; "on" is the explicit opt-in.
+    mode = os.environ.get(_MODE_ENV, "off").strip().lower()
     if mode == "off":
         logger.info(
-            "ArcXpuPlatform: skinny-M reroute OFF (%s=off — current routes "
-            "at all Ms)", _MODE_ENV)
+            "ArcXpuPlatform: skinny-M reroute OFF (%s unset/off — stock "
+            "routes at all Ms; the certified default after r127; set "
+            "%s=on to opt in)", _MODE_ENV, _MODE_ENV)
         return
     if mode != "on":
         logger.warning(
