@@ -7,8 +7,12 @@
 # external_patches/vllm-xpu-kernels/arc6_skinny_v017bp/csrc/) + W4A8
 # dispatch case arms for the arc5 enum values + the v0.1.17 Option-B
 # backports #611/#645/#650/#600, plus the wheel-side route patch
-# (vllm_gaudi/xpu/patches/skinny_m.py; ARC_SKINNY_M gate: unset/on =
-# route, off = A/B control; per-lane WARN + permanent fallback),
+# (vllm_gaudi/xpu/patches/skinny_m.py; ARC_SKINNY_M gate: unset/off =
+# stock routes — the CERTIFIED DEFAULT after the r127 e2e
+# falsification (under XPU-graph replay stock oneDNN runs 420-680
+# GB/s device-side; recorded skinny kernels regressed gemma solo
+# decode -38/-42%; results/2026-11-08-p633-skinny-m/); on = opt-in
+# with per-lane M caps and WARN + permanent per-lane fallback),
 # platform.py (one _XPU_PATCH_MODULES entry, LAST in the chain) and
 # envs.py (ARC_SKINNY_M registry entry).
 #
@@ -43,7 +47,10 @@
 # Inputs (cert7 reproducibility law):
 #   - base: certified cert21 (IMAGE_MANIFEST rows carry forward)
 #   - rig wheel vllm_xpu_kernels-0.1.14.1+arc6
-#     (sha256 filled at close-out)
+#     (sha256 484e06c18d0c8ea1cf6dc36dda24828e37b5c800688e9d4087d7
+#     79cb6dfb7156; FORK_SHA e2457389 = the P6.33 content commit the
+#     certification leg r127g2 ran against — image content is the
+#     already-cert-legged arc6test layers, retagged cert22)
 #   - repo vllm_gaudi/xpu/platform.py + patches/skinny_m.py +
 #     vllm_gaudi/envs.py (tracked)
 #   - this Dockerfile (tracked)
@@ -93,7 +100,7 @@ RUN set -euxo pipefail; \
        assert 'ARC_SKINNY_M' in m and 'skinny_fp8_gemm_w8a16' in m, 'mode gate / route target'; \
        print('CERT22_SKINNY_LIVE wheel+patches+registration OK')"; \
     { cat /etc/vllm-arc/IMAGE_MANIFEST; \
-      echo "cert22=P6.33 skinny-M kernel family: vllm-xpu-kernels 0.1.14.1+arc6 (new _xpu_C.skinny_{fp8_gemm_w8a16,fp8_gemm_w8a16_mxfp8,fp4_gemm_w4a16} GEMV-regime M<=8 kernels + W4A8 dispatch arms + v0.1.17 Option-B backports 611/645/650/600) + patches/skinny_m.py M<=8 route (ARC_SKINNY_M gate, off = A/B control; per-lane fallback) + platform/envs entries; larger-M byte-identical to cert21 (results/2026-11-08-p633-skinny-m/)"; \
+      echo "cert22=P6.33 skinny-M kernel family: vllm-xpu-kernels 0.1.14.1+arc6 (new _xpu_C.skinny_{fp8_gemm_w8a16,fp8_gemm_w8a16_mxfp8,fp4_gemm_w4a16} GEMV-regime M<=8 kernels + W4A8 dispatch arms + v0.1.17 Option-B backports 611/645/650/600) + patches/skinny_m.py M<=8 route (ARC_SKINNY_M gate: unset/off = stock routes, the certified default after the r127 e2e falsification; on = opt-in, per-lane M caps + fallback) + platform/envs entries; serve behavior byte-identical to cert21 (results/2026-11-08-p633-skinny-m/)"; \
       echo "cert22_fork_sha=${FORK_SHA}"; \
       echo "cert22_built=${BUILT}"; \
       echo "cert22_vxk_wheel_sha256=${WHEEL_SHA256}"; \

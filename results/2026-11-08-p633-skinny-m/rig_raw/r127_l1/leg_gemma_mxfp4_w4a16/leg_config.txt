@@ -1,0 +1,1 @@
+leg=E model=gemma4-31b quant=mxfp4-w4a16 img=vllm-arc:v0.30.0-b70-arc6test gmu=0.8 graph=1 spec=0 lmc=0 rpc=1200 skinny=on(default)

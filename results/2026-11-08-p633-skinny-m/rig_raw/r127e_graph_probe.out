@@ -1,0 +1,7 @@
+graph cls: <class 'torch.xpu.graphs.XPUGraph'>
+xpu: True Intel(R) Graphics [0xe223]
+gemma.up     M=2 stock eager 0.3169 replay 0.4957 (1.564x) | skinny eager 0.2184 replay 0.5017 (2.297x) | replay sk/st 1.012x
+gemma.down   M=2 stock eager 0.3452 replay 0.2783 (0.806x) | skinny eager 0.2766 replay 0.3461 (1.251x) | replay sk/st 1.244x
+gemma.qkv    M=2 stock eager 0.1613 replay 0.2348 (1.456x) | skinny eager 0.1989 replay 0.3225 (1.621x) | replay sk/st 1.373x
+gemma.o      M=2 stock eager 0.1709 replay 0.4679 (2.738x) | skinny eager 0.2890 replay 0.4695 (1.625x) | replay sk/st 1.003x
+PROBE_DONE

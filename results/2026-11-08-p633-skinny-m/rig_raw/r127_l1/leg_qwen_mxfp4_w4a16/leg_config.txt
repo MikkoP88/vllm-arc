@@ -1,0 +1,1 @@
+leg=C model=qwen3.8-27b quant=mxfp4-w4a16 img=vllm-arc:v0.30.0-b70-arc6test gmu=0.85 graph=1 spec=3 lmc=1 qcfg={"ignore":["*visual*","*linear_attn*","mtp.fc"]} skinny=on(default)

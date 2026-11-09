@@ -5,8 +5,16 @@ at the r46t close-out) from `vllm_gaudi/envs.py` arc-lane markers + the
 certified serve line (`r43_serve_k5.sh`, spec depth 3 per the r46t
 recommendation — a serve-time CLI change — on image
 `vllm-arc:v0.30.0-b70-cert`; unchanged since — the qwen fp8 chain is identical on
-the current certified image `vllm-arc:v0.30.0-b70-cert21`, where
-`LMCACHE_TRACK_USAGE=false` (P6.3) made it 25; cert21 = cert20 + the
+the current certified image `vllm-arc:v0.30.0-b70-cert22`, where
+`LMCACHE_TRACK_USAGE=false` (P6.3) made it 25; cert22 = cert21 + the
+P6.33 skinny-M kernel lane (arc6 `vllm_xpu_kernels` wheel swap +
+the `skinny_m` route patch — adds NO serve-line var; the lane rides
+the engine env `ARC_SKINNY_M` (unset/`off` = stock routes — the
+CERTIFIED default after the r127 e2e falsification; `on` = the M≤8
+kernels opt-in; a serve-ENV knob passed through by the script, like
+`ARC_ATTN_FA2`/`ARC_MXFP8_MODE`); serve behavior byte-identical to
+cert21 — r127g2 cert leg 27.7/192.9 exact ref, zero route markers);
+cert21 = cert20 + the
 P6.31 online-MXFP8 W8A16 lane (arc5 `vllm_xpu_kernels` wheel swap +
 the `mxfp8_w8a16` patch — adds NO serve-line var; the lane rides the
 model-lane env `ARC_QUANT=mxfp8` + the engine env `ARC_MXFP8_MODE`
@@ -130,6 +138,7 @@ kill-switch to disable):
 | `VLLM_ARC_FP8_W8A16_DISABLE` | `0` → W8A16 reroute ACTIVE | `patches/fp8_block_w8a16.py:65` | p44 | `=1` (stock W8A8) |
 | `ARC_MXFP4_MODE` | `w4a16` → certified route (bf16 acts → `fp4_gemm_w4a16`, zero per-call act quant; cert20) | `patches/mxfp4_w4a16.py:65` | p630 | `=w4a8` P6.31 probe lane (per-token e4m3 acts); `=w4a4` stock control |
 | `ARC_MXFP8_MODE` | `w8a16` → new route (bf16 acts → `fp8_gemm_w8a16_mxfp8`, group-32 e8m0 weight scales, zero runtime act quant; P6.31) | `patches/mxfp8_w8a16.py:57` | p631 | `=w8a8` stock control |
+| `ARC_SKINNY_M` | unset/`off` → stock routes at all Ms (**certified default**: r127 e2e falsified the reroute — under XPU-graph replay stock oneDNN runs 420–680 GB/s device-side and the recorded skinny kernels regressed gemma solo −38/−42%; results/2026-11-08-p633-skinny-m/) | `patches/skinny_m.py:167` | p633 | `=on` opt-in (per-lane caps w16 M=1, m816/g16 M≤2; eager-regime wins only — graph replay loses 1.6–2.6×; serve needs the rig `serve_arc_b70.sh` ARC_SKINNY_M pass-through) |
 | `VLLM_ARC_TQ_SPEC_FIX` | `1` → spec-verify fix ACTIVE on every `turboquant_*` dtype (fp8 never imports the hooked module — control proof t7/t9) | `patches/tq_spec_fix.py:99` | p619 | `=0` (pre-fix TQ spec-verify — corrupt under graphs, diagnosis only) |
 
 Dead since r47b (kept OUT of the live tables — no-unevidenced law):
@@ -214,10 +223,11 @@ twin of the live `VLLM_COMPACT_GDN` above).
 
 ## Naming map (r45g naming audit; completed r45h/r45i full sweep)
 
-In-line with best practice: `VLLM_ARC_*` engine-env namespace (**17 live
+In-line with best practice: `VLLM_ARC_*` engine-env namespace (**18 live
 vars** — the r45g audit's 10 + `VLLM_ARC_TQ_SPEC_FIX`/`VLLM_ARC_TQ_VERIFY_MODE`/`VLLM_ARC_TQ_MQ_SPLITS` (p619) +
 `VLLM_ARC_LMC_ASYNC_STORE`/`VLLM_ARC_LMC_EVSYNC` (p620) +
-`ARC_MXFP4_MODE` (p630) + `ARC_MXFP8_MODE` (p631); grep-verified
+`ARC_MXFP4_MODE` (p630) + `ARC_MXFP8_MODE` (p631) + `ARC_SKINNY_M`
+(p633); grep-verified
 against code consumers at the P6.23 docs audit + the 2026-11-08 P6.31
 registry catch-up (the p619 trio and the p630 gate had gone live
 docs-only; the `vllm_gaudi/envs.py` registry now mirrors the docs) — + 3 dropped at r45d +
@@ -228,11 +238,11 @@ library, not the engine; registered by `arc-fp8-allreduce.patch`, all
 default-off, documented in `CONFIGURATION-arc.md`'s knob table),
 `NN-category/pNN-slug` patch dirs,
 `feat/arc-pNN-<slug>` branches, `vllm-arc:v0.30.0-b70[-pNN]` image tags,
-`ARC_*` **host-side script vars** (22 — recounted at the P6.31
-close-out: the base 11 plus the P6.28–P6.31 lane knobs
+`ARC_*` **host-side script vars** (23 — recounted at the P6.33
+close-out: the base 11 plus the P6.28–P6.33 lane knobs
 `ARC_MODEL`/`ARC_SERVED`/`ARC_QUANT`/`ARC_QUANTCFG`/`ARC_TEMPLATE`/
 `ARC_RPARSER`/`ARC_TPARSER`/`ARC_RPC_TIMEOUT`/`ARC_MXFP4_MODE`/
-`ARC_MXFP8_MODE`/`ARC_MAXLEN`, most as set-only passthroughs (default
+`ARC_MXFP8_MODE`/`ARC_MAXLEN`/`ARC_SKINNY_M`, most as set-only passthroughs (default
 emits no line) or defaulted-overridable script args;
 `tools/serve_arc_b70.sh` — a
 different layer from engine envs; the 11th is `ARC_FP8`, the P6.24

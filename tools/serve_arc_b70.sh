@@ -82,6 +82,9 @@ set -euo pipefail
 
 #   ARC_MXFP4_MODE  passed into the serve env when set (p630 FIX-P A/B:
 #                  w4a4 = stock W4A4 control; unset = patch default w4a16)
+#   ARC_SKINNY_M   passed into the serve env when set (p633: on = the
+#                  M<=8 skinny kernels opt-in; unset/off = stock routes,
+#                  the certified default after the r127 e2e falsification)
 ARC_IMAGE=${ARC_IMAGE:-vllm-arc:v0.30.0-b70}
 ARC_NAME=${ARC_NAME:-arc-test}
 ARC_GRAPH=${ARC_GRAPH:-0}
@@ -326,6 +329,7 @@ $FP8_ENV
 export ARC_TRACE_FLIP=1
 ${ARC_MXFP4_MODE:+export ARC_MXFP4_MODE=${ARC_MXFP4_MODE};}
 ${ARC_MXFP8_MODE:+export ARC_MXFP8_MODE=${ARC_MXFP8_MODE};}
+${ARC_SKINNY_M:+export ARC_SKINNY_M=${ARC_SKINNY_M};}
 $LMC_ENV
 $GRAPH_ENV
 exec /opt/venv/bin/vllm serve --model /models/target \

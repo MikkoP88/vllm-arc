@@ -1,10 +1,10 @@
 #!/bin/bash
 # r127_skinny_e2e.sh -- P6.33 arc6 skinny-M e2e battery (arc6test image).
 #
-# Five legs, all ARC_SKINNY_M unset (= on; the M<=8 route installs when
-# the arc6 wheel's ops are present), each read against its banked control
+# Five legs, all ARC_SKINNY_M unset (= on; per-lane M caps w16 M=1, m816/g16 M<=2 (commit
+# kernel accepts M<=8; caps from r126 w8b/8c/9)), each read against its banked control
 # (identical inputs/postures; the M-split only adds the M<=8 branch, and
-# r126's big-M stock cells already banked backport neutrality at kernel
+# r126 big-M stock cells banked backport neutrality; over-cap M
 # level):
 #   leg A qwen fp8      (cert21 leg A ref)   -> skinny w16 champion lane
 #   leg B qwen mxfp8    (cert21 leg B ref)   -> skinny m816 lane

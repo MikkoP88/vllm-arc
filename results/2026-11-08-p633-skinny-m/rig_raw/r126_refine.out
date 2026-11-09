@@ -1,0 +1,136 @@
+=== [0] env ===
+xpu: True Intel(R) Graphics [0xe223]
+[ok] probe wheel ops present
+=== M=1: 6 combos interleaved ===
+  M=1 gemma.up    w16pt base:0.244(237) kc1024:0.228(253) sw:0.235(246) kc1024+sw:0.230(251) wi64k:0.271(213) wi64k+sw:0.268(216) BEST=kc1024 spread<=1.3x
+  M=1 gemma.up    w16pc base:0.211(274) kc1024:0.193(300) sw:0.195(296) kc1024+sw:0.193(300) wi64k:0.239(242) wi64k+sw:0.233(248) BEST=kc1024 spread<=1.4x
+  M=1 gemma.up    m816  base:0.238(243) kc1024:0.225(257) sw:0.237(244) kc1024+sw:0.237(244) wi64k:0.297(195) wi64k+sw:0.313(185) BEST=kc1024 spread<=1.4x
+  M=1 gemma.up    g16   base:0.160(181) kc1024:0.151(191) sw:0.165(176) kc1024+sw:0.156(185) wi64k:0.168(172) wi64k+sw:0.174(166) BEST=kc1024 spread<=2.2x
+  M=1 gemma.down  w16pt base:0.222(260) kc1024:0.211(273) sw:0.213(271) kc1024+sw:0.213(271) wi64k:0.211(274) wi64k+sw:0.213(272) BEST=wi64k spread<=1.1x
+  M=1 gemma.down  w16pc base:0.253(228) kc1024:0.226(255) sw:0.221(262) kc1024+sw:0.221(261) wi64k:0.226(256) wi64k+sw:0.215(269) BEST=wi64k+sw spread<=1.7x
+  M=1 gemma.down  m816  base:0.213(271) kc1024:0.203(284) sw:0.210(276) kc1024+sw:0.209(276) wi64k:0.203(285) wi64k+sw:0.209(277) BEST=wi64k spread<=1.5x
+  M=1 gemma.down  g16   base:0.232(124) kc1024:0.224(129) sw:0.202(143) kc1024+sw:0.211(137) wi64k:0.224(129) wi64k+sw:0.203(142) BEST=sw spread<=1.9x
+  M=1 gemma.o     w16pt base:0.273(106) kc1024:0.259(112) sw:0.246(117) kc1024+sw:0.246(117) wi64k:0.254(114) wi64k+sw:0.254(114) BEST=sw spread<=2.1x
+  M=1 gemma.o     w16pc base:0.170(170) kc1024:0.157(184) sw:0.156(186) kc1024+sw:0.158(183) wi64k:0.163(178) wi64k+sw:0.155(187) BEST=wi64k+sw spread<=1.6x
+  M=1 gemma.o     m816  base:0.242(120) kc1024:0.219(132) sw:0.218(133) kc1024+sw:0.214(135) wi64k:0.216(134) wi64k+sw:0.214(135) BEST=wi64k+sw spread<=1.9x
+  M=1 gemma.o     g16   base:0.148(97) kc1024:0.134(108) sw:0.133(109) kc1024+sw:0.134(108) wi64k:0.134(108) wi64k+sw:0.132(110) BEST=wi64k+sw spread<=1.8x
+  M=1 qwen.up     w16pt base:0.209(213) kc1024:0.216(207) sw:0.213(209) kc1024+sw:0.211(211) wi64k:0.196(227) wi64k+sw:0.194(229) BEST=wi64k+sw spread<=1.8x
+  M=1 qwen.up     w16pc base:0.186(239) kc1024:0.180(247) sw:0.178(251) kc1024+sw:0.178(251) wi64k:0.169(264) wi64k+sw:0.173(257) BEST=wi64k spread<=1.7x
+  M=1 qwen.up     m816  base:0.178(250) kc1024:0.184(243) sw:0.194(229) kc1024+sw:0.195(229) wi64k:0.175(255) wi64k+sw:0.189(235) BEST=wi64k spread<=1.1x
+  M=1 qwen.up     g16   base:0.256(87) kc1024:0.244(91) sw:0.223(100) kc1024+sw:0.230(97) wi64k:0.241(93) wi64k+sw:0.223(100) BEST=wi64k+sw spread<=2.1x
+  M=1 qwen.down   w16pt base:0.181(247) kc1024:0.173(258) sw:0.173(257) kc1024+sw:0.175(255) wi64k:0.171(261) wi64k+sw:0.172(259) BEST=wi64k spread<=1.0x
+  M=1 qwen.down   w16pc base:0.246(181) kc1024:0.210(213) sw:0.213(209) kc1024+sw:0.210(213) wi64k:0.206(216) wi64k+sw:0.215(207) BEST=wi64k spread<=1.7x
+  M=1 qwen.down   m816  base:0.176(253) kc1024:0.167(266) sw:0.171(261) kc1024+sw:0.172(260) wi64k:0.167(267) wi64k+sw:0.171(261) BEST=wi64k spread<=1.4x
+  M=1 qwen.down   g16   base:0.215(104) kc1024:0.187(119) sw:0.193(116) kc1024+sw:0.197(113) wi64k:0.189(118) wi64k+sw:0.186(120) BEST=wi64k+sw spread<=1.9x
+  M=1 qwen.o      w16pt base:0.238(110) kc1024:0.223(118) sw:0.220(119) kc1024+sw:0.220(119) wi64k:0.215(122) wi64k+sw:0.215(122) BEST=wi64k+sw spread<=2.1x
+  M=1 qwen.o      w16pc base:0.148(177) kc1024:0.135(194) sw:0.136(193) kc1024+sw:0.135(194) wi64k:0.134(195) wi64k+sw:0.135(194) BEST=wi64k spread<=1.5x
+  M=1 qwen.o      m816  base:0.277(95) kc1024:0.237(111) sw:0.238(110) kc1024+sw:0.230(114) wi64k:0.227(116) wi64k+sw:0.226(116) BEST=wi64k+sw spread<=2.2x
+  M=1 qwen.o      g16   base:0.147(89) kc1024:0.136(97) sw:0.133(99) kc1024+sw:0.134(98) wi64k:0.133(98) wi64k+sw:0.134(98) BEST=sw spread<=1.2x
+=== M=2: 3 combos interleaved ===
+  M=2 gemma.up    w16pt base:0.322(180) kc1024:0.320(181) sw:0.305(189) BEST=sw spread<=1.1x
+  M=2 gemma.up    w16pc base:0.233(249) kc1024:0.234(247) sw:0.219(264) BEST=sw spread<=1.1x
+  M=2 gemma.up    m816  base:0.215(269) kc1024:0.195(297) sw:0.219(264) BEST=kc1024 spread<=1.0x
+  M=2 gemma.up    g16   base:0.221(131) kc1024:0.197(146) sw:0.201(144) BEST=kc1024 spread<=1.8x
+  M=2 gemma.down  w16pt base:0.296(195) kc1024:0.292(198) sw:0.285(203) BEST=sw spread<=1.2x
+  M=2 gemma.down  w16pc base:0.236(245) kc1024:0.197(294) sw:0.197(294) BEST=kc1024 spread<=1.1x
+  M=2 gemma.down  m816  base:0.204(283) kc1024:0.193(300) sw:0.209(277) BEST=kc1024 spread<=1.4x
+  M=2 gemma.down  g16   base:0.274(105) kc1024:0.248(116) sw:0.242(119) BEST=sw spread<=1.4x
+  M=2 gemma.o     w16pt base:0.166(174) kc1024:0.220(131) sw:0.159(182) BEST=sw spread<=1.1x
+  M=2 gemma.o     w16pc base:0.137(210) kc1024:0.192(150) sw:0.131(221) BEST=sw spread<=1.9x
+  M=2 gemma.o     m816  base:0.276(105) kc1024:0.251(115) sw:0.247(117) BEST=sw spread<=1.1x
+  M=2 gemma.o     g16   base:0.159(91) kc1024:0.159(91) sw:0.146(99) BEST=sw spread<=1.5x
+  M=2 qwen.up     w16pt base:0.246(181) kc1024:0.234(191) sw:0.233(191) BEST=sw spread<=1.0x
+  M=2 qwen.up     w16pc base:0.269(165) kc1024:0.250(179) sw:0.249(179) BEST=sw spread<=1.2x
+  M=2 qwen.up     m816  base:0.212(210) kc1024:0.199(224) sw:0.209(214) BEST=kc1024 spread<=1.2x
+  M=2 qwen.up     g16   base:0.144(155) kc1024:0.136(164) sw:0.139(160) BEST=kc1024 spread<=1.0x
+  M=2 qwen.down   w16pt base:0.240(186) kc1024:0.230(194) sw:0.238(187) BEST=kc1024 spread<=1.4x
+  M=2 qwen.down   w16pc base:0.228(196) kc1024:0.214(208) sw:0.215(207) BEST=kc1024 spread<=1.3x
+  M=2 qwen.down   m816  base:0.177(252) kc1024:0.166(269) sw:0.183(244) BEST=kc1024 spread<=1.0x
+  M=2 qwen.down   g16   base:0.145(153) kc1024:0.137(163) sw:0.143(156) BEST=kc1024 spread<=1.2x
+  M=2 qwen.o      w16pt base:0.321(82) kc1024:0.299(88) sw:0.294(89) BEST=sw spread<=1.4x
+  M=2 qwen.o      w16pc base:0.149(175) kc1024:0.161(162) sw:0.135(194) BEST=sw spread<=1.3x
+  M=2 qwen.o      m816  base:0.133(197) kc1024:0.124(212) sw:0.122(215) BEST=sw spread<=1.1x
+  M=2 qwen.o      g16   base:0.273(48) kc1024:0.249(53) sw:0.245(54) BEST=sw spread<=1.1x
+=== M=4: 3 combos interleaved ===
+  M=4 gemma.up    w16pt base:0.280(206) kc1024:0.255(227) sw:0.276(210) BEST=kc1024 spread<=1.2x
+  M=4 gemma.up    w16pc base:0.242(239) kc1024:0.189(306) sw:0.219(264) BEST=kc1024 spread<=1.1x
+  M=4 gemma.up    m816  base:0.293(197) kc1024:0.267(217) sw:0.287(201) BEST=kc1024 spread<=1.4x
+  M=4 gemma.up    g16   base:0.234(123) kc1024:0.253(114) sw:0.226(128) BEST=sw spread<=1.3x
+  M=4 gemma.down  w16pt base:0.246(235) kc1024:0.237(244) sw:0.237(244) BEST=sw spread<=1.0x
+  M=4 gemma.down  w16pc base:0.225(257) kc1024:0.216(268) sw:0.217(266) BEST=kc1024 spread<=1.2x
+  M=4 gemma.down  m816  base:0.304(190) kc1024:0.285(203) sw:0.298(194) BEST=kc1024 spread<=1.1x
+  M=4 gemma.down  g16   base:0.238(121) kc1024:0.209(138) sw:0.214(135) BEST=kc1024 spread<=1.1x
+  M=4 gemma.o     w16pt base:0.160(180) kc1024:0.194(149) sw:0.150(193) BEST=sw spread<=1.3x
+  M=4 gemma.o     w16pc base:0.264(109) kc1024:0.239(121) sw:0.234(123) BEST=sw spread<=1.2x
+  M=4 gemma.o     m816  base:0.154(187) kc1024:0.185(156) sw:0.142(203) BEST=sw spread<=1.2x
+  M=4 gemma.o     g16   base:0.141(103) kc1024:0.195(74) sw:0.141(102) BEST=base spread<=1.0x
+  M=4 qwen.up     w16pt base:0.318(140) kc1024:0.301(148) sw:0.301(148) BEST=kc1024 spread<=1.4x
+  M=4 qwen.up     w16pc base:0.227(197) kc1024:0.217(205) sw:0.219(204) BEST=kc1024 spread<=1.1x
+  M=4 qwen.up     m816  base:0.231(193) kc1024:0.208(215) sw:0.215(207) BEST=kc1024 spread<=1.1x
+  M=4 qwen.up     g16   base:0.233(95) kc1024:0.211(106) sw:0.222(100) BEST=kc1024 spread<=1.4x
+  M=4 qwen.down   w16pt base:0.275(162) kc1024:0.246(181) sw:0.246(181) BEST=sw spread<=1.3x
+  M=4 qwen.down   w16pc base:0.182(244) kc1024:0.172(260) sw:0.177(252) BEST=kc1024 spread<=1.0x
+  M=4 qwen.down   m816  base:0.223(199) kc1024:0.206(216) sw:0.220(203) BEST=kc1024 spread<=1.3x
+  M=4 qwen.down   g16   base:0.264(84) kc1024:0.226(98) sw:0.232(96) BEST=kc1024 spread<=1.3x
+  M=4 qwen.o      w16pt base:0.162(162) kc1024:0.165(159) sw:0.152(172) BEST=sw spread<=1.1x
+  M=4 qwen.o      w16pc base:0.133(198) kc1024:0.138(189) sw:0.119(220) BEST=sw spread<=1.4x
+  M=4 qwen.o      m816  base:0.279(94) kc1024:0.254(103) sw:0.250(105) BEST=sw spread<=1.3x
+  M=4 qwen.o      g16   base:0.154(85) kc1024:0.168(78) sw:0.139(95) BEST=sw spread<=1.3x
+=== M=8: 3 combos interleaved ===
+  M=8 gemma.up    w16pt base:0.326(177) kc1024:0.297(195) sw:0.294(197) BEST=sw spread<=1.0x
+  M=8 gemma.up    w16pc base:0.339(170) kc1024:0.330(175) sw:0.328(176) BEST=sw spread<=1.3x
+  M=8 gemma.up    m816  base:0.372(155) kc1024:0.335(172) sw:0.336(172) BEST=kc1024 spread<=1.2x
+  M=8 gemma.up    g16   base:0.260(111) kc1024:0.268(108) sw:0.227(127) BEST=sw spread<=1.2x
+  M=8 gemma.down  w16pt base:0.400(145) kc1024:0.382(151) sw:0.383(151) BEST=kc1024 spread<=1.2x
+  M=8 gemma.down  w16pc base:0.303(191) kc1024:0.258(224) sw:0.258(224) BEST=sw spread<=1.0x
+  M=8 gemma.down  m816  base:0.369(157) kc1024:0.321(180) sw:0.342(169) BEST=kc1024 spread<=1.1x
+  M=8 gemma.down  g16   base:0.381(76) kc1024:0.362(80) sw:0.374(77) BEST=kc1024 spread<=1.2x
+  M=8 gemma.o     w16pt base:0.220(131) kc1024:0.272(106) sw:0.208(139) BEST=sw spread<=1.7x
+  M=8 gemma.o     w16pc base:0.177(163) kc1024:0.237(122) sw:0.161(180) BEST=sw spread<=1.5x
+  M=8 gemma.o     m816  base:0.276(105) kc1024:0.328(88) sw:0.258(112) BEST=sw spread<=1.3x
+  M=8 gemma.o     g16   base:0.184(78) kc1024:0.265(55) sw:0.151(96) BEST=sw spread<=1.1x
+  M=8 qwen.up     w16pt base:0.310(144) kc1024:0.271(165) sw:0.274(163) BEST=kc1024 spread<=1.4x
+  M=8 qwen.up     w16pc base:0.324(138) kc1024:0.305(146) sw:0.308(145) BEST=kc1024 spread<=1.1x
+  M=8 qwen.up     m816  base:0.332(134) kc1024:0.287(156) sw:0.298(150) BEST=kc1024 spread<=1.0x
+  M=8 qwen.up     g16   base:0.269(83) kc1024:0.224(100) sw:0.238(94) BEST=kc1024 spread<=1.4x
+  M=8 qwen.down   w16pt base:0.318(140) kc1024:0.308(145) sw:0.314(142) BEST=kc1024 spread<=1.2x
+  M=8 qwen.down   w16pc base:0.245(182) kc1024:0.203(220) sw:0.211(212) BEST=kc1024 spread<=1.1x
+  M=8 qwen.down   m816  base:0.293(152) kc1024:0.245(182) sw:0.273(163) BEST=kc1024 spread<=1.3x
+  M=8 qwen.down   g16   base:0.295(76) kc1024:0.270(82) sw:0.301(74) BEST=kc1024 spread<=1.1x
+  M=8 qwen.o      w16pt base:0.192(137) kc1024:0.214(122) sw:0.185(142) BEST=sw spread<=1.1x
+  M=8 qwen.o      w16pc base:0.165(159) kc1024:0.186(141) sw:0.155(170) BEST=sw spread<=1.0x
+  M=8 qwen.o      m816  base:0.272(96) kc1024:0.270(97) sw:0.245(107) BEST=sw spread<=1.4x
+  M=8 qwen.o      g16   base:0.176(75) kc1024:0.222(59) sw:0.185(71) BEST=base spread<=1.4x
+
+=== refine summary (p50 ms; best per cell) ===
+-- M=1
+  gemma.up    w16pt:kc1024(0.228,253GB/s) w16pc:kc1024(0.193,300GB/s) m816:kc1024(0.225,257GB/s) g16:kc1024(0.151,191GB/s)
+  gemma.down  w16pt:wi64k(0.211,274GB/s) w16pc:wi64k+sw(0.215,269GB/s) m816:wi64k(0.203,285GB/s) g16:sw(0.202,143GB/s)
+  gemma.o     w16pt:sw(0.246,117GB/s) w16pc:wi64k+sw(0.155,187GB/s) m816:wi64k+sw(0.214,135GB/s) g16:wi64k+sw(0.132,110GB/s)
+  qwen.up     w16pt:wi64k+sw(0.194,229GB/s) w16pc:wi64k(0.169,264GB/s) m816:wi64k(0.175,255GB/s) g16:wi64k+sw(0.223,100GB/s)
+  qwen.down   w16pt:wi64k(0.171,261GB/s) w16pc:wi64k(0.206,216GB/s) m816:wi64k(0.167,267GB/s) g16:wi64k+sw(0.186,120GB/s)
+  qwen.o      w16pt:wi64k+sw(0.215,122GB/s) w16pc:wi64k(0.134,195GB/s) m816:wi64k+sw(0.226,116GB/s) g16:sw(0.133,99GB/s)
+-- M=2
+  gemma.up    w16pt:sw(0.305,189GB/s) w16pc:sw(0.219,264GB/s) m816:kc1024(0.195,297GB/s) g16:kc1024(0.197,146GB/s)
+  gemma.down  w16pt:sw(0.285,203GB/s) w16pc:kc1024(0.197,294GB/s) m816:kc1024(0.193,300GB/s) g16:sw(0.242,119GB/s)
+  gemma.o     w16pt:sw(0.159,182GB/s) w16pc:sw(0.131,221GB/s) m816:sw(0.247,117GB/s) g16:sw(0.146,99GB/s)
+  qwen.up     w16pt:sw(0.233,191GB/s) w16pc:sw(0.249,179GB/s) m816:kc1024(0.199,224GB/s) g16:kc1024(0.136,164GB/s)
+  qwen.down   w16pt:kc1024(0.230,194GB/s) w16pc:kc1024(0.214,208GB/s) m816:kc1024(0.166,269GB/s) g16:kc1024(0.137,163GB/s)
+  qwen.o      w16pt:sw(0.294,89GB/s) w16pc:sw(0.135,194GB/s) m816:sw(0.122,215GB/s) g16:sw(0.245,54GB/s)
+-- M=4
+  gemma.up    w16pt:kc1024(0.255,227GB/s) w16pc:kc1024(0.189,306GB/s) m816:kc1024(0.267,217GB/s) g16:sw(0.226,128GB/s)
+  gemma.down  w16pt:sw(0.237,244GB/s) w16pc:kc1024(0.216,268GB/s) m816:kc1024(0.285,203GB/s) g16:kc1024(0.209,138GB/s)
+  gemma.o     w16pt:sw(0.150,193GB/s) w16pc:sw(0.234,123GB/s) m816:sw(0.142,203GB/s) g16:base(0.141,103GB/s)
+  qwen.up     w16pt:kc1024(0.301,148GB/s) w16pc:kc1024(0.217,205GB/s) m816:kc1024(0.208,215GB/s) g16:kc1024(0.211,106GB/s)
+  qwen.down   w16pt:sw(0.246,181GB/s) w16pc:kc1024(0.172,260GB/s) m816:kc1024(0.206,216GB/s) g16:kc1024(0.226,98GB/s)
+  qwen.o      w16pt:sw(0.152,172GB/s) w16pc:sw(0.119,220GB/s) m816:sw(0.250,105GB/s) g16:sw(0.139,95GB/s)
+-- M=8
+  gemma.up    w16pt:sw(0.294,197GB/s) w16pc:sw(0.328,176GB/s) m816:kc1024(0.335,172GB/s) g16:sw(0.227,127GB/s)
+  gemma.down  w16pt:kc1024(0.382,151GB/s) w16pc:sw(0.258,224GB/s) m816:kc1024(0.321,180GB/s) g16:kc1024(0.362,80GB/s)
+  gemma.o     w16pt:sw(0.208,139GB/s) w16pc:sw(0.161,180GB/s) m816:sw(0.258,112GB/s) g16:sw(0.151,96GB/s)
+  qwen.up     w16pt:kc1024(0.271,165GB/s) w16pc:kc1024(0.305,146GB/s) m816:kc1024(0.287,156GB/s) g16:kc1024(0.224,100GB/s)
+  qwen.down   w16pt:kc1024(0.308,145GB/s) w16pc:kc1024(0.203,220GB/s) m816:kc1024(0.245,182GB/s) g16:kc1024(0.270,82GB/s)
+  qwen.o      w16pt:sw(0.185,142GB/s) w16pc:sw(0.155,170GB/s) m816:sw(0.245,107GB/s) g16:base(0.176,75GB/s)
+
+best-combo win counts: {'kc1024': 39, 'sw': 38, 'wi64k+sw': 9, 'wi64k': 8, 'base': 2}
+[ok] banked to /work/r126_refine_rows.json
