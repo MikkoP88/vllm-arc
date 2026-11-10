@@ -56,6 +56,7 @@ if TYPE_CHECKING:
     ARC_MXFP4_MODE: str = "w4a16"
     ARC_MXFP8_MODE: str = "w8a16"
     ARC_SKINNY_M: str = "on"
+    VLLM_ARC_GRAPH_EXEC_DB: bool = True
 
 # The begin-* and end* here are used by the documentation generator
 # to extract the used env vars.
@@ -313,6 +314,18 @@ environment_variables: dict[str, Callable[[], Any]] = {
     # routes at all Ms). patches/skinny_m.py:133.
     "ARC_SKINNY_M":
     lambda: os.environ.get("ARC_SKINNY_M", "on").strip().lower(),
+
+    # p635 D1 graph-exec double-buffer: 1 (default; every XPU graph is
+    # captured twice into the manager's shared pool and replays alternate
+    # execs — torch 2.13 same-exec XPUGraph.replay() blocks until the
+    # exec's prior launch retires, serializing host/device ~24 ms/step
+    # under async scheduling; leg J: XRP max 24 ms -> 0.37, device busy
+    # 27.7% -> ~80%) | 0 (stock single-exec replays). XPU-only; +29 s
+    # boot for the second capture pass at the certified posture.
+    # patches/graph_exec_doublebuffer.py:76.
+    "VLLM_ARC_GRAPH_EXEC_DB":
+    lambda: os.environ.get("VLLM_ARC_GRAPH_EXEC_DB", "1").lower() in
+    ("1", "true"),
 }
 
 # end-env-vars-definition

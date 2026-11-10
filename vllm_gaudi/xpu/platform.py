@@ -77,6 +77,12 @@ _XPU_PATCH_MODULES = (
     # LAST in the chain — captures the apply_weights the lanes above
     # installed and only intercepts M<=8 (r123: stock routes 3-10x the
     # bytes floor at decode Ms; ARC_SKINNY_M gate, per-lane fallback)
+    "graph_exec_doublebuffer",  # p635 D1: capture every XPU graph twice
+    # into the shared pool, alternate replays — torch 2.13 same-exec
+    # XPUGraph.replay() blocks until its prior launch retires (~24
+    # ms/step serialized under async scheduling; leg J: XRP max 24 ->
+    # 0.37 ms, device busy 27.7% -> ~80%; VLLM_ARC_GRAPH_EXEC_DB=0
+    # opt-out)
 )
 
 
