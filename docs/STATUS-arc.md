@@ -56,6 +56,23 @@ elsewhere are cert22's):
   fp8k4) — honest numerator is max_tokens. Evidence:
   `results/2026-11-10-p635-telemetry/` (legs A–K + `sweep/` +
   `cert23/`).
+- **P6.35-V full validation matrix (cert23, r136+r136b)** — 11 cells,
+  both models, all online quants × spec depths, uniform protocol, 0
+  tracebacks, db markers correct at every depth. Qwen: mx4-W4A16 wins
+  every spec column — **k5 re-read 128.3 tok/s (+36% vs the clean
+  fp8-k3 base 94.5, project best; 5.93 tok/chunk acceptance)**;
+  spec0 column fp8 32.8 / mx8 28.2 / mx4 36.1. Gemma (spec0): **mx4
+  37.1 tok/s = +43% vs mxfp8 26.0** (ITL 27.0 vs 38.5 ms — the W4A16
+  weight-streaming win is model-agnostic); **online fp8 boots + serves
+  (26.6) — new capability**; mxfp8 26.0 repeatable. mxfp8 deprecated
+  for decode (below fp8 and mx4 at every depth, both models). TTFT:
+  fp8-k5 3.48 s best; mx4 prefill cost bounded (worst 5.11 s at k5).
+  Winner postures: qwen `ARC_QUANT=mxfp4 ARC_MXFP4_MODE=w4a16 QCFG-ignore
+  GMU0.85 SPEC5 FP8=0` (BASE ckpt); gemma same quant + `GMU0.8 LMC=0
+  RPC=1200 MAXLEN=40960`. Evidence: `results/2026-11-10-p635-telemetry/
+  vmatrix/` (incident note: 27B container rm >30 s caused a
+  stale-record cascade — data banked before every marker; watchdog +
+  hardened r136b teardown re-ran the 3 affected cells clean).
 - History: cert22 (P6.33 skinny-M, banked OFF), cert21 (P6.31), cert20
   (P6.30), cert19 (P6.29), cert18 (P6.28 FA2), cert17 (P6.28 gemma-4
   chain), cert11 (P6.26), cert10 (P6.24), cert9 (P6.20), cert8

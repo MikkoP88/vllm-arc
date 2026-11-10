@@ -417,3 +417,24 @@ Artifacts: `cert23/<leg>/{db_markers,battery,metrics,serve.log,
 p135_face_*.json,boot.txt}`; logs redacted (law 8;
 `SHA256SUMS.redacted` post-redaction hashes; originals on the rig at
 `/root/build/p635/cert23/`).
+
+## P6.35-V full validation matrix (vmatrix/, 2026-11-10 17:38Z complete)
+
+Owner-directed matrix on cert23 — 11 cells + fp8-k3 gate references, 0
+tracebacks, db markers correct at every spec depth (spec0=2, k3/k5=6).
+Full tables and postures in **`vmatrix/README.md`**. Headlines:
+
+- **qwen mxfp4-W4A16 k5 = 128.3 tok/s — new project best** (+36% vs the
+  clean fp8-k3 base 94.5; gate's 121.0 had lower draft acceptance, 5.50
+  vs 5.93 tok/chunk). mx4 wins every spec column: 36.1 / 103.0 / 128.3.
+- **gemma mxfp4-W4A16 = 37.1 tok/s (+43% vs mxfp8 26.0)** — the W4A16
+  weight-streaming win is model-agnostic. **gemma online fp8 boots and
+  serves** (26.6) — new capability cell.
+- **mxfp8 is a decode dud at every depth** (qwen 28.2 / 83.6 / 101.8 —
+  below fp8 at k0/k3, below mx4 everywhere). Not recommended.
+- TTFT best = fp8 k5 3.48 s; mx4 prefill cost real but bounded (k5
+  5.11 s worst).
+- Incident: 3 cells initially lost to a stale-teardown cascade (27B
+  container rm >30 s; data always banked before the marker); rig
+  watchdog + r136b make-up re-ran them clean. Details in vmatrix/README.
+
