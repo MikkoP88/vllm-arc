@@ -308,3 +308,57 @@ runs them off-trace.
 3. **D2 host-tail polish** (~8 ms exposed → step ~36–38 ms; ≤ +10%).
 4. **T1 prefill rank skew**: 1.87 s eager xccl all_reduce host block
    at a chunk boundary (leg-J trace) — TTFT lane.
+
+---
+
+## P6.35-P posture sweep — BANKED (2026-11-10, gate3, `sweep/`)
+
+Stock cert22, six cells, solo U8k (ctx 8192) 600-token streaming faces
+(`p135_face.py`, ignore_eos). **Rate accounting correction first**:
+spec-decode SSE streams MULTI-token chunks (fp8k4: 600 tokens in 127
+chunks) — chunk-count rates undercount; the honest numerator is
+max_tokens (cross-checked: `request_success_total{finished_reason=
+"length"}` and `generation_tokens_total` cover the full 600). The same
+correction re-reads the leg F/J baselines.
+
+| cell | tok/s | Δ vs fp8-k3 base | step ms (ITL p50) | tok/chunk | TTFT s |
+|---|---|---|---|---|---|
+| fp8 k3 (legF base) | 81.6 | — | 40.5 | 3.95 | 4.55 |
+| fp8 k3 + db (legJ) | 87.2 | +6.9% | ~38 | 3.97 | 7.63* |
+| mx8 W8A16 k3 | 83.8 | +2.7% | 45.4 | 3.86 | 4.34 |
+| fp8 k4 | 100.6 | +23% | 44.3 | 4.75 | 3.62 |
+| mx4 W4A16 k3 | 110.4 | +35% | 37.3 | 4.10 | 5.19** |
+| mx4 W4A16 k4 | 113.1 | +39% | 41.1 | 4.75 | 3.99 |
+| fp8 k5 | 115.2 | +41% | 47.6 | 5.60 | 3.63 |
+| **mx4 W4A16 k5** | **123.9** | **+52%** | **44.2** | **5.60** | **3.98** |
+
+\* legJ TTFT carried probe-log overhead (logging patches in prefill).
+\*\* first MX boot of the day — quant/triton cache cold; mx4k4/k5 land
+at 3.99/3.98 s.
+
+**Findings:**
+- **Winner: mxfp4 W4A16 + spec k5 = 123.9 tok/s (+52% vs the certified
+  k3 posture), TTFT 3.98 s (better than the 4.55 s baseline).** Both
+  halves stack: W4A16 cuts the step wall −3.4 ms (fp8k5 47.6 → mx4k5
+  44.2) and k5 raises tokens/read (5.60/chunk, 93% of the 6-token max
+  — acceptance holds under the quant lane).
+- **k5 is the biggest single lever on stock** (fp8: +41%) — the extra
+  draft token costs only ~3.3 ms/step (44.3 → 47.6) and yields +0.85
+  tok/step. This supersedes the r43-era "+1.5–2.4%" reading (that was
+  the arc_pybench solo battery under the old step economics).
+- **W4A16's step saving is real but sub-arithmetic**: halving weight
+  bytes saves only ~3 ms of the 23 ms weight-stream floor — bf16
+  activations (vs fp8) offset part of it; attention/KV reads unchanged.
+- **mxfp8 W8A16 is a decode dud** (83.8 ≈ baseline; same weight bytes
+  as fp8, bf16 activations cost +5 ms/step). Its lane value stays
+  prefill/quality-side, not decode.
+- MX dispatch markers fired in every MX cell (reroute ACTIVE ×2,
+  "Quantized 160/164 layers"); 0 tracebacks across all six cells.
+
+**Next**: cert23 = cert22 + D1 double-buffer; gate L4 runs the winner
+posture (mx4k5) on cert23 to test stackability (db gave +6.9% on k3;
+predict ~130 tok/s if it carries). Then P6.35-V full matrix.
+Sweep artifacts: `sweep/<cell>/{cell_config,dispatch,metrics,serve.log,
+p135_face_*.json,boot.txt}`; logs redacted per law 8
+(`SHA256SUMS.redacted` carries the post-redaction hashes; originals on
+the rig at `/root/build/p635/sweep-20261110-115158/`).

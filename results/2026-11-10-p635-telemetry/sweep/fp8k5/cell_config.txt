@@ -1,0 +1,1 @@
+cell=fp8k5 served=qwen3.8-27b-fp8 spec=5 quant=native-fp8 qcfg=- gmu=0.8

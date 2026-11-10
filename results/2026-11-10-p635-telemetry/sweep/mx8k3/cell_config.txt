@@ -1,0 +1,1 @@
+cell=mx8k3 served=qwen3.8-27b spec=3 quant=mxfp8 qcfg={"ignore":["*visual*","*linear_attn*","mtp.fc"]} gmu=0.85
