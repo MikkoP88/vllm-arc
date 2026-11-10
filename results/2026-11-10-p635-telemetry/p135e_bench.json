@@ -1,0 +1,27 @@
+{
+ "torch": "2.13.0+xpu",
+ "cases": [
+  {
+   "nodes": 1000,
+   "A_first_replay_after_capture_ms": 0.95,
+   "A_isolated_replay_host_us": 7.1,
+   "A_full_wall_us": 1059.8,
+   "C_instantiate_ms": 4.39,
+   "C_isolated_replay_host_us": 7.1,
+   "C_full_wall_us": 725.0,
+   "E_eager_enqueue_host_us": 13922.0,
+   "E_eager_full_wall_us": 13631.3
+  },
+  {
+   "nodes": 6000,
+   "A_first_replay_after_capture_ms": 0.07,
+   "A_isolated_replay_host_us": 7.6,
+   "A_full_wall_us": 4205.6,
+   "C_instantiate_ms": 28.9,
+   "C_isolated_replay_host_us": 7.5,
+   "C_full_wall_us": 4188.1,
+   "E_eager_enqueue_host_us": 83162.6,
+   "E_eager_full_wall_us": 80543.5
+  }
+ ]
+}

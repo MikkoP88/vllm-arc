@@ -1,0 +1,9 @@
+{
+ "rank0_view": true,
+ "B0_tiny_isolated_us_r0": 13.6,
+ "B2_big_full_wall_us_r0": 18355.3,
+ "B1_tiny_after_big_enqueued_us_r0": 7.6,
+ "A0_ar_isolated_us_r0": 14.4,
+ "A2_ar_peer_held_200ms_us_r0": 15.3,
+ "A3_tiny_peer_held_200ms_us_r0": 16.6
+}

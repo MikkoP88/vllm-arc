@@ -1,0 +1,21 @@
+{
+ "torch": "2.13.0+xpu",
+ "cases": [
+  {
+   "nodes": 1000,
+   "A_keepfalse_replay_host_us": 2315.4,
+   "B_first_replay_ms": 4.64,
+   "B_warmed_replay_host_us": 684.6,
+   "C_instantiate_ms": 4.88,
+   "C_inst_then_replay_host_us": 682.7
+  },
+  {
+   "nodes": 6000,
+   "A_keepfalse_replay_host_us": 4037.9,
+   "B_first_replay_ms": 31.82,
+   "B_warmed_replay_host_us": 4046.0,
+   "C_instantiate_ms": 29.63,
+   "C_inst_then_replay_host_us": 4053.6
+  }
+ ]
+}

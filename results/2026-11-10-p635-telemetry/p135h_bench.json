@@ -1,0 +1,12 @@
+{
+ "g1_full_wall_us": 65159.8,
+ "g2_full_wall_us": 13932.9,
+ "B5_empty_queue_launch_us": 15.5,
+ "B4_big_after_big_us_t0": 8.8,
+ "B4_big_after_big_us_t1": 7.3,
+ "B4_big_after_big_us_t2": 6.9,
+ "B4b_after_5ms_gap_us_t0": 26.0,
+ "B4b_after_5ms_gap_us_t1": 28.7,
+ "B4b_after_5ms_gap_us_t2": 28.7,
+ "B6_tiny_after_big_us": 6.8
+}

@@ -1,0 +1,4 @@
+arc-db capture bars per worker (serve_full.log):
+6
+
+note: ARC_DB_CAPTURED line goes to p135_steps.log at boot; gate2c wiped that file after health (rm) — alternation proof = 12 XRP ids x59 over 119 steps in p135_steps_spec3.log

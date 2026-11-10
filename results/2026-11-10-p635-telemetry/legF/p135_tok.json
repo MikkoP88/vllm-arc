@@ -1,0 +1,23 @@
+{
+ "2048": {
+  "enc_cold_s": 0.014,
+  "enc_warm_s": 0.005,
+  "n_enc": 2142,
+  "dec_full600_s": 0.0,
+  "dec_incr596x4_s": 0.003
+ },
+ "8192": {
+  "enc_cold_s": 0.032,
+  "enc_warm_s": 0.019,
+  "n_enc": 8582,
+  "dec_full600_s": 0.0,
+  "dec_incr596x4_s": 0.003
+ },
+ "32768": {
+  "enc_cold_s": 0.138,
+  "enc_warm_s": 0.124,
+  "n_enc": 34256,
+  "dec_full600_s": 0.001,
+  "dec_incr596x4_s": 0.003
+ }
+}
