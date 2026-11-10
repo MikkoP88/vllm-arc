@@ -362,3 +362,58 @@ Sweep artifacts: `sweep/<cell>/{cell_config,dispatch,metrics,serve.log,
 p135_face_*.json,boot.txt}`; logs redacted per law 8
 (`SHA256SUMS.redacted` carries the post-redaction hashes; originals on
 the rig at `/root/build/p635/sweep-20261110-115158/`).
+
+---
+
+## cert23 gate — BANKED (2026-11-10, r135 + r135b, `cert23/`)
+
+Image `vllm-arc:v0.30.0-b70-cert23` = cert22 + `graph_exec_doublebuffer.py`
+(fork content 6775abc9). Five legs, all green (0 tracebacks, W14 restored):
+
+| leg | posture | db | tok/s | ITL p50/p90/p99 | TTFT s |
+|---|---|---|---|---|---|
+| dbon | fp8 k3 | ON | 94.5 | 40.49/40.57/60.3 | 4.28 |
+| dboff | fp8 k3 | ON* | 94.5 | 40.47/40.59/61.1 | 4.29 |
+| dboff2 | fp8 k3 | **OFF** | **94.3** | 40.49/40.63/60.7 | 4.08 |
+| gemmam8 | gemma m8 spec0 | ON | 26.0 (no MTP) | 38.45/38.51/38.8 | 4.11 |
+| mx4k5db | mxfp4 W4A16 k5 | ON | 121.0 | 44.23/44.36/72.8 | 3.96 |
+
+\* accidental replicate: the gate's first dboff leg ran db ON — the scp
+carrying the serve-script passthrough aborted on a missing file arg, so
+`VLLM_ARC_GRAPH_EXEC_DB=0` never reached the container (proof:
+db_info_lines=6). Kept as an independent db-on replicate: 94.5 = 94.5
+across two boots (repeatability). The true control re-ran as dboff2
+(script md5 58b4b515): db_info_lines=0, arcdb_capture_passes=0 —
+kill-switch proven, boot identical to stock.
+
+**THE HONEST VERDICT (corrects the leg-F/J reading):**
+- **db is E2E-NEUTRAL at every measured posture** — fp8-k3 94.5 (on) vs
+  94.3 (off); mx4k5 121.0 (on) vs 123.9 stock (sweep). ITL shape
+  identical (p50 40.49 both; p99 ~60 both).
+- **leg-F's 81.6 "stock baseline" was probe tax** (~3.8 ms/step of
+  instrumentation: wrapped speculators + O_APPEND logging). The clean
+  stock engine at fp8-k3 was already ~94 tok/s flat. legJ's 87.2 was
+  the same tax at lower dose. The 24 ms same-exec replay block is real
+  (p135i microbench; leg-J XRP 24 → 0.37 ms) but the clean engine's
+  step was never replay-limited — the block overlaps device-floor work
+  the step waits out anyway. D1 ships as a **costless driver-level
+  hygiene fix** (+29 s boot, 0 memory, byte-identical semantics), not a
+  perf knob.
+- **The P6.35 decode story is the POSTURE sweep**: k5 +41% (115.2),
+  **mxfp4-W4A16 k5 = 123.9 (+52% vs the certified k3 posture)**, with
+  TTFT 3.98 s < baseline 4.55 s. cert23 recommended decode posture:
+  `ARC_QUANT=mxfp4 ARC_MXFP4_MODE=w4a16 ARC_QUANTCFG='{"ignore":
+  ["*visual*","*linear_attn*","mtp.fc"]}' ARC_GMU=0.85 ARC_SPEC=5
+  ARC_FP8=0` (BASE checkpoint). Battery note: r113 decode battery at
+  ctok=256 is prefill-dominated (wall includes prefill) — mx4 reads
+  lower there (55.7 vs 64.5 solo) while winning every decode-dominated
+  face; read the two as different mixes, not a contradiction.
+- gemma m8 spec0 = 26.0 tok/s flat (r127-era 27.7 battery class, no
+  regression from cert23).
+
+Next: P6.35-V full matrix (gemma × {fp8, mxfp8, mxfp4} spec0; qwen ×
+{spec0, k3, k5} × {fp8, mxfp8, mxfp4}) on cert23; D2 host-tail lane.
+Artifacts: `cert23/<leg>/{db_markers,battery,metrics,serve.log,
+p135_face_*.json,boot.txt}`; logs redacted (law 8;
+`SHA256SUMS.redacted` post-redaction hashes; originals on the rig at
+`/root/build/p635/cert23/`).
