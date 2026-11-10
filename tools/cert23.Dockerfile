@@ -3,19 +3,24 @@
 # graph-exec double-buffer: torch 2.13 XPU command-graph replay on the SAME
 # exec object blocks host-side until that exec's prior launch retires
 # (p135i bench: same-graph replay 13,957 us in-flight vs 8-12 us across two
-# execs sharing one capture pool alternating) — the root cause of the
-# leg-A "29.3 ms device-idle" decode gaps and the 24 ms XPUGraph.replay
-# walls. Fix: capture every graph TWICE into the manager's shared pool and
-# alternate replays per desc (swap-technique wrappers on
-# CudaGraphManager.capture / .run_fullgraph; second-capture failure
-# degrades to stock single-buffer semantics with a WARN, never a boot
-# death). Validated leg J (results/2026-11-10-p635-telemetry/legJ/):
-# XRP replay max 24 ms -> 0.37 ms, 12 XRP ids alternate x59 over 119
-# steps, engine serial work 40.8 -> 12.7 ms/step, device utilization
-# 27.7% -> ~80%, boot +29 s (6 extra "arc-db" capture passes), zero
-# extra activation memory (shared pool). Decode step wall is unchanged
-# (leg K: the AsyncOutput copy_event wait waits out REAL device work —
-# the fp8 pipeline floor ~40 ms; posture levers address that).
+# execs sharing one capture pool alternating) — measured directly in the
+# p135i microbench and eliminated by the fix (leg J: replay max 24 ->
+# 0.37 ms, engine serial work 40.8 -> 12.7 ms/step). Fix: capture every
+# graph TWICE into the manager's shared pool and alternate replays per
+# desc (swap-technique wrappers on CudaGraphManager.capture /
+# .run_fullgraph; second-capture failure degrades to stock single-buffer
+# semantics with a WARN, never a boot death).
+# E2E-HONEST POSITION (cert23 gate A/B, results/2026-11-10-p635-
+# telemetry/cert23/): end-to-end step wall is NEUTRAL at every measured
+# posture — fp8-k3 94.5 (db on) vs 94.3 tok/s (db off); mx4k5 121.0 vs
+# 123.9 — the clean engine's step was never replay-limited: the block
+# overlaps the device-floor work the step must wait out anyway, and
+# leg-F's spiky 81.6 "stock baseline" was ~3.8 ms/step probe tax. The
+# patch ships as a costless driver-level hygiene fix (+29 s boot, zero
+# extra memory — shared pool, byte-identical semantics, =0 kill-switch
+# proven in the gate). The P6.35 decode gains are POSTURE findings:
+# spec k5 +41% (115.2 tok/s), mxfp4-W4A16 k5 +52% (123.9 tok/s) on
+# stock cert22 — see the sweep README.
 #
 # Construction law (cert11+ overlay precedent, minimal delta): this
 # layer changes EXACTLY: vllm_gaudi/xpu/patches/graph_exec_doublebuffer.py
@@ -67,7 +72,7 @@ RUN set -euxo pipefail; \
        assert 'VLLM_ARC_GRAPH_EXEC_DB' in e, 'envs registration'; \
        print('CERT23_GRAPH_EXEC_DB_LIVE patch+registration OK')"; \
     { cat /etc/vllm-arc/IMAGE_MANIFEST; \
-      echo "cert23=P6.35 D1 graph-exec double-buffer: patches/graph_exec_doublebuffer.py captures every XPU graph twice into the shared pool and alternates replays per desc (torch 2.13 same-exec replay blocks on the prior launch — p135i bench; VLLM_ARC_GRAPH_EXEC_DB gate, default 1, =0 kill-switch) + platform/envs entries; XRP replay 24ms->0.37ms, engine serial 40.8->12.7ms/step, util ~80%, boot +29s (leg J, results/2026-11-10-p635-telemetry/)"; \
+      echo "cert23=P6.35 D1 graph-exec double-buffer: patches/graph_exec_doublebuffer.py captures every XPU graph twice into the shared pool and alternates replays per desc (torch 2.13 same-exec replay blocks on the prior launch — p135i bench; VLLM_ARC_GRAPH_EXEC_DB gate, default 1, =0 kill-switch) + platform/envs entries; replay max 24ms->0.37ms, engine serial 40.8->12.7ms/step, boot +29s; E2E NEUTRAL at measured postures (gate A/B fp8-k3 94.5 vs 94.3 tok/s, mx4k5 121.0 vs 123.9 — hygiene fix, not a perf knob; results/2026-11-10-p635-telemetry/)"; \
       echo "cert23_fork_sha=${FORK_SHA}"; \
       echo "cert23_built=${BUILT}"; \
     } > /etc/vllm-arc/IMAGE_MANIFEST.p635; \
