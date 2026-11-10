@@ -123,6 +123,15 @@ run_leg gemmam8 ARC_MODEL=/models/gemma4-31b ARC_SERVED=gemma4-31b \
   ARC_QUANT=mxfp8 ARC_GMU=0.8 ARC_GRAPH=1 ARC_SPEC=0 ARC_LMC=0 ARC_RPC=1200 \
   ARC_MAXLEN=40960 ARC_FP8=0 || exit 1
 
+# L4: THE STACK -- sweep winner posture (mxfp4 W4A16 + spec k5, gate3
+# mx4k5 = 123.9 tok/s stock = +52% vs k3 base 81.6) on cert23 with db ON:
+# does the +6.9% db gain stack on the winner? (legJ k3: 81.6 -> 87.2)
+SERVED=qwen3.8-27b
+run_leg mx4k5db ARC_MODEL=/models/qwen3.8-27b ARC_SERVED=qwen3.8-27b \
+  ARC_QUANT=mxfp4 'ARC_QUANTCFG={"ignore":["*visual*","*linear_attn*","mtp.fc"]}' \
+  ARC_MXFP4_MODE=w4a16 ARC_GMU=0.85 ARC_GRAPH=1 ARC_SPEC=5 ARC_LMC=1 \
+  ARC_FP8=0 || exit 1
+
 cd "$P" && find . -name "p135_face_*.json" -exec sha256sum {} \; > SHA256SUMS
 echo "LEG_ARTIFACTS $P"
 echo "P635_CERT23_GATE_COMPLETE -- analysis next"

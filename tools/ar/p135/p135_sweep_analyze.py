@@ -46,7 +46,9 @@ def row(tag, d):
 
 def main():
     d = sys.argv[1]
-    files = sorted(glob.glob(os.path.join(d, "p135_face_*.json")))
+    files = sorted(glob.glob(os.path.join(d, "p135_face_*.json")) +
+                   glob.glob(os.path.join(d, "**", "p135_face_*.json"),
+                             recursive=True))
     if not files:
         print("no face jsons in", d)
         return 1
