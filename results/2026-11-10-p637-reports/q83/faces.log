@@ -1,0 +1,11 @@
+FACE_OK_q83_c1024_t0.0 waited=18s
+FACE_OK_q83_c8192_t0.0 waited=20s
+FACE_OK_q83_c32768_t0.0 waited=32s
+FACE_OK_q83_c65536_t0.0 waited=56s
+FACE_OK_q83_c131072_t0.0 waited=122s
+FACE_OK_q83_s8192_t0.0 waited=20s
+FACE_OK_q83_s8192_t0.2 waited=18s
+FACE_OK_q83_s8192_t0.4 waited=18s
+FACE_OK_q83_s8192_t0.6 waited=20s
+FACE_OK_q83_s8192_t0.8 waited=20s
+FACE_OK_q83_s8192_t1.0 waited=20s

@@ -5,7 +5,8 @@
 A fork of [vllm-project/vllm-gaudi](https://github.com/vllm-project/vllm-gaudi) at **v0.30.0** (package name `vllm_gaudi` preserved; the Arc/XPU work lives in `vllm_gaudi/xpu/`).
 
 - Certified release: **`rel/v0.30.0-b70-cert23`** — every gate GREEN with banked evidence. cert23 = cert22 + the **P6.35 graph-exec double-buffer** (`vllm_gaudi/xpu/patches/graph_exec_doublebuffer.py`: every XPU graph captured ×2 into the shared pool, replays alternate execs — removes the torch-2.13 same-exec `XPUGraph.replay()` host block; replay max 24 → 0.37 ms, engine serial 40.8 → 12.7 ms/step; **E2E-neutral at every measured posture** (fp8-k3 94.5 vs 94.3 tok/s on/off; mx4k5 121.0 vs 123.9) — a costless driver-level hygiene fix (+29 s boot, zero memory, `VLLM_ARC_GRAPH_EXEC_DB=0` kill-switch proven). **The P6.35 decode gains are POSTURE** (serve-line choices on the same engine): spec k5 +41% (115.2 tok/s), **mxfp4-W4A16 + k5 = 123.9 tok/s (+52%) with TTFT 3.98 s < baseline 4.55 s** — the recommended decode posture; mxfp8-W8A16 is a decode dud. **P6.35-V full matrix** (11 cells on cert23: both models, all online quants × spec depths, 0 tracebacks): qwen mxfp4-W4A16 k5 re-read **128.3 tok/s = +36% vs the clean fp8-k3 base 94.5** (project best; mx4 wins every spec column), **gemma mxfp4-W4A16 = 37.1 tok/s (+43% vs mxfp8)** — W4A16 is model-agnostic; gemma online fp8 boots + serves (26.6); mxfp8 deprecated for decode (below fp8 and mx4 at every depth); best TTFT fp8-k5 3.48 s. Rate accounting corrected (spec SSE streams multi-token chunks). Evidence: `results/2026-11-10-p635-telemetry/`. Full release detail + per-cert lineage: [`docs/STATUS-arc.md`](docs/STATUS-arc.md).
-- **Project status: P0–P6.33 complete** — all phases closed with evidence (engine hardening → cache lane → certification battery → audits/soak → the P6.1–P6.25 measurement, fix, and certification phases; the in-scope improvement ledger closed at P6.24 and audited exhaustive at P6.25; the P6.26/P6.27 quant-lane validations; **P6.28 the gemma-4 campaign** — the G2 long-prefill freeze solved in all three layers (cert16/cert17), gemma-4-31B fp8 + mxfp8 validated end-to-end, and the prefill perf root cause closed r108aa/r108ab then FIXED at cert18 — the FA2 route to the engine's own ESVD kernel (34x microbench, 2.2–16.3x on the faces, +6 % decode; r108ac/r108ad/r108ae); **P6.29 the remaining-bottleneck campaign** — the sliding hd256 wall measured k-independent (r109a/r109a3), routed to the same FA2 kernel at cert19 (2.4–2.9x on the faces, decode +45 %/2.64x; r109a6 ref-bug closure + r111 ladder), spec parity dispositioned (MTP: no draft weights; ngram: upstream structural refusal — banked), qwen discriminator green in-band; **P6.30 the online-quant campaign** — online MXFP4/MXFP8 of base checkpoints implemented and the mxfp4 perf MAJOR ISSUE root-caused end-to-end (per-call act quant ≈ GEMM cost at decode + the (f4,f4) gemmstone gate → `matmul:ref`, structurally) and FIXED with the W4A16 route (cert20: arc4 wheel op + reroute patch behind `ARC_MXFP4_MODE`), validated on both target models — superior to online mxfp8 on every qwen axis (1.47–1.75×), the e8m0 group-scale GEMM penalty pinned mechanistically on oneDNN v3.13 (jit:gemm with bidirectional e8m0 scales, still 2.6× slower than bf16 at prefill), three new engineering laws banked incl. the `vllm_xpu_kernels._xpu_C` dlopen law; **P6.31 the online-mxfp8 W8A16 route** — the same act-quant-elimination fix applied to the 8-bit lane (cert21: arc5 wheel op `fp8_gemm_w8a16_mxfp8` + `mxfp8_w8a16.py` reroute behind `ARC_MXFP8_MODE`), r123 kernel matrix → r124/r124b e2e on both models: 1.37–1.85× over stock W8A8 everywhere, checkpoint-fp8 retains the perf crown by adjudication, W4A8 closed oneDNN-refused, gemma online-mxfp8 capacity law banked; **P6.32 the Xe2 FP8-nativeity verdict + kernel-feasibility map** — no native FP8 dot on Xe2 (counter-operand conversion only; B70 = BMG-G31, 256 XMX), the W4A8 refusal re-read as our dispatch default, five pre-registered kernel lanes + the Option-B backport policy; **P6.33 the skinny-M kernel campaign** — three GEMV-regime M≤8 weight-only kernels built correct (r126 gates) and eager-regime fast, then e2e-falsified under XPU-graph replay (stock oneDNN 420–680 GB/s device-side per the r127f probe — the eager ~197 GB/s was a host-rate artifact; gemma solo −38/−42%), route banked default OFF on cert22 ≡ cert21 at serve (r127g2 exact-ref leg), the TC joint-matrix redesign open behind the r127f probe). Full phase narrative + per-phase records: [`docs/STATUS-arc.md`](docs/STATUS-arc.md), [`docs/TESTING-arc.md`](docs/TESTING-arc.md) (validation record), [`docs/MIGRATION-arc.md`](docs/MIGRATION-arc.md) (evidence table).
+- **Project status: P0–P6.37 complete — the close-out is delivered** (P6.34 the joint-matrix skinny-kernel research: the fragment-op serialization law + SLM-staging law banked, ladder numerics never certify — research lane closed without a cert; P6.36 the final bottleneck decomposition: the prefill window is **device drain** — U32k = 80 % engine-core waits on chunk device completion, cross-rank skew ZERO, scheduler/queue sub-ms; the B discriminators (chunk 4k/16k, wide bf16 math) ALL negative — MNBT 8192 and the fp8 lane are the measured optimum; decode D2 host tail bounded +8–10 % and not worth the risk to the champion → **no remaining lawful lever ≥ 10 %**, cert23 stands, evidence-only close; P6.37 the owner close-out: the per-config performance reports below, the 64 GB-RAM host compatibility layer — `--shm-size 16g` + 16 GB LMCache CPU tier as the new defaults — and the kv-cache-dtype report). Full phase narrative + per-phase records: [`docs/STATUS-arc.md`](docs/STATUS-arc.md), [`docs/TESTING-arc.md`](docs/TESTING-arc.md) (validation record), [`docs/MIGRATION-arc.md`](docs/MIGRATION-arc.md) (evidence table).
+- **Per-config performance reports (P6.37)** — [`docs/reports/`](docs/reports/README.md): every model × quantization × MTP posture (qwen3.8-27b fp8/MXFP8/MXFP4-W4A16 with k3 + no-MTP, gemma-4-31b fp8/MXFP8/MXFP4), decode speed / TTFT / prefill rate / ITL at 1K–128K context, the MTP-k3 sampling-temperature sweep (0.0–1.0), the `--kv-cache-dtype` comparison (stock set + the TurboQuant presets), line charts of all data, and the complete copyable configuration for each cell — measured on the shipping cert23 image. Every patch module documented with provenance + evidence: [`docs/PATCHES-arc.md`](docs/PATCHES-arc.md).
 - **Improvement-lane status: the in-scope ledger is CLOSED (P6.24; audited exhaustive P6.25)** — every prefill device slice is dispositioned by measurement (GEMM / allreduce / FA / GDN / norms-act; host path clean; the last unmeasured door — cross-stream AR∥GEMM co-tenancy — closed measured at P6.25), the stack sits at the practical in-scope floor, and the transport was proven clean. Per-slice table + closed-route ledger: [`docs/STATUS-arc.md`](docs/STATUS-arc.md).
 
 ## What this fork adds
@@ -143,58 +144,38 @@ RIG=<build-host>                                # <- set: your rig/build host
                                                  #    hygiene law, and run
                                                  #    tools/leak_sweep.sh
                                                  #    before pushing)
-SHA=$(git rev-parse rel/v0.30.0-b70-cert10)      # the certified commit
-git archive --format=tar -o /tmp/fork.tar rel/v0.30.0-b70-cert10
+SHA=$(git rev-parse rel/v0.30.0-b70-cert23)      # the certified commit
+git archive --format=tar -o /tmp/fork.tar rel/v0.30.0-b70-cert23
 scp /tmp/fork.tar root@$RIG:/root/build/
 ssh root@$RIG 'tar -xOf /root/build/fork.tar tools/build_image.sh > /root/build/build_image.sh'
-ssh root@$RIG bash /root/build/build_image.sh /root/build/fork.tar $SHA vllm-arc:v0.30.0-b70-cert10
-#    -> wheel_guard PASSes (4/4 md5s), IMAGE_MANIFEST records fork_sha == $SHA
+ssh root@$RIG bash /root/build/build_image.sh /root/build/fork.tar $SHA vllm-arc:v0.30.0-b70-cert23
+#    -> wheel_guard PASSes, IMAGE_MANIFEST records fork_sha == $SHA
 #       (verify: docker run --rm --entrypoint cat
-#        vllm-arc:v0.30.0-b70-cert10 /etc/vllm-arc/IMAGE_MANIFEST)
+#        vllm-arc:v0.30.0-b70-cert23 /etc/vllm-arc/IMAGE_MANIFEST)
 #       ~15 min cold; ~1 min when only the source changed (stack layers
 #       cached — layer-order law in the Dockerfile).
 #
-#    cert10's vllm_gaudi tree is byte-identical to cert9's — building the
-#    tag gives cert9's engine; the P6.24 oneCCL overlay (fp8-wire
-#    allreduce, default-off) rides on top as a two-file lib overlay built
-#    by external_patches/oneccl (README + tools/build_oneccl_arc.sh;
-#    recipe + provenance there; the shipped image's overlay sha is pinned
-#    in its IMAGE_MANIFEST row oneccl=2022.0.0+arc1). EXACT-image
-#    reproduction = that overlay step (the LIB_SHA-gated cert10.Dockerfile
-#    recipe, oneccl README "Build law"; the 210 MB fat lib is sha-pinned,
-#    NOT tracked — see its ARTIFACT note for the durable homes).
-#
-#    Tag lineage (full table: docs/PERFORMANCE-arc.md "Image lineage"):
-#    cert10 = current (P6.24 oneCCL fp8-wire overlay: opt-in e4m3 AR
-#    1.65× at the dominant size, every p65 TTFT face beats cert9).
-#    Superseded: cert9 (P6.20 prefill host-path: L3 off-thread LMCache
-#    store default-ON + L6 dispatch-late + step_trace diagnostics;
-#    U32k/U64k/U8k TTFT wins; TQ dtypes re-gated clean), cert8 (P6.19 TQ
-#    spec-verify fix — all four turboquant_* dtypes serve clean; fp8 TTFT
-#    faces carry the pre-L3 store path), cert7 (its P6.18 refusal is
-#    superseded by the P6.19 fix), cert6
-#    (its TQ dtypes carry the pre-fix corrupted spec-verify path — do NOT
-#    serve TQ on cert6 or earlier), cert5 (identical default behavior,
-#    lacks the TQ-aware store hunk), cert4 (identical default behavior,
-#    lacks the default-OFF slice hunk), cert3 (identical default behavior,
-#    lacks the deferral hunk), cert2 (0.5.5-era wheel line), cert (predates
-#    r46u — never build from it).
+#    cert23 = cert22 + the P6.35 graph-exec double-buffer (one patch
+#    module; E2E-neutral, costless hygiene). The full tag lineage —
+#    every cert's content, validation legs, and the oneCCL overlay
+#    reproduction recipe — lives in the Repository-model section below
+#    and docs/PERFORMANCE-arc.md "Image lineage".
 
 # 2. Boot — the validated posture (annotated semantics in
 #    docs/CONFIGURATION-arc.md Step 1; key points: --privileged REQUIRED
 #    with CCL_ZE_IPC_EXCHANGE=pidfd [TP2 init law]; --ipc host shares
-#    host /dev/shm; --shm-size 64g is a ceiling, not a reservation;
+#    host /dev/shm; --shm-size 16g is a ceiling, not a reservation;
 #    model :ro — the checkpoint is an input; the -e pair are the 2
 #    boot-layer vars of the 25-var chain).
 docker run -d --name arc-test --privileged --network host --ipc host \
-  --shm-size 64g \
+  --shm-size 16g \
   -v /path/to/qwen3.8-27b-fp8:/models/target:ro \
   -v ~/.cache/arc/neo:/root/.neo_cache \
   -v ~/.cache/arc/triton:/root/.triton_cache \
   -v ~/.cache/arc/inductor:/root/.inductor_cache \
   -e VLLM_ALLOW_LONG_MAX_MODEL_LEN=1 \
   -e VLLM_WORKER_MULTIPROC_METHOD=spawn \
-  --entrypoint bash vllm-arc:v0.30.0-b70-cert10 -c "sleep infinity"
+  --entrypoint bash vllm-arc:v0.30.0-b70-cert23 -c "sleep infinity"
 
 # 3. Serve — the certified line (P6.17: probabilistic drafting = the serve
 #    script's default posture), byte-identical to
@@ -207,7 +188,7 @@ cat > serve_k3.sh <<'EOF'
 #!/bin/bash
 # --- serve environment: 23 of the certified 25-var chain (2 set at boot) ---
 export PYTHONHASHSEED=0                 # init determinism
-export ZE_AFFINITY_MASK=0,1             # one Arc Pro B70 per socket
+export ZE_AFFINITY_MASK=0,1             # expose both B70s (device indices 0,1)
 export LD_LIBRARY_PATH=/opt/venv/lib:/opt/venv/lib/python3.12/site-packages/torch/lib
 export CCL_ENABLE_SYCL_KERNELS=1
 export CCL_ZE_IPC_EXCHANGE=pidfd        # pairs with --privileged (Step 1)
@@ -221,7 +202,7 @@ export VLLM_XPU_ENABLE_XPU_GRAPH=1      # graph posture law
 export ARC_TRACE_FLIP=1                 # flip-payload interlock
 # --- LMCache certified set (10 — keep as a set) ---
 export LMCACHE_USE_EXPERIMENTAL_API=True
-export LMCACHE_MAX_LOCAL_CPU_SIZE=100
+export LMCACHE_MAX_LOCAL_CPU_SIZE=16
 export LMCACHE_LOCAL_CPU=True
 export LMCACHE_EVICT_POLICY=lr_u
 export LMCACHE_CHUNK_SIZE=1024
@@ -266,8 +247,8 @@ EOF
 docker cp serve_k3.sh arc-test:/root/
 docker exec -d arc-test bash /root/serve_k3.sh
 
-# 4. Health — first boot takes ~5 min to reach 200 (295 s at the cert7/
-#    cert9 gates; ~290 s at the cert10 gate: model load + graph capture)
+# 4. Health — first boot takes ~5-6 min to reach 200 (model load + tune
+#    warmup + the ×2 graph captures of the cert23 double-buffer)
 curl -s -o /dev/null -w "%{http_code}\n" -m 5 http://127.0.0.1:8000/health
 ```
 
@@ -300,6 +281,8 @@ The uniform boot interface with posture knobs (rig paths) is
 - [`docs/STATUS-arc.md`](docs/STATUS-arc.md) — release detail + the full phase/improvement-lane narrative (the front-page bullets above link here)
 - [`docs/CONFIGURATION-arc.md`](docs/CONFIGURATION-arc.md) — how to run the certified posture (the canonical serve block, knob table, posture laws)
 - [`docs/PERFORMANCE-arc.md`](docs/PERFORMANCE-arc.md) — measured numbers: **current certified record (P6.17 prob-lane campaign on cert6, re-verified at the cert7–cert10 release gates; the P6.24 fp8-wire opt-in faces first), the comprehensive dtype faces (fp8 + all four TurboQuant presets + MQ experimental mode), the posture matrices, then pre-P6.17 history (posture-labeled)
+- [`docs/reports/`](docs/reports/README.md) — **the per-config performance reports (P6.37)**: model × quantization × MTP, decode/TTFT/prefill/ITL at 1K–128K context, the MTP temperature sweep, the kv-cache-dtype comparison, line charts, copyable configs
+- [`docs/PATCHES-arc.md`](docs/PATCHES-arc.md) — the complete patch inventory: every module's purpose, mechanism, provenance, knobs, evidence, cert, and status across the four loading layers
 - [`docs/TESTING-arc.md`](docs/TESTING-arc.md) — 14 test suites, gates, validation record
 - [`docs/MIGRATION-arc.md`](docs/MIGRATION-arc.md) — swap an incumbent stack for this one (boot, verify, rollback) + the evidence table
 - [`docs/envs.md`](docs/envs.md) — complete env/knob control surface + naming map
@@ -308,7 +291,7 @@ The uniform boot interface with posture knobs (rig paths) is
 
 - **`main` is linear and protected**: changes land as squash commits from per-item lanes (`feat/arc-pNN-*`); direct pushes, force pushes, and deletions are blocked; PRs are required.
 - **Certified releases are annotated tags** pointing at the certified `main` commit — current: `rel/v0.30.0-b70-cert23` (P6.35 graph-exec double-buffer on the cert22 engine: `vllm_gaudi/xpu/patches/graph_exec_doublebuffer.py` — every XPU graph captured ×2 into the manager's shared pool, replays alternate execs (torch 2.13 same-exec replay blocks on that exec's prior launch — p135i microbench 13.96 ms same-graph vs 8–12 µs alternating); replay max 24 → 0.37 ms, engine serial 40.8 → 12.7 ms/step; VLLM_ARC_GRAPH_EXEC_DB gate default 1, `=0` kill-switch proven (dboff2: zero db markers, stock face); **E2E-neutral at every measured posture** — fp8-k3 94.5 (on) vs 94.3 tok/s (off), mx4k5 121.0 vs 123.9; the leg-F 81.6 "baseline" was ~3.8 ms/step probe tax; ships as a costless driver-level hygiene fix (+29 s boot, zero extra memory); **the P6.35 decode gains are POSTURE findings on the same engine**: spec k5 +41% (115.2 tok/s), mxfp4-W4A16+k5 123.9 tok/s (+52%) with TTFT 3.98 s < baseline 4.55 s, mxfp8-W8A16 a decode dud (83.8); rate accounting corrected (spec SSE streams multi-token chunks — numerator = max_tokens); via `tools/cert23.Dockerfile`; gate r135 five legs + r135b control, evidence `results/2026-11-10-p635-telemetry/`); superseded: `rel/v0.30.0-b70-cert22` (P6.33 skinny-M kernel family banked OFF on the cert21 engine: arc6 `vllm_xpu_kernels` wheel 0.1.14.1+arc6 (adds the GEMV-regime M≤8 weight-only ops `_xpu_C.skinny_fp8_gemm_w8a16`/`skinny_fp8_gemm_w8a16_mxfp8`/`skinny_fp4_gemm_w4a16` — register dequant, deterministic split-K; plus W4A8 dispatch arms + the v0.1.17 Option-B backports 611/645/650/600; carries every arc5/arc4 op) + `vllm_gaudi/xpu/patches/skinny_m.py` reroute behind `ARC_SKINNY_M` + the platform/envs entries, via `tools/cert22.Dockerfile`; **unset/off = stock routes — the certified default** after the r127 e2e falsification: under XPU-graph replay stock oneDNN runs 420–680 GB/s device-side (r127f 50-call amortized probe) vs the skinny streaming ceiling ~300 GB/s, and the size-1 decode graph pads M→2, so gemma solo regressed −38/−42% while every over-cap path sat on ref; image-validated: r127 five-leg battery + r127c EXP-1 (`ARC_SKINNY_M=off` → 27.7/192.3, the exact r124b ref) + r127g2 cert leg (default posture 27.7/192.9 exact ref, zero route markers) = **serve behavior byte-identical to cert21**; kernels correct (r126 gates) and retained in-tree, `=on` opts in); superseded: `rel/v0.30.0-b70-cert21` (P6.31 online-MXFP8 W8A16 route on the cert20 engine: arc5 `vllm_xpu_kernels` wheel 0.1.14.1+arc5 (adds `_xpu_C.fp8_gemm_w8a16_mxfp8` — bf16 acts × f8 weights, group-32 e8m0 weight scales, no per-call act quant; also carries the W4A8 probe op `_xpu_C.fp4_gemm_w4a8`, a banked oneDNN-refused closed-negative) + `vllm_gaudi/xpu/patches/mxfp8_w8a16.py` reroute behind `ARC_MXFP8_MODE` + the `mxfp4_w4a16.py` w4a8 probe branch + the platform entry, via `tools/cert21.Dockerfile`; image-validated (r124/r124b on the same bytes, r125 gate): qwen online mxfp8 **U8k 3.61 / U32k 17.07 s, decode 53.8–55.6 / 265.9 agg8 tok/s = 1.37–1.55× over stock W8A8**, spec 0.9804; gemma **1.57–1.85× over stock** at `ARC_MAXLEN=40960` (capacity law); checkpoint-fp8 stays the perf default, mxfp4-w4a16 the superior online lane, by adjudication; three-lane gate green = fp8 champion + w4a16 carry + the new lane); superseded: `rel/v0.30.0-b70-cert20` (P6.30 online-MXFP4 W4A16 route on the cert19 engine: arc4 `vllm_xpu_kernels` wheel 0.1.14.1+arc4 (adds `_xpu_C.fp4_gemm_w4a16` — bf16 acts × f4 weights, group-32 e8m0 weight scales → `jit:gemm` DPAS via weight decomposition) + `vllm_gaudi/xpu/patches/mxfp4_w4a16.py` reroute behind `ARC_MXFP4_MODE` via `tools/cert20.Dockerfile`; image-validated (r120c/r120g on the same bytes, r121 gate): qwen online mxfp4 **U8k 3.66 / U32k 17.12 s, decode 62.5–65.2 / ~305 agg8 tok/s — superior to online mxfp8 on every axis (1.47–1.75×)**, 1.74–1.87× TTFT over the W4A4 control, spec 1.0000; gemma 1.90–2.21× over W4A4; qwen fp8 discriminator in-band = incumbent lanes untouched); superseded: `rel/v0.30.0-b70-cert19` (P6.29 sliding-window FA2 route on the cert18 engine: gemma-4's 50/60 sliding hd256 layers dispatch to the same ESVD FA2 kernel windowed — 18–25x microbench k-independent (r109a/r109a3), image-validated face8k 4.9 / face32k 17.2 (qwen-parity) / face120k 110.9 s, decode 28.4/195 tok/s (r111); qwen3.8 discriminator in-band; `ARC_ATTN_FA2=0` disables both routes); superseded: `rel/v0.30.0-b70-cert18` (P6.28 FA2 route on the cert17 engine: gemma-4's hd512 full-attention layers dispatch to the ESVD FA2 kernel — 34x microbench (r108ac/r108ad), image-validated 2.2–16.3x on the faces + 6 % decode (r108ae); qwen3.8 discriminator marker-0 green — the incumbent lane untouched; `ARC_ATTN_FA2=0` escape hatch); superseded: `rel/v0.30.0-b70-cert17` (P6.26 MXFP4 lane: `quark` + `supports_mx` on `ArcXpuPlatform` — overlay on cert10, all prior bytes carry; fp8 lane behavior identical, r105t/t2 same-day face-for-face proof); superseded: `rel/v0.30.0-b70-cert10` (P6.24 oneCCL fp8-wire overlay: same-version 2022.0.0 rebuild + e4m3-wire large-ring allreduce, default-OFF env `CCL_SYCL_ALLREDUCE_FP8`; opt-in 1.65× at the dominant AR and every p65 TTFT face beats cert9 — cert11's engine + overlay bytes carry unchanged), `rel/v0.30.0-b70-cert9` (P6.20 prefill host-path: L3 off-thread LMCache store default-ON + L6 dispatch-late + `step_trace` diagnostics — cert10's engine is byte-identical), `rel/v0.30.0-b70-cert8` (P6.19 TQ spec-verify fix — fp8 TTFT faces carry the pre-L3 inline store path), `rel/v0.30.0-b70-cert7` (cert6 engine + the P6.18 TQ refusal — superseded by the P6.19 fix: its refusal is lifted on cert8 and the TQ dtypes serve clean), `rel/v0.30.0-b70-cert6` (fp8 behavior byte-identical; its servable `turboquant_*` dtypes carried the P6.18-corrupted spec-verify path), `rel/v0.30.0-b70-cert5` (identical default behavior, lacks the P6.14 TQ-aware store hunk), `rel/v0.30.0-b70-cert4` (identical default behavior, lacks the default-OFF P6.13 slice hunk), `rel/v0.30.0-b70-cert3` (identical default behavior, lacks the p65 deferral hunk), `rel/v0.30.0-b70-cert2` (0.5.5-era lmcache line — valid, older), `rel/v0.30.0-b70-cert` (predates the r46u glue-alias fix — never build from it). The Docker image embeds the fork SHA in `/etc/vllm-arc/IMAGE_MANIFEST` for A/B verification.
-- **Evidence is in-tree**: every validation leg banks to `results/YYYY-MM-DD-<phase>-r<leg>-<slug>/` (VERDICT + raw outputs) — **115 evidence dirs, 102 VERDICTs of record**, P0 through P6.
+- **Evidence is in-tree**: every validation leg banks to `results/YYYY-MM-DD-<phase>-r<leg>-<slug>/` (VERDICT + raw outputs) — **128 evidence dirs, 102 VERDICTs of record**, P0 through P6.37.
 - **No secrets or real host addresses in-tree (publishing-hygiene law)**: tracked == pushable, so credentials, rig/host addresses, and private identities never enter tracked files; banked logs carry redacted host addresses (each banking-time scrub documented in its `results/REDACTION-*.md` note). `tools/leak_sweep.sh` must exit 0 before every push.
 - The `feat/arc-*` branches are kept deliberately: squash-merging leaves the per-item development history nowhere else.
 
