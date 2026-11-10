@@ -1,0 +1,3 @@
+ARC_CONTAINER_FRESH image=vllm-arc:v0.30.0-b70-cert22 id=a040c8dc8a89 model=/models/qwen3.8-27b (recreated from none)
+eac3c05ec83520fda06030d99b10bb9758a77ff8ac715897c1d23215ac605937
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert22 name=arc-psw model=/models/qwen3.8-27b served=qwen3.8-27b quant=mxfp8 qcfg={"ignore":["*visual*","*linear_attn*","mtp.fc"]} graph=1 spec=3 gmu=0.85 maxlen=262144 mnbt=8192 seqs=64 fp8=0 xgc=0 tmpl=__qwen_default__ rp=<qwen3> tp=<qwen3_coder> port=8000 12:49:21

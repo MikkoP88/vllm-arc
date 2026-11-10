@@ -1,0 +1,17 @@
+{
+ "B7_drain_wall_us": 65170.0,
+ "B7b_empty_launch_us": 16.0,
+ "B7_samegraph_inflight_us_t0": 13957.0,
+ "B7_samegraph_inflight_us_t1": 13955.3,
+ "B7_samegraph_inflight_us_t2": 13975.4,
+ "B8_shared_pool_alt_us": [
+  11.8,
+  8.8,
+  7.6
+ ],
+ "B8b_separate_pool_alt_us": [
+  20.1,
+  11.6,
+  8.1
+ ]
+}

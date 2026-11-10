@@ -1,0 +1,4 @@
+db_info_lines=6
+arcdb_capture_passes=8
+db_optout_seen=0
+tracebacks=0
