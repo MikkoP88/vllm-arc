@@ -8,18 +8,63 @@ traces to the banked `results/` legs and the two ledger docs
 ([`TESTING-arc.md`](TESTING-arc.md) — validation record,
 [`MIGRATION-arc.md`](MIGRATION-arc.md) — evidence table).
 
-**Currency: `rel/v0.30.0-b70-cert22` (`vllm-arc:v0.30.0-b70-cert22`).**
+**Currency: `rel/v0.30.0-b70-cert23` (`vllm-arc:v0.30.0-b70-cert23`).**
 This file rides the main-currency law: at every certification close-out
 the README anchors repoint (checklist in `tools/check_currency.sh`) and
 this ledger's release section is rewritten to the new cert in the same
 change.
 
-## Certified release — `rel/v0.30.0-b70-cert22`
+## Certified release — `rel/v0.30.0-b70-cert23`
 
-Every gate GREEN with banked evidence. cert22 = **cert21 + the P6.33
-skinny-M kernel family, banked OFF** (r125→r127 + r127g2; behaviorally
-≡ cert21 at serve — the route ships default OFF after the e2e battery
-falsified the reroute):
+Every gate GREEN with banked evidence. cert23 = **cert22 + the P6.35
+graph-exec double-buffer** (r135 five-leg gate + r135b control; one
+patch module, no wheel change, no serve-line var — the engine bytes
+elsewhere are cert22's):
+
+- **The defect it removes** — torch 2.13 `XPUGraph.replay()` on the
+  SAME exec object blocks host-side until that exec's prior launch
+  retires (p135i microbench: 13.96 ms same-graph in-flight vs 8–12 µs
+  for two execs sharing one capture pool alternating). The fix
+  (`vllm_gaudi/xpu/patches/graph_exec_doublebuffer.py`) captures every
+  graph ×2 into the manager's shared pool and alternates replays per
+  desc (swap-technique wrappers; second-capture failure degrades to
+  stock semantics with a WARN — never a boot death). Leg J: replay max
+  24 → 0.37 ms, engine serial work 40.8 → 12.7 ms/step, alternation
+  proven (12 XRP ids × 59 over 119 steps).
+- **E2E-honest position** — the gate A/B reads **NEUTRAL at every
+  measured posture**: fp8-k3 94.5 (db on) vs 94.3 tok/s (db off),
+  ITL p50 40.49 both; mx4k5 121.0 vs 123.9 (sweep). Leg-F's spiky
+  81.6 "stock baseline" was ~3.8 ms/step instrumentation tax — the
+  clean engine's step was never replay-limited (the block overlaps
+  the device-floor work the step waits out anyway; leg K: the
+  copy_event wait waits out real device work). Ships as a **costless
+  driver-level hygiene fix**: +29 s boot (the ×2 captures), zero
+  extra memory (shared pool), byte-identical semantics.
+- **Knob** — `VLLM_ARC_GRAPH_EXEC_DB` (default `1` = ACTIVE; `=0` =
+  stock single-exec replays — kill-switch proven in the gate: dboff2
+  boot shows zero db markers and the stock face).
+- **The P6.35 performance deliverable is POSTURE, not engine** (all on
+  stock cert22-class bytes; serve-line choices on cert23): spec depth
+  **k5 = +41% decode** (115.2 tok/s solo U8k vs 81.6 at k3); **mxfp4
+  W4A16 + k5 = 123.9 tok/s (+52%) with TTFT 3.98 s < the 4.55 s
+  baseline** — the recommended decode posture (`ARC_QUANT=mxfp4
+  ARC_MXFP4_MODE=w4a16 ARC_QUANTCFG='{"ignore":["*visual*",
+  "*linear_attn*","mtp.fc"]}' ARC_GMU=0.85 ARC_SPEC=5 ARC_FP8=0`, BASE
+  checkpoint). mxfp8 W8A16 is a decode dud (83.8 ≈ baseline — no
+  weight savings, bf16-activation tax). Rate accounting corrected:
+  spec-decode SSE streams multi-token chunks (600 tokens/127 chunks at
+  fp8k4) — honest numerator is max_tokens. Evidence:
+  `results/2026-11-10-p635-telemetry/` (legs A–K + `sweep/` +
+  `cert23/`).
+- History: cert22 (P6.33 skinny-M, banked OFF), cert21 (P6.31), cert20
+  (P6.30), cert19 (P6.29), cert18 (P6.28 FA2), cert17 (P6.28 gemma-4
+  chain), cert11 (P6.26), cert10 (P6.24), cert9 (P6.20), cert8
+  (P6.19) remain fully valid.
+
+Prior release (the kernel family, banked OFF) — cert22 = **cert21 + the
+P6.33 skinny-M kernel family, banked OFF** (r125→r127 + r127g2;
+behaviorally ≡ cert21 at serve — the route ships default OFF after the
+e2e battery falsified the reroute):
 
 - **The kernels** — the arc6 wheel (`vllm-xpu-kernels 0.1.14.1+arc6`,
   sha256 `484e06c1…`) adds three GEMV-regime M≤8 weight-only GEMM ops

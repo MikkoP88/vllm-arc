@@ -5,8 +5,15 @@ at the r46t close-out) from `vllm_gaudi/envs.py` arc-lane markers + the
 certified serve line (`r43_serve_k5.sh`, spec depth 3 per the r46t
 recommendation — a serve-time CLI change — on image
 `vllm-arc:v0.30.0-b70-cert`; unchanged since — the qwen fp8 chain is identical on
-the current certified image `vllm-arc:v0.30.0-b70-cert22`, where
-`LMCACHE_TRACK_USAGE=false` (P6.3) made it 25; cert22 = cert21 + the
+the current certified image `vllm-arc:v0.30.0-b70-cert23`, where
+`LMCACHE_TRACK_USAGE=false` (P6.3) made it 25; cert23 = cert22 + the
+P6.35 graph-exec double-buffer (`vllm_gaudi/xpu/patches/graph_exec_doublebuffer.py` —
+captures every XPU graph ×2 into the shared pool, alternates replays; removes the
+torch-2.13 same-exec replay host block — replay max 24 → 0.37 ms, engine serial
+40.8 → 12.7 ms/step, E2E-NEUTRAL at every measured posture (hygiene fix, not a
+perf knob; the table row carries the honest wording); adds NO serve-line var —
+the knob `VLLM_ARC_GRAPH_EXEC_DB` is a serve-ENV switch like `ARC_ATTN_FA2`;
+no wheel change; gate r135/r135b, results/2026-11-10-p635-telemetry/); cert22 = cert21 + the
 P6.33 skinny-M kernel lane (arc6 `vllm_xpu_kernels` wheel swap +
 the `skinny_m` route patch — adds NO serve-line var; the lane rides
 the engine env `ARC_SKINNY_M` (unset/`off` = stock routes — the
@@ -140,6 +147,7 @@ kill-switch to disable):
 | `ARC_MXFP8_MODE` | `w8a16` → new route (bf16 acts → `fp8_gemm_w8a16_mxfp8`, group-32 e8m0 weight scales, zero runtime act quant; P6.31) | `patches/mxfp8_w8a16.py:57` | p631 | `=w8a8` stock control |
 | `ARC_SKINNY_M` | unset/`off` → stock routes at all Ms (**certified default**: r127 e2e falsified the reroute — under XPU-graph replay stock oneDNN runs 420–680 GB/s device-side and the recorded skinny kernels regressed gemma solo −38/−42%; results/2026-11-08-p633-skinny-m/) | `patches/skinny_m.py:167` | p633 | `=on` opt-in (per-lane caps w16 M=1, m816/g16 M≤2; eager-regime wins only — graph replay loses 1.6–2.6×; serve needs the rig `serve_arc_b70.sh` ARC_SKINNY_M pass-through) |
 | `VLLM_ARC_TQ_SPEC_FIX` | `1` → spec-verify fix ACTIVE on every `turboquant_*` dtype (fp8 never imports the hooked module — control proof t7/t9) | `patches/tq_spec_fix.py:99` | p619 | `=0` (pre-fix TQ spec-verify — corrupt under graphs, diagnosis only) |
+| `VLLM_ARC_GRAPH_EXEC_DB` | `1` → graph-exec double-buffer ACTIVE: every XPU graph captured ×2 into the manager's shared pool, replays alternate execs — torch 2.13 same-exec `XPUGraph.replay()` blocks until that exec's prior launch retires (p135i microbench: 13.96 ms same-graph in-flight vs 8–12 µs alternating; leg J: replay max 24 → 0.37 ms, engine serial 40.8 → 12.7 ms/step). **E2E-honest note (cert23 gate A/B): end-to-end step wall is NEUTRAL at every measured posture (fp8-k3 94.5 vs 94.3 tok/s; mx4k5 121.0 vs 123.9) — the clean engine's step was never replay-limited (the block overlaps the device-floor work; leg-F's 81.6 "baseline" was probe tax ~3.8 ms/step). Ships as a costless driver-level hygiene fix (+29 s boot, 0 extra memory, byte-identical semantics); XPU-only — CUDA launches are already async. results/2026-11-10-p635-telemetry/) | `patches/graph_exec_doublebuffer.py:76` | p635 | `=0` stock single-exec replays (cert23 gate: boots with 0 db markers = kill-switch proven) |
 
 Dead since r47b (kept OUT of the live tables — no-unevidenced law):
 `VLLM_ARC_LMC_TORCH_KV` — its consumer module
