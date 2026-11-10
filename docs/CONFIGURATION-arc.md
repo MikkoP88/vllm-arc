@@ -56,7 +56,7 @@ be separated by following the guide top to bottom.
 ```bash
 docker run -d --name arc-test \
   --privileged --network host --ipc host \
-  --shm-size 64g \
+  --shm-size 16g \
   -v /models/qwen3.8-27b-fp8:/models/target:ro \
   -v /root/build/neo_cache:/root/.neo_cache \
   -v /root/build/triton_cache:/root/.triton_cache \
@@ -67,7 +67,7 @@ docker run -d --name arc-test \
 ```
 
 These are the validated boot bytes (rig `r46t_campaign.sh:54-63`,
-`r42/r46_soak.sh:33-42`): `--shm-size 64g`, four mounts, and the two
+`r42/r46_soak.sh:33-42`): `--shm-size 16g`, four mounts, and the two
 boot-layer vars of the 25-var chain below (`:ro` on the model is the
 read-only posture law — the leg scripts omit it, the law is stricter).
 The optional chat-template mount (below) is added to this block only if
@@ -88,7 +88,7 @@ three separate days: p618b, the cert7 gate, the cert8 gate; the
 free-memory state — KV capacity tracks boot-day free memory). At
 MNBT 16384: 332,629 tokens (r66c). Host RAM is not
 gated by the cache:
-`LMCACHE_MAX_LOCAL_CPU_SIZE=100` is a single *virtual* reservation —
+`LMCACHE_MAX_LOCAL_CPU_SIZE=16` is a single *virtual* reservation —
 one malloc wrapped by `torch.frombuffer`, first-touch physical pages,
 evicted (lr_u) at the cap (wheel-verified:
 `lmcache/v1/memory_management.py:593`; eager allocation is the pinned
@@ -123,7 +123,7 @@ the whole LMCache set:
 #!/bin/bash
 # --- serve environment: 23 of the certified 25-var chain (2 set at boot) ---
 export PYTHONHASHSEED=0                 # init determinism
-export ZE_AFFINITY_MASK=0,1             # one Arc Pro B70 per socket
+export ZE_AFFINITY_MASK=0,1             # expose both B70s (device indices 0,1)
 export LD_LIBRARY_PATH=/opt/venv/lib:/opt/venv/lib/python3.12/site-packages/torch/lib
 export CCL_ENABLE_SYCL_KERNELS=1
 export CCL_ZE_IPC_EXCHANGE=pidfd        # pairs with --privileged (Step 1)
@@ -137,7 +137,7 @@ export VLLM_XPU_ENABLE_XPU_GRAPH=1      # graph posture law
 export ARC_TRACE_FLIP=1                 # flip-payload interlock
 # --- LMCache certified set (10 — keep as a set) ---
 export LMCACHE_USE_EXPERIMENTAL_API=True
-export LMCACHE_MAX_LOCAL_CPU_SIZE=100
+export LMCACHE_MAX_LOCAL_CPU_SIZE=16
 export LMCACHE_LOCAL_CPU=True
 export LMCACHE_EVICT_POLICY=lr_u
 export LMCACHE_CHUNK_SIZE=1024
@@ -828,7 +828,7 @@ Serve-time runtime/system (13 — in Step 2's block):
 
 ```bash
 export PYTHONHASHSEED=0                # init determinism
-export ZE_AFFINITY_MASK=0,1            # one Arc Pro B70 per socket
+export ZE_AFFINITY_MASK=0,1            # expose both B70s (device indices 0,1)
 export LD_LIBRARY_PATH=/opt/venv/lib:/opt/venv/lib/python3.12/site-packages/torch/lib
 export CCL_ENABLE_SYCL_KERNELS=1
 export CCL_ZE_IPC_EXCHANGE=pidfd
@@ -846,7 +846,7 @@ Serve-time LMCache certified set (10 — keep as a set; in Step 2's block):
 
 ```bash
 export LMCACHE_USE_EXPERIMENTAL_API=True
-export LMCACHE_MAX_LOCAL_CPU_SIZE=100
+export LMCACHE_MAX_LOCAL_CPU_SIZE=16
 export LMCACHE_LOCAL_CPU=True
 export LMCACHE_EVICT_POLICY=lr_u
 export LMCACHE_CHUNK_SIZE=1024
@@ -918,7 +918,20 @@ PERFORMANCE-arc "Prefill anatomy"), `ARC_MAXSEQS` (64), `ARC_PORT`
 (8000), `ARC_FP8` (0 = the certified stock allreduce; `1` = the P6.24
 cert10 overlay opt-in — appends `export CCL_SYCL_ALLREDUCE_FP8=1` to
 the exec env, "Best-performance postures" above; no-op on images
-without the overlay; default emits no env line).
+without the overlay; default emits no env line), `ARC_KVDTYPE`
+(close-out G 2026-11-10: serve-line pass-through to
+`--kv-cache-dtype`; unset = `fp8_e4m3` the certified incumbent. The
+stock alternates were measured on cert23 at 8K/32K context — per-dtype
+report:
+[`docs/reports/qwen-fp8-kv-cache-dtype.md`](reports/qwen-fp8-kv-cache-dtype.md).
+Two measured boundaries: `auto` (fp16 KV) refuses at the certified
+`max_model_len=262144` (one max-len request needs 8.73 GiB KV vs
+6.78 GiB available at GMU 0.8/TP2) and is servable only with
+`ARC_MAXLEN≤131072`-class reductions; `fp8_e5m2` refuses outright —
+the esimd FA2 backend has no e5m2 KV path on Xe2. `fp8` boots and
+measures close to the incumbent; the four `turboquant_*` presets
+remain servable via the same flag — their full matrix is the banked
+cert8/cert9 gate data in the "KV-cache dtype" section below).
 
 ## Posture laws (never change in production)
 

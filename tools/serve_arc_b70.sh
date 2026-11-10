@@ -37,6 +37,10 @@
 #               supports only ~120k. Legs needing a lower cap set this knob;
 #               all G2 faces top out at U64k so a 120k cap costs nothing.
 #   ARC_MNBT    --max-num-batched-tokens (default 8192, D champion)
+#   ARC_KVDTYPE --kv-cache-dtype (default fp8_e4m3 = the certified
+#               incumbent; close-out G 2026-11-10 adds the knob so the
+#               kv-dtype report sweep can drive auto/fp8/fp8_e5m2 without
+#               editing the wrapper)
 #   ARC_MAXSEQS --max-num-seqs (default 64, D champion)
 #   ARC_PORT    serve port (default 8000)
 #   ARC_MODEL   host model dir mounted at /models/target (default
@@ -187,13 +191,15 @@ if [ "$HAVE_IMG_ID" != "$WANT_IMG_ID" ] || [ "$HAVE_MODEL_SRC" != "$ARC_MODEL" ]
   docker rm -f "$ARC_NAME" >/dev/null 2>&1 || true
   echo "ARC_CONTAINER_FRESH image=$ARC_IMAGE id=${WANT_IMG_ID:7:12} model=$ARC_MODEL (recreated from $HAVE_SRC)"
   # Boot block = the validated bytes (rig r46t_campaign.sh:54-63 /
-  # r42/r46_soak.sh:33-42): --privileged --network host --ipc host,
-  # --shm-size 64g, 5 mounts, and the 2 boot-layer -e vars of the 25-var
-  # chain (the other 23 are exported in the exec block below).
+  # r42/r46_soak.sh:33-42): --privileged --network host --ipc host, 5
+  # mounts, and the 2 boot-layer -e vars of the 25-var chain (the other
+  # 23 are exported in the exec block below). --shm-size 16g: the 64g of
+  # the r42/r46 rigs is far beyond TP2 IPC need and breaks 64 GB-RAM
+  # hosts (close-out F, 2026-11-10; validated by the r138 report run).
   docker run -d --name "$ARC_NAME" \
     --label arc_skin="$ARC_TEMPLATE" \
     --privileged --network host --ipc host \
-    --shm-size 64g \
+    --shm-size 16g \
     -v "$ARC_MODEL":/models/target:ro \
     $CT_MOUNT \
     -v /root/build/neo_cache:/root/.neo_cache \
@@ -311,7 +317,10 @@ fi
 LMC_ENV=""
 LMC_FLAG=""
 if [ "$ARC_LMC" = 1 ]; then
-  LMC_ENV="export LMCACHE_USE_EXPERIMENTAL_API=True; export LMCACHE_MAX_LOCAL_CPU_SIZE=100; export LMCACHE_LOCAL_CPU=True; export LMCACHE_EVICT_POLICY=lr_u; export LMCACHE_CHUNK_SIZE=1024; export LMCACHE_SAVE_DECODE_CACHE=True; export LMCACHE_MIN_RETRIEVE_TOKENS=1024; export LMCACHE_LOG_LEVEL=INFO; export LMCACHE_DISABLE_PINNED_MEMORY=1; export LMCACHE_TRACK_USAGE=false;"
+  # LMCACHE_MAX_LOCAL_CPU_SIZE=16 (GB): close-out F 2026-11-10 — the 100 GB
+  # virtual reservation of the r42 rig breaks 64 GB-RAM hosts; 16 GB keeps
+  # a meaningful CPU tier with headroom for weights load + page cache.
+  LMC_ENV="export LMCACHE_USE_EXPERIMENTAL_API=True; export LMCACHE_MAX_LOCAL_CPU_SIZE=16; export LMCACHE_LOCAL_CPU=True; export LMCACHE_EVICT_POLICY=lr_u; export LMCACHE_CHUNK_SIZE=1024; export LMCACHE_SAVE_DECODE_CACHE=True; export LMCACHE_MIN_RETRIEVE_TOKENS=1024; export LMCACHE_LOG_LEVEL=INFO; export LMCACHE_DISABLE_PINNED_MEMORY=1; export LMCACHE_TRACK_USAGE=false;"
   LMC_FLAG="--kv-transfer-config '{\"kv_connector\":\"LMCacheConnectorV1\",\"kv_role\":\"kv_both\",\"kv_connector_extra_config\":{\"use_native\":true,\"lmcache.extra_config\":{\"mamba_pool_ratio\":2}},\"engine_id\":\"arc-p40\"}'"
 fi
 
@@ -349,7 +358,7 @@ exec /opt/venv/bin/vllm serve --model /models/target \
   --dtype float16 \
   $QUANT_FLAG \
   $QUANTCFG_FLAG \
-  --kv-cache-dtype fp8_e4m3 \
+  --kv-cache-dtype ${ARC_KVDTYPE:-fp8_e4m3} \
   --mamba-ssm-cache-dtype float16 \
   --mamba-cache-mode=align \
   --enable-prefix-caching \
