@@ -137,7 +137,9 @@ refusal was the interim mitigation, lifted at P6.19), cert6 (P6.14,
 certified line is `ARC_SPEC_METHOD=probabilistic` — the serve script
 default flipped). Target: serve **qwen3.8-27b-fp8**
 (dense hybrid-GDN, **MTP k3 recommended** — r46t real-world campaign) on
-`vllm-arc:v0.30.0-b70-cert22`, replacing the W14 incumbent
+`vllm-arc:v0.30.0-b70-cert23` (the P6.35 release: graph-exec
+double-buffer patch, posture gains are serve-line choices), replacing
+the W14 incumbent
 (`radiance-test`, flash-next k3) as the rig's serving stack. Everything
 below is rig-proven; the full phase-by-phase evidence table is §6.
 

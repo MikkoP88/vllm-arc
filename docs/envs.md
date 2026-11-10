@@ -5,8 +5,15 @@ at the r46t close-out) from `vllm_gaudi/envs.py` arc-lane markers + the
 certified serve line (`r43_serve_k5.sh`, spec depth 3 per the r46t
 recommendation — a serve-time CLI change — on image
 `vllm-arc:v0.30.0-b70-cert`; unchanged since — the qwen fp8 chain is identical on
-the current certified image `vllm-arc:v0.30.0-b70-cert22`, where
-`LMCACHE_TRACK_USAGE=false` (P6.3) made it 25; cert22 = cert21 + the
+the current certified image `vllm-arc:v0.30.0-b70-cert23`, where
+`LMCACHE_TRACK_USAGE=false` (P6.3) made it 25; cert23 = cert22 + the
+P6.35 graph-exec double-buffer (`vllm_gaudi/xpu/patches/graph_exec_doublebuffer.py` —
+captures every XPU graph ×2 into the shared pool, alternates replays; removes the
+torch-2.13 same-exec replay host block — replay max 24 → 0.37 ms, engine serial
+40.8 → 12.7 ms/step, E2E-NEUTRAL at every measured posture (hygiene fix, not a
+perf knob; the table row carries the honest wording); adds NO serve-line var —
+the knob `VLLM_ARC_GRAPH_EXEC_DB` is a serve-ENV switch like `ARC_ATTN_FA2`;
+no wheel change; gate r135/r135b, results/2026-11-10-p635-telemetry/); cert22 = cert21 + the
 P6.33 skinny-M kernel lane (arc6 `vllm_xpu_kernels` wheel swap +
 the `skinny_m` route patch — adds NO serve-line var; the lane rides
 the engine env `ARC_SKINNY_M` (unset/`off` = stock routes — the
