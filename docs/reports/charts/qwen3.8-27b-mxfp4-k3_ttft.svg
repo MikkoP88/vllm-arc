@@ -19,14 +19,14 @@
 <text x="816.0" y="454" font-size="11" fill="#667085" text-anchor="middle">128K</text>
 <line x1="84" y1="436" x2="816" y2="436" stroke="#d0d5dd" stroke-width="1"/>
 <line x1="84" y1="52" x2="84" y2="436" stroke="#d0d5dd" stroke-width="1"/>
-<line x1="84" y1="434.5" x2="816" y2="434.5" stroke="#98a2b3" stroke-width="1" stroke-dasharray="5 4"/>
-<text x="820" y="437.5" font-size="9.5" fill="#667085" font-style="italic">instant</text>
-<line x1="84" y1="429.9" x2="816" y2="429.9" stroke="#98a2b3" stroke-width="1" stroke-dasharray="5 4"/>
-<text x="820" y="432.9" font-size="9.5" fill="#667085" font-style="italic">responsive</text>
-<line x1="84" y1="420.9" x2="816" y2="420.9" stroke="#98a2b3" stroke-width="1" stroke-dasharray="5 4"/>
-<text x="820" y="423.9" font-size="9.5" fill="#667085" font-style="italic">noticeable</text>
 <line x1="84" y1="405.7" x2="816" y2="405.7" stroke="#98a2b3" stroke-width="1" stroke-dasharray="5 4"/>
-<text x="820" y="408.7" font-size="9.5" fill="#667085" font-style="italic">slow</text>
+<text x="820" y="399.5" font-size="9.5" fill="#667085" font-style="italic">slow</text>
+<line x1="84" y1="420.9" x2="816" y2="420.9" stroke="#98a2b3" stroke-width="1" stroke-dasharray="5 4"/>
+<text x="820" y="411.0" font-size="9.5" fill="#667085" font-style="italic">noticeable</text>
+<line x1="84" y1="429.9" x2="816" y2="429.9" stroke="#98a2b3" stroke-width="1" stroke-dasharray="5 4"/>
+<text x="820" y="422.5" font-size="9.5" fill="#667085" font-style="italic">responsive</text>
+<line x1="84" y1="434.5" x2="816" y2="434.5" stroke="#98a2b3" stroke-width="1" stroke-dasharray="5 4"/>
+<text x="820" y="434.0" font-size="9.5" fill="#667085" font-style="italic">instant</text>
 <polyline points="84.0,433.3 267.0,423.9 450.0,381.1 633.0,309.6 816.0,99.2" fill="none" stroke="#2563eb" stroke-width="2.4"/>
 <circle cx="84.0" cy="433.3" r="4.4" fill="#2563eb"/>
 <circle cx="267.0" cy="423.9" r="4.4" fill="#2563eb"/>

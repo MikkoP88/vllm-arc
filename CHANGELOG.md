@@ -268,6 +268,42 @@ raw evidence is banked under `results/YYYY-MM-DD-<phase>-*/`.
 
 ## Serve-layer and analysis phases (no cert — engine bytes unchanged)
 
+- **P6.43 canonical rung ladder + no-chord padding + gemma 128K completion
+  (2026-11-11)**: every context axis now keeps the canonical rung ladder
+  (1K, 8K, 32K, 64K, 128K) up to its highest measured x, centralized in the
+  two plotters. (1) **Labeled empty 64K slot on gemma**: the gemma boots
+  never measured 64K, so the 17 gemma charts that reach 128K previously
+  jumped 32K→128K with no 64K position; they now render the full 5-rung
+  ladder with an empty, still-labeled 64K slot. (2) **Rung padding
+  enforces no-chord centrally**: `chart()`/`band_chart()` inject an
+  explicit `(rung, None)` pair for every rung a series did not measure,
+  so the existing run-splitting breaks the line at the empty slot — this
+  also fixed a latent defect where 4 of 5 `tq_speed_ctx` series had been
+  chording 32K→128K across the unmeasured 64K rung since P6.42 (invisible
+  to the tick-only audit). (3) **Gemma 128K completion**: the solo detail
+  table gains its 131072 row (annex-boot faces, t1.0 decode 26.9 tok/s;
+  `r140` faces carry `None` fields, cells are now None-safe), and the
+  annex boot's t1.0@128K face joins the temperature comparison (both bars
+  at 128K: 28 vs 27 tok/s) with the exec-success counts updated. Queue
+  and efficiency tables carry the 64K "-" row with a generalized empty-slot
+  note; the annex intro's stale "not merged into the charts above" is now
+  the merge provenance sentence. METHODOLOGY gains the canonical-ladder
+  law. (4) **Band-tag de-collision**: the picture-capture validation pass
+  exposed that all 26 TTFT charts drew the right-margin class-threshold
+  tags (instant/responsive/noticeable/slow) at 1.9–6.3 px baseline gaps —
+  the four bands compress under a 0–300 s axis. The new `_hline_tags`
+  helper (shared by all three plotters) spreads the stack order-
+  preservingly (11.5 px pitch, centred, clamped inside the plot) only
+  when a collision exists; uncompressed sets keep the line-hugging
+  position, so the other 149 charts are byte-identical. Oracle diff vs
+  P6.42 output: 136 charts byte-identical, 39 changed (19 ladder-set +
+  26 band-tag-set, 6 in both) — qwen/fp8/mxfp4 outputs outside those
+  sets untouched. All 175 charts rasterized at 2x (Edge headless) and
+  validated: vision checks on the ladder/chord/band-tag/bar fixes, plus
+  exact-box checkers — 0 overlapping pairs across 1603 value labels,
+  0 across 313 band tags, 0 tag-vs-tick.
+  Generator only; no engine bytes changed — cert23 stands.
+
 - **P6.42 no-jump full-ladder axes + gemma 128K annex merge (2026-11-11)**:
   closes the last x-axis defects found by a full 175-chart tick audit.
   (1) **Break, never chord**: a `None` inside a series (or at a band edge)

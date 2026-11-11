@@ -9,10 +9,12 @@
 <text x="76" y="170.5" font-size="11" fill="#667085" text-anchor="end">40</text>
 <line x1="84.0" y1="52" x2="84.0" y2="436" stroke="#f0f0f0" stroke-width="1"/>
 <text x="84.0" y="454" font-size="11" fill="#667085" text-anchor="middle">1K</text>
-<line x1="328.0" y1="52" x2="328.0" y2="436" stroke="#f0f0f0" stroke-width="1"/>
-<text x="328.0" y="454" font-size="11" fill="#667085" text-anchor="middle">8K</text>
-<line x1="572.0" y1="52" x2="572.0" y2="436" stroke="#f0f0f0" stroke-width="1"/>
-<text x="572.0" y="454" font-size="11" fill="#667085" text-anchor="middle">32K</text>
+<line x1="267.0" y1="52" x2="267.0" y2="436" stroke="#f0f0f0" stroke-width="1"/>
+<text x="267.0" y="454" font-size="11" fill="#667085" text-anchor="middle">8K</text>
+<line x1="450.0" y1="52" x2="450.0" y2="436" stroke="#f0f0f0" stroke-width="1"/>
+<text x="450.0" y="454" font-size="11" fill="#667085" text-anchor="middle">32K</text>
+<line x1="633.0" y1="52" x2="633.0" y2="436" stroke="#f0f0f0" stroke-width="1"/>
+<text x="633.0" y="454" font-size="11" fill="#667085" text-anchor="middle">64K</text>
 <line x1="816.0" y1="52" x2="816.0" y2="436" stroke="#f0f0f0" stroke-width="1"/>
 <text x="816.0" y="454" font-size="11" fill="#667085" text-anchor="middle">128K</text>
 <line x1="84" y1="436" x2="816" y2="436" stroke="#d0d5dd" stroke-width="1"/>
@@ -23,14 +25,14 @@
 <text x="820" y="270.6" font-size="9.5" fill="#667085" font-style="italic">acceptable</text>
 <line x1="84" y1="99.2" x2="816" y2="99.2" stroke="#98a2b3" stroke-width="1" stroke-dasharray="5 4"/>
 <text x="820" y="102.2" font-size="9.5" fill="#667085" font-style="italic">fast</text>
-<polyline points="84.0,180.2 328.0,185.4 572.0,201.0 816.0,244.4" fill="none" stroke="#2563eb" stroke-width="2.4"/>
+<polyline points="84.0,180.2 267.0,185.4 450.0,201.0" fill="none" stroke="#2563eb" stroke-width="2.4"/>
 <circle cx="84.0" cy="180.2" r="4.4" fill="#2563eb"/>
-<circle cx="328.0" cy="185.4" r="4.4" fill="#2563eb"/>
-<circle cx="572.0" cy="201.0" r="4.4" fill="#2563eb"/>
+<circle cx="267.0" cy="185.4" r="4.4" fill="#2563eb"/>
+<circle cx="450.0" cy="201.0" r="4.4" fill="#2563eb"/>
 <circle cx="816.0" cy="244.4" r="4.4" fill="#2563eb"/>
 <text x="84.0" y="171.2" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">38</text>
-<text x="328.0" y="176.4" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">37</text>
-<text x="572.0" y="192.0" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">35</text>
+<text x="267.0" y="176.4" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">37</text>
+<text x="450.0" y="192.0" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">35</text>
 <text x="816.0" y="235.4" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">28</text>
 <line x1="84" y1="494" x2="100" y2="494" stroke="#2563eb" stroke-width="3"/>
 <text x="104" y="498" font-size="11.5" fill="#1d2939">no MTP</text>
