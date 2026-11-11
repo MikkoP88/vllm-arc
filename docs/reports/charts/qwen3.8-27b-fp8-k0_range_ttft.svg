@@ -30,7 +30,7 @@
 <line x1="84" y1="425.0" x2="816" y2="425.0" stroke="#98a2b3" stroke-width="1" stroke-dasharray="5 4"/>
 <text x="820" y="428.0" font-size="9.5" fill="#667085" font-style="italic">slow</text>
 <polygon points="84.0,430.2 267.0,404.8 450.0,296.4 450.0,418.4 267.0,431.8 84.0,434.1" fill="#2563eb" fill-opacity="0.14" stroke="none"/>
-<polyline points="84.0,430.2 267.0,404.8 450.0,296.4 816.0,99.2" fill="none" stroke="#2563eb" stroke-width="2.4"/>
+<polyline points="84.0,430.2 267.0,404.8 450.0,296.4" fill="none" stroke="#2563eb" stroke-width="2.4"/>
 <circle cx="84.0" cy="430.2" r="4.2" fill="#2563eb"/>
 <circle cx="267.0" cy="404.8" r="4.2" fill="#2563eb"/>
 <circle cx="450.0" cy="296.4" r="4.2" fill="#2563eb"/>

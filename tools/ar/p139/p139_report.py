@@ -553,12 +553,23 @@ def band_chart(path, title, top_pts, bot_pts, top_lab, bot_lab,
                    for x in reversed(run)])
         out.append('<polygon points="{}" fill="{}" fill-opacity="0.14" '
                    'stroke="none"/>'.format(" ".join(poly), band))
-    for pts_, col in ((tg, edge_t), (bg, edge_b)):
-        if len(pts_) >= 2:
-            pl = " ".join("{:.1f},{:.1f}".format(X(x), Y(y)) for x, y in pts_)
+    for pts_, col in ((top_pts, edge_t), (bot_pts, edge_b)):
+        runs, cur = [], []        # a None inside an edge BREAKS it (no
+        for x, y in pts_:         # chord across an unmeasured context)
+            if y is not None:
+                cur.append((x, y))
+            elif cur:
+                runs.append(cur)
+                cur = []
+        if cur:
+            runs.append(cur)
+        for run in runs:
+            if len(run) < 2:
+                continue
+            pl = " ".join("{:.1f},{:.1f}".format(X(x), Y(y)) for x, y in run)
             out.append('<polyline points="{}" fill="none" stroke="{}" '
                        'stroke-width="2.4"/>'.format(pl, col))
-        for x, y in pts_:
+        for x, y in [p for r in runs for p in r]:
             out.append('<circle cx="{:.1f}" cy="{:.1f}" r="4.2" '
                        'fill="{}"/>'.format(X(x), Y(y), col))
     cand = [(X(x), Y(y), yfmt.format(y), col)
@@ -591,13 +602,17 @@ def band_chart(path, title, top_pts, bot_pts, top_lab, bot_lab,
 
 def chart(path, title, series, xlabel, ylabel, xcat=None, yfmt="{:.1f}",
           y_from_zero=True, hlines=(), ideal=False, label_all=True,
-          ylog=False):
+          ylog=False, xdomain=None):
     """SVG line chart. series = [(label, [(x, y)|None, ...])].
-    xcat = category labels -> x = index. hlines = [(y, tag)] dashed
-    class thresholds (right-margin tags). ideal = dashed linear
-    reference per series anchored at its first point (throughput
+    xcat = category labels -> x = index. xdomain = the full x ladder to
+    label even where nothing measured (the honest empty slot -- pass it
+    truncated to the chart's own highest measured x). hlines = [(y,
+    tag)] dashed class thresholds (right-margin tags). ideal = dashed
+    linear reference per series anchored at its first point (throughput
     scaling charts). label_all = value label on every point (default);
-    labels are auto-staggered so close neighbours never overlap."""
+    labels are auto-staggered so close neighbours never overlap.
+    A None inside a series BREAKS the line (no chord across an
+    unmeasured context)."""
     # legend rows (bottom, greedy wrap): extend canvas as needed
     _PW = 880 - 84 - 64
     _legw = [16 + 7.2 * min(len(lab), 30) + 20 for lab, _ in series]
@@ -612,9 +627,11 @@ def chart(path, title, series, xlabel, ylabel, xcat=None, yfmt="{:.1f}",
     pts = [p for _, ps in series for p in ps if p[1] is not None]
     if not pts:
         return
-    xs = sorted({p[0] for p in pts})
+    xs = list(xdomain) if xdomain is not None else sorted({p[0] for p in pts})
     ys = [p[1] for p in pts]
     if xcat is not None:
+        xi = None                 # category mode: x values are indices
+
         def X(v):
             return ML + (v + 0.5) / len(xcat) * PW
     else:
@@ -706,11 +723,22 @@ def chart(path, title, series, xlabel, ylabel, xcat=None, yfmt="{:.1f}",
     for si, (lab, ps) in enumerate(series):
         col = PALETTE[si % len(PALETTE)]
         mk = MARKERS[si % len(MARKERS)]
-        good = [(xv, yv) for xv, yv in ps if yv is not None]
-        if len(good) >= 2:
-            pl = " ".join("{:.1f},{:.1f}".format(X(xv), Y(yv)) for xv, yv in good)
+        runs, cur = [], []        # contiguous measured stretches: a None
+        for xv, yv in ps:         # inside the series BREAKS the line
+            if yv is not None and (xi is None or xv in xi):
+                cur.append((xv, yv))
+            elif cur:
+                runs.append(cur)
+                cur = []
+        if cur:
+            runs.append(cur)
+        for run in runs:
+            if len(run) < 2:
+                continue
+            pl = " ".join("{:.1f},{:.1f}".format(X(xv), Y(yv)) for xv, yv in run)
             out.append('<polyline points="{}" fill="none" stroke="{}" '
                        'stroke-width="2.4"/>'.format(pl, col))
+        good = [p for run in runs for p in run]
         for pi, (xv, yv) in enumerate(good):
             xx, yy = X(xv), Y(yv)
             if mk == "circle":
@@ -1130,6 +1158,30 @@ def _solo_fill_edge(pts, faces, sfield):
              and faces[c].get(sfield) else (c, v)) for c, v in pts]
 
 
+def _annex_solo_face(b139, acell, c):
+    """Synthesize a r138-style solo face from the annex boot's
+    single-request concurrency face, so the main report's solo charts
+    and tables can carry the annex-measured contexts (same image and
+    quantization; cross-boot equivalence is delta-table-proven in the
+    annex section)."""
+    d1 = load_conc(b139, acell, c, 1)
+    if not _conc_face_ok(d1):
+        return None
+    ia = itl_agg(d1) or {}
+    return {
+        "ctx": c,
+        "decode_tps": d1.get("per_user_mean_tps"),
+        "ttft_s": d1.get("ttft_mean_s"),
+        "prefill_tps": (c / d1["ttft_mean_s"]
+                        if d1.get("ttft_mean_s") else None),
+        "tok_per_step": d1.get("tok_per_step"),
+        "itl_ms_p50": ia.get("p50"),
+        "itl_ms_p90": ia.get("p90"),
+        "itl_ms_p99": ia.get("p99"),
+        "src": "r139",
+    }
+
+
 def per_config_report(banks, out, cfg, date):
     b138 = banks[0]
     b139 = banks[1:]
@@ -1147,6 +1199,30 @@ def per_config_report(banks, out, cfg, date):
     fctxs = sorted(set(cctxs) | {c for c, f in faces.items() if f})
     conc = {c: {n: load_conc(b139, cell, c, n) for n in conc_concs(b139, cell, c)}
             for c in cctxs}
+    # 128K annex merge: the annex boot re-measured the shared ladder
+    # (delta-table-proven equivalent at 1K-32K) and adds the contexts
+    # the main boot could not serve -- its faces complete this report's
+    # tables and charts; the annex section holds the boot record
+    annex_ctxs = set()
+    apoolm = 0
+    ann = cfg.get("annex")
+    if ann:
+        apoolm, _aps = pool_of(banks, ann["cell"])
+        for c in conc_ctxs(b139, ann["cell"]):
+            if c in conc:
+                continue
+            fc = {n: load_conc(b139, ann["cell"], c, n)
+                  for n in conc_concs(b139, ann["cell"], c)}
+            if not any(_conc_face_ok(d) for d in fc.values()):
+                continue
+            conc[c] = fc
+            annex_ctxs.add(c)
+            af = _annex_solo_face(b139, ann["cell"], c)
+            if af:
+                faces[c] = af
+        if annex_ctxs:
+            cctxs = sorted(set(cctxs) | annex_ctxs)
+            fctxs = sorted(set(fctxs) | annex_ctxs)
     t1 = {c: load_conc(b139, cell, c, 1, "1.0") for c in cctxs}
     t1ok = {c: d for c, d in t1.items() if _conc_face_ok(d)}
     pool, pool_src = pool_of(banks, cell)
@@ -1197,6 +1273,14 @@ def per_config_report(banks, out, cfg, date):
         nok, ntot = requests_stats(faces, tfaces, conc, t1ok)
         L.append("## Executive summary")
         L.append("")
+        if annex_ctxs:
+            L.append("The {} points in the tables and charts below come from "
+                     "the **128K annex boot** — same image and quantization "
+                     "posture; the annex section quantifies both boots' "
+                     "agreement at the shared contexts.".format(
+                         ", ".join("{}K".format(c // 1024)
+                                   for c in sorted(annex_ctxs))))
+            L.append("")
         L.append("Infrastructure decisions require real performance data. This "
                  "report measures user-facing performance — how many "
                  "concurrent requests the configuration supports at a given "
@@ -1427,7 +1511,7 @@ def per_config_report(banks, out, cfg, date):
         chart(os.path.join(ch, "{}_decode.svg".format(slug)),
               "Per-user decode speed vs context length (temperature 0.0, solo)",
               [(cfg["mtp"], [(c, faces[c]["decode_tps"]) if faces.get(c) else (c, None)
-                             for c in cfg["ctxs"]])],
+                             for c in sorted(set(cfg["ctxs"]) | annex_ctxs)])],
               "Context length (tokens)", "Decode speed (tok/s)", yfmt="{:.0f}",
               hlines=SPEED_HL, label_all=True)
         L.append(img("{}_decode".format(slug),
@@ -1528,7 +1612,7 @@ def per_config_report(banks, out, cfg, date):
         chart(os.path.join(ch, "{}_ttft.svg".format(slug)),
               "Time to first token vs context length (temperature 0.0, solo)",
               [(cfg["mtp"], [(c, faces[c]["ttft_s"]) if faces.get(c) else (c, None)
-                             for c in cfg["ctxs"]])],
+                             for c in sorted(set(cfg["ctxs"]) | annex_ctxs)])],
               "Context length (tokens)", "TTFT (s)", yfmt="{:.1f}",
               hlines=TTFT_HL, label_all=True)
         L.append(img("{}_ttft".format(slug),
@@ -1650,7 +1734,8 @@ def per_config_report(banks, out, cfg, date):
             L.append("")
             rows = []
             for c in allctx:
-                fit = pool // (c + OVERHEAD)
+                p = apoolm if (c in annex_ctxs and apoolm) else pool
+                fit = p // (c + OVERHEAD)
                 measured = max([n for n, d in conc.get(c, {}).items()
                                 if _conc_face_ok(d)] or [0])
                 rows.append([ctxrow(c), _fmt_comma(fit),
@@ -1661,6 +1746,14 @@ def per_config_report(banks, out, cfg, date):
                                "Measured green @ conc", "c8 fully resident?"],
                               rows))
             L.append("")
+            if annex_ctxs:
+                L.append("*The {} row's pool is the annex boot's "
+                         "({} tokens) — the main boot's pool cannot hold "
+                         "that context.*".format(
+                             ", ".join("{}K".format(c // 1024)
+                                       for c in sorted(annex_ctxs)),
+                             _fmt_comma(apoolm)))
+                L.append("")
             L.append("*Sessions are the whole-pool bound; `--max-num-seqs 64` "
                      "bounds the running batch above it. TurboQuant dtypes "
                      "multiply the pool up to 3.68x: see the "
@@ -1680,18 +1773,25 @@ def per_config_report(banks, out, cfg, date):
                      "first-token wait — `ttft_mean(n) − ttft_mean(1)` — is "
                      "the queue+prefill-share stagger the Nth user pays. "
                      "Derived client-side; engine-internal queueing is not "
-                     "exported by this engine version.")
+                     "exported by this engine version. The x-axis keeps the "
+                     "configuration's full measured ladder — an empty slot "
+                     "marks a context the concurrency sweep skipped (64K on "
+                     "the qwen sweeps); no stagger exists there.")
             L.append("")
+            qmeas = {c for c in cctxs
+                     if _conc_face_ok(conc.get(c, {}).get(1)) and any(
+                         _conc_face_ok(conc.get(c, {}).get(n))
+                         for n in (2, 3, 4, 8))}
+            qxd = [c for c in fctxs if qmeas and c <= max(qmeas)]
             rows = []
-            for c in cctxs:
+            for c in (qxd or cctxs):
                 base = conc.get(c, {}).get(1)
-                if not _conc_face_ok(base):
-                    continue
                 r = [ctxrow(c)]
                 for n in (2, 4, 8):
                     d = conc.get(c, {}).get(n)
                     r.append((f'+{d["ttft_mean_s"] - base["ttft_mean_s"]:.1f} s')
-                             if _conc_face_ok(d) else "-")
+                             if (_conc_face_ok(d) and _conc_face_ok(base))
+                             else "-")
                 rows.append(r)
             if rows:
                 L.append(md_table(["Context", "added wait @ n2", "@ n4", "@ n8"],
@@ -1702,17 +1802,20 @@ def per_config_report(banks, out, cfg, date):
                     _conc_face_ok(conc[c].get(1)) for c in cctxs)]
                 qseries = []
                 for n in qns:
-                    qseries.append((_reqlab(n), [
-                        (c, conc[c][n]["ttft_mean_s"] - conc[c][1]["ttft_mean_s"])
-                        if _conc_face_ok(conc[c].get(n)) and
-                        _conc_face_ok(conc[c].get(1)) else (c, None)
-                        for c in cctxs]))
+                    pts = []
+                    for c in (qxd or cctxs):
+                        cd = conc.get(c, {})
+                        pts.append((c, cd[n]["ttft_mean_s"] - cd[1]["ttft_mean_s"])
+                                   if _conc_face_ok(cd.get(n)) and
+                                   _conc_face_ok(cd.get(1)) else (c, None))
+                    qseries.append((_reqlab(n), pts))
                 if qseries:
                     chart(os.path.join(ch, "{}_queue_ctx.svg".format(slug)),
                           "Added first-token wait vs context length "
                           "(derived: ttft_mean(n) - ttft_mean(1))",
                           qseries, "Context length (tokens)",
-                          "Added wait (s)", yfmt="{:.1f}", label_all=True)
+                          "Added wait (s)", yfmt="{:.1f}", label_all=True,
+                          xdomain=(qxd or None))
                     L.append(img("{}_queue_ctx".format(slug),
                                  "Added first-token wait vs context length, one "
                                  "line per concurrency (derived queue+prefill "
@@ -1817,11 +1920,11 @@ def per_config_report(banks, out, cfg, date):
                 chart(os.path.join(ch, "{}_itl.svg".format(slug)),
                       "Inter-token latency vs context length (temperature 0.0, solo)",
                       [("ITL p50", [(c, faces[c]["itl_ms_p50"]) if faces.get(c) else (c, None)
-                                    for c in cfg["ctxs"]]),
+                                    for c in sorted(set(cfg["ctxs"]) | annex_ctxs)]),
                        ("ITL p90", [(c, faces[c]["itl_ms_p90"]) if faces.get(c) else (c, None)
-                                    for c in cfg["ctxs"]]),
+                                    for c in sorted(set(cfg["ctxs"]) | annex_ctxs)]),
                        ("ITL p99", [(c, faces[c]["itl_ms_p99"]) if faces.get(c) else (c, None)
-                                    for c in cfg["ctxs"]])],
+                                    for c in sorted(set(cfg["ctxs"]) | annex_ctxs)])],
                       "Context length (tokens)", "ITL (ms)", yfmt="{:.0f}",
                       label_all=True)
                 L.append(img("{}_itl".format(slug),
@@ -1836,27 +1939,39 @@ def per_config_report(banks, out, cfg, date):
                      "throughput with no per-user cost). Real efficiency is "
                      "always lower — the accelerators are shared; high "
                      "efficiency at your target concurrency signals "
-                     "headroom.")
+                     "headroom. The x-axis keeps the full measured ladder; "
+                     "an empty slot marks a context the concurrency sweep "
+                     "skipped (64K on the qwen sweeps).")
             L.append("")
+            emeas = {c for c in cctxs
+                     if _conc_face_ok(conc.get(c, {}).get(1)) and
+                     conc.get(c, {}).get(1, {}).get("agg_tps_wall") and
+                     conc[c][1]["agg_tps_wall"] > 0 and any(
+                         _conc_face_ok(conc.get(c, {}).get(n))
+                         for n in (2, 3, 4, 8))}
+            exd = [c for c in fctxs if emeas and c <= max(emeas)]
             ens = [n for n in (2, 3, 4, 8) if any(
                 _conc_face_ok(conc[c].get(n)) and
                 _conc_face_ok(conc[c].get(1)) and
                 conc[c][1]["agg_tps_wall"] > 0 for c in cctxs)]
             eseries = []
             for n in ens:
-                eseries.append((_reqlab(n), [
-                    (c, 100.0 * conc[c][n]["agg_tps_wall"] /
-                        (n * conc[c][1]["agg_tps_wall"]))
-                    if _conc_face_ok(conc[c].get(n)) and
-                    _conc_face_ok(conc[c].get(1)) and
-                    conc[c][1]["agg_tps_wall"] > 0 else (c, None)
-                    for c in cctxs]))
+                pts = []
+                for c in (exd or cctxs):
+                    cd = conc.get(c, {})
+                    pts.append((c, 100.0 * cd[n]["agg_tps_wall"] /
+                                (n * cd[1]["agg_tps_wall"]))
+                               if _conc_face_ok(cd.get(n)) and
+                               _conc_face_ok(cd.get(1)) and
+                               cd[1]["agg_tps_wall"] > 0 else (c, None))
+                eseries.append((_reqlab(n), pts))
             if eseries:
                 chart(os.path.join(ch, "{}_eff_ctx.svg".format(slug)),
                       "Scaling efficiency vs context length (aggregate / (n x aggregate-at-1))",
                       eseries, "Context length (tokens)",
                       "Scaling efficiency (%)", yfmt="{:.0f}",
-                      y_from_zero=False, label_all=True)
+                      y_from_zero=False, label_all=True,
+                      xdomain=(exd or None))
                 L.append(img("{}_eff_ctx".format(slug),
                              "Scaling efficiency vs context length, one line per "
                              "concurrency — {}, {}".format(qshort, cfg["mtp"])))
@@ -2602,10 +2717,26 @@ def kv_report(banks, out, date):
              "Worst-user TTFT @ c8 vs context length — fp8 vs TurboQuant")]:
         series = []
         for lab, cell in overlay:
-            pts = [(c, load_conc(b139, cell, c, nsel)[met])
-                   if _conc_face_ok(load_conc(b139, cell, c, nsel))
-                   else (c, None)
-                   for c in conc_ctxs(b139, cell)]
+            cctx_cell = conc_ctxs(b139, cell)
+            if nsel == 1 and met == "per_user_mean_tps":
+                # solo line: complete the ladder from the r138 solo
+                # faces at ctxs the sweep skipped (64K)
+                ladder = sorted(set(cctx_cell) | {
+                    c for c in QCTX if solo_face(banks, cell, c)})
+                pts = []
+                for c in ladder:
+                    d = load_conc(b139, cell, c, 1)
+                    if _conc_face_ok(d):
+                        pts.append((c, d[met]))
+                    else:
+                        f = solo_face(banks, cell, c)
+                        pts.append((c, f["decode_tps"])
+                                   if f and f.get("decode_tps") else (c, None))
+            else:
+                pts = [(c, load_conc(b139, cell, c, nsel)[met])
+                       if _conc_face_ok(load_conc(b139, cell, c, nsel))
+                       else (c, None)
+                       for c in cctx_cell]
             if any(p[1] is not None for p in pts):
                 series.append((lab, pts))
         chart(os.path.join(ch, fname + ".svg"), cap, series,
@@ -2713,7 +2844,14 @@ def methodology_report(out, date):
          "that configuration's solo faces — the same single-request "
          "measurement on the same certified image; loaded lines keep "
          "their honest gaps, and band shading never bridges an "
-         "unmeasured context. Range-band "
+         "unmeasured context. Derived-metric charts (queue stagger, "
+         "scaling efficiency) keep the full ladder on the axis with an "
+         "empty slot where the metric was not measured, and a break "
+         "inside any line is always a real gap — no line chords across "
+         "an unmeasured context. The gemma MXFP4 tables and charts "
+         "carry the 128K annex-boot measurements, same image and "
+         "quantization posture (the annex section quantifies both "
+         "boots' agreement at the shared contexts). Range-band "
          "charts show the measured envelope across concurrency (top edge "
          "= single request, bottom edge = maximum tested concurrency; for "
          "TTFT the envelope inverts — the loaded worst user is the top "
@@ -2798,14 +2936,17 @@ def _peak(banks, cfg):
 def _uc_short(banks, cfg, uc, lastc):
     b139 = banks[1:]
     uctx = uc["ctx"] if uc["ctx"] is not None else lastc
-    cd = {n: d for n, d in
-          ((n, load_conc(b139, cfg["cell"], uctx, n))
-           for n in conc_concs(b139, cfg["cell"], uctx)) }
-    if any(_conc_face_ok(d) for d in cd.values()):
-        cap, note = uc_verdict(cd, uc)
-        if note:
-            return note.split(" (")[0]
-        return f"{cap} req"
+    # main cell first; the annex cell serves the merged 128K contexts
+    for cell in [cfg["cell"]] + ([cfg["annex"]["cell"]]
+                                 if cfg.get("annex") else []):
+        cd = {n: d for n, d in
+              ((n, load_conc(b139, cell, uctx, n))
+               for n in conc_concs(b139, cell, uctx))}
+        if any(_conc_face_ok(d) for d in cd.values()):
+            cap, note = uc_verdict(cd, uc)
+            if note:
+                return note.split(" (")[0]
+            return f"{cap} req"
     return "-"
 
 
@@ -2825,6 +2966,12 @@ def index_report(banks, out, date):
                 for ctxv in c["ctxs"]:
                     f = solo_face(banks, c["cell"], ctxv)
                     pts.append((ctxv, f[met] if f else None))
+                ann = c.get("annex")
+                if ann:   # the annex boot's solo face extends the ladder
+                    af = _annex_solo_face(banks[1:], ann["cell"], 131072)
+                    if af:
+                        pts.append((131072, af[met]))
+                pts.sort()
                 series.append(("{} {}".format(c["quant"].split(" (")[0], c["mtp"]), pts))
             chart(os.path.join(ch, fname + ".svg"), cap, series,
                   "Context length (tokens)", ylab, yfmt=yfmt, y_from_zero=zeroy,

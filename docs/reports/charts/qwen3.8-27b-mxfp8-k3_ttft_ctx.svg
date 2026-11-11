@@ -35,7 +35,7 @@
 <circle cx="450.0" cy="401.0" r="4.4" fill="#2563eb"/>
 <circle cx="633.0" cy="353.8" r="4.4" fill="#2563eb"/>
 <circle cx="816.0" cy="216.2" r="4.4" fill="#2563eb"/>
-<polyline points="84.0,433.5 267.0,424.4 450.0,379.3 816.0,99.2" fill="none" stroke="#dc2626" stroke-width="2.4"/>
+<polyline points="84.0,433.5 267.0,424.4 450.0,379.3" fill="none" stroke="#dc2626" stroke-width="2.4"/>
 <rect x="79.5" y="429.0" width="9" height="9" fill="#dc2626"/>
 <rect x="262.5" y="419.9" width="9" height="9" fill="#dc2626"/>
 <rect x="445.5" y="374.8" width="9" height="9" fill="#dc2626"/>

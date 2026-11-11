@@ -1,51 +1,53 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="880" height="500" viewBox="0 0 880 500" font-family="Segoe UI, Helvetica, Arial, sans-serif">
 <rect width="880" height="500" fill="#ffffff"/>
 <text x="84" y="26" font-size="17" font-weight="600" fill="#101828">Gemma-4-31b: TTFT vs context (all configs, t0.0)</text>
-<line x1="84" y1="368.2" x2="816" y2="368.2" stroke="#f0f0f0" stroke-width="1"/>
-<text x="76" y="372.2" font-size="11" fill="#667085" text-anchor="end">5.0</text>
-<line x1="84" y1="290.6" x2="816" y2="290.6" stroke="#f0f0f0" stroke-width="1"/>
-<text x="76" y="294.6" font-size="11" fill="#667085" text-anchor="end">10.0</text>
-<line x1="84" y1="212.9" x2="816" y2="212.9" stroke="#f0f0f0" stroke-width="1"/>
-<text x="76" y="216.9" font-size="11" fill="#667085" text-anchor="end">15.0</text>
-<line x1="84" y1="135.3" x2="816" y2="135.3" stroke="#f0f0f0" stroke-width="1"/>
-<text x="76" y="139.3" font-size="11" fill="#667085" text-anchor="end">20.0</text>
-<line x1="84" y1="57.6" x2="816" y2="57.6" stroke="#f0f0f0" stroke-width="1"/>
-<text x="76" y="61.6" font-size="11" fill="#667085" text-anchor="end">25.0</text>
+<line x1="84" y1="341.2" x2="816" y2="341.2" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="345.2" font-size="11" fill="#667085" text-anchor="end">50.0</text>
+<line x1="84" y1="245.1" x2="816" y2="245.1" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="249.1" font-size="11" fill="#667085" text-anchor="end">100.0</text>
+<line x1="84" y1="149.1" x2="816" y2="149.1" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="153.1" font-size="11" fill="#667085" text-anchor="end">150.0</text>
+<line x1="84" y1="53.0" x2="816" y2="53.0" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="57.0" font-size="11" fill="#667085" text-anchor="end">200.0</text>
 <line x1="84.0" y1="52" x2="84.0" y2="436" stroke="#f0f0f0" stroke-width="1"/>
 <text x="84.0" y="454" font-size="11" fill="#667085" text-anchor="middle">1K</text>
-<line x1="450.0" y1="52" x2="450.0" y2="436" stroke="#f0f0f0" stroke-width="1"/>
-<text x="450.0" y="454" font-size="11" fill="#667085" text-anchor="middle">8K</text>
+<line x1="328.0" y1="52" x2="328.0" y2="436" stroke="#f0f0f0" stroke-width="1"/>
+<text x="328.0" y="454" font-size="11" fill="#667085" text-anchor="middle">8K</text>
+<line x1="572.0" y1="52" x2="572.0" y2="436" stroke="#f0f0f0" stroke-width="1"/>
+<text x="572.0" y="454" font-size="11" fill="#667085" text-anchor="middle">32K</text>
 <line x1="816.0" y1="52" x2="816.0" y2="436" stroke="#f0f0f0" stroke-width="1"/>
-<text x="816.0" y="454" font-size="11" fill="#667085" text-anchor="middle">32K</text>
+<text x="816.0" y="454" font-size="11" fill="#667085" text-anchor="middle">128K</text>
 <line x1="84" y1="436" x2="816" y2="436" stroke="#d0d5dd" stroke-width="1"/>
 <line x1="84" y1="52" x2="84" y2="436" stroke="#d0d5dd" stroke-width="1"/>
-<line x1="84" y1="414.8" x2="816" y2="414.8" stroke="#98a2b3" stroke-width="1" stroke-dasharray="5 4"/>
-<text x="820" y="417.8" font-size="9.5" fill="#667085" font-style="italic">responsive</text>
-<line x1="84" y1="368.2" x2="816" y2="368.2" stroke="#98a2b3" stroke-width="1" stroke-dasharray="5 4"/>
-<text x="820" y="371.2" font-size="9.5" fill="#667085" font-style="italic">noticeable</text>
-<line x1="84" y1="290.6" x2="816" y2="290.6" stroke="#98a2b3" stroke-width="1" stroke-dasharray="5 4"/>
-<text x="820" y="293.6" font-size="9.5" fill="#667085" font-style="italic">slow</text>
-<polyline points="84.0,430.1 450.0,383.4 816.0,107.2" fill="none" stroke="#2563eb" stroke-width="2.4"/>
-<circle cx="84.0" cy="430.1" r="4.4" fill="#2563eb"/>
-<circle cx="450.0" cy="383.4" r="4.4" fill="#2563eb"/>
-<circle cx="816.0" cy="107.2" r="4.4" fill="#2563eb"/>
-<polyline points="84.0,427.4 450.0,382.5 816.0,104.5" fill="none" stroke="#dc2626" stroke-width="2.4"/>
-<rect x="79.5" y="422.9" width="9" height="9" fill="#dc2626"/>
-<rect x="445.5" y="378.0" width="9" height="9" fill="#dc2626"/>
-<rect x="811.5" y="100.0" width="9" height="9" fill="#dc2626"/>
-<polyline points="84.0,435.1 450.0,381.7 816.0,100.4" fill="none" stroke="#059669" stroke-width="2.4"/>
-<polygon points="84.0,429.6 78.5,439.6 89.5,439.6" fill="#059669"/>
-<polygon points="450.0,376.2 444.5,386.2 455.5,386.2" fill="#059669"/>
-<polygon points="816.0,94.9 810.5,104.9 821.5,104.9" fill="#059669"/>
-<text x="84.0" y="418.4" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">1.2</text>
-<text x="84.0" y="397.1" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">1.0</text>
-<text x="84.0" y="378.1" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">0.7</text>
-<text x="450.0" y="372.7" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">4.1</text>
-<text x="450.0" y="398.5" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">4.1</text>
-<text x="450.0" y="362.4" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">4.0</text>
-<text x="816.0" y="91.4" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">22.2</text>
-<text x="816.0" y="120.5" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">22.0</text>
-<text x="816.0" y="134.2" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">21.8</text>
+<line x1="84" y1="433.4" x2="816" y2="433.4" stroke="#98a2b3" stroke-width="1" stroke-dasharray="5 4"/>
+<text x="820" y="436.4" font-size="9.5" fill="#667085" font-style="italic">responsive</text>
+<line x1="84" y1="427.6" x2="816" y2="427.6" stroke="#98a2b3" stroke-width="1" stroke-dasharray="5 4"/>
+<text x="820" y="430.6" font-size="9.5" fill="#667085" font-style="italic">noticeable</text>
+<line x1="84" y1="418.0" x2="816" y2="418.0" stroke="#98a2b3" stroke-width="1" stroke-dasharray="5 4"/>
+<text x="820" y="421.0" font-size="9.5" fill="#667085" font-style="italic">slow</text>
+<polyline points="84.0,435.3 328.0,429.5 572.0,395.3" fill="none" stroke="#2563eb" stroke-width="2.4"/>
+<circle cx="84.0" cy="435.3" r="4.4" fill="#2563eb"/>
+<circle cx="328.0" cy="429.5" r="4.4" fill="#2563eb"/>
+<circle cx="572.0" cy="395.3" r="4.4" fill="#2563eb"/>
+<polyline points="84.0,434.9 328.0,429.4 572.0,395.0" fill="none" stroke="#dc2626" stroke-width="2.4"/>
+<rect x="79.5" y="430.4" width="9" height="9" fill="#dc2626"/>
+<rect x="323.5" y="424.9" width="9" height="9" fill="#dc2626"/>
+<rect x="567.5" y="390.5" width="9" height="9" fill="#dc2626"/>
+<polyline points="84.0,435.9 328.0,429.3 572.0,394.5 816.0,99.3" fill="none" stroke="#059669" stroke-width="2.4"/>
+<polygon points="84.0,430.4 78.5,440.4 89.5,440.4" fill="#059669"/>
+<polygon points="328.0,423.8 322.5,433.8 333.5,433.8" fill="#059669"/>
+<polygon points="572.0,389.0 566.5,399.0 577.5,399.0" fill="#059669"/>
+<polygon points="816.0,93.8 810.5,103.8 821.5,103.8" fill="#059669"/>
+<text x="84.0" y="425.9" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">1.2</text>
+<text x="84.0" y="414.3" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">1.0</text>
+<text x="84.0" y="402.9" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">0.7</text>
+<text x="328.0" y="420.3" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">4.1</text>
+<text x="328.0" y="408.4" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">4.1</text>
+<text x="328.0" y="396.5" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">4.0</text>
+<text x="572.0" y="385.5" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">22.2</text>
+<text x="572.0" y="411.0" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">22.0</text>
+<text x="572.0" y="374.3" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">21.8</text>
+<text x="816.0" y="90.3" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">175.9</text>
 <line x1="84" y1="494" x2="100" y2="494" stroke="#2563eb" stroke-width="3"/>
 <text x="104" y="498" font-size="11.5" fill="#1d2939">FP8 no MTP</text>
 <line x1="192" y1="494" x2="208" y2="494" stroke="#dc2626" stroke-width="3"/>

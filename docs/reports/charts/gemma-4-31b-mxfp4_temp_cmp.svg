@@ -13,21 +13,24 @@
 <text x="820" y="249.6" font-size="9.5" fill="#667085" font-style="italic">acceptable</text>
 <line x1="84" y1="99.2" x2="816" y2="99.2" stroke="#98a2b3" stroke-width="1" stroke-dasharray="5 4"/>
 <text x="820" y="102.2" font-size="9.5" fill="#667085" font-style="italic">fast</text>
-<rect x="174.0" y="170.1" width="30.0" height="223.9" fill="#2563eb" rx="2"/>
-<text x="189.0" y="164.1" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">38</text>
-<rect x="208.0" y="178.6" width="30.0" height="215.4" fill="#dc2626" rx="2"/>
-<text x="223.0" y="172.6" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">37</text>
-<text x="206.0" y="412" font-size="11.5" fill="#475467" text-anchor="middle">1K</text>
-<rect x="418.0" y="174.7" width="30.0" height="219.3" fill="#2563eb" rx="2"/>
-<text x="433.0" y="168.7" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">37</text>
-<rect x="452.0" y="181.5" width="30.0" height="212.5" fill="#dc2626" rx="2"/>
-<text x="467.0" y="175.5" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">36</text>
-<text x="450.0" y="412" font-size="11.5" fill="#475467" text-anchor="middle">8K</text>
-<rect x="662.0" y="188.9" width="30.0" height="205.1" fill="#2563eb" rx="2"/>
-<text x="677.0" y="182.9" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">35</text>
-<rect x="696.0" y="203.3" width="30.0" height="190.7" fill="#dc2626" rx="2"/>
-<text x="711.0" y="197.3" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">32</text>
-<text x="694.0" y="412" font-size="11.5" fill="#475467" text-anchor="middle">32K</text>
+<rect x="143.5" y="170.1" width="30.0" height="223.9" fill="#2563eb" rx="2"/>
+<text x="158.5" y="164.1" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">38</text>
+<rect x="177.5" y="178.6" width="30.0" height="215.4" fill="#dc2626" rx="2"/>
+<text x="192.5" y="172.6" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">37</text>
+<text x="175.5" y="412" font-size="11.5" fill="#475467" text-anchor="middle">1K</text>
+<rect x="326.5" y="174.7" width="30.0" height="219.3" fill="#2563eb" rx="2"/>
+<text x="341.5" y="168.7" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">37</text>
+<rect x="360.5" y="181.5" width="30.0" height="212.5" fill="#dc2626" rx="2"/>
+<text x="375.5" y="175.5" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">36</text>
+<text x="358.5" y="412" font-size="11.5" fill="#475467" text-anchor="middle">8K</text>
+<rect x="509.5" y="188.9" width="30.0" height="205.1" fill="#2563eb" rx="2"/>
+<text x="524.5" y="182.9" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">35</text>
+<rect x="543.5" y="203.3" width="30.0" height="190.7" fill="#dc2626" rx="2"/>
+<text x="558.5" y="197.3" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">32</text>
+<text x="541.5" y="412" font-size="11.5" fill="#475467" text-anchor="middle">32K</text>
+<rect x="692.5" y="226.3" width="30.0" height="167.7" fill="#2563eb" rx="2"/>
+<text x="707.5" y="220.3" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">28</text>
+<text x="724.5" y="412" font-size="11.5" fill="#475467" text-anchor="middle">128K</text>
 <rect x="84" y="416" width="12" height="12" fill="#2563eb" rx="2"/>
 <text x="101" y="426" font-size="11.5" fill="#1d2939">t0.0</text>
 <rect x="156" y="416" width="12" height="12" fill="#dc2626" rx="2"/>

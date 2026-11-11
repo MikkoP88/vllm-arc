@@ -217,13 +217,14 @@ This boot exposed a KV pool of **306,494 tokens** (r139 posture). A session occu
 
 ### Queue + prefill decomposition (derived)
 
-At concurrency 1 the queue is empty, so solo TTFT is pure prefill. Under the barrier burst the added first-token wait — `ttft_mean(n) − ttft_mean(1)` — is the queue+prefill-share stagger the Nth user pays. Derived client-side; engine-internal queueing is not exported by this engine version.
+At concurrency 1 the queue is empty, so solo TTFT is pure prefill. Under the barrier burst the added first-token wait — `ttft_mean(n) − ttft_mean(1)` — is the queue+prefill-share stagger the Nth user pays. Derived client-side; engine-internal queueing is not exported by this engine version. The x-axis keeps the configuration's full measured ladder — an empty slot marks a context the concurrency sweep skipped (64K on the qwen sweeps); no stagger exists there.
 
 | Context | added wait @ n2 | @ n4 | @ n8 |
 |---|---|---|---|
 | 1024 (1K) | +0.4 s | +1.7 s | +4.4 s |
 | 8192 (8K) | +1.7 s | +7.3 s | +17.1 s |
 | 32768 (32K) | +10.9 s | +29.4 s | +67.9 s |
+| 65536 (64K) | - | - | - |
 | 131072 (128K) | +59.1 s | - | - |
 
 ![Added first-token wait vs context length, one line per concurrency (derived queue+prefill stagger) — MXFP8, MTP k3](charts/qwen3.8-27b-mxfp8-k3_queue_ctx.svg)
@@ -260,7 +261,7 @@ Time between consecutive streamed tokens — the smoothness of streaming. Solo p
 
 ### Scaling efficiency
 
-Percentage of ideal linear scaling achieved as concurrency rises (100% = n× the concurrency-1 throughput with no per-user cost). Real efficiency is always lower — the accelerators are shared; high efficiency at your target concurrency signals headroom.
+Percentage of ideal linear scaling achieved as concurrency rises (100% = n× the concurrency-1 throughput with no per-user cost). Real efficiency is always lower — the accelerators are shared; high efficiency at your target concurrency signals headroom. The x-axis keeps the full measured ladder; an empty slot marks a context the concurrency sweep skipped (64K on the qwen sweeps).
 
 ![Scaling efficiency vs context length, one line per concurrency — MXFP8, MTP k3](charts/qwen3.8-27b-mxfp8-k3_eff_ctx.svg)
 

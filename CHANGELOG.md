@@ -268,6 +268,28 @@ raw evidence is banked under `results/YYYY-MM-DD-<phase>-*/`.
 
 ## Serve-layer and analysis phases (no cert — engine bytes unchanged)
 
+- **P6.42 no-jump full-ladder axes + gemma 128K annex merge (2026-11-11)**:
+  closes the last x-axis defects found by a full 175-chart tick audit.
+  (1) **Break, never chord**: a `None` inside a series (or at a band edge)
+  now splits the polyline into contiguous measured runs — a line can no
+  longer bridge an unmeasured context with a straight segment that
+  implies data there. (2) **Empty slots instead of axis jumps**: derived
+  metrics that are unmeasurable at a context (queue wait, efficiency at
+  the solo-only 64K rung) render that rung as a labeled empty slot on
+  the full ladder (`xdomain`), instead of dropping it and making the
+  axis jump 32K→128K; rows absent from a table show "-". (3) **Gemma
+  128K annex merge**: `gemma-4-31b-mxfp4.md` main tables and charts no
+  longer stop at 32K — the 128K annex boot's faces merge into the main
+  report's data layer (cross-boot equivalence already delta-table-proven
+  in the annex section: same image, same quantization posture), so the
+  exec summary, per-user speed/TTFT/aggregate charts, solo decode/TTFT/
+  ITL charts, queue table, KV-pool table (128K row uses the annex boot's
+  pool, footnoted), use-case bars, and the cross-model all-chart now all
+  run 1K→128K, with a provenance sentence under the exec summary. The
+  tq per-user speed line is completed to the full five-rung ladder the
+  same way. Oracle diff vs P6.41 output: 115 charts byte-identical,
+  60 changed, all in the intended families; 1,602 value labels,
+  0 overlaps. No engine bytes changed; cert23 stands.
 - **P6.41 linear x-axis + full measured prefill coverage (2026-11-11)**:
   every context-length line chart re-spaced from log2 to a **linear
   equal-slot axis** — one evenly spaced slot per measured context (no
