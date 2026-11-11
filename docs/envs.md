@@ -10,7 +10,7 @@ cert23 every release added ZERO certified serve-line vars — each new
 lane rides an engine env or script arg (`ARC_*`) proven env-free and
 face-identical at its own gate (per-cert details:
 [`../CHANGELOG.md`](../CHANGELOG.md)). Every entry cites its
-provenance (no-unevidenced law, plan Appendix H #6). Audit of record:
+provenance. Audit of record:
 `results/2026-10-30-p5-r45-env-log-audit/`.
 
 ## Certified serve-line env chain (25 vars: 13 runtime/system + 10 LMCache + 2 boot-layer)
@@ -22,18 +22,18 @@ Runtime/system:
 | `PYTHONHASHSEED` | `0` | every leg since r22a; NONE_HASH init determinism (r30 law) |
 | `ZE_AFFINITY_MASK` | `0,1` | p02 dual-B70 law; champion boot `boot_iexp_v1237.sh` |
 | `LD_LIBRARY_PATH` | `/opt/venv/lib` + torch lib | Dockerfile runtime; P1 boot interface |
-| `CCL_ENABLE_SYCL_KERNELS` | `1` | §7 ENV map CCL row — D champion set verbatim (oneCCL runtime) |
-| `CCL_ZE_IPC_EXCHANGE` | `pidfd` | §7 CCL row + r18/r30 pidfd IPC law (`--privileged` pair) |
-| `CCL_TOPO_P2P_ACCESS` | `1` | §7 CCL row (champion boot script) |
-| `CCL_TOPO_FABRIC_VERTEX_CONNECTION_CHECK` | `0` | §7 CCL row |
-| `CCL_SYCL_ALLGATHERV_SMALL_THRESHOLD` | `131072` | §7 CCL row |
-| `CCL_SYCL_ALLGATHERV_SCALEOUT_THRESHOLD` | `1048576` | §7 CCL row |
-| `CCL_SYCL_ALLGATHERV_TMP_BUF` | `0` | §7 CCL row |
-| `CCL_SYCL_ALLREDUCE_TMP_BUF` | `0` | §7 CCL row |
-| `VLLM_XPU_ENABLE_XPU_GRAPH` | `1` | standing rig law (plan App I #11) |
+| `CCL_ENABLE_SYCL_KERNELS` | `1` | donor-validated oneCCL runtime set |
+| `CCL_ZE_IPC_EXCHANGE` | `pidfd` | donor-validated set + r18/r30 pidfd IPC finding (`--privileged` pair) |
+| `CCL_TOPO_P2P_ACCESS` | `1` | donor-validated set (champion boot script) |
+| `CCL_TOPO_FABRIC_VERTEX_CONNECTION_CHECK` | `0` | donor-validated set |
+| `CCL_SYCL_ALLGATHERV_SMALL_THRESHOLD` | `131072` | donor-validated set |
+| `CCL_SYCL_ALLGATHERV_SCALEOUT_THRESHOLD` | `1048576` | donor-validated set |
+| `CCL_SYCL_ALLGATHERV_TMP_BUF` | `0` | donor-validated set |
+| `CCL_SYCL_ALLREDUCE_TMP_BUF` | `0` | donor-validated set |
+| `VLLM_XPU_ENABLE_XPU_GRAPH` | `1` | standing rig rule |
 | `ARC_TRACE_FLIP` | `1` | p12b flip-payload interlock (r11/r12 tracer); gates every leg r18+ |
 
-LMCache certified set (D champion verbatim, plan Appendix E — keep as a set):
+LMCache certified set (donor-validated verbatim — keep as a set):
 
 | var | value |
 |---|---|
@@ -203,16 +203,16 @@ historical lane — flip validated
 evidence-dir
 convention `results/YYYY-MM-DD-<phase/item>-r<leg>-<slug>/` (internal
 only, never upstreamed). **`pNN` is TWO sequences** — patch dirs/branches
-carry PLAN-ITEM numbers (§5: p01..p61), image tags carry BUILD-sequence
+carry item numbers (p01..p61), image tags carry BUILD-sequence
 numbers (p44, p45b, p46, …); they coincide at p44/p45 and diverge after
 (image p46 exists with no item p46; item p60 branch has no image p60).
 Sanctioned deviations (kept for evidence-chain continuity; rename is
-an upstream-PR-lane item per §11.7 rule 8 — "format chosen to upstream
+an upstream-PR-lane item — "format chosen to upstream
 without rewriting"):
 
 | name | deviation | why kept |
 |---|---|---|
-| `ARC_TRACE_FLIP` | engine env, no `VLLM_ARC_` prefix | §7-cited p12b interlock name; certified line + every evidence leg since r18 uses it |
+| `ARC_TRACE_FLIP` | engine env, no `VLLM_ARC_` prefix | p12b interlock name; certified line + every evidence leg since r18 uses it |
 | `ARC_SNAP_PROBE` | engine diagnostic env, `ARC_` host-layer prefix | r31/r34/r35 leg telemetry (~12 read sites: `sched_tail_split.py:93`, `mamba_lmcache_glue.py`, `mamba_hybrid_snap_glue.py`, lmcint adapter); silent-off default, deliberately NOT in the envs.py registry (envs.py:156 header law: diagnostics documented here only); rename candidate `VLLM_ARC_SNAP_PROBE` at the upstream lane |
 | `VLLM_MAMBA_FP16_SEED_REPAIR` | `VLLM_` without `ARC` | upstream-style name — an asset for the upstream PR lane |
 | `LMC_BOUND*` (4) | donor v136 lineage names; intra-family abbreviation split (`LMC_BOUNDARY_KEEP`/`_CAP` vs `LMC_BOUND_STATS`/`_MD5`) | ported verbatim for provenance (p41 dual-donor convergence evidence) — the BOUND/BOUNDARY split is the donor's own; unify only at the upstream lane |
@@ -222,4 +222,4 @@ without rewriting"):
 | module prefix `lmc_` vs `lmcache_` | our own patch modules use both (`lmcache_hma_connector.py` vs the `patches/lmcint/` kit's `lmc_twohs_transfer.py`, `lmc_kvfmt_detector.py`) | historical per-patch coinage; `patches/lmcint/` dir is the donor kit name (kept for provenance); unify candidate `lmcache_*` at the upstream lane |
 
 Regenerate: this file is a snapshot; on any envs.py or serve-line change,
-update alongside the leg's VERDICT (the audit leg re-runs the §A–E sweeps).
+update alongside the leg's VERDICT (the audit leg re-runs the full sweeps).
