@@ -1,134 +1,152 @@
-# Release Notes
+# Release notes — vllm-arc certified releases
 
-This document provides an overview of the features, changes, and fixes introduced in each release of the vLLM Hardware Plugin for Intel® Gaudi®.
+Index of the certified releases, newest first. This file follows the
+upstream vllm-gaudi release-notes practice: **one short section per
+release** — tag, image, what changed for the user, and where the
+evidence lives. The detailed per-release entries (full change lists,
+fork SHAs, wheel pins, gate numbers) are in
+[`../CHANGELOG.md`](../CHANGELOG.md); superseded doc content is
+archived per-doc under [`history/`](history/). The current certified
+release is **`rel/v0.30.0-b70-cert23`** (`vllm-arc:v0.30.0-b70-cert23`).
 
-## 0.30.0
+Every release below is based on upstream vllm-gaudi **v0.30.0** with
+the pinned wheel stack (`tools/wheel_guard.sh`; per-release wheel shas
+in the CHANGELOG entries) and ships the full certified posture for
+qwen3.8-27b-fp8 on dual Intel Arc Pro B70, TP2. The upstream basis
+itself (what vLLM 0.30.0 + the Gaudi plugin stack provide) is documented
+in the upstream per-version detail files
+[`release_notes_v0.30.0.md`](release_notes_v0.30.0.md) and predecessors.
 
-This release is based on [vLLM 0.30.0](https://github.com/vllm-project/vllm/releases/tag/v0.30.0) and supports [Intel® Gaudi® Software v1.24.2](https://docs.habana.ai/en/v1.24.2/Release_Notes/GAUDI_Release_Notes.html) with PyTorch 2.13. Key updates include:
+---
 
-- Enabled the plugin on upstream [vLLM v0.30.0](https://github.com/vllm-project/vllm/releases/tag/v0.30.0), incorporating upstream API changes across MoE, MLA, KV cache, quantization, and serving.
-- Added support for GLM-5.2-FP8 with DeepSeek Sparse Attention (DSA) and Nemotron-H FP8 with quantization-aware Mamba and non-gated FP8 MoE.
-- Improved Qwen3.5/3.6 MoE token generation at low batch sizes with an opt-in gathered-expert MoE combine for FP8.
-- Improved Qwen3.5 GDN correctness with prefix caching and compact GDN, and fixed RoPE accuracy for very long contexts.
-- Reduced decode warmup memory by clamping decode block buckets to the physical KV cache size.
-- Added RHEL 10.2 Dockerfiles and strengthened supply-chain security with Cosign-signed release tarballs, OpenSSF Scorecard, Dependabot, and SHA-pinned GitHub Actions.
+## rel/v0.30.0-b70-cert23 — graph-exec double-buffer (2026-11-10)
 
-For a full list of changes, see the [Detailed Release Notes](release_notes_v0.30.0.md).
+Current certified release. cert22 engine + one patch module: every XPU
+graph captured ×2 into the manager's shared pool, replays alternate
+execs — removes the torch-2.13 same-exec `XPUGraph.replay()` host block.
+E2E-neutral at every measured posture (fp8-k3 94.5 vs 94.3 tok/s on/off),
++29 s boot, byte-identical semantics, `VLLM_ARC_GRAPH_EXEC_DB=0`
+kill-switch. Existing cert22 deployments need no action.
+Full detail: [`../CHANGELOG.md`](../CHANGELOG.md).
 
-## 0.26.0
+## rel/v0.30.0-b70-cert22 — skinny-M kernel family, banked OFF (2026-11-09)
 
-This version is based on [vLLM 0.26.0](https://github.com/vllm-project/vllm/releases/tag/v0.26.0) and supports [Intel® Gaudi® Software v1.24.1](https://docs.habana.ai/en/v1.24.1/Release_Notes/GAUDI_Release_Notes.html) with PyTorch 2.11.
+arc6 wheel: three GEMV-regime weight-only GEMM kernels, correct and
+faster in the eager regime, e2e-falsified under XPU-graph replay —
+shipped default OFF (`ARC_SKINNY_M`). Engine otherwise carries cert21.
+Full detail: [`../CHANGELOG.md`](../CHANGELOG.md).
 
-This release enables the plugin on upstream vLLM 0.26.0 and realigns the Intel® Gaudi® platform with extensive upstream API drift across MoE/MLA, quantization, serving, attention, KV-offload, the multi-model server, and the NIXL connector. It adds new model support for MiniMax-M3, the Gemma-4 family, the Kimi-K2.5 vision tower, and Qwen3-Coder-Next, improves MXFP4 gpt-oss serving and FP8/INC quantization stability, reduces graph compilation and warmup overhead, strengthens security, and restores the latest `transformers` version.
+## rel/v0.30.0-b70-cert21 — online-MXFP8 W8A16 route (2026-11-08)
 
-For a full list of changes, see the [Detailed Release Notes](release_notes_v0.26.0.md).
+arc5 wheel: `_xpu_C.fp8_gemm_w8a16_mxfp8` keeps activations bf16 against
+f8 weights — online mxfp8 turns from the slow lane into a real one
+(1.37–1.55× over stock W8A8 on every qwen face). `ARC_MXFP8_MODE` gate
+knob. Full detail: [`../CHANGELOG.md`](../CHANGELOG.md).
 
-## 0.24.0
+## rel/v0.30.0-b70-cert20 — online-MXFP4 W4A16 route (2026-11-08)
 
-This version is based on [vLLM 0.24.0](https://github.com/vllm-project/vllm/releases/tag/v0.24.0) and supports [Intel® Gaudi® Software v1.24.1](https://docs.habana.ai/en/v1.24.1/Release_Notes/GAUDI_Release_Notes.html) with PyTorch 2.11.
+arc4 wheel: `_xpu_C.fp4_gemm_w4a16` — online mxfp4 superior to every
+online lane on every axis (1.47–1.75× over stock mxfp8; 1.74–1.87× TTFT
+over the W4A4 control). `ARC_MXFP4_MODE` gate knob; with the later
+probabilistic k5 posture this becomes the recommended decode lane
+(123.9 tok/s, +52 %). Full detail: [`../CHANGELOG.md`](../CHANGELOG.md).
 
-This release enables the plugin on upstream vLLM 0.24.0 and adapts the Intel® Gaudi® platform to upstream changes, including the FusedMoE/MoERunner inversion, KV-connector and offloading refactors, the Mamba/GDN rewrite, and serving tokenization changes. It also adds Qwen3-Next architecture support, improves FP8/INC quantization memory usage and stability, switches hybrid models to a TPC-native `causal_conv1d` update path, extends single-card model swapping to hybrid SSM-Transformer models, and strengthens security.
+## rel/v0.30.0-b70-cert19 — sliding-window FA2 route (2026-11-07)
 
-For a full list of changes, see the [Detailed Release Notes](release_notes_v0.24.0.md).
+Wrapper dispatch of gemma-4's sliding-window hd256 layers to the
+`vllm_xpu_kernels` ESVD FA2 kernel (18–25× prefill over the triton
+path); gemma face32k reaches qwen parity (17.2 s). Gemma-4-31B is a
+fully validated second model from this release line.
+Full detail: [`../CHANGELOG.md`](../CHANGELOG.md).
 
-## 0.21.0
+## rel/v0.30.0-b70-cert18 — FA2 hd512 route (2026-11-07)
 
-This version is based on [vLLM 0.21.0](https://github.com/vllm-project/vllm/releases/tag/v0.21.0) and supports [Intel® Gaudi® Software v1.24.0](https://docs.habana.ai/en/v1.24.0/Release_Notes/GAUDI_Release_Notes.html) with PyTorch 2.10.
+Wrapper dispatch of gemma-4's full-attention hd512 layers to the ESVD
+FA2 kernel (34× over the triton path at production geometry).
+Full detail: [`../CHANGELOG.md`](../CHANGELOG.md).
 
-This release introduces a new padding-aware bucketing strategy for improved memory utilization, W8A8 INT8 quantization with BF16 fallback, and FusedSDPA slicing for better attention performance. It adds an OpenAI-compatible `/v1/models/switch` entrypoint with per-model tool-calling and FP8 configs for online model swap, HPU-specific KV-offload and async speculative decoding fixes, and NIXL connector fixes for heterogeneous and homogeneous deployments. Eager execution mode is now the default in CI, with lazy mode still supported at runtime.
+## rel/v0.30.0-b70-cert17 — gemma-4 validation chain (2026-11-07)
 
-For a full list of changes, see the [Detailed Release Notes](release_notes_v0.21.0.md).
+cert11 engine + the three build-kit fixes that made gemma-4-31B
+servable (this entry also covers the intermediate build-kit releases
+**cert12** `a964e047` — B70 prefill launch-config table + warmup gate —
+and **cert16** `5d895fef` — warm-gate v4, the triton cache-key fix that
+closed the G2 long-prefill freeze; cert13–cert15 were process/kit
+stepping stones inside the same chain). Adds the KVGATE boot gate +
+`ARC_RPC_TIMEOUT=1200` to the certified gemma posture.
+Full detail: [`../CHANGELOG.md`](../CHANGELOG.md).
 
-## 0.19.1
+## rel/v0.30.0-b70-cert11 — MXFP4/quark lane (2026-11-06)
 
-This version is a minor patch release on top of [0.19.0](release_notes_v0.19.0.md) and continues to support [Intel® Gaudi® Software v1.24.0](https://docs.habana.ai/en/v1.24.0/Release_Notes/GAUDI_Release_Notes.html) with PyTorch 2.10.
+Two-override `ArcXpuPlatform` patch (quark in `supported_quantization`,
+truthful `supports_mx()`): pre-quantized MXFP4 checkpoints boot and
+serve under the full certified posture — mxfp4 becomes the certified
+weight-constrained lane (9.03 GiB weights/rank); fp8 stays the perf
+default; fp8 bytes unchanged (proven face-for-face).
+Full detail: [`../CHANGELOG.md`](../CHANGELOG.md).
 
-This release lifts the `transformers < 5` upper-bound constraint, allowing users to install Hugging Face Transformers v5 alongside the plugin, and refreshes the pinned upstream vLLM stable commit used by build scripts and CI.
+## rel/v0.30.0-b70-cert10 — oneCCL fp8-wire allreduce overlay (2026-11-05)
 
-For a full list of changes, see the [Detailed Release Notes](release_notes_v0.19.1.md).
+Patched-`libccl` overlay: `CCL_SYCL_ALLREDUCE_FP8=1` moves dominant
+prefill allreduces to the e4m3 wire — the best prefill faces, opt-in
+(U8k −13 %, U64k −8.2 % TTFT), decode/spec neutral, quality parity
+proven. Default OFF. Full detail: [`../CHANGELOG.md`](../CHANGELOG.md).
 
-## 0.19.0
+## rel/v0.30.0-b70-cert9 — prefill host-path (2026-11-04)
 
-This version is based on [vLLM 0.19.0](https://github.com/vllm-project/vllm/releases/tag/v0.19.0) and supports the latest [Intel® Gaudi® Software v1.24.0](https://docs.habana.ai/en/v1.24.0/Release_Notes/GAUDI_Release_Notes.html) with PyTorch 2.10.
+LMCache off-thread store (`VLLM_ARC_LMC_ASYNC_STORE=1`, default ON):
+the store's host wait moves off the engine thread — U32k TTFT −0.74 s,
+U64k −1.64 s at zero cost. Full detail: [`../CHANGELOG.md`](../CHANGELOG.md).
 
-This release introduces Qwen 3.5 model support with compact mode, Mamba prefix caching for hybrid models, MxFP4 weight loading and dequantization, LMCache integration, and a custom depthwise conv1d TPC kernel for MambaMixer2. Performance improvements include torch.compile-compatible online defragmentation, reduced warmup time via decode bucket capping, and optimized hybrid KV cache visibility. Multiple stability fixes address OOM crashes, multimodal prefill batching, grammar bitmask corruption, and FP8 quantization issues.
+## rel/v0.30.0-b70-cert8 — TurboQuant spec-verify FIX (2026-11-04)
 
-For a full list of changes, see the [Detailed Release Notes](release_notes_v0.19.0.md).
+Root-caused the TurboQuant corruption to three stacked spec-verify
+defects (split-row dispatch, donor capture forcing, the MQ kernel's
+SoA/AoS mismatch) and fixed them wheel-side (`tq_spec_fix`): every
+`turboquant_*` preset serves clean again, all-dtype gate with the fp8
+control. KV capacity up to 3.68× opt-in. The MQ experimental mode lands
+behind `VLLM_ARC_TQ_VERIFY_MODE=mq` (+21 % agg8).
+Full detail: [`../CHANGELOG.md`](../CHANGELOG.md).
 
-## 0.17.1
+## rel/v0.30.0-b70-cert7 — TurboQuant interim refusal (2026-11-03)
 
-This version is based on [vLLM 0.17.1](https://github.com/vllm-project/vllm/releases/tag/v0.17.1) and supports [Intel® Gaudi® Software v1.23.0](https://docs.habana.ai/en/v1.23.0/Release_Notes/GAUDI_Release_Notes.html) and [Intel® Gaudi® Software v1.24.0](https://docs.habana.ai/en/v1.24.0/Release_Notes/GAUDI_Release_Notes.html).
+Hard-refused the `turboquant_*` dtypes at boot pending the corruption
+root cause (the honest interim posture; the full reproduction battery
+and roundtest are banked from this release).
+Full detail: [`../CHANGELOG.md`](../CHANGELOG.md).
 
-This release adds validated support for Ernie4.5-VL, GPT-OSS (20B/120B), and reranking models (Bert, Roberta, Qwen3-based), introduces MxFP4 weight loading and dequantization, and delivers major Mamba/Granite 4.0-h improvements including prefix caching, custom depthwise conv1d TPC kernels, and precision enhancements. It also introduces RowParallel NIC chunking for distributed inference, logprobs output functionality, and Granite tool calling accuracy improvements. Stability was improved through grammar bitmask corruption fixes.
+## rel/v0.30.0-b70-cert6 — TurboQuant presets (2026-11-02)
 
-For a full list of changes, see the [Detailed Release Notes](release_notes_v0.17.1.md).
+First certified TurboQuant battery: the five-dtype matrix (capacity,
+TTFT, t0/t1.0 faces, bystander gaps) that remains the TQ record.
+Full detail: [`../CHANGELOG.md`](../CHANGELOG.md).
 
-## 0.16.0
+## rel/v0.30.0-b70-cert5 — sliced final-span store, default OFF (2026-11-01)
 
-This version is based on [vLLM 0.16.0](https://github.com/vllm-project/vllm/releases/tag/v0.16.0) and supports [Intel® Gaudi® Software v1.23.0](https://docs.habana.ai/en/v1.23.0/Release_Notes/GAUDI_Release_Notes.html).
+`LMC_STORE_SLICE_TOKENS` ships default-OFF (experimental slice of the
+deferred one-shot store; the gate record is banked).
+Full detail: [`../CHANGELOG.md`](../CHANGELOG.md).
 
-This release introduces validated support and critical stability fixes for Qwen3-VL models leveraging HPUMMEncoderAttention. Performance and stability were improved through backported Mamba architecture optimizations, Docker and UBI infrastructure enhancements, and a forced CPU loading mechanism for INC quantization to prevent OOM errors.
+## rel/v0.30.0-b70-cert4 — certified posture image (2026-10-31)
 
-For a full list of changes, see the [Detailed Release Notes](release_notes_v0.16.0.md).
+The first full certified-posture release: the frozen 25-var env chain +
+CLI, the 12-cell load matrix, and the comprehensive battery of record
+(soak GREEN, 4 h). Everything earlier was pre-certification hardening.
+Full detail: [`../CHANGELOG.md`](../CHANGELOG.md).
 
-## 0.15.1
+## rel/v0.30.0-b70-cert3 / cert2 / cert — image-process milestones (2026-10-31 and earlier)
 
-This version is based on [vLLM 0.15.1](https://github.com/vllm-project/vllm/releases/tag/v0.15.1) and supports [Intel® Gaudi® Software v1.23.0](https://docs.habana.ai/en/v1.23.0/Release_Notes/GAUDI_Release_Notes.html).
+The build/boot/process milestones that led to cert4: wheel-pinning
+guard, IMAGE_MANIFEST, container-freshness law, boot verification.
+Full detail: [`../CHANGELOG.md`](../CHANGELOG.md).
 
-This release introduces validated support for Granite 4.0-h and Qwen3-VL (dense and MoE variants) on Intel Gaudi 3, alongside significant Llama 4 stability fixes. It also features major prefill performance improvements via full chunked prefill attention, FlashAttention online merge, b2b matmul operations, and KV cache sharing. Additionally, this version adds HPU ops for Mamba/SSM architectures to enable hybrid models, and introduces new support for ModelOpt FP8 quantization.
+---
 
-For a full list of changes see the [Detailed Release Notes](release_notes_v0.15.1.md).
+## Serve-layer and analysis phases (no cert — engine bytes unchanged)
 
-## 0.14.1
-
-This version is based on [vLLM 0.14.1](https://github.com/vllm-project/vllm/releases/tag/v0.14.1) with support for [Intel® Gaudi® v1.23.0](https://docs.habana.ai/en/v1.23.0/Release_Notes/GAUDI_Release_Notes.html), and introduces support for the following models on Gaudi 3:
-
-- [ibm-granite/granite-4.0-h-small](https://huggingface.co/ibm-granite/granite-4.0-h-small)
-- [Qwen/Qwen3-VL-8B-Instruct](https://huggingface.co/Qwen/Qwen3-VL-8B-Instruct)
-- [Qwen/Qwen3-VL-32B-Instruct](https://huggingface.co/Qwen/Qwen3-VL-32B-Instruct)
-- [Qwen/Qwen3-VL-32B-Thinking](https://huggingface.co/Qwen/Qwen3-VL-32B-Thinking)
-- [Qwen/Qwen3-VL-235B-A22B-Instruct](https://huggingface.co/Qwen/Qwen3-VL-235B-A22B-Instruct)
-- [Qwen/Qwen3-VL-235B-A22B-Instruct-FP8](https://huggingface.co/Qwen/Qwen3-VL-235B-A22B-Instruct-FP8)
-- [Qwen/Qwen3-VL-235B-A22B-Thinking](https://huggingface.co/Qwen/Qwen3-VL-235B-A22B-Thinking)
-- [Qwen/Qwen3-VL-235B-A22B-Thinking-FP8](https://huggingface.co/Qwen/Qwen3-VL-235B-A22B-Thinking-FP8)
-
-## 0.13.0
-
-This version is based on [vLLM 0.13.0](https://github.com/vllm-project/vllm/releases/tag/v0.13.0) and supports [Intel® Gaudi® v1.23.0](https://docs.habana.ai/en/v1.23.0/Release_Notes/GAUDI_Release_Notes.html).
-
-The release includes experimental dynamic quantization for MatMul and KV‑cache operations. This feature improves performance, with minimal expected impact on accuracy. To enable the feature, see the [Dynamic Quantization for MatMul and KV‑cache Operations](features/supported_features.md#dynamic-quantization-for-matmul-and-kv-cache-operations) section.
-
-This release also introduces support for the following models supported on Gaudi 3:
-
-- [bielik-11b-v2.6-instruct](https://huggingface.co/speakleash/Bielik-11B-v2.6-Instruct)
-- [bielik-1.5b-v3.0-instruct](https://huggingface.co/speakleash/Bielik-1.5B-v3.0-Instruct)
-- [bielik-4.5b-v3.0-instruct](https://huggingface.co/speakleash/Bielik-4.5B-v3.0-Instruct)
-- [deepseek-ai/DeepSeek-R1-Distill-Llama-70B](https://huggingface.co/deepseek-ai/DeepSeek-R1-Distill-Llama-70B)
-- [Qwen/Qwen2.5-7B-Instruct](https://huggingface.co/Qwen/Qwen2.5-7B-Instruct)
-- [Qwen/Qwen2.5-14B-Instruct](https://huggingface.co/Qwen/Qwen2.5-14B-Instruct)
-- [Qwen/Qwen2.5-32B-Instruct](https://huggingface.co/Qwen/Qwen2.5-32B-Instruct)
-- [Qwen/Qwen2.5-VL-7B-Instruct](https://huggingface.co/Qwen/Qwen2.5-VL-7B-Instruct)
-- [Qwen/Qwen3-0.6B](https://huggingface.co/Qwen/Qwen3-0.6B)
-
-Additionally, the following models were successfully validated:
-
-- [meta-llama/Meta-Llama-3.1-8B](https://huggingface.co/meta-llama/Meta-Llama-3.1-8B)
-- [meta-llama/Meta-Llama-3.1-70B](https://huggingface.co/meta-llama/Meta-Llama-3.1-70B)
-- [meta-llama/Meta-Llama-3.1-70B-Instruct](https://huggingface.co/meta-llama/Meta-Llama-3.1-70B-Instruct)
-- [meta-llama/Meta-Llama-3.1-405B](https://huggingface.co/meta-llama/Meta-Llama-3.1-405B)
-- [meta-llama/Meta-Llama-3.1-405B-Instruct](https://huggingface.co/meta-llama/Meta-Llama-3.1-405B-Instruct)
-- [mistralai/Mistral-7B-Instruct-v0.3](https://huggingface.co/mistralai/Mistral-7B-Instruct-v0.3)
-
-For the list of all supported models, see [Validated Models](getting_started/validated_models.md).
-
-## 0.11.2
-
-This version is based on [vLLM 0.11.2](https://github.com/vllm-project/vllm/releases/tag/v0.11.2) and supports [Intel® Gaudi® v1.22.2](https://docs.habana.ai/en/v1.22.2/Release_Notes/GAUDI_Release_Notes.html) and [v1.23.0](https://docs.habana.ai/en/v1.23.0/Release_Notes/GAUDI_Release_Notes.html).
-
-This release introduces the production-ready vLLM Hardware Plugin for Intel® Gaudi®, a community-driven integration layer based on the [vLLM v1 architecture](https://blog.vllm.ai/2025/01/27/v1-alpha-release.html). It enables efficient, high-performance large language model (LLM) inference on [Intel® Gaudi®](https://docs.habana.ai/) AI accelerators. The plugin is an alternative to the [vLLM fork](https://github.com/HabanaAI/vllm-fork), which reaches end of life with this release and will be deprecated in v1.24.0, remaining functional only for legacy use cases. We strongly encourage all fork users to begin planning their migration to the plugin.
-
-The plugin provides [feature parity](features/supported_features.md) with the fork, including mature, production-ready implementations of Automatic Prefix Caching (APC) and async scheduler. Two legacy features - multi-step scheduling and delayed sampling - have been discontinued, as their functionality is now covered by the async scheduler.
-
-For more details on the plugin's implementation, see [Plugin System](dev_guide/plugin_system.md).
-
-To start using the plugin, follow the [Basic Quick Start Guide](getting_started/quickstart/quickstart.md) and explore the rest of this documentation.
+Between releases, serve-script postures and measurement campaigns land
+without engine changes — probabilistic drafting (the certified default
+posture), MTP-depth selection, the prefill/device-ledger closures, the
+per-config performance reports, and the docs/history restructure. These
+are listed per phase in [`../CHANGELOG.md`](../CHANGELOG.md) under
+"Serve-layer and analysis phases".
