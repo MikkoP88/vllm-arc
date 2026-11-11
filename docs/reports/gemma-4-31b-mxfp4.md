@@ -35,7 +35,7 @@ Test parameters: context lengths 1K–128K tokens; concurrency 1–8; 600 output
 | Interactive chat capacity (8K) | ~2 concurrent requests (estimated between the measured 2 and 3 points) |
 | Long-context assistant (RAG) capacity (32K) | thresholds exceeded at concurrency 1 - not recommended |
 | Document processing (batch) capacity (128K) | 2 concurrent requests |
-| Success rate | **100.0%** across 52 requests (19 faces green) |
+| Success rate | **100.0%** across 53 requests (19 faces green) |
 
 > Every concurrent request models one user session holding a full generation (prompt prefill + 600 streamed tokens), barrier-started together — the worst-case burst. Interactive sessions idle between turns, so sustained user counts run well below request concurrency. Full definitions: [METHODOLOGY.md](METHODOLOGY.md).
 
@@ -216,13 +216,14 @@ This boot exposed a KV pool of **128,033 tokens** (r139 posture). A session occu
 
 ### Queue + prefill decomposition (derived)
 
-At concurrency 1 the queue is empty, so solo TTFT is pure prefill. Under the barrier burst the added first-token wait — `ttft_mean(n) − ttft_mean(1)` — is the queue+prefill-share stagger the Nth user pays. Derived client-side; engine-internal queueing is not exported by this engine version. The x-axis keeps the configuration's full measured ladder — an empty slot marks a context the concurrency sweep skipped (64K on the qwen sweeps); no stagger exists there.
+At concurrency 1 the queue is empty, so solo TTFT is pure prefill. Under the barrier burst the added first-token wait — `ttft_mean(n) − ttft_mean(1)` — is the queue+prefill-share stagger the Nth user pays. Derived client-side; engine-internal queueing is not exported by this engine version. The x-axis keeps the canonical rung ladder up to the highest measured context — an empty slot marks a rung the concurrency measurements skip (64K: only the solo face measured it on qwen; unmeasured entirely on the gemma boots); no stagger exists there.
 
 | Context | added wait @ n2 | @ n4 | @ n8 |
 |---|---|---|---|
 | 1024 (1K) | +0.2 s | +1.1 s | +3.2 s |
 | 8192 (8K) | +2.1 s | +8.0 s | +17.2 s |
 | 32768 (32K) | +12.8 s | - | - |
+| 65536 (64K) | - | - | - |
 | 131072 (128K) | +89.0 s | - | - |
 
 ![Added first-token wait vs context length, one line per concurrency (derived queue+prefill stagger) — MXFP4 W4A16, no MTP](charts/gemma-4-31b-mxfp4_queue_ctx.svg)
@@ -258,7 +259,7 @@ Time between consecutive streamed tokens — the smoothness of streaming. Solo p
 
 ### Scaling efficiency
 
-Percentage of ideal linear scaling achieved as concurrency rises (100% = n× the concurrency-1 throughput with no per-user cost). Real efficiency is always lower — the accelerators are shared; high efficiency at your target concurrency signals headroom. The x-axis keeps the full measured ladder; an empty slot marks a context the concurrency sweep skipped (64K on the qwen sweeps).
+Percentage of ideal linear scaling achieved as concurrency rises (100% = n× the concurrency-1 throughput with no per-user cost). Real efficiency is always lower — the accelerators are shared; high efficiency at your target concurrency signals headroom. The x-axis keeps the canonical rung ladder up to the highest measured context — an empty slot marks a rung the concurrency measurements skip (64K: only the solo face measured it on qwen; unmeasured entirely on the gemma boots).
 
 ![Scaling efficiency vs context length, one line per concurrency — MXFP4 W4A16, no MTP](charts/gemma-4-31b-mxfp4_eff_ctx.svg)
 
@@ -281,6 +282,7 @@ Percentage of ideal linear scaling achieved as concurrency rises (100% = n× the
 | 1024 (1K) | 0.69 | 1,481 | 38.0 | 1.00 | 26.4 | 26.6 | 26.8 | 36.5 |
 | 8192 (8K) | 4.13 | 1,981 | 37.2 | 1.00 | 27.0 | 27.0 | 27.3 | 36.0 |
 | 32768 (32K) | 22.25 | 1,473 | 34.9 | 1.00 | 28.8 | 28.9 | 29.2 | 32.3 |
+| 131072 (128K) | 175.90 | 745 | 28.4 | - | 35.6 | 35.6 | 36.0 | 26.9 |
 
 *Rows sourced from the r139/r140 concurrency-1 faces where no r138 solo face exists (same cold-prefill measurement).*
 
@@ -323,7 +325,7 @@ Percentage of ideal linear scaling achieved as concurrency rises (100% = n× the
 
 ## 128K annex — max_model_len 131072
 
-Raising the certified gemma maxlen (40960) to 131072 is a KV-headroom question. MXFP4 weight savings buy the KV headroom for max_model_len 131072 — the boot below is its own cell (`gm4x`, outcome `CONC_OK`), never merged into the charts above: the main body and the annex are different boots with different pools.
+Raising the certified gemma maxlen (40960) to 131072 is a KV-headroom question. MXFP4 weight savings buy the KV headroom for max_model_len 131072 — the boot below is its own cell (`gm4x`, outcome `CONC_OK`). Its measurements are merged into the tables and charts above (the executive summary notes the provenance); the same-contexts table below quantifies both boots' agreement, and the pools differ — this section holds the boot record.
 
 The 8-bit control (`gm8x`) ran the same 128K posture at 8-bit weights and refused (outcome `BOOT_FAIL`, pool not parseable) — the refusal is banked with its serve log and is the capacity boundary itself; only the 4-bit weight budget buys the 128K pool.
 

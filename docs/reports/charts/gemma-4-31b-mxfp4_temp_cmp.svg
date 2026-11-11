@@ -30,6 +30,8 @@
 <text x="541.5" y="412" font-size="11.5" fill="#475467" text-anchor="middle">32K</text>
 <rect x="692.5" y="226.3" width="30.0" height="167.7" fill="#2563eb" rx="2"/>
 <text x="707.5" y="220.3" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">28</text>
+<rect x="726.5" y="235.3" width="30.0" height="158.7" fill="#dc2626" rx="2"/>
+<text x="741.5" y="229.3" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">27</text>
 <text x="724.5" y="412" font-size="11.5" fill="#475467" text-anchor="middle">128K</text>
 <rect x="84" y="416" width="12" height="12" fill="#2563eb" rx="2"/>
 <text x="101" y="426" font-size="11.5" fill="#1d2939">t0.0</text>

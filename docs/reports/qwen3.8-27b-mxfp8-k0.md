@@ -217,7 +217,7 @@ This boot exposed a KV pool of **439,620 tokens** (r139 posture). A session occu
 
 ### Queue + prefill decomposition (derived)
 
-At concurrency 1 the queue is empty, so solo TTFT is pure prefill. Under the barrier burst the added first-token wait — `ttft_mean(n) − ttft_mean(1)` — is the queue+prefill-share stagger the Nth user pays. Derived client-side; engine-internal queueing is not exported by this engine version. The x-axis keeps the configuration's full measured ladder — an empty slot marks a context the concurrency sweep skipped (64K on the qwen sweeps); no stagger exists there.
+At concurrency 1 the queue is empty, so solo TTFT is pure prefill. Under the barrier burst the added first-token wait — `ttft_mean(n) − ttft_mean(1)` — is the queue+prefill-share stagger the Nth user pays. Derived client-side; engine-internal queueing is not exported by this engine version. The x-axis keeps the canonical rung ladder up to the highest measured context — an empty slot marks a rung the concurrency measurements skip (64K: only the solo face measured it on qwen; unmeasured entirely on the gemma boots); no stagger exists there.
 
 | Context | added wait @ n2 | @ n4 | @ n8 |
 |---|---|---|---|
@@ -261,7 +261,7 @@ Time between consecutive streamed tokens — the smoothness of streaming. Solo p
 
 ### Scaling efficiency
 
-Percentage of ideal linear scaling achieved as concurrency rises (100% = n× the concurrency-1 throughput with no per-user cost). Real efficiency is always lower — the accelerators are shared; high efficiency at your target concurrency signals headroom. The x-axis keeps the full measured ladder; an empty slot marks a context the concurrency sweep skipped (64K on the qwen sweeps).
+Percentage of ideal linear scaling achieved as concurrency rises (100% = n× the concurrency-1 throughput with no per-user cost). Real efficiency is always lower — the accelerators are shared; high efficiency at your target concurrency signals headroom. The x-axis keeps the canonical rung ladder up to the highest measured context — an empty slot marks a rung the concurrency measurements skip (64K: only the solo face measured it on qwen; unmeasured entirely on the gemma boots).
 
 ![Scaling efficiency vs context length, one line per concurrency — MXFP8, no MTP](charts/qwen3.8-27b-mxfp8-k0_eff_ctx.svg)
 

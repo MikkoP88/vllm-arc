@@ -44,6 +44,10 @@ import contextlib
 QCTX = [1024, 8192, 32768, 65536, 131072]
 GCTX = [1024, 8192, 32768]
 GCTX128 = [1024, 8192, 32768, 131072]
+# canonical axis rungs: every context-x chart labels every rung up to its
+# highest measured x -- a rung nothing measured (64K on the gemma boots)
+# renders as a labelled empty slot, never an axis that jumps 32K -> 128K
+CTX_LADDER = [1024, 8192, 32768, 65536, 131072]
 TEMPS = ["0.0", "0.2", "0.4", "0.6", "0.8", "1.0"]
 CONCS = [1, 2, 3, 4, 8]
 QCFG = '{"ignore":["*visual*","*linear_attn*","mtp.fc"]}'
@@ -448,6 +452,27 @@ def _place_labels(out, cand, MT, PH):
                    '{}</text>'.format(xx, yy + dy, col, text))
 
 
+def _hline_tags(hlines, ylo, yhi, Y, MT, PH):
+    """Right-margin tag baselines for the class-threshold hlines, shared
+    by all three plotters. An uncompressed set keeps the line-hugging
+    yy + 3 (and its given order, so the chart bytes do not churn); when
+    the axis squeezes several band edges into a few pixels (the TTFT
+    bands at 0.5-10 s under a 0-300 s axis) the stack spreads order-
+    preservingly inside the plot height -- no tag sits on another, and
+    the bottom tag stays clear of the x-tick band."""
+    vis = [(Y(hv), t) for hv, t in hlines if ylo < hv < yhi]
+    gap = 11.5                      # a 9.5pt italic line's worth of air
+    by_y = sorted(vis)
+    base = [yy + 3 for yy, _ in by_y]
+    if all(b2 - b1 >= gap for b1, b2 in zip(base, base[1:])):
+        return [(yy, yy + 3, t) for yy, t in vis]
+    span = (len(base) - 1) * gap
+    centre = (base[0] + base[-1]) / 2
+    top = min(max(centre - span / 2, MT + 8), MT + PH - 2 - span)
+    return [(by_y[i][0], top + i * gap, by_y[i][1])
+            for i in range(len(by_y))]
+
+
 def band_chart(path, title, top_pts, bot_pts, top_lab, bot_lab,
                xlabel, ylabel, yfmt="{:.1f}", hlines=()):
     """Range-band chart (millstone format): x = context length, the
@@ -472,6 +497,14 @@ def band_chart(path, title, top_pts, bot_pts, top_lab, bot_lab,
     if len(pts) < 2:
         return
     xs = sorted({p[0] for p in pts})
+    if len(xs) > 1 and all(x in CTX_LADDER for x in xs):
+        xs = [c for c in CTX_LADDER if c <= max(xs)]   # canonical rungs
+
+        def _rungpad(ps):
+            have = {x for x, _ in ps}
+            return sorted(list(ps) + [(c, None) for c in xs if c not in have],
+                          key=lambda p: p[0])
+        top_pts, bot_pts = _rungpad(top_pts), _rungpad(bot_pts)
     ys = [p[1] for p in pts]
     n_x = len(xs)
     xi = {v: i for i, v in enumerate(xs)}
@@ -520,16 +553,13 @@ def band_chart(path, title, top_pts, bot_pts, top_lab, bot_lab,
                'stroke-width="1"/>'.format(ML, MT + PH, ML + PW, MT + PH))
     out.append('<line x1="{}" y1="{}" x2="{}" y2="{}" stroke="#d0d5dd" '
                'stroke-width="1"/>'.format(ML, MT, ML, MT + PH))
-    for hv, htag in hlines:
-        if not (ylo < hv < yhi):
-            continue
-        yy = Y(hv)
+    for yy, ty, htag in _hline_tags(hlines, ylo, yhi, Y, MT, PH):
         out.append('<line x1="{}" y1="{:.1f}" x2="{}" y2="{:.1f}" '
                    'stroke="#98a2b3" stroke-width="1" stroke-dasharray="5 4"/>'
                    .format(ML, yy, ML + PW, yy))
         out.append('<text x="{}" y="{:.1f}" font-size="9.5" fill="#667085" '
                    'font-style="italic">{}</text>'
-                   .format(ML + PW + 4, yy + 3, esc(htag)))
+                   .format(ML + PW + 4, ty, esc(htag)))
     # the band: polygon top edge l->r then bottom edge r->l, over each
     # CONTIGUOUS run of contexts where both edges measured -- shading
     # never bridges a context the sweep skipped
@@ -628,6 +658,20 @@ def chart(path, title, series, xlabel, ylabel, xcat=None, yfmt="{:.1f}",
     if not pts:
         return
     xs = list(xdomain) if xdomain is not None else sorted({p[0] for p in pts})
+    # canonical context rungs (see CTX_LADDER): when every x is a rung,
+    # label every rung up to the chart's highest measured x, and give
+    # every series an explicit (rung, None) pair for rungs it did not
+    # measure -- the line BREAKS at the empty slot instead of chording
+    # across it
+    if xcat is None and len(xs) > 1 and all(x in CTX_LADDER for x in xs):
+        xs = [c for c in CTX_LADDER if c <= max(xs)]
+        padded = []
+        for lab, ps in series:
+            have = {x for x, _ in ps}
+            padded.append((lab, sorted(
+                list(ps) + [(c, None) for c in xs if c not in have],
+                key=lambda p: p[0])))
+        series = padded
     ys = [p[1] for p in pts]
     if xcat is not None:
         xi = None                 # category mode: x values are indices
@@ -697,16 +741,13 @@ def chart(path, title, series, xlabel, ylabel, xcat=None, yfmt="{:.1f}",
     out.append('<line x1="{}" y1="{}" x2="{}" y2="{}" stroke="#d0d5dd" '
                'stroke-width="1"/>'.format(ML, MT, ML, MT + PH))
     # class threshold hlines (dashed, tagged at the right margin)
-    for hv, htag in hlines:
-        if not (ylo < hv < yhi):
-            continue
-        yy = Y(hv)
+    for yy, ty, htag in _hline_tags(hlines, ylo, yhi, Y, MT, PH):
         out.append('<line x1="{}" y1="{:.1f}" x2="{}" y2="{:.1f}" '
                    'stroke="#98a2b3" stroke-width="1" stroke-dasharray="5 4"/>'
                    .format(ML, yy, ML + PW, yy))
         out.append('<text x="{}" y="{:.1f}" font-size="9.5" fill="#667085" '
                    'font-style="italic">{}</text>'
-                   .format(ML + PW + 4, yy + 3, esc(htag)))
+                   .format(ML + PW + 4, ty, esc(htag)))
     # ideal-linear dashed references (anchored per series first point)
     if ideal:
         for si, (_lab, ps) in enumerate(series):
@@ -816,16 +857,13 @@ def bars(path, title, groups, slabels, values, ylabel, yfmt="{:.0f}",
         out.append('<text x="{}" y="{:.1f}" font-size="11" fill="#667085" '
                    'text-anchor="end">{}</text>'.format(ML - 8, yy + 4,
                                                         yfmt.format(t)))
-    for hv, htag in hlines:
-        if not (ylo < hv < yhi):
-            continue
-        yy = Y(hv)
+    for yy, ty, htag in _hline_tags(hlines, ylo, yhi, Y, MT, PH):
         out.append('<line x1="{}" y1="{:.1f}" x2="{}" y2="{:.1f}" '
                    'stroke="#98a2b3" stroke-width="1" stroke-dasharray="5 4"/>'
                    .format(ML, yy, ML + PW, yy))
         out.append('<text x="{}" y="{:.1f}" font-size="9.5" fill="#667085" '
                    'font-style="italic">{}</text>'
-                   .format(ML + PW + 4, yy + 3, esc(htag)))
+                   .format(ML + PW + 4, ty, esc(htag)))
     for gi, glab in enumerate(groups):
         gx = ML + gi * gw
         for si, v in enumerate(values[gi]):
@@ -1224,6 +1262,12 @@ def per_config_report(banks, out, cfg, date):
             cctxs = sorted(set(cctxs) | annex_ctxs)
             fctxs = sorted(set(fctxs) | annex_ctxs)
     t1 = {c: load_conc(b139, cell, c, 1, "1.0") for c in cctxs}
+    for c in annex_ctxs:   # the annex boot's t1.0 faces join the merge
+        if _conc_face_ok(t1.get(c)):
+            continue
+        d1 = load_conc(b139, ann["cell"], c, 1, "1.0")
+        if _conc_face_ok(d1):
+            t1[c] = d1
     t1ok = {c: d for c, d in t1.items() if _conc_face_ok(d)}
     pool, pool_src = pool_of(banks, cell)
     good = {c: f for c, f in faces.items() if f}
@@ -1774,15 +1818,19 @@ def per_config_report(banks, out, cfg, date):
                      "the queue+prefill-share stagger the Nth user pays. "
                      "Derived client-side; engine-internal queueing is not "
                      "exported by this engine version. The x-axis keeps the "
-                     "configuration's full measured ladder — an empty slot "
-                     "marks a context the concurrency sweep skipped (64K on "
-                     "the qwen sweeps); no stagger exists there.")
+                     "canonical rung ladder up to the highest measured "
+                     "context — an empty slot marks a rung the concurrency "
+                     "measurements skip (64K: only the solo face measured it "
+                     "on qwen; unmeasured entirely on the gemma boots); no "
+                     "stagger exists there.")
             L.append("")
             qmeas = {c for c in cctxs
                      if _conc_face_ok(conc.get(c, {}).get(1)) and any(
                          _conc_face_ok(conc.get(c, {}).get(n))
                          for n in (2, 3, 4, 8))}
             qxd = [c for c in fctxs if qmeas and c <= max(qmeas)]
+            if len(qxd) > 1 and all(c in CTX_LADDER for c in qxd):
+                qxd = [c for c in CTX_LADDER if c <= max(qxd)]
             rows = []
             for c in (qxd or cctxs):
                 base = conc.get(c, {}).get(1)
@@ -1939,9 +1987,11 @@ def per_config_report(banks, out, cfg, date):
                      "throughput with no per-user cost). Real efficiency is "
                      "always lower — the accelerators are shared; high "
                      "efficiency at your target concurrency signals "
-                     "headroom. The x-axis keeps the full measured ladder; "
-                     "an empty slot marks a context the concurrency sweep "
-                     "skipped (64K on the qwen sweeps).")
+                     "headroom. The x-axis keeps the canonical rung ladder "
+                     "up to the highest measured context — an empty slot "
+                     "marks a rung the concurrency measurements skip (64K: "
+                     "only the solo face measured it on qwen; unmeasured "
+                     "entirely on the gemma boots).")
             L.append("")
             emeas = {c for c in cctxs
                      if _conc_face_ok(conc.get(c, {}).get(1)) and
@@ -1950,6 +2000,8 @@ def per_config_report(banks, out, cfg, date):
                          _conc_face_ok(conc.get(c, {}).get(n))
                          for n in (2, 3, 4, 8))}
             exd = [c for c in fctxs if emeas and c <= max(emeas)]
+            if len(exd) > 1 and all(c in CTX_LADDER for c in exd):
+                exd = [c for c in CTX_LADDER if c <= max(exd)]
             ens = [n for n in (2, 3, 4, 8) if any(
                 _conc_face_ok(conc[c].get(n)) and
                 _conc_face_ok(conc[c].get(1)) and
@@ -2059,18 +2111,23 @@ def per_config_report(banks, out, cfg, date):
             if t1col:
                 hdr.append("Decode @ t1.0 (tok/s)")
             rows = []
-            for c in cfg["ctxs"]:
+
+            def _ff(v, fmt):
+                # r139-sourced rows can carry None fields (tok_per_step)
+                return fmt.format(v) if v is not None else "-"
+            for c in fctxs:
                 f = faces.get(c)
                 if not f and c not in conc:
                     continue
                 r = [ctxrow(c),
-                     "{:.2f}".format(f["ttft_s"]) if f else "-",
-                     _fmt_comma(f["prefill_tps"]) if f else "-",
-                     "{:.1f}".format(f["decode_tps"]) if f else "-",
-                     "{:.2f}".format(f["tok_per_step"]) if f else "-",
-                     "{:.1f}".format(f["itl_ms_p50"]) if f else "-",
-                     "{:.1f}".format(f["itl_ms_p90"]) if f else "-",
-                     "{:.1f}".format(f["itl_ms_p99"]) if f else "-"]
+                     _ff(f["ttft_s"], "{:.2f}") if f else "-",
+                     (_fmt_comma(f["prefill_tps"])
+                      if f and f["prefill_tps"] is not None else "-"),
+                     _ff(f["decode_tps"], "{:.1f}") if f else "-",
+                     _ff(f["tok_per_step"], "{:.2f}") if f else "-",
+                     _ff(f["itl_ms_p50"], "{:.1f}") if f else "-",
+                     _ff(f["itl_ms_p90"], "{:.1f}") if f else "-",
+                     _ff(f["itl_ms_p99"], "{:.1f}") if f else "-"]
                 if t1col:
                     d1 = t1.get(c)
                     r.append("{:.1f}".format(d1["per_user_mean_tps"])
@@ -2141,11 +2198,13 @@ def per_config_report(banks, out, cfg, date):
         L.append("")
         L.append("Raising the certified gemma maxlen (40960) to 131072 is a "
                  "KV-headroom question. {} — the boot below is its own cell "
-                 "(`{}`, outcome `{}`), never merged into the charts above: "
-                 "the main body and the annex are different boots with "
-                 "different pools.".format(ax["blurb"].capitalize()
-                                           if ax["blurb"][0].islower()
-                                           else ax["blurb"], acell, aoc))
+                 "(`{}`, outcome `{}`). Its measurements are merged into the "
+                 "tables and charts above (the executive summary notes the "
+                 "provenance); the same-contexts table below quantifies both "
+                 "boots' agreement, and the pools differ — this section "
+                 "holds the boot record.".format(ax["blurb"].capitalize()
+                                                 if ax["blurb"][0].islower()
+                                                 else ax["blurb"], acell, aoc))
         L.append("")
         ctrl = ax.get("control")
         if ctrl:
