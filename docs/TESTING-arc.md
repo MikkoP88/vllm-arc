@@ -233,8 +233,8 @@ type"). Evidence: `results/2026-11-03-p618-cert7/rig/gate/longprobe_*`,
 ## Evidence layout
 
 Each leg banks to `results/YYYY-MM-DD-<phase>-r<leg>-<slug>/` (VERDICT,
-raw bench outputs, hook audit, integrity shas, serve keylines) — 113
-dirs / 101 VERDICTs of record to date; the naming convention is
+raw bench outputs, hook audit, integrity shas, serve keylines) — 128
+dirs / 102 VERDICTs of record to date; the naming convention is
 documented in [`envs.md`](envs.md) (naming map).
 
 ## Validation record
