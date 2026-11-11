@@ -268,6 +268,34 @@ raw evidence is banked under `results/YYYY-MM-DD-<phase>-*/`.
 
 ## Serve-layer and analysis phases (no cert — engine bytes unchanged)
 
+- **P6.45 canonical rung rows in every context table (2026-11-11)**: extends
+  the ladder law from the chart axes (P6.43/P6.44) to the TABLES: every
+  context-row table now renders the full canonical rung ladder up to its
+  highest measured context — an unmeasured rung (64K on every boot here)
+  shows a `-` row instead of the table jumping 32K→128K. A single helper
+  `_ctx_axis` (extracted from the queue table's proven `qxd` expansion,
+  which the queue and efficiency builders now share) drives the row sets:
+  `allctx` (per-user speed, TTFT, KV pool), the prefill table + series,
+  and the solo detail sweep; the per-context concurrency-sweep section
+  keeps its heading at an unscheduled rung with an explicit not-measured
+  note (a table whose rows are concurrency levels cannot carry dash
+  rows). The KV-pool capacity column still computes at 64K from the
+  banked pool arithmetic (the table is the whole-pool bound; the
+  measured-green column reads `-`), so the gemma mxfp4 64K row shows the
+  real 1-session bound. The embedded METHODOLOGY copy in the generator
+  is synced to the hand-edited tree file (the regen copy had gone stale
+  at P6.44) and both now state the table-row law; future regens emit the
+  current text byte-identically. Oracle diff vs P6.44 output: all 175
+  charts byte-identical (no chart bytes touched), 7 report mds changed —
+  the six qwen configs gain only the 64K concurrency-sweep stub (their
+  tables already carried 64K solo values from the r138 bank), gemma
+  mxfp4 gains the five dash rows (speed, TTFT, KV pool, prefill, solo
+  detail) + stub; gemma fp8/mxfp8 (max measured 32K) and the TQ
+  per-preset blocks correctly gain nothing — the axis law stops at the
+  highest measured rung. Same law, no fabrication: a table cell and a
+  chart marker alike exist only where something was measured or
+  derivable. Generator + docs only; no engine bytes changed — cert23
+  stands.
 - **P6.44 measured points connect across empty rung slots (2026-11-11)**:
   completes the P6.43 ladder law with the line rule a full-chart read
   demands: every line now CONNECTS its measured points, drawn straight

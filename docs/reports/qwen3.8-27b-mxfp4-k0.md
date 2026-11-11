@@ -318,6 +318,10 @@ Percentage of ideal linear scaling achieved as concurrency rises (100% = n× the
 | 4 | 46.8 | 69.0 | 17.8 | 9.1 | 27 | 39% | 32.3 | 32.4 |
 | 8 | 81.6 | 137.6 | 10.5 | 4.3 | 30 | 22% | 39.0 | 39.1 |
 
+### Concurrency sweep — 65536 (64K) context (temperature 0.0)
+
+> Not measured at this rung — no concurrency faces were scheduled here on this boot; the slot stays visible between its measured neighbors.
+
 ### Concurrency sweep — 131072 (128K) context (temperature 0.0)
 
 | Concurrency | TTFT mean (s) | TTFT max (s) | Per-user mean (tok/s) | Per-user worst (tok/s) | Aggregate (tok/s) | Scaling eff. | ITL p50 med (ms) | ITL p90 max (ms) |
