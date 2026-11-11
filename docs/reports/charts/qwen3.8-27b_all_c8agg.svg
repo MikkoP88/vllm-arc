@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="470" viewBox="0 0 880 470" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+<rect width="880" height="470" fill="#ffffff"/>
+<text x="84" y="26" font-size="17" font-weight="600" fill="#101828">Qwen3.8-27b: aggregate throughput @ concurrency 8 (8K ctx, t0.0)</text>
+<line x1="84" y1="394.0" x2="816" y2="394.0" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="398.0" font-size="11" fill="#667085" text-anchor="end">0</text>
+<line x1="84" y1="275.5" x2="816" y2="275.5" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="279.5" font-size="11" fill="#667085" text-anchor="end">50</text>
+<line x1="84" y1="157.0" x2="816" y2="157.0" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="161.0" font-size="11" fill="#667085" text-anchor="end">100</text>
+<rect x="130.0" y="99.2" width="30.0" height="294.8" fill="#2563eb" rx="2"/>
+<text x="145.0" y="93.2" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">124</text>
+<text x="145.0" y="412" font-size="11.5" fill="#475467" text-anchor="middle">FP8 MTP k3</text>
+<rect x="252.0" y="165.3" width="30.0" height="228.7" fill="#2563eb" rx="2"/>
+<text x="267.0" y="159.3" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">97</text>
+<text x="267.0" y="412" font-size="11.5" fill="#475467" text-anchor="middle">FP8 k0</text>
+<rect x="374.0" y="138.9" width="30.0" height="255.1" fill="#2563eb" rx="2"/>
+<text x="389.0" y="132.9" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">108</text>
+<text x="389.0" y="412" font-size="11.5" fill="#475467" text-anchor="middle">MXFP8 MTP k3</text>
+<rect x="496.0" y="192.1" width="30.0" height="201.9" fill="#2563eb" rx="2"/>
+<text x="511.0" y="186.1" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">85</text>
+<text x="511.0" y="412" font-size="11.5" fill="#475467" text-anchor="middle">MXFP8 k0</text>
+<rect x="618.0" y="126.2" width="30.0" height="267.8" fill="#2563eb" rx="2"/>
+<text x="633.0" y="120.2" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">113</text>
+<text x="633.0" y="412" font-size="11.5" fill="#475467" text-anchor="middle">MXFP4 MTP k3</text>
+<rect x="740.0" y="173.9" width="30.0" height="220.1" fill="#2563eb" rx="2"/>
+<text x="755.0" y="167.9" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">93</text>
+<text x="755.0" y="412" font-size="11.5" fill="#475467" text-anchor="middle">MXFP4 k0</text>
+<rect x="84" y="416" width="12" height="12" fill="#2563eb" rx="2"/>
+<text x="101" y="426" font-size="11.5" fill="#1d2939">aggregate</text>
+<text x="450" y="458" font-size="12.5" fill="#475467" text-anchor="middle">Aggregate throughput (tok/s)</text>
+</svg>

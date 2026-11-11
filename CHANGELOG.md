@@ -268,6 +268,22 @@ raw evidence is banked under `results/YYYY-MM-DD-<phase>-*/`.
 
 ## Serve-layer and analysis phases (no cert — engine bytes unchanged)
 
+- **P6.39 concurrency reports + gemma 128K annex (2026-11-11)**: every
+  per-config report gains the measured concurrency 1–8 series and the
+  paired temperature 0.0/1.0 faces; all line-chart points carry value
+  labels (staggered collision-free placement — 1,360 labels, 0 overlaps
+  across 108 charts); the gemma MXFP4 128K annex (max_model_len 131072,
+  KV pool 288,972 tokens: solo 28.4 tok/s @ 128K, TTFT 175.9 s,
+  capacity 2 concurrent requests) with the mxfp8 131K boot refusal
+  banking the 8-bit boundary; the TurboQuant KV presets and the gemma
+  fp8 auto-KV wall (~13.3K ctx) measured. Engineered boundary find: the
+  API server enforces **prompt_len + max_tokens ≤ max_model_len**
+  (probe-banked verbatim) — gemma's sentencepiece round-trip inflates
+  1.026x, so the harness now sizes server-side prompt budgets
+  (ctx − max_tokens − 64). Docs tooling hardened: `validate_docs.py`
+  (0 errors across 29 fork docs) and a two-pass `leak_sweep.sh`. No
+  engine bytes changed; cert23 stands. Banks
+  `results/2026-11-11-p637b-conc/` + `results/2026-11-11-r140-gemma128k/`.
 - **P6.38 docs restructure (2026-11-11)**: current-state-only living docs
   + the two-tier history architecture — `CHANGELOG.md` as the pure
   changelog (the consolidated-history section removed), per-doc archives

@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="470" viewBox="0 0 880 470" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+<rect width="880" height="470" fill="#ffffff"/>
+<text x="84" y="26" font-size="17" font-weight="600" fill="#101828">KV pool by dtype (tokens, per-boot parsed)</text>
+<line x1="84" y1="394.0" x2="816" y2="394.0" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="398.0" font-size="11" fill="#667085" text-anchor="end">0</text>
+<line x1="84" y1="317.2" x2="816" y2="317.2" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="321.2" font-size="11" fill="#667085" text-anchor="end">250,000</text>
+<line x1="84" y1="240.4" x2="816" y2="240.4" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="244.4" font-size="11" fill="#667085" text-anchor="end">500,000</text>
+<line x1="84" y1="163.6" x2="816" y2="163.6" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="167.6" font-size="11" fill="#667085" text-anchor="end">750,000</text>
+<line x1="84" y1="86.9" x2="816" y2="86.9" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="90.9" font-size="11" fill="#667085" text-anchor="end">1,000,000</text>
+<rect x="105.6" y="271.6" width="30.0" height="122.4" fill="#2563eb" rx="2"/>
+<text x="120.6" y="265.6" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">398,363</text>
+<text x="120.6" y="412" font-size="11.5" fill="#475467" text-anchor="middle">fp8_e4m3</text>
+<rect x="178.8" y="235.0" width="30.0" height="159.0" fill="#2563eb" rx="2"/>
+<text x="193.8" y="229.0" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">517,815</text>
+<text x="193.8" y="412" font-size="11.5" fill="#475467" text-anchor="middle">tq_k8v4</text>
+<rect x="252.0" y="165.0" width="30.0" height="229.0" fill="#2563eb" rx="2"/>
+<text x="267.0" y="159.0" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">745,519</text>
+<text x="267.0" y="412" font-size="11.5" fill="#475467" text-anchor="middle">tq_4bit_nc</text>
+<rect x="325.2" y="136.6" width="30.0" height="257.4" fill="#2563eb" rx="2"/>
+<text x="340.2" y="130.6" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">838,192</text>
+<text x="340.2" y="412" font-size="11.5" fill="#475467" text-anchor="middle">tq_k3v4_nc</text>
+<rect x="398.4" y="99.2" width="30.0" height="294.8" fill="#2563eb" rx="2"/>
+<text x="413.4" y="93.2" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">959,909</text>
+<text x="413.4" y="412" font-size="11.5" fill="#475467" text-anchor="middle">tq_3bit_nc</text>
+<rect x="471.6" y="271.9" width="30.0" height="122.1" fill="#2563eb" rx="2"/>
+<text x="486.6" y="265.9" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">397,470</text>
+<text x="486.6" y="412" font-size="11.5" fill="#475467" text-anchor="middle">fp8</text>
+<rect x="544.8" y="333.0" width="30.0" height="61.0" fill="#2563eb" rx="2"/>
+<text x="559.8" y="327.0" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">198,735</text>
+<text x="559.8" y="412" font-size="11.5" fill="#475467" text-anchor="middle">auto@131072</text>
+<rect x="618.0" y="377.8" width="30.0" height="16.2" fill="#2563eb" rx="2"/>
+<text x="633.0" y="371.8" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">52,822</text>
+<text x="633.0" y="412" font-size="11.5" fill="#475467" text-anchor="middle">fp8_e4m3 (gemma)</text>
+<text x="706.2" y="412" font-size="11.5" fill="#475467" text-anchor="middle">auto@16384 (gemma)</text>
+<rect x="764.4" y="305.2" width="30.0" height="88.8" fill="#2563eb" rx="2"/>
+<text x="779.4" y="299.2" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">288,972</text>
+<text x="779.4" y="412" font-size="11.5" fill="#475467" text-anchor="middle">mxfp4@131072 (gemma)</text>
+<rect x="84" y="416" width="12" height="12" fill="#2563eb" rx="2"/>
+<text x="101" y="426" font-size="11.5" fill="#1d2939">KV pool</text>
+<text x="450" y="458" font-size="12.5" fill="#475467" text-anchor="middle">KV pool (tokens)</text>
+</svg>

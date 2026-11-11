@@ -1,0 +1,3 @@
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert23 name=arc-r140c model=/models/gemma4-31b served=gemma4-31b quant=mxfp4 qcfg= graph=1 spec=0 gmu=0.8 maxlen=131072 mnbt=8192 seqs=64 fp8=0 xgc=0 tmpl=__qwen_default__ rp=<qwen3> tp=<qwen3_coder> port=8000 15:16:12
+tracebacks=0
+kv_pool_tokens=288972

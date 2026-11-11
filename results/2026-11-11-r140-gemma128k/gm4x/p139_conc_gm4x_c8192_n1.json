@@ -1,0 +1,31 @@
+{
+ "tag": "gm4x_c8192_n1",
+ "ctx": 8192,
+ "conc": 1,
+ "max_tokens": 600,
+ "model": "gemma4-31b",
+ "temperature": 0.0,
+ "n_ok": 1,
+ "n_fail": 0,
+ "requests": [
+  {
+   "slot": 0,
+   "error": null,
+   "ttft_s": 4.161987534025684,
+   "total_s": 20.304273855988868,
+   "n_stream_chunks": 600,
+   "itl_ms_p50": 26.98866795981303,
+   "itl_ms_p90": 27.037980034947395,
+   "itl_ms_p99": 27.31280302396044
+  }
+ ],
+ "ttft_mean_s": 4.161987534025684,
+ "ttft_max_s": 4.161987534025684,
+ "per_user_tps": [
+  37.17
+ ],
+ "per_user_mean_tps": 37.169455926676285,
+ "per_user_min_tps": 37.169455926676285,
+ "agg_tps_wall": 29.550428853333575,
+ "wall_s": 20.304273855988868
+}

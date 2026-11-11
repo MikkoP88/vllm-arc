@@ -1,37 +1,49 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="780" height="430" viewBox="0 0 780 430" font-family="Segoe UI, Helvetica, Arial, sans-serif">
-<rect width="780" height="430" fill="#ffffff"/>
-<text x="78" y="24" font-size="16" font-weight="600" fill="#101828">Time to first token vs context length (temperature 0.0)</text>
-<line x1="78" y1="378.0" x2="762" y2="378.0" stroke="#f0f0f0" stroke-width="1"/>
-<text x="70" y="382.0" font-size="11" fill="#667085" text-anchor="end">0.0</text>
-<line x1="78" y1="308.5" x2="762" y2="308.5" stroke="#f0f0f0" stroke-width="1"/>
-<text x="70" y="312.5" font-size="11" fill="#667085" text-anchor="end">25.0</text>
-<line x1="78" y1="239.0" x2="762" y2="239.0" stroke="#f0f0f0" stroke-width="1"/>
-<text x="70" y="243.0" font-size="11" fill="#667085" text-anchor="end">50.0</text>
-<line x1="78" y1="169.5" x2="762" y2="169.5" stroke="#f0f0f0" stroke-width="1"/>
-<text x="70" y="173.5" font-size="11" fill="#667085" text-anchor="end">75.0</text>
-<line x1="78" y1="100.0" x2="762" y2="100.0" stroke="#f0f0f0" stroke-width="1"/>
-<text x="70" y="104.0" font-size="11" fill="#667085" text-anchor="end">100.0</text>
-<line x1="78.0" y1="46" x2="78.0" y2="378" stroke="#e5e5e5" stroke-width="1"/>
-<text x="78.0" y="396" font-size="11" fill="#667085" text-anchor="middle">1K</text>
-<line x1="371.1" y1="46" x2="371.1" y2="378" stroke="#e5e5e5" stroke-width="1"/>
-<text x="371.1" y="396" font-size="11" fill="#667085" text-anchor="middle">8K</text>
-<line x1="566.6" y1="46" x2="566.6" y2="378" stroke="#e5e5e5" stroke-width="1"/>
-<text x="566.6" y="396" font-size="11" fill="#667085" text-anchor="middle">32K</text>
-<line x1="664.3" y1="46" x2="664.3" y2="378" stroke="#e5e5e5" stroke-width="1"/>
-<text x="664.3" y="396" font-size="11" fill="#667085" text-anchor="middle">64K</text>
-<line x1="762.0" y1="46" x2="762.0" y2="378" stroke="#e5e5e5" stroke-width="1"/>
-<text x="762.0" y="396" font-size="11" fill="#667085" text-anchor="middle">128K</text>
-<line x1="78" y1="378" x2="762" y2="378" stroke="#d0d5dd" stroke-width="1"/>
-<line x1="78" y1="46" x2="78" y2="378" stroke="#d0d5dd" stroke-width="1"/>
-<polyline points="78.0,374.1 371.1,366.0 566.6,329.7 664.3,264.5 762.0,81.6" fill="none" stroke="#2563eb" stroke-width="2.2"/>
-<circle cx="78.0" cy="374.1" r="4" fill="#2563eb"/>
-<circle cx="371.1" cy="366.0" r="4" fill="#2563eb"/>
-<circle cx="566.6" cy="329.7" r="4" fill="#2563eb"/>
-<circle cx="664.3" cy="264.5" r="4" fill="#2563eb"/>
-<circle cx="762.0" cy="81.6" r="4" fill="#2563eb"/>
-<text x="762.0" y="73.6" font-size="10.5" fill="#2563eb" text-anchor="end" font-weight="600">106.6</text>
-<line x1="78" y1="34" x2="94" y2="34" stroke="#2563eb" stroke-width="3"/>
-<text x="98" y="38" font-size="11.5" fill="#1d2939">no MTP</text>
-<text x="420" y="420" font-size="12.5" fill="#475467" text-anchor="middle">Context length (tokens)</text>
-<text x="14" y="212" font-size="12.5" fill="#475467" text-anchor="middle" transform="rotate(-90 14 212)">TTFT (s)</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="500" viewBox="0 0 880 500" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+<rect width="880" height="500" fill="#ffffff"/>
+<text x="84" y="26" font-size="17" font-weight="600" fill="#101828">Time to first token vs context length (temperature 0.0, solo)</text>
+<line x1="84" y1="436.0" x2="816" y2="436.0" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="440.0" font-size="11" fill="#667085" text-anchor="end">0.0</text>
+<line x1="84" y1="357.0" x2="816" y2="357.0" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="361.0" font-size="11" fill="#667085" text-anchor="end">25.0</text>
+<line x1="84" y1="278.0" x2="816" y2="278.0" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="282.0" font-size="11" fill="#667085" text-anchor="end">50.0</text>
+<line x1="84" y1="199.1" x2="816" y2="199.1" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="203.1" font-size="11" fill="#667085" text-anchor="end">75.0</text>
+<line x1="84" y1="120.1" x2="816" y2="120.1" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="124.1" font-size="11" fill="#667085" text-anchor="end">100.0</text>
+<line x1="84.0" y1="52" x2="84.0" y2="436" stroke="#f0f0f0" stroke-width="1"/>
+<text x="84.0" y="454" font-size="11" fill="#667085" text-anchor="middle">1K</text>
+<line x1="397.7" y1="52" x2="397.7" y2="436" stroke="#f0f0f0" stroke-width="1"/>
+<text x="397.7" y="454" font-size="11" fill="#667085" text-anchor="middle">8K</text>
+<line x1="606.9" y1="52" x2="606.9" y2="436" stroke="#f0f0f0" stroke-width="1"/>
+<text x="606.9" y="454" font-size="11" fill="#667085" text-anchor="middle">32K</text>
+<line x1="711.4" y1="52" x2="711.4" y2="436" stroke="#f0f0f0" stroke-width="1"/>
+<text x="711.4" y="454" font-size="11" fill="#667085" text-anchor="middle">64K</text>
+<line x1="816.0" y1="52" x2="816.0" y2="436" stroke="#f0f0f0" stroke-width="1"/>
+<text x="816.0" y="454" font-size="11" fill="#667085" text-anchor="middle">128K</text>
+<line x1="84" y1="436" x2="816" y2="436" stroke="#d0d5dd" stroke-width="1"/>
+<line x1="84" y1="52" x2="84" y2="436" stroke="#d0d5dd" stroke-width="1"/>
+<line x1="84" y1="434.4" x2="816" y2="434.4" stroke="#98a2b3" stroke-width="1" stroke-dasharray="5 4"/>
+<text x="820" y="437.4" font-size="9.5" fill="#667085" font-style="italic">instant</text>
+<line x1="84" y1="429.7" x2="816" y2="429.7" stroke="#98a2b3" stroke-width="1" stroke-dasharray="5 4"/>
+<text x="820" y="432.7" font-size="9.5" fill="#667085" font-style="italic">responsive</text>
+<line x1="84" y1="420.2" x2="816" y2="420.2" stroke="#98a2b3" stroke-width="1" stroke-dasharray="5 4"/>
+<text x="820" y="423.2" font-size="9.5" fill="#667085" font-style="italic">noticeable</text>
+<line x1="84" y1="404.4" x2="816" y2="404.4" stroke="#98a2b3" stroke-width="1" stroke-dasharray="5 4"/>
+<text x="820" y="407.4" font-size="9.5" fill="#667085" font-style="italic">slow</text>
+<polyline points="84.0,431.6 397.7,422.4 606.9,381.1 711.4,307.0 816.0,99.2" fill="none" stroke="#2563eb" stroke-width="2.4"/>
+<circle cx="84.0" cy="431.6" r="4.4" fill="#2563eb"/>
+<circle cx="397.7" cy="422.4" r="4.4" fill="#2563eb"/>
+<circle cx="606.9" cy="381.1" r="4.4" fill="#2563eb"/>
+<circle cx="711.4" cy="307.0" r="4.4" fill="#2563eb"/>
+<circle cx="816.0" cy="99.2" r="4.4" fill="#2563eb"/>
+<text x="84.0" y="422.6" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">1.4</text>
+<text x="397.7" y="413.4" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">4.3</text>
+<text x="606.9" y="372.1" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">17.4</text>
+<text x="711.4" y="298.0" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">40.8</text>
+<text x="816.0" y="90.2" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">106.6</text>
+<line x1="84" y1="494" x2="100" y2="494" stroke="#2563eb" stroke-width="3"/>
+<text x="104" y="498" font-size="11.5" fill="#1d2939">no MTP</text>
+<text x="450" y="470" font-size="12.5" fill="#475467" text-anchor="middle">Context length (tokens)</text>
+<text x="16" y="244" font-size="12.5" fill="#475467" text-anchor="middle" transform="rotate(-90 16 244)">TTFT (s)</text>
 </svg>

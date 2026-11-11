@@ -1,46 +1,67 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="780" height="430" viewBox="0 0 780 430" font-family="Segoe UI, Helvetica, Arial, sans-serif">
-<rect width="780" height="430" fill="#ffffff"/>
-<text x="78" y="24" font-size="16" font-weight="600" fill="#101828">Inter-token latency vs context length (temperature 0.0)</text>
-<line x1="78" y1="378.0" x2="762" y2="378.0" stroke="#f0f0f0" stroke-width="1"/>
-<text x="70" y="382.0" font-size="11" fill="#667085" text-anchor="end">0</text>
-<line x1="78" y1="298.8" x2="762" y2="298.8" stroke="#f0f0f0" stroke-width="1"/>
-<text x="70" y="302.8" font-size="11" fill="#667085" text-anchor="end">10</text>
-<line x1="78" y1="219.6" x2="762" y2="219.6" stroke="#f0f0f0" stroke-width="1"/>
-<text x="70" y="223.6" font-size="11" fill="#667085" text-anchor="end">20</text>
-<line x1="78" y1="140.4" x2="762" y2="140.4" stroke="#f0f0f0" stroke-width="1"/>
-<text x="70" y="144.4" font-size="11" fill="#667085" text-anchor="end">30</text>
-<line x1="78" y1="61.2" x2="762" y2="61.2" stroke="#f0f0f0" stroke-width="1"/>
-<text x="70" y="65.2" font-size="11" fill="#667085" text-anchor="end">40</text>
-<line x1="78.0" y1="46" x2="78.0" y2="378" stroke="#e5e5e5" stroke-width="1"/>
-<text x="78.0" y="396" font-size="11" fill="#667085" text-anchor="middle">1K</text>
-<line x1="371.1" y1="46" x2="371.1" y2="378" stroke="#e5e5e5" stroke-width="1"/>
-<text x="371.1" y="396" font-size="11" fill="#667085" text-anchor="middle">8K</text>
-<line x1="566.6" y1="46" x2="566.6" y2="378" stroke="#e5e5e5" stroke-width="1"/>
-<text x="566.6" y="396" font-size="11" fill="#667085" text-anchor="middle">32K</text>
-<line x1="664.3" y1="46" x2="664.3" y2="378" stroke="#e5e5e5" stroke-width="1"/>
-<text x="664.3" y="396" font-size="11" fill="#667085" text-anchor="middle">64K</text>
-<line x1="762.0" y1="46" x2="762.0" y2="378" stroke="#e5e5e5" stroke-width="1"/>
-<text x="762.0" y="396" font-size="11" fill="#667085" text-anchor="middle">128K</text>
-<line x1="78" y1="378" x2="762" y2="378" stroke="#d0d5dd" stroke-width="1"/>
-<line x1="78" y1="46" x2="78" y2="378" stroke="#d0d5dd" stroke-width="1"/>
-<polyline points="78.0,166.7 371.1,162.6 566.6,146.8 664.3,125.1 762.0,82.5" fill="none" stroke="#2563eb" stroke-width="2.2"/>
-<circle cx="78.0" cy="166.7" r="4" fill="#2563eb"/>
-<circle cx="371.1" cy="162.6" r="4" fill="#2563eb"/>
-<circle cx="566.6" cy="146.8" r="4" fill="#2563eb"/>
-<circle cx="664.3" cy="125.1" r="4" fill="#2563eb"/>
-<circle cx="762.0" cy="82.5" r="4" fill="#2563eb"/>
-<text x="762.0" y="74.5" font-size="10.5" fill="#2563eb" text-anchor="end" font-weight="600">37</text>
-<polyline points="78.0,165.3 371.1,162.2 566.6,146.4 664.3,124.7 762.0,81.6" fill="none" stroke="#dc2626" stroke-width="2.2"/>
-<rect x="74.0" y="161.3" width="8" height="8" fill="#dc2626"/>
-<rect x="367.1" y="158.2" width="8" height="8" fill="#dc2626"/>
-<rect x="562.6" y="142.4" width="8" height="8" fill="#dc2626"/>
-<rect x="660.3" y="120.7" width="8" height="8" fill="#dc2626"/>
-<rect x="758.0" y="77.6" width="8" height="8" fill="#dc2626"/>
-<text x="762.0" y="73.6" font-size="10.5" fill="#dc2626" text-anchor="end" font-weight="600">37</text>
-<line x1="78" y1="34" x2="94" y2="34" stroke="#2563eb" stroke-width="3"/>
-<text x="98" y="38" font-size="11.5" fill="#1d2939">ITL p50</text>
-<line x1="168" y1="34" x2="184" y2="34" stroke="#dc2626" stroke-width="3"/>
-<text x="188" y="38" font-size="11.5" fill="#1d2939">ITL p90</text>
-<text x="420" y="420" font-size="12.5" fill="#475467" text-anchor="middle">Context length (tokens)</text>
-<text x="14" y="212" font-size="12.5" fill="#475467" text-anchor="middle" transform="rotate(-90 14 212)">ITL (ms)</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="500" viewBox="0 0 880 500" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+<rect width="880" height="500" fill="#ffffff"/>
+<text x="84" y="26" font-size="17" font-weight="600" fill="#101828">Inter-token latency vs context length (temperature 0.0, solo)</text>
+<line x1="84" y1="436.0" x2="816" y2="436.0" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="440.0" font-size="11" fill="#667085" text-anchor="end">0</text>
+<line x1="84" y1="347.3" x2="816" y2="347.3" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="351.3" font-size="11" fill="#667085" text-anchor="end">10</text>
+<line x1="84" y1="258.6" x2="816" y2="258.6" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="262.6" font-size="11" fill="#667085" text-anchor="end">20</text>
+<line x1="84" y1="169.9" x2="816" y2="169.9" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="173.9" font-size="11" fill="#667085" text-anchor="end">30</text>
+<line x1="84" y1="81.2" x2="816" y2="81.2" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="85.2" font-size="11" fill="#667085" text-anchor="end">40</text>
+<line x1="84.0" y1="52" x2="84.0" y2="436" stroke="#f0f0f0" stroke-width="1"/>
+<text x="84.0" y="454" font-size="11" fill="#667085" text-anchor="middle">1K</text>
+<line x1="397.7" y1="52" x2="397.7" y2="436" stroke="#f0f0f0" stroke-width="1"/>
+<text x="397.7" y="454" font-size="11" fill="#667085" text-anchor="middle">8K</text>
+<line x1="606.9" y1="52" x2="606.9" y2="436" stroke="#f0f0f0" stroke-width="1"/>
+<text x="606.9" y="454" font-size="11" fill="#667085" text-anchor="middle">32K</text>
+<line x1="711.4" y1="52" x2="711.4" y2="436" stroke="#f0f0f0" stroke-width="1"/>
+<text x="711.4" y="454" font-size="11" fill="#667085" text-anchor="middle">64K</text>
+<line x1="816.0" y1="52" x2="816.0" y2="436" stroke="#f0f0f0" stroke-width="1"/>
+<text x="816.0" y="454" font-size="11" fill="#667085" text-anchor="middle">128K</text>
+<line x1="84" y1="436" x2="816" y2="436" stroke="#d0d5dd" stroke-width="1"/>
+<line x1="84" y1="52" x2="84" y2="436" stroke="#d0d5dd" stroke-width="1"/>
+<polyline points="84.0,199.3 397.7,194.7 606.9,177.0 711.4,152.7 816.0,105.0" fill="none" stroke="#2563eb" stroke-width="2.4"/>
+<circle cx="84.0" cy="199.3" r="4.4" fill="#2563eb"/>
+<circle cx="397.7" cy="194.7" r="4.4" fill="#2563eb"/>
+<circle cx="606.9" cy="177.0" r="4.4" fill="#2563eb"/>
+<circle cx="711.4" cy="152.7" r="4.4" fill="#2563eb"/>
+<circle cx="816.0" cy="105.0" r="4.4" fill="#2563eb"/>
+<polyline points="84.0,197.8 397.7,194.3 606.9,176.6 711.4,152.3 816.0,104.0" fill="none" stroke="#dc2626" stroke-width="2.4"/>
+<rect x="79.5" y="193.3" width="9" height="9" fill="#dc2626"/>
+<rect x="393.2" y="189.8" width="9" height="9" fill="#dc2626"/>
+<rect x="602.4" y="172.1" width="9" height="9" fill="#dc2626"/>
+<rect x="706.9" y="147.8" width="9" height="9" fill="#dc2626"/>
+<rect x="811.5" y="99.5" width="9" height="9" fill="#dc2626"/>
+<polyline points="84.0,167.9 397.7,192.2 606.9,171.9 711.4,149.5 816.0,99.2" fill="none" stroke="#059669" stroke-width="2.4"/>
+<polygon points="84.0,162.4 78.5,172.4 89.5,172.4" fill="#059669"/>
+<polygon points="397.7,186.7 392.2,196.7 403.2,196.7" fill="#059669"/>
+<polygon points="606.9,166.4 601.4,176.4 612.4,176.4" fill="#059669"/>
+<polygon points="711.4,144.0 705.9,154.0 716.9,154.0" fill="#059669"/>
+<polygon points="816.0,93.7 810.5,103.7 821.5,103.7" fill="#059669"/>
+<text x="84.0" y="158.9" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">30</text>
+<text x="84.0" y="188.8" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">27</text>
+<text x="84.0" y="215.3" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">27</text>
+<text x="397.7" y="183.2" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">27</text>
+<text x="397.7" y="210.3" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">27</text>
+<text x="397.7" y="221.7" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">27</text>
+<text x="606.9" y="162.9" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">30</text>
+<text x="606.9" y="192.6" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">29</text>
+<text x="606.9" y="204.0" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">29</text>
+<text x="711.4" y="140.5" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">32</text>
+<text x="711.4" y="168.3" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">32</text>
+<text x="711.4" y="179.7" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">32</text>
+<text x="816.0" y="90.2" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">38</text>
+<text x="816.0" y="120.0" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">37</text>
+<text x="816.0" y="132.0" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">37</text>
+<line x1="84" y1="494" x2="100" y2="494" stroke="#2563eb" stroke-width="3"/>
+<text x="104" y="498" font-size="11.5" fill="#1d2939">ITL p50</text>
+<line x1="170" y1="494" x2="186" y2="494" stroke="#dc2626" stroke-width="3"/>
+<text x="190" y="498" font-size="11.5" fill="#1d2939">ITL p90</text>
+<line x1="256" y1="494" x2="272" y2="494" stroke="#059669" stroke-width="3"/>
+<text x="276" y="498" font-size="11.5" fill="#1d2939">ITL p99</text>
+<text x="450" y="470" font-size="12.5" fill="#475467" text-anchor="middle">Context length (tokens)</text>
+<text x="16" y="244" font-size="12.5" fill="#475467" text-anchor="middle" transform="rotate(-90 16 244)">ITL (ms)</text>
 </svg>

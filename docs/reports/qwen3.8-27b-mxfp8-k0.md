@@ -10,34 +10,284 @@
 | Engine | vLLM v0.30.0 — vllm-arc fork, image v0.30.0-b70-cert23, XPU graphs |
 | KV cache dtype | fp8_e4m3 |
 | Speculative decoding | disabled |
-| Date | 2026-11-10 |
+| Max model len | 262144 |
+| KV pool (this boot) | 439,620 tokens (r139 posture) |
+| Date | 2026-11-11 |
 | Cell outcome | FACES_OK |
 
 ## Executive summary
 
-Qwen3.8-27B — the MTP-off ablation of the MXFP8 lane — measured on the shipping cert23 image, solo streaming, seeded-random unique prompts (no cache hits), `ignore_eos`.
+Infrastructure decisions require real performance data. This report measures user-facing performance — how many concurrent requests the configuration supports at a given context length before streaming speed or first-token wait degrade below the user-experience bands.
+
+This benchmark evaluates **Qwen3.8-27B** (Qwen (Alibaba); 27B parameters, dense hybrid-GDN) running **MXFP8 (online, bf16 base checkpoint)** on **2x Intel Arc Pro B70** (32 GB each, TP2) — the MTP-off ablation of the MXFP8 lane.
+
+Test parameters: context lengths 1K–128K tokens; concurrency 1–8; 600 output tokens per request; unique seeded-random prompts (cold prefill, no prefix-cache hits); no speculative decoding; KV cache `fp8_e4m3`; temperature 0.0 with paired 1.0 faces.
 
 | Metric | Result |
 |---|---|
-| TTFT @ 1K ctx | 1.40 s |
-| TTFT @ 128K ctx | 106.6 s |
-| Peak decode speed | 28.7 tok/s @ 1K ctx |
-| Decode @ largest ctx | 22.1 tok/s |
-| Prefill rate (client, ctx/TTFT) | 730 (min) … 1,902 tok/s (max) |
-| Success rate | 5/5 faces (ctx sweep + temp sweep) |
+| Generation speed, single request | 28.7 tok/s (1K) → 22.1 tok/s (128K) |
+| TTFT, single request | 1.40 (1K) → 106.6 (128K) |
+| Peak per-user speed (solo) | **28.7 tok/s** @ 1K ctx (fast) |
+| Peak system throughput | **166 tok/s** @ 8 concurrent, 1K ctx — ≈ 597.03 K tokens/hour |
+| Throughput scaling (1 → 8, 1K ctx) | 6.1x (76% of ideal linear) |
+| Interactive chat capacity (8K) | ~2 concurrent requests (estimated between the measured 2 and 3 points) |
+| Long-context assistant (RAG) capacity (32K) | thresholds exceeded at concurrency 1 - not recommended |
+| Document processing (batch) capacity (128K) | ~1 concurrent requests (estimated between the measured 1 and 2 points) |
+| Success rate | **100.0%** across 69 requests (23 faces green) |
 
-## Test parameters
+> Every concurrent request models one user session holding a full generation (prompt prefill + 600 streamed tokens), barrier-started together — the worst-case burst. Interactive sessions idle between turns, so sustained user counts run well below request concurrency. Full definitions: [METHODOLOGY.md](METHODOLOGY.md).
 
-- Context lengths: 1K, 8K, 32K, 64K, 128K tokens (prompt + template). Concurrency 1, 600 output tokens per request, `ignore_eos`.
-- Prompts: seeded random-token contexts, unique per face (`p138_face.py`, tag-seeded) — every face is a cold prefill (no prompt-cache hits).
-- Client-side timing on the rig loopback; TTFT includes the full engine prefill window (queue ~0 at concurrency 1).
+## Use case guidance
+
+The table maps this configuration to common deployment scenarios. Capacity limits are where TTFT or streaming speed fall below the accepted thresholds for a comfortable user experience (the band edges of the UX classification below).
+
+| Use case | Context | Thresholds | Capacity |
+|---|---|---|---|
+| Interactive chat | 8K | TTFT < 10s · speed >= 15 tok/s | ~2 concurrent requests (estimated between the measured 2 and 3 points) |
+| Long-context assistant (RAG) | 32K | TTFT < 10s · speed >= 15 tok/s | thresholds exceeded at concurrency 1 - not recommended |
+| Document processing (batch) | 128K | speed >= 15 tok/s | ~1 concurrent requests (estimated between the measured 1 and 2 points) |
+
+The limits are conservative: past them the system keeps serving with slower response times that may still be acceptable for your workload.
+
+## System throughput
+
+Aggregate token generation across all concurrent requests (output tokens only; prefill excluded). Measured as n × 600 / wall — the wall includes the barrier start and the slowest-user tail, so it is the honest saturated-burst number.
+
+| Condition | Aggregate throughput |
+|---|---|
+| Peak (1K, 8 req) | 166 tok/s |
+| 8K ctx, 4 req | 63 tok/s |
+| 8K ctx, 8 req | 85 tok/s |
+| 32K ctx, 4 req | 26 tok/s |
+| 32K ctx, 8 req | 29 tok/s |
+
+At the peak point this configuration produces approximately **597.03 K tokens/hour** — the number that matters for batch workloads (document processing, synthetic-data generation, offline analysis).
+
+
+## Per-user generation speed
+
+The streaming rate each user experiences. As concurrency rises, per-user speed falls because the accelerators are shared; with MTP, multiple accepted tokens ride one stream chunk (spec-aware accounting).
+
+| Context | Solo (tok/s) | class | Best @ conc (tok/s) | @ conc 8 (tok/s) | class |
+|---|---|---|---|---|---|
+| 1024 (1K) | 28.7 | fast | 29.1 | 25.4 | fast |
+| 8192 (8K) | 28.6 | fast | 28.3 | 18.2 | acceptable |
+| 32768 (32K) | 27.1 | fast | 27.1 | 9.5 | slow |
+| 65536 (64K) | 25.0 | acceptable | - | - | - |
+| 131072 (128K) | 22.1 | acceptable | 22.1 | - | - |
+
+### How fast is this?
+
+| Speed | User experience |
+|---|---|
+| < 15 tok/s | Slow - may be slower than reading speed |
+| 15-25 tok/s | Acceptable - keeps pace with reading |
+| 25-50 tok/s | Fast - exceeds reading speed |
+| >= 50 tok/s | Very fast - text appears nearly instantly |
+
+Solo speed spans **22.1–28.7 tok/s** (128K to 1K context); at concurrency 8 the floor is 9.5 tok/s (32K ctx).
+
+![Per-user decode speed vs context length (solo) — MXFP8, no MTP](charts/qwen3.8-27b-mxfp8-k0_decode.svg)
+
+<i>Per-user decode speed vs context length (solo) — MXFP8, no MTP</i>
+
+![Per-user decode speed vs concurrency — MXFP8, no MTP](charts/qwen3.8-27b-mxfp8-k0_conc_speed.svg)
+
+<i>Per-user decode speed vs concurrency — MXFP8, no MTP</i>
+
+## Time to first token
+
+Time from request submission to the first streamed token — the primary responsiveness metric. Client-side on the rig loopback, it decomposes into queue wait (rising with concurrency) and prefill (rising with context); the technical analysis below separates the two.
+
+| Context | Solo (s) | class | @ conc 8 mean (s) | @ conc 8 worst (s) | class |
+|---|---|---|---|---|---|
+| 1024 (1K) | 1.40 | responsive | 5.23 | 5.81 | slow |
+| 8192 (8K) | 4.31 | noticeable | 21.6 | 31.1 | frustrating |
+| 32768 (32K) | 17.4 | frustrating | 81.1 | 136.9 | frustrating |
+| 65536 (64K) | 40.8 | frustrating | - | - | - |
+| 131072 (128K) | 106.6 | frustrating | - | - | - |
+
+### How responsive is this?
+
+| TTFT | User experience |
+|---|---|
+| < 0.5 s | Feels instant |
+| 0.5-2 s | Feels responsive |
+| 2-5 s | Noticeable but still acceptable |
+| 5-10 s | Feels slow; acceptable at higher context |
+| > 10 s | Can be frustrating; users may retry or abandon |
+
+> **Caching note.** Every face uses a unique seeded-random prompt — a deliberate cold prefill, the worst case. The certified posture runs prefix caching (LMCache): in production, incremental conversations pay TTFT only for new tokens, which is dramatically faster than these numbers.
+
+![TTFT vs context length (solo) — MXFP8, no MTP](charts/qwen3.8-27b-mxfp8-k0_ttft.svg)
+
+<i>TTFT vs context length (solo) — MXFP8, no MTP</i>
+
+![TTFT vs concurrency (mean and worst user) — MXFP8, no MTP](charts/qwen3.8-27b-mxfp8-k0_conc_ttft.svg)
+
+<i>TTFT vs concurrency (mean and worst user) — MXFP8, no MTP</i>
+
+## Capacity analysis
+
+### Interactive chat (8K context)
+
+Conversational assistant sessions: system prompt plus a few turns fit 8K. Both first-token wait and streaming speed matter. Thresholds: TTFT < 10s · speed >= 15 tok/s.
+
+| Metric | @ 1 | @ 2 | @ 3 | @ 4 | @ 8 |
+|---|---|---|---|---|---|
+| TTFT worst user (s) | 4.12 | 8.06 | 11.9 *(exceeded)* | 15.8 *(exceeded)* | 31.1 *(exceeded)* |
+| Per-user mean speed (tok/s) | 28.3 | 27.4 | 25.8 | 24.1 | 18.2 |
+
+**Capacity limit: ~2 concurrent requests (estimated between the measured 2 and 3 points)**
+
+### Long-context assistant (RAG) (32K context)
+
+Retrieval-augmented / large-prompt assistants at 32K context. Thresholds: TTFT < 10s · speed >= 15 tok/s.
+
+| Metric | @ 1 | @ 2 | @ 3 | @ 4 | @ 8 |
+|---|---|---|---|---|---|
+| TTFT worst user (s) | 17.2 *(exceeded)* | 34.7 *(exceeded)* | 51.4 *(exceeded)* | 68.7 *(exceeded)* | 136.9 *(exceeded)* |
+| Per-user mean speed (tok/s) | 27.1 | 21.8 | 18.3 | 15.4 | 9.5 *(below)* |
+
+**Capacity limit: thresholds exceeded at concurrency 1 - not recommended**
+
+### Document processing (batch) (128K context)
+
+Offline summarization / extraction at the largest measured context. Turnaround matters, not first-token wait: the bar is streaming speed (and total throughput). Thresholds: speed >= 15 tok/s.
+
+| Metric | @ 1 | @ 2 | @ 3 |
+|---|---|---|---|
+| TTFT worst user (s) | 106.5 | 213.4 | 320.4 |
+| Per-user mean speed (tok/s) | 22.1 | 13.1 *(below)* | 9.2 *(below)* |
+
+**Capacity limit: ~1 concurrent requests (estimated between the measured 1 and 2 points)**
+
+### KV pool (the whole-pool bound)
+
+This boot exposed a KV pool of **439,620 tokens** (r139 posture). A session occupies ctx + 664 (output + scheduler slack), so the pool holds:
+
+| Context | Pool capacity (sessions) | Measured green @ conc | c8 fully resident? |
+|---|---|---|---|
+| 1024 (1K) | 260 | 8 (green) | yes |
+| 8192 (8K) | 49 | 8 (green) | yes |
+| 32768 (32K) | 13 | 8 (green) | yes |
+| 65536 (64K) | 6 | - | marginal |
+| 131072 (128K) | 3 | 3 (green) | no |
+
+*Sessions are the whole-pool bound; `--max-num-seqs 64` bounds the running batch above it. TurboQuant dtypes multiply the pool up to 3.68x: see the [KV-cache dtype report](qwen3.8-27b-fp8-kv-cache-dtype.md).*
+
+## Technical analysis
+
+### Queue + prefill decomposition (derived)
+
+At concurrency 1 the queue is empty, so solo TTFT is pure prefill. Under the barrier burst the added first-token wait — `ttft_mean(n) − ttft_mean(1)` — is the queue+prefill-share stagger the Nth user pays. Derived client-side; engine-internal queueing is not exported by this engine version.
+
+| Context | added wait @ n2 | @ n4 | @ n8 |
+|---|---|---|---|
+| 1024 (1K) | +-0.2 s | +1.3 s | +3.8 s |
+| 8192 (8K) | +3.4 s | +8.8 s | +17.5 s |
+| 32768 (32K) | +10.9 s | +29.3 s | +63.9 s |
+| 131072 (128K) | +56.1 s | - | - |
+
+![Added first-token wait vs concurrency (derived queue+prefill stagger) — MXFP8, no MTP](charts/qwen3.8-27b-mxfp8-k0_queue.svg)
+
+<i>Added first-token wait vs concurrency (derived queue+prefill stagger) — MXFP8, no MTP</i>
+
+### Per-user prefill speed
+
+Rate at which input context is processed before the first token. Client-observed (ctx / TTFT at queue ~0); the engine-side device rate is higher — the client view includes chunk drain and the decode-transition tail.
+
+| Context | prefill @ n1 (tok/s) | @ n4 | @ n8 |
+|---|---|---|---|
+| 1024 (1K) | 712 | 373 | 196 |
+| 8192 (8K) | 1990 | 633 | 379 |
+| 32768 (32K) | 1900 | 703 | 404 |
+| 131072 (128K) | 1230 | - | - |
+
+![Client-observed prefill rate vs context length (solo) — MXFP8, no MTP](charts/qwen3.8-27b-mxfp8-k0_prefill.svg)
+
+<i>Client-observed prefill rate vs context length (solo) — MXFP8, no MTP</i>
+
+### Inter-token latency
+
+Time between consecutive streamed tokens — the smoothness of streaming. Solo p50 spans **34.4 ms** (1K) to 45.1 ms; the worst observed p99 is **46 ms** (128K). With MTP one chunk can carry multiple accepted tokens, so the perceived stream is smoother than the raw chunk gap.
+
+![Inter-token latency vs context length (solo) — MXFP8, no MTP](charts/qwen3.8-27b-mxfp8-k0_itl.svg)
+
+<i>Inter-token latency vs context length (solo) — MXFP8, no MTP</i>
+
+### Scaling efficiency
+
+Percentage of ideal linear scaling achieved as concurrency rises (100% = n× the concurrency-1 throughput with no per-user cost). Real efficiency is always lower — the accelerators are shared; high efficiency at your target concurrency signals headroom.
+
+![Scaling efficiency vs concurrency — MXFP8, no MTP](charts/qwen3.8-27b-mxfp8-k0_conc_eff.svg)
+
+<i>Scaling efficiency vs concurrency — MXFP8, no MTP</i>
+
+### Temperature 0.0 vs 1.0 (per context)
+
+![Solo decode speed t0.0 vs t1.0 — MXFP8, no MTP](charts/qwen3.8-27b-mxfp8-k0_temp_cmp.svg)
+
+<i>Solo decode speed t0.0 vs t1.0 — MXFP8, no MTP</i>
+
+## Results — detail tables
+
+### Context sweep (solo, temperature 0.0)
+
+| Context | TTFT (s) | Prefill (tok/s) | Decode (tok/s) | Tok/step | ITL p50 (ms) | ITL p90 (ms) | ITL p99 (ms) | Decode @ t1.0 (tok/s) |
+|---|---|---|---|---|---|---|---|---|
+| 1024 (1K) | 1.40 | 730 | 28.7 | 1.00 | 34.4 | 34.6 | 38.1 | 28.6 |
+| 8192 (8K) | 4.31 | 1,902 | 28.6 | 1.00 | 35.0 | 35.0 | 35.3 | 27.8 |
+| 32768 (32K) | 17.37 | 1,886 | 27.1 | 1.00 | 37.0 | 37.0 | 37.5 | 26.7 |
+| 65536 (64K) | 40.82 | 1,605 | 25.0 | 1.00 | 39.7 | 39.8 | 40.4 | - |
+| 131072 (128K) | 106.62 | 1,229 | 22.1 | 1.00 | 45.0 | 45.2 | 46.2 | 22.1 |
+
+### Concurrency sweep — 1024 (1K) context (temperature 0.0)
+
+| Concurrency | TTFT mean (s) | TTFT max (s) | Per-user mean (tok/s) | Per-user worst (tok/s) | Aggregate (tok/s) | Scaling eff. | ITL p50 med (ms) | ITL p90 max (ms) |
+|---|---|---|---|---|---|---|---|---|
+| 1 | 1.44 | 1.44 | 29.1 | 29.1 | 27 | 100% | 34.4 | 34.6 |
+| 2 | 1.22 | 1.60 | 27.9 | 27.5 | 53 | 97% | 34.9 | 35.0 |
+| 3 | 2.10 | 2.60 | 27.3 | 26.2 | 75 | 92% | 35.4 | 35.6 |
+| 4 | 2.74 | 3.33 | 26.7 | 25.0 | 95 | 87% | 35.7 | 35.9 |
+| 8 | 5.23 | 5.81 | 25.4 | 21.9 | 166 | 76% | 37.6 | 37.8 |
+
+### Concurrency sweep — 8192 (8K) context (temperature 0.0)
+
+| Concurrency | TTFT mean (s) | TTFT max (s) | Per-user mean (tok/s) | Per-user worst (tok/s) | Aggregate (tok/s) | Scaling eff. | ITL p50 med (ms) | ITL p90 max (ms) |
+|---|---|---|---|---|---|---|---|---|
+| 1 | 4.12 | 4.12 | 28.3 | 28.3 | 24 | 100% | 35.0 | 35.0 |
+| 2 | 7.52 | 8.06 | 27.4 | 26.9 | 41 | 86% | 35.5 | 35.6 |
+| 3 | 10.1 | 11.9 | 25.8 | 22.7 | 54 | 75% | 36.2 | 36.3 |
+| 4 | 12.9 | 15.8 | 24.1 | 19.2 | 63 | 66% | 36.8 | 36.8 |
+| 8 | 21.6 | 31.1 | 18.2 | 12.3 | 85 | 45% | 40.2 | 40.5 |
+
+### Concurrency sweep — 32768 (32K) context (temperature 0.0)
+
+| Concurrency | TTFT mean (s) | TTFT max (s) | Per-user mean (tok/s) | Per-user worst (tok/s) | Aggregate (tok/s) | Scaling eff. | ITL p50 med (ms) | ITL p90 max (ms) |
+|---|---|---|---|---|---|---|---|---|
+| 1 | 17.2 | 17.2 | 27.1 | 27.1 | 15 | 100% | 37.0 | 37.0 |
+| 2 | 28.2 | 34.7 | 21.8 | 17.0 | 21 | 69% | 37.6 | 37.6 |
+| 3 | 37.8 | 51.4 | 18.3 | 11.4 | 24 | 53% | 38.6 | 38.7 |
+| 4 | 46.6 | 68.7 | 15.4 | 8.5 | 26 | 43% | 39.9 | 40.0 |
+| 8 | 81.1 | 136.9 | 9.5 | 4.2 | 29 | 24% | 46.7 | 46.8 |
+
+### Concurrency sweep — 131072 (128K) context (temperature 0.0)
+
+| Concurrency | TTFT mean (s) | TTFT max (s) | Per-user mean (tok/s) | Per-user worst (tok/s) | Aggregate (tok/s) | Scaling eff. | ITL p50 med (ms) | ITL p90 max (ms) |
+|---|---|---|---|---|---|---|---|---|
+| 1 | 106.5 | 106.5 | 22.1 | 22.1 | 4 | 100% | 45.1 | 45.2 |
+| 2 | 162.7 | 213.4 | 13.1 | 4.7 | 5 | 55% | 45.7 | 45.8 |
+| 3 | 216.8 | 320.4 | 9.2 | 2.5 | 5 | 38% | 47.6 | 47.9 |
+
+*Scaling eff. = aggregate / (n x aggregate-at-1): 100% = perfect linear scaling. ITL p50 med = median of per-request p50s; ITL p90 max = worst user. Aggregate is wall-clock (n x 600 tokens / wall) and includes the slowest-user tail.*
 
 ## Configuration (copy & run on your own hardware)
 
-#### Validated invocation (what the r138 gate ran, byte-exact)
+### Validated invocation (what the gate ran, byte-exact)
 
 ```bash
-# image vllm-arc:v0.30.0-b70-cert23 ; 2026-11-10 ; TP2 on 2x Arc Pro B70
+# image vllm-arc:v0.30.0-b70-cert23 ; 2026-11-11 ; TP2 on 2x Arc Pro B70
 ARC_IMAGE=vllm-arc:v0.30.0-b70-cert23 ARC_NAME=arc-b70 \
   ARC_MODEL=/models/qwen3.8-27b ARC_SERVED=qwen3.8-27b ARC_QUANTCFG={"ignore":["*visual*","*linear_attn*","mtp.fc"]} ARC_GMU=0.85 ARC_GRAPH=1 ARC_LMC=1 ARC_FP8=0 ARC_QUANT=mxfp8 ARC_SPEC=0 \
   bash serve_arc_b70.sh     # tools/serve_arc_b70.sh in this repo
@@ -81,36 +331,17 @@ exec vllm serve --model /models/target \
   --port 8000
 ```
 
-## Results — context sweep (temperature 0.0)
+## Test parameters
 
-| Context | TTFT (s) | Prefill (tok/s) | Decode (tok/s) | Tok/step | ITL p50 (ms) | ITL p90 (ms) | ITL p99 (ms) |
-|---|---|---|---|---|---|---|---|
-| 1024 (1K) | 1.40 | 730 | 28.7 | 1.00 | 34.4 | 34.6 | 38.1 |
-| 8192 (8K) | 4.31 | 1,902 | 28.6 | 1.00 | 35.0 | 35.0 | 35.3 |
-| 32768 (32K) | 17.37 | 1,886 | 27.1 | 1.00 | 37.0 | 37.0 | 37.5 |
-| 65536 (64K) | 40.82 | 1,605 | 25.0 | 1.00 | 39.7 | 39.8 | 40.4 |
-| 131072 (128K) | 106.62 | 1,229 | 22.1 | 1.00 | 45.0 | 45.2 | 46.2 |
-
-## Charts
-
-![TTFT vs context length — MXFP8, no MTP](charts/qwen3.8-27b-mxfp8-k0_ttft.svg)
-
-<i>TTFT vs context length — MXFP8, no MTP</i>
-
-![Decode speed vs context length — MXFP8, no MTP](charts/qwen3.8-27b-mxfp8-k0_decode.svg)
-
-<i>Decode speed vs context length — MXFP8, no MTP</i>
-
-![Prefill rate vs context length — MXFP8, no MTP](charts/qwen3.8-27b-mxfp8-k0_prefill.svg)
-
-<i>Prefill rate vs context length — MXFP8, no MTP</i>
-
-![Inter-token latency vs context length — MXFP8, no MTP](charts/qwen3.8-27b-mxfp8-k0_itl.svg)
-
-<i>Inter-token latency vs context length — MXFP8, no MTP</i>
+- Context lengths: 1K, 8K, 32K, 64K, 128K tokens (prompt + template). Solo faces: concurrency 1, 600 output tokens, `ignore_eos`.
+- Concurrency sweeps: 1/2/3/4/8 at contexts 1K, 8K, 32K, 128K — barrier-started simultaneous requests, 600 output tokens each, temperature 0.0, plus one temperature-1.0 solo face per context.
+- Prompts: seeded random-token contexts, unique per face and per request slot (`p138_face.py` / `p139_conc.py`, tag-seeded) — every face is a cold prefill (no prompt-cache hits).
+- Client-side timing on the rig loopback; TTFT includes the full engine prefill window (at c=1 queue wait ~0; at c=N the TTFT spread IS the queue+prefill stagger).
 
 ## Notes
 
-- Decode speed = output tokens / decode window (spec-decode aware; with MTP one stream chunk carries multiple accepted tokens — Tok/step is the acceptance view).
+- Per-user speed = output tokens / decode window (spec-decode aware; with MTP one stream chunk carries multiple accepted tokens). Aggregate = n x 600 tokens / wall clock.
+- The r139 1K t0.0 face runs first after the boot warmup at a cold spec-verify batch shape — its acceptance (2.8 tok/step) sits below the family norm (3.8 at 8K); the 8K/32K faces are the steady reference. Temperature comparisons are within-harness (r138 sweep vs r139 faces, both reported).
 - Prefill rate is the client-observed ctx/TTFT; the engine-side device rate (P6.36 decomposition) is ~2.1–2.9k tok/s at fp8 — the client view includes chunk drain and the decode-transition tail.
-- Bank: `results/2026-11-10-p637-reports/` (faces, postures, serve logs); face tool: `tools/ar/p138/p138_face.py`.
+- Metric definitions, UX bands, use-case thresholds and the honest-limits statement: [METHODOLOGY.md](METHODOLOGY.md).
+- Banks: `results/2026-11-10-p637-reports/` (solo + temperature faces, r138) and `results/2026-11-11-p637b-conc/` (concurrency faces, r139); tools `tools/ar/p138/p138_face.py`, `tools/ar/p139/p139_conc.py`.
