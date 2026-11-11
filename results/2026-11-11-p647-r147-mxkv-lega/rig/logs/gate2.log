@@ -1,0 +1,12 @@
+=== [r147:legA] W14 quiesce 19:56:36 ===
+=== [r147:legA] offline harness in vllm-arc:v0.30.0-b70-cert23 19:56:52 ===
+=== [r147:legA] harness exit rc=1 19:57:10 ===
+[face: ref] reference self-test (CPU, exact math)
+  FAIL ref/mxfp8: round-trip rel 0.0782 cos 0.999655
+  ok   ref/mxfp8: zero rows encode to zero payload + code 0
+  FAIL ref/mxfp4: round-trip rel 1.0000 cos 0.993256
+  ok   ref/mxfp4: zero rows encode to zero payload + code 0
+  FAIL ref/-: ceil_log2_exact disagrees with naive on 1/1M points
+[face: bytes] store-kernel byte law (XPU)
+R147_LEGA_DONE rc=1 2026-11-11T19:57:10Z
+W14_RESTORED 2026-11-11T19:57:10Z

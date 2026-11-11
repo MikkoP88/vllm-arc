@@ -1,0 +1,40 @@
+[face: ref] reference self-test (CPU, exact math)
+  ok   ref/mxfp8: round-trip cos 0.999655, rel-RMSE 0.0263
+  ok   ref/mxfp8: zero rows encode to zero payload + code 0
+  ok   ref/mxfp4: round-trip cos 0.993256, rel-RMSE 0.1160
+  ok   ref/mxfp4: zero rows encode to zero payload + code 0
+  ok   ref/-: ceil_log2_exact satisfies 2^e >= r > 2^(e-1) on 1M points (naive disagrees on 1 — ulp edge, informational)
+[face: bytes] store-kernel byte law (XPU)
+  ok   bytes/mxfp8: 0 byte mismatches over 512 slots
+  ok   bytes/mxfp4: 0 byte mismatches over 512 slots
+[face: decode] kernel decode vs fp64 exact on dequantized cache (XPU)
+  ok   decode/mxfp8: random: vs-exact d=1.28e-07 c=1.0000000; vs-orig cos=0.999158 rmse=0.0044
+  ok   decode/mxfp4: random: vs-exact d=9.33e-08 c=1.0000000; vs-orig cos=0.985926 rmse=0.0180
+[face: accuracy] kernel decode vs fp64 attention on unquantized K/V (XPU)
+  ok   accuracy/mxfp8: random600: vs-exact d=1.06e-07 c=1.0000000; vs-orig cos=0.999278 rmse=0.0044
+  ok   accuracy/mxfp4: random600: vs-exact d=1.76e-07 c=1.0000000; vs-orig cos=0.988298 rmse=0.0176
+[face: robust] adversarial tensors + boundary seq lens (XPU)
+  ok   robust/mxfp8: denormal: vs-exact d=1.95e-09 c=1.0000000; vs-orig cos=0.999598 rmse=0.0004
+  ok   robust/mxfp4: denormal: vs-exact d=1.42e-09 c=1.0000000; vs-orig cos=0.993424 rmse=0.0015
+  ok   robust/mxfp8: outlier: vs-exact d=6.09e-09 c=1.0000000; vs-orig cos=0.999560 rmse=0.0010
+  ok   robust/mxfp4: outlier: vs-exact d=6.96e-09 c=1.0000000; vs-orig cos=0.994661 rmse=0.0035
+  ok   robust/mxfp8: zeroed: vs-exact d=2.31e-09 c=1.0000000; vs-orig cos=0.999624 rmse=0.0004
+  ok   robust/mxfp4: zeroed: vs-exact d=2.48e-09 c=1.0000000; vs-orig cos=0.993719 rmse=0.0015
+  ok   robust/mxfp8: signed: vs-exact d=2.49e-08 c=1.0000000; vs-orig cos=0.999379 rmse=0.0007
+  ok   robust/mxfp4: signed: vs-exact d=1.85e-08 c=1.0000000; vs-orig cos=0.987801 rmse=0.0032
+  ok   robust/mxfp8: len1: vs-exact d=0.00e+00 c=1.0000000; vs-orig cos=0.999648 rmse=0.0265
+  ok   robust/mxfp4: len1: vs-exact d=0.00e+00 c=1.0000000; vs-orig cos=0.993936 rmse=0.1086
+  ok   robust/mxfp8: len63: vs-exact d=2.29e-07 c=1.0000000; vs-orig cos=0.999342 rmse=0.0111
+  ok   robust/mxfp4: len63: vs-exact d=1.50e-07 c=1.0000000; vs-orig cos=0.989699 rmse=0.0438
+  ok   robust/mxfp8: len64: vs-exact d=2.52e-07 c=1.0000000; vs-orig cos=0.999264 rmse=0.0115
+  ok   robust/mxfp4: len64: vs-exact d=2.59e-07 c=1.0000000; vs-orig cos=0.989036 rmse=0.0443
+  ok   robust/mxfp8: len65: vs-exact d=1.66e-07 c=1.0000000; vs-orig cos=0.999387 rmse=0.0098
+  ok   robust/mxfp4: len65: vs-exact d=2.70e-07 c=1.0000000; vs-orig cos=0.987772 rmse=0.0436
+[face: telemetry] store/decode timings + effective bytes/s (XPU)
+  ok   telemetry/mxfp8 ctx=1024: store 0.070 ms, decode 0.333 ms, 6.5 GB/s effective
+  ok   telemetry/mxfp8 ctx=8192: store 0.067 ms, decode 2.405 ms, 7.2 GB/s effective
+  ok   telemetry/mxfp8 ctx=32768: store 0.219 ms, decode 9.594 ms, 7.2 GB/s effective
+  ok   telemetry/mxfp4 ctx=1024: store 0.068 ms, decode 0.409 ms, 2.7 GB/s effective
+  ok   telemetry/mxfp4 ctx=8192: store 0.071 ms, decode 2.874 ms, 3.1 GB/s effective
+  ok   telemetry/mxfp4 ctx=32768: store 0.175 ms, decode 11.379 ms, 3.1 GB/s effective
+VERDICT: PASS

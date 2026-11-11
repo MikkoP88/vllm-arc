@@ -1,0 +1,31 @@
+=== [r147:legA] W14 quiesce 20:05:31 ===
+=== [r147:legA] offline harness in vllm-arc:v0.30.0-b70-cert23 20:05:48 ===
+=== [r147:legA] harness exit rc=1 20:06:47 ===
+[face: ref] reference self-test (CPU, exact math)
+  ok   ref/mxfp8: round-trip cos 0.999655, rel-RMSE 0.0263
+  ok   ref/mxfp8: zero rows encode to zero payload + code 0
+  ok   ref/mxfp4: round-trip cos 0.993256, rel-RMSE 0.1160
+  ok   ref/mxfp4: zero rows encode to zero payload + code 0
+  ok   ref/-: ceil_log2_exact satisfies 2^e >= r > 2^(e-1) on 1M points (naive disagrees on 1 — ulp edge, informational)
+[face: bytes] store-kernel byte law (XPU)
+  ok   bytes/mxfp8: 0 byte mismatches over 512 slots
+  ok   bytes/mxfp4: 0 byte mismatches over 512 slots
+[face: decode] kernel decode vs fp64 exact on dequantized cache (XPU)
+  ok   decode/mxfp8: random: vs-exact d=1.28e-07 c=1.0000000; vs-orig cos=0.999158 rmse=0.0044
+  ok   decode/mxfp4: random: vs-exact d=9.33e-08 c=1.0000000; vs-orig cos=0.985926 rmse=0.0180
+[face: accuracy] kernel decode vs fp64 attention on unquantized K/V (XPU)
+  FAIL accuracy/mxfp8: random600: vs-original cos 0.999278 < 0.9999
+  FAIL accuracy/mxfp4: random600: vs-original cos 0.988298 < 0.99
+[face: robust] adversarial tensors + boundary seq lens (XPU)
+  ok   robust/mxfp8: denormal: vs-exact d=1.95e-09 c=1.0000000; vs-orig cos=0.999598 rmse=0.0004
+  ok   robust/mxfp4: denormal: vs-exact d=1.42e-09 c=1.0000000; vs-orig cos=0.993424 rmse=0.0015
+  ok   robust/mxfp8: outlier: vs-exact d=6.09e-09 c=1.0000000; vs-orig cos=0.999560 rmse=0.0010
+  ok   robust/mxfp4: outlier: vs-exact d=6.96e-09 c=1.0000000; vs-orig cos=0.994661 rmse=0.0035
+  ok   robust/mxfp8: zeroed: vs-exact d=2.31e-09 c=1.0000000; vs-orig cos=0.999624 rmse=0.0004
+  ok   robust/mxfp4: zeroed: vs-exact d=2.48e-09 c=1.0000000; vs-orig cos=0.993719 rmse=0.0015
+  ok   robust/mxfp8: signed: vs-exact d=2.49e-08 c=1.0000000; vs-orig cos=0.999379 rmse=0.0007
+  ok   robust/mxfp4: signed: vs-exact d=1.85e-08 c=1.0000000; vs-orig cos=0.987801 rmse=0.0032
+  FAIL robust/mxfp8: non-finite output (len1)
+  FAIL robust/mxfp4: non-finite output (len1)
+R147_LEGA_DONE rc=1 2026-11-11T20:06:47Z
+W14_RESTORED 2026-11-11T20:06:47Z
