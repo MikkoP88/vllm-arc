@@ -193,6 +193,72 @@ churn included — the release bar "no corruption on ANY kv-cache
 type"). Evidence: `results/2026-11-03-p618-cert7/rig/gate/longprobe_*`,
 `results/2026-11-04-p619-tqverify/rig/gate/`.
 
+## Performance-testing context ladder (standing directive)
+
+**Directive (2026-11-11):** whenever a performance measurement leg is
+scheduled — engine validation, posture sweeps, report-corpus renewal,
+or a rung-fill leg — the context matrix carries the **canonical rung
+ladder {1K, 8K, 32K, 64K, 128K} on every boot where `max_model_len`
+and the booted KV pool permit the rung**, and every scheduled rung is
+swept to its wall. No rung is dropped for schedule convenience: the
+`docs/reports/` axes, tables, and band edges are built on the full
+ladder, and a skipped-but-feasible rung renders as a permanent `-` row
+/ bridged line until it is measured.
+
+Rules:
+
+- **Feasibility wall** per rung: `n_max = pool // (ctx + 664)` (600
+  output tokens + 64 scheduler slack). The sweep runs conc
+  {1, 2, 3, 4, 8, wall} plus the t0.0/t1.0 solo pair per rung;
+  infeasible points are banked as `KV_CAP` rows in the gate log —
+  never silently dropped. The r139/r140 gate logic already does this;
+  only the rung list needed the law.
+- **Rungs above `max_model_len`** are impossible, not scheduled, and
+  the reports stop the axis at the highest measured rung (gemma 40960
+  boots stop at 32K; 128K on gemma requires the MXFP4 annex boot —
+  the mxfp8 control refusal banked in
+  `results/2026-11-11-r140-gemma128k/gm8x/` is the boundary evidence:
+  5.83 GiB KV needed > 5.3 GiB available, engine-estimated max length
+  103296).
+- **Solo and concurrency ladders are the same rung set** (the r138
+  solo gate and the r139/r140 concurrency gates); a rung measured
+  solo-only still leaves every loaded line bridging across its slot.
+- **Comparability law**: only faces on the current certified image
+  with the current face harnesses (`tools/ar/p138/p138_face.py`,
+  `tools/ar/p139/p139_conc.py`) merge into `docs/reports/`.
+  Older-era 64K probes (the r29 TTFT ladder, the r46 soak face) stay
+  archived — different engine and harness conditions (54.8 s vs
+  38–42 s at 64K makes the incomparability measurable).
+
+History and current state: the r138 solo directive carried the full
+ladder (64K included — the six qwen solo faces), but the r139
+concurrency and r140 annex matrices hardcoded {1K, 8K, 32K, 128K}: 64K
+was feasible on all 11 long-context boots and never scheduled, while
+every scheduled rung was measured exactly to its wall (128K walls hit
+on all 11 cells; gemma main hit its shallow 8K/32K walls). The gates
+now carry the full ladder; the banked feasibility walls for a 64K fill
+leg (pool // 66200 per cell, capped at the n8 design ceiling):
+
+| Boot (banked pool) | 64K wall | 128K wall | 128K measured |
+|---|---|---|---|
+| qwen fp8 k0 (494,979) | n7 | n3 | n3 — at wall |
+| qwen fp8 k3 (398,363) | n6 | n3 | n3 — at wall |
+| qwen mxfp4 k0 (708,277) | n8 | n5 | n5 — at wall |
+| qwen mxfp4 k3 (599,525) | n8 | n4 | n4 — at wall |
+| qwen mxfp8 k0 (439,620) | n6 | n3 | n3 — at wall |
+| qwen mxfp8 k3 (306,494) | n4 | n2 | n2 — at wall |
+| tq_3bit (959,909) | n8 | n7 | n7 — at wall |
+| tq_4bit (745,519) | n8 | n5 | n5 — at wall |
+| tq_k3v4 (838,192) | n8 | n6 | n6 — at wall |
+| tq_k8v4 (517,815) | n7 | n3 | n3 — at wall |
+| gemma mxfp4 annex (288,972) | n4 | n2 | n2 — at wall |
+
+A 64K fill leg is therefore: same postures, the updated gates
+(`tools/ar/r139_conc.sh`, `tools/ar/r140_gemma128k.sh`), ~60 faces
+across the 11 reachable cells; `tools/ar/p139/p139_report.py` picks
+the faces up with no generator change — the report corpus already
+renders the empty 64K slots per its ladder laws.
+
 ## Laws that every test posture keeps
 
 - **align law**: never remove `--mamba-cache-mode=align`; never ship

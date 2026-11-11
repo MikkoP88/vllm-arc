@@ -268,6 +268,34 @@ raw evidence is banked under `results/YYYY-MM-DD-<phase>-*/`.
 
 ## Serve-layer and analysis phases (no cert — engine bytes unchanged)
 
+- **P6.46 performance-testing context-ladder directive (2026-11-11)**:
+  a bank audit (r138/r139/r140) proved every scheduled rung was swept
+  to its KV wall — 128K walls hit exactly on all 11 long-context
+  cells (n2–n7 by quant), gemma main hit its shallow 8K/32K walls —
+  but 64K was in NO concurrency or annex matrix: the gates hardcoded
+  CTXS {1K, 8K, 32K, 128K} while the rung was feasible on all 11
+  boots (walls n4–n14 from pools 288,972–959,909). The r138 SOLO
+  directive did carry the full ladder — the six qwen 64K solo faces
+  are the only cert23-era 64K data (older r29/r46-era 64K probes are
+  pre-cert image/harness: 54.8 s vs 38–42 s TTFT — archived under the
+  comparability law, never merged). The gm8x refusal banks the mxfp8
+  long-context boundary (5.83 GiB KV needed > 5.3 available;
+  engine-estimated max length 103,296 — 128K genuinely needs MXFP4
+  weights). LANDED DIRECTIVE: `docs/TESTING-arc.md` gains the standing
+  **performance-testing context ladder** section — canonical rung
+  ladder {1K, 8K, 32K, 64K, 128K} on every boot where `max_model_len`
+  and the booted pool permit, wall sweep `n_max = pool // (ctx + 664)`
+  at conc {1,2,3,4,8,wall} + the t0.0/t1.0 pair, KV_CAP banking, the
+  solo/conc rung-set equality, the same-image/same-harness merge law,
+  and the banked feasibility table; both gates now carry 65536
+  (`tools/ar/r139_conc.sh`, `tools/ar/r140_gemma128k.sh`; gemma main
+  stays 3-rung — maxlen 40960; long gemma boots go through r140). A
+  64K fill leg is ~60 faces across the 11 reachable cells on the
+  updated gates, and `p139_report.py` picks the faces up with no
+  generator change (P6.45 ladder rows + P6.44 connect lines already
+  render the empty slots). No rig work run — the directive fires when
+  a leg is needed. Docs + gate scripts only; no engine bytes changed —
+  cert23 stands.
 - **P6.45 canonical rung rows in every context table (2026-11-11)**: extends
   the ladder law from the chart axes (P6.43/P6.44) to the TABLES: every
   context-row table now renders the full canonical rung ladder up to its
