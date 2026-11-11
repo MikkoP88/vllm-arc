@@ -6,38 +6,38 @@ Individual close-out reports per model x quantization x MTP posture, each with t
 
 | Report | Precision | MTP | Peak decode | Outcome |
 |---|---|---|---|---|
-| [qwen-fp8-k3](qwen-fp8-k3.md) | FP8 (fp8 checkpoint, compressed-tensors) | MTP k3 | 93.8 tok/s @ 1K | FACES_OK |
-| [qwen-fp8-k0](qwen-fp8-k0.md) | FP8 (fp8 checkpoint, compressed-tensors) | no MTP | 34.0 tok/s @ 1K | FACES_OK |
-| [qwen-mxfp8-k3](qwen-mxfp8-k3.md) | MXFP8 (online, bf16 base checkpoint) | MTP k3 | 81.1 tok/s @ 8K | FACES_OK |
-| [qwen-mxfp8-k0](qwen-mxfp8-k0.md) | MXFP8 (online, bf16 base checkpoint) | no MTP | 28.7 tok/s @ 1K | FACES_OK |
-| [qwen-mxfp4-k3](qwen-mxfp4-k3.md) | MXFP4 W4A16 (online, bf16 base checkpoint) | MTP k3 | 103.3 tok/s @ 8K | FACES_OK |
-| [qwen-mxfp4-k0](qwen-mxfp4-k0.md) | MXFP4 W4A16 (online, bf16 base checkpoint) | no MTP | 36.9 tok/s @ 1K | FACES_OK |
+| [qwen3.8-27b-fp8-k3](qwen3.8-27b-fp8-k3.md) | FP8 (fp8 checkpoint, compressed-tensors) | MTP k3 | 93.8 tok/s @ 1K | FACES_OK |
+| [qwen3.8-27b-fp8-k0](qwen3.8-27b-fp8-k0.md) | FP8 (fp8 checkpoint, compressed-tensors) | no MTP | 34.0 tok/s @ 1K | FACES_OK |
+| [qwen3.8-27b-mxfp8-k3](qwen3.8-27b-mxfp8-k3.md) | MXFP8 (online, bf16 base checkpoint) | MTP k3 | 81.1 tok/s @ 8K | FACES_OK |
+| [qwen3.8-27b-mxfp8-k0](qwen3.8-27b-mxfp8-k0.md) | MXFP8 (online, bf16 base checkpoint) | no MTP | 28.7 tok/s @ 1K | FACES_OK |
+| [qwen3.8-27b-mxfp4-k3](qwen3.8-27b-mxfp4-k3.md) | MXFP4 W4A16 (online, bf16 base checkpoint) | MTP k3 | 103.3 tok/s @ 8K | FACES_OK |
+| [qwen3.8-27b-mxfp4-k0](qwen3.8-27b-mxfp4-k0.md) | MXFP4 W4A16 (online, bf16 base checkpoint) | no MTP | 36.9 tok/s @ 1K | FACES_OK |
 
 ## Gemma-4-31B (dense hybrid, no MTP head)
 
 | Report | Precision | MTP | Peak decode | Outcome |
 |---|---|---|---|---|
-| [gemma-fp8](gemma-fp8.md) | FP8 (online, bf16 base checkpoint) | no MTP | 27.0 tok/s @ 1K | FACES_OK |
-| [gemma-mxfp8](gemma-mxfp8.md) | MXFP8 (online, bf16 base checkpoint) | no MTP | 26.5 tok/s @ 1K | FACES_OK |
-| [gemma-mxfp4](gemma-mxfp4.md) | MXFP4 W4A16 (online, bf16 base checkpoint) | no MTP | 38.0 tok/s @ 1K | FACES_OK |
+| [gemma-4-31b-fp8](gemma-4-31b-fp8.md) | FP8 (online, bf16 base checkpoint) | no MTP | 27.0 tok/s @ 1K | FACES_OK |
+| [gemma-4-31b-mxfp8](gemma-4-31b-mxfp8.md) | MXFP8 (online, bf16 base checkpoint) | no MTP | 26.5 tok/s @ 1K | FACES_OK |
+| [gemma-4-31b-mxfp4](gemma-4-31b-mxfp4.md) | MXFP4 W4A16 (online, bf16 base checkpoint) | no MTP | 38.0 tok/s @ 1K | FACES_OK |
 
 ## Cross-cutting
 
-- [Qwen FP8 + MTP k3 — KV-cache dtype comparison](qwen-fp8-kv-cache-dtype.md)
+- [Qwen FP8 + MTP k3 — KV-cache dtype comparison](qwen3.8-27b-fp8-kv-cache-dtype.md)
 
-![qwen all decode](charts/qwen_all_decode.svg)
+![qwen all decode](charts/qwen3.8-27b_all_decode.svg)
 
 <i>qwen all decode</i>
 
-![qwen all ttft](charts/qwen_all_ttft.svg)
+![qwen all ttft](charts/qwen3.8-27b_all_ttft.svg)
 
 <i>qwen all ttft</i>
 
-![gemma all decode](charts/gemma_all_decode.svg)
+![gemma all decode](charts/gemma-4-31b_all_decode.svg)
 
 <i>gemma all decode</i>
 
-![gemma all ttft](charts/gemma_all_ttft.svg)
+![gemma all ttft](charts/gemma-4-31b_all_ttft.svg)
 
 <i>gemma all ttft</i>
 

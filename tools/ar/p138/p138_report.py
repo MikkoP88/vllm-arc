@@ -36,39 +36,39 @@ GM = ("ARC_MODEL=/models/gemma4-31b ARC_SERVED=gemma4-31b ARC_GMU=0.8 "
 # with tools/ar/r138_reports.sh; the banked posture.txt echo is the
 # runtime evidence for each).
 CONFIGS = [
-    dict(cell="qf3", slug="qwen-fp8-k3", model="Qwen3.8-27B", org="Qwen (Alibaba)",
+    dict(cell="qf3", slug="qwen3.8-27b-fp8-k3", model="Qwen3.8-27B", org="Qwen (Alibaba)",
          quant="FP8 (fp8 checkpoint, compressed-tensors)", plan="qwen3", mtp="MTP k3",
          env=QF8 + " ARC_SPEC=3", ctxs=QCTX, temps=True,
          blurb="the certified incumbent posture"),
-    dict(cell="qf0", slug="qwen-fp8-k0", model="Qwen3.8-27B", org="Qwen (Alibaba)",
+    dict(cell="qf0", slug="qwen3.8-27b-fp8-k0", model="Qwen3.8-27B", org="Qwen (Alibaba)",
          quant="FP8 (fp8 checkpoint, compressed-tensors)", plan="qwen0", mtp="no MTP",
          env=QF8 + " ARC_SPEC=0", ctxs=QCTX, temps=False,
          blurb="the MTP-off ablation of the incumbent"),
-    dict(cell="q83", slug="qwen-mxfp8-k3", model="Qwen3.8-27B", org="Qwen (Alibaba)",
+    dict(cell="q83", slug="qwen3.8-27b-mxfp8-k3", model="Qwen3.8-27B", org="Qwen (Alibaba)",
          quant="MXFP8 (online, bf16 base checkpoint)", plan="qwen3", mtp="MTP k3",
          env=QMX + " ARC_QUANT=mxfp8 ARC_SPEC=3", ctxs=QCTX, temps=True,
          blurb="the online-MXFP8 lane"),
-    dict(cell="q80", slug="qwen-mxfp8-k0", model="Qwen3.8-27B", org="Qwen (Alibaba)",
+    dict(cell="q80", slug="qwen3.8-27b-mxfp8-k0", model="Qwen3.8-27B", org="Qwen (Alibaba)",
          quant="MXFP8 (online, bf16 base checkpoint)", plan="qwen0", mtp="no MTP",
          env=QMX + " ARC_QUANT=mxfp8 ARC_SPEC=0", ctxs=QCTX, temps=False,
          blurb="the MTP-off ablation of the MXFP8 lane"),
-    dict(cell="q43", slug="qwen-mxfp4-k3", model="Qwen3.8-27B", org="Qwen (Alibaba)",
+    dict(cell="q43", slug="qwen3.8-27b-mxfp4-k3", model="Qwen3.8-27B", org="Qwen (Alibaba)",
          quant="MXFP4 W4A16 (online, bf16 base checkpoint)", plan="qwen3", mtp="MTP k3",
          env=QMX + " ARC_QUANT=mxfp4 ARC_MXFP4_MODE=w4a16 ARC_SPEC=3", ctxs=QCTX, temps=True,
          blurb="the decode champion posture (P6.35-V winner)"),
-    dict(cell="q40", slug="qwen-mxfp4-k0", model="Qwen3.8-27B", org="Qwen (Alibaba)",
+    dict(cell="q40", slug="qwen3.8-27b-mxfp4-k0", model="Qwen3.8-27B", org="Qwen (Alibaba)",
          quant="MXFP4 W4A16 (online, bf16 base checkpoint)", plan="qwen0", mtp="no MTP",
          env=QMX + " ARC_QUANT=mxfp4 ARC_MXFP4_MODE=w4a16 ARC_SPEC=0", ctxs=QCTX, temps=False,
          blurb="the MTP-off ablation of the MXFP4 lane"),
-    dict(cell="gf8", slug="gemma-fp8", model="Gemma-4-31B", org="Google",
+    dict(cell="gf8", slug="gemma-4-31b-fp8", model="Gemma-4-31B", org="Google",
          quant="FP8 (online, bf16 base checkpoint)", plan="gemma", mtp="no MTP",
          env=GM + " ARC_QUANT=fp8", ctxs=GCTX, temps=False,
          blurb="the gemma online-FP8 capability lane"),
-    dict(cell="gm8", slug="gemma-mxfp8", model="Gemma-4-31B", org="Google",
+    dict(cell="gm8", slug="gemma-4-31b-mxfp8", model="Gemma-4-31B", org="Google",
          quant="MXFP8 (online, bf16 base checkpoint)", plan="gemma", mtp="no MTP",
          env=GM + " ARC_QUANT=mxfp8", ctxs=GCTX, temps=False,
          blurb="the gemma MXFP8 lane"),
-    dict(cell="gm4", slug="gemma-mxfp4", model="Gemma-4-31B", org="Google",
+    dict(cell="gm4", slug="gemma-4-31b-mxfp4", model="Gemma-4-31B", org="Google",
          quant="MXFP4 W4A16 (online, bf16 base checkpoint)", plan="gemma", mtp="no MTP",
          env=GM + " ARC_QUANT=mxfp4 ARC_MXFP4_MODE=w4a16", ctxs=GCTX, temps=False,
          blurb="the gemma MXFP4 lane"),
@@ -598,7 +598,7 @@ def kv_report(bank, out, date):
           "## Configuration (copyable deltas on the certified posture)",
           "",
           "Base = the Qwen3.8-27B FP8 + MTP k3 block from "
-          "[qwen-fp8-mtp-k3.md](qwen-fp8-mtp-k3.md); each cell changes only:",
+          "[qwen3.8-27b-fp8-k3.md](qwen3.8-27b-fp8-k3.md); each cell changes only:",
           "",
           md_table(["dtype", "cell", "delta", "max_model_len"], [
               ["fp8_e4m3", "qf3", "(none — incumbent)", "262144"],
@@ -654,7 +654,7 @@ def kv_report(bank, out, date):
           "the identity records and per-preset guidance: "
           "CONFIGURATION-arc \"KV-cache dtype\"; evidence: "
           "`results/2026-11-04-p619-tqverify/`."]
-    with open(os.path.join(out, "qwen-fp8-kv-cache-dtype.md"), "w",
+    with open(os.path.join(out, "qwen3.8-27b-fp8-kv-cache-dtype.md"), "w",
               encoding="utf-8") as f:
         f.write("\n".join(L) + "\n")
 
@@ -696,9 +696,9 @@ def index_report(bank, out, date):
         ["[%s](%s.md)" % (c["slug"], c["slug"]), c["quant"], c["mtp"],
          _peak(bank, c), outcome(bank, c["cell"])] for c in gcfgs]))
     L += ["", "## Cross-cutting", "",
-          "- [Qwen FP8 + MTP k3 — KV-cache dtype comparison](qwen-fp8-kv-cache-dtype.md)",
+          "- [Qwen FP8 + MTP k3 — KV-cache dtype comparison](qwen3.8-27b-fp8-kv-cache-dtype.md)",
           ""]
-    for nm in ["qwen_all_decode", "qwen_all_ttft", "gemma_all_decode", "gemma_all_ttft"]:
+    for nm in ["qwen3.8-27b_all_decode", "qwen3.8-27b_all_ttft", "gemma-4-31b_all_decode", "gemma-4-31b_all_ttft"]:
         L.append(img("idx", nm, nm.replace("_", " ")))
         L.append("")
     L += ["## Reading the numbers", "",
@@ -732,7 +732,7 @@ def main():
         per_config_report(bank, out, cfg, date)
         print("report: %s.md" % cfg["slug"])
     kv_report(bank, out, date)
-    print("report: qwen-fp8-kv-cache-dtype.md")
+    print("report: qwen3.8-27b-fp8-kv-cache-dtype.md")
     index_report(bank, out, date)
     print("report: README.md (index)")
 

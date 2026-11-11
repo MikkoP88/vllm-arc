@@ -78,7 +78,7 @@ coarsest preset (3bit) shows the widest t0 variant drift.
 Preset table (KV capacity = cert8-gate same-day values — capacity tracks
 boot-day free memory; TTFT/t1.0-agg columns are the P6.14 campaign faces.
 Full per-dtype guide: `docs/CONFIGURATION-arc.md` "KV-cache dtype" and
-[`docs/reports/qwen-fp8-kv-cache-dtype.md`](docs/reports/qwen-fp8-kv-cache-dtype.md)):
+[`docs/reports/qwen3.8-27b-fp8-kv-cache-dtype.md`](docs/reports/qwen3.8-27b-fp8-kv-cache-dtype.md)):
 
 | Preset | KV capacity (cert8) | U32k / U64k TTFT (P6.14) | t1.0 agg (P6.14) | Status |
 |---|---|---|---|---|
