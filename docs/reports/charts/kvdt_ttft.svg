@@ -1,50 +1,41 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="880" height="500" viewBox="0 0 880 500" font-family="Segoe UI, Helvetica, Arial, sans-serif">
-<rect width="880" height="500" fill="#ffffff"/>
-<text x="84" y="26" font-size="17" font-weight="600" fill="#101828">TTFT vs KV-cache dtype (solo, 8K/32K) — qwen fp8 k3</text>
-<line x1="84" y1="436.0" x2="816" y2="436.0" stroke="#f0f0f0" stroke-width="1"/>
-<text x="76" y="440.0" font-size="11" fill="#667085" text-anchor="end">0.0</text>
-<line x1="84" y1="334.0" x2="816" y2="334.0" stroke="#f0f0f0" stroke-width="1"/>
-<text x="76" y="338.0" font-size="11" fill="#667085" text-anchor="end">5.0</text>
-<line x1="84" y1="232.0" x2="816" y2="232.0" stroke="#f0f0f0" stroke-width="1"/>
-<text x="76" y="236.0" font-size="11" fill="#667085" text-anchor="end">10.0</text>
-<line x1="84" y1="130.0" x2="816" y2="130.0" stroke="#f0f0f0" stroke-width="1"/>
-<text x="76" y="134.0" font-size="11" fill="#667085" text-anchor="end">15.0</text>
-<line x1="175.5" y1="52" x2="175.5" y2="436" stroke="#f0f0f0" stroke-width="1"/>
-<text x="175.5" y="454" font-size="11" fill="#667085" text-anchor="middle">fp8_e4m3</text>
-<line x1="358.5" y1="52" x2="358.5" y2="436" stroke="#f0f0f0" stroke-width="1"/>
-<text x="358.5" y="454" font-size="11" fill="#667085" text-anchor="middle">auto</text>
-<line x1="541.5" y1="52" x2="541.5" y2="436" stroke="#f0f0f0" stroke-width="1"/>
-<text x="541.5" y="454" font-size="11" fill="#667085" text-anchor="middle">fp8</text>
-<line x1="724.5" y1="52" x2="724.5" y2="436" stroke="#f0f0f0" stroke-width="1"/>
-<text x="724.5" y="454" font-size="11" fill="#667085" text-anchor="middle">fp8_e5m2</text>
-<line x1="84" y1="436" x2="816" y2="436" stroke="#d0d5dd" stroke-width="1"/>
-<line x1="84" y1="52" x2="84" y2="436" stroke="#d0d5dd" stroke-width="1"/>
-<line x1="84" y1="425.8" x2="816" y2="425.8" stroke="#98a2b3" stroke-width="1" stroke-dasharray="5 4"/>
-<text x="820" y="428.8" font-size="9.5" fill="#667085" font-style="italic">instant</text>
-<line x1="84" y1="395.2" x2="816" y2="395.2" stroke="#98a2b3" stroke-width="1" stroke-dasharray="5 4"/>
-<text x="820" y="398.2" font-size="9.5" fill="#667085" font-style="italic">responsive</text>
-<line x1="84" y1="334.0" x2="816" y2="334.0" stroke="#98a2b3" stroke-width="1" stroke-dasharray="5 4"/>
-<text x="820" y="337.0" font-size="9.5" fill="#667085" font-style="italic">noticeable</text>
-<line x1="84" y1="232.0" x2="816" y2="232.0" stroke="#98a2b3" stroke-width="1" stroke-dasharray="5 4"/>
-<text x="820" y="235.0" font-size="9.5" fill="#667085" font-style="italic">slow</text>
-<polyline points="175.5,348.3 358.5,360.0 541.5,348.8" fill="none" stroke="#2563eb" stroke-width="2.4"/>
-<circle cx="175.5" cy="348.3" r="4.4" fill="#2563eb"/>
-<circle cx="358.5" cy="360.0" r="4.4" fill="#2563eb"/>
-<circle cx="541.5" cy="348.8" r="4.4" fill="#2563eb"/>
-<polyline points="175.5,101.5 358.5,137.5 541.5,99.2" fill="none" stroke="#dc2626" stroke-width="2.4"/>
-<rect x="171.0" y="97.0" width="9" height="9" fill="#dc2626"/>
-<rect x="354.0" y="133.0" width="9" height="9" fill="#dc2626"/>
-<rect x="537.0" y="94.7" width="9" height="9" fill="#dc2626"/>
-<text x="175.5" y="92.5" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">16.4</text>
-<text x="175.5" y="339.3" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">4.3</text>
-<text x="358.5" y="128.5" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">14.6</text>
-<text x="358.5" y="351.0" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">3.7</text>
-<text x="541.5" y="90.2" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">16.5</text>
-<text x="541.5" y="339.8" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">4.3</text>
-<line x1="84" y1="494" x2="100" y2="494" stroke="#2563eb" stroke-width="3"/>
-<text x="104" y="498" font-size="11.5" fill="#1d2939">8K ctx</text>
-<line x1="163" y1="494" x2="179" y2="494" stroke="#dc2626" stroke-width="3"/>
-<text x="183" y="498" font-size="11.5" fill="#1d2939">32K ctx</text>
-<text x="450" y="470" font-size="12.5" fill="#475467" text-anchor="middle">--kv-cache-dtype</text>
-<text x="16" y="244" font-size="12.5" fill="#475467" text-anchor="middle" transform="rotate(-90 16 244)">TTFT (s)</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="470" viewBox="0 0 880 470" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+<rect width="880" height="470" fill="#ffffff"/>
+<text x="84" y="26" font-size="17" font-weight="600" fill="#101828">TTFT by KV-cache dtype (solo, 8K/32K) — qwen fp8 k3</text>
+<line x1="84" y1="394.0" x2="816" y2="394.0" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="398.0" font-size="11" fill="#667085" text-anchor="end">0.0</text>
+<line x1="84" y1="304.7" x2="816" y2="304.7" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="308.7" font-size="11" fill="#667085" text-anchor="end">5.0</text>
+<line x1="84" y1="215.5" x2="816" y2="215.5" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="219.5" font-size="11" fill="#667085" text-anchor="end">10.0</text>
+<line x1="84" y1="126.2" x2="816" y2="126.2" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="130.2" font-size="11" fill="#667085" text-anchor="end">15.0</text>
+<line x1="84" y1="385.1" x2="816" y2="385.1" stroke="#98a2b3" stroke-width="1" stroke-dasharray="5 4"/>
+<text x="820" y="388.1" font-size="9.5" fill="#667085" font-style="italic">instant</text>
+<line x1="84" y1="358.3" x2="816" y2="358.3" stroke="#98a2b3" stroke-width="1" stroke-dasharray="5 4"/>
+<text x="820" y="361.3" font-size="9.5" fill="#667085" font-style="italic">responsive</text>
+<line x1="84" y1="304.7" x2="816" y2="304.7" stroke="#98a2b3" stroke-width="1" stroke-dasharray="5 4"/>
+<text x="820" y="307.7" font-size="9.5" fill="#667085" font-style="italic">noticeable</text>
+<line x1="84" y1="215.5" x2="816" y2="215.5" stroke="#98a2b3" stroke-width="1" stroke-dasharray="5 4"/>
+<text x="820" y="218.5" font-size="9.5" fill="#667085" font-style="italic">slow</text>
+<rect x="143.5" y="317.2" width="30.0" height="76.8" fill="#2563eb" rx="2"/>
+<text x="158.5" y="311.2" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">4.3</text>
+<rect x="177.5" y="101.2" width="30.0" height="292.8" fill="#dc2626" rx="2"/>
+<text x="192.5" y="95.2" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">16.4</text>
+<text x="175.5" y="412" font-size="11.5" fill="#475467" text-anchor="middle">fp8_e4m3</text>
+<rect x="326.5" y="327.5" width="30.0" height="66.5" fill="#2563eb" rx="2"/>
+<text x="341.5" y="321.5" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">3.7</text>
+<rect x="360.5" y="132.7" width="30.0" height="261.3" fill="#dc2626" rx="2"/>
+<text x="375.5" y="126.7" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">14.6</text>
+<text x="358.5" y="412" font-size="11.5" fill="#475467" text-anchor="middle">auto</text>
+<rect x="509.5" y="317.7" width="30.0" height="76.3" fill="#2563eb" rx="2"/>
+<text x="524.5" y="311.7" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">4.3</text>
+<rect x="543.5" y="99.2" width="30.0" height="294.8" fill="#dc2626" rx="2"/>
+<text x="558.5" y="93.2" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">16.5</text>
+<text x="541.5" y="412" font-size="11.5" fill="#475467" text-anchor="middle">fp8</text>
+<text x="724.5" y="412" font-size="11.5" fill="#475467" text-anchor="middle">fp8_e5m2</text>
+<rect x="84" y="416" width="12" height="12" fill="#2563eb" rx="2"/>
+<text x="101" y="426" font-size="11.5" fill="#1d2939">8K ctx</text>
+<rect x="171" y="416" width="12" height="12" fill="#dc2626" rx="2"/>
+<text x="188" y="426" font-size="11.5" fill="#1d2939">32K ctx</text>
+<text x="450" y="458" font-size="12.5" fill="#475467" text-anchor="middle">TTFT (s)</text>
 </svg>

@@ -1,44 +1,35 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="880" height="500" viewBox="0 0 880 500" font-family="Segoe UI, Helvetica, Arial, sans-serif">
-<rect width="880" height="500" fill="#ffffff"/>
-<text x="84" y="26" font-size="17" font-weight="600" fill="#101828">Solo decode speed vs KV-cache dtype (8K/32K) — qwen fp8 k3</text>
-<line x1="84" y1="436.0" x2="816" y2="436.0" stroke="#f0f0f0" stroke-width="1"/>
-<text x="76" y="440.0" font-size="11" fill="#667085" text-anchor="end">0</text>
-<line x1="84" y1="347.8" x2="816" y2="347.8" stroke="#f0f0f0" stroke-width="1"/>
-<text x="76" y="351.8" font-size="11" fill="#667085" text-anchor="end">25</text>
-<line x1="84" y1="259.6" x2="816" y2="259.6" stroke="#f0f0f0" stroke-width="1"/>
-<text x="76" y="263.6" font-size="11" fill="#667085" text-anchor="end">50</text>
-<line x1="84" y1="171.5" x2="816" y2="171.5" stroke="#f0f0f0" stroke-width="1"/>
-<text x="76" y="175.5" font-size="11" fill="#667085" text-anchor="end">75</text>
-<line x1="84" y1="83.3" x2="816" y2="83.3" stroke="#f0f0f0" stroke-width="1"/>
-<text x="76" y="87.3" font-size="11" fill="#667085" text-anchor="end">100</text>
-<line x1="175.5" y1="52" x2="175.5" y2="436" stroke="#f0f0f0" stroke-width="1"/>
-<text x="175.5" y="454" font-size="11" fill="#667085" text-anchor="middle">fp8_e4m3</text>
-<line x1="358.5" y1="52" x2="358.5" y2="436" stroke="#f0f0f0" stroke-width="1"/>
-<text x="358.5" y="454" font-size="11" fill="#667085" text-anchor="middle">auto</text>
-<line x1="541.5" y1="52" x2="541.5" y2="436" stroke="#f0f0f0" stroke-width="1"/>
-<text x="541.5" y="454" font-size="11" fill="#667085" text-anchor="middle">fp8</text>
-<line x1="724.5" y1="52" x2="724.5" y2="436" stroke="#f0f0f0" stroke-width="1"/>
-<text x="724.5" y="454" font-size="11" fill="#667085" text-anchor="middle">fp8_e5m2</text>
-<line x1="84" y1="436" x2="816" y2="436" stroke="#d0d5dd" stroke-width="1"/>
-<line x1="84" y1="52" x2="84" y2="436" stroke="#d0d5dd" stroke-width="1"/>
-<polyline points="175.5,420.8 358.5,99.2 541.5,103.1" fill="none" stroke="#2563eb" stroke-width="2.4"/>
-<circle cx="175.5" cy="420.8" r="4.4" fill="#2563eb"/>
-<circle cx="358.5" cy="99.2" r="4.4" fill="#2563eb"/>
-<circle cx="541.5" cy="103.1" r="4.4" fill="#2563eb"/>
-<polyline points="175.5,378.2 358.5,110.9 541.5,114.8" fill="none" stroke="#dc2626" stroke-width="2.4"/>
-<rect x="171.0" y="373.7" width="9" height="9" fill="#dc2626"/>
-<rect x="354.0" y="106.4" width="9" height="9" fill="#dc2626"/>
-<rect x="537.0" y="110.3" width="9" height="9" fill="#dc2626"/>
-<text x="175.5" y="369.2" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">16</text>
-<text x="175.5" y="411.8" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">4</text>
-<text x="358.5" y="90.2" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">95</text>
-<text x="358.5" y="101.9" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">92</text>
-<text x="541.5" y="94.1" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">94</text>
-<text x="541.5" y="105.8" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">91</text>
-<line x1="84" y1="494" x2="100" y2="494" stroke="#2563eb" stroke-width="3"/>
-<text x="104" y="498" font-size="11.5" fill="#1d2939">8K ctx</text>
-<line x1="163" y1="494" x2="179" y2="494" stroke="#dc2626" stroke-width="3"/>
-<text x="183" y="498" font-size="11.5" fill="#1d2939">32K ctx</text>
-<text x="450" y="470" font-size="12.5" fill="#475467" text-anchor="middle">--kv-cache-dtype</text>
-<text x="16" y="244" font-size="12.5" fill="#475467" text-anchor="middle" transform="rotate(-90 16 244)">Decode speed (tok/s)</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="470" viewBox="0 0 880 470" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+<rect width="880" height="470" fill="#ffffff"/>
+<text x="84" y="26" font-size="17" font-weight="600" fill="#101828">Solo decode speed by KV-cache dtype (8K/32K) — qwen fp8 k3</text>
+<line x1="84" y1="394.0" x2="816" y2="394.0" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="398.0" font-size="11" fill="#667085" text-anchor="end">0</text>
+<line x1="84" y1="316.8" x2="816" y2="316.8" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="320.8" font-size="11" fill="#667085" text-anchor="end">25</text>
+<line x1="84" y1="239.6" x2="816" y2="239.6" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="243.6" font-size="11" fill="#667085" text-anchor="end">50</text>
+<line x1="84" y1="162.5" x2="816" y2="162.5" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="166.5" font-size="11" fill="#667085" text-anchor="end">75</text>
+<line x1="84" y1="85.3" x2="816" y2="85.3" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="89.3" font-size="11" fill="#667085" text-anchor="end">100</text>
+<rect x="143.5" y="107.0" width="30.0" height="287.0" fill="#2563eb" rx="2"/>
+<text x="158.5" y="101.0" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">93</text>
+<rect x="177.5" y="121.8" width="30.0" height="272.2" fill="#dc2626" rx="2"/>
+<text x="192.5" y="115.8" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">88</text>
+<text x="175.5" y="412" font-size="11.5" fill="#475467" text-anchor="middle">fp8_e4m3</text>
+<rect x="326.5" y="99.2" width="30.0" height="294.8" fill="#2563eb" rx="2"/>
+<text x="341.5" y="93.2" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">95</text>
+<rect x="360.5" y="109.4" width="30.0" height="284.6" fill="#dc2626" rx="2"/>
+<text x="375.5" y="103.4" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">92</text>
+<text x="358.5" y="412" font-size="11.5" fill="#475467" text-anchor="middle">auto</text>
+<rect x="509.5" y="102.6" width="30.0" height="291.4" fill="#2563eb" rx="2"/>
+<text x="524.5" y="96.6" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">94</text>
+<rect x="543.5" y="112.9" width="30.0" height="281.1" fill="#dc2626" rx="2"/>
+<text x="558.5" y="106.9" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">91</text>
+<text x="541.5" y="412" font-size="11.5" fill="#475467" text-anchor="middle">fp8</text>
+<text x="724.5" y="412" font-size="11.5" fill="#475467" text-anchor="middle">fp8_e5m2</text>
+<rect x="84" y="416" width="12" height="12" fill="#2563eb" rx="2"/>
+<text x="101" y="426" font-size="11.5" fill="#1d2939">8K ctx</text>
+<rect x="171" y="416" width="12" height="12" fill="#dc2626" rx="2"/>
+<text x="188" y="426" font-size="11.5" fill="#1d2939">32K ctx</text>
+<text x="450" y="458" font-size="12.5" fill="#475467" text-anchor="middle">Decode speed (tok/s)</text>
 </svg>

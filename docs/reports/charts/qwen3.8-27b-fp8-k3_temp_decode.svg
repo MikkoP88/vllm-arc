@@ -1,51 +1,41 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="880" height="500" viewBox="0 0 880 500" font-family="Segoe UI, Helvetica, Arial, sans-serif">
-<rect width="880" height="500" fill="#ffffff"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="470" viewBox="0 0 880 470" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+<rect width="880" height="470" fill="#ffffff"/>
 <text x="84" y="26" font-size="17" font-weight="600" fill="#101828">Decode speed vs sampling temperature (8K context, solo)</text>
-<line x1="84" y1="436.0" x2="816" y2="436.0" stroke="#f0f0f0" stroke-width="1"/>
-<text x="76" y="440.0" font-size="11" fill="#667085" text-anchor="end">0</text>
-<line x1="84" y1="347.7" x2="816" y2="347.7" stroke="#f0f0f0" stroke-width="1"/>
-<text x="76" y="351.7" font-size="11" fill="#667085" text-anchor="end">25</text>
-<line x1="84" y1="259.4" x2="816" y2="259.4" stroke="#f0f0f0" stroke-width="1"/>
-<text x="76" y="263.4" font-size="11" fill="#667085" text-anchor="end">50</text>
-<line x1="84" y1="171.1" x2="816" y2="171.1" stroke="#f0f0f0" stroke-width="1"/>
-<text x="76" y="175.1" font-size="11" fill="#667085" text-anchor="end">75</text>
-<line x1="84" y1="82.8" x2="816" y2="82.8" stroke="#f0f0f0" stroke-width="1"/>
-<text x="76" y="86.8" font-size="11" fill="#667085" text-anchor="end">100</text>
-<line x1="84.0" y1="52" x2="84.0" y2="436" stroke="#f0f0f0" stroke-width="1"/>
-<text x="84.0" y="454" font-size="11" fill="#667085" text-anchor="middle">0</text>
-<line x1="230.4" y1="52" x2="230.4" y2="436" stroke="#f0f0f0" stroke-width="1"/>
-<text x="230.4" y="454" font-size="11" fill="#667085" text-anchor="middle">0</text>
-<line x1="376.8" y1="52" x2="376.8" y2="436" stroke="#f0f0f0" stroke-width="1"/>
-<text x="376.8" y="454" font-size="11" fill="#667085" text-anchor="middle">0</text>
-<line x1="523.2" y1="52" x2="523.2" y2="436" stroke="#f0f0f0" stroke-width="1"/>
-<text x="523.2" y="454" font-size="11" fill="#667085" text-anchor="middle">0</text>
-<line x1="669.6" y1="52" x2="669.6" y2="436" stroke="#f0f0f0" stroke-width="1"/>
-<text x="669.6" y="454" font-size="11" fill="#667085" text-anchor="middle">0</text>
-<line x1="816.0" y1="52" x2="816.0" y2="436" stroke="#f0f0f0" stroke-width="1"/>
-<text x="816.0" y="454" font-size="11" fill="#667085" text-anchor="middle">1</text>
-<line x1="84" y1="436" x2="816" y2="436" stroke="#d0d5dd" stroke-width="1"/>
-<line x1="84" y1="52" x2="84" y2="436" stroke="#d0d5dd" stroke-width="1"/>
-<line x1="84" y1="383.0" x2="816" y2="383.0" stroke="#98a2b3" stroke-width="1" stroke-dasharray="5 4"/>
-<text x="820" y="386.0" font-size="9.5" fill="#667085" font-style="italic">slow</text>
-<line x1="84" y1="347.7" x2="816" y2="347.7" stroke="#98a2b3" stroke-width="1" stroke-dasharray="5 4"/>
-<text x="820" y="350.7" font-size="9.5" fill="#667085" font-style="italic">acceptable</text>
-<line x1="84" y1="259.4" x2="816" y2="259.4" stroke="#98a2b3" stroke-width="1" stroke-dasharray="5 4"/>
-<text x="820" y="262.4" font-size="9.5" fill="#667085" font-style="italic">fast</text>
-<polyline points="84.0,102.7 230.4,99.2 376.8,109.2 523.2,170.6 669.6,110.1 816.0,180.0" fill="none" stroke="#2563eb" stroke-width="2.4"/>
-<circle cx="84.0" cy="102.7" r="4.4" fill="#2563eb"/>
-<circle cx="230.4" cy="99.2" r="4.4" fill="#2563eb"/>
-<circle cx="376.8" cy="109.2" r="4.4" fill="#2563eb"/>
-<circle cx="523.2" cy="170.6" r="4.4" fill="#2563eb"/>
-<circle cx="669.6" cy="110.1" r="4.4" fill="#2563eb"/>
-<circle cx="816.0" cy="180.0" r="4.4" fill="#2563eb"/>
-<text x="84.0" y="93.7" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">94</text>
-<text x="230.4" y="90.2" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">95</text>
-<text x="376.8" y="100.2" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">93</text>
-<text x="523.2" y="161.6" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">75</text>
-<text x="669.6" y="101.1" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">92</text>
-<text x="816.0" y="171.0" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">72</text>
-<line x1="84" y1="494" x2="100" y2="494" stroke="#2563eb" stroke-width="3"/>
-<text x="104" y="498" font-size="11.5" fill="#1d2939">decode</text>
-<text x="450" y="470" font-size="12.5" fill="#475467" text-anchor="middle">Sampling temperature</text>
-<text x="16" y="244" font-size="12.5" fill="#475467" text-anchor="middle" transform="rotate(-90 16 244)">Decode speed (tok/s)</text>
+<line x1="84" y1="394.0" x2="816" y2="394.0" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="398.0" font-size="11" fill="#667085" text-anchor="end">0</text>
+<line x1="84" y1="316.7" x2="816" y2="316.7" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="320.7" font-size="11" fill="#667085" text-anchor="end">25</text>
+<line x1="84" y1="239.4" x2="816" y2="239.4" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="243.4" font-size="11" fill="#667085" text-anchor="end">50</text>
+<line x1="84" y1="162.2" x2="816" y2="162.2" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="166.2" font-size="11" fill="#667085" text-anchor="end">75</text>
+<line x1="84" y1="84.9" x2="816" y2="84.9" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="88.9" font-size="11" fill="#667085" text-anchor="end">100</text>
+<line x1="84" y1="347.6" x2="816" y2="347.6" stroke="#98a2b3" stroke-width="1" stroke-dasharray="5 4"/>
+<text x="820" y="350.6" font-size="9.5" fill="#667085" font-style="italic">slow</text>
+<line x1="84" y1="316.7" x2="816" y2="316.7" stroke="#98a2b3" stroke-width="1" stroke-dasharray="5 4"/>
+<text x="820" y="319.7" font-size="9.5" fill="#667085" font-style="italic">acceptable</text>
+<line x1="84" y1="239.4" x2="816" y2="239.4" stroke="#98a2b3" stroke-width="1" stroke-dasharray="5 4"/>
+<text x="820" y="242.4" font-size="9.5" fill="#667085" font-style="italic">fast</text>
+<rect x="130.0" y="102.3" width="30.0" height="291.7" fill="#2563eb" rx="2"/>
+<text x="145.0" y="96.3" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">94</text>
+<text x="145.0" y="412" font-size="11.5" fill="#475467" text-anchor="middle">t0.0</text>
+<rect x="252.0" y="99.2" width="30.0" height="294.8" fill="#2563eb" rx="2"/>
+<text x="267.0" y="93.2" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">95</text>
+<text x="267.0" y="412" font-size="11.5" fill="#475467" text-anchor="middle">t0.2</text>
+<rect x="374.0" y="107.9" width="30.0" height="286.1" fill="#2563eb" rx="2"/>
+<text x="389.0" y="101.9" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">93</text>
+<text x="389.0" y="412" font-size="11.5" fill="#475467" text-anchor="middle">t0.4</text>
+<rect x="496.0" y="161.7" width="30.0" height="232.3" fill="#2563eb" rx="2"/>
+<text x="511.0" y="155.7" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">75</text>
+<text x="511.0" y="412" font-size="11.5" fill="#475467" text-anchor="middle">t0.6</text>
+<rect x="618.0" y="108.8" width="30.0" height="285.2" fill="#2563eb" rx="2"/>
+<text x="633.0" y="102.8" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">92</text>
+<text x="633.0" y="412" font-size="11.5" fill="#475467" text-anchor="middle">t0.8</text>
+<rect x="740.0" y="170.0" width="30.0" height="224.0" fill="#2563eb" rx="2"/>
+<text x="755.0" y="164.0" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">72</text>
+<text x="755.0" y="412" font-size="11.5" fill="#475467" text-anchor="middle">t1.0</text>
+<rect x="84" y="416" width="12" height="12" fill="#2563eb" rx="2"/>
+<text x="101" y="426" font-size="11.5" fill="#1d2939">decode</text>
+<text x="450" y="458" font-size="12.5" fill="#475467" text-anchor="middle">Decode speed (tok/s)</text>
 </svg>

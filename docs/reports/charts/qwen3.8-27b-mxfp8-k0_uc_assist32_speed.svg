@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="470" viewBox="0 0 880 470" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+<rect width="880" height="470" fill="#ffffff"/>
+<text x="84" y="26" font-size="17" font-weight="600" fill="#101828">Long-context assistant (RAG) (32K): per-user speed vs concurrency</text>
+<line x1="84" y1="394.0" x2="816" y2="394.0" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="398.0" font-size="11" fill="#667085" text-anchor="end">0</text>
+<line x1="84" y1="285.1" x2="816" y2="285.1" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="289.1" font-size="11" fill="#667085" text-anchor="end">10</text>
+<line x1="84" y1="176.3" x2="816" y2="176.3" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="180.3" font-size="11" fill="#667085" text-anchor="end">20</text>
+<line x1="84" y1="67.4" x2="816" y2="67.4" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="71.4" font-size="11" fill="#667085" text-anchor="end">30</text>
+<line x1="84" y1="230.7" x2="816" y2="230.7" stroke="#98a2b3" stroke-width="1" stroke-dasharray="5 4"/>
+<text x="820" y="233.7" font-size="9.5" fill="#667085" font-style="italic">floor</text>
+<rect x="142.2" y="99.2" width="30.0" height="294.8" fill="#2563eb" rx="2"/>
+<text x="157.2" y="93.2" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">27</text>
+<text x="157.2" y="412" font-size="11.5" fill="#475467" text-anchor="middle">@ 1</text>
+<rect x="288.6" y="156.4" width="30.0" height="237.6" fill="#2563eb" rx="2"/>
+<text x="303.6" y="150.4" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">22</text>
+<text x="303.6" y="412" font-size="11.5" fill="#475467" text-anchor="middle">@ 2</text>
+<rect x="435.0" y="194.8" width="30.0" height="199.2" fill="#2563eb" rx="2"/>
+<text x="450.0" y="188.8" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">18</text>
+<text x="450.0" y="412" font-size="11.5" fill="#475467" text-anchor="middle">@ 3</text>
+<rect x="581.4" y="226.7" width="30.0" height="167.3" fill="#2563eb" rx="2"/>
+<text x="596.4" y="220.7" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">15</text>
+<text x="596.4" y="412" font-size="11.5" fill="#475467" text-anchor="middle">@ 4</text>
+<rect x="727.8" y="290.6" width="30.0" height="103.4" fill="#2563eb" rx="2"/>
+<text x="742.8" y="284.6" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">9</text>
+<text x="742.8" y="412" font-size="11.5" fill="#475467" text-anchor="middle">@ 8</text>
+<rect x="84" y="416" width="12" height="12" fill="#2563eb" rx="2"/>
+<text x="101" y="426" font-size="11.5" fill="#1d2939">speed</text>
+<text x="450" y="458" font-size="12.5" fill="#475467" text-anchor="middle">Per-user mean speed (tok/s)</text>
+</svg>

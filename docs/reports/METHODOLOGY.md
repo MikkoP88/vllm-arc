@@ -25,6 +25,10 @@ User-facing performance: how many concurrent requests a configuration supports a
 | Scaling efficiency | aggregate(n) / (n x aggregate(1)); 100% = ideal linear scaling. |
 | KV pool | Parsed from the booted engine log (`KV cache size: N tokens`) and banked per cell in `posture.txt`. |
 
+## Presentation conventions
+
+Every line chart in these reports measures **context length on the x-axis** — the deployment variable you choose; concurrency is the series (one line per request count, 1-8). Range-band charts show the measured envelope across concurrency (top edge = single request, bottom edge = maximum tested concurrency; for TTFT the envelope inverts — the loaded worst user is the top edge). Every chart point carries its value label, and dashed horizontal lines mark the user-experience thresholds from the bands below. Categorical comparisons (KV dtype, sampling temperature, per-config leaderboards) use bar charts. Each section places its table and its chart under the same heading, with an *Interpretation:* paragraph that reads the banked numbers — the analysis ships with the data. Presentation format follows the public millstoneai.com inference-benchmark pages, extended with copyable byte-exact configurations, banked refusal records, and spec-aware MTP accounting.
+
 ## User-experience bands
 
 ### Streaming speed

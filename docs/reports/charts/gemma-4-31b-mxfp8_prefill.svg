@@ -1,16 +1,16 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="880" height="500" viewBox="0 0 880 500" font-family="Segoe UI, Helvetica, Arial, sans-serif">
 <rect width="880" height="500" fill="#ffffff"/>
-<text x="84" y="26" font-size="17" font-weight="600" fill="#101828">Client-observed prefill rate vs context length (temperature 0.0, solo)</text>
+<text x="84" y="26" font-size="17" font-weight="600" fill="#101828">Client-observed prefill rate vs context length (per concurrency level)</text>
 <line x1="84" y1="436.0" x2="816" y2="436.0" stroke="#f0f0f0" stroke-width="1"/>
 <text x="76" y="440.0" font-size="11" fill="#667085" text-anchor="end">0</text>
-<line x1="84" y1="352.1" x2="816" y2="352.1" stroke="#f0f0f0" stroke-width="1"/>
-<text x="76" y="356.1" font-size="11" fill="#667085" text-anchor="end">500</text>
-<line x1="84" y1="268.2" x2="816" y2="268.2" stroke="#f0f0f0" stroke-width="1"/>
-<text x="76" y="272.2" font-size="11" fill="#667085" text-anchor="end">1,000</text>
-<line x1="84" y1="184.2" x2="816" y2="184.2" stroke="#f0f0f0" stroke-width="1"/>
-<text x="76" y="188.2" font-size="11" fill="#667085" text-anchor="end">1,500</text>
-<line x1="84" y1="100.3" x2="816" y2="100.3" stroke="#f0f0f0" stroke-width="1"/>
-<text x="76" y="104.3" font-size="11" fill="#667085" text-anchor="end">2,000</text>
+<line x1="84" y1="351.8" x2="816" y2="351.8" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="355.8" font-size="11" fill="#667085" text-anchor="end">500</text>
+<line x1="84" y1="267.6" x2="816" y2="267.6" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="271.6" font-size="11" fill="#667085" text-anchor="end">1,000</text>
+<line x1="84" y1="183.4" x2="816" y2="183.4" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="187.4" font-size="11" fill="#667085" text-anchor="end">1,500</text>
+<line x1="84" y1="99.1" x2="816" y2="99.1" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="103.1" font-size="11" fill="#667085" text-anchor="end">2,000</text>
 <line x1="84.0" y1="52" x2="84.0" y2="436" stroke="#f0f0f0" stroke-width="1"/>
 <text x="84.0" y="454" font-size="11" fill="#667085" text-anchor="middle">1K</text>
 <line x1="523.2" y1="52" x2="523.2" y2="436" stroke="#f0f0f0" stroke-width="1"/>
@@ -19,15 +19,26 @@
 <text x="816.0" y="454" font-size="11" fill="#667085" text-anchor="middle">32K</text>
 <line x1="84" y1="436" x2="816" y2="436" stroke="#d0d5dd" stroke-width="1"/>
 <line x1="84" y1="52" x2="84" y2="436" stroke="#d0d5dd" stroke-width="1"/>
-<polyline points="84.0,291.2 523.2,99.2 816.0,185.8" fill="none" stroke="#2563eb" stroke-width="2.4"/>
-<circle cx="84.0" cy="291.2" r="4.4" fill="#2563eb"/>
+<polyline points="84.0,290.8 523.2,99.2 816.0,185.4" fill="none" stroke="#2563eb" stroke-width="2.4"/>
+<circle cx="84.0" cy="290.8" r="4.4" fill="#2563eb"/>
 <circle cx="523.2" cy="99.2" r="4.4" fill="#2563eb"/>
-<circle cx="816.0" cy="185.8" r="4.4" fill="#2563eb"/>
-<text x="84.0" y="282.2" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">862</text>
-<text x="523.2" y="90.2" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">2,007</text>
-<text x="816.0" y="176.8" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">1,491</text>
+<circle cx="816.0" cy="185.4" r="4.4" fill="#2563eb"/>
+<polyline points="84.0,339.3 523.2,321.7" fill="none" stroke="#dc2626" stroke-width="2.4"/>
+<rect x="79.5" y="334.8" width="9" height="9" fill="#dc2626"/>
+<rect x="518.7" y="317.2" width="9" height="9" fill="#dc2626"/>
+<polygon points="84.0,383.8 78.5,393.8 89.5,393.8" fill="#059669"/>
+<text x="84.0" y="281.8" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">862</text>
+<text x="84.0" y="330.3" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">574</text>
+<text x="84.0" y="380.3" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">277</text>
+<text x="523.2" y="90.2" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">2,000</text>
+<text x="523.2" y="312.7" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">679</text>
+<text x="816.0" y="176.4" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">1,488</text>
 <line x1="84" y1="494" x2="100" y2="494" stroke="#2563eb" stroke-width="3"/>
-<text x="104" y="498" font-size="11.5" fill="#1d2939">no MTP</text>
+<text x="104" y="498" font-size="11.5" fill="#1d2939">1 request</text>
+<line x1="184" y1="494" x2="200" y2="494" stroke="#dc2626" stroke-width="3"/>
+<text x="204" y="498" font-size="11.5" fill="#1d2939">4 requests</text>
+<line x1="292" y1="494" x2="308" y2="494" stroke="#059669" stroke-width="3"/>
+<text x="312" y="498" font-size="11.5" fill="#1d2939">8 requests</text>
 <text x="450" y="470" font-size="12.5" fill="#475467" text-anchor="middle">Context length (tokens)</text>
 <text x="16" y="244" font-size="12.5" fill="#475467" text-anchor="middle" transform="rotate(-90 16 244)">Prefill rate (tok/s)</text>
 </svg>

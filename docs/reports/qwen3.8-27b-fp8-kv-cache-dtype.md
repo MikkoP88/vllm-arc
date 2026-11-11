@@ -144,7 +144,7 @@ The certified gemma posture caps `max_model_len` at 40960. Raising it to 131072 
 | MXFP4 (gm4x) | 32K | 22.3 | 34.8 | 23 | 8.1 | 288,972 |
 | MXFP4 (gm4x) | 128K | 175.9 | 28.4 | - | - | 288,972 |
 
-Full report: [gemma-4-31b-mxfp4-128k](gemma-4-31b-mxfp4-128k.md).
+Full lane report (main body + the 128K annex section): [gemma-4-31b-mxfp4](gemma-4-31b-mxfp4.md).
 
 ## Capacity cliffs (the whole point of the dtype menu)
 
@@ -181,32 +181,37 @@ Refusal boundaries: `auto` at max_model_len 262144 (qwen, fp16 capacity) and 409
 
 `ARC_MAXLEN` is what makes fp16-KV `auto` servable — the refusal is the capacity cliff itself. The full qwen3.8-27b-fp8-k3 invocation: [qwen3.8-27b-fp8-k3.md](qwen3.8-27b-fp8-k3.md).
 
-![TTFT vs KV-cache dtype (solo, 8K/32K) — qwen fp8 k3](charts/kvdt_ttft.svg)
+![TTFT by KV-cache dtype (solo, 8K/32K) — qwen fp8 k3](charts/kvdt_ttft.svg)
 
-<i>TTFT vs KV-cache dtype (solo, 8K/32K) — qwen fp8 k3</i>
+<i>TTFT by KV-cache dtype (solo, 8K/32K) — qwen fp8 k3</i>
+*Interpretation:* speed is flat across the servable dtypes — the KV dtype menu trades pool size, not per-token speed; the capacity table above is the real axis. A missing bar is a banked refusal, not a gap in measurement.
 
-![Solo decode speed vs KV-cache dtype (8K/32K) — qwen fp8 k3](charts/kvdt_decode.svg)
+![Solo decode speed by KV-cache dtype (8K/32K) — qwen fp8 k3](charts/kvdt_decode.svg)
 
-<i>Solo decode speed vs KV-cache dtype (8K/32K) — qwen fp8 k3</i>
+<i>Solo decode speed by KV-cache dtype (8K/32K) — qwen fp8 k3</i>
+*Interpretation:* speed is flat across the servable dtypes — the KV dtype menu trades pool size, not per-token speed; the capacity table above is the real axis. A missing bar is a banked refusal, not a gap in measurement.
 
-![Aggregate throughput @ c8 vs KV-cache dtype (8K/32K) — qwen fp8 k3](charts/kvdt_agg8.svg)
+![Aggregate throughput @ c8 by KV-cache dtype (8K/32K) — qwen fp8 k3](charts/kvdt_agg8.svg)
 
-<i>Aggregate throughput @ c8 vs KV-cache dtype (8K/32K) — qwen fp8 k3</i>
+<i>Aggregate throughput @ c8 by KV-cache dtype (8K/32K) — qwen fp8 k3</i>
+*Interpretation:* speed is flat across the servable dtypes — the KV dtype menu trades pool size, not per-token speed; the capacity table above is the real axis. A missing bar is a banked refusal, not a gap in measurement.
 
 ![KV pool by dtype — capacity is the dtype menu's axis](charts/kvdt_pool.svg)
 
 <i>KV pool by dtype — capacity is the dtype menu's axis</i>
 
-![Per-user speed vs concurrency — fp8 vs TurboQuant (8K ctx)](charts/tq_conc_speed.svg)
+![Per-user speed vs context length — fp8 vs TurboQuant (solo)](charts/tq_speed_ctx.svg)
 
-<i>Per-user speed vs concurrency — fp8 vs TurboQuant (8K ctx)</i>
+<i>Per-user speed vs context length — fp8 vs TurboQuant (solo)</i>
 
-![Aggregate throughput vs concurrency — fp8 vs TurboQuant (8K ctx)](charts/tq_conc_agg.svg)
+![Aggregate throughput @ c8 vs context length — fp8 vs TurboQuant](charts/tq_agg8_ctx.svg)
 
-<i>Aggregate throughput vs concurrency — fp8 vs TurboQuant (8K ctx)</i>
+<i>Aggregate throughput @ c8 vs context length — fp8 vs TurboQuant</i>
 
-![Worst-user TTFT vs concurrency — fp8 vs TurboQuant (8K ctx)](charts/tq_conc_ttft.svg)
+![Worst-user TTFT @ c8 vs context length — fp8 vs TurboQuant](charts/tq_ttft8_ctx.svg)
 
-<i>Worst-user TTFT vs concurrency — fp8 vs TurboQuant (8K ctx)</i>
+<i>Worst-user TTFT @ c8 vs context length — fp8 vs TurboQuant</i>
+
+*Interpretation:* TurboQuant holds solo speed within 90% of fp8 at every measured context (worst relative delta) while multiplying the KV pool up to 3.68x — the capacity table is the payoff; a line that stops before 128K is the pool cliff reached later, not sooner.
 
 Banks: r139 `results/2026-11-11-p637b-conc/` (conc cells + posture pools), r138 `results/2026-11-10-p637-reports/` (solo dtype cells + refusals); knob: `ARC_KVDTYPE` in `tools/serve_arc_b70.sh`. Identity records per TQ preset: CONFIGURATION-arc "KV-cache dtype".

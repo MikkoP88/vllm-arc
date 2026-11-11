@@ -60,6 +60,11 @@ Aggregate token generation across all concurrent requests (output tokens only; p
 
 At the peak point this configuration produces approximately **541.20 K tokens/hour** — the number that matters for batch workloads (document processing, synthetic-data generation, offline analysis).
 
+![Aggregate throughput vs context length, one line per concurrency — FP8, no MTP](charts/gemma-4-31b-fp8_agg_ctx.svg)
+
+<i>Aggregate throughput vs context length, one line per concurrency — FP8, no MTP</i>
+
+*Interpretation:* throughput peaks at 150 tok/s (8 requests, 1K); at 32K the heaviest measured load (1 request) yields 13 tok/s (9% of peak) — long-context KV residency shrinks the resident batch. Batch workloads should batch short and parallel; long-context work is bound by KV residency, not compute.
 
 ## Per-user generation speed
 
@@ -86,9 +91,15 @@ Solo speed spans **25.4–27.0 tok/s** (32K to 1K context); at concurrency 8 the
 
 <i>Per-user decode speed vs context length (solo) — FP8, no MTP</i>
 
-![Per-user decode speed vs concurrency — FP8, no MTP](charts/gemma-4-31b-fp8_conc_speed.svg)
+![Per-user speed vs context length, one line per concurrency — FP8, no MTP](charts/gemma-4-31b-fp8_speed_ctx.svg)
 
-<i>Per-user decode speed vs concurrency — FP8, no MTP</i>
+<i>Per-user speed vs context length, one line per concurrency — FP8, no MTP</i>
+
+![Per-user speed range: the band every deployment concurrency lands in — FP8, no MTP](charts/gemma-4-31b-fp8_range_speed.svg)
+
+<i>Per-user speed range: the band every deployment concurrency lands in — FP8, no MTP</i>
+
+*Interpretation:* at 32K a single user streams 25.3 tok/s while 1 request share down to 25.3 tok/s (100% of solo); at 8K the spread is 19.4-26.6 tok/s — every concurrency you deploy lands between the band edges; the bands below classify the streaming feel.
 
 ## Time to first token
 
@@ -116,9 +127,15 @@ Time from request submission to the first streamed token — the primary respons
 
 <i>TTFT vs context length (solo) — FP8, no MTP</i>
 
-![TTFT vs concurrency (mean and worst user) — FP8, no MTP](charts/gemma-4-31b-fp8_conc_ttft.svg)
+![TTFT vs context length, one line per concurrency — FP8, no MTP](charts/gemma-4-31b-fp8_ttft_ctx.svg)
 
-<i>TTFT vs concurrency (mean and worst user) — FP8, no MTP</i>
+<i>TTFT vs context length, one line per concurrency — FP8, no MTP</i>
+
+![TTFT range: single request (bottom) to worst user at max concurrency (top) — FP8, no MTP](charts/gemma-4-31b-fp8_range_ttft.svg)
+
+<i>TTFT range: single request (bottom) to worst user at max concurrency (top) — FP8, no MTP</i>
+
+*Interpretation:* at 32K the first token takes 21.9 solo but up to 21.9 for the worst user under 1 request — 0% of the loaded wait is queue+prefill stagger, the sharing cost the capacity tables price below.
 
 ## Capacity analysis
 
@@ -131,6 +148,14 @@ Conversational assistant sessions: system prompt plus a few turns fit 8K. Both f
 | TTFT worst user (s) | 4.05 | 8.00 | 12.0 *(exceeded)* | 15.9 *(exceeded)* | 23.9 *(exceeded)* |
 | Per-user mean speed (tok/s) | 26.6 | 24.3 | 23.1 | 22.1 | 19.4 |
 
+![Interactive chat (8K): per-user speed by concurrency; the dashed line marks the 15.0 tok/s use-case floor](charts/gemma-4-31b-fp8_uc_chat8_speed.svg)
+
+<i>Interactive chat (8K): per-user speed by concurrency; the dashed line marks the 15.0 tok/s use-case floor</i>
+
+![Interactive chat (8K): worst-user TTFT by concurrency; the dashed line marks the 10.0 s use-case bar](charts/gemma-4-31b-fp8_uc_chat8_ttft.svg)
+
+<i>Interactive chat (8K): worst-user TTFT by concurrency; the dashed line marks the 10.0 s use-case bar</i>
+
 **Capacity limit: ~2 concurrent requests (estimated between the measured 2 and 3 points)**
 
 ### Long-context assistant (RAG) (32K context)
@@ -142,6 +167,14 @@ Retrieval-augmented / large-prompt assistants at 32K context. Thresholds: TTFT <
 | TTFT worst user (s) | 21.9 *(exceeded)* |
 | Per-user mean speed (tok/s) | 25.3 |
 
+![Long-context assistant (RAG) (32K): per-user speed by concurrency; the dashed line marks the 15.0 tok/s use-case floor](charts/gemma-4-31b-fp8_uc_assist32_speed.svg)
+
+<i>Long-context assistant (RAG) (32K): per-user speed by concurrency; the dashed line marks the 15.0 tok/s use-case floor</i>
+
+![Long-context assistant (RAG) (32K): worst-user TTFT by concurrency; the dashed line marks the 10.0 s use-case bar](charts/gemma-4-31b-fp8_uc_assist32_ttft.svg)
+
+<i>Long-context assistant (RAG) (32K): worst-user TTFT by concurrency; the dashed line marks the 10.0 s use-case bar</i>
+
 **Capacity limit: thresholds exceeded at concurrency 1 - not recommended**
 
 ### Document processing (batch) (32K context)
@@ -152,6 +185,10 @@ Offline summarization / extraction at the largest measured context. Turnaround m
 |---|---|
 | TTFT worst user (s) | 21.9 |
 | Per-user mean speed (tok/s) | 25.3 |
+
+![Document processing (batch) (32K): per-user speed by concurrency; the dashed line marks the 15.0 tok/s use-case floor](charts/gemma-4-31b-fp8_uc_docmax_speed.svg)
+
+<i>Document processing (batch) (32K): per-user speed by concurrency; the dashed line marks the 15.0 tok/s use-case floor</i>
 
 **Capacity limit: 1 concurrent requests**
 
@@ -179,9 +216,9 @@ At concurrency 1 the queue is empty, so solo TTFT is pure prefill. Under the bar
 | 8192 (8K) | +2.0 s | +7.8 s | - |
 | 32768 (32K) | - | - | - |
 
-![Added first-token wait vs concurrency (derived queue+prefill stagger) — FP8, no MTP](charts/gemma-4-31b-fp8_queue.svg)
+![Added first-token wait vs context length, one line per concurrency (derived queue+prefill stagger) — FP8, no MTP](charts/gemma-4-31b-fp8_queue_ctx.svg)
 
-<i>Added first-token wait vs concurrency (derived queue+prefill stagger) — FP8, no MTP</i>
+<i>Added first-token wait vs context length, one line per concurrency (derived queue+prefill stagger) — FP8, no MTP</i>
 
 ### Per-user prefill speed
 
@@ -193,9 +230,11 @@ Rate at which input context is processed before the first token. Client-observed
 | 8192 (8K) | 2022 | 692 | - |
 | 32768 (32K) | 1496 | - | - |
 
-![Client-observed prefill rate vs context length (solo) — FP8, no MTP](charts/gemma-4-31b-fp8_prefill.svg)
+![Client-observed prefill rate vs context length, one line per concurrency — FP8, no MTP](charts/gemma-4-31b-fp8_prefill.svg)
 
-<i>Client-observed prefill rate vs context length (solo) — FP8, no MTP</i>
+<i>Client-observed prefill rate vs context length, one line per concurrency — FP8, no MTP</i>
+
+*Interpretation:* prefill peaks at 2,022 tok/s (8K) and eases as context grows — chunked prefill batches more work per pass at length, trading first-token wait for decode-window protection.
 
 ### Inter-token latency
 
@@ -209,9 +248,9 @@ Time between consecutive streamed tokens — the smoothness of streaming. Solo p
 
 Percentage of ideal linear scaling achieved as concurrency rises (100% = n× the concurrency-1 throughput with no per-user cost). Real efficiency is always lower — the accelerators are shared; high efficiency at your target concurrency signals headroom.
 
-![Scaling efficiency vs concurrency — FP8, no MTP](charts/gemma-4-31b-fp8_conc_eff.svg)
+![Scaling efficiency vs context length, one line per concurrency — FP8, no MTP](charts/gemma-4-31b-fp8_eff_ctx.svg)
 
-<i>Scaling efficiency vs concurrency — FP8, no MTP</i>
+<i>Scaling efficiency vs context length, one line per concurrency — FP8, no MTP</i>
 
 ### Temperature 0.0 vs 1.0 (per context)
 

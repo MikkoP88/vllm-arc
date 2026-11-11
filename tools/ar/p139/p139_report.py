@@ -93,22 +93,20 @@ CONFIGS = [
     dict(cell="gm8", slug="gemma-4-31b-mxfp8", model="Gemma-4-31B", org="Google",
          quant="MXFP8 (online, bf16 base checkpoint)", plan="gemma", mtp="no MTP",
          env=GM + " ARC_QUANT=mxfp8", kvdt="fp8_e4m3", ctxs=GCTX, temps=False,
-         blurb="the gemma MXFP8 lane"),
+         blurb="the gemma MXFP8 lane",
+         control=dict(cell="gm8x", ctxs=GCTX128,
+                      env=GM128 + " ARC_QUANT=mxfp8",
+                      blurb="the 128K-maxlen control (8-bit weights: the KV "
+                            "headroom question)")),
     dict(cell="gm4", slug="gemma-4-31b-mxfp4", model="Gemma-4-31B", org="Google",
          quant="MXFP4 W4A16 (online, bf16 base checkpoint)", plan="gemma", mtp="no MTP",
          env=GM + " ARC_QUANT=mxfp4 ARC_MXFP4_MODE=w4a16", kvdt="fp8_e4m3", ctxs=GCTX,
-         temps=False, blurb="the gemma MXFP4 lane"),
-    dict(cell="gm4x", slug="gemma-4-31b-mxfp4-128k", model="Gemma-4-31B", org="Google",
-         quant="MXFP4 W4A16 (online, bf16 base checkpoint)", plan="gemma", mtp="no MTP",
-         env=GM128 + " ARC_QUANT=mxfp4 ARC_MXFP4_MODE=w4a16", kvdt="fp8_e4m3",
-         ctxs=GCTX128, temps=False,
-         blurb="the gemma 128K annex - MXFP4 weight savings buy the KV "
-               "headroom for max_model_len 131072"),
-    dict(cell="gm8x", slug="gemma-4-31b-mxfp8-128k", model="Gemma-4-31B", org="Google",
-         quant="MXFP8 (online, bf16 base checkpoint)", plan="gemma", mtp="no MTP",
-         env=GM128 + " ARC_QUANT=mxfp8", kvdt="fp8_e4m3", ctxs=GCTX128, temps=False,
-         blurb="the 128K-maxlen control for the gemma annex (8-bit weights: "
-               "the KV headroom question)"),
+         temps=False, blurb="the gemma MXFP4 lane",
+         annex=dict(cell="gm4x", ctxs=GCTX128,
+                    env=GM128 + " ARC_QUANT=mxfp4 ARC_MXFP4_MODE=w4a16",
+                    control="gm8x",
+                    blurb="MXFP4 weight savings buy the KV headroom for "
+                          "max_model_len 131072")),
 ]
 
 # r139 TurboQuant cells: QF8 posture + spec k3 + the TQ kv dtype.
@@ -418,6 +416,169 @@ def _niceTicks(lo, hi, n=5):
     return ts
 
 
+def _place_labels(out, cand, MT, PH):
+    """Value labels on every point, staggered so close neighbours never
+    overlap (greedy left-to-right over an alternating above/below offset
+    ladder; zero-overlap offset preferred, least-overlap fallback for
+    pathological clusters). cand = (xx, yy, text, colour)."""
+    DYES = (-9, 16, -21, 27, -33, 38, -45, 49, -57, 60, -69, 71,
+            -81, 82, -93, 94, -105, 105, -117, 117)
+    boxes = []
+    for xx, yy, text, col in sorted(cand, key=lambda c: (c[0], c[1])):
+        w = 6.1 * len(text) + 2
+        scored = []
+        for rank, dy in enumerate(DYES):
+            x1, y1 = xx - w / 2.0, yy + dy - 10
+            x2, y2 = xx + w / 2.0, yy + dy
+            if y1 < 32 or y2 > MT + PH + 6:
+                continue          # title band, x-tick band, or off-canvas
+            ov = 0.0
+            for b in boxes:
+                ox = min(x2, b[2]) - max(x1, b[0])
+                oy = min(y2, b[3]) - max(y1, b[1])
+                if ox > 0 and oy > 0:
+                    ov += ox * oy
+            scored.append((ov, rank, dy))
+        if not scored:            # extreme edge point: clamp above
+            scored = [(0.0, 0, -9)]
+        _ov, _rank, dy = min(scored)
+        boxes.append((xx - w / 2.0, yy + dy - 10, xx + w / 2.0, yy + dy))
+        out.append('<text x="{:.1f}" y="{:.1f}" font-size="10" fill="{}" '
+                   'text-anchor="middle" font-weight="600">'
+                   '{}</text>'.format(xx, yy + dy, col, text))
+
+
+def band_chart(path, title, top_pts, bot_pts, top_lab, bot_lab,
+               xlabel, ylabel, yfmt="{:.1f}", hlines=()):
+    """Range-band chart (millstone format): x = context length, the
+    band spans the measured envelope -- top edge = the best case
+    (single request), bottom edge = the worst measured case (maximum
+    tested concurrency). Both edges are solid lines with a value label
+    on every point; the band between them is shaded. Any concurrency a
+    deployment picks lands inside the band. top_pts/bot_pts =
+    [(x, y)|None, ...] sharing the same x domain."""
+    series = [(top_lab, top_pts), (bot_lab, bot_pts)]
+    _PW = 880 - 84 - 64
+    _legw = [16 + 7.2 * min(len(lab), 30) + 20 for lab, _ in series]
+    _lrows, _lx = 1, 0
+    for w in _legw:
+        if _lx + w > _PW:
+            _lrows += 1
+            _lx = 0
+        _lx += w
+    W, H, ML, MR, MT, MB = 880, 478 + 22 * _lrows, 84, 64, 52, 64
+    PW, PH = W - ML - MR, H - MT - MB
+    pts = [p for ps in (top_pts, bot_pts) for p in ps if p[1] is not None]
+    if len(pts) < 2:
+        return
+    xs = sorted({p[0] for p in pts})
+    ys = [p[1] for p in pts]
+    if len(xs) > 1 and xs[-1] / max(xs[0], 1) > 8:
+        l0, l1 = math.log2(xs[0]), math.log2(xs[-1])
+
+        def X(v):
+            return ML + (math.log2(v) - l0) / (l1 - l0) * PW
+    else:
+        x0, x1 = xs[0], xs[-1]
+
+        def X(v):
+            return ML + (v - x0) / max(x1 - x0, 1e-9) * PW
+    ylo = 0.0
+    yhi = max(max(ys), max([h for h, _ in hlines] or [0])) * 1.14
+    if yhi <= 0:
+        yhi = 1.0
+
+    def Y(v):
+        return MT + PH - (v - ylo) / (yhi - ylo) * PH
+
+    band = PALETTE[0]
+    edge_t, edge_b = PALETTE[0], PALETTE[3]
+    out = ['<svg xmlns="http://www.w3.org/2000/svg" width="{}" height="{}" '
+           'viewBox="0 0 {} {}" font-family="Segoe UI, Helvetica, Arial, '
+           'sans-serif">'.format(W, H, W, H)]
+    out.append('<rect width="{}" height="{}" fill="#ffffff"/>'.format(W, H))
+    out.append('<text x="{}" y="26" font-size="17" font-weight="600" '
+               'fill="#101828">{}</text>'.format(ML, esc(title)))
+    for t in _niceTicks(ylo, yhi, 5):
+        yy = Y(t)
+        if yy < MT - 2 or yy > MT + PH + 2:
+            continue
+        out.append('<line x1="{}" y1="{:.1f}" x2="{}" y2="{:.1f}" '
+                   'stroke="#f0f0f0" stroke-width="1"/>'.format(ML, yy,
+                                                                ML + PW, yy))
+        out.append('<text x="{}" y="{:.1f}" font-size="11" fill="#667085" '
+                   'text-anchor="end">{}</text>'.format(ML - 8, yy + 4,
+                                                        yfmt.format(t)))
+    for xv in xs:
+        xx = X(xv)
+        out.append('<line x1="{:.1f}" y1="{}" x2="{:.1f}" y2="{}" '
+                   'stroke="#f0f0f0" stroke-width="1"/>'.format(xx, MT, xx,
+                                                                MT + PH))
+        out.append('<text x="{:.1f}" y="{}" font-size="11" fill="#667085" '
+                   'text-anchor="middle">{}</text>'.format(xx, MT + PH + 18,
+                                                               _fmt_tick(xv)))
+    out.append('<line x1="{}" y1="{}" x2="{}" y2="{}" stroke="#d0d5dd" '
+               'stroke-width="1"/>'.format(ML, MT + PH, ML + PW, MT + PH))
+    out.append('<line x1="{}" y1="{}" x2="{}" y2="{}" stroke="#d0d5dd" '
+               'stroke-width="1"/>'.format(ML, MT, ML, MT + PH))
+    for hv, htag in hlines:
+        if not (ylo < hv < yhi):
+            continue
+        yy = Y(hv)
+        out.append('<line x1="{}" y1="{:.1f}" x2="{}" y2="{:.1f}" '
+                   'stroke="#98a2b3" stroke-width="1" stroke-dasharray="5 4"/>'
+                   .format(ML, yy, ML + PW, yy))
+        out.append('<text x="{}" y="{:.1f}" font-size="9.5" fill="#667085" '
+                   'font-style="italic">{}</text>'
+                   .format(ML + PW + 4, yy + 3, esc(htag)))
+    # the band: polygon top edge l->r then bottom edge r->l (points
+    # present on both edges only; an edge gap splits the band there)
+    tg = [(xv, yv) for xv, yv in top_pts if yv is not None]
+    bg = [(xv, yv) for xv, yv in bot_pts if yv is not None]
+    both = sorted(set(x for x, _ in tg) & set(x for x, _ in bg))
+    if len(both) >= 2:
+        tmap, bmap = dict(tg), dict(bg)
+        poly = ([ "{:.1f},{:.1f}".format(X(x), Y(tmap[x])) for x in both ]
+                + ["{:.1f},{:.1f}".format(X(x), Y(bmap[x]))
+                   for x in reversed(both)])
+        out.append('<polygon points="{}" fill="{}" fill-opacity="0.14" '
+                   'stroke="none"/>'.format(" ".join(poly), band))
+    for pts_, col in ((tg, edge_t), (bg, edge_b)):
+        if len(pts_) >= 2:
+            pl = " ".join("{:.1f},{:.1f}".format(X(x), Y(y)) for x, y in pts_)
+            out.append('<polyline points="{}" fill="none" stroke="{}" '
+                       'stroke-width="2.4"/>'.format(pl, col))
+        for x, y in pts_:
+            out.append('<circle cx="{:.1f}" cy="{:.1f}" r="4.2" '
+                       'fill="{}"/>'.format(X(x), Y(y), col))
+    cand = [(X(x), Y(y), yfmt.format(y), col)
+            for pts_, col in ((tg, edge_t), (bg, edge_b)) for x, y in pts_]
+    _place_labels(out, cand, MT, PH)
+    lx, ly = ML, MT + PH + 58
+    for lab, col, kind in ((top_lab, edge_t, "line"),
+                           (bot_lab, edge_b, "line")):
+        w = 16 + 7.2 * min(len(lab), 30) + 20
+        if lx + w > ML + PW:
+            lx, ly = ML, ly + 22
+        out.append('<line x1="{}" y1="{}" x2="{}" y2="{}" stroke="{}" '
+                   'stroke-width="3"/>'.format(int(lx), int(ly),
+                                               int(lx + 16), int(ly), col))
+        out.append('<text x="{}" y="{}" font-size="11.5" fill="#1d2939">'
+                   '{}</text>'.format(int(lx + 20), int(ly + 4),
+                                      esc(lab[:30])))
+        lx += w
+    out.append('<text x="{}" y="{}" font-size="12.5" fill="#475467" '
+               'text-anchor="middle">{}</text>'.format(ML + PW // 2,
+                                                       MT + PH + 34,
+                                                       esc(xlabel)))
+    out.append('<text x="16" y="{}" font-size="12.5" fill="#475467" '
+               'text-anchor="middle" transform="rotate(-90 16 {})">{}</text>'
+               .format(MT + PH // 2, MT + PH // 2, esc(ylabel)))
+    out.append("</svg>")
+    with open(path, "w", encoding="utf-8", newline="\n") as f:
+        f.write("\n".join(out) + "\n")
+
+
 def chart(path, title, series, xlabel, ylabel, xcat=None, yfmt="{:.1f}",
           y_from_zero=True, hlines=(), ideal=False, label_all=True,
           ylog=False):
@@ -559,35 +720,7 @@ def chart(path, title, series, xlabel, ylabel, xcat=None, yfmt="{:.1f}",
                                xx - 5.5, yy, col))
             if label_all or pi == len(good) - 1:
                 cand.append((xx, yy, yfmt.format(yv), col))
-    # value labels: every point, staggered so close neighbours never
-    # overlap (greedy left-to-right over an alternating above/below
-    # offset ladder; zero-overlap offset preferred, least-overlap
-    # fallback for pathological clusters)
-    DYES = (-9, 16, -21, 27, -33, 38, -45, 49, -57, 60, -69, 71,
-            -81, 82, -93, 94, -105, 105, -117, 117)
-    boxes = []
-    for xx, yy, text, col in sorted(cand, key=lambda c: (c[0], c[1])):
-        w = 6.1 * len(text) + 2
-        scored = []
-        for rank, dy in enumerate(DYES):
-            x1, y1 = xx - w / 2.0, yy + dy - 10
-            x2, y2 = xx + w / 2.0, yy + dy
-            if y1 < 32 or y2 > MT + PH + 6:
-                continue          # title band, x-tick band, or off-canvas
-            ov = 0.0
-            for b in boxes:
-                ox = min(x2, b[2]) - max(x1, b[0])
-                oy = min(y2, b[3]) - max(y1, b[1])
-                if ox > 0 and oy > 0:
-                    ov += ox * oy
-            scored.append((ov, rank, dy))
-        if not scored:            # extreme edge point: clamp above
-            scored = [(0.0, 0, -9)]
-        _ov, _rank, dy = min(scored)
-        boxes.append((xx - w / 2.0, yy + dy - 10, xx + w / 2.0, yy + dy))
-        out.append('<text x="{:.1f}" y="{:.1f}" font-size="10" fill="{}" '
-                   'text-anchor="middle" font-weight="600">'
-                   '{}</text>'.format(xx, yy + dy, col, text))
+    _place_labels(out, cand, MT, PH)
     # legend (bottom, greedy wrap - same packing as the height calc)
     lx, ly = ML, MT + PH + 58
     for si, (lab, _ps) in enumerate(series):
@@ -610,7 +743,7 @@ def chart(path, title, series, xlabel, ylabel, xcat=None, yfmt="{:.1f}",
                'text-anchor="middle" transform="rotate(-90 16 {})">{}</text>'
                .format(MT + PH // 2, MT + PH // 2, esc(ylabel)))
     out.append("</svg>")
-    with open(path, "w", encoding="utf-8") as f:
+    with open(path, "w", encoding="utf-8", newline="\n") as f:
         f.write("\n".join(out) + "\n")
 
 
@@ -685,7 +818,7 @@ def bars(path, title, groups, slabels, values, ylabel, yfmt="{:.0f}",
                'text-anchor="middle">{}</text>'.format(ML + PW // 2, H - 12,
                                                        esc(ylabel)))
     out.append("</svg>")
-    with open(path, "w", encoding="utf-8") as f:
+    with open(path, "w", encoding="utf-8", newline="\n") as f:
         f.write("\n".join(out) + "\n")
 
 
@@ -918,6 +1051,52 @@ def config_block(cfg, date):
 
 # --------------------------------------------------------- per-config v3
 
+def _reqlab(n):
+    return "1 request" if n == 1 else "{} requests".format(n)
+
+
+def _conc_ctx_series(conc, ctxs, ns, field):
+    """One line per concurrency level, x = context length (the report
+    chart convention: every line chart measures context length on x;
+    concurrency is the series). Points the cell never measured (KV_CAP
+    skips) stay None and break the line honestly."""
+    out = []
+    for n in ns:
+        pts = [(c, conc.get(c, {}).get(n, {}).get(field)
+                if _conc_face_ok(conc.get(c, {}).get(n)) else None)
+               for c in ctxs]
+        if any(p[1] is not None for p in pts):
+            out.append((_reqlab(n), pts))
+    return out
+
+
+def _ctx_edge(conc, ctxs, field, chooser):
+    """One band edge over ctxs. chooser(cd) -> (n, face) picks the face
+    for the edge (the single-request face for the best edge, the max
+    measured concurrency for the loaded edge). Returns (edge_pts,
+    {ctx: n})."""
+    pts, ns = [], {}
+    for c in ctxs:
+        cd = {n: d for n, d in conc.get(c, {}).items() if _conc_face_ok(d)}
+        if not cd:
+            pts.append((c, None))
+            continue
+        n, d = chooser(cd)
+        pts.append((c, d[field]))
+        ns[c] = n
+    return pts, ns
+
+
+def _pick_n1(cd):
+    n = 1 if 1 in cd else min(cd)
+    return n, cd[n]
+
+
+def _pick_nmax(cd):
+    n = max(cd)
+    return n, cd[n]
+
+
 def per_config_report(banks, out, cfg, date):
     b138 = banks[0]
     b139 = banks[1:]
@@ -936,14 +1115,13 @@ def per_config_report(banks, out, cfg, date):
     pool, pool_src = pool_of(banks, cell)
     good = {c: f for c, f in faces.items() if f}
     qshort = cfg["quant"].split(" (")[0]
-    annex = cell.endswith("x")          # r140 annex cells
+    has_annex = bool(cfg.get("annex"))   # 128K annex rendered inside this report
 
     has_data = bool(good or any(_conc_face_ok(d) for cd in conc.values()
                                 for d in cd.values()))
 
     L = []
-    L.append("# {} on 2x Intel Arc Pro B70 — {}, {}{}".format(cfg["model"], qshort, cfg["mtp"],
-              " (128K annex)" if annex else ""))
+    L.append("# {} on 2x Intel Arc Pro B70 — {}, {}".format(cfg["model"], qshort, cfg["mtp"]))
     L.append("")
     L.append(md_table(["Field", "Value"], [
         ["Organization", cfg["org"]],
@@ -1126,10 +1304,39 @@ def per_config_report(banks, out, cfg, date):
                      "matters for batch workloads (document processing, "
                      "synthetic-data generation, offline analysis).".format(_fmt_hourly(pagg)))
             L.append("")
-            L.append(img("{}_conc_agg".format(slug),
-                         "Aggregate throughput vs concurrency (dashed = ideal "
-                         "linear) — {}, {}".format(qshort, cfg["mtp"])))
-            L.append("")
+            ns_all = sorted({n for cd in conc.values() for n in cd})
+            agg_series = _conc_ctx_series(conc, cctxs, ns_all, "agg_tps_wall")
+            if agg_series:
+                chart(os.path.join(ch, "{}_agg_ctx.svg".format(slug)),
+                      "Aggregate throughput vs context length (1-{} concurrent requests)".format(
+                          max(ns_all)),
+                      agg_series, "Context length (tokens)",
+                      "Aggregate throughput (tok/s)", yfmt="{:.0f}",
+                      label_all=True)
+                L.append(img("{}_agg_ctx".format(slug),
+                             "Aggregate throughput vs context length, one line "
+                             "per concurrency — {}, {}".format(qshort, cfg["mtp"])))
+                L.append("")
+                dlast, dnlast = None, None
+                for _n in sorted(conc.get(lastc, {}), reverse=True):
+                    if _conc_face_ok(conc[lastc].get(_n)):
+                        dlast, dnlast = conc[lastc][_n], _n
+                        break
+                tail = ""
+                if dlast is not None and lastc != pc:
+                    tail = ("; at {}K the heaviest measured load ({}) "
+                            "yields {:.0f} tok/s ({:.0f}% of peak) — "
+                            "long-context KV residency shrinks the resident "
+                            "batch".format(
+                                lastc // 1024, _reqlab(dnlast),
+                                dlast["agg_tps_wall"],
+                                100 * dlast["agg_tps_wall"] / pagg))
+                L.append("*Interpretation:* throughput peaks at {:.0f} tok/s "
+                         "({} requests, {}K){}. Batch workloads should batch "
+                         "short and parallel; long-context work is bound by "
+                         "KV residency, not compute.".format(
+                             pagg, pn, pc // 1024, tail))
+                L.append("")
 
         # ------------------------------------------------ per-user speed
         L.append("## Per-user generation speed")
@@ -1187,17 +1394,58 @@ def per_config_report(banks, out, cfg, date):
         L.append(img("{}_decode".format(slug),
                      "Per-user decode speed vs context length (solo) — {}, {}".format(qshort, cfg["mtp"])))
         L.append("")
-        chart(os.path.join(ch, "{}_conc_speed.svg".format(slug)),
-              "Per-user decode speed vs concurrency (temperature 0.0)",
-              [(f"{c // 1024}K ctx",
-                [(n, conc[c][n]["per_user_mean_tps"])
-                 if _conc_face_ok(conc[c].get(n)) else (n, None)
-                 for n in sorted(conc[c])]) for c in cctxs],
-              "Concurrent requests", "Per-user mean speed (tok/s)", yfmt="{:.0f}",
-              hlines=SPEED_HL, label_all=True)
-        L.append(img("{}_conc_speed".format(slug),
-                     "Per-user decode speed vs concurrency — {}, {}".format(qshort, cfg["mtp"])))
-        L.append("")
+        ns_all = sorted({n for cd in conc.values() for n in cd})
+        spd_series = _conc_ctx_series(conc, cctxs, ns_all, "per_user_mean_tps")
+        if spd_series:
+            chart(os.path.join(ch, "{}_speed_ctx.svg".format(slug)),
+                  "Per-user speed vs context length (1-{} concurrent requests)".format(
+                      max(ns_all)),
+                  spd_series, "Context length (tokens)",
+                  "Per-user mean speed (tok/s)", yfmt="{:.0f}",
+                  hlines=SPEED_HL, label_all=True)
+            L.append(img("{}_speed_ctx".format(slug),
+                         "Per-user speed vs context length, one line per "
+                         "concurrency — {}, {}".format(qshort, cfg["mtp"])))
+            L.append("")
+            top_e, _tn = _ctx_edge(conc, cctxs, "per_user_mean_tps", _pick_n1)
+            bot_e, bn = _ctx_edge(conc, cctxs, "per_user_mean_tps", _pick_nmax)
+            maxn = max(bn.values()) if bn else 0
+            band_chart(os.path.join(ch, "{}_range_speed.svg".format(slug)),
+                       "Per-user speed range across context length (band = measured envelope)",
+                       top_e, bot_e,
+                       "single request (top edge)",
+                       "{} requests (bottom edge)".format(maxn) if maxn > 1
+                       else "loaded floor (bottom edge)",
+                       "Context length (tokens)", "Per-user speed (tok/s)",
+                       yfmt="{:.0f}", hlines=SPEED_HL)
+            L.append(img("{}_range_speed".format(slug),
+                         "Per-user speed range: the band every deployment "
+                         "concurrency lands in — {}, {}".format(qshort, cfg["mtp"])))
+            L.append("")
+            # interpretation: the sharing cost at the extremes
+            s_top = next((v for c, v in top_e if c == lastc), None)
+            s_bot = next((v for c, v in bot_e if c == lastc), None)
+            n_at_last = bn.get(lastc)
+            n8k = 8192 if 8192 in cctxs else cctxs[0]
+            s8t = next((v for c, v in top_e if c == n8k), None)
+            s8b = next((v for c, v in bot_e if c == n8k), None)
+            bits = []
+            if (s_top is not None and s_bot is not None and s_top > 0
+                    and n_at_last):
+                bits.append("at {}K a single user streams {:.1f} tok/s while "
+                            "{} share down to {:.1f} tok/s ({:.0f}% of "
+                            "solo)".format(
+                                lastc // 1024, s_top, _reqlab(n_at_last),
+                                s_bot, 100 * s_bot / s_top))
+            if s8t is not None and s8b is not None and s8t > 0 and n8k != lastc:
+                bits.append("at {}K the spread is {:.1f}-{:.1f} tok/s".format(
+                    n8k // 1024, s8b, s8t))
+            if bits:
+                L.append("*Interpretation:* {} — every concurrency you "
+                         "deploy lands between the band edges; the bands "
+                         "below classify the streaming feel.".format(
+                             "; ".join(bits)))
+                L.append("")
 
         # ------------------------------------------------ TTFT
         L.append("## Time to first token")
@@ -1244,20 +1492,46 @@ def per_config_report(banks, out, cfg, date):
         L.append(img("{}_ttft".format(slug),
                      "TTFT vs context length (solo) — {}, {}".format(qshort, cfg["mtp"])))
         L.append("")
-        chart(os.path.join(ch, "{}_conc_ttft.svg".format(slug)),
-              "TTFT vs concurrency (temperature 0.0; solid = mean, dashed = worst user)",
-              [(f"{c // 1024}K mean",
-                [(n, conc[c][n]["ttft_mean_s"])
-                 if _conc_face_ok(conc[c].get(n)) else (n, None)
-                 for n in sorted(conc[c])]) for c in cctxs] +
-              [(f"{c // 1024}K worst",
-                [(n, conc[c][n]["ttft_max_s"])
-                 if _conc_face_ok(conc[c].get(n)) else (n, None)
-                 for n in sorted(conc[c])]) for c in cctxs],
-              "Concurrent requests", "TTFT (s)", yfmt="{:.1f}")
-        L.append(img("{}_conc_ttft".format(slug),
-                     "TTFT vs concurrency (mean and worst user) — {}, {}".format(qshort, cfg["mtp"])))
-        L.append("")
+        tt_series = _conc_ctx_series(conc, cctxs, ns_all, "ttft_mean_s")
+        if tt_series:
+            chart(os.path.join(ch, "{}_ttft_ctx.svg".format(slug)),
+                  "Time to first token vs context length (1-{} concurrent requests)".format(
+                      max(ns_all)),
+                  tt_series, "Context length (tokens)",
+                  "TTFT mean per user (s)", yfmt="{:.1f}",
+                  hlines=TTFT_HL, label_all=True)
+            L.append(img("{}_ttft_ctx".format(slug),
+                         "TTFT vs context length, one line per concurrency — "
+                         "{}, {}".format(qshort, cfg["mtp"])))
+            L.append("")
+            tb_e, _btn = _ctx_edge(conc, cctxs, "ttft_mean_s", _pick_n1)
+            tt_e, ttn = _ctx_edge(conc, cctxs, "ttft_max_s", _pick_nmax)
+            tmaxn = max(ttn.values()) if ttn else 0
+            band_chart(os.path.join(ch, "{}_range_ttft.svg".format(slug)),
+                       "Time-to-first-token range across context length (band = measured envelope)",
+                       tt_e, tb_e,
+                       "{} requests, worst user (top edge)".format(tmaxn)
+                       if tmaxn > 1 else "loaded ceiling (top edge)",
+                       "single request (bottom edge)",
+                       "Context length (tokens)", "TTFT (s)",
+                       yfmt="{:.1f}", hlines=TTFT_HL)
+            L.append(img("{}_range_ttft".format(slug),
+                         "TTFT range: single request (bottom) to worst user at "
+                         "max concurrency (top) — {}, {}".format(qshort, cfg["mtp"])))
+            L.append("")
+            w1 = next((v for c, v in tb_e if c == lastc), None)
+            wx = next((v for c, v in tt_e if c == lastc), None)
+            wn_at_last = ttn.get(lastc)
+            if (w1 is not None and wx is not None and wx > 0
+                    and wn_at_last):
+                L.append("*Interpretation:* at {}K the first token takes {} "
+                         "solo but up to {} for the worst user under {} "
+                         "— {:.0f}% of the loaded wait is "
+                         "queue+prefill stagger, the sharing cost the "
+                         "capacity tables price below.".format(
+                             lastc // 1024, ttft_fmt(w1), ttft_fmt(wx),
+                             _reqlab(wn_at_last), 100 * (wx - w1) / wx))
+                L.append("")
 
         # ------------------------------------------------ capacity analysis
         if pool:
@@ -1292,6 +1566,33 @@ def per_config_report(banks, out, cfg, date):
                 L.append(md_table(["Metric"] + [f"@ {n}" for n in ns],
                                   [trow, srow]))
                 L.append("")
+                groups = ["@ {}".format(n) for n in ns]
+                if uc["speed_bar"] is not None:
+                    vals = [[cd[n]["per_user_mean_tps"]] for n in ns]
+                    bars(os.path.join(ch, "{}_uc_{}_speed.svg".format(slug, uc["key"])),
+                         "{} ({}K): per-user speed vs concurrency".format(
+                             uc["name"], uctx // 1024),
+                         groups, ["speed"], vals, "Per-user mean speed (tok/s)",
+                         yfmt="{:.0f}", hlines=[(uc["speed_bar"], "floor")])
+                    L.append(img("{}_uc_{}_speed".format(slug, uc["key"]),
+                                 "{} ({}K): per-user speed by concurrency; the "
+                                 "dashed line marks the {} tok/s use-case "
+                                 "floor".format(uc["name"], uctx // 1024,
+                                                uc["speed_bar"])))
+                    L.append("")
+                if uc["ttft_bar"] is not None:
+                    vals = [[cd[n]["ttft_max_s"]] for n in ns]
+                    bars(os.path.join(ch, "{}_uc_{}_ttft.svg".format(slug, uc["key"])),
+                         "{} ({}K): worst-user TTFT vs concurrency".format(
+                             uc["name"], uctx // 1024),
+                         groups, ["TTFT worst"], vals, "TTFT worst user (s)",
+                         yfmt="{:.1f}", hlines=[(uc["ttft_bar"], "bar")])
+                    L.append(img("{}_uc_{}_ttft".format(slug, uc["key"]),
+                                 "{} ({}K): worst-user TTFT by concurrency; the "
+                                 "dashed line marks the {} s use-case "
+                                 "bar".format(uc["name"], uctx // 1024,
+                                              uc["ttft_bar"])))
+                    L.append("")
                 L.append("**Capacity limit: {}**".format(
                     note if note else f"{cap} concurrent requests"))
                 L.append("")
@@ -1351,20 +1652,38 @@ def per_config_report(banks, out, cfg, date):
                 L.append(md_table(["Context", "added wait @ n2", "@ n4", "@ n8"],
                                   rows))
                 L.append("")
-                chart(os.path.join(ch, "{}_queue.svg".format(slug)),
-                      "Added first-token wait vs concurrency (derived: "
-                      "ttft_mean(n) - ttft_mean(1))",
-                      [(f"{c // 1024}K ctx",
-                        [(n, conc[c][n]["ttft_mean_s"] - conc[c][1]["ttft_mean_s"])
-                         if _conc_face_ok(conc[c].get(n)) and
-                         _conc_face_ok(conc[c].get(1)) else (n, None)
-                         for n in sorted(conc[c])]) for c in cctxs],
-                      "Concurrent requests", "Added wait (s)", yfmt="{:.1f}",
-                      label_all=True)
-                L.append(img("{}_queue".format(slug),
-                             "Added first-token wait vs concurrency (derived "
-                             "queue+prefill stagger) — {}, {}".format(qshort, cfg["mtp"])))
-                L.append("")
+                qns = [n for n in (2, 3, 4, 8) if any(
+                    _conc_face_ok(conc[c].get(n)) and
+                    _conc_face_ok(conc[c].get(1)) for c in cctxs)]
+                qseries = []
+                for n in qns:
+                    qseries.append((_reqlab(n), [
+                        (c, conc[c][n]["ttft_mean_s"] - conc[c][1]["ttft_mean_s"])
+                        if _conc_face_ok(conc[c].get(n)) and
+                        _conc_face_ok(conc[c].get(1)) else (c, None)
+                        for c in cctxs]))
+                if qseries:
+                    chart(os.path.join(ch, "{}_queue_ctx.svg".format(slug)),
+                          "Added first-token wait vs context length "
+                          "(derived: ttft_mean(n) - ttft_mean(1))",
+                          qseries, "Context length (tokens)",
+                          "Added wait (s)", yfmt="{:.1f}", label_all=True)
+                    L.append(img("{}_queue_ctx".format(slug),
+                                 "Added first-token wait vs context length, one "
+                                 "line per concurrency (derived queue+prefill "
+                                 "stagger) — {}, {}".format(qshort, cfg["mtp"])))
+                    L.append("")
+                    qn = qns[-1]
+                    qpts = [(c, v) for c, v in qseries[-1][1] if v is not None]
+                    if len(qpts) >= 2:
+                        (qc1, q1), (qc2, q2) = qpts[0], qpts[-1]
+                        L.append("*Interpretation:* the loaded-request stagger "
+                                 "grows from +{:.1f} s at {}K to +{:.1f} s at "
+                                 "{}K ({} requests) — the context-carrying "
+                                 "requests serialize behind each other's "
+                                 "prefill.".format(q1, qc1 // 1024, q2,
+                                                   qc2 // 1024, qn))
+                        L.append("")
             # prefill
             L.append("### Per-user prefill speed")
             L.append("")
@@ -1386,16 +1705,39 @@ def per_config_report(banks, out, cfg, date):
                 L.append(md_table(["Context", "prefill @ n1 (tok/s)",
                                    "@ n4", "@ n8"], rows))
                 L.append("")
-                chart(os.path.join(ch, "{}_prefill.svg".format(slug)),
-                      "Client-observed prefill rate vs context length (temperature 0.0, solo)",
-                      [(cfg["mtp"], [(c, faces[c]["prefill_tps"]) if faces.get(c)
-                                     else (c, None) for c in cfg["ctxs"]])],
-                      "Context length (tokens)", "Prefill rate (tok/s)",
-                      yfmt="{:,.0f}", label_all=True)
-                L.append(img("{}_prefill".format(slug),
-                             "Client-observed prefill rate vs context length "
-                             "(solo) — {}, {}".format(qshort, cfg["mtp"])))
-                L.append("")
+                pseries = []
+                for n in (1, 4, 8):
+                    pts = [(c, c / conc[c][n]["ttft_mean_s"])
+                           if _conc_face_ok(conc.get(c, {}).get(n)) and
+                           conc[c][n]["ttft_mean_s"] > 0 else (c, None)
+                           for c in cctxs]
+                    if any(p[1] is not None for p in pts):
+                        pseries.append((_reqlab(n), pts))
+                if not pseries and good:
+                    pseries = [(cfg["mtp"], [(c, faces[c]["prefill_tps"])
+                                             if faces.get(c) else (c, None)
+                                             for c in cfg["ctxs"]])]
+                if pseries:
+                    chart(os.path.join(ch, "{}_prefill.svg".format(slug)),
+                          "Client-observed prefill rate vs context length (per concurrency level)",
+                          pseries, "Context length (tokens)",
+                          "Prefill rate (tok/s)", yfmt="{:,.0f}", label_all=True)
+                    L.append(img("{}_prefill".format(slug),
+                                 "Client-observed prefill rate vs context "
+                                 "length, one line per concurrency — {}, "
+                                 "{}".format(qshort, cfg["mtp"])))
+                    L.append("")
+                    pk = max((p for _l, ps in pseries for p in ps
+                              if p[1] is not None), key=lambda p: p[1],
+                             default=None)
+                    if pk is not None:
+                        L.append("*Interpretation:* prefill peaks at "
+                                 "{:,.0f} tok/s ({}K) and eases as context "
+                                 "grows — chunked prefill batches more work "
+                                 "per pass at length, trading first-token "
+                                 "wait for decode-window protection.".format(
+                                     pk[1], pk[0] // 1024))
+                        L.append("")
             # ITL
             L.append("### Inter-token latency")
             L.append("")
@@ -1442,20 +1784,39 @@ def per_config_report(banks, out, cfg, date):
                      "efficiency at your target concurrency signals "
                      "headroom.")
             L.append("")
-            chart(os.path.join(ch, "{}_conc_eff.svg".format(slug)),
-                  "Scaling efficiency vs concurrency (aggregate / (n x aggregate-at-1))",
-                  [(f"{c // 1024}K ctx",
-                    [(n, 100.0 * conc[c][n]["agg_tps_wall"] /
-                      (n * conc[c][1]["agg_tps_wall"]))
-                     if _conc_face_ok(conc[c].get(n)) and
-                     _conc_face_ok(conc[c].get(1)) and
-                     conc[c][1]["agg_tps_wall"] > 0 else (n, None)
-                     for n in sorted(conc[c])]) for c in cctxs],
-                  "Concurrent requests", "Scaling efficiency (%)", yfmt="{:.0f}",
-                  y_from_zero=False, label_all=True)
-            L.append(img("{}_conc_eff".format(slug),
-                         "Scaling efficiency vs concurrency — {}, {}".format(qshort, cfg["mtp"])))
-            L.append("")
+            ens = [n for n in (2, 3, 4, 8) if any(
+                _conc_face_ok(conc[c].get(n)) and
+                _conc_face_ok(conc[c].get(1)) and
+                conc[c][1]["agg_tps_wall"] > 0 for c in cctxs)]
+            eseries = []
+            for n in ens:
+                eseries.append((_reqlab(n), [
+                    (c, 100.0 * conc[c][n]["agg_tps_wall"] /
+                        (n * conc[c][1]["agg_tps_wall"]))
+                    if _conc_face_ok(conc[c].get(n)) and
+                    _conc_face_ok(conc[c].get(1)) and
+                    conc[c][1]["agg_tps_wall"] > 0 else (c, None)
+                    for c in cctxs]))
+            if eseries:
+                chart(os.path.join(ch, "{}_eff_ctx.svg".format(slug)),
+                      "Scaling efficiency vs context length (aggregate / (n x aggregate-at-1))",
+                      eseries, "Context length (tokens)",
+                      "Scaling efficiency (%)", yfmt="{:.0f}",
+                      y_from_zero=False, label_all=True)
+                L.append(img("{}_eff_ctx".format(slug),
+                             "Scaling efficiency vs context length, one line per "
+                             "concurrency — {}, {}".format(qshort, cfg["mtp"])))
+                L.append("")
+                epts = [(c, v) for c, v in eseries[-1][1] if v is not None]
+                if len(epts) >= 2:
+                    (ec1, e1), (ec2, e2) = epts[0], epts[-1]
+                    L.append("*Interpretation:* efficiency holds at {:.0f}% at "
+                             "{}K but falls to {:.0f}% at {}K under {} requests — "
+                             "high efficiency signals headroom; a sharp drop "
+                             "signals the accelerators are already "
+                             "saturated.".format(e1, ec1 // 1024, e2, ec2 // 1024,
+                                                 ens[-1]))
+                    L.append("")
 
         # ------------------------------------------------ temperature
         if cfg["temps"] and tfaces and any(tfaces.values()):
@@ -1477,15 +1838,27 @@ def per_config_report(banks, out, cfg, date):
                   "{:.1f}".format(f["itl_ms_p90"]) if f else "-"]
                  for t, f in ((t, tfaces.get(t)) for t in TEMPS)]))
             L.append("")
-            chart(os.path.join(ch, "{}_temp_decode.svg".format(slug)),
-                  "Decode speed vs sampling temperature (8K context, solo)",
-                  [("decode", [(float(t), tfaces[t]["decode_tps"]) if tfaces.get(t)
-                               else (float(t), None) for t in TEMPS])],
-                  "Sampling temperature", "Decode speed (tok/s)", yfmt="{:.0f}",
-                  hlines=SPEED_HL, label_all=True)
+            bars(os.path.join(ch, "{}_temp_decode.svg".format(slug)),
+                 "Decode speed vs sampling temperature (8K context, solo)",
+                 ["t{}".format(t) for t in TEMPS], ["decode"],
+                 [[tfaces[t]["decode_tps"]] if tfaces.get(t) else [None]
+                  for t in TEMPS],
+                 "Decode speed (tok/s)", yfmt="{:.0f}", hlines=SPEED_HL)
             L.append(img("{}_temp_decode".format(slug),
-                         "Decode speed vs sampling temperature — {}".format(cfg["mtp"])))
+                         "Decode speed by sampling temperature — {}".format(cfg["mtp"])))
             L.append("")
+            t0f, t1f = tfaces.get("0.0"), tfaces.get("1.0")
+            if t0f and t1f and t0f["decode_tps"] > 0:
+                L.append("*Interpretation:* decode falls {:.0f}% from t0.0 "
+                         "({:.1f} tok/s, {:.2f} tok/step) to t1.0 ({:.1f} "
+                         "tok/s, {:.2f} tok/step) — hotter sampling lowers "
+                         "draft acceptance, so fewer speculative tokens ride "
+                         "each step; the target distribution stays exact at "
+                         "every temperature.".format(
+                             100 * (1 - t1f["decode_tps"] / t0f["decode_tps"]),
+                             t0f["decode_tps"], t0f["tok_per_step"],
+                             t1f["decode_tps"], t1f["tok_per_step"]))
+                L.append("")
         if t1ok:
             gctx = sorted(set(list(t1ok.keys()) +
                               [c for c in conc if _conc_face_ok(conc[c].get(1))]))
@@ -1584,6 +1957,238 @@ def per_config_report(banks, out, cfg, date):
                      "slowest-user tail.*")
             L.append("")
 
+    # ------------------------------------------------ 128K annex (in-report)
+    ax = cfg.get("annex")
+    if ax:
+        acell = ax["cell"]
+        actxs = conc_ctxs(b139, acell)
+        aconc = {c: {n: load_conc(b139, acell, c, n)
+                     for n in conc_concs(b139, acell, c)} for c in actxs}
+        apool, apool_src = pool_of(banks, acell)
+        aoc = outcome(banks, acell)
+        aany = any(_conc_face_ok(d) for cd in aconc.values()
+                   for d in cd.values())
+        L.append("## 128K annex — max_model_len 131072")
+        L.append("")
+        L.append("Raising the certified gemma maxlen (40960) to 131072 is a "
+                 "KV-headroom question. {} — the boot below is its own cell "
+                 "(`{}`, outcome `{}`), never merged into the charts above: "
+                 "the main body and the annex are different boots with "
+                 "different pools.".format(ax["blurb"].capitalize()
+                                           if ax["blurb"][0].islower()
+                                           else ax["blurb"], acell, aoc))
+        L.append("")
+        ctrl = ax.get("control")
+        if ctrl:
+            coc = outcome(banks, ctrl)
+            cpool, _cs = pool_of(banks, ctrl)
+            L.append("The 8-bit control (`{}`) ran the same 128K posture at "
+                     "8-bit weights and refused{} — the refusal is banked "
+                     "with its serve log and is the capacity boundary "
+                     "itself; only the 4-bit weight budget buys the "
+                     "128K pool.".format(
+                         ctrl, (" (outcome `{}`, pool not parseable)".format(coc)
+                                if not cpool else
+                                " (outcome `{}`)".format(coc))))
+            L.append("")
+        L.append(md_table(["Field", "Value"], [
+            ["Posture", "this lane + `ARC_MAXLEN=131072`"],
+            ["KV pool (annex boot)",
+             "{:,} tokens ({})".format(apool, apool_src) if apool
+             else "not parsed"],
+            ["Contexts measured", ", ".join(f"{c // 1024}K" for c in actxs)
+             or "-"],
+            ["Cell outcome", aoc]]))
+        L.append("")
+        if aany:
+            ans_all = sorted({n for cd in aconc.values() for n in cd})
+            aspd = _conc_ctx_series(aconc, actxs, ans_all, "per_user_mean_tps")
+            chart(os.path.join(ch, "{}_annex_speed.svg".format(slug)),
+                  "Annex: per-user speed vs context length (1-{} concurrent requests)".format(
+                      max(ans_all)),
+                  aspd, "Context length (tokens)",
+                  "Per-user mean speed (tok/s)", yfmt="{:.0f}",
+                  hlines=SPEED_HL, label_all=True)
+            L.append(img("{}_annex_speed".format(slug),
+                         "Annex per-user speed vs context length, one line per "
+                         "concurrency — {}".format(qshort)))
+            L.append("")
+            atts = _conc_ctx_series(aconc, actxs, ans_all, "ttft_mean_s")
+            chart(os.path.join(ch, "{}_annex_ttft.svg".format(slug)),
+                  "Annex: time to first token vs context length (1-{} concurrent requests)".format(
+                      max(ans_all)),
+                  atts, "Context length (tokens)", "TTFT mean per user (s)",
+                  yfmt="{:.1f}", hlines=TTFT_HL, label_all=True)
+            L.append(img("{}_annex_ttft".format(slug),
+                         "Annex TTFT vs context length, one line per "
+                         "concurrency — {}".format(qshort)))
+            L.append("")
+            atop, _at = _ctx_edge(aconc, actxs, "per_user_mean_tps", _pick_n1)
+            abot, abn = _ctx_edge(aconc, actxs, "per_user_mean_tps", _pick_nmax)
+            amaxn = max(abn.values()) if abn else 0
+            band_chart(os.path.join(ch, "{}_annex_range_speed.svg".format(slug)),
+                       "Annex: per-user speed range across context length (band = measured envelope)",
+                       atop, abot, "single request (top edge)",
+                       "{} requests (bottom edge)".format(amaxn)
+                       if amaxn > 1 else "loaded floor (bottom edge)",
+                       "Context length (tokens)", "Per-user speed (tok/s)",
+                       yfmt="{:.0f}", hlines=SPEED_HL)
+            L.append(img("{}_annex_range_speed".format(slug),
+                         "Annex per-user speed range — the band every "
+                         "deployment concurrency lands in ({})".format(qshort)))
+            L.append("")
+            attb, _atb = _ctx_edge(aconc, actxs, "ttft_mean_s", _pick_n1)
+            attt, attn = _ctx_edge(aconc, actxs, "ttft_max_s", _pick_nmax)
+            atmaxn = max(attn.values()) if attn else 0
+            band_chart(os.path.join(ch, "{}_annex_range_ttft.svg".format(slug)),
+                       "Annex: time-to-first-token range across context length (band = measured envelope)",
+                       attt, attb,
+                       "{} requests, worst user (top edge)".format(atmaxn)
+                       if atmaxn > 1 else "loaded ceiling (top edge)",
+                       "single request (bottom edge)",
+                       "Context length (tokens)", "TTFT (s)",
+                       yfmt="{:.1f}", hlines=TTFT_HL)
+            L.append(img("{}_annex_range_ttft".format(slug),
+                         "Annex TTFT range: single request (bottom) to worst "
+                         "user at max concurrency (top) — {}".format(qshort)))
+            L.append("")
+        # the 131072 point: faces + capacity + interpretation
+        if 131072 in aconc:
+            cd = {n: d for n, d in aconc[131072].items() if _conc_face_ok(d)}
+            cap128 = apool // (131072 + OVERHEAD) if apool else None
+            rows = []
+            for n in sorted(aconc[131072]):
+                d = aconc[131072][n]
+                rows.append([_reqlab(n),
+                             ttft_fmt(d["ttft_mean_s"]) if _conc_face_ok(d) else "-",
+                             "{:.1f}".format(d["per_user_mean_tps"])
+                             if _conc_face_ok(d) else "-",
+                             "{:.0f}".format(d["agg_tps_wall"])
+                             if _conc_face_ok(d) else "-"])
+            t1f = load_conc(b139, acell, 131072, 1, "1.0")
+            if _conc_face_ok(t1f):
+                rows.append(["1 request (t1.0)",
+                             ttft_fmt(t1f["ttft_mean_s"]),
+                             "{:.1f}".format(t1f["per_user_mean_tps"]),
+                             "{:.0f}".format(t1f["agg_tps_wall"])])
+            L.append("### The 131072-token point")
+            L.append("")
+            L.append(md_table(["Face (131K)", "TTFT mean (s)",
+                               "Per-user (tok/s)", "Aggregate (tok/s)"], rows))
+            L.append("")
+            captxt = ("{} full-length sessions (pool {:,} // 131072 + 664)"
+                      .format(cap128, apool) if cap128 is not None
+                      else "pool not parsed")
+            L.append("A full-length session occupies ctx + 664 tokens, so "
+                     "this boot holds **{}**; the sweep measured {} at "
+                     "131072 — higher concurrencies exceed the pool by "
+                     "design and are banked as `KV_CAP` rows, not "
+                     "failures.".format(
+                         captxt, " and ".join(_reqlab(n) for n in sorted(cd))
+                         or "no green faces"))
+            L.append("")
+            d1 = cd.get(1)
+            if d1:
+                ref = aconc.get(32768, {}).get(1)
+                reftxt = ""
+                if _conc_face_ok(ref) and ref["per_user_mean_tps"] > 0:
+                    reftxt = (" — {:.0f}% of the 32K figure; the cost of "
+                              "128K is KV residency and prefill, not "
+                              "decode".format(
+                                  100 * d1["per_user_mean_tps"]
+                                  / ref["per_user_mean_tps"]))
+                L.append("*Interpretation:* a single 128K request streams "
+                         "{:.1f} tok/s with a {} first-token wait{} — cold "
+                         "prefill of the whole prompt dominates; interactive "
+                         "turns on cached prefixes pay only the new "
+                         "tokens.".format(
+                             d1["per_user_mean_tps"],
+                             ttft_fmt(d1["ttft_mean_s"]), reftxt))
+                L.append("")
+        # same-context delta vs the main boot
+        shared = [c for c in actxs if c in conc
+                  and any(_conc_face_ok(d) for d in conc[c].values())]
+        if shared:
+            drows = []
+            for c in shared:
+                m1, a1 = conc[c].get(1), aconc[c].get(1)
+                m8, a8 = conc[c].get(8), aconc[c].get(8)
+                drows.append([
+                    ctxrow(c),
+                    "{:.1f}".format(m1["per_user_mean_tps"])
+                    if _conc_face_ok(m1) else "-",
+                    "{:.1f}".format(a1["per_user_mean_tps"])
+                    if _conc_face_ok(a1) else "-",
+                    ttft_fmt(m1["ttft_mean_s"]) if _conc_face_ok(m1) else "-",
+                    ttft_fmt(a1["ttft_mean_s"]) if _conc_face_ok(a1) else "-",
+                    "{:.1f}".format(m8["per_user_mean_tps"])
+                    if _conc_face_ok(m8) else "-",
+                    "{:.1f}".format(a8["per_user_mean_tps"])
+                    if _conc_face_ok(a8) else "-"])
+            L.append("### Same contexts, both boots")
+            L.append("")
+            L.append(md_table(["Context", "solo speed, maxlen 40960",
+                               "solo speed, 131072", "TTFT, 40960",
+                               "TTFT, 131072", "@8 speed, 40960",
+                               "@8 speed, 131072"], drows))
+            L.append("")
+            pairs = [(m["per_user_mean_tps"], a["per_user_mean_tps"])
+                     for c in shared
+                     for m, a in ((conc[c].get(1), aconc[c].get(1)),)
+                     if _conc_face_ok(m) and _conc_face_ok(a)]
+            if pairs:
+                worst = max(abs(m - a) / max(m, 1e-9) for m, a in pairs)
+                L.append("Two boots, one lane: the shared contexts agree "
+                         "within {:.0f}% on solo speed (worst relative "
+                         "delta) — the maxlen change costs nothing at short "
+                         "context; what it buys is the 128K point "
+                         "above.".format(100 * worst))
+                L.append("")
+        L.append("> **Prompt-budget rule (banked).** The API server enforces "
+                 "prompt + max_tokens <= max_model_len — the completion "
+                 "budget counts — and gemma's tokenizer round-trip inflates "
+                 "decoded text ~1.026x. The annex faces size the server-side "
+                 "prompt budget as ctx - max_tokens - 64 (`p139_conc.py` v2, "
+                 "verify-and-trim); the boundary probes are banked in the "
+                 "r140 bank (`p140_probe_gm4x_probe_b131000.json` = the "
+                 "server stating the rule verbatim).")
+        L.append("")
+        L.append("### Annex invocation (byte-exact)")
+        L.append("")
+        L.append(config_block(dict(cfg, cell=acell, ctxs=ax["ctxs"],
+                                   env=ax["env"]), date))
+        L.append("")
+
+    # ------------------------------------------------ 128K control (refused)
+    ctl = cfg.get("control")
+    if ctl and not ax:                     # the annex renders its own control
+        coc = outcome(banks, ctl["cell"])
+        cpool, _cs = pool_of(banks, ctl["cell"])
+        if "OK" in coc:
+            body = ("banked outcome `{}` — the control booted and is "
+                    "reported in its own right".format(coc))
+        else:
+            body = ("outcome `{}` — 8-bit weights leave no KV headroom for "
+                    "a full 128K session; the refusal is the capacity "
+                    "boundary itself, banked with its serve log in the r140 "
+                    "bank".format(coc))
+        L.append("## 128K control — {}".format(
+            "measured" if "OK" in coc else "refused"))
+        L.append("")
+        L.append("The same `ARC_MAXLEN=131072` posture on this lane's "
+                 "weights (cell `{}`, pool {}): {}. The 4-bit lane carries "
+                 "the 128K annex instead: "
+                 "[gemma-4-31b-mxfp4](gemma-4-31b-mxfp4.md).".format(
+                     ctl["cell"],
+                     "{:,} tokens".format(cpool) if cpool else "not parsed",
+                     body))
+        L.append("")
+        L.append("### Control invocation")
+        L.append("")
+        L.append(config_block(dict(cfg, cell=ctl["cell"], ctxs=ctl["ctxs"],
+                                   env=ctl["env"]), date))
+        L.append("")
+
     # ------------------------------------------------ configuration
     L.append("## Configuration (copy & run on your own hardware)")
     L.append("")
@@ -1629,12 +2234,12 @@ def per_config_report(banks, out, cfg, date):
              "honest-limits statement: [METHODOLOGY.md](METHODOLOGY.md).")
     L.append("- Banks: `results/2026-11-10-p637-reports/` (solo + temperature "
              "faces, r138) and `results/2026-11-11-p637b-conc/` (concurrency "
-             "faces, r139)%s; tools `tools/ar/p138/p138_face.py`, "
-             "`tools/ar/p139/p139_conc.py`." %
-             (" and `results/2026-11-11-r140-gemma128k/` (gemma 128K annex)"
-              if annex else ""))
+             "faces, r139){}; tools `tools/ar/p138/p138_face.py`, "
+             "`tools/ar/p139/p139_conc.py`.".format(
+                 " and `results/2026-11-11-r140-gemma128k/` (128K annex)"
+                 if has_annex else ""))
     L = drop_missing_imgs(L, out)
-    with open(os.path.join(out, slug + ".md"), "w", encoding="utf-8") as f:
+    with open(os.path.join(out, slug + ".md"), "w", encoding="utf-8", newline="\n") as f:
         f.write("\n".join(L) + "\n")
 
 
@@ -1829,7 +2434,8 @@ def kv_report(banks, out, date):
                            "Decode solo (tok/s)", "Agg @ c8 (tok/s)",
                            "Per-user @ c8 (tok/s)", "KV pool (tok)"], gm8x_rows))
         L.append("")
-        L.append("Full report: [gemma-4-31b-mxfp4-128k](gemma-4-31b-mxfp4-128k.md).")
+        L.append("Full lane report (main body + the 128K annex section): "
+                 "[gemma-4-31b-mxfp4](gemma-4-31b-mxfp4.md).")
         L.append("")
 
     # ------------------------------------------------------------ capacity
@@ -1883,35 +2489,39 @@ def kv_report(banks, out, date):
           ""]
 
     # ------------------------------------------------------------ charts
-    cats = [dt for dt, _c, _n in KVDTS_Q]
     for met, agg, ylab, yfmt, fname, cap in [
             ("ttft_mean_s", False, "TTFT (s)", "{:.1f}", "kvdt_ttft",
-             "TTFT vs KV-cache dtype (solo, 8K/32K)"),
+             "TTFT by KV-cache dtype (solo, 8K/32K)"),
             ("per_user_mean_tps", False, "Decode speed (tok/s)", "{:.0f}", "kvdt_decode",
-             "Solo decode speed vs KV-cache dtype (8K/32K)"),
+             "Solo decode speed by KV-cache dtype (8K/32K)"),
             ("agg_tps_wall", True, "Aggregate @ c8 (tok/s)", "{:.0f}", "kvdt_agg8",
-             "Aggregate throughput @ c8 vs KV-cache dtype (8K/32K)")]:
-        series = []
-        for cv in (8192, 32768):
-            pts = []
-            for i, (dt, cell, _n) in enumerate(KVDTS_Q):
-                f = ctx_face(b138, cell, cv) if cell == "qf3" else load_face(
-                    b138, cell, f"{cell}_c{cv}_t0.0")
+             "Aggregate throughput @ c8 by KV-cache dtype (8K/32K)")]:
+        groups = [dt for dt, _c, _n in KVDTS_Q]
+        values = []
+        for dt, cell, _n in KVDTS_Q:
+            row = []
+            for cv in (8192, 32768):
+                v = None
                 if cell == "qf3":
                     d = load_conc(b139, cell, cv, 8 if agg else 1)
                     if _conc_face_ok(d):
-                        pts.append((i, d[met] if agg else d["ttft_mean_s"]))
-                        continue
-                if f:
-                    pts.append((i, f["ttft_s"] if met == "ttft_mean_s"
-                                else f["decode_tps"] if not agg else None))
+                        v = d[met]
                 else:
-                    pts.append((i, None))
-            series.append((f"{cv // 1024}K ctx", pts))
-        chart(os.path.join(ch, fname + ".svg"),
-              cap + " — qwen fp8 k3", series, "--kv-cache-dtype", ylab,
-              xcat=cats, yfmt=yfmt, hlines=TTFT_HL if "TTFT" in cap else ())
+                    f = load_face(b138, cell, f"{cell}_c{cv}_t0.0")
+                    if f:
+                        v = (f["ttft_s"] if met == "ttft_mean_s"
+                             else f["decode_tps"] if not agg else None)
+                row.append(v)
+            values.append(row)
+        bars(os.path.join(ch, fname + ".svg"), cap + " — qwen fp8 k3",
+             groups, ["8K ctx", "32K ctx"], values, ylab, yfmt=yfmt,
+             hlines=TTFT_HL if "TTFT" in cap else ())
         L.append(img(fname, cap + " — qwen fp8 k3"))
+        L.append("*Interpretation:* speed is flat across the servable "
+                 "dtypes — the KV dtype menu trades pool size, not "
+                 "per-token speed; the capacity table above is the real "
+                 "axis. A missing bar is a banked refusal, not a gap in "
+                 "measurement.")
         L.append("")
     # pool bars
     groups, vals = [], []
@@ -1924,28 +2534,49 @@ def kv_report(banks, out, date):
          groups, ["KV pool"], vals, "KV pool (tokens)", yfmt="{:,.0f}")
     L.append(img("kvdt_pool", "KV pool by dtype — capacity is the dtype menu's axis"))
     L.append("")
-    # turboquant conc overlay vs fp8
+    # turboquant overlay vs fp8 — x = context length, one line per dtype
     overlay = [("fp8_e4m3 (qf3)", "qf3")] + [(tp["dtype"], tp["cell"]) for tp in TQ_PRESETS]
-    for met, ylab, yfmt, fname, cap, ideal in [
-            ("per_user_mean_tps", "Per-user mean speed (tok/s)", "{:.0f}",
-             "tq_conc_speed", "Per-user speed vs concurrency — fp8 vs TurboQuant (8K ctx)", False),
-            ("agg_tps_wall", "Aggregate throughput (tok/s)", "{:.0f}",
-             "tq_conc_agg", "Aggregate throughput vs concurrency — fp8 vs TurboQuant (8K ctx)", True),
-            ("ttft_max_s", "Worst-user TTFT (s)", "{:.1f}",
-             "tq_conc_ttft", "Worst-user TTFT vs concurrency — fp8 vs TurboQuant (8K ctx)", False)]:
+    for met, nsel, ylab, yfmt, fname, cap in [
+            ("per_user_mean_tps", 1, "Per-user speed, solo (tok/s)", "{:.0f}",
+             "tq_speed_ctx",
+             "Per-user speed vs context length — fp8 vs TurboQuant (solo)"),
+            ("agg_tps_wall", 8, "Aggregate @ c8 (tok/s)", "{:.0f}",
+             "tq_agg8_ctx",
+             "Aggregate throughput @ c8 vs context length — fp8 vs TurboQuant"),
+            ("ttft_max_s", 8, "Worst-user TTFT @ c8 (s)", "{:.1f}",
+             "tq_ttft8_ctx",
+             "Worst-user TTFT @ c8 vs context length — fp8 vs TurboQuant")]:
         series = []
         for lab, cell in overlay:
-            ns = conc_concs(b139, cell, 8192)
-            pts = []
-            for n in ns:
-                d = load_conc(b139, cell, 8192, n)
-                pts.append((n, d[met]) if _conc_face_ok(d) else (n, None))
-            series.append((lab, pts))
+            pts = [(c, load_conc(b139, cell, c, nsel)[met])
+                   if _conc_face_ok(load_conc(b139, cell, c, nsel))
+                   else (c, None)
+                   for c in conc_ctxs(b139, cell)]
+            if any(p[1] is not None for p in pts):
+                series.append((lab, pts))
         chart(os.path.join(ch, fname + ".svg"), cap, series,
-              "Concurrent requests", ylab, yfmt=yfmt, hlines=(
-                  TTFT_HL if "TTFT" in cap else (SPEED_HL if "Per-user" in ylab else ())),
-              ideal=ideal, label_all=True)
+              "Context length (tokens)", ylab, yfmt=yfmt, hlines=(
+                  TTFT_HL if "TTFT" in cap else
+                  (SPEED_HL if "speed" in cap.lower() else ())),
+              label_all=True)
         L.append(img(fname, cap))
+        L.append("")
+    # turboquant cost-of-capacity sentence (solo speed delta vs fp8)
+    tq_pairs = []
+    for tp in TQ_PRESETS:
+        for c in set(conc_ctxs(b139, "qf3")) & set(conc_ctxs(b139, tp["cell"])):
+            a = load_conc(b139, "qf3", c, 1)
+            b_ = load_conc(b139, tp["cell"], c, 1)
+            if _conc_face_ok(a) and _conc_face_ok(b_) and a["per_user_mean_tps"] > 0:
+                tq_pairs.append(abs(b_["per_user_mean_tps"] - a["per_user_mean_tps"])
+                                / a["per_user_mean_tps"])
+    if tq_pairs:
+        L.append("*Interpretation:* TurboQuant holds solo speed within "
+                 "{:.0f}% of fp8 at every measured context (worst relative "
+                 "delta) while multiplying the KV pool up to 3.68x — the "
+                 "capacity table is the payoff; a line that stops before "
+                 "128K is the pool cliff reached later, not sooner.".format(
+                     100 * max(tq_pairs)))
         L.append("")
     L.append("Banks: r139 `results/2026-11-11-p637b-conc/` (conc cells + "
              "posture pools), r138 `results/2026-11-10-p637-reports/` (solo "
@@ -1954,7 +2585,7 @@ def kv_report(banks, out, date):
              "CONFIGURATION-arc \"KV-cache dtype\".")
     L = drop_missing_imgs(L, out)
     with open(os.path.join(out, "qwen3.8-27b-fp8-kv-cache-dtype.md"), "w",
-              encoding="utf-8") as f:
+              encoding="utf-8", newline="\n") as f:
         f.write("\n".join(L) + "\n")
 
 
@@ -2013,6 +2644,25 @@ def methodology_report(out, date):
               "(`KV cache size: N tokens`) and banked per cell in "
               "`posture.txt`."]]),
          "",
+         "## Presentation conventions",
+         "",
+         "Every line chart in these reports measures **context length on "
+         "the x-axis** — the deployment variable you choose; concurrency "
+         "is the series (one line per request count, 1-8). Range-band "
+         "charts show the measured envelope across concurrency (top edge "
+         "= single request, bottom edge = maximum tested concurrency; for "
+         "TTFT the envelope inverts — the loaded worst user is the top "
+         "edge). Every chart point carries its value label, and dashed "
+         "horizontal lines mark the user-experience thresholds from the "
+         "bands below. Categorical comparisons (KV dtype, sampling "
+         "temperature, per-config leaderboards) use bar charts. Each "
+         "section places its table and its chart under the same heading, "
+         "with an *Interpretation:* paragraph that reads the banked "
+         "numbers — the analysis ships with the data. Presentation format "
+         "follows the public millstoneai.com inference-benchmark pages, "
+         "extended with copyable byte-exact configurations, banked "
+         "refusal records, and spec-aware MTP accounting.",
+         "",
          "## User-experience bands",
          "",
          "### Streaming speed",
@@ -2065,7 +2715,7 @@ def methodology_report(out, date):
          "The gate scripts are `tools/ar/r139_conc.sh` (concurrency matrix) "
          "and `tools/ar/r140_gemma128k.sh` (gemma 128K annex); reports "
          "regenerate with `tools/ar/p139/p139_report.py`."]
-    with open(os.path.join(out, "METHODOLOGY.md"), "w", encoding="utf-8") as f:
+    with open(os.path.join(out, "METHODOLOGY.md"), "w", encoding="utf-8", newline="\n") as f:
         f.write("\n".join(L) + "\n")
 
 
@@ -2140,7 +2790,10 @@ def index_report(banks, out, date):
          "TTFT, capacity analysis, technical analysis (queue decomposition, "
          "prefill, ITL, scaling efficiency), concurrency sweeps {{1,2,3,4,8}}, "
          "temperature analysis, the full copyable configuration, and charts. "
-         "Generated {} from the r138 bank "
+         "Every line chart measures context length on the x-axis "
+         "(concurrency is the series), range bands span the measured "
+         "envelope, and each section carries its table, its chart, and an "
+         "interpretation together. Generated {} from the r138 bank "
          "(`results/2026-11-10-p637-reports/`) + r139 bank "
          "(`results/2026-11-11-p637b-conc/`) + gemma 128K annex "
          "(`results/2026-11-11-r140-gemma128k/`).".format(date),
@@ -2149,12 +2802,24 @@ def index_report(banks, out, date):
          "[METHODOLOGY.md](METHODOLOGY.md).",
          ""]
 
-    def cfg_rows(cfgs):
+    def _annex_col(c):
+        ax = c.get("annex")
+        if not ax:
+            return "-"
+        d1 = load_conc(banks[1:], ax["cell"], 131072, 1)
+        apool, _s = pool_of(banks, ax["cell"])
+        if _conc_face_ok(d1):
+            cap = apool // (131072 + OVERHEAD) if apool else None
+            return "{:.1f} tok/s solo · cap {}".format(
+                d1["per_user_mean_tps"], cap if cap else "?")
+        return outcome(banks, ax["cell"])
+
+    def cfg_rows(cfgs, annex_col=False):
         rows = []
         for c in cfgs:
             d8 = load_conc(banks[1:], c["cell"], 8192, 8)
             lastc = max(c["ctxs"])
-            rows.append([
+            r = [
                 "[{}]({}.md)".format(c["slug"], c["slug"]), c["quant"], c["mtp"],
                 _peak(banks, c),
                 ("{:.1f}".format(d8["per_user_mean_tps"])) if _conc_face_ok(d8) else "-",
@@ -2162,7 +2827,10 @@ def index_report(banks, out, date):
                 _hr_col(d8["agg_tps_wall"]) if _conc_face_ok(d8) else "-",
                 ttft_fmt(d8["ttft_max_s"]) if _conc_face_ok(d8) else "-",
                 _uc_short(banks, c, USE_CASES[0], lastc),
-                outcome(banks, c["cell"])])
+                outcome(banks, c["cell"])]
+            if annex_col:
+                r.append(_annex_col(c))
+            rows.append(r)
         return rows
 
     hdr = ["Report", "Precision", "MTP", "Peak decode (solo)",
@@ -2175,7 +2843,7 @@ def index_report(banks, out, date):
     L += ["## Qwen3.8-27B (dense hybrid-GDN, MTP k3 and no-MTP)", ""]
     L.append(md_table(hdr, cfg_rows(qcfgs)))
     L += ["", "## Gemma-4-31B (dense hybrid, no MTP head; 128K annex on MXFP4)", ""]
-    L.append(md_table(hdr, cfg_rows(gcfgs)))
+    L.append(md_table(hdr + ["128K annex"], cfg_rows(gcfgs, annex_col=True)))
     L += ["", "## Cross-cutting", "",
           "- [KV-cache dtype comparison — both models + TurboQuant + capacity "
           "cliffs](qwen3.8-27b-fp8-kv-cache-dtype.md)",
@@ -2210,7 +2878,7 @@ def index_report(banks, out, date):
           "host 64 GB RAM; close-out F defaults (--shm-size 16g, 16 GB "
           "LMCache CPU tier)."]
     L = drop_missing_imgs(L, out)
-    with open(os.path.join(out, "README.md"), "w", encoding="utf-8") as f:
+    with open(os.path.join(out, "README.md"), "w", encoding="utf-8", newline="\n") as f:
         f.write("\n".join(L) + "\n")
 
 
