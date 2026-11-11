@@ -11,7 +11,9 @@
 #              qwen-fp8 posture, ARC_KVDTYPE=turboquant_*)
 #            + 2 gemma KV cells (kvauto @40960 expected refusal,
 #              kvauto16384 working fp16-KV supplement).
-#   per config cell: ctx in {1K, 8K, 32K} (+128K qwen-only) x conc in
+#   per config cell: ctx in {1K, 8K, 32K, 64K, 128K} (the canonical
+#   rung ladder, standing directive docs/TESTING-arc.md; gemma main
+#   boots cap at 32K by maxlen 40960) x conc in
 #   {1,2,3,4,8} (t0.0) + a t1.0 solo face per ctx -- the temp 0.0/1.0
 #   pair lands in every report row.
 #   feasibility from the booted KV pool (serve.log "KV cache size: N
@@ -152,7 +154,12 @@ run_cell() {
       group "$fx" "$fn" "${CELLN}_c${fx}_n${fn}_t${ft}" "$ft"
     done
   else
-    local CTXS="1024 8192 32768 131072"
+    # standing directive: the canonical rung ladder — every rung the
+    # boot's maxlen/KV pool permits, swept to the wall (64K was missing
+    # from the original matrix; docs/TESTING-arc.md context-ladder law).
+    # gemma main boots (maxlen 40960) stop at 32K; long gemma boots use
+    # the r140 annex gate.
+    local CTXS="1024 8192 32768 65536 131072"
     [ "$FAM" = "gemma" ] && CTXS="1024 8192 32768"
     for CTX in $CTXS; do
       local ran="" c

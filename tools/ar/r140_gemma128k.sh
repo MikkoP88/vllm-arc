@@ -8,14 +8,16 @@
 #          attempt; a refusal banks the "128K needs MXFP4" boundary; if
 #          it boots, two probe faces prove it servable)
 #   gm4x -- gemma MXFP4 W4A16 @ ARC_MAXLEN=131072: full ctx sweep
-#          {1K, 8K, 32K, 128K} x conc {1,2,3,4,8} (t0.0) + a t1.0 solo
-#          face per ctx (same convention as r139)
+#          {1K, 8K, 32K, 64K, 128K} (the canonical rung ladder,
+#          standing directive docs/TESTING-arc.md) x conc
+#          {1,2,3,4,8} (t0.0) + a t1.0 solo face per ctx (same
+#          convention as r139)
 # Feasibility from the booted KV pool exactly as r139: need =
 # conc*(ctx+600+64); infeasible points bank as KV_CAP rows.
 # Faces: /root/p139_conc.py (already on the rig from r139). Groups
 # sequential per boot. Boot failure does NOT abort (vmatrix law). W14
 # entry quiesce + trap restore. Artifacts -> /root/build/r140/<cell>/.
-# ETA ~2.5-3.5 h (2 boots; 131K legs are long).
+# ETA ~3-4 h (2 boots; 64K/131K legs are long).
 set -uo pipefail
 R=/root/build
 P=$R/r140
@@ -141,7 +143,10 @@ run_cell() {
     group 131072 1 "${CELLN}_c131072_n1_t1.0" 1.0
   else
     local CTX
-    for CTX in 1024 8192 32768 131072; do
+    # standing directive: the canonical rung ladder incl. 64K — every
+    # rung the boot's maxlen/KV pool permits, swept to the wall
+    # (docs/TESTING-arc.md context-ladder law).
+    for CTX in 1024 8192 32768 65536 131072; do
       local ran="" c
       local maxf=0
       for c in 1 2 3 4 5 6 7 8; do
