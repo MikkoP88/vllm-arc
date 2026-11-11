@@ -1,0 +1,31 @@
+{
+ "tag": "gm4_c1024_n1_t1.0",
+ "ctx": 1024,
+ "conc": 1,
+ "max_tokens": 600,
+ "model": "gemma4-31b",
+ "temperature": 1.0,
+ "n_ok": 1,
+ "n_fail": 0,
+ "requests": [
+  {
+   "slot": 0,
+   "error": null,
+   "ttft_s": 0.5722703160136007,
+   "total_s": 16.99833355296869,
+   "n_stream_chunks": 600,
+   "itl_ms_p50": 26.934839028399438,
+   "itl_ms_p90": 29.510978027246892,
+   "itl_ms_p99": 29.97361699817702
+  }
+ ],
+ "ttft_mean_s": 0.5722703160136007,
+ "ttft_max_s": 0.5722703160136007,
+ "per_user_tps": [
+  36.53
+ ],
+ "per_user_mean_tps": 36.52731584827519,
+ "per_user_min_tps": 36.52731584827519,
+ "agg_tps_wall": 35.297577737860806,
+ "wall_s": 16.99833355296869
+}

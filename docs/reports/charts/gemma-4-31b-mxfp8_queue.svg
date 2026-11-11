@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="500" viewBox="0 0 880 500" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+<rect width="880" height="500" fill="#ffffff"/>
+<text x="84" y="26" font-size="17" font-weight="600" fill="#101828">Added first-token wait vs concurrency (derived: ttft_mean(n) - ttft_mean(1))</text>
+<line x1="84" y1="436.0" x2="816" y2="436.0" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="440.0" font-size="11" fill="#667085" text-anchor="end">0.0</text>
+<line x1="84" y1="354.4" x2="816" y2="354.4" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="358.4" font-size="11" fill="#667085" text-anchor="end">2.5</text>
+<line x1="84" y1="272.9" x2="816" y2="272.9" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="276.9" font-size="11" fill="#667085" text-anchor="end">5.0</text>
+<line x1="84" y1="191.3" x2="816" y2="191.3" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="195.3" font-size="11" fill="#667085" text-anchor="end">7.5</text>
+<line x1="84" y1="109.7" x2="816" y2="109.7" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="113.7" font-size="11" fill="#667085" text-anchor="end">10.0</text>
+<line x1="84.0" y1="52" x2="84.0" y2="436" stroke="#f0f0f0" stroke-width="1"/>
+<text x="84.0" y="454" font-size="11" fill="#667085" text-anchor="middle">1</text>
+<line x1="188.6" y1="52" x2="188.6" y2="436" stroke="#f0f0f0" stroke-width="1"/>
+<text x="188.6" y="454" font-size="11" fill="#667085" text-anchor="middle">2</text>
+<line x1="293.1" y1="52" x2="293.1" y2="436" stroke="#f0f0f0" stroke-width="1"/>
+<text x="293.1" y="454" font-size="11" fill="#667085" text-anchor="middle">3</text>
+<line x1="397.7" y1="52" x2="397.7" y2="436" stroke="#f0f0f0" stroke-width="1"/>
+<text x="397.7" y="454" font-size="11" fill="#667085" text-anchor="middle">4</text>
+<line x1="502.3" y1="52" x2="502.3" y2="436" stroke="#f0f0f0" stroke-width="1"/>
+<text x="502.3" y="454" font-size="11" fill="#667085" text-anchor="middle">5</text>
+<line x1="816.0" y1="52" x2="816.0" y2="436" stroke="#f0f0f0" stroke-width="1"/>
+<text x="816.0" y="454" font-size="11" fill="#667085" text-anchor="middle">8</text>
+<line x1="84" y1="436" x2="816" y2="436" stroke="#d0d5dd" stroke-width="1"/>
+<line x1="84" y1="52" x2="84" y2="436" stroke="#d0d5dd" stroke-width="1"/>
+<polyline points="84.0,436.0 188.6,446.9 293.1,426.7 397.7,416.6 816.0,354.2" fill="none" stroke="#2563eb" stroke-width="2.4"/>
+<circle cx="84.0" cy="436.0" r="4.4" fill="#2563eb"/>
+<circle cx="188.6" cy="446.9" r="4.4" fill="#2563eb"/>
+<circle cx="293.1" cy="426.7" r="4.4" fill="#2563eb"/>
+<circle cx="397.7" cy="416.6" r="4.4" fill="#2563eb"/>
+<circle cx="816.0" cy="354.2" r="4.4" fill="#2563eb"/>
+<polyline points="84.0,436.0 188.6,370.5 293.1,264.1 397.7,175.9 502.3,99.2" fill="none" stroke="#dc2626" stroke-width="2.4"/>
+<rect x="79.5" y="431.5" width="9" height="9" fill="#dc2626"/>
+<rect x="184.1" y="366.0" width="9" height="9" fill="#dc2626"/>
+<rect x="288.6" y="259.6" width="9" height="9" fill="#dc2626"/>
+<rect x="393.2" y="171.4" width="9" height="9" fill="#dc2626"/>
+<rect x="497.8" y="94.7" width="9" height="9" fill="#dc2626"/>
+<polygon points="84.0,430.5 78.5,440.5 89.5,440.5" fill="#059669"/>
+<text x="84.0" y="427.0" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">0.0</text>
+<text x="84.0" y="415.0" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">0.0</text>
+<text x="84.0" y="403.0" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">0.0</text>
+<text x="188.6" y="361.5" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">2.0</text>
+<text x="188.6" y="437.9" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">-0.3</text>
+<text x="293.1" y="255.1" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">5.3</text>
+<text x="293.1" y="417.7" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">0.3</text>
+<text x="397.7" y="166.9" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">8.0</text>
+<text x="397.7" y="407.6" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">0.6</text>
+<text x="502.3" y="90.2" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">10.3</text>
+<text x="816.0" y="345.2" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">2.5</text>
+<line x1="84" y1="494" x2="100" y2="494" stroke="#2563eb" stroke-width="3"/>
+<text x="104" y="498" font-size="11.5" fill="#1d2939">1K ctx</text>
+<line x1="163" y1="494" x2="179" y2="494" stroke="#dc2626" stroke-width="3"/>
+<text x="183" y="498" font-size="11.5" fill="#1d2939">8K ctx</text>
+<line x1="242" y1="494" x2="258" y2="494" stroke="#059669" stroke-width="3"/>
+<text x="262" y="498" font-size="11.5" fill="#1d2939">32K ctx</text>
+<text x="450" y="470" font-size="12.5" fill="#475467" text-anchor="middle">Concurrent requests</text>
+<text x="16" y="244" font-size="12.5" fill="#475467" text-anchor="middle" transform="rotate(-90 16 244)">Added wait (s)</text>
+</svg>

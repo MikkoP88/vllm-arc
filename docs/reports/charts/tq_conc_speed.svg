@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="522" viewBox="0 0 880 522" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+<rect width="880" height="522" fill="#ffffff"/>
+<text x="84" y="26" font-size="17" font-weight="600" fill="#101828">Per-user speed vs concurrency — fp8 vs TurboQuant (8K ctx)</text>
+<line x1="84" y1="458.0" x2="816" y2="458.0" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="462.0" font-size="11" fill="#667085" text-anchor="end">0</text>
+<line x1="84" y1="362.2" x2="816" y2="362.2" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="366.2" font-size="11" fill="#667085" text-anchor="end">25</text>
+<line x1="84" y1="266.4" x2="816" y2="266.4" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="270.4" font-size="11" fill="#667085" text-anchor="end">50</text>
+<line x1="84" y1="170.7" x2="816" y2="170.7" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="174.7" font-size="11" fill="#667085" text-anchor="end">75</text>
+<line x1="84" y1="74.9" x2="816" y2="74.9" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="78.9" font-size="11" fill="#667085" text-anchor="end">100</text>
+<line x1="84.0" y1="52" x2="84.0" y2="458" stroke="#f0f0f0" stroke-width="1"/>
+<text x="84.0" y="476" font-size="11" fill="#667085" text-anchor="middle">1</text>
+<line x1="188.6" y1="52" x2="188.6" y2="458" stroke="#f0f0f0" stroke-width="1"/>
+<text x="188.6" y="476" font-size="11" fill="#667085" text-anchor="middle">2</text>
+<line x1="293.1" y1="52" x2="293.1" y2="458" stroke="#f0f0f0" stroke-width="1"/>
+<text x="293.1" y="476" font-size="11" fill="#667085" text-anchor="middle">3</text>
+<line x1="397.7" y1="52" x2="397.7" y2="458" stroke="#f0f0f0" stroke-width="1"/>
+<text x="397.7" y="476" font-size="11" fill="#667085" text-anchor="middle">4</text>
+<line x1="816.0" y1="52" x2="816.0" y2="458" stroke="#f0f0f0" stroke-width="1"/>
+<text x="816.0" y="476" font-size="11" fill="#667085" text-anchor="middle">8</text>
+<line x1="84" y1="458" x2="816" y2="458" stroke="#d0d5dd" stroke-width="1"/>
+<line x1="84" y1="52" x2="84" y2="458" stroke="#d0d5dd" stroke-width="1"/>
+<line x1="84" y1="400.5" x2="816" y2="400.5" stroke="#98a2b3" stroke-width="1" stroke-dasharray="5 4"/>
+<text x="820" y="403.5" font-size="9.5" fill="#667085" font-style="italic">slow</text>
+<line x1="84" y1="362.2" x2="816" y2="362.2" stroke="#98a2b3" stroke-width="1" stroke-dasharray="5 4"/>
+<text x="820" y="365.2" font-size="9.5" fill="#667085" font-style="italic">acceptable</text>
+<line x1="84" y1="266.4" x2="816" y2="266.4" stroke="#98a2b3" stroke-width="1" stroke-dasharray="5 4"/>
+<text x="820" y="269.4" font-size="9.5" fill="#667085" font-style="italic">fast</text>
+<polyline points="84.0,101.9 188.6,173.1 293.1,215.2 397.7,249.2 816.0,313.2" fill="none" stroke="#2563eb" stroke-width="2.4"/>
+<circle cx="84.0" cy="101.9" r="4.4" fill="#2563eb"/>
+<circle cx="188.6" cy="173.1" r="4.4" fill="#2563eb"/>
+<circle cx="293.1" cy="215.2" r="4.4" fill="#2563eb"/>
+<circle cx="397.7" cy="249.2" r="4.4" fill="#2563eb"/>
+<circle cx="816.0" cy="313.2" r="4.4" fill="#2563eb"/>
+<polyline points="84.0,246.3 188.6,334.8 293.1,366.0 397.7,384.5 816.0,417.7" fill="none" stroke="#dc2626" stroke-width="2.4"/>
+<rect x="79.5" y="241.8" width="9" height="9" fill="#dc2626"/>
+<rect x="184.1" y="330.3" width="9" height="9" fill="#dc2626"/>
+<rect x="288.6" y="361.5" width="9" height="9" fill="#dc2626"/>
+<rect x="393.2" y="380.0" width="9" height="9" fill="#dc2626"/>
+<rect x="811.5" y="413.2" width="9" height="9" fill="#dc2626"/>
+<polyline points="84.0,272.1 188.6,275.1 293.1,317.8 397.7,346.5 816.0,396.0" fill="none" stroke="#059669" stroke-width="2.4"/>
+<polygon points="84.0,266.6 78.5,276.6 89.5,276.6" fill="#059669"/>
+<polygon points="188.6,269.6 183.1,279.6 194.1,279.6" fill="#059669"/>
+<polygon points="293.1,312.3 287.6,322.3 298.6,322.3" fill="#059669"/>
+<polygon points="397.7,341.0 392.2,351.0 403.2,351.0" fill="#059669"/>
+<polygon points="816.0,390.5 810.5,400.5 821.5,400.5" fill="#059669"/>
+<polyline points="84.0,233.1 188.6,293.8 293.1,346.6 397.7,364.7 816.0,402.7" fill="none" stroke="#9333ea" stroke-width="2.4"/>
+<polygon points="84.0,227.6 89.5,233.1 84.0,238.6 78.5,233.1" fill="#9333ea"/>
+<polygon points="188.6,288.3 194.1,293.8 188.6,299.3 183.1,293.8" fill="#9333ea"/>
+<polygon points="293.1,341.1 298.6,346.6 293.1,352.1 287.6,346.6" fill="#9333ea"/>
+<polygon points="397.7,359.2 403.2,364.7 397.7,370.2 392.2,364.7" fill="#9333ea"/>
+<polygon points="816.0,397.2 821.5,402.7 816.0,408.2 810.5,402.7" fill="#9333ea"/>
+<polyline points="84.0,243.9 188.6,318.8 293.1,355.6 397.7,380.5 816.0,414.6" fill="none" stroke="#ea580c" stroke-width="2.4"/>
+<circle cx="84.0" cy="243.9" r="4.4" fill="#ea580c"/>
+<circle cx="188.6" cy="318.8" r="4.4" fill="#ea580c"/>
+<circle cx="293.1" cy="355.6" r="4.4" fill="#ea580c"/>
+<circle cx="397.7" cy="380.5" r="4.4" fill="#ea580c"/>
+<circle cx="816.0" cy="414.6" r="4.4" fill="#ea580c"/>
+<text x="84.0" y="92.9" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">93</text>
+<text x="84.0" y="224.1" font-size="10" fill="#9333ea" text-anchor="middle" font-weight="600">59</text>
+<text x="84.0" y="234.9" font-size="10" fill="#ea580c" text-anchor="middle" font-weight="600">56</text>
+<text x="84.0" y="262.3" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">55</text>
+<text x="84.0" y="288.1" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">49</text>
+<text x="188.6" y="164.1" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">74</text>
+<text x="188.6" y="266.1" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">48</text>
+<text x="188.6" y="284.8" font-size="10" fill="#9333ea" text-anchor="middle" font-weight="600">43</text>
+<text x="188.6" y="309.8" font-size="10" fill="#ea580c" text-anchor="middle" font-weight="600">36</text>
+<text x="188.6" y="325.8" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">32</text>
+<text x="293.1" y="206.2" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">63</text>
+<text x="293.1" y="308.8" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">37</text>
+<text x="293.1" y="337.6" font-size="10" fill="#9333ea" text-anchor="middle" font-weight="600">29</text>
+<text x="293.1" y="371.6" font-size="10" fill="#ea580c" text-anchor="middle" font-weight="600">27</text>
+<text x="293.1" y="357.0" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">24</text>
+<text x="397.7" y="240.2" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">55</text>
+<text x="397.7" y="337.5" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">29</text>
+<text x="397.7" y="355.7" font-size="10" fill="#9333ea" text-anchor="middle" font-weight="600">24</text>
+<text x="397.7" y="371.5" font-size="10" fill="#ea580c" text-anchor="middle" font-weight="600">20</text>
+<text x="397.7" y="400.5" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">19</text>
+<text x="816.0" y="304.2" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">38</text>
+<text x="816.0" y="387.0" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">16</text>
+<text x="816.0" y="418.7" font-size="10" fill="#9333ea" text-anchor="middle" font-weight="600">14</text>
+<text x="816.0" y="405.6" font-size="10" fill="#ea580c" text-anchor="middle" font-weight="600">11</text>
+<text x="816.0" y="433.7" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">11</text>
+<line x1="84" y1="516" x2="100" y2="516" stroke="#2563eb" stroke-width="3"/>
+<text x="104" y="520" font-size="11.5" fill="#1d2939">fp8_e4m3 (qf3)</text>
+<line x1="220" y1="516" x2="236" y2="516" stroke="#dc2626" stroke-width="3"/>
+<text x="240" y="520" font-size="11.5" fill="#1d2939">turboquant_k8v4</text>
+<line x1="364" y1="516" x2="380" y2="516" stroke="#059669" stroke-width="3"/>
+<text x="384" y="520" font-size="11.5" fill="#1d2939">turboquant_4bit_nc</text>
+<line x1="530" y1="516" x2="546" y2="516" stroke="#9333ea" stroke-width="3"/>
+<text x="550" y="520" font-size="11.5" fill="#1d2939">turboquant_k3v4_nc</text>
+<line x1="84" y1="538" x2="100" y2="538" stroke="#ea580c" stroke-width="3"/>
+<text x="104" y="542" font-size="11.5" fill="#1d2939">turboquant_3bit_nc</text>
+<text x="450" y="492" font-size="12.5" fill="#475467" text-anchor="middle">Concurrent requests</text>
+<text x="16" y="255" font-size="12.5" fill="#475467" text-anchor="middle" transform="rotate(-90 16 255)">Per-user mean speed (tok/s)</text>
+</svg>

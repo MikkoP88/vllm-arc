@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="470" viewBox="0 0 880 470" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+<rect width="880" height="470" fill="#ffffff"/>
+<text x="84" y="26" font-size="17" font-weight="600" fill="#101828">Gemma-4-31b: per-user speed @ concurrency 8 (8K ctx, t0.0)</text>
+<line x1="84" y1="394.0" x2="816" y2="394.0" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="398.0" font-size="11" fill="#667085" text-anchor="end">0</text>
+<line x1="84" y1="276.1" x2="816" y2="276.1" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="280.1" font-size="11" fill="#667085" text-anchor="end">20</text>
+<line x1="84" y1="158.1" x2="816" y2="158.1" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="162.1" font-size="11" fill="#667085" text-anchor="end">40</text>
+<line x1="84" y1="305.6" x2="816" y2="305.6" stroke="#98a2b3" stroke-width="1" stroke-dasharray="5 4"/>
+<text x="820" y="308.6" font-size="9.5" fill="#667085" font-style="italic">slow</text>
+<line x1="84" y1="246.6" x2="816" y2="246.6" stroke="#98a2b3" stroke-width="1" stroke-dasharray="5 4"/>
+<text x="820" y="249.6" font-size="9.5" fill="#667085" font-style="italic">acceptable</text>
+<line x1="84" y1="99.2" x2="816" y2="99.2" stroke="#98a2b3" stroke-width="1" stroke-dasharray="5 4"/>
+<text x="820" y="102.2" font-size="9.5" fill="#667085" font-style="italic">fast</text>
+<text x="157.2" y="412" font-size="11.5" fill="#475467" text-anchor="middle">FP8 k0</text>
+<text x="303.6" y="412" font-size="11.5" fill="#475467" text-anchor="middle">MXFP8 k0</text>
+<rect x="435.0" y="285.6" width="30.0" height="108.4" fill="#2563eb" rx="2"/>
+<text x="450.0" y="279.6" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">18</text>
+<text x="450.0" y="412" font-size="11.5" fill="#475467" text-anchor="middle">MXFP4 k0</text>
+<rect x="581.4" y="285.6" width="30.0" height="108.4" fill="#2563eb" rx="2"/>
+<text x="596.4" y="279.6" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">18</text>
+<text x="596.4" y="412" font-size="11.5" fill="#475467" text-anchor="middle">MXFP4 k0</text>
+<text x="742.8" y="412" font-size="11.5" fill="#475467" text-anchor="middle">MXFP8 k0</text>
+<rect x="84" y="416" width="12" height="12" fill="#2563eb" rx="2"/>
+<text x="101" y="426" font-size="11.5" fill="#1d2939">per-user mean</text>
+<text x="450" y="458" font-size="12.5" fill="#475467" text-anchor="middle">Per-user mean speed (tok/s)</text>
+</svg>

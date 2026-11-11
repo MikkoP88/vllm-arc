@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="500" viewBox="0 0 880 500" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+<rect width="880" height="500" fill="#ffffff"/>
+<text x="84" y="26" font-size="17" font-weight="600" fill="#101828">Scaling efficiency vs concurrency (aggregate / (n x aggregate-at-1))</text>
+<line x1="84" y1="408.4" x2="816" y2="408.4" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="412.4" font-size="11" fill="#667085" text-anchor="end">60</text>
+<line x1="84" y1="276.4" x2="816" y2="276.4" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="280.4" font-size="11" fill="#667085" text-anchor="end">80</text>
+<line x1="84" y1="144.4" x2="816" y2="144.4" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="148.4" font-size="11" fill="#667085" text-anchor="end">100</text>
+<line x1="84.0" y1="52" x2="84.0" y2="436" stroke="#f0f0f0" stroke-width="1"/>
+<text x="84.0" y="454" font-size="11" fill="#667085" text-anchor="middle">1</text>
+<line x1="188.6" y1="52" x2="188.6" y2="436" stroke="#f0f0f0" stroke-width="1"/>
+<text x="188.6" y="454" font-size="11" fill="#667085" text-anchor="middle">2</text>
+<line x1="293.1" y1="52" x2="293.1" y2="436" stroke="#f0f0f0" stroke-width="1"/>
+<text x="293.1" y="454" font-size="11" fill="#667085" text-anchor="middle">3</text>
+<line x1="397.7" y1="52" x2="397.7" y2="436" stroke="#f0f0f0" stroke-width="1"/>
+<text x="397.7" y="454" font-size="11" fill="#667085" text-anchor="middle">4</text>
+<line x1="502.3" y1="52" x2="502.3" y2="436" stroke="#f0f0f0" stroke-width="1"/>
+<text x="502.3" y="454" font-size="11" fill="#667085" text-anchor="middle">5</text>
+<line x1="816.0" y1="52" x2="816.0" y2="436" stroke="#f0f0f0" stroke-width="1"/>
+<text x="816.0" y="454" font-size="11" fill="#667085" text-anchor="middle">8</text>
+<line x1="84" y1="436" x2="816" y2="436" stroke="#d0d5dd" stroke-width="1"/>
+<line x1="84" y1="52" x2="84" y2="436" stroke="#d0d5dd" stroke-width="1"/>
+<polyline points="84.0,144.4 188.6,149.7 293.1,183.2 397.7,182.0 816.0,317.3" fill="none" stroke="#2563eb" stroke-width="2.4"/>
+<circle cx="84.0" cy="144.4" r="4.4" fill="#2563eb"/>
+<circle cx="188.6" cy="149.7" r="4.4" fill="#2563eb"/>
+<circle cx="293.1" cy="183.2" r="4.4" fill="#2563eb"/>
+<circle cx="397.7" cy="182.0" r="4.4" fill="#2563eb"/>
+<circle cx="816.0" cy="317.3" r="4.4" fill="#2563eb"/>
+<polyline points="84.0,144.4 188.6,236.0 293.1,311.6 397.7,362.1 502.3,404.0" fill="none" stroke="#dc2626" stroke-width="2.4"/>
+<rect x="79.5" y="139.9" width="9" height="9" fill="#dc2626"/>
+<rect x="184.1" y="231.5" width="9" height="9" fill="#dc2626"/>
+<rect x="288.6" y="307.1" width="9" height="9" fill="#dc2626"/>
+<rect x="393.2" y="357.6" width="9" height="9" fill="#dc2626"/>
+<rect x="497.8" y="399.5" width="9" height="9" fill="#dc2626"/>
+<polygon points="84.0,138.9 78.5,148.9 89.5,148.9" fill="#059669"/>
+<text x="84.0" y="135.4" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">100</text>
+<text x="84.0" y="160.4" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">100</text>
+<text x="84.0" y="123.4" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">100</text>
+<text x="188.6" y="140.7" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">99</text>
+<text x="188.6" y="227.0" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">86</text>
+<text x="293.1" y="174.2" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">94</text>
+<text x="293.1" y="302.6" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">75</text>
+<text x="397.7" y="173.0" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">94</text>
+<text x="397.7" y="353.1" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">67</text>
+<text x="502.3" y="395.0" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">61</text>
+<text x="816.0" y="308.3" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">74</text>
+<line x1="84" y1="494" x2="100" y2="494" stroke="#2563eb" stroke-width="3"/>
+<text x="104" y="498" font-size="11.5" fill="#1d2939">1K ctx</text>
+<line x1="163" y1="494" x2="179" y2="494" stroke="#dc2626" stroke-width="3"/>
+<text x="183" y="498" font-size="11.5" fill="#1d2939">8K ctx</text>
+<line x1="242" y1="494" x2="258" y2="494" stroke="#059669" stroke-width="3"/>
+<text x="262" y="498" font-size="11.5" fill="#1d2939">32K ctx</text>
+<text x="450" y="470" font-size="12.5" fill="#475467" text-anchor="middle">Concurrent requests</text>
+<text x="16" y="244" font-size="12.5" fill="#475467" text-anchor="middle" transform="rotate(-90 16 244)">Scaling efficiency (%)</text>
+</svg>
