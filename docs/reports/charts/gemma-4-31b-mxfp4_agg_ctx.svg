@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="500" viewBox="0 0 880 500" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+<rect width="880" height="500" fill="#ffffff"/>
+<text x="84" y="26" font-size="17" font-weight="600" fill="#101828">Aggregate throughput vs context length (1-8 concurrent requests)</text>
+<line x1="84" y1="436.0" x2="816" y2="436.0" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="440.0" font-size="11" fill="#667085" text-anchor="end">0</text>
+<line x1="84" y1="344.5" x2="816" y2="344.5" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="348.5" font-size="11" fill="#667085" text-anchor="end">50</text>
+<line x1="84" y1="252.9" x2="816" y2="252.9" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="256.9" font-size="11" fill="#667085" text-anchor="end">100</text>
+<line x1="84" y1="161.4" x2="816" y2="161.4" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="165.4" font-size="11" fill="#667085" text-anchor="end">150</text>
+<line x1="84" y1="69.9" x2="816" y2="69.9" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="73.9" font-size="11" fill="#667085" text-anchor="end">200</text>
+<line x1="84.0" y1="52" x2="84.0" y2="436" stroke="#f0f0f0" stroke-width="1"/>
+<text x="84.0" y="454" font-size="11" fill="#667085" text-anchor="middle">1K</text>
+<line x1="523.2" y1="52" x2="523.2" y2="436" stroke="#f0f0f0" stroke-width="1"/>
+<text x="523.2" y="454" font-size="11" fill="#667085" text-anchor="middle">8K</text>
+<line x1="816.0" y1="52" x2="816.0" y2="436" stroke="#f0f0f0" stroke-width="1"/>
+<text x="816.0" y="454" font-size="11" fill="#667085" text-anchor="middle">32K</text>
+<line x1="84" y1="436" x2="816" y2="436" stroke="#d0d5dd" stroke-width="1"/>
+<line x1="84" y1="52" x2="84" y2="436" stroke="#d0d5dd" stroke-width="1"/>
+<polyline points="84.0,369.4 523.2,381.8 816.0,408.2" fill="none" stroke="#2563eb" stroke-width="2.4"/>
+<circle cx="84.0" cy="369.4" r="4.4" fill="#2563eb"/>
+<circle cx="523.2" cy="381.8" r="4.4" fill="#2563eb"/>
+<circle cx="816.0" cy="408.2" r="4.4" fill="#2563eb"/>
+<polyline points="84.0,308.2 523.2,347.3 816.0,400.7" fill="none" stroke="#dc2626" stroke-width="2.4"/>
+<rect x="79.5" y="303.7" width="9" height="9" fill="#dc2626"/>
+<rect x="518.7" y="342.8" width="9" height="9" fill="#dc2626"/>
+<rect x="811.5" y="396.2" width="9" height="9" fill="#dc2626"/>
+<polyline points="84.0,260.5 523.2,324.9 816.0,397.8" fill="none" stroke="#059669" stroke-width="2.4"/>
+<polygon points="84.0,255.0 78.5,265.0 89.5,265.0" fill="#059669"/>
+<polygon points="523.2,319.4 517.7,329.4 528.7,329.4" fill="#059669"/>
+<polygon points="816.0,392.3 810.5,402.3 821.5,402.3" fill="#059669"/>
+<polyline points="84.0,197.3 523.2,305.8" fill="none" stroke="#9333ea" stroke-width="2.4"/>
+<polygon points="84.0,191.8 89.5,197.3 84.0,202.8 78.5,197.3" fill="#9333ea"/>
+<polygon points="523.2,300.3 528.7,305.8 523.2,311.3 517.7,305.8" fill="#9333ea"/>
+<polyline points="84.0,99.2 523.2,280.1" fill="none" stroke="#ea580c" stroke-width="2.4"/>
+<circle cx="84.0" cy="99.2" r="4.4" fill="#ea580c"/>
+<circle cx="523.2" cy="280.1" r="4.4" fill="#ea580c"/>
+<text x="84.0" y="90.2" font-size="10" fill="#ea580c" text-anchor="middle" font-weight="600">184</text>
+<text x="84.0" y="188.3" font-size="10" fill="#9333ea" text-anchor="middle" font-weight="600">130</text>
+<text x="84.0" y="251.5" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">96</text>
+<text x="84.0" y="299.2" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">70</text>
+<text x="84.0" y="360.4" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">36</text>
+<text x="523.2" y="271.1" font-size="10" fill="#ea580c" text-anchor="middle" font-weight="600">85</text>
+<text x="523.2" y="296.8" font-size="10" fill="#9333ea" text-anchor="middle" font-weight="600">71</text>
+<text x="523.2" y="315.9" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">61</text>
+<text x="523.2" y="338.3" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">48</text>
+<text x="523.2" y="372.8" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">30</text>
+<text x="816.0" y="388.8" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">21</text>
+<text x="816.0" y="416.7" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">19</text>
+<text x="816.0" y="399.2" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">15</text>
+<line x1="84" y1="494" x2="100" y2="494" stroke="#2563eb" stroke-width="3"/>
+<text x="104" y="498" font-size="11.5" fill="#1d2939">1 request</text>
+<line x1="184" y1="494" x2="200" y2="494" stroke="#dc2626" stroke-width="3"/>
+<text x="204" y="498" font-size="11.5" fill="#1d2939">2 requests</text>
+<line x1="292" y1="494" x2="308" y2="494" stroke="#059669" stroke-width="3"/>
+<text x="312" y="498" font-size="11.5" fill="#1d2939">3 requests</text>
+<line x1="400" y1="494" x2="416" y2="494" stroke="#9333ea" stroke-width="3"/>
+<text x="420" y="498" font-size="11.5" fill="#1d2939">4 requests</text>
+<line x1="508" y1="494" x2="524" y2="494" stroke="#ea580c" stroke-width="3"/>
+<text x="528" y="498" font-size="11.5" fill="#1d2939">8 requests</text>
+<text x="450" y="470" font-size="12.5" fill="#475467" text-anchor="middle">Context length (tokens)</text>
+<text x="16" y="244" font-size="12.5" fill="#475467" text-anchor="middle" transform="rotate(-90 16 244)">Aggregate throughput (tok/s)</text>
+</svg>

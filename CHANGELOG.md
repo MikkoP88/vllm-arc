@@ -268,6 +268,25 @@ raw evidence is banked under `results/YYYY-MM-DD-<phase>-*/`.
 
 ## Serve-layer and analysis phases (no cert — engine bytes unchanged)
 
+- **P6.40 presentation overhaul — context-length x-axis + range bands
+  (2026-11-11)**: every line chart re-anchored so the x-axis measures
+  **context length** and concurrency becomes the plotted series (the
+  prior x = concurrency charts retired); per-user speed and TTFT gain
+  millstone-style **Range band charts** (the measured envelope: solo
+  edge vs heaviest tested load) with dashed quality-threshold guide
+  lines on the use-case bars; every chart now ships a data-precise
+  *Interpretation* paragraph and sits directly under its table in the
+  same section. Near-duplicate reports eliminated:
+  `gemma-4-31b-mxfp4-128k.md` merged into `gemma-4-31b-mxfp4.md` as a
+  full 128K annex (same-contexts delta table proves both boots agree)
+  and `gemma-4-31b-mxfp8-128k.md` into `gemma-4-31b-mxfp8.md` as the
+  refused-131K control — 12 reports / 175 charts (was 14 / 108).
+  Generator refactor (`p139_report.py`: label-placement extraction,
+  `band_chart`, per-concurrency series builders) proven
+  behavior-preserving by oracle diff — 41 untouched charts
+  byte-identical; 1,545 point labels, 0 overlaps across all 175.
+  No engine bytes changed; cert23 stands. Reanalysis of the banked
+  P6.37/P6.39/P6.39c data, no new banks.
 - **P6.39 concurrency reports + gemma 128K annex (2026-11-11)**: every
   per-config report gains the measured concurrency 1–8 series and the
   paired temperature 0.0/1.0 faces; all line-chart points carry value

@@ -1,6 +1,6 @@
 # Performance reports — 2x Intel Arc Pro B70 (vllm-arc cert23)
 
-World-class close-out reports per model x quantization x MTP posture: executive summary and key findings, use-case guidance with capacity verdicts, system throughput, UX-banded speed and TTFT, capacity analysis, technical analysis (queue decomposition, prefill, ITL, scaling efficiency), concurrency sweeps {1,2,3,4,8}, temperature analysis, the full copyable configuration, and charts. Generated 2026-11-11 from the r138 bank (`results/2026-11-10-p637-reports/`) + r139 bank (`results/2026-11-11-p637b-conc/`) + gemma 128K annex (`results/2026-11-11-r140-gemma128k/`).
+World-class close-out reports per model x quantization x MTP posture: executive summary and key findings, use-case guidance with capacity verdicts, system throughput, UX-banded speed and TTFT, capacity analysis, technical analysis (queue decomposition, prefill, ITL, scaling efficiency), concurrency sweeps {1,2,3,4,8}, temperature analysis, the full copyable configuration, and charts. Every line chart measures context length on the x-axis (concurrency is the series), range bands span the measured envelope, and each section carries its table, its chart, and an interpretation together. Generated 2026-11-11 from the r138 bank (`results/2026-11-10-p637-reports/`) + r139 bank (`results/2026-11-11-p637b-conc/`) + gemma 128K annex (`results/2026-11-11-r140-gemma128k/`).
 
 Metric definitions, UX bands and thresholds: [METHODOLOGY.md](METHODOLOGY.md).
 
@@ -17,13 +17,11 @@ Metric definitions, UX bands and thresholds: [METHODOLOGY.md](METHODOLOGY.md).
 
 ## Gemma-4-31B (dense hybrid, no MTP head; 128K annex on MXFP4)
 
-| Report | Precision | MTP | Peak decode (solo) | Per-user @ c8, 8K | Agg @ c8, 8K | Tokens/hr @ c8 | TTFT max @ c8 (s) | Chat capacity (8K) | Outcome |
-|---|---|---|---|---|---|---|---|---|---|
-| [gemma-4-31b-fp8](gemma-4-31b-fp8.md) | FP8 (online, bf16 base checkpoint) | no MTP | 27.0 tok/s @ 1K | - | - | - | - | ~2 concurrent requests | FACES_OK |
-| [gemma-4-31b-mxfp8](gemma-4-31b-mxfp8.md) | MXFP8 (online, bf16 base checkpoint) | no MTP | 26.5 tok/s @ 1K | - | - | - | - | ~2 concurrent requests | FACES_OK |
-| [gemma-4-31b-mxfp4](gemma-4-31b-mxfp4.md) | MXFP4 W4A16 (online, bf16 base checkpoint) | no MTP | 38.0 tok/s @ 1K | 18.4 | 85 | 306K | 32.8 | ~2 concurrent requests | FACES_OK |
-| [gemma-4-31b-mxfp4-128k](gemma-4-31b-mxfp4-128k.md) | MXFP4 W4A16 (online, bf16 base checkpoint) | no MTP | 38.0 tok/s @ 1K | 18.4 | 85 | 306K | 32.7 | ~2 concurrent requests | CONC_OK |
-| [gemma-4-31b-mxfp8-128k](gemma-4-31b-mxfp8-128k.md) | MXFP8 (online, bf16 base checkpoint) | no MTP | - | - | - | - | - | - | BOOT_FAIL |
+| Report | Precision | MTP | Peak decode (solo) | Per-user @ c8, 8K | Agg @ c8, 8K | Tokens/hr @ c8 | TTFT max @ c8 (s) | Chat capacity (8K) | Outcome | 128K annex |
+|---|---|---|---|---|---|---|---|---|---|---|
+| [gemma-4-31b-fp8](gemma-4-31b-fp8.md) | FP8 (online, bf16 base checkpoint) | no MTP | 27.0 tok/s @ 1K | - | - | - | - | ~2 concurrent requests | FACES_OK | - |
+| [gemma-4-31b-mxfp8](gemma-4-31b-mxfp8.md) | MXFP8 (online, bf16 base checkpoint) | no MTP | 26.5 tok/s @ 1K | - | - | - | - | ~2 concurrent requests | FACES_OK | - |
+| [gemma-4-31b-mxfp4](gemma-4-31b-mxfp4.md) | MXFP4 W4A16 (online, bf16 base checkpoint) | no MTP | 38.0 tok/s @ 1K | 18.4 | 85 | 306K | 32.8 | ~2 concurrent requests | FACES_OK | 28.4 tok/s solo · cap 2 |
 
 ## Cross-cutting
 

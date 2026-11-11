@@ -61,6 +61,11 @@ Aggregate token generation across all concurrent requests (output tokens only; p
 
 At the peak point this configuration produces approximately **662.42 K tokens/hour** — the number that matters for batch workloads (document processing, synthetic-data generation, offline analysis).
 
+![Aggregate throughput vs context length, one line per concurrency — MXFP4 W4A16, no MTP](charts/gemma-4-31b-mxfp4_agg_ctx.svg)
+
+<i>Aggregate throughput vs context length, one line per concurrency — MXFP4 W4A16, no MTP</i>
+
+*Interpretation:* throughput peaks at 184 tok/s (8 requests, 1K); at 32K the heaviest measured load (3 requests) yields 21 tok/s (11% of peak) — long-context KV residency shrinks the resident batch. Batch workloads should batch short and parallel; long-context work is bound by KV residency, not compute.
 
 ## Per-user generation speed
 
@@ -87,9 +92,15 @@ Solo speed spans **34.9–38.0 tok/s** (32K to 1K context); at concurrency 8 the
 
 <i>Per-user decode speed vs context length (solo) — MXFP4 W4A16, no MTP</i>
 
-![Per-user decode speed vs concurrency — MXFP4 W4A16, no MTP](charts/gemma-4-31b-mxfp4_conc_speed.svg)
+![Per-user speed vs context length, one line per concurrency — MXFP4 W4A16, no MTP](charts/gemma-4-31b-mxfp4_speed_ctx.svg)
 
-<i>Per-user decode speed vs concurrency — MXFP4 W4A16, no MTP</i>
+<i>Per-user speed vs context length, one line per concurrency — MXFP4 W4A16, no MTP</i>
+
+![Per-user speed range: the band every deployment concurrency lands in — MXFP4 W4A16, no MTP](charts/gemma-4-31b-mxfp4_range_speed.svg)
+
+<i>Per-user speed range: the band every deployment concurrency lands in — MXFP4 W4A16, no MTP</i>
+
+*Interpretation:* at 32K a single user streams 34.8 tok/s while 3 requests share down to 18.7 tok/s (54% of solo); at 8K the spread is 18.4-37.2 tok/s — every concurrency you deploy lands between the band edges; the bands below classify the streaming feel.
 
 ## Time to first token
 
@@ -117,9 +128,15 @@ Time from request submission to the first streamed token — the primary respons
 
 <i>TTFT vs context length (solo) — MXFP4 W4A16, no MTP</i>
 
-![TTFT vs concurrency (mean and worst user) — MXFP4 W4A16, no MTP](charts/gemma-4-31b-mxfp4_conc_ttft.svg)
+![TTFT vs context length, one line per concurrency — MXFP4 W4A16, no MTP](charts/gemma-4-31b-mxfp4_ttft_ctx.svg)
 
-<i>TTFT vs concurrency (mean and worst user) — MXFP4 W4A16, no MTP</i>
+<i>TTFT vs context length, one line per concurrency — MXFP4 W4A16, no MTP</i>
+
+![TTFT range: single request (bottom) to worst user at max concurrency (top) — MXFP4 W4A16, no MTP](charts/gemma-4-31b-mxfp4_range_ttft.svg)
+
+<i>TTFT range: single request (bottom) to worst user at max concurrency (top) — MXFP4 W4A16, no MTP</i>
+
+*Interpretation:* at 32K the first token takes 22.3 solo but up to 66.6 for the worst user under 3 requests — 67% of the loaded wait is queue+prefill stagger, the sharing cost the capacity tables price below.
 
 ## Capacity analysis
 
@@ -132,6 +149,14 @@ Conversational assistant sessions: system prompt plus a few turns fit 8K. Both f
 | TTFT worst user (s) | 4.14 | 8.23 | 12.3 *(exceeded)* | 16.4 *(exceeded)* | 32.8 *(exceeded)* |
 | Per-user mean speed (tok/s) | 37.2 | 32.8 | 30.8 | 29.1 | 18.4 |
 
+![Interactive chat (8K): per-user speed by concurrency; the dashed line marks the 15.0 tok/s use-case floor](charts/gemma-4-31b-mxfp4_uc_chat8_speed.svg)
+
+<i>Interactive chat (8K): per-user speed by concurrency; the dashed line marks the 15.0 tok/s use-case floor</i>
+
+![Interactive chat (8K): worst-user TTFT by concurrency; the dashed line marks the 10.0 s use-case bar](charts/gemma-4-31b-mxfp4_uc_chat8_ttft.svg)
+
+<i>Interactive chat (8K): worst-user TTFT by concurrency; the dashed line marks the 10.0 s use-case bar</i>
+
 **Capacity limit: ~2 concurrent requests (estimated between the measured 2 and 3 points)**
 
 ### Long-context assistant (RAG) (32K context)
@@ -143,6 +168,14 @@ Retrieval-augmented / large-prompt assistants at 32K context. Thresholds: TTFT <
 | TTFT worst user (s) | 22.3 *(exceeded)* | 44.4 *(exceeded)* | 66.6 *(exceeded)* |
 | Per-user mean speed (tok/s) | 34.8 | 25.1 | 18.7 |
 
+![Long-context assistant (RAG) (32K): per-user speed by concurrency; the dashed line marks the 15.0 tok/s use-case floor](charts/gemma-4-31b-mxfp4_uc_assist32_speed.svg)
+
+<i>Long-context assistant (RAG) (32K): per-user speed by concurrency; the dashed line marks the 15.0 tok/s use-case floor</i>
+
+![Long-context assistant (RAG) (32K): worst-user TTFT by concurrency; the dashed line marks the 10.0 s use-case bar](charts/gemma-4-31b-mxfp4_uc_assist32_ttft.svg)
+
+<i>Long-context assistant (RAG) (32K): worst-user TTFT by concurrency; the dashed line marks the 10.0 s use-case bar</i>
+
 **Capacity limit: thresholds exceeded at concurrency 1 - not recommended**
 
 ### Document processing (batch) (32K context)
@@ -153,6 +186,10 @@ Offline summarization / extraction at the largest measured context. Turnaround m
 |---|---|---|---|
 | TTFT worst user (s) | 22.3 | 44.4 | 66.6 |
 | Per-user mean speed (tok/s) | 34.8 | 25.1 | 18.7 |
+
+![Document processing (batch) (32K): per-user speed by concurrency; the dashed line marks the 15.0 tok/s use-case floor](charts/gemma-4-31b-mxfp4_uc_docmax_speed.svg)
+
+<i>Document processing (batch) (32K): per-user speed by concurrency; the dashed line marks the 15.0 tok/s use-case floor</i>
 
 **Capacity limit: 3 concurrent requests**
 
@@ -180,9 +217,11 @@ At concurrency 1 the queue is empty, so solo TTFT is pure prefill. Under the bar
 | 8192 (8K) | +2.1 s | +8.0 s | +17.2 s |
 | 32768 (32K) | +12.8 s | - | - |
 
-![Added first-token wait vs concurrency (derived queue+prefill stagger) — MXFP4 W4A16, no MTP](charts/gemma-4-31b-mxfp4_queue.svg)
+![Added first-token wait vs context length, one line per concurrency (derived queue+prefill stagger) — MXFP4 W4A16, no MTP](charts/gemma-4-31b-mxfp4_queue_ctx.svg)
 
-<i>Added first-token wait vs concurrency (derived queue+prefill stagger) — MXFP4 W4A16, no MTP</i>
+<i>Added first-token wait vs context length, one line per concurrency (derived queue+prefill stagger) — MXFP4 W4A16, no MTP</i>
+
+*Interpretation:* the loaded-request stagger grows from +3.2 s at 1K to +17.2 s at 8K (8 requests) — the context-carrying requests serialize behind each other's prefill.
 
 ### Per-user prefill speed
 
@@ -194,9 +233,11 @@ Rate at which input context is processed before the first token. Client-observed
 | 8192 (8K) | 1979 | 673 | 384 |
 | 32768 (32K) | 1470 | - | - |
 
-![Client-observed prefill rate vs context length (solo) — MXFP4 W4A16, no MTP](charts/gemma-4-31b-mxfp4_prefill.svg)
+![Client-observed prefill rate vs context length, one line per concurrency — MXFP4 W4A16, no MTP](charts/gemma-4-31b-mxfp4_prefill.svg)
 
-<i>Client-observed prefill rate vs context length (solo) — MXFP4 W4A16, no MTP</i>
+<i>Client-observed prefill rate vs context length, one line per concurrency — MXFP4 W4A16, no MTP</i>
+
+*Interpretation:* prefill peaks at 1,979 tok/s (8K) and eases as context grows — chunked prefill batches more work per pass at length, trading first-token wait for decode-window protection.
 
 ### Inter-token latency
 
@@ -210,9 +251,11 @@ Time between consecutive streamed tokens — the smoothness of streaming. Solo p
 
 Percentage of ideal linear scaling achieved as concurrency rises (100% = n× the concurrency-1 throughput with no per-user cost). Real efficiency is always lower — the accelerators are shared; high efficiency at your target concurrency signals headroom.
 
-![Scaling efficiency vs concurrency — MXFP4 W4A16, no MTP](charts/gemma-4-31b-mxfp4_conc_eff.svg)
+![Scaling efficiency vs context length, one line per concurrency — MXFP4 W4A16, no MTP](charts/gemma-4-31b-mxfp4_eff_ctx.svg)
 
-<i>Scaling efficiency vs concurrency — MXFP4 W4A16, no MTP</i>
+<i>Scaling efficiency vs context length, one line per concurrency — MXFP4 W4A16, no MTP</i>
+
+*Interpretation:* efficiency holds at 63% at 1K but falls to 36% at 8K under 8 requests — high efficiency signals headroom; a sharp drop signals the accelerators are already saturated.
 
 ### Temperature 0.0 vs 1.0 (per context)
 
@@ -259,6 +302,105 @@ Percentage of ideal linear scaling achieved as concurrency rises (100% = n× the
 | 3 | 46.7 | 66.6 | 18.7 | 10.0 | 21 | 46% | 33.0 | 33.0 |
 
 *Scaling eff. = aggregate / (n x aggregate-at-1): 100% = perfect linear scaling. ITL p50 med = median of per-request p50s; ITL p90 max = worst user. Aggregate is wall-clock (n x 600 tokens / wall) and includes the slowest-user tail.*
+
+## 128K annex — max_model_len 131072
+
+Raising the certified gemma maxlen (40960) to 131072 is a KV-headroom question. MXFP4 weight savings buy the KV headroom for max_model_len 131072 — the boot below is its own cell (`gm4x`, outcome `CONC_OK`), never merged into the charts above: the main body and the annex are different boots with different pools.
+
+The 8-bit control (`gm8x`) ran the same 128K posture at 8-bit weights and refused (outcome `BOOT_FAIL`, pool not parseable) — the refusal is banked with its serve log and is the capacity boundary itself; only the 4-bit weight budget buys the 128K pool.
+
+| Field | Value |
+|---|---|
+| Posture | this lane + `ARC_MAXLEN=131072` |
+| KV pool (annex boot) | 288,972 tokens (r139 posture) |
+| Contexts measured | 1K, 8K, 32K, 128K |
+| Cell outcome | CONC_OK |
+
+![Annex per-user speed vs context length, one line per concurrency — MXFP4 W4A16](charts/gemma-4-31b-mxfp4_annex_speed.svg)
+
+<i>Annex per-user speed vs context length, one line per concurrency — MXFP4 W4A16</i>
+
+![Annex TTFT vs context length, one line per concurrency — MXFP4 W4A16](charts/gemma-4-31b-mxfp4_annex_ttft.svg)
+
+<i>Annex TTFT vs context length, one line per concurrency — MXFP4 W4A16</i>
+
+![Annex per-user speed range — the band every deployment concurrency lands in (MXFP4 W4A16)](charts/gemma-4-31b-mxfp4_annex_range_speed.svg)
+
+<i>Annex per-user speed range — the band every deployment concurrency lands in (MXFP4 W4A16)</i>
+
+![Annex TTFT range: single request (bottom) to worst user at max concurrency (top) — MXFP4 W4A16](charts/gemma-4-31b-mxfp4_annex_range_ttft.svg)
+
+<i>Annex TTFT range: single request (bottom) to worst user at max concurrency (top) — MXFP4 W4A16</i>
+
+### The 131072-token point
+
+| Face (131K) | TTFT mean (s) | Per-user (tok/s) | Aggregate (tok/s) |
+|---|---|---|---|
+| 1 request | 175.9 | 28.4 | 3 |
+| 2 requests | 264.9 | 15.1 | 3 |
+| 1 request (t1.0) | 176.5 | 26.9 | 3 |
+
+A full-length session occupies ctx + 664 tokens, so this boot holds **2 full-length sessions (pool 288,972 // 131072 + 664)**; the sweep measured 1 request and 2 requests at 131072 — higher concurrencies exceed the pool by design and are banked as `KV_CAP` rows, not failures.
+
+*Interpretation:* a single 128K request streams 28.4 tok/s with a 175.9 first-token wait — 82% of the 32K figure; the cost of 128K is KV residency and prefill, not decode — cold prefill of the whole prompt dominates; interactive turns on cached prefixes pay only the new tokens.
+
+### Same contexts, both boots
+
+| Context | solo speed, maxlen 40960 | solo speed, 131072 | TTFT, 40960 | TTFT, 131072 | @8 speed, 40960 | @8 speed, 131072 |
+|---|---|---|---|---|---|---|
+| 1024 (1K) | 38.0 | 38.0 | 0.70 | 0.70 | 27.2 | 27.1 |
+| 8192 (8K) | 37.2 | 37.2 | 4.14 | 4.16 | 18.4 | 18.4 |
+| 32768 (32K) | 34.8 | 34.8 | 22.3 | 22.3 | - | 8.1 |
+
+Two boots, one lane: the shared contexts agree within 0% on solo speed (worst relative delta) — the maxlen change costs nothing at short context; what it buys is the 128K point above.
+
+> **Prompt-budget rule (banked).** The API server enforces prompt + max_tokens <= max_model_len — the completion budget counts — and gemma's tokenizer round-trip inflates decoded text ~1.026x. The annex faces size the server-side prompt budget as ctx - max_tokens - 64 (`p139_conc.py` v2, verify-and-trim); the boundary probes are banked in the r140 bank (`p140_probe_gm4x_probe_b131000.json` = the server stating the rule verbatim).
+
+### Annex invocation (byte-exact)
+
+### Validated invocation (what the gate ran, byte-exact)
+
+```bash
+# image vllm-arc:v0.30.0-b70-cert23 ; 2026-11-11 ; TP2 on 2x Arc Pro B70
+ARC_IMAGE=vllm-arc:v0.30.0-b70-cert23 ARC_NAME=arc-b70 \
+  ARC_MODEL=/models/gemma4-31b ARC_SERVED=gemma4-31b ARC_GMU=0.8 ARC_GRAPH=1 ARC_SPEC=0 ARC_LMC=0 ARC_RPC=1200 ARC_MAXLEN=131072 ARC_FP8=0 ARC_QUANT=mxfp4 ARC_MXFP4_MODE=w4a16 \
+  bash serve_arc_b70.sh     # tools/serve_arc_b70.sh in this repo
+```
+
+The wrapper is the audited source of truth (banked posture echo: `gm4x/posture.txt`). What it expands to:
+
+```bash
+# 1) container boot layer  [serve_arc_b70.sh:199-210]
+docker run -d --name arc-b70 \
+  --privileged --network host --ipc host \
+  --shm-size 16g \              # close-out F: 64 GB-RAM hosts
+  -v /models/gemma4-31b:/models/target:ro \
+  -v <chat-template.json>:/root/chat_template.json:ro \
+  -v ./neo_cache:/root/.neo_cache -v ./triton_cache:/root/.triton_cache \
+  -v ./inductor_cache:/root/.inductor_cache \
+  -e VLLM_ALLOW_LONG_MAX_MODEL_LEN=1 -e VLLM_WORKER_MULTIPROC_METHOD=spawn \
+  --entrypoint /bin/bash vllm-arc:v0.30.0-b70-cert23 -c 'sleep infinity'
+
+# 2) engine layer (docker exec)  [serve_arc_b70.sh:327-375]
+export PYTHONHASHSEED=0 VLLM_EXECUTE_MODEL_TIMEOUT_SECONDS=1200 ZE_AFFINITY_MASK=0,1
+export CCL_ENABLE_SYCL_KERNELS=1 CCL_ZE_IPC_EXCHANGE=pidfd CCL_TOPO_P2P_ACCESS=1
+export CCL_TOPO_FABRIC_VERTEX_CONNECTION_CHECK=0 CCL_SYCL_ALLGATHERV_SMALL_THRESHOLD=131072
+export CCL_SYCL_ALLGATHERV_SCALEOUT_THRESHOLD=1048576 CCL_SYCL_ALLGATHERV_TMP_BUF=0 CCL_SYCL_ALLREDUCE_TMP_BUF=0
+export ARC_TRACE_FLIP=1 VLLM_XPU_ENABLE_XPU_GRAPH=1   # decode-only XPU graphs
+export ARC_MXFP4_MODE=w4a16                        # weights-only MXFP4 lane
+exec vllm serve --model /models/target \
+  --served-model-name gemma4-31b --tensor-parallel-size 2 \
+  --gpu-memory-utilization 0.8 --max-model-len 131072 \
+  --max-num-batched-tokens 8192 --max-num-seqs 64 --block-size 64 \
+  --dtype float16 --quantization mxfp4  \
+  --kv-cache-dtype fp8_e4m3 \
+  --mamba-ssm-cache-dtype float16 --mamba-cache-mode=align \
+  --enable-prefix-caching --trust-remote-code \
+  --chat-template /root/chat_template.json \   # gemma: no qwen parsers
+  --no-disable-hybrid-kv-cache-manager \
+  --compilation-config '{"mode":"none","cudagraph_mode":"FULL_DECODE_ONLY","cudagraph_capture_sizes":[1..320]}' \   # 64-size discipline, see wrapper
+  --port 8000
+```
 
 ## Configuration (copy & run on your own hardware)
 
@@ -319,4 +461,4 @@ exec vllm serve --model /models/target \
 - The r139 1K t0.0 face runs first after the boot warmup at a cold spec-verify batch shape — its acceptance (2.8 tok/step) sits below the family norm (3.8 at 8K); the 8K/32K faces are the steady reference. Temperature comparisons are within-harness (r138 sweep vs r139 faces, both reported).
 - Prefill rate is the client-observed ctx/TTFT; the engine-side device rate (P6.36 decomposition) is ~2.1–2.9k tok/s at fp8 — the client view includes chunk drain and the decode-transition tail.
 - Metric definitions, UX bands, use-case thresholds and the honest-limits statement: [METHODOLOGY.md](METHODOLOGY.md).
-- Banks: `results/2026-11-10-p637-reports/` (solo + temperature faces, r138) and `results/2026-11-11-p637b-conc/` (concurrency faces, r139); tools `tools/ar/p138/p138_face.py`, `tools/ar/p139/p139_conc.py`.
+- Banks: `results/2026-11-10-p637-reports/` (solo + temperature faces, r138) and `results/2026-11-11-p637b-conc/` (concurrency faces, r139) and `results/2026-11-11-r140-gemma128k/` (128K annex); tools `tools/ar/p138/p138_face.py`, `tools/ar/p139/p139_conc.py`.

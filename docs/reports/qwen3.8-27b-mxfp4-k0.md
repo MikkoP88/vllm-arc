@@ -64,6 +64,11 @@ Aggregate token generation across all concurrent requests (output tokens only; p
 
 At the peak point this configuration produces approximately **709.85 K tokens/hour** — the number that matters for batch workloads (document processing, synthetic-data generation, offline analysis).
 
+![Aggregate throughput vs context length, one line per concurrency — MXFP4 W4A16, no MTP](charts/qwen3.8-27b-mxfp4-k0_agg_ctx.svg)
+
+<i>Aggregate throughput vs context length, one line per concurrency — MXFP4 W4A16, no MTP</i>
+
+*Interpretation:* throughput peaks at 197 tok/s (8 requests, 1K); at 128K the heaviest measured load (5 requests) yields 5 tok/s (3% of peak) — long-context KV residency shrinks the resident batch. Batch workloads should batch short and parallel; long-context work is bound by KV residency, not compute.
 
 ## Per-user generation speed
 
@@ -92,9 +97,15 @@ Solo speed spans **26.6–36.9 tok/s** (128K to 1K context); at concurrency 8 th
 
 <i>Per-user decode speed vs context length (solo) — MXFP4 W4A16, no MTP</i>
 
-![Per-user decode speed vs concurrency — MXFP4 W4A16, no MTP](charts/qwen3.8-27b-mxfp4-k0_conc_speed.svg)
+![Per-user speed vs context length, one line per concurrency — MXFP4 W4A16, no MTP](charts/qwen3.8-27b-mxfp4-k0_speed_ctx.svg)
 
-<i>Per-user decode speed vs concurrency — MXFP4 W4A16, no MTP</i>
+<i>Per-user speed vs context length, one line per concurrency — MXFP4 W4A16, no MTP</i>
+
+![Per-user speed range: the band every deployment concurrency lands in — MXFP4 W4A16, no MTP](charts/qwen3.8-27b-mxfp4-k0_range_speed.svg)
+
+<i>Per-user speed range: the band every deployment concurrency lands in — MXFP4 W4A16, no MTP</i>
+
+*Interpretation:* at 128K a single user streams 26.6 tok/s while 5 requests share down to 6.1 tok/s (23% of solo); at 8K the spread is 21.8-36.8 tok/s — every concurrency you deploy lands between the band edges; the bands below classify the streaming feel.
 
 ## Time to first token
 
@@ -124,9 +135,15 @@ Time from request submission to the first streamed token — the primary respons
 
 <i>TTFT vs context length (solo) — MXFP4 W4A16, no MTP</i>
 
-![TTFT vs concurrency (mean and worst user) — MXFP4 W4A16, no MTP](charts/qwen3.8-27b-mxfp4-k0_conc_ttft.svg)
+![TTFT vs context length, one line per concurrency — MXFP4 W4A16, no MTP](charts/qwen3.8-27b-mxfp4-k0_ttft_ctx.svg)
 
-<i>TTFT vs concurrency (mean and worst user) — MXFP4 W4A16, no MTP</i>
+<i>TTFT vs context length, one line per concurrency — MXFP4 W4A16, no MTP</i>
+
+![TTFT range: single request (bottom) to worst user at max concurrency (top) — MXFP4 W4A16, no MTP](charts/qwen3.8-27b-mxfp4-k0_range_ttft.svg)
+
+<i>TTFT range: single request (bottom) to worst user at max concurrency (top) — MXFP4 W4A16, no MTP</i>
+
+*Interpretation:* at 128K the first token takes 106.7 solo but up to 536.1 for the worst user under 5 requests — 80% of the loaded wait is queue+prefill stagger, the sharing cost the capacity tables price below.
 
 ## Capacity analysis
 
@@ -139,6 +156,14 @@ Conversational assistant sessions: system prompt plus a few turns fit 8K. Both f
 | TTFT worst user (s) | 4.11 | 8.08 | 12.4 *(exceeded)* | 16.0 *(exceeded)* | 31.6 *(exceeded)* |
 | Per-user mean speed (tok/s) | 36.8 | 35.0 | 31.8 | 29.6 | 21.8 |
 
+![Interactive chat (8K): per-user speed by concurrency; the dashed line marks the 15.0 tok/s use-case floor](charts/qwen3.8-27b-mxfp4-k0_uc_chat8_speed.svg)
+
+<i>Interactive chat (8K): per-user speed by concurrency; the dashed line marks the 15.0 tok/s use-case floor</i>
+
+![Interactive chat (8K): worst-user TTFT by concurrency; the dashed line marks the 10.0 s use-case bar](charts/qwen3.8-27b-mxfp4-k0_uc_chat8_ttft.svg)
+
+<i>Interactive chat (8K): worst-user TTFT by concurrency; the dashed line marks the 10.0 s use-case bar</i>
+
 **Capacity limit: ~2 concurrent requests (estimated between the measured 2 and 3 points)**
 
 ### Long-context assistant (RAG) (32K context)
@@ -150,6 +175,14 @@ Retrieval-augmented / large-prompt assistants at 32K context. Thresholds: TTFT <
 | TTFT worst user (s) | 17.3 *(exceeded)* | 34.6 *(exceeded)* | 51.6 *(exceeded)* | 69.0 *(exceeded)* | 137.6 *(exceeded)* |
 | Per-user mean speed (tok/s) | 34.3 | 26.2 | 21.7 | 17.8 | 10.5 *(below)* |
 
+![Long-context assistant (RAG) (32K): per-user speed by concurrency; the dashed line marks the 15.0 tok/s use-case floor](charts/qwen3.8-27b-mxfp4-k0_uc_assist32_speed.svg)
+
+<i>Long-context assistant (RAG) (32K): per-user speed by concurrency; the dashed line marks the 15.0 tok/s use-case floor</i>
+
+![Long-context assistant (RAG) (32K): worst-user TTFT by concurrency; the dashed line marks the 10.0 s use-case bar](charts/qwen3.8-27b-mxfp4-k0_uc_assist32_ttft.svg)
+
+<i>Long-context assistant (RAG) (32K): worst-user TTFT by concurrency; the dashed line marks the 10.0 s use-case bar</i>
+
 **Capacity limit: thresholds exceeded at concurrency 1 - not recommended**
 
 ### Document processing (batch) (128K context)
@@ -160,6 +193,10 @@ Offline summarization / extraction at the largest measured context. Turnaround m
 |---|---|---|---|---|---|
 | TTFT worst user (s) | 106.7 | 213.7 | 320.9 | 428.1 | 536.1 |
 | Per-user mean speed (tok/s) | 26.6 | 15.3 | 10.6 *(below)* | 7.8 *(below)* | 6.1 *(below)* |
+
+![Document processing (batch) (128K): per-user speed by concurrency; the dashed line marks the 15.0 tok/s use-case floor](charts/qwen3.8-27b-mxfp4-k0_uc_docmax_speed.svg)
+
+<i>Document processing (batch) (128K): per-user speed by concurrency; the dashed line marks the 15.0 tok/s use-case floor</i>
 
 **Capacity limit: ~2 concurrent requests (estimated between the measured 2 and 3 points)**
 
@@ -190,9 +227,11 @@ At concurrency 1 the queue is empty, so solo TTFT is pure prefill. Under the bar
 | 32768 (32K) | +10.8 s | +29.5 s | +64.3 s |
 | 131072 (128K) | +56.2 s | +164.4 s | - |
 
-![Added first-token wait vs concurrency (derived queue+prefill stagger) — MXFP4 W4A16, no MTP](charts/qwen3.8-27b-mxfp4-k0_queue.svg)
+![Added first-token wait vs context length, one line per concurrency (derived queue+prefill stagger) — MXFP4 W4A16, no MTP](charts/qwen3.8-27b-mxfp4-k0_queue_ctx.svg)
 
-<i>Added first-token wait vs concurrency (derived queue+prefill stagger) — MXFP4 W4A16, no MTP</i>
+<i>Added first-token wait vs context length, one line per concurrency (derived queue+prefill stagger) — MXFP4 W4A16, no MTP</i>
+
+*Interpretation:* the loaded-request stagger grows from +3.7 s at 1K to +64.3 s at 32K (8 requests) — the context-carrying requests serialize behind each other's prefill.
 
 ### Per-user prefill speed
 
@@ -205,9 +244,11 @@ Rate at which input context is processed before the first token. Client-observed
 | 32768 (32K) | 1892 | 700 | 402 |
 | 131072 (128K) | 1229 | 484 | - |
 
-![Client-observed prefill rate vs context length (solo) — MXFP4 W4A16, no MTP](charts/qwen3.8-27b-mxfp4-k0_prefill.svg)
+![Client-observed prefill rate vs context length, one line per concurrency — MXFP4 W4A16, no MTP](charts/qwen3.8-27b-mxfp4-k0_prefill.svg)
 
-<i>Client-observed prefill rate vs context length (solo) — MXFP4 W4A16, no MTP</i>
+<i>Client-observed prefill rate vs context length, one line per concurrency — MXFP4 W4A16, no MTP</i>
+
+*Interpretation:* prefill peaks at 1,995 tok/s (8K) and eases as context grows — chunked prefill batches more work per pass at length, trading first-token wait for decode-window protection.
 
 ### Inter-token latency
 
@@ -221,9 +262,11 @@ Time between consecutive streamed tokens — the smoothness of streaming. Solo p
 
 Percentage of ideal linear scaling achieved as concurrency rises (100% = n× the concurrency-1 throughput with no per-user cost). Real efficiency is always lower — the accelerators are shared; high efficiency at your target concurrency signals headroom.
 
-![Scaling efficiency vs concurrency — MXFP4 W4A16, no MTP](charts/qwen3.8-27b-mxfp4-k0_conc_eff.svg)
+![Scaling efficiency vs context length, one line per concurrency — MXFP4 W4A16, no MTP](charts/qwen3.8-27b-mxfp4-k0_eff_ctx.svg)
 
-<i>Scaling efficiency vs concurrency — MXFP4 W4A16, no MTP</i>
+<i>Scaling efficiency vs context length, one line per concurrency — MXFP4 W4A16, no MTP</i>
+
+*Interpretation:* efficiency holds at 73% at 1K but falls to 22% at 32K under 8 requests — high efficiency signals headroom; a sharp drop signals the accelerators are already saturated.
 
 ### Temperature 0.0 vs 1.0 (per context)
 
