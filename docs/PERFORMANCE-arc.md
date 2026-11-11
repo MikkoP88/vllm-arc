@@ -156,8 +156,8 @@ trigger everywhere → REPORT lane — `results/2026-11-06-p627-mxfp8/`.
 Nothing validated beats the certified default (the two
 faster-on-paper postures are rejected: k5-depth dropped at P5 — its
 greedy edge inverts under sampling, though P6.35 re-opened k5 on the
-probabilistic lane as the decode-posture winner; compile — Appendix H
-law #1 acceptance gate, p67). The opt-in slice profile (experimental,
+probabilistic lane as the decode-posture winner; compile — acceptance-gate
+rejection, p67). The opt-in slice profile (experimental,
 P6.13) is NOT part of the certified default. The TurboQuant dtype
 faces are **servable since cert8** (P6.19 spec-verify fix; their table
 is below). How to run: the 25-var chain in
@@ -606,8 +606,8 @@ block below.)
 
 ### Posture laws in force on cert4 (do not re-litigate without new evidence)
 
-- **`mode: none`** — the 0.30 compile REVAL FIRED the Appendix H law #1
-  acceptance gate: `vllm_compile` collapses acceptance length
+- **`mode: none`** — the 0.30 compile re-validation fired the acceptance
+  gate: `vllm_compile` collapses acceptance length
   3.40/3.57 → 2.21/2.32 (−35 %), decode −39 %, prefill flat (p67);
   r70's accidental first launch re-replicated it exactly (182/52 t/s,
   mean length 2.12 — see `a_invalid_compile_posture/` in the p70
@@ -677,7 +677,7 @@ Zero engine-code change; cert4 remains the certified image (no cert5).
 Evidence: `results/2026-10-31-p67-r67a-compile-ab/` (VERDICT.md,
 r67b_capture_analysis.md, P67_LADDER_VERDICT.md, raw rank traces).
 
-**Compile REVAL (r67a, Appendix H law #1 on 0.30) — REJECTED.**
+**Compile REVAL (r67a, re-validated on 0.30) — REJECTED.**
 `mode=vllm_compile` × `cudagraph_mode=FULL_AND_PIECEWISE` (the only legal
 combo per the capture law), same-session A/B on the cert4 image: MTP mean
 acceptance **3.40/3.57 → 2.21/2.32 (−35 %)**, agg4x256 steady 300.48 →

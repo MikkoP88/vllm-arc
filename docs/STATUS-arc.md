@@ -91,7 +91,7 @@ elsewhere are cert22's):
   floor) ⇒ ceiling +8–10 %, not worth the risk to the champion.
   **No remaining lawful lever ≥ 10 %.** Evidence:
   `results/2026-11-10-p636-legA/` (PR #96).
-- **P6.37 — the owner close-out (2026-11-10)**: per-config performance
+- **P6.37 — close-out (2026-11-10)**: per-config performance
   reports ([`docs/reports/`](reports/README.md) — model × quant × MTP,
   decode/TTFT/prefill/ITL at 1K–128K, the MTP-k3 temperature sweep,
   line charts, copyable configs; bank `results/2026-11-10-p637-reports/`
@@ -158,7 +158,7 @@ narratives: [`../CHANGELOG.md`](../CHANGELOG.md).
 | P6.34 | 2026-11-09 | joint-matrix ladder research: serialization + SLM-staging laws; never certifies — closed research-only | `results/2026-11-09-p634-jm-ladder/` |
 | P6.35 (+V) | 2026-11-10 | **graph-exec double-buffer = cert23** (E2E-neutral hygiene); posture findings: mx4+k5 128.3 tok/s project best | `results/2026-11-10-p635-telemetry/` |
 | P6.36 | 2026-11-10 | final decomposition: prefill = device drain, skew zero, B discriminators negative — **no remaining lawful lever ≥ 10 %**; cert23 stands | `results/2026-11-10-p636-legA/` |
-| P6.37 | 2026-11-10 | owner close-out: per-config reports, 64 GB-RAM host defaults, `ARC_KVDTYPE` knob + dtype report, patch inventory | `results/2026-11-10-p637-reports/` |
+| P6.37 | 2026-11-10 | close-out: per-config reports, 64 GB-RAM host defaults, `ARC_KVDTYPE` knob + dtype report, patch inventory | `results/2026-11-10-p637-reports/` |
 
 ## Improvement-lane status — the in-scope ledger is CLOSED (P6.24; audited exhaustive P6.25)
 

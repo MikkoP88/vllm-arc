@@ -166,8 +166,8 @@ exec /opt/venv/bin/vllm serve --model /models/target \
 Two compile-posture laws (p67, do not re-try blind — evidence
 `results/2026-10-31-p67-r67a-compile-ab/`):
 
-1. **`mode` stays `none`** — the 0.30 REVAL of the compile-off acceptance
-   law (Appendix H #1) FIRED: `mode=vllm_compile` ×
+1. **`mode` stays `none`** — the 0.30 re-validation of the compile-off
+   acceptance rule FIRED: `mode=vllm_compile` ×
    `cudagraph_mode=FULL_AND_PIECEWISE` collapses MTP mean acceptance
    3.40/3.57 → 2.21/2.32 (−35 %) and decode t/s −39 %, with
    prefill flat — nothing compensates (KV pool +5.3 % aside).

@@ -106,7 +106,7 @@ to `results/`.
 ## 5. Rig laws that govern the migration window
 
 - NEVER leave the rig on an arc image overnight; W14 restores after every
-  arc block (plan §9 / App F etiquette).
+  arc block.
 - `VLLM_XPU_ENABLE_XPU_GRAPH=1` on all graph legs (set inside the serve
   script).
 - Verify interleave/BW matrix after any rig reboot.

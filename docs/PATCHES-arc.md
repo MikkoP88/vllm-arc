@@ -42,7 +42,7 @@ and posture), [`PERFORMANCE-arc.md`](PERFORMANCE-arc.md) (numbers),
 - **Purpose**: vLLM 0.30's `AsyncOutput` D2H copies ride a side stream
   whose events the XPU-graph capture pool cannot own — torn outputs under
   graph replay.
-- **Provenance**: in-house (plan Appendix C defect-b family, P2).
+- **Provenance**: in-house (P2).
 - **Knob**: always-on (safety class, no opt-out).
 - **Evidence**: `results/2026-10-28-p2-*` (defect-b reproduction + fix A/B).
 - **Cert**: cert5-era; in every image since. **Status: ACTIVE, safety-critical.**
