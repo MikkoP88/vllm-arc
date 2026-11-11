@@ -94,19 +94,19 @@ exec vllm serve --model /models/target \
 
 ## Charts
 
-![TTFT vs context length — FP8, no MTP](charts/qwen-fp8-k0_ttft.svg)
+![TTFT vs context length — FP8, no MTP](charts/qwen3.8-27b-fp8-k0_ttft.svg)
 
 <i>TTFT vs context length — FP8, no MTP</i>
 
-![Decode speed vs context length — FP8, no MTP](charts/qwen-fp8-k0_decode.svg)
+![Decode speed vs context length — FP8, no MTP](charts/qwen3.8-27b-fp8-k0_decode.svg)
 
 <i>Decode speed vs context length — FP8, no MTP</i>
 
-![Prefill rate vs context length — FP8, no MTP](charts/qwen-fp8-k0_prefill.svg)
+![Prefill rate vs context length — FP8, no MTP](charts/qwen3.8-27b-fp8-k0_prefill.svg)
 
 <i>Prefill rate vs context length — FP8, no MTP</i>
 
-![Inter-token latency vs context length — FP8, no MTP](charts/qwen-fp8-k0_itl.svg)
+![Inter-token latency vs context length — FP8, no MTP](charts/qwen3.8-27b-fp8-k0_itl.svg)
 
 <i>Inter-token latency vs context length — FP8, no MTP</i>
 

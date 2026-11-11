@@ -109,27 +109,27 @@ Higher temperature lowers draft acceptance (tok/step falls), so decode speed dro
 
 ## Charts
 
-![TTFT vs context length — MXFP8, MTP k3](charts/qwen-mxfp8-k3_ttft.svg)
+![TTFT vs context length — MXFP8, MTP k3](charts/qwen3.8-27b-mxfp8-k3_ttft.svg)
 
 <i>TTFT vs context length — MXFP8, MTP k3</i>
 
-![Decode speed vs context length — MXFP8, MTP k3](charts/qwen-mxfp8-k3_decode.svg)
+![Decode speed vs context length — MXFP8, MTP k3](charts/qwen3.8-27b-mxfp8-k3_decode.svg)
 
 <i>Decode speed vs context length — MXFP8, MTP k3</i>
 
-![Prefill rate vs context length — MXFP8, MTP k3](charts/qwen-mxfp8-k3_prefill.svg)
+![Prefill rate vs context length — MXFP8, MTP k3](charts/qwen3.8-27b-mxfp8-k3_prefill.svg)
 
 <i>Prefill rate vs context length — MXFP8, MTP k3</i>
 
-![Inter-token latency vs context length — MXFP8, MTP k3](charts/qwen-mxfp8-k3_itl.svg)
+![Inter-token latency vs context length — MXFP8, MTP k3](charts/qwen3.8-27b-mxfp8-k3_itl.svg)
 
 <i>Inter-token latency vs context length — MXFP8, MTP k3</i>
 
-![Decode speed vs sampling temperature — MTP k3](charts/qwen-mxfp8-k3_temp_decode.svg)
+![Decode speed vs sampling temperature — MTP k3](charts/qwen3.8-27b-mxfp8-k3_temp_decode.svg)
 
 <i>Decode speed vs sampling temperature — MTP k3</i>
 
-![TTFT vs sampling temperature — MTP k3](charts/qwen-mxfp8-k3_temp_ttft.svg)
+![TTFT vs sampling temperature — MTP k3](charts/qwen3.8-27b-mxfp8-k3_temp_ttft.svg)
 
 <i>TTFT vs sampling temperature — MTP k3</i>
 

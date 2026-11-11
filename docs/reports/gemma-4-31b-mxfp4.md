@@ -87,19 +87,19 @@ exec vllm serve --model /models/target \
 
 ## Charts
 
-![TTFT vs context length — MXFP4 W4A16, no MTP](charts/gemma-mxfp4_ttft.svg)
+![TTFT vs context length — MXFP4 W4A16, no MTP](charts/gemma-4-31b-mxfp4_ttft.svg)
 
 <i>TTFT vs context length — MXFP4 W4A16, no MTP</i>
 
-![Decode speed vs context length — MXFP4 W4A16, no MTP](charts/gemma-mxfp4_decode.svg)
+![Decode speed vs context length — MXFP4 W4A16, no MTP](charts/gemma-4-31b-mxfp4_decode.svg)
 
 <i>Decode speed vs context length — MXFP4 W4A16, no MTP</i>
 
-![Prefill rate vs context length — MXFP4 W4A16, no MTP](charts/gemma-mxfp4_prefill.svg)
+![Prefill rate vs context length — MXFP4 W4A16, no MTP](charts/gemma-4-31b-mxfp4_prefill.svg)
 
 <i>Prefill rate vs context length — MXFP4 W4A16, no MTP</i>
 
-![Inter-token latency vs context length — MXFP4 W4A16, no MTP](charts/gemma-mxfp4_itl.svg)
+![Inter-token latency vs context length — MXFP4 W4A16, no MTP](charts/gemma-4-31b-mxfp4_itl.svg)
 
 <i>Inter-token latency vs context length — MXFP4 W4A16, no MTP</i>
 

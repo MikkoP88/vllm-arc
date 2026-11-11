@@ -201,7 +201,7 @@ KV-cache dtype (close-out G, qwen fp8 k3): `fp8_e4m3` incumbent 93.3
 `max_model_len=262144` (8.73 GiB KV needed > 6.78 GiB available;
 measured at 131072 instead) and `fp8_e5m2` refuses outright (the
 esimd FA2 backend has no e5m2 KV path on Xe2). Report:
-[`docs/reports/qwen-fp8-kv-cache-dtype.md`](reports/qwen-fp8-kv-cache-dtype.md).
+[`docs/reports/qwen3.8-27b-fp8-kv-cache-dtype.md`](reports/qwen3.8-27b-fp8-kv-cache-dtype.md).
 
 ### Gemma-4-31B validation faces (P6.28+P6.29; cert19 L1 current — r111 — with the cert18/cert17-native columns kept as labeled history)
 

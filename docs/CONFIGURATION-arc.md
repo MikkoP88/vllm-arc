@@ -906,7 +906,7 @@ without the overlay; default emits no env line), `ARC_KVDTYPE`
 `--kv-cache-dtype`; unset = `fp8_e4m3` the certified incumbent. The
 stock alternates were measured on cert23 at 8K/32K context — per-dtype
 report:
-[`docs/reports/qwen-fp8-kv-cache-dtype.md`](reports/qwen-fp8-kv-cache-dtype.md).
+[`docs/reports/qwen3.8-27b-fp8-kv-cache-dtype.md`](reports/qwen3.8-27b-fp8-kv-cache-dtype.md).
 Two measured boundaries: `auto` (fp16 KV) refuses at the certified
 `max_model_len=262144` (one max-len request needs 8.73 GiB KV vs
 6.78 GiB available at GMU 0.8/TP2) and is servable only with

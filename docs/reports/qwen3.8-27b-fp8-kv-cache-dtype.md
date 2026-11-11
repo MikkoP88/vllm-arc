@@ -24,7 +24,7 @@
 
 ## Configuration (copyable deltas on the certified posture)
 
-Base = the Qwen3.8-27B FP8 + MTP k3 block from [qwen-fp8-mtp-k3.md](qwen-fp8-mtp-k3.md); each cell changes only:
+Base = the Qwen3.8-27B FP8 + MTP k3 block from [qwen3.8-27b-fp8-k3.md](qwen3.8-27b-fp8-k3.md); each cell changes only:
 
 | dtype | cell | delta | max_model_len |
 |---|---|---|---|
