@@ -1,14 +1,15 @@
 # Changelog — vllm-arc
 
 Every certified release and closed phase, newest first. The living docs
-(README, `docs/*`) carry **current state only** and point here for history
-(main-currency law — `tools/check_currency.sh`). Facts in each entry are
+(README, `docs/*`) carry **current state only**; superseded doc content
+is archived per-doc under `docs/history/` (main-currency law —
+`tools/check_currency.sh`). Facts in each entry are
 the durable summary of the banked evidence; full narratives live in the
 cited `results/` legs and the close-out PRs. Tags are annotated and point
 at the certified `main` commit; `IMAGE_MANIFEST` inside each image carries
 the fork SHA it was built from.
 
-Phase labels P0–P6.37 refer to the plan's execution phases; every phase's
+Phase labels P0–P6.38 refer to the plan's execution phases; every phase's
 raw evidence is banked under `results/YYYY-MM-DD-<phase>-*/`.
 
 ## rel/v0.30.0-b70-cert23 — P6.34/P6.35: graph-exec double-buffer (2026-11-10)
@@ -267,6 +268,18 @@ raw evidence is banked under `results/YYYY-MM-DD-<phase>-*/`.
 
 ## Serve-layer and analysis phases (no cert — engine bytes unchanged)
 
+- **P6.38 docs restructure (2026-11-11)**: current-state-only living docs
+  + the two-tier history architecture — `CHANGELOG.md` as the pure
+  changelog (the consolidated-history section removed), per-doc archives
+  `docs/history/{STATUS,TESTING,MIGRATION,PERFORMANCE,CONFIGURATION}_HISTORY.md`
+  (every outgoing table/narrative banked verbatim), and
+  `docs/release_notes.md` as the upstream-style release index. Era
+  labels (rNN leg IDs in prose, cert-era tags, phase prefixes) stripped
+  from README + all living docs; two latent staleness bugs fixed
+  (CONFIGURATION Step-1 docker image cert19→cert23; draft-sampling
+  ARC_IMAGE example cert19→cert23) plus the envs.md currency bugs
+  (`LMCACHE_MAX_LOCAL_CPU_SIZE` 100→16, host-var count 23→24 with
+  `ARC_KVDTYPE`). No engine bytes changed; cert23 stands.
 - **P6.37 close-out (2026-11-10/11)**: the per-config performance reports
   (`docs/reports/`), 64 GB-RAM host defaults (`--shm-size 16g`,
   `LMCACHE_MAX_LOCAL_CPU_SIZE=16`), the `ARC_KVDTYPE` knob + measured
@@ -322,5 +335,4 @@ raw evidence is banked under `results/YYYY-MM-DD-<phase>-*/`.
   state, elide/memo, tail-split), certification battery + certified
   image + 12-cell matrix, env/doc/lint audits + 8 h soak + the r46t
   real-world campaign (k3 recommended). Evidence per `results/` phase
-  dirs; the phase ledger tables live in `docs/TESTING-arc.md` and
-  `docs/MIGRATION-arc.md` §6.
+  dirs.
