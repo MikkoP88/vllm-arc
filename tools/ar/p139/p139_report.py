@@ -473,16 +473,15 @@ def band_chart(path, title, top_pts, bot_pts, top_lab, bot_lab,
         return
     xs = sorted({p[0] for p in pts})
     ys = [p[1] for p in pts]
-    if len(xs) > 1 and xs[-1] / max(xs[0], 1) > 8:
-        l0, l1 = math.log2(xs[0]), math.log2(xs[-1])
+    n_x = len(xs)
+    xi = {v: i for i, v in enumerate(xs)}
 
-        def X(v):
-            return ML + (math.log2(v) - l0) / (l1 - l0) * PW
-    else:
-        x0, x1 = xs[0], xs[-1]
-
-        def X(v):
-            return ML + (v - x0) / max(x1 - x0, 1e-9) * PW
+    def X(v):
+        # linear equal-slot axis: one even slot per measured x, no log
+        # compression, no value-proportional bunching; the domain stops
+        # at the highest measured context length
+        i = xi[v]
+        return ML + (PW / 2 if n_x == 1 else i / (n_x - 1) * PW)
     ylo = 0.0
     yhi = max(max(ys), max([h for h, _ in hlines] or [0])) * 1.14
     if yhi <= 0:
@@ -531,16 +530,27 @@ def band_chart(path, title, top_pts, bot_pts, top_lab, bot_lab,
         out.append('<text x="{}" y="{:.1f}" font-size="9.5" fill="#667085" '
                    'font-style="italic">{}</text>'
                    .format(ML + PW + 4, yy + 3, esc(htag)))
-    # the band: polygon top edge l->r then bottom edge r->l (points
-    # present on both edges only; an edge gap splits the band there)
+    # the band: polygon top edge l->r then bottom edge r->l, over each
+    # CONTIGUOUS run of contexts where both edges measured -- shading
+    # never bridges a context the sweep skipped
     tg = [(xv, yv) for xv, yv in top_pts if yv is not None]
     bg = [(xv, yv) for xv, yv in bot_pts if yv is not None]
-    both = sorted(set(x for x, _ in tg) & set(x for x, _ in bg))
-    if len(both) >= 2:
-        tmap, bmap = dict(tg), dict(bg)
-        poly = ([ "{:.1f},{:.1f}".format(X(x), Y(tmap[x])) for x in both ]
+    tmap, bmap = dict(tg), dict(bg)
+    runs, cur = [], []
+    for xv in xs:
+        if xv in tmap and xv in bmap:
+            cur.append(xv)
+        elif cur:
+            runs.append(cur)
+            cur = []
+    if cur:
+        runs.append(cur)
+    for run in runs:
+        if len(run) < 2:
+            continue
+        poly = ([ "{:.1f},{:.1f}".format(X(x), Y(tmap[x])) for x in run ]
                 + ["{:.1f},{:.1f}".format(X(x), Y(bmap[x]))
-                   for x in reversed(both)])
+                   for x in reversed(run)])
         out.append('<polygon points="{}" fill="{}" fill-opacity="0.14" '
                    'stroke="none"/>'.format(" ".join(poly), band))
     for pts_, col in ((tg, edge_t), (bg, edge_b)):
@@ -607,16 +617,16 @@ def chart(path, title, series, xlabel, ylabel, xcat=None, yfmt="{:.1f}",
     if xcat is not None:
         def X(v):
             return ML + (v + 0.5) / len(xcat) * PW
-    elif len(xs) > 1 and xs[-1] / max(xs[0], 1) > 8:
-        l0, l1 = math.log2(xs[0]), math.log2(xs[-1])
-
-        def X(v):
-            return ML + (math.log2(v) - l0) / (l1 - l0) * PW
     else:
-        x0, x1 = xs[0], xs[-1]
+        # linear equal-slot axis: one even slot per measured x, no log
+        # compression, no value-proportional bunching; the domain stops
+        # at the highest measured context length
+        n_x = len(xs)
+        xi = {v: i for i, v in enumerate(xs)}
 
         def X(v):
-            return ML + (v - x0) / (x1 - x0) * PW
+            i = xi[v]
+            return ML + (PW / 2 if n_x == 1 else i / (n_x - 1) * PW)
 
     ylo = 0.0 if y_from_zero else min(ys) * 0.92
     yhi = max(max(ys), max([h for h, _ in hlines] or [0])) * 1.14
@@ -1097,6 +1107,29 @@ def _pick_nmax(cd):
     return n, cd[n]
 
 
+def _solo_fill_n1(series, faces, sfield):
+    """Complete the '1 request' line with the solo face at contexts the
+    concurrency sweep skipped (64K on qwen): a single request at
+    temperature 0 is the same measurement on either boot -- the
+    same-contexts delta tables bound the cross-boot drift near zero.
+    Loaded lines keep their honest gaps."""
+    out = []
+    for lab, ps in series:
+        if lab != _reqlab(1):
+            out.append((lab, ps))
+            continue
+        out.append((lab, [((c, faces[c][sfield]) if v is None and
+                           faces.get(c) and faces[c].get(sfield)
+                           else (c, v)) for c, v in ps]))
+    return out
+
+
+def _solo_fill_edge(pts, faces, sfield):
+    """Same completion for a band's single-request edge."""
+    return [((c, faces[c][sfield]) if v is None and faces.get(c)
+             and faces[c].get(sfield) else (c, v)) for c, v in pts]
+
+
 def per_config_report(banks, out, cfg, date):
     b138 = banks[0]
     b139 = banks[1:]
@@ -1108,6 +1141,10 @@ def per_config_report(banks, out, cfg, date):
     faces = {c: solo_face(banks, cell, c) for c in cfg["ctxs"]}
     tfaces = {t: temp_face(b138, cell, t) for t in TEMPS} if cfg["temps"] else {}
     cctxs = conc_ctxs(b139, cell)
+    # full chart domain: sweep ctxs plus every solo-measured ctx (the
+    # qwen sweep skipped 64K; the solo faces measured it -- a single
+    # request is the same measurement on either boot, delta-proven)
+    fctxs = sorted(set(cctxs) | {c for c, f in faces.items() if f})
     conc = {c: {n: load_conc(b139, cell, c, n) for n in conc_concs(b139, cell, c)}
             for c in cctxs}
     t1 = {c: load_conc(b139, cell, c, 1, "1.0") for c in cctxs}
@@ -1305,7 +1342,9 @@ def per_config_report(banks, out, cfg, date):
                      "synthetic-data generation, offline analysis).".format(_fmt_hourly(pagg)))
             L.append("")
             ns_all = sorted({n for cd in conc.values() for n in cd})
-            agg_series = _conc_ctx_series(conc, cctxs, ns_all, "agg_tps_wall")
+            agg_series = _solo_fill_n1(
+                _conc_ctx_series(conc, fctxs, ns_all, "agg_tps_wall"),
+                faces, "decode_tps")
             if agg_series:
                 chart(os.path.join(ch, "{}_agg_ctx.svg".format(slug)),
                       "Aggregate throughput vs context length (1-{} concurrent requests)".format(
@@ -1395,7 +1434,9 @@ def per_config_report(banks, out, cfg, date):
                      "Per-user decode speed vs context length (solo) — {}, {}".format(qshort, cfg["mtp"])))
         L.append("")
         ns_all = sorted({n for cd in conc.values() for n in cd})
-        spd_series = _conc_ctx_series(conc, cctxs, ns_all, "per_user_mean_tps")
+        spd_series = _solo_fill_n1(
+            _conc_ctx_series(conc, fctxs, ns_all, "per_user_mean_tps"),
+            faces, "decode_tps")
         if spd_series:
             chart(os.path.join(ch, "{}_speed_ctx.svg".format(slug)),
                   "Per-user speed vs context length (1-{} concurrent requests)".format(
@@ -1407,8 +1448,9 @@ def per_config_report(banks, out, cfg, date):
                          "Per-user speed vs context length, one line per "
                          "concurrency — {}, {}".format(qshort, cfg["mtp"])))
             L.append("")
-            top_e, _tn = _ctx_edge(conc, cctxs, "per_user_mean_tps", _pick_n1)
-            bot_e, bn = _ctx_edge(conc, cctxs, "per_user_mean_tps", _pick_nmax)
+            top_e, _tn = _ctx_edge(conc, fctxs, "per_user_mean_tps", _pick_n1)
+            top_e = _solo_fill_edge(top_e, faces, "decode_tps")
+            bot_e, bn = _ctx_edge(conc, fctxs, "per_user_mean_tps", _pick_nmax)
             maxn = max(bn.values()) if bn else 0
             band_chart(os.path.join(ch, "{}_range_speed.svg".format(slug)),
                        "Per-user speed range across context length (band = measured envelope)",
@@ -1492,7 +1534,9 @@ def per_config_report(banks, out, cfg, date):
         L.append(img("{}_ttft".format(slug),
                      "TTFT vs context length (solo) — {}, {}".format(qshort, cfg["mtp"])))
         L.append("")
-        tt_series = _conc_ctx_series(conc, cctxs, ns_all, "ttft_mean_s")
+        tt_series = _solo_fill_n1(
+            _conc_ctx_series(conc, fctxs, ns_all, "ttft_mean_s"),
+            faces, "ttft_s")
         if tt_series:
             chart(os.path.join(ch, "{}_ttft_ctx.svg".format(slug)),
                   "Time to first token vs context length (1-{} concurrent requests)".format(
@@ -1504,8 +1548,9 @@ def per_config_report(banks, out, cfg, date):
                          "TTFT vs context length, one line per concurrency — "
                          "{}, {}".format(qshort, cfg["mtp"])))
             L.append("")
-            tb_e, _btn = _ctx_edge(conc, cctxs, "ttft_mean_s", _pick_n1)
-            tt_e, ttn = _ctx_edge(conc, cctxs, "ttft_max_s", _pick_nmax)
+            tb_e, _btn = _ctx_edge(conc, fctxs, "ttft_mean_s", _pick_n1)
+            tb_e = _solo_fill_edge(tb_e, faces, "ttft_s")
+            tt_e, ttn = _ctx_edge(conc, fctxs, "ttft_max_s", _pick_nmax)
             tmaxn = max(ttn.values()) if ttn else 0
             band_chart(os.path.join(ch, "{}_range_ttft.svg".format(slug)),
                        "Time-to-first-token range across context length (band = measured envelope)",
@@ -1690,16 +1735,24 @@ def per_config_report(banks, out, cfg, date):
             L.append("Rate at which input context is processed before the "
                      "first token. Client-observed (ctx / TTFT at queue ~0); "
                      "the engine-side device rate is higher — the client view "
-                     "includes chunk drain and the decode-transition tail.")
+                     "includes chunk drain and the decode-transition tail. "
+                     "The single-request line spans **every measured "
+                     "context** (sweep plus solo faces — the sweep skipped "
+                     "64K); loaded lines cover the contexts the concurrency "
+                     "sweep measured.")
             L.append("")
             rows = []
-            for c in cctxs:
+            for c in fctxs:
                 cells = [ctxrow(c)]
                 for n in (1, 4, 8):
                     d = conc.get(c, {}).get(n)
-                    cells.append((f'{c / d["ttft_mean_s"]:.0f}')
-                                 if _conc_face_ok(d) and d["ttft_mean_s"] > 0
-                                 else "-")
+                    if _conc_face_ok(d) and d["ttft_mean_s"] > 0:
+                        cells.append(f'{c / d["ttft_mean_s"]:.0f}')
+                    elif (n == 1 and faces.get(c)
+                          and faces[c].get("prefill_tps")):
+                        cells.append(f'{faces[c]["prefill_tps"]:.0f}')
+                    else:
+                        cells.append("-")
                 rows.append(cells)
             if rows:
                 L.append(md_table(["Context", "prefill @ n1 (tok/s)",
@@ -1710,9 +1763,10 @@ def per_config_report(banks, out, cfg, date):
                     pts = [(c, c / conc[c][n]["ttft_mean_s"])
                            if _conc_face_ok(conc.get(c, {}).get(n)) and
                            conc[c][n]["ttft_mean_s"] > 0 else (c, None)
-                           for c in cctxs]
+                           for c in fctxs]
                     if any(p[1] is not None for p in pts):
                         pseries.append((_reqlab(n), pts))
+                pseries = _solo_fill_n1(pseries, faces, "prefill_tps")
                 if not pseries and good:
                     pseries = [(cfg["mtp"], [(c, faces[c]["prefill_tps"])
                                              if faces.get(c) else (c, None)
@@ -2648,7 +2702,18 @@ def methodology_report(out, date):
          "",
          "Every line chart in these reports measures **context length on "
          "the x-axis** — the deployment variable you choose; concurrency "
-         "is the series (one line per request count, 1-8). Range-band "
+         "is the series (one line per request count, 1-8). The x-axis is "
+         "**linear**: every measured context length gets one equally "
+         "spaced slot (1K, 8K, 32K, 64K, 128K … in even steps, no "
+         "logarithmic compression, no skipped middle labels), and the "
+         "axis stops at the highest context actually measured — an "
+         "unmeasured trailing context never occupies a slot. Where the "
+         "concurrency sweep skipped a context (64K on the qwen sweep) "
+         "the single-request line and its band edge are completed from "
+         "that configuration's solo faces — the same single-request "
+         "measurement on the same certified image; loaded lines keep "
+         "their honest gaps, and band shading never bridges an "
+         "unmeasured context. Range-band "
          "charts show the measured envelope across concurrency (top edge "
          "= single request, bottom edge = maximum tested concurrency; for "
          "TTFT the envelope inverts — the loaded worst user is the top "

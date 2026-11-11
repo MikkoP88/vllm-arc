@@ -268,6 +268,21 @@ raw evidence is banked under `results/YYYY-MM-DD-<phase>-*/`.
 
 ## Serve-layer and analysis phases (no cert — engine bytes unchanged)
 
+- **P6.41 linear x-axis + full measured prefill coverage (2026-11-11)**:
+  every context-length line chart re-spaced from log2 to a **linear
+  equal-slot axis** — one evenly spaced slot per measured context (no
+  log compression, no value-proportional bunching), all middle labels
+  kept, and the axis stops at the highest context actually measured.
+  The qwen concurrency sweep skipped 64K (sweep = 1K/8K/32K/128K) while
+  the solo faces measured it: the "1 request" line, its band edge, and
+  the prefill table/chart are now completed from each configuration's
+  solo faces (the same single-request measurement on the same certified
+  image — cross-boot drift bounded near zero by the same-contexts delta
+  tables), so the prefill chart spans the full measured 1K-128K with
+  64K restored; loaded lines keep honest gaps and band shading is now
+  drawn per contiguous measured run (never bridges an unmeasured
+  context). 12 reports / 175 charts (unchanged counts); 1,581 value
+  labels, 0 overlaps. No engine bytes changed; cert23 stands.
 - **P6.40 presentation overhaul — context-length x-axis + range bands
   (2026-11-11)**: every line chart re-anchored so the x-axis measures
   **context length** and concurrency becomes the plotted series (the
