@@ -23,17 +23,17 @@
 <text x="816.0" y="454" font-size="11" fill="#667085" text-anchor="middle">128K</text>
 <line x1="84" y1="436" x2="816" y2="436" stroke="#d0d5dd" stroke-width="1"/>
 <line x1="84" y1="52" x2="84" y2="436" stroke="#d0d5dd" stroke-width="1"/>
-<polyline points="84.0,109.5 267.0,171.0 450.0,240.7" fill="none" stroke="#2563eb" stroke-width="2.4"/>
+<polyline points="84.0,109.5 267.0,171.0 450.0,240.7 816.0,289.3" fill="none" stroke="#2563eb" stroke-width="2.4"/>
 <circle cx="84.0" cy="109.5" r="4.4" fill="#2563eb"/>
 <circle cx="267.0" cy="171.0" r="4.4" fill="#2563eb"/>
 <circle cx="450.0" cy="240.7" r="4.4" fill="#2563eb"/>
 <circle cx="816.0" cy="289.3" r="4.4" fill="#2563eb"/>
-<polyline points="84.0,134.5 267.0,227.5 450.0,310.1" fill="none" stroke="#dc2626" stroke-width="2.4"/>
+<polyline points="84.0,134.5 267.0,227.5 450.0,310.1 816.0,361.9" fill="none" stroke="#dc2626" stroke-width="2.4"/>
 <rect x="79.5" y="130.0" width="9" height="9" fill="#dc2626"/>
 <rect x="262.5" y="223.0" width="9" height="9" fill="#dc2626"/>
 <rect x="445.5" y="305.6" width="9" height="9" fill="#dc2626"/>
 <rect x="811.5" y="357.4" width="9" height="9" fill="#dc2626"/>
-<polyline points="84.0,145.5 267.0,266.3 450.0,353.2" fill="none" stroke="#059669" stroke-width="2.4"/>
+<polyline points="84.0,145.5 267.0,266.3 450.0,353.2 816.0,400.1" fill="none" stroke="#059669" stroke-width="2.4"/>
 <polygon points="84.0,140.0 78.5,150.0 89.5,150.0" fill="#059669"/>
 <polygon points="267.0,260.8 261.5,270.8 272.5,270.8" fill="#059669"/>
 <polygon points="450.0,347.7 444.5,357.7 455.5,357.7" fill="#059669"/>

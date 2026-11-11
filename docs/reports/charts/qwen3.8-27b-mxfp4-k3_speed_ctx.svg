@@ -35,17 +35,17 @@
 <circle cx="450.0" cy="128.4" r="4.4" fill="#2563eb"/>
 <circle cx="633.0" cy="145.1" r="4.4" fill="#2563eb"/>
 <circle cx="816.0" cy="178.7" r="4.4" fill="#2563eb"/>
-<polyline points="84.0,127.7 267.0,216.3 450.0,255.8" fill="none" stroke="#dc2626" stroke-width="2.4"/>
+<polyline points="84.0,127.7 267.0,216.3 450.0,255.8 816.0,325.3" fill="none" stroke="#dc2626" stroke-width="2.4"/>
 <rect x="79.5" y="123.2" width="9" height="9" fill="#dc2626"/>
 <rect x="262.5" y="211.8" width="9" height="9" fill="#dc2626"/>
 <rect x="445.5" y="251.3" width="9" height="9" fill="#dc2626"/>
 <rect x="811.5" y="320.8" width="9" height="9" fill="#dc2626"/>
-<polyline points="84.0,158.4 267.0,221.8 450.0,309.2" fill="none" stroke="#059669" stroke-width="2.4"/>
+<polyline points="84.0,158.4 267.0,221.8 450.0,309.2 816.0,371.1" fill="none" stroke="#059669" stroke-width="2.4"/>
 <polygon points="84.0,152.9 78.5,162.9 89.5,162.9" fill="#059669"/>
 <polygon points="267.0,216.3 261.5,226.3 272.5,226.3" fill="#059669"/>
 <polygon points="450.0,303.7 444.5,313.7 455.5,313.7" fill="#059669"/>
 <polygon points="816.0,365.6 810.5,375.6 821.5,375.6" fill="#059669"/>
-<polyline points="84.0,181.1 267.0,249.3 450.0,338.6" fill="none" stroke="#9333ea" stroke-width="2.4"/>
+<polyline points="84.0,181.1 267.0,249.3 450.0,338.6 816.0,392.7" fill="none" stroke="#9333ea" stroke-width="2.4"/>
 <polygon points="84.0,175.6 89.5,181.1 84.0,186.6 78.5,181.1" fill="#9333ea"/>
 <polygon points="267.0,243.8 272.5,249.3 267.0,254.8 261.5,249.3" fill="#9333ea"/>
 <polygon points="450.0,333.1 455.5,338.6 450.0,344.1 444.5,338.6" fill="#9333ea"/>

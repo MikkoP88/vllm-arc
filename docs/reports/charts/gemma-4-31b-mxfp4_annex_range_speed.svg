@@ -25,13 +25,13 @@
 <text x="820" y="270.6" font-size="9.5" fill="#667085" font-style="italic">acceptable</text>
 <line x1="84" y1="99.2" x2="816" y2="99.2" stroke="#98a2b3" stroke-width="1" stroke-dasharray="5 4"/>
 <text x="820" y="102.2" font-size="9.5" fill="#667085" font-style="italic">fast</text>
-<polygon points="84.0,180.2 267.0,185.6 450.0,201.7 450.0,381.4 267.0,312.2 84.0,253.2" fill="#2563eb" fill-opacity="0.14" stroke="none"/>
-<polyline points="84.0,180.2 267.0,185.6 450.0,201.7" fill="none" stroke="#2563eb" stroke-width="2.4"/>
+<polygon points="84.0,180.2 267.0,185.6 450.0,201.7 816.0,244.4 816.0,334.6 450.0,381.4 267.0,312.2 84.0,253.2" fill="#2563eb" fill-opacity="0.14" stroke="none"/>
+<polyline points="84.0,180.2 267.0,185.6 450.0,201.7 816.0,244.4" fill="none" stroke="#2563eb" stroke-width="2.4"/>
 <circle cx="84.0" cy="180.2" r="4.2" fill="#2563eb"/>
 <circle cx="267.0" cy="185.6" r="4.2" fill="#2563eb"/>
 <circle cx="450.0" cy="201.7" r="4.2" fill="#2563eb"/>
 <circle cx="816.0" cy="244.4" r="4.2" fill="#2563eb"/>
-<polyline points="84.0,253.2 267.0,312.2 450.0,381.4" fill="none" stroke="#9333ea" stroke-width="2.4"/>
+<polyline points="84.0,253.2 267.0,312.2 450.0,381.4 816.0,334.6" fill="none" stroke="#9333ea" stroke-width="2.4"/>
 <circle cx="84.0" cy="253.2" r="4.2" fill="#9333ea"/>
 <circle cx="267.0" cy="312.2" r="4.2" fill="#9333ea"/>
 <circle cx="450.0" cy="381.4" r="4.2" fill="#9333ea"/>

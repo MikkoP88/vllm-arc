@@ -268,6 +268,35 @@ raw evidence is banked under `results/YYYY-MM-DD-<phase>-*/`.
 
 ## Serve-layer and analysis phases (no cert — engine bytes unchanged)
 
+- **P6.44 measured points connect across empty rung slots (2026-11-11)**:
+  completes the P6.43 ladder law with the line rule a full-chart read
+  demands: every line now CONNECTS its measured points, drawn straight
+  across a labeled empty rung slot (64K) — standard uneven-x line
+  plotting, no marker ever at the unmeasured rung. P6.43's rung
+  padding (`(rung, None)` injection) had every line BREAK at the empty
+  slot, leaving measured 128K points isolated after 32K (visible on
+  the gemma queue decomposition: the n2 stagger point 89.0 s sat
+  detached). The padding is removed; the axis keeps the honest 5-rung
+  ladder. The break survives only where a face RAN and failed
+  (banked `n_fail > 0`) or a per-n KV_CAP wall ends a line —
+  `_conc_ctx_series`, `_ctx_edge`, and the queue/eff/prefill/tq-solo
+  builders now distinguish rung-never-scheduled (no point, line
+  connects) from ran-but-failed (None, honest break); `_solo_fill_n1`/
+  `_solo_fill_edge` additionally ADD the solo-measured rungs (qwen 64K
+  single-request point) instead of only filling failed slots. Band
+  shading follows the same rule: one polygon over the both-measured
+  domain, each edge following its own measured points (qwen top edge
+  keeps its 64K point, the loaded bottom edge bridges 32K→128K
+  straight). METHODOLOGY states the connect law. Oracle diff vs
+  P6.43 output: 113 charts byte-identical, 62 changed — every chart
+  whose series cross the 64K slot (gemma mxfp4 15, gemma-family 2,
+  qwen 44, tq 1); the max-32K charts are untouched. Point-attachment
+  audit: 667 markers, 652 on their line, 12 isolated by data (single-
+  point n8 series at 1K on gemma fp8/mxfp8 — one measurement, nothing
+  to connect); ink checkers still 0 overlapping pairs across 1603
+  value labels and 313 band tags. Generator only; no engine bytes
+  changed — cert23 stands.
+
 - **P6.43 canonical rung ladder + no-chord padding + gemma 128K completion
   (2026-11-11)**: every context axis now keeps the canonical rung ladder
   (1K, 8K, 32K, 64K, 128K) up to its highest measured x, centralized in the

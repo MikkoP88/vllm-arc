@@ -35,7 +35,7 @@
 <rect x="79.5" y="430.4" width="9" height="9" fill="#dc2626"/>
 <rect x="262.5" y="424.9" width="9" height="9" fill="#dc2626"/>
 <rect x="445.5" y="390.5" width="9" height="9" fill="#dc2626"/>
-<polyline points="84.0,435.9 267.0,429.3 450.0,394.5" fill="none" stroke="#059669" stroke-width="2.4"/>
+<polyline points="84.0,435.9 267.0,429.3 450.0,394.5 816.0,99.3" fill="none" stroke="#059669" stroke-width="2.4"/>
 <polygon points="84.0,430.4 78.5,440.4 89.5,440.4" fill="#059669"/>
 <polygon points="267.0,423.8 261.5,433.8 272.5,433.8" fill="#059669"/>
 <polygon points="450.0,389.0 444.5,399.0 455.5,399.0" fill="#059669"/>
