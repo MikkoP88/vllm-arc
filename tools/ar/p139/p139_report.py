@@ -499,12 +499,6 @@ def band_chart(path, title, top_pts, bot_pts, top_lab, bot_lab,
     xs = sorted({p[0] for p in pts})
     if len(xs) > 1 and all(x in CTX_LADDER for x in xs):
         xs = [c for c in CTX_LADDER if c <= max(xs)]   # canonical rungs
-
-        def _rungpad(ps):
-            have = {x for x, _ in ps}
-            return sorted(list(ps) + [(c, None) for c in xs if c not in have],
-                          key=lambda p: p[0])
-        top_pts, bot_pts = _rungpad(top_pts), _rungpad(bot_pts)
     ys = [p[1] for p in pts]
     n_x = len(xs)
     xi = {v: i for i, v in enumerate(xs)}
@@ -560,32 +554,25 @@ def band_chart(path, title, top_pts, bot_pts, top_lab, bot_lab,
         out.append('<text x="{}" y="{:.1f}" font-size="9.5" fill="#667085" '
                    'font-style="italic">{}</text>'
                    .format(ML + PW + 4, ty, esc(htag)))
-    # the band: polygon top edge l->r then bottom edge r->l, over each
-    # CONTIGUOUS run of contexts where both edges measured -- shading
-    # never bridges a context the sweep skipped
+    # the band: polygon top edge l->r then bottom edge r->l over the
+    # domain both edges measured. Each edge follows its own measured
+    # points (straight across a rung only that edge skipped -- same
+    # rule as the lines), so the shading spans the measured envelope
     tg = [(xv, yv) for xv, yv in top_pts if yv is not None]
     bg = [(xv, yv) for xv, yv in bot_pts if yv is not None]
     tmap, bmap = dict(tg), dict(bg)
-    runs, cur = [], []
-    for xv in xs:
-        if xv in tmap and xv in bmap:
-            cur.append(xv)
-        elif cur:
-            runs.append(cur)
-            cur = []
-    if cur:
-        runs.append(cur)
-    for run in runs:
-        if len(run) < 2:
-            continue
-        poly = ([ "{:.1f},{:.1f}".format(X(x), Y(tmap[x])) for x in run ]
-                + ["{:.1f},{:.1f}".format(X(x), Y(bmap[x]))
-                   for x in reversed(run)])
+    both = sorted(set(tmap) & set(bmap))
+    if len(both) >= 2:
+        lo, hi = both[0], both[-1]
+        poly = (["{:.1f},{:.1f}".format(X(x), Y(y)) for x, y in tg
+                 if lo <= x <= hi]
+                + ["{:.1f},{:.1f}".format(X(x), Y(y)) for x, y in
+                   reversed(bg) if lo <= x <= hi])
         out.append('<polygon points="{}" fill="{}" fill-opacity="0.14" '
                    'stroke="none"/>'.format(" ".join(poly), band))
     for pts_, col in ((top_pts, edge_t), (bot_pts, edge_b)):
-        runs, cur = [], []        # a None inside an edge BREAKS it (no
-        for x, y in pts_:         # chord across an unmeasured context)
+        runs, cur = [], []        # a None mid-edge (failed face) breaks
+        for x, y in pts_:         # it; unmeasured rungs simply connect
             if y is not None:
                 cur.append((x, y))
             elif cur:
@@ -641,8 +628,9 @@ def chart(path, title, series, xlabel, ylabel, xcat=None, yfmt="{:.1f}",
     linear reference per series anchored at its first point (throughput
     scaling charts). label_all = value label on every point (default);
     labels are auto-staggered so close neighbours never overlap.
-    A None inside a series BREAKS the line (no chord across an
-    unmeasured context)."""
+    A line always connects its measured points, straight across any
+    labelled empty rung slot (no marker at the unmeasured rung); a
+    None inside a series (a banked failed face) breaks the line."""
     # legend rows (bottom, greedy wrap): extend canvas as needed
     _PW = 880 - 84 - 64
     _legw = [16 + 7.2 * min(len(lab), 30) + 20 for lab, _ in series]
@@ -659,19 +647,12 @@ def chart(path, title, series, xlabel, ylabel, xcat=None, yfmt="{:.1f}",
         return
     xs = list(xdomain) if xdomain is not None else sorted({p[0] for p in pts})
     # canonical context rungs (see CTX_LADDER): when every x is a rung,
-    # label every rung up to the chart's highest measured x, and give
-    # every series an explicit (rung, None) pair for rungs it did not
-    # measure -- the line BREAKS at the empty slot instead of chording
-    # across it
+    # label every rung up to the chart's highest measured x. A rung
+    # nothing measured keeps its labelled empty slot on the axis, and
+    # every line CONNECTS its measured points straight across it (no
+    # marker at the unmeasured rung) -- standard uneven-x line plotting
     if xcat is None and len(xs) > 1 and all(x in CTX_LADDER for x in xs):
         xs = [c for c in CTX_LADDER if c <= max(xs)]
-        padded = []
-        for lab, ps in series:
-            have = {x for x, _ in ps}
-            padded.append((lab, sorted(
-                list(ps) + [(c, None) for c in xs if c not in have],
-                key=lambda p: p[0])))
-        series = padded
     ys = [p[1] for p in pts]
     if xcat is not None:
         xi = None                 # category mode: x values are indices
@@ -765,7 +746,7 @@ def chart(path, title, series, xlabel, ylabel, xcat=None, yfmt="{:.1f}",
         col = PALETTE[si % len(PALETTE)]
         mk = MARKERS[si % len(MARKERS)]
         runs, cur = [], []        # contiguous measured stretches: a None
-        for xv, yv in ps:         # inside the series BREAKS the line
+        for xv, yv in ps:         # mid-series (failed face) breaks the line
             if yv is not None and (xi is None or xv in xi):
                 cur.append((xv, yv))
             elif cur:
@@ -1134,13 +1115,20 @@ def _reqlab(n):
 def _conc_ctx_series(conc, ctxs, ns, field):
     """One line per concurrency level, x = context length (the report
     chart convention: every line chart measures context length on x;
-    concurrency is the series). Points the cell never measured (KV_CAP
-    skips) stay None and break the line honestly."""
+    concurrency is the series). A rung the sweep never scheduled has
+    no point -- the line connects straight across its empty axis slot.
+    A face that ran and failed stays None and breaks the line honestly;
+    a per-n skip at a scheduled rung (KV_CAP wall) is always trailing."""
     out = []
     for n in ns:
-        pts = [(c, conc.get(c, {}).get(n, {}).get(field)
-                if _conc_face_ok(conc.get(c, {}).get(n)) else None)
-               for c in ctxs]
+        pts = []
+        for c in ctxs:
+            d = conc.get(c, {}).get(n)
+            if _conc_face_ok(d):
+                pts.append((c, d[field]))
+            elif d is not None or c in conc:
+                pts.append((c, None))
+            # else: rung never scheduled -> no point, connect across
         if any(p[1] is not None for p in pts):
             out.append((_reqlab(n), pts))
     return out
@@ -1153,9 +1141,12 @@ def _ctx_edge(conc, ctxs, field, chooser):
     {ctx: n})."""
     pts, ns = [], {}
     for c in ctxs:
-        cd = {n: d for n, d in conc.get(c, {}).items() if _conc_face_ok(d)}
+        cell_c = conc.get(c)
+        if cell_c is None:
+            continue          # rung never scheduled: no point, the edge
+        cd = {n: d for n, d in cell_c.items() if _conc_face_ok(d)}
         if not cd:
-            pts.append((c, None))
+            pts.append((c, None))   # faces ran but all failed: break
             continue
         n, d = chooser(cd)
         pts.append((c, d[field]))
@@ -1178,22 +1169,30 @@ def _solo_fill_n1(series, faces, sfield):
     concurrency sweep skipped (64K on qwen): a single request at
     temperature 0 is the same measurement on either boot -- the
     same-contexts delta tables bound the cross-boot drift near zero.
-    Loaded lines keep their honest gaps."""
+    Loaded lines connect straight across a rung the sweep skipped."""
     out = []
     for lab, ps in series:
         if lab != _reqlab(1):
             out.append((lab, ps))
             continue
-        out.append((lab, [((c, faces[c][sfield]) if v is None and
-                           faces.get(c) and faces[c].get(sfield)
-                           else (c, v)) for c, v in ps]))
+        filled = [((c, faces[c][sfield]) if v is None and faces.get(c)
+                   and faces[c].get(sfield) else (c, v)) for c, v in ps]
+        have = {c for c, _ in filled}
+        filled += [(c, faces[c][sfield]) for c in sorted(faces)
+                   if c not in have and faces[c].get(sfield)]
+        out.append((lab, sorted(filled)))
     return out
 
 
 def _solo_fill_edge(pts, faces, sfield):
-    """Same completion for a band's single-request edge."""
-    return [((c, faces[c][sfield]) if v is None and faces.get(c)
-             and faces[c].get(sfield) else (c, v)) for c, v in pts]
+    """Same completion for a band's single-request edge: fill failed
+    slots and add the solo-measured rungs the sweep never scheduled."""
+    out = [((c, faces[c][sfield]) if v is None and faces.get(c)
+            and faces[c].get(sfield) else (c, v)) for c, v in pts]
+    have = {c for c, _ in out}
+    out += [(c, faces[c][sfield]) for c in sorted(faces)
+            if c not in have and faces[c].get(sfield)]
+    return sorted(out)
 
 
 def _annex_solo_face(b139, acell, c):
@@ -1853,9 +1852,14 @@ def per_config_report(banks, out, cfg, date):
                     pts = []
                     for c in (qxd or cctxs):
                         cd = conc.get(c, {})
-                        pts.append((c, cd[n]["ttft_mean_s"] - cd[1]["ttft_mean_s"])
-                                   if _conc_face_ok(cd.get(n)) and
-                                   _conc_face_ok(cd.get(1)) else (c, None))
+                        d, base = cd.get(n), cd.get(1)
+                        if _conc_face_ok(d) and _conc_face_ok(base):
+                            pts.append((c, d["ttft_mean_s"] -
+                                        base["ttft_mean_s"]))
+                        elif d is not None and base is not None:
+                            pts.append((c, None))   # ran but failed: break
+                            # a rung never scheduled has no point at all --
+                            # the line connects straight across its slot
                     qseries.append((_reqlab(n), pts))
                 if qseries:
                     chart(os.path.join(ch, "{}_queue_ctx.svg".format(slug)),
@@ -1911,10 +1915,14 @@ def per_config_report(banks, out, cfg, date):
                 L.append("")
                 pseries = []
                 for n in (1, 4, 8):
-                    pts = [(c, c / conc[c][n]["ttft_mean_s"])
-                           if _conc_face_ok(conc.get(c, {}).get(n)) and
-                           conc[c][n]["ttft_mean_s"] > 0 else (c, None)
-                           for c in fctxs]
+                    pts = []
+                    for c in fctxs:
+                        d = conc.get(c, {}).get(n)
+                        if _conc_face_ok(d) and d["ttft_mean_s"] > 0:
+                            pts.append((c, c / d["ttft_mean_s"]))
+                        elif d is not None or c in conc:
+                            pts.append((c, None))   # ran/scheduled, no value
+                        # else: rung never scheduled -> connect across
                     if any(p[1] is not None for p in pts):
                         pseries.append((_reqlab(n), pts))
                 pseries = _solo_fill_n1(pseries, faces, "prefill_tps")
@@ -2011,11 +2019,15 @@ def per_config_report(banks, out, cfg, date):
                 pts = []
                 for c in (exd or cctxs):
                     cd = conc.get(c, {})
-                    pts.append((c, 100.0 * cd[n]["agg_tps_wall"] /
-                                (n * cd[1]["agg_tps_wall"]))
-                               if _conc_face_ok(cd.get(n)) and
-                               _conc_face_ok(cd.get(1)) and
-                               cd[1]["agg_tps_wall"] > 0 else (c, None))
+                    d, base = cd.get(n), cd.get(1)
+                    if (_conc_face_ok(d) and _conc_face_ok(base) and
+                            base["agg_tps_wall"] > 0):
+                        pts.append((c, 100.0 * d["agg_tps_wall"] /
+                                    (n * base["agg_tps_wall"])))
+                    elif d is not None and base is not None:
+                        pts.append((c, None))   # ran but failed: break
+                        # a rung never scheduled has no point at all --
+                        # the line connects straight across its slot
                 eseries.append((_reqlab(n), pts))
             if eseries:
                 chart(os.path.join(ch, "{}_eff_ctx.svg".format(slug)),
@@ -2787,10 +2799,13 @@ def kv_report(banks, out, date):
                     d = load_conc(b139, cell, c, 1)
                     if _conc_face_ok(d):
                         pts.append((c, d[met]))
-                    else:
-                        f = solo_face(banks, cell, c)
-                        pts.append((c, f["decode_tps"])
-                                   if f and f.get("decode_tps") else (c, None))
+                        continue
+                    f = solo_face(banks, cell, c)
+                    if f and f.get("decode_tps"):
+                        pts.append((c, f["decode_tps"]))
+                    elif d is not None:
+                        pts.append((c, None))   # ran but failed: break
+                    # never scheduled anywhere: no point, connect across
             else:
                 pts = [(c, load_conc(b139, cell, c, nsel)[met])
                        if _conc_face_ok(load_conc(b139, cell, c, nsel))

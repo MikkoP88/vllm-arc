@@ -268,6 +268,47 @@ raw evidence is banked under `results/YYYY-MM-DD-<phase>-*/`.
 
 ## Serve-layer and analysis phases (no cert — engine bytes unchanged)
 
+- **P6.44 measured points connect across empty rung slots (2026-11-11)**:
+  completes the P6.43 ladder law with the line rule a full-chart read
+  demands: every line now CONNECTS its measured points, drawn straight
+  across a labeled empty rung slot (64K) — standard uneven-x line
+  plotting, no marker ever at the unmeasured rung. P6.43's rung
+  padding (`(rung, None)` injection) had every line BREAK at the empty
+  slot, leaving measured 128K points isolated after 32K (visible on
+  the gemma queue decomposition: the n2 stagger point 89.0 s sat
+  detached). The padding is removed; the axis keeps the honest 5-rung
+  ladder. The break survives only where a face RAN and failed
+  (banked `n_fail > 0`) or a per-n KV_CAP wall ends a line —
+  `_conc_ctx_series`, `_ctx_edge`, and the queue/eff/prefill/tq-solo
+  builders now distinguish rung-never-scheduled (no point, line
+  connects) from ran-but-failed (None, honest break); `_solo_fill_n1`/
+  `_solo_fill_edge` additionally ADD the solo-measured rungs (qwen 64K
+  single-request point) instead of only filling failed slots. Band
+  shading follows the same rule: one polygon over the both-measured
+  domain, each edge following its own measured points (qwen top edge
+  keeps its 64K point, the loaded bottom edge bridges 32K→128K
+  straight). METHODOLOGY states the connect law. Oracle diff vs
+  P6.43 output: 113 charts byte-identical, 62 changed — every chart
+  whose series cross the 64K slot (gemma mxfp4 15, gemma-family 2,
+  qwen 44, tq 1); the max-32K charts are untouched. Point-attachment
+  audit: 1296 markers, 1276 on their line, 20 isolated by data (single-
+  point series — gemma n8@1K and n5@8K on fp8/mxfp8, mxfp4-k0 n5@128K —
+  one measurement, nothing to connect); ink checkers still 0
+  overlapping pairs across 1603 value labels and 313 band tags. A full
+  64K-presence deep audit
+  against the three banks confirms the reports render 64K exactly as
+  measured: the six qwen configs carry complete solo 64K faces in the
+  r138 bank (TTFT 38–42 s; decode derived by the harness loader, 75–94
+  tok/s; ITL; prefill ~1.7K tok/s) and every solo-family chart, table
+  row, solo-completed n1 line, single-request band edge, and
+  all-configs qwen series shows them; no concurrency face exists at
+  64K anywhere (qwen sweep skipped it; gemma never planned it; the
+  r140 annex is 1K/8K/32K/128K; the tq preset cells have no solo
+  bank), so loaded lines bridge and the queue/eff/aggregate rows read
+  "-" — the two remaining isolated 128K markers (mxfp4-k0 speed/ttft)
+  are the genuinely single-point n5@128K series. Generator only; no
+  engine bytes changed — cert23 stands.
+
 - **P6.43 canonical rung ladder + no-chord padding + gemma 128K completion
   (2026-11-11)**: every context axis now keeps the canonical rung ladder
   (1K, 8K, 32K, 64K, 128K) up to its highest measured x, centralized in the

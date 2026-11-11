@@ -31,12 +31,12 @@
 <circle cx="450.0" cy="253.5" r="4.4" fill="#2563eb"/>
 <circle cx="633.0" cy="267.7" r="4.4" fill="#2563eb"/>
 <circle cx="816.0" cy="287.3" r="4.4" fill="#2563eb"/>
-<polyline points="84.0,248.0 267.0,251.5 450.0,288.9" fill="none" stroke="#dc2626" stroke-width="2.4"/>
+<polyline points="84.0,248.0 267.0,251.5 450.0,288.9 816.0,347.7" fill="none" stroke="#dc2626" stroke-width="2.4"/>
 <rect x="79.5" y="243.5" width="9" height="9" fill="#dc2626"/>
 <rect x="262.5" y="247.0" width="9" height="9" fill="#dc2626"/>
 <rect x="445.5" y="284.4" width="9" height="9" fill="#dc2626"/>
 <rect x="811.5" y="343.2" width="9" height="9" fill="#dc2626"/>
-<polyline points="84.0,252.0 267.0,262.1 450.0,312.7" fill="none" stroke="#059669" stroke-width="2.4"/>
+<polyline points="84.0,252.0 267.0,262.1 450.0,312.7 816.0,373.9" fill="none" stroke="#059669" stroke-width="2.4"/>
 <polygon points="84.0,246.5 78.5,256.5 89.5,256.5" fill="#059669"/>
 <polygon points="267.0,256.6 261.5,266.6 272.5,266.6" fill="#059669"/>
 <polygon points="450.0,307.2 444.5,317.2 455.5,317.2" fill="#059669"/>

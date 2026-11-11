@@ -29,8 +29,8 @@
 <text x="820" y="422.5" font-size="9.5" fill="#667085" font-style="italic">responsive</text>
 <line x1="84" y1="435.5" x2="816" y2="435.5" stroke="#98a2b3" stroke-width="1" stroke-dasharray="5 4"/>
 <text x="820" y="434.0" font-size="9.5" fill="#667085" font-style="italic">instant</text>
-<polygon points="84.0,430.4 267.0,406.5 450.0,298.1 450.0,419.3 267.0,431.6 84.0,435.1" fill="#2563eb" fill-opacity="0.14" stroke="none"/>
-<polyline points="84.0,430.4 267.0,406.5 450.0,298.1" fill="none" stroke="#2563eb" stroke-width="2.4"/>
+<polygon points="84.0,430.4 267.0,406.5 450.0,298.1 816.0,99.2 816.0,327.9 633.0,396.2 450.0,419.3 267.0,431.6 84.0,435.1" fill="#2563eb" fill-opacity="0.14" stroke="none"/>
+<polyline points="84.0,430.4 267.0,406.5 450.0,298.1 816.0,99.2" fill="none" stroke="#2563eb" stroke-width="2.4"/>
 <circle cx="84.0" cy="430.4" r="4.2" fill="#2563eb"/>
 <circle cx="267.0" cy="406.5" r="4.2" fill="#2563eb"/>
 <circle cx="450.0" cy="298.1" r="4.2" fill="#2563eb"/>
