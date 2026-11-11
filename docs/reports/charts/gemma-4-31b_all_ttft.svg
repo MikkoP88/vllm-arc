@@ -13,8 +13,8 @@
 <text x="76" y="61.6" font-size="11" fill="#667085" text-anchor="end">25.0</text>
 <line x1="84.0" y1="52" x2="84.0" y2="436" stroke="#f0f0f0" stroke-width="1"/>
 <text x="84.0" y="454" font-size="11" fill="#667085" text-anchor="middle">1K</text>
-<line x1="523.2" y1="52" x2="523.2" y2="436" stroke="#f0f0f0" stroke-width="1"/>
-<text x="523.2" y="454" font-size="11" fill="#667085" text-anchor="middle">8K</text>
+<line x1="450.0" y1="52" x2="450.0" y2="436" stroke="#f0f0f0" stroke-width="1"/>
+<text x="450.0" y="454" font-size="11" fill="#667085" text-anchor="middle">8K</text>
 <line x1="816.0" y1="52" x2="816.0" y2="436" stroke="#f0f0f0" stroke-width="1"/>
 <text x="816.0" y="454" font-size="11" fill="#667085" text-anchor="middle">32K</text>
 <line x1="84" y1="436" x2="816" y2="436" stroke="#d0d5dd" stroke-width="1"/>
@@ -25,24 +25,24 @@
 <text x="820" y="371.2" font-size="9.5" fill="#667085" font-style="italic">noticeable</text>
 <line x1="84" y1="290.6" x2="816" y2="290.6" stroke="#98a2b3" stroke-width="1" stroke-dasharray="5 4"/>
 <text x="820" y="293.6" font-size="9.5" fill="#667085" font-style="italic">slow</text>
-<polyline points="84.0,430.1 523.2,383.4 816.0,107.2" fill="none" stroke="#2563eb" stroke-width="2.4"/>
+<polyline points="84.0,430.1 450.0,383.4 816.0,107.2" fill="none" stroke="#2563eb" stroke-width="2.4"/>
 <circle cx="84.0" cy="430.1" r="4.4" fill="#2563eb"/>
-<circle cx="523.2" cy="383.4" r="4.4" fill="#2563eb"/>
+<circle cx="450.0" cy="383.4" r="4.4" fill="#2563eb"/>
 <circle cx="816.0" cy="107.2" r="4.4" fill="#2563eb"/>
-<polyline points="84.0,427.4 523.2,382.5 816.0,104.5" fill="none" stroke="#dc2626" stroke-width="2.4"/>
+<polyline points="84.0,427.4 450.0,382.5 816.0,104.5" fill="none" stroke="#dc2626" stroke-width="2.4"/>
 <rect x="79.5" y="422.9" width="9" height="9" fill="#dc2626"/>
-<rect x="518.7" y="378.0" width="9" height="9" fill="#dc2626"/>
+<rect x="445.5" y="378.0" width="9" height="9" fill="#dc2626"/>
 <rect x="811.5" y="100.0" width="9" height="9" fill="#dc2626"/>
-<polyline points="84.0,435.1 523.2,381.7 816.0,100.4" fill="none" stroke="#059669" stroke-width="2.4"/>
+<polyline points="84.0,435.1 450.0,381.7 816.0,100.4" fill="none" stroke="#059669" stroke-width="2.4"/>
 <polygon points="84.0,429.6 78.5,439.6 89.5,439.6" fill="#059669"/>
-<polygon points="523.2,376.2 517.7,386.2 528.7,386.2" fill="#059669"/>
+<polygon points="450.0,376.2 444.5,386.2 455.5,386.2" fill="#059669"/>
 <polygon points="816.0,94.9 810.5,104.9 821.5,104.9" fill="#059669"/>
 <text x="84.0" y="418.4" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">1.2</text>
 <text x="84.0" y="397.1" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">1.0</text>
 <text x="84.0" y="378.1" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">0.7</text>
-<text x="523.2" y="372.7" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">4.1</text>
-<text x="523.2" y="398.5" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">4.1</text>
-<text x="523.2" y="362.4" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">4.0</text>
+<text x="450.0" y="372.7" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">4.1</text>
+<text x="450.0" y="398.5" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">4.1</text>
+<text x="450.0" y="362.4" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">4.0</text>
 <text x="816.0" y="91.4" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">22.2</text>
 <text x="816.0" y="120.5" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">22.0</text>
 <text x="816.0" y="134.2" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">21.8</text>

@@ -13,30 +13,30 @@
 <text x="76" y="102.3" font-size="11" fill="#667085" text-anchor="end">40</text>
 <line x1="84.0" y1="52" x2="84.0" y2="436" stroke="#f0f0f0" stroke-width="1"/>
 <text x="84.0" y="454" font-size="11" fill="#667085" text-anchor="middle">1K</text>
-<line x1="523.2" y1="52" x2="523.2" y2="436" stroke="#f0f0f0" stroke-width="1"/>
-<text x="523.2" y="454" font-size="11" fill="#667085" text-anchor="middle">8K</text>
+<line x1="450.0" y1="52" x2="450.0" y2="436" stroke="#f0f0f0" stroke-width="1"/>
+<text x="450.0" y="454" font-size="11" fill="#667085" text-anchor="middle">8K</text>
 <line x1="816.0" y1="52" x2="816.0" y2="436" stroke="#f0f0f0" stroke-width="1"/>
 <text x="816.0" y="454" font-size="11" fill="#667085" text-anchor="middle">32K</text>
 <line x1="84" y1="436" x2="816" y2="436" stroke="#d0d5dd" stroke-width="1"/>
 <line x1="84" y1="52" x2="84" y2="436" stroke="#d0d5dd" stroke-width="1"/>
-<polyline points="84.0,122.7 523.2,117.9 816.0,101.9" fill="none" stroke="#2563eb" stroke-width="2.4"/>
+<polyline points="84.0,122.7 450.0,117.9 816.0,101.9" fill="none" stroke="#2563eb" stroke-width="2.4"/>
 <circle cx="84.0" cy="122.7" r="4.4" fill="#2563eb"/>
-<circle cx="523.2" cy="117.9" r="4.4" fill="#2563eb"/>
+<circle cx="450.0" cy="117.9" r="4.4" fill="#2563eb"/>
 <circle cx="816.0" cy="101.9" r="4.4" fill="#2563eb"/>
-<polyline points="84.0,121.2 523.2,117.4 816.0,101.5" fill="none" stroke="#dc2626" stroke-width="2.4"/>
+<polyline points="84.0,121.2 450.0,117.4 816.0,101.5" fill="none" stroke="#dc2626" stroke-width="2.4"/>
 <rect x="79.5" y="116.7" width="9" height="9" fill="#dc2626"/>
-<rect x="518.7" y="112.9" width="9" height="9" fill="#dc2626"/>
+<rect x="445.5" y="112.9" width="9" height="9" fill="#dc2626"/>
 <rect x="811.5" y="97.0" width="9" height="9" fill="#dc2626"/>
-<polyline points="84.0,119.9 523.2,114.1 816.0,99.2" fill="none" stroke="#059669" stroke-width="2.4"/>
+<polyline points="84.0,119.9 450.0,114.1 816.0,99.2" fill="none" stroke="#059669" stroke-width="2.4"/>
 <polygon points="84.0,114.4 78.5,124.4 89.5,124.4" fill="#059669"/>
-<polygon points="523.2,108.6 517.7,118.6 528.7,118.6" fill="#059669"/>
+<polygon points="450.0,108.6 444.5,118.6 455.5,118.6" fill="#059669"/>
 <polygon points="816.0,93.7 810.5,103.7 821.5,103.7" fill="#059669"/>
 <text x="84.0" y="110.9" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">37</text>
 <text x="84.0" y="137.2" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">37</text>
 <text x="84.0" y="149.7" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">37</text>
-<text x="523.2" y="105.1" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">38</text>
-<text x="523.2" y="133.4" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">38</text>
-<text x="523.2" y="144.9" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">38</text>
+<text x="450.0" y="105.1" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">38</text>
+<text x="450.0" y="133.4" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">38</text>
+<text x="450.0" y="144.9" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">38</text>
 <text x="816.0" y="90.2" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">40</text>
 <text x="816.0" y="117.5" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">40</text>
 <text x="816.0" y="128.9" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">40</text>

@@ -234,13 +234,14 @@ At concurrency 1 the queue is empty, so solo TTFT is pure prefill. Under the bar
 
 ### Per-user prefill speed
 
-Rate at which input context is processed before the first token. Client-observed (ctx / TTFT at queue ~0); the engine-side device rate is higher — the client view includes chunk drain and the decode-transition tail.
+Rate at which input context is processed before the first token. Client-observed (ctx / TTFT at queue ~0); the engine-side device rate is higher — the client view includes chunk drain and the decode-transition tail. The single-request line spans **every measured context** (sweep plus solo faces — the sweep skipped 64K); loaded lines cover the contexts the concurrency sweep measured.
 
 | Context | prefill @ n1 (tok/s) | @ n4 | @ n8 |
 |---|---|---|---|
 | 1024 (1K) | 1190 | 425 | 208 |
 | 8192 (8K) | 1905 | 774 | 427 |
 | 32768 (32K) | 1998 | 751 | 418 |
+| 65536 (64K) | 1675 | - | - |
 | 131072 (128K) | 1235 | - | - |
 
 ![Client-observed prefill rate vs context length, one line per concurrency — FP8, MTP k3](charts/qwen3.8-27b-fp8-k3_prefill.svg)
