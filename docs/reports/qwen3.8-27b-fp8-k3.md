@@ -336,6 +336,10 @@ Higher sampling temperature lowers draft acceptance (tok/step falls), so decode 
 | 4 | 43.7 | 66.3 | 29.1 | 11.2 | 32 | 31% | 57.8 | 59.0 |
 | 8 | 78.4 | 135.5 | 15.2 | 4.8 | 33 | 16% | 78.5 | 3741.0 |
 
+### Concurrency sweep — 65536 (64K) context (temperature 0.0)
+
+> Not measured at this rung — no concurrency faces were scheduled here on this boot; the slot stays visible between its measured neighbors.
+
 ### Concurrency sweep — 131072 (128K) context (temperature 0.0)
 
 | Concurrency | TTFT mean (s) | TTFT max (s) | Per-user mean (tok/s) | Per-user worst (tok/s) | Aggregate (tok/s) | Scaling eff. | ITL p50 med (ms) | ITL p90 max (ms) |

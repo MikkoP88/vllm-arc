@@ -78,6 +78,7 @@ The streaming rate each user experiences. As concurrency rises, per-user speed f
 | 1024 (1K) | 38.0 | fast | 38.0 | 27.2 | fast |
 | 8192 (8K) | 37.2 | fast | 37.2 | 18.4 | acceptable |
 | 32768 (32K) | 34.9 | fast | 34.8 | - | - |
+| 65536 (64K) | - | - | - | - | - |
 | 131072 (128K) | 28.4 | fast | 28.4 | - | - |
 
 ### How fast is this?
@@ -114,6 +115,7 @@ Time from request submission to the first streamed token — the primary respons
 | 1024 (1K) | 0.69 | responsive | 3.93 | 4.36 | noticeable |
 | 8192 (8K) | 4.13 | noticeable | 21.3 | 32.8 | frustrating |
 | 32768 (32K) | 22.2 | frustrating | - | - | - |
+| 65536 (64K) | - | - | - | - | - |
 | 131072 (128K) | 175.9 | frustrating | - | - | - |
 
 ### How responsive is this?
@@ -206,6 +208,7 @@ This boot exposed a KV pool of **128,033 tokens** (r139 posture). A session occu
 | 1024 (1K) | 75 | 8 (green) | yes |
 | 8192 (8K) | 14 | 8 (green) | yes |
 | 32768 (32K) | 3 | 3 (green) | no |
+| 65536 (64K) | 1 | - | no |
 | 131072 (128K) | 2 | 2 (green) | no |
 
 *The 128K row's pool is the annex boot's (288,972 tokens) — the main boot's pool cannot hold that context.*
@@ -241,6 +244,7 @@ Rate at which input context is processed before the first token. Client-observed
 | 1024 (1K) | 1467 | 581 | 260 |
 | 8192 (8K) | 1979 | 673 | 384 |
 | 32768 (32K) | 1470 | - | - |
+| 65536 (64K) | - | - | - |
 | 131072 (128K) | 745 | - | - |
 
 ![Client-observed prefill rate vs context length, one line per concurrency — MXFP4 W4A16, no MTP](charts/gemma-4-31b-mxfp4_prefill.svg)
@@ -282,6 +286,7 @@ Percentage of ideal linear scaling achieved as concurrency rises (100% = n× the
 | 1024 (1K) | 0.69 | 1,481 | 38.0 | 1.00 | 26.4 | 26.6 | 26.8 | 36.5 |
 | 8192 (8K) | 4.13 | 1,981 | 37.2 | 1.00 | 27.0 | 27.0 | 27.3 | 36.0 |
 | 32768 (32K) | 22.25 | 1,473 | 34.9 | 1.00 | 28.8 | 28.9 | 29.2 | 32.3 |
+| 65536 (64K) | - | - | - | - | - | - | - | - |
 | 131072 (128K) | 175.90 | 745 | 28.4 | - | 35.6 | 35.6 | 36.0 | 26.9 |
 
 *Rows sourced from the r139/r140 concurrency-1 faces where no r138 solo face exists (same cold-prefill measurement).*
@@ -313,6 +318,10 @@ Percentage of ideal linear scaling achieved as concurrency rises (100% = n× the
 | 1 | 22.3 | 22.3 | 34.8 | 34.8 | 15 | 100% | 28.9 | 29.0 |
 | 2 | 35.1 | 44.4 | 25.1 | 16.5 | 19 | 64% | 29.9 | 29.9 |
 | 3 | 46.7 | 66.6 | 18.7 | 10.0 | 21 | 46% | 33.0 | 33.0 |
+
+### Concurrency sweep — 65536 (64K) context (temperature 0.0)
+
+> Not measured at this rung — no concurrency faces were scheduled here on this boot; the slot stays visible between its measured neighbors.
 
 ### Concurrency sweep — 131072 (128K) context (temperature 0.0)
 

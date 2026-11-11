@@ -885,6 +885,17 @@ def ctxrow(c):
     return f"{c} ({c // 1024}K)"
 
 
+def _ctx_axis(ctxs):
+    # Canonical-ladder expansion for context tables: when every measured
+    # context is a rung, the rows cover the whole ladder up to the highest
+    # measured one -- an unmeasured rung renders as a "-" row, never a
+    # table that jumps 32K to 128K (same law as the chart x-axis).
+    xs = sorted(set(ctxs))
+    if len(xs) > 1 and all(c in CTX_LADDER for c in xs):
+        xs = [c for c in CTX_LADDER if c <= max(xs)]
+    return xs
+
+
 def md_table(header, rows):
     out = ["| " + " | ".join(str(x) for x in header) + " |",
            "|" + "|".join(["---"] * len(header)) + "|"]
@@ -1310,7 +1321,7 @@ def per_config_report(banks, out, cfg, date):
 
     # ------------------------------------------------ executive summary
     if has_data:
-        allctx = sorted(set(list(good.keys()) + list(conc.keys())))
+        allctx = _ctx_axis(set(list(good.keys()) + list(conc.keys())))
         lastc = max(allctx)
         firstc = min(allctx)
         nok, ntot = requests_stats(faces, tfaces, conc, t1ok)
@@ -1827,9 +1838,7 @@ def per_config_report(banks, out, cfg, date):
                      if _conc_face_ok(conc.get(c, {}).get(1)) and any(
                          _conc_face_ok(conc.get(c, {}).get(n))
                          for n in (2, 3, 4, 8))}
-            qxd = [c for c in fctxs if qmeas and c <= max(qmeas)]
-            if len(qxd) > 1 and all(c in CTX_LADDER for c in qxd):
-                qxd = [c for c in CTX_LADDER if c <= max(qxd)]
+            qxd = _ctx_axis([c for c in fctxs if qmeas and c <= max(qmeas)])
             rows = []
             for c in (qxd or cctxs):
                 base = conc.get(c, {}).get(1)
@@ -1897,7 +1906,8 @@ def per_config_report(banks, out, cfg, date):
                      "sweep measured.")
             L.append("")
             rows = []
-            for c in fctxs:
+            pxd = _ctx_axis(fctxs)
+            for c in pxd:
                 cells = [ctxrow(c)]
                 for n in (1, 4, 8):
                     d = conc.get(c, {}).get(n)
@@ -1916,7 +1926,7 @@ def per_config_report(banks, out, cfg, date):
                 pseries = []
                 for n in (1, 4, 8):
                     pts = []
-                    for c in fctxs:
+                    for c in pxd:
                         d = conc.get(c, {}).get(n)
                         if _conc_face_ok(d) and d["ttft_mean_s"] > 0:
                             pts.append((c, c / d["ttft_mean_s"]))
@@ -2007,9 +2017,7 @@ def per_config_report(banks, out, cfg, date):
                      conc[c][1]["agg_tps_wall"] > 0 and any(
                          _conc_face_ok(conc.get(c, {}).get(n))
                          for n in (2, 3, 4, 8))}
-            exd = [c for c in fctxs if emeas and c <= max(emeas)]
-            if len(exd) > 1 and all(c in CTX_LADDER for c in exd):
-                exd = [c for c in CTX_LADDER if c <= max(exd)]
+            exd = _ctx_axis([c for c in fctxs if emeas and c <= max(emeas)])
             ens = [n for n in (2, 3, 4, 8) if any(
                 _conc_face_ok(conc[c].get(n)) and
                 _conc_face_ok(conc[c].get(1)) and
@@ -2127,10 +2135,8 @@ def per_config_report(banks, out, cfg, date):
             def _ff(v, fmt):
                 # r139-sourced rows can carry None fields (tok_per_step)
                 return fmt.format(v) if v is not None else "-"
-            for c in fctxs:
+            for c in _ctx_axis(fctxs):
                 f = faces.get(c)
-                if not f and c not in conc:
-                    continue
                 r = [ctxrow(c),
                      _ff(f["ttft_s"], "{:.2f}") if f else "-",
                      (_fmt_comma(f["prefill_tps"])
@@ -2155,10 +2161,16 @@ def per_config_report(banks, out, cfg, date):
                          "cold-prefill measurement).*")
                 L.append("")
         # concurrency tables
-        for c in cctxs:
-            cds = conc[c]
+        for c in _ctx_axis(cctxs):
+            cds = conc.get(c, {})
             ns = sorted(cds)
             if not ns:
+                L.append("### Concurrency sweep — {} context (temperature 0.0)".format(ctxrow(c)))
+                L.append("")
+                L.append("> Not measured at this rung — no concurrency "
+                         "faces were scheduled here on this boot; the slot "
+                         "stays visible between its measured neighbors.")
+                L.append("")
                 continue
             base = cds.get(1)
             base_agg = base["agg_tps_wall"] if _conc_face_ok(base) else None
@@ -2916,13 +2928,26 @@ def methodology_report(out, date):
          "concurrency sweep skipped a context (64K on the qwen sweep) "
          "the single-request line and its band edge are completed from "
          "that configuration's solo faces — the same single-request "
-         "measurement on the same certified image; loaded lines keep "
-         "their honest gaps, and band shading never bridges an "
-         "unmeasured context. Derived-metric charts (queue stagger, "
+         "measurement on the same certified image; the loaded lines keep "
+         "their measured points, and every line connects its measured "
+         "points straight across an empty slot — no marker ever sits at "
+         "a rung nothing measured. Derived-metric charts (queue stagger, "
          "scaling efficiency) keep the full ladder on the axis with an "
-         "empty slot where the metric was not measured, and a break "
-         "inside any line is always a real gap — no line chords across "
-         "an unmeasured context. The gemma MXFP4 tables and charts "
+         "empty slot where the metric was not measured. Every context "
+         "axis keeps the canonical rung ladder (1K, 8K, 32K, 64K, 128K) "
+         "up to its highest measured context — a rung nothing measured "
+         "(64K on the gemma boots) or a derived metric could not be "
+         "computed for renders as a labelled empty slot, never an axis "
+         "that jumps 32K to 128K. Context tables obey the same law: "
+         "every canonical rung up to the highest measured context gets "
+         "a row — an unmeasured rung shows `-` in its measured columns "
+         "(the KV-pool capacity column still computes from the banked "
+         "pool arithmetic), and a concurrency-sweep rung nothing was "
+         "scheduled for keeps its heading with an explicit not-measured "
+         "note. A line break only appears where a measurement failed "
+         "mid-series (a banked failed face), and band shading spans the "
+         "measured envelope the same way — its edges follow their "
+         "measured points. The gemma MXFP4 tables and charts "
          "carry the 128K annex-boot measurements, same image and "
          "quantization posture (the annex section quantifies both "
          "boots' agreement at the shared contexts). Range-band "
