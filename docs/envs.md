@@ -3,74 +3,13 @@
 Generated at P5 hardening (r45, 2026-10-30; serve-line identity updated
 at the r46t close-out) from `vllm_gaudi/envs.py` arc-lane markers + the
 certified serve line (`r43_serve_k5.sh`, spec depth 3 per the r46t
-recommendation — a serve-time CLI change — on image
-`vllm-arc:v0.30.0-b70-cert`; unchanged since — the qwen fp8 chain is identical on
-the current certified image `vllm-arc:v0.30.0-b70-cert23`, where
-`LMCACHE_TRACK_USAGE=false` (P6.3) made it 25; cert23 = cert22 + the
-P6.35 graph-exec double-buffer (`vllm_gaudi/xpu/patches/graph_exec_doublebuffer.py` —
-captures every XPU graph ×2 into the shared pool, alternates replays; removes the
-torch-2.13 same-exec replay host block — replay max 24 → 0.37 ms, engine serial
-40.8 → 12.7 ms/step, E2E-NEUTRAL at every measured posture (hygiene fix, not a
-perf knob; the table row carries the honest wording); adds NO serve-line var —
-the knob `VLLM_ARC_GRAPH_EXEC_DB` is a serve-ENV switch like `ARC_ATTN_FA2`;
-no wheel change; gate r135/r135b, results/2026-11-10-p635-telemetry/); cert22 = cert21 + the
-P6.33 skinny-M kernel lane (arc6 `vllm_xpu_kernels` wheel swap +
-the `skinny_m` route patch — adds NO serve-line var; the lane rides
-the engine env `ARC_SKINNY_M` (unset/`off` = stock routes — the
-CERTIFIED default after the r127 e2e falsification; `on` = the M≤8
-kernels opt-in; a serve-ENV knob passed through by the script, like
-`ARC_ATTN_FA2`/`ARC_MXFP8_MODE`); serve behavior byte-identical to
-cert21 — r127g2 cert leg 27.7/192.9 exact ref, zero route markers);
-cert21 = cert20 + the
-P6.31 online-MXFP8 W8A16 lane (arc5 `vllm_xpu_kernels` wheel swap +
-the `mxfp8_w8a16` patch — adds NO serve-line var; the lane rides the
-model-lane env `ARC_QUANT=mxfp8` + the engine env `ARC_MXFP8_MODE`
-(unset/`w8a16` = the W8A16 route — default; `w8a8` = stock control; a
-serve-ENV knob, not part of the 25-var chain, like `ARC_ATTN_FA2`) +
-the script arg `ARC_MAXLEN` (default 262144; 40960 on gemma
-online-mxfp8 legs — the 8-bit-weights KV capacity law); the
-fp8/checkpoint/mxfp4 lanes are byte-untouched — r125 three-lane gate);
-cert20 = cert19 + the
-P6.30 online-quant W4A16 lane (arc4 `vllm_xpu_kernels` wheel swap +
-the `mxfp4_w4a16` patch — adds NO serve-line var; the lane rides the
-existing model-lane envs `ARC_QUANT=mxfp4` + `ARC_QUANTCFG` (the
-hybrid ignore list) + the engine env `ARC_MXFP4_MODE` (unset/`w4a16` =
-the W4A16 route — default; `w4a4` = stock control; a serve-ENV knob,
-not part of the 25-var chain, like `ARC_ATTN_FA2`); the fp8/checkpoint
-lanes are byte-untouched — r121 discriminator); cert19 = cert18 + the
-P6.29 sliding-window FA2 route (the same wheel file,
-`triton_unified_attention.py` — adds NO serve-line var; the shared
-engine env `ARC_ATTN_FA2` defaults 1 = the hd512 full-attention route
-AND the hd256 sliding-window route ON, `=0` = the pure-triton escape
-hatch — a serve-ENV knob, not part of the 25-var chain; gemma-4 hits
-both routes, qwen3.8's full-attn never hits the hd512 route
-marker-proven at r108ae/r111); cert18 = cert17 + the
-P6.28 FA2 route (one wheel file — adds
-NO serve-line var); cert17 = the cert11
-engine + the P6.28 chain (cert12 launcher-table points, cert16 warm-gate
-v4, cert17 lmcint kit — none adds a qwen serve-line var; the gemma-4
-lane rides the same script with `ARC_LMC=0` + `ARC_RPC_TIMEOUT=1200`
-(→ `VLLM_EXECUTE_MODEL_TIMEOUT_SECONDS`; REQUIRED for gemma-4
-long-prefill faces — the stock 300 s execute-model watchdog kills late
-chunks) + `ARC_TEMPLATE`); cert11 = cert10 + the
-P6.26 platform patch ONLY (`vllm_gaudi/xpu/platform.py` — quark/mxfp4
-lane, config-validation surface; r105b walk-proven byte-identical
-everywhere else, and the fp8 posture proven env- and face-identical at
-the r105 gate); cert10 = cert9's engine
-byte-identical (exhaustive md5 walk at the cert10 gate) + the P6.24
-oneCCL fp8-wire overlay, which is **default-OFF** and adds NO certified
-serve-line var — opting into the e4m3-wire allreduce is the single
-uncertified-line addition `CCL_SYCL_ALLREDUCE_FP8=1` (rows in the
-overlay table below + `CONFIGURATION-arc.md`'s knob table; proven
-env-absent at the cert10 gate with
-FP8_ENV_SET=0 and default-posture numbers cert9-identical; the overlay
-rows carry into cert11);
-cert9 = cert6-era
-compute bytes under the certified fp8 line — the P6.19 TQ fix never
-engages there (control-proven t7/t9 + cert8 gate) and the P6.20
-off-thread store (L3, default ON) adds no serve-line var — it rides the
-code default, proven env-free at the cert9 gate [STORE_WORKER_ACTIVE
-with LMC_ENV_SET=0]). Every entry cites its
+recommendation — a serve-time CLI change). The qwen fp8 chain is
+identical on the current certified image `vllm-arc:v0.30.0-b70-cert23`
+(25 vars incl. `LMCACHE_TRACK_USAGE=false`, P6.3): from cert9 through
+cert23 every release added ZERO certified serve-line vars — each new
+lane rides an engine env or script arg (`ARC_*`) proven env-free and
+face-identical at its own gate (per-cert details:
+[`../CHANGELOG.md`](../CHANGELOG.md)). Every entry cites its
 provenance (no-unevidenced law, plan Appendix H #6). Audit of record:
 `results/2026-10-30-p5-r45-env-log-audit/`.
 

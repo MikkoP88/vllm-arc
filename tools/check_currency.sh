@@ -25,10 +25,15 @@ ck() {  # ck <file> <fixed-string> <what>
 
 ck README.md            "Certified release: **\`$latest\`**"  "certified-release headline"
 ck README.md            "current: \`$latest\`"                 "releases bullet"
-ck docs/CONFIGURATION-arc.md "$img"                            "image-table head"
-ck docs/MIGRATION-arc.md     "$img"                            "identities table"
+# Row-value anchors (2026-11-11, P6.38): an anywhere-in-file grep let a stale
+# table row pass while the cert string appeared elsewhere in the same doc
+# (MIGRATION S1 image row said cert22 for two certs). Anchor the actual
+# current-pointer ROWS, not file-wide presence.
+ck docs/CONFIGURATION-arc.md "| Image | \`$img\`"                "image-table row"
+ck docs/MIGRATION-arc.md     "| image | \`$img\`"               "identities image row"
+ck docs/MIGRATION-arc.md     "ARC_IMAGE=$img"                    "S2 boot block image"
 ck docs/PERFORMANCE-arc.md   "## Current certified image"      "current-record heading"
-ck docs/PERFORMANCE-arc.md   "$latest"                         "current-record tag"
+ck docs/PERFORMANCE-arc.md   "**Current release = $latest**"  "current-release statement"
 ck docs/envs.md              "current certified image \`$img\`" "env chain currency note"
 
 # No doc may present an older tag AS THE certified release:
