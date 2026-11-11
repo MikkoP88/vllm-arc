@@ -1,0 +1,5 @@
+=== [r147:legA] W14 quiesce 19:53:39 ===
+=== [r147:legA] offline harness in vllm-arc:v0.30.0-b70-cert23 19:53:56 ===
+=== [r147:legA] harness exit rc=1 19:53:59 ===
+R147_LEGA_DONE rc=1 2026-11-11T19:53:59Z
+W14_RESTORED 2026-11-11T19:54:00Z
