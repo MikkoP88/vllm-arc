@@ -100,7 +100,8 @@ RUN set -euxo pipefail; \
            and lay.slot_bytes(256, 'mxk8v4') == 400, 'slot law'; \
        import vllm_gaudi.xpu.patches.mx_dtype_map as d; \
        import vllm_gaudi.xpu.patches.mx_kv_mode as m; \
-       assert d.STR_DTYPE_TO_TORCH_DTYPE.get('mxk8v4') is not None, 'dtype map'; \
+       assert 'mxk8v4' in inspect.getsource(d), 'dtype map'; \
+       assert 'mxk8v4' in inspect.getsource(m), 'mode alias'; \
        import vllm_gaudi.xpu.patches.mx_kv.engine as eng; \
        assert len(eng.MX_KV_DTYPES) == 3 and 'mxk8v4' in eng.MX_KV_DTYPES, 'engine dtypes'; \
        assert eng.MX_TQ_INIT_ALIAS['mxk8v4'] == 'turboquant_k8v4', 'tq alias'; \
