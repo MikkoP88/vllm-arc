@@ -949,22 +949,40 @@ class MxAttentionImpl(TurboQuantAttentionImpl):
         # One-step cache on self (the metadata may be pooled/reused by
         # the wheel, so attaching to it could serve a STALE plan — that
         # would poison every limit in the step). Key on metadata identity
-        # plus the slot_mapping buffer identity/version, and hold the
-        # metadata reference so its id cannot recycle under the cache.
-        key = (id(attn_metadata), smeta.data_ptr(), smeta._version)
+        # plus the slot_mapping buffer identity/version plus the split
+        # shape (a pooled-metadata re-CAPTURE with the same buffer and
+        # unbumped version must not reuse a differently-shaped plan), and
+        # hold the metadata reference so its id cannot recycle under the
+        # cache.
+        key = (
+            id(attn_metadata),
+            smeta.data_ptr(),
+            smeta._version,
+            tuple(split_rows),
+        )
         cached = getattr(self, "_mx_split_cache", None)
         if cached is not None and cached[0] == key:
             plan = cached[1]
         if plan is None:
             bt = attn_metadata.block_table
             stride = kv_cache.shape[1]
+            # CAPTURE LAW: this runs inside XPU-graph capture (the plan-
+            # build kernels are what replay refreshes the limits with).
+            # Every op here must be a device op — torch.tensor(<py list>)
+            # is a pageable H2D memcpy whose event wait is illegal under
+            # capture ("wait method cannot be used for an event associated
+            # with a command graph", m8 cert25y boot 2026-11-12). Build the
+            # request-index the same way as idx: device fills whose scalars
+            # ride as kernel args, no memcpy.
             idx_parts = []
-            req_parts: list[int] = []
+            req_parts = []
             for i, qs, ql in split_rows:
                 idx_parts.append(torch.arange(qs, qs + ql, device=bt.device))
-                req_parts.extend([i] * ql)
+                req_parts.append(
+                    torch.full((ql,), i, device=bt.device, dtype=torch.long)
+                )
             idx = torch.cat(idx_parts)
-            req_idx = torch.tensor(req_parts, device=bt.device, dtype=torch.long)
+            req_idx = torch.cat(req_parts)
             sm = smeta.index_select(0, idx)
             bt_rows = bt.index_select(0, req_idx)
             sm_blk = torch.div(sm, stride, rounding_mode="floor")
