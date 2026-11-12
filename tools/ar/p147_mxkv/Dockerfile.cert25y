@@ -1,0 +1,40 @@
+# SPDX-License-Identifier: Apache-2.0
+# Dockerfile.cert25y -- P6.47 cert25y image: cert25x + the A9/A10 decode
+# line (A9 true-shape rebake: v2 decoder default + BLOCK_N=32 tune table,
+# native-q decode path, batched MTP-verify decode). Two-file overlay on
+# cert25x; built by r163_build_cert25y.sh with FORK_SHA=<content commit>.
+FROM vllm-arc:v0.30.0-b70-cert25x
+
+ARG FORK_SHA=unknown
+ARG BUILT=unknown
+
+COPY engine.py /tmp/mx_kv_engine.py
+COPY triton_mx_decode.py /tmp/mx_kv_triton_mx_decode.py
+
+RUN set -euxo pipefail; \
+    SP=/opt/venv/lib/python3.12/site-packages/vllm_gaudi; \
+    cp /tmp/mx_kv_engine.py           $SP/xpu/patches/mx_kv/engine.py; \
+    cp /tmp/mx_kv_triton_mx_decode.py $SP/xpu/patches/mx_kv/triton_mx_decode.py; \
+    rm -rf $SP/xpu/patches/__pycache__/mx_kv; \
+    rm -f /tmp/mx_kv_engine.py /tmp/mx_kv_triton_mx_decode.py; \
+    export LD_LIBRARY_PATH=/opt/venv/lib:/opt/venv/lib/python3.12/site-packages/torch/lib; \
+    /opt/venv/bin/python -c \
+      "import inspect, re;\
+       import vllm_gaudi.xpu.patches.mx_kv.engine as e;\
+       import vllm_gaudi.xpu.patches.mx_kv.triton_mx_decode as t;\
+       tsrc = inspect.getsource(t);\
+       esrc = inspect.getsource(e);\
+       assert 'tl.maximum(1, n_tiles)' in tsrc, 'v3 s_eff 1-tile floor';\
+       assert '_split_verify_decode' in esrc, 'batched MTP-verify decode';\
+       assert '_mx_split_cache' in esrc, 'one-step plan cache';\
+       assert not re.search(r'query\.float\(\)', esrc), 'native-q decode path';\
+       assert t._MX_TUNE == {'mxfp8': (32, 4, 2, False), 'mxfp4': (32, 8, 2, False), 'mxk8v4': (32, 8, 2, True)}, 'A9 true-shape baked tune+flavor';\
+       assert t._DECODER == 'v2', 'A9 rebake: decoder default v2';\
+       print('CERT25Y_DECODE_LINE_LIVE s_eff-floor + native-q + batched-verify OK')"; \
+    { cat /etc/vllm-arc/IMAGE_MANIFEST; \
+      echo "cert25y=P6.47 decode-superiority line part 2: A9 true-shape rebake (HK=4/Hq=24/D=256 — the offline bake had tuned at HK=8/Hq=32/D=128) flips the decoder default to v2 + BLOCK_N=32 tune table (mxfp8 (32,4) 1.414 ms, mxfp4 (32,8) 1.174, mxk8v4 (32,8) 1.519 at B=8@2048; v3 wins only solo B=1@1K and stays reachable via ARC_MXKV_DECODER=v3), engine passes q natively to mx_decode (<=1.2e-4 vs rounded-fp32, two fewer cast kernels/layer), _split_verify_decode batches the MTP verify step into ONE mx_decode (R rows, duplicated bt rows, LIMIT-LAW per-row slot-derived limits; one-step plan cache keyed on metadata identity + slot_mapping version) — replaces ~2k kernels/step at agg8 with ~80; v3 s_eff 1-tile floor retained for the v3 env lane; A9 true-shape probe + A10 telemetry ladder banked results/2026-11-12-p647-decode-perf-research/"; \
+      echo "cert25y_fork_sha=${FORK_SHA}"; \
+      echo "cert25y_built=${BUILT}"; \
+    } > /etc/vllm-arc/IMAGE_MANIFEST.p647; \
+    mv /etc/vllm-arc/IMAGE_MANIFEST.p647 /etc/vllm-arc/IMAGE_MANIFEST; \
+    cat /etc/vllm-arc/IMAGE_MANIFEST
