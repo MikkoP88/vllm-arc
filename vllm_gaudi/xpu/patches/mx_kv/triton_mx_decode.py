@@ -358,7 +358,7 @@ def _mx_decode_split_gqa(
     # pays that chase N_REP times per tile through N_REP co-resident
     # programs re-walking the same slice. v3 dequants K/V once per tile
     # and keeps N_REP unrolled rows of (q, m, l, acc) state — trace-time
-    # Python-list unrolling under tl.static_range, ~3 KB of extra
+    # tuple-carried unrolling under tl.static_range, ~3 KB of extra
     # registers vs the spill cliff A5 mapped at BLOCK_N=128 sub-byte
     # payloads. mid layout and the combine stage are identical to v2.
     b = tl.program_id(0)
@@ -373,22 +373,25 @@ def _mx_decode_split_gqa(
     split_end = tl.minimum(split_start + split_len, seq_len)
 
     offs_d = tl.arange(0, D)
-    qs = []
-    mis = []
-    lis = []
-    accs = []
+    # Per-r unrolled state as TUPLES (the tracer coerces loop-captured
+    # lists to tuples — append is illegal under static_range); tuple
+    # concat + constexpr-index reads are the supported aggregate form.
+    qs = ()
+    mis = ()
+    lis = ()
+    accs = ()
     for r in tl.static_range(N_REP):
-        qs.append(
+        qs = qs + (
             tl.load(
                 q_ptr
                 + b * stride_q_b
                 + (hk * N_REP + r) * stride_q_h
                 + offs_d
-            )
+            ),
         )
-        mis.append(-float("inf"))
-        lis.append(0.0)
-        accs.append(tl.zeros((D,), dtype=tl.float32))
+        mis = mis + (-float("inf"),)
+        lis = lis + (0.0,)
+        accs = accs + (tl.zeros((D,), dtype=tl.float32),)
 
     if split_start < split_end:
         v_off = (D // 2 if K4 else D) + N_GROUPS
@@ -417,9 +420,13 @@ def _mx_decode_split_gqa(
                 m_new = tl.maximum(mis[r], tl.max(scores, 0))
                 p = tl.exp(scores - m_new)
                 alpha = tl.exp(mis[r] - m_new)
-                lis[r] = lis[r] * alpha + tl.sum(p, 0)
-                accs[r] = accs[r] * alpha + tl.sum(p[:, None] * v, axis=0)
-                mis[r] = m_new
+                lis = lis[:r] + (lis[r] * alpha + tl.sum(p, 0),) + lis[r + 1 :]
+                accs = (
+                    accs[:r]
+                    + (accs[r] * alpha + tl.sum(p[:, None] * v, axis=0),)
+                    + accs[r + 1 :]
+                )
+                mis = mis[:r] + (m_new,) + mis[r + 1 :]
 
     for r in tl.static_range(N_REP):
         hq = hk * N_REP + r
