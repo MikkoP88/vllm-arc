@@ -279,3 +279,24 @@ assertions incl. the (32,...) table + `_DECODER == 'v2'`) -> r162 A10
 telemetry ladder on cert25y -> r161 full 8-leg battery + gemma_compare
 (gemma gates comparative per GEMMA-THINKSPAM-DISPOSITION.md) -> r155
 three-axes ladder -> close-out.
+
+## A11 lever 1 (split cap) — REFUTED, and the m4 collapse re-attributed
+
+p158_splitsweep (r165, cert24x dev image, bank legA11_summary.txt): S=64/128
+vs S=32 is flat-to-negative on every problem cell (mxfp8 32K/n8 R=32: 83.5 vs
+83.4/83.8 ms; mxfp4 61.3 vs 61.9/63.8; @2048 R=32 all formats prefer 32) —
+the split cap is NOT the 32K cliff. Correctness faces bit-equal @549 and
+2-3e-08 @8195 (splits are pure partial regrouping, as designed). One isolated
+win (mxk8v4 B=1@8K: 3.44 -> 1.07 ms at S=64) does not generalize and is not
+baked.
+
+The sweep's R=32@32K kernel numbers force a re-attribution of the A10 m4
+collapse: eager kernel says m4 61.3 ms < m8 83.4 ms per call, yet e2e m4 ITL
+is 3714 ms vs m8's 830 (232 vs 52 ms/attn-layer) — the deficit is NOT in the
+decode kernel. Leading hypothesis: MTP acceptance collapse on 4-bit KV at
+32K (failed verify steps cost a full pass and emit no token). r161 banks
+serve_full.log per leg; its SpecDecoding metrics settle it.
+
+Next levers: verify-row walk sharing (4x walk/dequant cut, half of v3's
+spilled state) and XMX tl.dot reopening (A6's pointer-chase premise is
+refuted at true shape) — next session's kernel line.
