@@ -108,7 +108,7 @@ def vslot(x, fmt):
     return torch.cat([enc, codes], dim=-1)
 
 
-def run_variant(variant, q, cache, bt, sl, block_n=None, num_warps=None):
+def run_variant(variant, q, cache, bt, sl, block_n=None, num_warps=None, num_stages=None):
     if variant == "v1":
         return mx_decode(q, cache, bt, sl, SCALE, decoder="v1")
     tmx._SHIFT = variant == "v2shift"
@@ -117,6 +117,8 @@ def run_variant(variant, q, cache, bt, sl, block_n=None, num_warps=None):
         kw["block_n"] = block_n
     if num_warps is not None:
         kw["num_warps"] = num_warps
+    if num_stages is not None:
+        kw["num_stages"] = num_stages
     return mx_decode(q, cache, bt, sl, SCALE, decoder="v2", **kw)
 
 
@@ -424,12 +426,19 @@ def face_dequant():
 
 
 def face_tune():
-    """Tuning sweep: v2join (BLOCK_N, num_warps) per fmt at 32K — the
-    register-pressure lever for the double-e2m1 mxfp4 leg (A4: v2@128/4
-    regressed mxfp4 to 0.87x while e4m3 formats took 5.5x/2.6x). Winner
-    combo gets a correctness spot vs the fp64 reference."""
-    print("[face: tune] v2 (BLOCK_N, num_warps) sweep @ ctx=32768 (XPU)")
-    combos = ((64, 4), (64, 8), (128, 4), (128, 8))
+    """Tuning sweep: v2join (BLOCK_N, num_warps, num_stages) per fmt at
+    32K — two independent levers. Register pressure: the double-e2m1
+    mxfp4 leg regressed to 0.87x at (128,4) in A4. Latency: A4 mxfp8
+    @131K ran at ~4% ALU / <=36% DRAM of peak, i.e. the tile loop's
+    dependent load chain (bt -> slot -> payload) is the bound — SLM
+    double-buffered prefetch (num_stages>1) is the pipelining fix.
+    Winner combo gets a correctness spot vs the fp64 reference."""
+    print("[face: tune] v2 (BLOCK_N, num_warps, num_stages) sweep @ ctx=32768 (XPU)")
+    combos = tuple(
+        (bn, nw, ns)
+        for bn, nw in ((64, 4), (64, 8), (128, 4), (128, 8))
+        for ns in (1, 2, 3)
+    )
     ctx = 32768
     for fmt in FMTS:
         n_blocks = ctx // BLOCK + 2
@@ -451,18 +460,32 @@ def face_tune():
         q = torch.randn(1, HK_T * HREP, D, device=DEV)
         best = None
         rows = {}
-        for bn, nw in combos:
-            for _ in range(3):
-                run_variant("v2join", q, cache, bt, sl, block_n=bn, num_warps=nw)
-            torch.xpu.synchronize()
-            t0 = time.perf_counter()
-            for _ in range(20):
-                run_variant("v2join", q, cache, bt, sl, block_n=bn, num_warps=nw)
-            torch.xpu.synchronize()
-            ms = (time.perf_counter() - t0) / 20 * 1e3
-            rows[f"n{bn}w{nw}"] = round(ms, 4)
-            if best is None or ms < best[2]:
-                best = (bn, nw, ms)
+        for bn, nw, ns in combos:
+            try:
+                for _ in range(3):
+                    run_variant(
+                        "v2join", q, cache, bt, sl, block_n=bn, num_warps=nw,
+                        num_stages=ns,
+                    )
+                torch.xpu.synchronize()
+                t0 = time.perf_counter()
+                for _ in range(20):
+                    run_variant(
+                        "v2join", q, cache, bt, sl, block_n=bn, num_warps=nw,
+                        num_stages=ns,
+                    )
+                torch.xpu.synchronize()
+                ms = (time.perf_counter() - t0) / 20 * 1e3
+            except Exception as exc:  # noqa: BLE001 — record, keep the sweep alive
+                rows[f"n{bn}w{nw}s{ns}"] = f"err:{type(exc).__name__}"
+                continue
+            rows[f"n{bn}w{nw}s{ns}"] = round(ms, 4)
+            if best is None or ms < best[3]:
+                best = (bn, nw, ns, ms)
+        if best is None:
+            _fail("tune", fmt, f"all combos errored: {rows}")
+            _rec("tune", fmt, sweep_ms=rows, winner=None)
+            continue
         # correctness spot at the winner combo (tuning changes only
         # scheduling; the gate proves it: vs fp64 exact on a 549-token
         # fragmented case)
@@ -480,7 +503,7 @@ def face_tune():
         out = run_variant(
             "v2join", q2, cache2, flat_tables(lens, tables2),
             torch.tensor(lens, dtype=torch.int32, device=DEV),
-            block_n=best[0], num_warps=best[1],
+            block_n=best[0], num_warps=best[1], num_stages=best[2],
         ).cpu()
         got = cache2[tb2.long().cpu(), tp2.long().cpu(), :, :].cpu()
         ng = D // 32
@@ -489,15 +512,21 @@ def face_tune():
         ref = _ref_attention(q2.cpu(), rk, rv, lens)
         d_exact = (out - ref).abs().max().item()
         if d_exact > 2e-3 or not torch.isfinite(out).all():
-            _fail("tune", fmt, f"winner n{best[0]}w{best[1]}: vs-exact {d_exact:.2e}")
+            _fail(
+                "tune", fmt,
+                f"winner n{best[0]}w{best[1]}s{best[2]}: vs-exact {d_exact:.2e}",
+            )
         else:
             _ok(
                 "tune",
                 fmt,
-                f"winner BLOCK_N={best[0]} warps={best[1]} {best[2]:.3f} ms "
-                f"(sweep {rows}); correctness d={d_exact:.2e}",
+                f"winner BLOCK_N={best[0]} warps={best[1]} stages={best[2]} "
+                f"{best[3]:.3f} ms (sweep {rows}); correctness d={d_exact:.2e}",
             )
-        _rec("tune", fmt, sweep_ms=rows, winner=[best[0], best[1]], maxdiff=round(d_exact, 8))
+        _rec(
+            "tune", fmt, sweep_ms=rows, winner=[best[0], best[1], best[2]],
+            maxdiff=round(d_exact, 8),
+        )
 
 
 def main():

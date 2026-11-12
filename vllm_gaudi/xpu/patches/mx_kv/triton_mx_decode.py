@@ -362,14 +362,16 @@ def _mx_decode_v2(
     block_n: int,
     shift: bool,
     num_warps: int = 4,
+    num_stages: int = 2,
 ) -> torch.Tensor:
     """Split-KV decode launch (stage 1 + stage 2). The mid buffer is
     cached per (B, Hq, splits, D, device) — allocated once per shape on
     the eager warmup and reused (graph law: no allocation inside a
-    capture). num_warps/BLOCK_N are the tuning surface (A4 evidence:
-    e4m3-payload formats want (128, 4); the double-e2m1 mxfp4 leg blows
-    registers at BLOCK_N=128 under split-K concurrency — smaller tiles
-    trade tile count for occupancy)."""
+    capture). num_warps/BLOCK_N/num_stages are the tuning surface (A4
+    evidence: v2 stays latency-bound at 4% ALU / <=36% DRAM — the tile
+    loop's dependent load chain (bt -> slot -> payload) wants SLM
+    double-buffered prefetch; e4m3 formats took (128,4), the double-e2m1
+    mxfp4 leg blows registers at BLOCK_N=128 under split-K concurrency)."""
     bsz, hq, d = q.shape
     hk = cache.shape[2]
     sb = cache.shape[-1]
@@ -411,6 +413,7 @@ def _mx_decode_v2(
         NUM_SPLITS=_MX_SPLIT_MAX,
         SHIFT=shift,
         num_warps=num_warps,
+        num_stages=num_stages,
     )
     _mx_decode_combine[(bsz, hq)](
         mid,
@@ -438,6 +441,7 @@ def mx_decode(
     block_n: int = 128,
     decoder: str | None = None,
     num_warps: int = 4,
+    num_stages: int = 2,
 ) -> torch.Tensor:
     """Host wrapper. q [B, Hq, D] fp32 device; cache uint8 paged
     [num_blocks, block_size, Hk, slot_bytes(fmt)] (format inferred from
@@ -446,14 +450,14 @@ def mx_decode(
 
     decoder: None -> ARC_MXKV_DECODER -> "v1" (the certified path);
     "v2" = split-KV stage1+stage2 (opt-in until its validation legs
-    pass — see the module header). block_n/num_warps are the v2 tuning
-    surface (see _mx_decode_v2).
+    pass — see the module header). block_n/num_warps/num_stages are the
+    v2 tuning surface (see _mx_decode_v2).
     """
     dec = decoder or _DECODER
     if dec == "v2":
         return _mx_decode_v2(
             q, cache, block_tables, seq_lens, sm_scale, block_size, block_n, _SHIFT,
-            num_warps,
+            num_warps, num_stages,
         )
     bsz, hq, d = q.shape
     hk = cache.shape[2]
