@@ -234,3 +234,48 @@ assertions incl. `_MX_TUNE == {mxfp8: (64,4,2,join), mxfp4: (64,8,2,join),
 mxk8v4: (64,8,2,shift)}`, `_DECODER == 'v3'`) -> r159 full 8-leg battery
 (ctrl m8q m4q m8g m4g mkq mkg g0) on cert25x -> r155 three-axes ladder
 (decode/prefill/TTFT vs ctrl) -> close-out.
+
+## A9 (2026-11-12, run 2) — the true-shape rebake overturns the v3 default
+
+A4-A8 tuned at HK=8/Hq=32/D=128 (N_REP=4). The REAL qwen3.8-27b-fp8 attention
+shape is HK=4/Hq=24/D=256 (N_REP=6): at D=256 a BLOCK_N=64 K-tile holds 64KB
+fp32 of live accumulator state — the spill cliff moves, and BLOCK_N=32 was
+never swept. A9 (p157_v3_shortctx.py, cert24x dev image) swept the full
+(decoder x {32,64} x {4,8} warps) grid at the true shape, serve cells
+B=1 {1K,4K,32K} and B=8@2048:
+
+- v2 + BLOCK_N=32 dominates EVERY serve cell. B=8@2048: mxfp8 1.414 ms
+  (32,4), mxfp4 1.174 (32,8), mxk8v4 1.519 (32,8) — vs the baked v3 (64,8)
+  2.478/1.516/2.478. v3 keeps exactly ONE niche: solo B=1@1K (0.331 vs 0.74).
+- REBAKE: `_MX_TUNE` = mxfp8 (32,4,2,join), mxfp4 (32,8,2,join), mxk8v4
+  (32,8,2,shift); `_DECODER` default v2; v3 + s_eff 1-tile floor stay
+  reachable via ARC_MXKV_DECODER=v3.
+- run-2 faces (bank `legA9_run2_summary.txt`, md5 b527c6f1): fp16-q native
+  7.0e-05-1.2e-04 vs rounded-fp32 (NOT bit-equal — the kernel's intermediate
+  dtype follows the q/out element type, i.e. one fp16 rounding; gate <= 2e-3,
+  two orders inside the MX quant-noise envelope; out dtype follows q via
+  empty_like) — evidence for the engine's native-q path; verify-batch face
+  (R=32, BARE shipping-config calls) bit-equal d=0.000 with the batched call
+  1.1-1.3x over the 32-row loop at every format. A9_PROBE_PASS rc=0.
+
+## The engine decode-gap line (same leg) — batched MTP verify
+
+Telemetry (A10 directive) attributed the MX-vs-ctrl decode gap primarily to
+per-step kernel COUNT, not per-kernel speed: with spec=3 every decode step is
+a q_len=4 verify batch routed to the split branch — one mx_decode PER ROW
+plus a slot-inversion cascade (~8 kernels) per request, ~2k kernels/step at
+agg8 x ~17 attn layers vs ctrl's ONE fused FA kernel per layer. Fixes banked
+with the rebake: `_split_verify_decode` (ONE mx_decode for all split rows in
+the step; plan cached one step on self keyed on metadata identity +
+slot_mapping data_ptr/_version, strong metadata ref), native-q decode (drop
+query.float() + out .to guard), LIMIT-LAW per-row limits retained verbatim.
+v3-vs-v2 correctness gates and the fp8-path reference (FP8-PATH-REFERENCE.md)
+explain the ctrl shape this line converges toward.
+
+## Certification path (updated)
+
+Rebake commit -> cert25y image (r163, two-file overlay on cert25x, live
+assertions incl. the (32,...) table + `_DECODER == 'v2'`) -> r162 A10
+telemetry ladder on cert25y -> r161 full 8-leg battery + gemma_compare
+(gemma gates comparative per GEMMA-THINKSPAM-DISPOSITION.md) -> r155
+three-axes ladder -> close-out.

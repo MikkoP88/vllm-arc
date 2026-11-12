@@ -1,0 +1,37 @@
+[mxfp8] v3-vs-v2 @549 true-shape: max|d|=8.149e-08 OK
+[mxfp8] fp16-q native vs rounded-fp32: max|d|=1.163e-04 out.dtype=torch.float16 OK
+[mxfp8] ctx=1024: best v3n64w8 0.331 ms
+[mxfp8] ctx=1024: {'v2n32w4': 0.7767, 'v2n32w8': 0.7386, 'v2n64w4': 0.8893, 'v2n64w8': 0.7903, 'v3n32w4': 0.9949, 'v3n32w8': 0.6101, 'v3n64w4': 1.5318, 'v3n64w8': 0.3306}
+[mxfp8] ctx=4096: best v2n64w8 0.373 ms
+[mxfp8] ctx=4096: {'v2n32w4': 0.4678, 'v2n32w8': 0.4688, 'v2n64w4': 0.5535, 'v2n64w8': 0.3729, 'v3n32w4': 0.8203, 'v3n32w8': 0.505, 'v3n64w4': 0.8563, 'v3n64w8': 0.9142}
+[mxfp8] ctx=32768: best v2n32w4 2.695 ms
+[mxfp8] ctx=32768: {'v2n32w4': 2.6951, 'v2n32w8': 2.8639, 'v2n64w4': 3.4685, 'v2n64w8': 2.761, 'v3n32w4': 5.8168, 'v3n32w8': 3.2247, 'v3n64w4': 5.9819, 'v3n64w8': 6.5992}
+[mxfp8] B=8 ctx=2048: best v2n64w8 1.461 ms
+[mxfp8] B=8 ctx=2048: {'v2n32w4': 1.6751, 'v2n32w8': 1.6033, 'v2n64w4': 1.7008, 'v2n64w8': 1.4608, 'v3n32w4': 3.4117, 'v3n32w8': 2.2469, 'v3n64w4': 3.9216, 'v3n64w8': 3.8815}
+[mxfp8] verify-batch R=32 @2048: batched 5.454 ms vs 32-row loop 5.922 ms (1.1x) max|d|=0.000e+00 OK
+[mxfp8] store N=4 @D=256: 0.0780 ms
+[mxfp4] v3-vs-v2 @549 true-shape: max|d|=7.823e-08 OK
+[mxfp4] fp16-q native vs rounded-fp32: max|d|=1.022e-04 out.dtype=torch.float16 OK
+[mxfp4] ctx=1024: best v2n32w8 0.521 ms
+[mxfp4] ctx=1024: {'v2n32w4': 0.7344, 'v2n32w8': 0.5215, 'v2n64w4': 1.1649, 'v2n64w8': 0.8445, 'v3n32w4': 1.4012, 'v3n32w8': 1.0202, 'v3n64w4': 0.9905, 'v3n64w8': 0.5734}
+[mxfp4] ctx=4096: best v2n32w8 0.369 ms
+[mxfp4] ctx=4096: {'v2n32w4': 0.4567, 'v2n32w8': 0.369, 'v2n64w4': 1.255, 'v2n64w8': 0.3801, 'v3n32w4': 1.3143, 'v3n32w8': 1.3354, 'v3n64w4': 1.2288, 'v3n64w8': 1.3764}
+[mxfp4] ctx=32768: best v2n32w8 2.043 ms
+[mxfp4] ctx=32768: {'v2n32w4': 2.6432, 'v2n32w8': 2.0432, 'v2n64w4': 9.0175, 'v2n64w8': 2.627, 'v3n32w4': 9.1919, 'v3n32w8': 9.0666, 'v3n64w4': 8.7288, 'v3n64w8': 9.2037}
+[mxfp4] B=8 ctx=2048: best v2n32w8 1.178 ms
+[mxfp4] B=8 ctx=2048: {'v2n32w4': 1.4097, 'v2n32w8': 1.1778, 'v2n64w4': 4.4126, 'v2n64w8': 1.5114, 'v3n32w4': 5.3336, 'v3n32w8': 5.9986, 'v3n64w4': 4.9052, 'v3n64w8': 6.0704}
+[mxfp4] verify-batch R=32 @2048: batched 4.482 ms vs 32-row loop 5.805 ms (1.3x) max|d|=0.000e+00 OK
+[mxfp4] store N=4 @D=256: 0.0774 ms
+[mxk8v4] v3-vs-v2 @549 true-shape: max|d|=9.686e-08 OK
+[mxk8v4] fp16-q native vs rounded-fp32: max|d|=7.042e-05 out.dtype=torch.float16 OK
+[mxk8v4] ctx=1024: best v3n64w8 0.349 ms
+[mxk8v4] ctx=1024: {'v2n32w4': 0.8817, 'v2n32w8': 0.6134, 'v2n64w4': 1.3458, 'v2n64w8': 0.9724, 'v3n32w4': 1.0241, 'v3n32w8': 0.629, 'v3n64w4': 1.6547, 'v3n64w8': 0.349}
+[mxk8v4] ctx=4096: best v2n32w8 0.465 ms
+[mxk8v4] ctx=4096: {'v2n32w4': 0.7172, 'v2n32w8': 0.4646, 'v2n64w4': 1.7087, 'v2n64w8': 0.6636, 'v3n32w4': 0.8636, 'v3n32w8': 0.562, 'v3n64w4': 1.0447, 'v3n64w8': 1.0179}
+[mxk8v4] ctx=32768: best v2n32w8 2.812 ms
+[mxk8v4] ctx=32768: {'v2n32w4': 4.3085, 'v2n32w8': 2.8119, 'v2n64w4': 11.769, 'v2n64w8': 4.5453, 'v3n32w4': 6.3242, 'v3n32w8': 3.6056, 'v3n64w4': 7.4337, 'v3n64w8': 7.251}
+[mxk8v4] B=8 ctx=2048: best v2n32w8 1.516 ms
+[mxk8v4] B=8 ctx=2048: {'v2n32w4': 2.2938, 'v2n32w8': 1.5161, 'v2n64w4': 5.9947, 'v2n64w8': 2.4775, 'v3n32w4': 3.6287, 'v3n32w8': 2.5543, 'v3n64w4': 4.7073, 'v3n64w8': 4.2926}
+[mxk8v4] verify-batch R=32 @2048: batched 5.982 ms vs 32-row loop 6.639 ms (1.1x) max|d|=0.000e+00 OK
+[mxk8v4] store N=4 @D=256: 0.0848 ms
+A9_PROBE_PASS
