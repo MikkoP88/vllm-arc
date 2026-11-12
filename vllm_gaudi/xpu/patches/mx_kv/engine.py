@@ -70,7 +70,7 @@ from .mx_dequant import mx_dequant_cache
 from .mx_layout import offsets as _mx_offsets
 from .mx_layout import slot_bytes
 from .mx_quant import decode_kv as _ref_decode_kv
-from .triton_mx_decode import mx_decode, mx_decode_rows
+from .triton_mx_decode import mx_decode, mx_decode_rows, mx_decode_rows_dot
 from .triton_mx_store import mx_store
 
 # vllm-namespace logger (platform.py law): serve-time dictConfig
@@ -113,6 +113,11 @@ _trace_calls = 0
 # _V4_R_TILE must equal the kernel's group width (spec=3 -> k+1 = 4).
 _V4_VERIFY = os.environ.get("ARC_MXKV_V4_VERIFY", "") == "1"
 _V4_R_TILE = 4
+# v5 (A11 lever 3): the same row-group dispatch with the XMX tl.dot
+# kernel (score path as fp16 MMA — the ctrl lane's economy). Takes
+# precedence over v4 when both are set (the p160 A/B face). Off by
+# default until the p160 probe + e2e ladder validate.
+_V5_DOT = os.environ.get("ARC_MXKV_V5_DOT", "") == "1"
 
 # Ground-truth dump hook (debug-run-only, default off): with
 # ARC_MXKV_DUMP=1, the first attention call after `touch /tmp/mxkv_dump`
@@ -1010,7 +1015,9 @@ class MxAttentionImpl(TurboQuantAttentionImpl):
             # serve all its rows — group block-table rows, same per-row
             # limits. Device ops only (capture law above).
             bt_groups = None
-            if _V4_VERIFY and all(ql == _V4_R_TILE for _, _, ql in split_rows):
+            if (_V4_VERIFY or _V5_DOT) and all(
+                ql == _V4_R_TILE for _, _, ql in split_rows
+            ):
                 bt_groups = bt.index_select(
                     0,
                     torch.arange(
@@ -1023,13 +1030,24 @@ class MxAttentionImpl(TurboQuantAttentionImpl):
         _trace("path", "batch", "splitbatch", f"R={idx.shape[0]}")
         q_rows = query.index_select(0, idx)
         if bt_groups is not None:
-            out = mx_decode_rows(
-                q_rows,
-                kv_cache,
-                bt_groups,
-                sl_rows,
-                self.scale,
-                r_tile=_V4_R_TILE,
+            out = (
+                mx_decode_rows_dot(
+                    q_rows,
+                    kv_cache,
+                    bt_groups,
+                    sl_rows,
+                    self.scale,
+                    r_tile=_V4_R_TILE,
+                )
+                if _V5_DOT
+                else mx_decode_rows(
+                    q_rows,
+                    kv_cache,
+                    bt_groups,
+                    sl_rows,
+                    self.scale,
+                    r_tile=_V4_R_TILE,
+                )
             )
         else:
             out = mx_decode(

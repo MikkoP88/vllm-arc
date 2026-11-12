@@ -82,6 +82,18 @@ guard preserves v2's exact empty-marker semantics). Wired behind
 ARC_MXKV_V4_VERIFY=1 in the engine's MTP verify path — default off
 until the p159 probe + A12 ladder earn the flip.
 
+V5 XMX DOT DECODE (A11 lever 3, 2026-11-12): A6's "no tl.dot" non-goal
+rested on the pointer-chase diagnosis; the A9 true-shape rebake and A10
+attribution refuted that premise (v3's GQA unroll spills; the deficit
+is scalar-ALU dequant+FMA, not the walk). `_mx_decode_split_dot`
+grid (G, Hk, 32): the v4 row-group walk with the score path in
+tl.dot — (M_PAD, D) @ (D, BLOCK_N) fp16 operands, f32 accumulate —
+the ctrl fp8 lane's counter-operand economy (dequant -> fp16 feeds
+the XMX MMA pipe). M packs R_TILE x N_REP = 24 lanes (padded to 32;
+MMA >= 16, tl.arange power-of-2). m/l/acc are (M_PAD,) / (M_PAD, D)
+vectors — no tuple unroll. Behind ARC_MXKV_V5_DOT=1, probe p160;
+numerics = fp16-operand class (the ctrl lane's own), gate d <= 2e-3.
+
 GRAPH SAFETY: seq lens and block tables are read from device buffers
 inside the kernel (the TQ decode pattern) — no host reads, no
 data-dependent host control flow; XPU-graph safe. The mid buffer is
@@ -592,6 +604,133 @@ def _mx_decode_split_rows(
 
 
 @triton.jit
+def _mx_decode_split_dot(
+    q_ptr,
+    cache_ptr,
+    block_tables_ptr,
+    limits_ptr,  # [R] per-row causal limits (rows grouped: g*R_TILE..+R_TILE-1)
+    mid_ptr,  # [R, Hq, NUM_SPLITS, D+1] f32 — same layout v2/v3/v4 write
+    sm_scale,
+    stride_q_b,
+    stride_q_h,
+    stride_mid_b,
+    stride_mid_h,
+    stride_mid_s,
+    stride_bt_b,
+    stride_c_b,
+    stride_c_t,
+    stride_c_h,
+    D: tl.constexpr,
+    N_GROUPS: tl.constexpr,
+    K4: tl.constexpr,
+    V4: tl.constexpr,
+    R_TILE: tl.constexpr,  # verify rows per group (MTP k4 -> 4)
+    N_REP: tl.constexpr,  # GQA: Hq // Hk
+    M_LANES: tl.constexpr,  # R_TILE * N_REP real score lanes (24)
+    M_PAD: tl.constexpr,  # next_pow2(M_LANES) — tl.arange/power-of-2 law
+    BLOCK_SIZE: tl.constexpr,  # cache block (tokens per block)
+    BLOCK_N: tl.constexpr,  # decode tile
+    NUM_SPLITS: tl.constexpr,  # grid z; effective count adapts per group
+    SHIFT: tl.constexpr,  # e2m1 unpack flavor
+):
+    # v5 stage 1 (A11 lever 3, the XMX reopening): the score path as MMA.
+    # ONE program per (row-GROUP, KV-HEAD, split) walks the request once
+    # (the v4 economy) AND runs the hot multiply-reduce through tl.dot —
+    # (M_PAD, D) @ (D, BLOCK_N) fp16 operands, f32 accumulate — the same
+    # counter-operand economy the ctrl fp8 lane's fused FA kernel uses
+    # (fp8->fp16 convert feeding the XMX pipe; A10 showed the MX deficit
+    # is scalar-ALU dequant+FMA, and A6's pointer-chase no-op was a
+    # BLOCK_N/warps artifact at the wrong shape). M dimension packs the
+    # 4 verify rows x N_REP q-heads of one kv-head = MMA-shaped by
+    # construction (24 real lanes, padded to 32; pad lanes load zeros,
+    # mask to -inf, store nothing). m/l/acc are (M_PAD,) / (M_PAD, D)
+    # vectors — no tuple unroll, no spill ladder. Numerics: fp16 operand
+    # products with f32 accumulation = the ctrl lane's own class (its
+    # e2e quality is the bar); group-scale magnitudes are the original
+    # tensor values (normalizing quantizer), so fp16 cast cannot
+    # overflow on real KV. Gate d <= 2e-3 vs per-row v2.
+    g = tl.program_id(0)
+    hk = tl.program_id(1)
+    sid = tl.program_id(2)
+
+    offs_m = tl.arange(0, M_PAD)
+    lane_ok = offs_m < M_LANES
+    row_b = offs_m // N_REP  # verify row of each score lane
+    rep = offs_m % N_REP  # q-head within the kv-head
+    # per-lane causal limit (a (M_PAD,) gather over the group's rows)
+    ends = tl.load(limits_ptr + g * R_TILE + row_b, mask=lane_ok, other=0)
+    walk_end = tl.max(ends, 0)
+
+    n_tiles = (walk_end + BLOCK_N - 1) // BLOCK_N
+    s_eff = tl.minimum(NUM_SPLITS, tl.maximum(1, (n_tiles + 1) // 2))
+    split_len = (walk_end + s_eff - 1) // s_eff
+    split_start = split_len * sid
+    split_end = tl.minimum(split_start + split_len, walk_end)
+
+    offs_d = tl.arange(0, D)
+    # q tile (M_PAD, D) fp16: lane m reads row g*R_TILE+row_b[m] at head
+    # hk*N_REP+rep[m]; pad lanes read zeros.
+    q16 = tl.load(
+        q_ptr
+        + (g * R_TILE + row_b)[:, None] * stride_q_b
+        + (hk * N_REP + rep)[:, None] * stride_q_h
+        + offs_d[None, :],
+        mask=lane_ok[:, None],
+        other=0.0,
+    ).to(tl.float16)
+
+    m = tl.full((M_PAD,), -float("inf"), dtype=tl.float32)
+    lrow = tl.zeros((M_PAD,), dtype=tl.float32)
+    acc = tl.zeros((M_PAD, D), dtype=tl.float32)
+
+    if split_start < split_end:
+        v_off = (D // 2 if K4 else D) + N_GROUPS
+        for start_n in range(split_start, split_end, BLOCK_N):
+            offs_n = start_n + tl.arange(0, BLOCK_N)
+            nmask = offs_n < split_end
+            blk = tl.load(
+                block_tables_ptr + g * stride_bt_b + offs_n // BLOCK_SIZE,
+                mask=nmask,
+                other=0,
+            )
+            slot = (
+                blk.to(tl.int64) * stride_c_b
+                + (offs_n % BLOCK_SIZE).to(tl.int64) * stride_c_t
+                + hk.to(tl.int64) * stride_c_h
+            )
+            k = _mx_dequant_block(
+                cache_ptr, slot, 0, nmask, BLOCK_N, D, N_GROUPS, K4, SHIFT
+            )
+            v = _mx_dequant_block(
+                cache_ptr, slot, v_off, nmask, BLOCK_N, D, N_GROUPS, V4, SHIFT
+            )
+            scores = tl.dot(q16, tl.trans(k).to(tl.float16)) * sm_scale
+            # per-lane causal + tile + pad-lane mask, v2's -inf semantics
+            rmask = (offs_n[None, :] < tl.minimum(ends[:, None], split_end)) & (
+                lane_ok[:, None] & nmask[None, :]
+            )
+            scores = tl.where(rmask, scores, -float("inf"))
+            m_new = tl.maximum(m, tl.max(scores, 1))
+            m_safe = tl.where(m_new == -float("inf"), 0.0, m_new)
+            p = tl.exp(scores - m_safe[:, None])
+            alpha = tl.exp(m - m_safe)
+            lrow = lrow * alpha + tl.sum(p, 1)
+            acc = acc * alpha[:, None] + tl.dot(p.to(tl.float16), v.to(tl.float16))
+            m = m_new
+
+    safe_l = tl.where(lrow > 0.0, lrow, 1.0)
+    out = acc / safe_l[:, None]
+    lse = tl.where(lrow > 0.0, m + tl.log(safe_l), -float("inf"))
+    base = (
+        (g * R_TILE + row_b) * stride_mid_b
+        + (hk * N_REP + rep) * stride_mid_h
+        + sid * stride_mid_s
+    )
+    tl.store(mid_ptr + base[:, None] + offs_d[None, :], out, mask=lane_ok[:, None])
+    tl.store(mid_ptr + base + D, lse, mask=lane_ok)
+
+
+@triton.jit
 def _mx_decode_combine(
     mid_ptr,
     out_ptr,
@@ -821,6 +960,98 @@ def mx_decode_rows(
         V4=fmt in ("mxfp4", "mxk8v4"),
         R_TILE=r_tile,
         N_REP=hq // hk,
+        BLOCK_SIZE=block_size,
+        BLOCK_N=block_n,
+        NUM_SPLITS=_MX_SPLIT_MAX,
+        SHIFT=shift,
+        num_warps=num_warps,
+        num_stages=num_stages,
+    )
+    _mx_decode_combine[(r, hq)](
+        mid,
+        out,
+        mid.stride(0),
+        mid.stride(1),
+        mid.stride(2),
+        out.stride(0),
+        out.stride(1),
+        D=d,
+        NUM_SPLITS=_MX_SPLIT_MAX,
+        BLOCK_S=triton.next_power_of_2(_MX_SPLIT_MAX),
+        num_warps=1,
+    )
+    return out
+
+
+def mx_decode_rows_dot(
+    q: torch.Tensor,
+    cache: torch.Tensor,
+    block_tables: torch.Tensor,
+    limits: torch.Tensor,
+    sm_scale: float,
+    block_size: int = 64,
+    block_n: int | None = None,
+    num_warps: int | None = None,
+    num_stages: int | None = None,
+    r_tile: int = 4,
+) -> torch.Tensor:
+    """v5 XMX verify-row decode (A11 lever 3): the v4 row-group walk with
+    the score path in tl.dot — (M_PAD, D) @ (D, BLOCK_N) fp16 operands,
+    f32 accumulate; M packs the r_tile verify rows x N_REP q-heads of one
+    kv-head (24 real lanes, padded to 32 for the tl.arange power-of-2
+    law; MMA wants >= 16). q [R, Hq, D]; block_tables [G, max_blocks]
+    one row per group; limits [R] per-row causal limits. Returns
+    [R, Hq, D]. Numerics: fp16 operand products with f32 accumulation —
+    the ctrl fp8 lane's own class (gate d <= 2e-3 vs per-row v2)."""
+    r, hq, d = q.shape
+    if r % r_tile != 0:
+        raise ValueError(f"rows ({r}) not a multiple of r_tile ({r_tile})")
+    g = r // r_tile
+    hk = cache.shape[2]
+    if hq % hk != 0:
+        raise ValueError(f"Hq ({hq}) not a multiple of Hk ({hk})")
+    n_rep = hq // hk
+    sb = cache.shape[-1]
+    want = {f: slot_bytes(d, f) for f in ("mxfp8", "mxfp4", "mxk8v4")}
+    fmt = next(f for f, w in want.items() if w == sb)
+    bn_t, nw_t, ns_t, sh_t = _MX_TUNE[fmt]
+    block_n = bn_t if block_n is None else block_n
+    num_warps = nw_t if num_warps is None else num_warps
+    num_stages = ns_t if num_stages is None else num_stages
+    shift = sh_t if _SHIFT is None else _SHIFT
+    out = torch.empty_like(q)
+    key = (r, hq, _MX_SPLIT_MAX, d, str(q.device))
+    mid = _mid_cache.get(key)
+    if mid is None:
+        mid = torch.empty(
+            r, hq, _MX_SPLIT_MAX, d + 1, dtype=torch.float32, device=q.device
+        )
+        _mid_cache[key] = mid
+    m_lanes = r_tile * n_rep
+    _mx_decode_split_dot[(g, hk, _MX_SPLIT_MAX)](
+        q,
+        cache,
+        block_tables,
+        limits,
+        mid,
+        sm_scale,
+        q.stride(0),
+        q.stride(1),
+        mid.stride(0),
+        mid.stride(1),
+        mid.stride(2),
+        block_tables.stride(0),
+        cache.stride(0),
+        cache.stride(1),
+        cache.stride(2),
+        D=d,
+        N_GROUPS=d // 32,
+        K4=fmt == "mxfp4",
+        V4=fmt in ("mxfp4", "mxk8v4"),
+        R_TILE=r_tile,
+        N_REP=n_rep,
+        M_LANES=m_lanes,
+        M_PAD=triton.next_power_of_2(m_lanes),
         BLOCK_SIZE=block_size,
         BLOCK_N=block_n,
         NUM_SPLITS=_MX_SPLIT_MAX,

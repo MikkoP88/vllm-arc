@@ -30,7 +30,7 @@ from .mx_quant import (
     encode_mxfp8,
     encode_mxk8v4,
 )
-from .triton_mx_decode import mx_decode, mx_decode_rows
+from .triton_mx_decode import mx_decode, mx_decode_rows, mx_decode_rows_dot
 from .triton_mx_store import mx_store
 
 __all__ = [
@@ -45,6 +45,7 @@ __all__ = [
     "encode_mxk8v4",
     "mx_decode",
     "mx_decode_rows",
+    "mx_decode_rows_dot",
     "mx_store",
     "offsets",
     "pool_bytes",
