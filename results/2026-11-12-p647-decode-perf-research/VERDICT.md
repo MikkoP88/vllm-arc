@@ -164,3 +164,73 @@ Defects in our v1 `triton_mx_decode.py`, ranked:
 - Banked inputs: `results/2026-11-12-p647-cert24-gate/` (engine numbers),
   `results/2026-11-11-p647-mxkv-research/` (wheel template survey),
   `results/2026-11-12-p647-mxkv-offline/` (p147 kernel telemetry).
+
+---
+
+# ADDENDUM 2026-11-12 (post-A8): the improvement loop ran to convergence — v3 is the decoder
+
+The always-loop directive ("do not stop while there is room") drove four more
+measured iterations after the bank above (legs A5-A8 + two probes, all banked
+here). Outcome: **v3, a GQA-batched split decoder, is the shipping default**
+(cert25x), with per-format launch tables. The non-goal list above is
+superseded where the evidence moved; the tl.dot non-goal HELD (never needed).
+
+## A5 — the (BLOCK_N, num_warps) axis refutes the "mxfp4 regresses" verdict
+
+Register pressure was the mxfp4 v2 regression: (64,8) takes mxfp4 to 2.413 ms
+@32K (x7.26 vs v1 — from 0.87x at (128,4)); mxk8v4 (64,8) 5.951 ms (x3.06);
+mxfp8 keeps (128,4) 2.994 ms (x5.55). (128,8) maps the spill cliff at 17-20 ms.
+Format order now matches the byte law (mxfp4 < mxfp8 < mxk8v4 @ equal tuning).
+Adversarial-face A4 FAILs were a harness zero-V case bug (cos(0,0)=NaN); fixed.
+
+## A6 — num_stages is a no-op: the walk is a data-dependent pointer chase
+
+Full (BLOCK_N, warps) x stages {1,2,3} factorial: stages flat within noise on
+every combo (mxfp4 n64w8 2.414/2.414/2.419). Software pipelining cannot cross
+the block-table -> slot pointer chase. Winners unchanged; stages=2 baked.
+
+## v3 — GQA batching answers the pointer chase structurally (leg A7/A7b)
+
+`_mx_decode_split_gqa`: grid (B, Hk, 32); ONE program serves all N_REP q-heads
+of a kv-head — K/V dequanted once per tile, the chase amortizes N_REP-fold.
+Per-r (q, m, l, acc) state is unrolled under tl.static_range as TUPLES (the
+tracer coerces loop-captured lists to tuples — append is illegal; annotations
+evaluate in Triton's namespace — bare `tuple` is NameError). No tl.dot, no 3D
+broadcast materialization; v1 per-row math verbatim; v3 == v2 BIT-EXACT at 549
+tokens (d=0.000, both flavors, all formats — same splits, same op order).
+
+## Flavor sweep — per-format e2m1 unpack (FLAVOR-SWEEP.md)
+
+Under v3's shared walk mxk8v4's V-only e2m1 dequant becomes the hot op: shift
+(no cross-lane join) wins (2.520 vs join 3.124 ms); double-e2m1 mxfp4 keeps
+join (1.156 vs 2.446); mxfp8 flavor-flat. Baked as the 4th _MX_TUNE field.
+
+## A8 — shipping-config battery on the exact cert25 bytes: PASS
+
+| fmt | @32K | @131K | vs v1 @32K | vs v1 @131K |
+|---|---|---|---|---|
+| mxfp8 (64,4,s2,join) | 1.183 ms | 4.593 ms | x14.0 | x14.4 |
+| mxfp4 (64,8,s2,join) | 0.844 ms | 3.309 ms | x20.7 | x21.1 |
+| mxk8v4 (64,8,s2,shift) | 2.232 ms | 8.576 ms | x8.2 | x8.5 |
+
+(v1 baseline 16.6-18.2 / 66.1-73.2 ms; v1delta <= 3e-8 throughout; tune-face
+correctness spots vs fp64 d ~ 1e-7.)
+
+## Superseded non-goals, held non-goals
+
+- HELD: no tl.dot/XMX path anywhere (the pointer-chase diagnosis made it
+  unnecessary); no store-kernel work; no prefill restructuring.
+- SUPERSEDED: "no default flip this leg" — v3 default flipped on the strength
+  of A4-A8 (offline gates green; the r159 engine battery on cert25x re-earns
+  the serve-level quality verdicts per the convergence law).
+- mxfp8 superiority note: the byte law (264 vs 256 B) still caps mxfp8 at
+  kernel parity vs a perfect native kernel; x14 vs OUR v1 is the measured
+  claim; the e2e ctrl comparison rides the r159/r155 cells.
+
+## Certification path taken
+
+Bake (commit 663a760f) -> cert25x image (r158, fork_sha 663a760f, live
+assertions incl. `_MX_TUNE == {mxfp8: (64,4,2,join), mxfp4: (64,8,2,join),
+mxk8v4: (64,8,2,shift)}`, `_DECODER == 'v3'`) -> r159 full 8-leg battery
+(ctrl m8q m4q m8g m4g mkq mkg g0) on cert25x -> r155 three-axes ladder
+(decode/prefill/TTFT vs ctrl) -> close-out.
