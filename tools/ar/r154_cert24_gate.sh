@@ -139,16 +139,27 @@ PYEOF
   tail -1 "$P/churn_$base.out"
 }
 
-text_battery() {  # $1 = leg dir $2 = served model — the r149 3-prompt
-  # temp-0 battery (trace25-28 validated set); p1 MUST contain Paris
-  local CD=$1 mdl=$2 line
+text_battery() {  # $1 = leg dir $2 = served model $3 = endpoint
+  # (completions|chat) — the r149 3-prompt temp-0 battery (trace25-28
+  # validated set); p1 MUST contain Paris. Gemma is chat-only: the raw
+  # /v1/completions endpoint has document-continuation semantics there
+  # (m8g run: prompt-echo + further questions, dtype-INDEPENDENT — an
+  # endpoint artifact, not KV corruption), so gemma legs use the chat
+  # endpoint with the message content identical.
+  local CD=$1 mdl=$2 EP=${3:-completions}
   : > "$CD/probe.out"
   for q in "What is the capital of France? Answer with just the city name." \
            "Write a Python function that returns the n-th Fibonacci number using iteration." \
            "Name three chemical elements that are gases at room temperature."; do
-    curl -s -m 180 http://127.0.0.1:8000/v1/completions -H 'Content-Type: application/json' \
-      -d "{\"model\":\"$mdl\",\"prompt\":\"$q\",\"max_tokens\":64,\"temperature\":0}" \
-      | python3 -c 'import json,sys; r=json.load(sys.stdin); print("PROMPT_OK", len(r["choices"][0]["text"]), repr(r["choices"][0]["text"][:160]))' >> "$CD/probe.out" 2>&1
+    if [ "$EP" = chat ]; then
+      curl -s -m 180 http://127.0.0.1:8000/v1/chat/completions -H 'Content-Type: application/json' \
+        -d "{\"model\":\"$mdl\",\"messages\":[{\"role\":\"user\",\"content\":\"$q\"}],\"max_tokens\":64,\"temperature\":0}" \
+        | python3 -c 'import json,sys; r=json.load(sys.stdin); c=r["choices"][0]; t=c.get("message",{}).get("content") or c.get("message",{}).get("reasoning_content") or ""; print("PROMPT_OK", len(t), repr(t[:160]))' >> "$CD/probe.out" 2>&1
+    else
+      curl -s -m 180 http://127.0.0.1:8000/v1/completions -H 'Content-Type: application/json' \
+        -d "{\"model\":\"$mdl\",\"prompt\":\"$q\",\"max_tokens\":64,\"temperature\":0}" \
+        | python3 -c 'import json,sys; r=json.load(sys.stdin); print("PROMPT_OK", len(r["choices"][0]["text"]), repr(r["choices"][0]["text"][:160]))' >> "$CD/probe.out" 2>&1
+    fi
   done
   cat "$CD/probe.out"
   grep -q "PROMPT_OK" "$CD/probe.out" || { echo "TEXT_BATTERY: FAIL (no PROMPT_OK) $CD"; GATE_FAIL=1; return; }
@@ -170,6 +181,9 @@ run_leg() {
   # $1=legname $2=served $3=fullsuite(1|0) $4..=env assignments
   local LEGN=$1 SERVED=$2 FULL=$3; shift 3
   local CD=$P/$LEGN
+  # gemma is chat-only at the probe layer (completions = document-
+  # continuation semantics, dtype-independent — m8g run1 evidence)
+  case $SERVED in gemma*) local EP=chat ;; *) local EP=completions ;; esac
   mkdir -p "$CD"
   echo "=== [$LEGN] boot $(date +%H:%M:%S) env=[$*] ==="
   nohup env ARC_IMAGE="$IMG" ARC_NAME=$CNAME "$@" \
@@ -195,7 +209,7 @@ run_leg() {
     -d "{\"model\":\"$SERVED\",\"prompt\":\"warmup\",\"max_tokens\":16,\"temperature\":0}" > /dev/null
   sleep 3
   # text battery (all legs — the corruption gate)
-  text_battery "$CD" "$SERVED"
+  text_battery "$CD" "$SERVED" "$EP"
   # decode battery (all legs)
   python3 $R/r113_battery.py decode "$SERVED" > "$CD/battery.txt" 2>&1 || echo "BATTERY_NONZERO_EXIT $LEGN"
   tail -6 "$CD/battery.txt"
@@ -205,12 +219,12 @@ run_leg() {
     tail -5 "$CD/garbage.out"
     grep -q "GARBAGE_SUITE_PASS" "$CD/garbage.out" || { echo "SUITE13: FAIL $LEGN"; GATE_FAIL=1; }
     # suite-14: long-return full + 3 churn rehits + hash determinism
-    ( cd "$CD" && python3 $R/p647/p647_longprobe.py c24$LEGN full > longprobe_full.out 2>&1 )
+    ( cd "$CD" && ARC_PROBE_MODEL="$SERVED" python3 $R/p647/p647_longprobe.py c24$LEGN full > longprobe_full.out 2>&1 )
     grep -E "^\[|LONGPROBE" "$CD/longprobe_full.out"
     garble_check "$CD/longprobe_full.out"
     for cyc in 1 2 3; do
       churn $(( 900 * cyc )) "$SERVED"
-      ( cd "$CD" && python3 $R/p647/p647_longprobe.py c24${LEGN}r$cyc rehit > longprobe_rehit$cyc.out 2>&1 )
+      ( cd "$CD" && ARC_PROBE_MODEL="$SERVED" python3 $R/p647/p647_longprobe.py c24${LEGN}r$cyc rehit > longprobe_rehit$cyc.out 2>&1 )
       grep -E "^\[|LONGPROBE" "$CD/longprobe_rehit$cyc.out"
       garble_check "$CD/longprobe_rehit$cyc.out"
     done
@@ -250,22 +264,46 @@ sleep 5
 QWEN_FP8="ARC_MODEL=/models/qwen3.8-27b-fp8 ARC_SERVED=qwen3.8-27b-fp8 ARC_GRAPH=1 ARC_SPEC=3 ARC_LMC=1 ARC_FP8=1"
 GEMMA_M8="ARC_MODEL=/models/gemma4-31b ARC_SERVED=gemma4-31b ARC_QUANT=mxfp8 ARC_GMU=0.8 ARC_GRAPH=1 ARC_SPEC=0 ARC_LMC=0 ARC_RPC=1200 ARC_MAXLEN=40960 ARC_FP8=0"
 
-# L0: default-off neutrality (cert23 posture, no ARC_KVDTYPE)
-run_leg ctrl qwen3.8-27b-fp8 0 $QWEN_FP8 || true
-MX_LINES=$(grep -c "mx_backend_lines=0" "$P/ctrl/markers.txt" || true)
-[ "$MX_LINES" = "1" ] || { echo "DEFAULT-OFF: FAIL (MX backend engaged without ARC_KVDTYPE)"; GATE_FAIL=1; }
+# Leg registry: run1 = all five (2026-11-12 07:41 UTC); run2 = the gemma
+# pair re-run after the two gate-probe fixes (chat-endpoint battery +
+# ARC_PROBE_MODEL on longprobe — run1's gemma longprobe cells 404'd on the
+# default qwen model name and the battery hit gemma's completions-continuation
+# semantics; both artifacts, engine exonerated by m8g==m4g text equality).
+# Prior leg dirs are preserved as <leg>.run1 before a re-run.
+leg_ctrl() {
+  run_leg ctrl qwen3.8-27b-fp8 0 $QWEN_FP8 || true
+  MX_LINES=$(grep -c "mx_backend_lines=0" "$P/ctrl/markers.txt" || true)
+  [ "$MX_LINES" = "1" ] || { echo "DEFAULT-OFF: FAIL (MX backend engaged without ARC_KVDTYPE)"; GATE_FAIL=1; }
+}
+leg_m8q() {
+  run_leg m8q qwen3.8-27b-fp8 1 $QWEN_FP8 ARC_KVDTYPE=mxfp8 || true
+  grep -Eq "mx_backend_lines=[1-9]" "$P/m8q/markers.txt" || { echo "MX_MARKER: FAIL m8q (expect >=1 worker)"; GATE_FAIL=1; }
+}
+leg_m4q() {
+  run_leg m4q qwen3.8-27b-fp8 1 $QWEN_FP8 ARC_KVDTYPE=mxfp4 || true
+  grep -Eq "mx_backend_lines=[1-9]" "$P/m4q/markers.txt" || { echo "MX_MARKER: FAIL m4q (expect >=1 worker)"; GATE_FAIL=1; }
+}
+leg_m8g() {
+  [ -d "$P/m8g" ] && mv "$P/m8g" "$P/m8g.run1"
+  run_leg m8g gemma4-31b 1 $GEMMA_M8 ARC_KVDTYPE=mxfp8 || true
+  grep -Eq "mx_backend_lines=[1-9]" "$P/m8g/markers.txt" || { echo "MX_MARKER: FAIL m8g (expect >=1 worker)"; GATE_FAIL=1; }
+}
+leg_m4g() {
+  [ -d "$P/m4g" ] && mv "$P/m4g" "$P/m4g.run1"
+  run_leg m4g gemma4-31b 1 $GEMMA_M8 ARC_KVDTYPE=mxfp4 || true
+  grep -Eq "mx_backend_lines=[1-9]" "$P/m4g/markers.txt" || { echo "MX_MARKER: FAIL m4g (expect >=1 worker)"; GATE_FAIL=1; }
+}
 
-# L1/L2: qwen MX lanes, champion chain (LMC=1)
-run_leg m8q qwen3.8-27b-fp8 1 $QWEN_FP8 ARC_KVDTYPE=mxfp8 || true
-grep -Eq "mx_backend_lines=[1-9]" "$P/m8q/markers.txt" || { echo "MX_MARKER: FAIL m8q (expect >=1 worker)"; GATE_FAIL=1; }
-run_leg m4q qwen3.8-27b-fp8 1 $QWEN_FP8 ARC_KVDTYPE=mxfp4 || true
-grep -Eq "mx_backend_lines=[1-9]" "$P/m4q/markers.txt" || { echo "MX_MARKER: FAIL m4q (expect >=1 worker)"; GATE_FAIL=1; }
-
-# L3/L4: gemma MX lanes (cert22 gemma posture + KV dtype)
-run_leg m8g gemma4-31b 1 $GEMMA_M8 ARC_KVDTYPE=mxfp8 || true
-grep -Eq "mx_backend_lines=[1-9]" "$P/m8g/markers.txt" || { echo "MX_MARKER: FAIL m8g (expect >=1 worker)"; GATE_FAIL=1; }
-run_leg m4g gemma4-31b 1 $GEMMA_M8 ARC_KVDTYPE=mxfp4 || true
-grep -Eq "mx_backend_lines=[1-9]" "$P/m4g/markers.txt" || { echo "MX_MARKER: FAIL m4g (expect >=1 worker)"; GATE_FAIL=1; }
+if [ $# -gt 0 ]; then
+  for LEG in "$@"; do
+    case $LEG in
+      ctrl|m8q|m4q|m8g|m4g) leg_$LEG ;;
+      *) echo "UNKNOWN_LEG $LEG (ctrl|m8q|m4q|m8g|m4g)"; GATE_FAIL=1 ;;
+    esac
+  done
+else
+  leg_ctrl; leg_m8q; leg_m4q; leg_m8g; leg_m4g
+fi
 
 cd "$P"
 find . -type f \( -name "*.out" -o -name "*.txt" -o -name "*.json" -o -name "*.sha256" -o -name "serve.log" -o -name "metrics.txt" \) -exec sha256sum {} \; > SHA256SUMS
