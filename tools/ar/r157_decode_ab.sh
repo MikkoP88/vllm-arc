@@ -31,6 +31,8 @@ grep -q "_mx_decode_split" "$W/vllm_gaudi/xpu/patches/mx_kv/triton_mx_decode.py"
   || { echo "R157_STALE_TREE (no _mx_decode_split in work triton_mx_decode.py) -- refresh via the p156 bundle first"; exit 1; }
 grep -q "num_stages=num_stages" "$W/vllm_gaudi/xpu/patches/mx_kv/triton_mx_decode.py" 2>/dev/null \
   || { echo "R157_STALE_TREE (no num_stages wiring -- A6 needs the stages axis) -- refresh via the p156 bundle first"; exit 1; }
+grep -q "_mx_decode_split_gqa" "$W/vllm_gaudi/xpu/patches/mx_kv/triton_mx_decode.py" 2>/dev/null \
+  || { echo "R157_STALE_TREE (no v3 GQA kernel -- A7 needs it) -- refresh via the p156 bundle first"; exit 1; }
 grep -q "num_stages" "$W/tools/ar/p147_mxkv/p157_mxkv_decode_ab.py" 2>/dev/null \
   || { echo "R157_STALE_TREE (harness lacks the stages sweep) -- refresh via the p156 bundle first"; exit 1; }
 [ -f "$W/tools/ar/p147_mxkv/p157_mxkv_decode_ab.py" ] \

@@ -75,7 +75,7 @@ SCALE = 1.0 / math.sqrt(D)
 FMTS = ("mxfp8", "mxfp4", "mxk8v4")
 KENC = {"mxfp8": encode_mxfp8, "mxfp4": encode_mxfp4, "mxk8v4": encode_mxfp8}
 VENC = {"mxfp8": encode_mxfp8, "mxfp4": encode_mxfp4, "mxk8v4": encode_mxfp4}
-VARIANTS = ("v1", "v2join", "v2shift")
+VARIANTS = ("v1", "v2join", "v2shift", "v3join", "v3shift")
 R = {}  # results tree
 FAILED = []
 
@@ -111,7 +111,7 @@ def vslot(x, fmt):
 def run_variant(variant, q, cache, bt, sl, block_n=None, num_warps=None, num_stages=None):
     if variant == "v1":
         return mx_decode(q, cache, bt, sl, SCALE, decoder="v1")
-    tmx._SHIFT = variant == "v2shift"
+    tmx._SHIFT = variant.endswith("shift")
     kw = {}
     if block_n is not None:
         kw["block_n"] = block_n
@@ -119,7 +119,7 @@ def run_variant(variant, q, cache, bt, sl, block_n=None, num_warps=None, num_sta
         kw["num_warps"] = num_warps
     if num_stages is not None:
         kw["num_stages"] = num_stages
-    return mx_decode(q, cache, bt, sl, SCALE, decoder="v2", **kw)
+    return mx_decode(q, cache, bt, sl, SCALE, decoder=variant[:2], **kw)
 
 
 def build_paged(total_tokens, seed=7):
@@ -335,17 +335,22 @@ def face_telemetry():
             }
             bad_delta = max(row["v1_delta_max"].values()) > 2e-3
             if bad_delta:
-                _fail("telemetry", f"{fmt}", f"ctx={ctx}: v2 deviates from v1 > 2e-3")
+                _fail(
+                    "telemetry", f"{fmt}",
+                    f"ctx={ctx}: a split decoder deviates from v1 > 2e-3",
+                )
             else:
                 _ok(
                     "telemetry",
                     f"{fmt}",
                     f"ctx={ctx}: v1 {row['decode_ms']['v1']:.3f} ms, "
-                    f"v2join {row['decode_ms']['v2join']:.3f} ms "
-                    f"(x{row['speedup_vs_v1']['v2join']}), "
-                    f"v2shift {row['decode_ms']['v2shift']:.3f} ms "
-                    f"(x{row['speedup_vs_v1']['v2shift']}), "
-                    f"v1delta<={max(row['v1_delta_max'].values()):.2e}",
+                    + ", ".join(
+                        f"{v} {row['decode_ms'][v]:.3f} ms "
+                        f"(x{row['speedup_vs_v1'][v]})"
+                        for v in VARIANTS
+                        if v != "v1"
+                    )
+                    + f", v1delta<={max(row['v1_delta_max'].values()):.2e}",
                 )
             _rec("telemetry", fmt, **{str(ctx): row})
 
@@ -426,14 +431,13 @@ def face_dequant():
 
 
 def face_tune():
-    """Tuning sweep: v2join (BLOCK_N, num_warps, num_stages) per fmt at
-    32K — two independent levers. Register pressure: the double-e2m1
-    mxfp4 leg regressed to 0.87x at (128,4) in A4. Latency: A4 mxfp8
-    @131K ran at ~4% ALU / <=36% DRAM of peak, i.e. the tile loop's
-    dependent load chain (bt -> slot -> payload) is the bound — SLM
-    double-buffered prefetch (num_stages>1) is the pipelining fix.
-    Winner combo gets a correctness spot vs the fp64 reference."""
-    print("[face: tune] v2 (BLOCK_N, num_warps, num_stages) sweep @ ctx=32768 (XPU)")
+    """Tuning sweep: v3join (BLOCK_N, num_warps, num_stages) per fmt at
+    32K. v2's winners are banked (A5/A6 -> _MX_TUNE: mxfp8 (128,4),
+    sub-byte (64,8), stages flat); v3 changes the per-program state
+    (N_REP unrolled rows) so the spill cliff moves — re-sweep the full
+    factorial for it. Winner combo gets a correctness spot vs the fp64
+    reference."""
+    print("[face: tune] v3 (BLOCK_N, num_warps, num_stages) sweep @ ctx=32768 (XPU)")
     combos = tuple(
         (bn, nw, ns)
         for bn, nw in ((64, 4), (64, 8), (128, 4), (128, 8))
@@ -464,14 +468,14 @@ def face_tune():
             try:
                 for _ in range(3):
                     run_variant(
-                        "v2join", q, cache, bt, sl, block_n=bn, num_warps=nw,
+                        "v3join", q, cache, bt, sl, block_n=bn, num_warps=nw,
                         num_stages=ns,
                     )
                 torch.xpu.synchronize()
                 t0 = time.perf_counter()
                 for _ in range(20):
                     run_variant(
-                        "v2join", q, cache, bt, sl, block_n=bn, num_warps=nw,
+                        "v3join", q, cache, bt, sl, block_n=bn, num_warps=nw,
                         num_stages=ns,
                     )
                 torch.xpu.synchronize()
@@ -501,7 +505,7 @@ def face_tune():
         torch.xpu.synchronize()
         q2 = torch.randn(len(lens), HK * HREP, D, generator=gen).to(DEV)
         out = run_variant(
-            "v2join", q2, cache2, flat_tables(lens, tables2),
+            "v3join", q2, cache2, flat_tables(lens, tables2),
             torch.tensor(lens, dtype=torch.int32, device=DEV),
             block_n=best[0], num_warps=best[1], num_stages=best[2],
         ).cpu()

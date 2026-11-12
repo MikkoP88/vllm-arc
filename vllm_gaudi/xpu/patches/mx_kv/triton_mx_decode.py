@@ -48,9 +48,26 @@ The e2m1 unpack has two flavors on the shared dequant helper: "join"
 (v1's join/reshape interleave — bit-frozen) and "shift"
 (duplicated-load + dynamic nibble shift, pure vector ALU, no
 cross-lane op) — the A/B leg measures before anything defaults.
-Decoder selection: ARC_MXKV_DECODER=v1|v2 (default v1 — the certified
-path and every banked quality verdict stay tied to v1 until v2's own
-gates pass); ARC_MXKV_UNPACK=join|shift (v2 only, default join).
+Decoder selection: ARC_MXKV_DECODER=v1|v2|v3 (default v1 — the certified
+path and every banked quality verdict stay tied to v1 until the split
+decoder's own gates pass); ARC_MXKV_UNPACK=join|shift (v2/v3 only,
+default join).
+
+V3 GQA-BATCHED SPLIT (leg A6 evidence): num_stages pipelining is a
+no-op on the v2 tile loop (s1/s2/s3 within noise on every combo) —
+the walk is bound by the data-dependent pointer chase (block-table
+load -> slot address), which the compiler cannot prefetch across.
+`_mx_decode_split_gqa` grid (B, Hk, 32): one program serves all
+N_REP q-heads of a kv-head, dequanting K/V once per tile (the chase
+amortizes N_REP-fold instead of re-walking the same slice per q-head)
+with N_REP unrolled rows of (q, m, l, acc) state under
+tl.static_range — no tl.dot, no 3D broadcast materialization, v1's
+per-row math verbatim. A5/A6 tune-table winners (the (BLOCK_N,
+num_warps, num_stages) factorial, results/.../legA5 + legA6):
+e4m3-payload mxfp8 takes (128, 4); the sub-byte formats spill at
+BLOCK_N=128 (a 17-20 ms cliff vs 2.4-6.0 ms winners) and take (64,
+8) — the table is baked into `_MX_TUNE` and applied per format
+unless the caller overrides.
 
 GRAPH SAFETY: seq lens and block tables are read from device buffers
 inside the kernel (the TQ decode pattern) — no host reads, no
@@ -308,6 +325,112 @@ def _mx_decode_split(
 
 
 @triton.jit
+def _mx_decode_split_gqa(
+    q_ptr,
+    cache_ptr,
+    block_tables_ptr,
+    seq_lens_ptr,
+    mid_ptr,  # [B, Hq, NUM_SPLITS, D+1] f32: rows [:D]=acc/l, [D]=lse
+    sm_scale,
+    stride_q_b,
+    stride_q_h,
+    stride_mid_b,
+    stride_mid_h,
+    stride_mid_s,
+    stride_bt_b,
+    stride_c_b,
+    stride_c_t,
+    stride_c_h,
+    D: tl.constexpr,
+    N_GROUPS: tl.constexpr,
+    K4: tl.constexpr,
+    V4: tl.constexpr,
+    N_REP: tl.constexpr,  # GQA: Hq // Hk
+    BLOCK_SIZE: tl.constexpr,  # cache block (tokens per block)
+    BLOCK_N: tl.constexpr,  # decode tile
+    NUM_SPLITS: tl.constexpr,  # grid z; effective count adapts per batch
+    SHIFT: tl.constexpr,  # e2m1 unpack flavor (v2/v3 A/B)
+):
+    # v3 stage 1: same split math as v2, but one program per (batch,
+    # kv-head, split) serving all N_REP q-heads of that kv-head. A6
+    # proved the tile walk is bound by the data-dependent pointer chase
+    # (bt -> slot: num_stages pipelining is a no-op across it), and v2
+    # pays that chase N_REP times per tile through N_REP co-resident
+    # programs re-walking the same slice. v3 dequants K/V once per tile
+    # and keeps N_REP unrolled rows of (q, m, l, acc) state — trace-time
+    # Python-list unrolling under tl.static_range, ~3 KB of extra
+    # registers vs the spill cliff A5 mapped at BLOCK_N=128 sub-byte
+    # payloads. mid layout and the combine stage are identical to v2.
+    b = tl.program_id(0)
+    hk = tl.program_id(1)
+    sid = tl.program_id(2)
+
+    seq_len = tl.load(seq_lens_ptr + b)
+    n_tiles = (seq_len + BLOCK_N - 1) // BLOCK_N
+    s_eff = tl.minimum(NUM_SPLITS, tl.maximum(1, (n_tiles + 1) // 2))
+    split_len = (seq_len + s_eff - 1) // s_eff
+    split_start = split_len * sid
+    split_end = tl.minimum(split_start + split_len, seq_len)
+
+    offs_d = tl.arange(0, D)
+    qs = []
+    mis = []
+    lis = []
+    accs = []
+    for r in tl.static_range(N_REP):
+        qs.append(
+            tl.load(
+                q_ptr
+                + b * stride_q_b
+                + (hk * N_REP + r) * stride_q_h
+                + offs_d
+            )
+        )
+        mis.append(-float("inf"))
+        lis.append(0.0)
+        accs.append(tl.zeros((D,), dtype=tl.float32))
+
+    if split_start < split_end:
+        v_off = (D // 2 if K4 else D) + N_GROUPS
+        for start_n in range(split_start, split_end, BLOCK_N):
+            offs_n = start_n + tl.arange(0, BLOCK_N)
+            nmask = offs_n < split_end
+            blk = tl.load(
+                block_tables_ptr + b * stride_bt_b + offs_n // BLOCK_SIZE,
+                mask=nmask,
+                other=0,
+            )
+            slot = (
+                blk.to(tl.int64) * stride_c_b
+                + (offs_n % BLOCK_SIZE).to(tl.int64) * stride_c_t
+                + hk.to(tl.int64) * stride_c_h
+            )
+            k = _mx_dequant_block(
+                cache_ptr, slot, 0, nmask, BLOCK_N, D, N_GROUPS, K4, SHIFT
+            )
+            v = _mx_dequant_block(
+                cache_ptr, slot, v_off, nmask, BLOCK_N, D, N_GROUPS, V4, SHIFT
+            )
+            for r in tl.static_range(N_REP):
+                scores = tl.sum(qs[r][None, :] * k, axis=1) * sm_scale
+                scores = tl.where(nmask, scores, -float("inf"))
+                m_new = tl.maximum(mis[r], tl.max(scores, 0))
+                p = tl.exp(scores - m_new)
+                alpha = tl.exp(mis[r] - m_new)
+                lis[r] = lis[r] * alpha + tl.sum(p, 0)
+                accs[r] = accs[r] * alpha + tl.sum(p[:, None] * v, axis=0)
+                mis[r] = m_new
+
+    for r in tl.static_range(N_REP):
+        hq = hk * N_REP + r
+        base = b * stride_mid_b + hq * stride_mid_h + sid * stride_mid_s
+        safe_l = tl.where(lis[r] > 0.0, lis[r], 1.0)
+        tl.store(mid_ptr + base + offs_d, accs[r] / safe_l)
+        lse = tl.where(lis[r] > 0.0, mis[r] + tl.log(safe_l), -float("inf"))
+        tl.store(mid_ptr + base + D, lse)
+
+
+@triton.jit
 def _mx_decode_combine(
     mid_ptr,
     out_ptr,
@@ -351,8 +474,22 @@ def _mx_decode_combine(
 _MX_SPLIT_MAX = 32  # wheel parity (max_num_kv_splits)
 _mid_cache: dict = {}
 
+# Per-format (BLOCK_N, num_warps, num_stages) — A5/A6 factorial winners
+# @32K ctx, HK=8/Hq=32 (results/2026-11-12-p647-decode-perf-research/
+# legA5 + legA6): e4m3-payload mxfp8 takes (128, 4); the sub-byte
+# formats hit a register-spill cliff at BLOCK_N=128 (17-20 ms vs 2.4-6.0
+# ms winners — the double-e2m1 payload doubles the tile's live state)
+# and take (64, 8). num_stages is flat (the walk is a pointer chase).
+_MX_TUNE = {
+    "mxfp8": (128, 4, 2),
+    "mxfp4": (64, 8, 2),
+    "mxk8v4": (64, 8, 2),
+}
 
-def _mx_decode_v2(
+
+def _split_launch(
+    stage1,
+    grid_heads,
     q: torch.Tensor,
     cache: torch.Tensor,
     block_tables: torch.Tensor,
@@ -361,17 +498,15 @@ def _mx_decode_v2(
     block_size: int,
     block_n: int,
     shift: bool,
-    num_warps: int = 4,
-    num_stages: int = 2,
+    num_warps: int,
+    num_stages: int,
 ) -> torch.Tensor:
-    """Split-KV decode launch (stage 1 + stage 2). The mid buffer is
+    """Shared split-KV launcher (stage 1 + stage 2). The mid buffer is
     cached per (B, Hq, splits, D, device) — allocated once per shape on
     the eager warmup and reused (graph law: no allocation inside a
-    capture). num_warps/BLOCK_N/num_stages are the tuning surface (A4
-    evidence: v2 stays latency-bound at 4% ALU / <=36% DRAM — the tile
-    loop's dependent load chain (bt -> slot -> payload) wants SLM
-    double-buffered prefetch; e4m3 formats took (128,4), the double-e2m1
-    mxfp4 leg blows registers at BLOCK_N=128 under split-K concurrency)."""
+    capture). Stage 1 runs at (B, grid_heads, _MX_SPLIT_MAX) — Hq for
+    v2, Hk for the GQA-batched v3 — and the combine always at (B, Hq);
+    the mid layout is identical for both."""
     bsz, hq, d = q.shape
     hk = cache.shape[2]
     sb = cache.shape[-1]
@@ -387,7 +522,7 @@ def _mx_decode_v2(
             bsz, hq, _MX_SPLIT_MAX, d + 1, dtype=torch.float32, device=q.device
         )
         _mid_cache[key] = mid
-    _mx_decode_split[(bsz, hq, _MX_SPLIT_MAX)](
+    stage1[(bsz, grid_heads, _MX_SPLIT_MAX)](
         q,
         cache,
         block_tables,
@@ -431,6 +566,49 @@ def _mx_decode_v2(
     return out
 
 
+def _mx_decode_v2(
+    q: torch.Tensor,
+    cache: torch.Tensor,
+    block_tables: torch.Tensor,
+    seq_lens: torch.Tensor,
+    sm_scale: float,
+    block_size: int,
+    block_n: int,
+    shift: bool,
+    num_warps: int = 4,
+    num_stages: int = 2,
+) -> torch.Tensor:
+    """Split-KV decode (per-q-head stage 1). Tuning surface and A4-A6
+    evidence: see the module header and _MX_TUNE."""
+    hq = q.shape[1]
+    return _split_launch(
+        _mx_decode_split, hq, q, cache, block_tables, seq_lens, sm_scale,
+        block_size, block_n, shift, num_warps, num_stages,
+    )
+
+
+def _mx_decode_v3(
+    q: torch.Tensor,
+    cache: torch.Tensor,
+    block_tables: torch.Tensor,
+    seq_lens: torch.Tensor,
+    sm_scale: float,
+    block_size: int,
+    block_n: int,
+    shift: bool,
+    num_warps: int = 4,
+    num_stages: int = 2,
+) -> torch.Tensor:
+    """GQA-batched split-KV decode (per-kv-head stage 1 serving all
+    N_REP q-heads): the pointer chase amortizes N_REP-fold. A7 is its
+    A/B leg; see the module header for the A6 pointer-chase evidence."""
+    hk = cache.shape[2]
+    return _split_launch(
+        _mx_decode_split_gqa, hk, q, cache, block_tables, seq_lens, sm_scale,
+        block_size, block_n, shift, num_warps, num_stages,
+    )
+
+
 def mx_decode(
     q: torch.Tensor,
     cache: torch.Tensor,
@@ -438,10 +616,10 @@ def mx_decode(
     seq_lens: torch.Tensor,
     sm_scale: float,
     block_size: int = 64,
-    block_n: int = 128,
+    block_n: int | None = None,
     decoder: str | None = None,
-    num_warps: int = 4,
-    num_stages: int = 2,
+    num_warps: int | None = None,
+    num_stages: int | None = None,
 ) -> torch.Tensor:
     """Host wrapper. q [B, Hq, D] fp32 device; cache uint8 paged
     [num_blocks, block_size, Hk, slot_bytes(fmt)] (format inferred from
@@ -449,16 +627,32 @@ def mx_decode(
     seq_lens int32 [B]. Returns [B, Hq, D] fp32.
 
     decoder: None -> ARC_MXKV_DECODER -> "v1" (the certified path);
-    "v2" = split-KV stage1+stage2 (opt-in until its validation legs
-    pass — see the module header). block_n/num_warps/num_stages are the
-    v2 tuning surface (see _mx_decode_v2).
+    "v2" = split-KV per-q-head stage 1; "v3" = GQA-batched per-kv-head
+    stage 1 (see the module header). block_n/num_warps/num_stages
+    default to the per-format _MX_TUNE winners for v2/v3 (None) and to
+    v1's frozen (128, 4); explicit values override — the A/B harness's
+    tuning face.
     """
     dec = decoder or _DECODER
-    if dec == "v2":
-        return _mx_decode_v2(
-            q, cache, block_tables, seq_lens, sm_scale, block_size, block_n, _SHIFT,
-            num_warps, num_stages,
+    if dec != "v1":
+        sb = cache.shape[-1]
+        d = q.shape[-1]
+        want = {
+            f: slot_bytes(d, f) for f in ("mxfp8", "mxfp4", "mxk8v4")
+        }
+        fmt = next(f for f, w in want.items() if w == sb)
+        bn_t, nw_t, ns_t = _MX_TUNE[fmt]
+        block_n = bn_t if block_n is None else block_n
+        num_warps = nw_t if num_warps is None else num_warps
+        num_stages = ns_t if num_stages is None else num_stages
+        launch = _mx_decode_v2 if dec == "v2" else _mx_decode_v3
+        return launch(
+            q, cache, block_tables, seq_lens, sm_scale, block_size, block_n,
+            _SHIFT, num_warps, num_stages,
         )
+    # v1 is bit-frozen: fixed launch config (BLOCK_N=block_n — default
+    # 128 — and its hardcoded num_warps=4); tuning params are v2/v3's.
+    block_n = 128 if block_n is None else block_n
     bsz, hq, d = q.shape
     hk = cache.shape[2]
     sb = cache.shape[-1]
