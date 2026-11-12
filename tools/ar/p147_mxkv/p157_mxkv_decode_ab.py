@@ -108,11 +108,16 @@ def vslot(x, fmt):
     return torch.cat([enc, codes], dim=-1)
 
 
-def run_variant(variant, q, cache, bt, sl):
+def run_variant(variant, q, cache, bt, sl, block_n=None, num_warps=None):
     if variant == "v1":
         return mx_decode(q, cache, bt, sl, SCALE, decoder="v1")
     tmx._SHIFT = variant == "v2shift"
-    return mx_decode(q, cache, bt, sl, SCALE, decoder="v2")
+    kw = {}
+    if block_n is not None:
+        kw["block_n"] = block_n
+    if num_warps is not None:
+        kw["num_warps"] = num_warps
+    return mx_decode(q, cache, bt, sl, SCALE, decoder="v2", **kw)
 
 
 def build_paged(total_tokens, seed=7):
@@ -239,11 +244,14 @@ def faces_exact():
     lens, tables, tb, tp, n_blocks = build_paged(549)
     q = torch.randn(len(lens), HK * HREP, D, generator=gen).to(DEV)
     face_exact("random549", xk, xv, q, lens, tables, tb, tp, n_blocks)
-    # adversarial rows (p147 robust subset: the zero and outlier extremes)
+    # adversarial rows (p147 robust subset: the zero and outlier extremes).
+    # xv stays nonzero-random (p147 law): zero V makes every output exactly
+    # zero and cos_sim(0,0) undefined — the A4 first-run artifact (d=0.0,
+    # cos=nan on ALL variants incl. v1: case bug, not kernel bug).
     xk = torch.randn(128, HK, D, generator=gen) * 1e-3
     xk[3, 0, 10] = 4e2
     xk[7, 1, :32] = 0.0
-    xv = torch.zeros(128, HK, D)
+    xv = torch.randn(128, HK, D, generator=gen) * 0.1
     lens, tables, tb, tp, n_blocks = build_paged(128, seed=11)
     q = torch.randn(len(lens), HK * HREP, D, generator=gen).to(DEV)
     face_exact("adversarial", xk.to(DEV), xv.to(DEV), q, lens, tables, tb, tp, n_blocks)
@@ -415,12 +423,90 @@ def face_dequant():
             _rec("dequant", fmt, **{str(ctx): row})
 
 
+def face_tune():
+    """Tuning sweep: v2join (BLOCK_N, num_warps) per fmt at 32K — the
+    register-pressure lever for the double-e2m1 mxfp4 leg (A4: v2@128/4
+    regressed mxfp4 to 0.87x while e4m3 formats took 5.5x/2.6x). Winner
+    combo gets a correctness spot vs the fp64 reference."""
+    print("[face: tune] v2 (BLOCK_N, num_warps) sweep @ ctx=32768 (XPU)")
+    combos = ((64, 4), (64, 8), (128, 4), (128, 8))
+    ctx = 32768
+    for fmt in FMTS:
+        n_blocks = ctx // BLOCK + 2
+        tab = list(range(n_blocks))
+        tables = [torch.tensor(tab[: (ctx + BLOCK - 1) // BLOCK], dtype=torch.int32, device=DEV)]
+        tb = torch.tensor(
+            [tab[t // BLOCK] for t in range(ctx)], dtype=torch.int32, device=DEV
+        )
+        tp = torch.tensor([t % BLOCK for t in range(ctx)], dtype=torch.int32, device=DEV)
+        cache = torch.zeros(
+            n_blocks, BLOCK, HK_T, slot_bytes(D, fmt), dtype=torch.uint8, device=DEV
+        )
+        xk = torch.randn(ctx, HK_T, D, device=DEV)
+        xv = torch.randn(ctx, HK_T, D, device=DEV)
+        mx_store(xk, xv, cache, tb, tp)
+        torch.xpu.synchronize()
+        bt = flat_tables([ctx], tables)
+        sl = torch.tensor([ctx], dtype=torch.int32, device=DEV)
+        q = torch.randn(1, HK_T * HREP, D, device=DEV)
+        best = None
+        rows = {}
+        for bn, nw in combos:
+            for _ in range(3):
+                run_variant("v2join", q, cache, bt, sl, block_n=bn, num_warps=nw)
+            torch.xpu.synchronize()
+            t0 = time.perf_counter()
+            for _ in range(20):
+                run_variant("v2join", q, cache, bt, sl, block_n=bn, num_warps=nw)
+            torch.xpu.synchronize()
+            ms = (time.perf_counter() - t0) / 20 * 1e3
+            rows[f"n{bn}w{nw}"] = round(ms, 4)
+            if best is None or ms < best[2]:
+                best = (bn, nw, ms)
+        # correctness spot at the winner combo (tuning changes only
+        # scheduling; the gate proves it: vs fp64 exact on a 549-token
+        # fragmented case)
+        T = 549
+        gen = torch.Generator().manual_seed(31)
+        xk2 = torch.randn(T, HK, D, generator=gen).to(DEV)
+        xv2 = torch.randn(T, HK, D, generator=gen).to(DEV)
+        lens, tables2, tb2, tp2, nb2 = build_paged(T, seed=31)
+        cache2 = torch.zeros(
+            nb2, BLOCK, HK, slot_bytes(D, fmt), dtype=torch.uint8, device=DEV
+        )
+        mx_store(xk2, xv2, cache2, tb2, tp2)
+        torch.xpu.synchronize()
+        q2 = torch.randn(len(lens), HK * HREP, D, generator=gen).to(DEV)
+        out = run_variant(
+            "v2join", q2, cache2, flat_tables(lens, tables2),
+            torch.tensor(lens, dtype=torch.int32, device=DEV),
+            block_n=best[0], num_warps=best[1],
+        ).cpu()
+        got = cache2[tb2.long().cpu(), tp2.long().cpu(), :, :].cpu()
+        ng = D // 32
+        kw = D + ng if fmt in ("mxfp8", "mxk8v4") else D // 2 + ng
+        rk, rv = decode_kv(got[..., :kw].contiguous(), got[..., kw:].contiguous(), fmt, D)
+        ref = _ref_attention(q2.cpu(), rk, rv, lens)
+        d_exact = (out - ref).abs().max().item()
+        if d_exact > 2e-3 or not torch.isfinite(out).all():
+            _fail("tune", fmt, f"winner n{best[0]}w{best[1]}: vs-exact {d_exact:.2e}")
+        else:
+            _ok(
+                "tune",
+                fmt,
+                f"winner BLOCK_N={best[0]} warps={best[1]} {best[2]:.3f} ms "
+                f"(sweep {rows}); correctness d={d_exact:.2e}",
+            )
+        _rec("tune", fmt, sweep_ms=rows, winner=[best[0], best[1]], maxdiff=round(d_exact, 8))
+
+
 def main():
     out = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(".")
     out.mkdir(parents=True, exist_ok=True)
     print(f"p157_mxkv_decode_ab — device={DEV}, torch={torch.__version__}")
     faces_exact()
     face_telemetry()
+    face_tune()
     face_dequant()
     R["verdict"] = "PASS" if not FAILED else "FAIL"
     R["failures"] = FAILED
