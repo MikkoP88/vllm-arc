@@ -24,6 +24,7 @@ human summary. Every write site uses newline="\\n" (p139 law).
 
 from __future__ import annotations
 
+import importlib
 import importlib.util
 import json
 import math
@@ -61,6 +62,8 @@ offsets = mxkv.offsets
 # v2 reads the unpack flavor from the module global at call time — the
 # harness flips it per leg (no reload needed).
 tmx = sys.modules["mx_kv_lane.triton_mx_decode"]
+mxd = importlib.import_module("mx_kv_lane.mx_dequant")
+mx_dequant_cache = mxd.mx_dequant_cache
 
 D = 128
 HK = 2
@@ -337,12 +340,88 @@ def face_telemetry():
             _rec("telemetry", fmt, **{str(ctx): row})
 
 
+def face_dequant():
+    """Prefill-axis face: bulk-dequant (mx_dequant_cache) timings fmt x ctx
+    for both unpack flavors — the large-continuation prefill cost that the
+    superiority-axes law (2026-11-12) puts in scope. Content sanity at 8K
+    vs the reference decode (loose gate; the strict content gates are the
+    p147/engine xchecks)."""
+    print("[face: dequant] bulk-dequant A/B fmt x ctx (XPU)")
+    for fmt in FMTS:
+        for ctx in (8192, 32768, 131072):
+            n_blocks = ctx // BLOCK + 2
+            tab = list(range(n_blocks))
+            tables = [torch.tensor(tab[: (ctx + BLOCK - 1) // BLOCK], dtype=torch.int32, device=DEV)]
+            tb = torch.tensor(
+                [tab[t // BLOCK] for t in range(ctx)], dtype=torch.int32, device=DEV
+            )
+            tp = torch.tensor([t % BLOCK for t in range(ctx)], dtype=torch.int32, device=DEV)
+            cache = torch.zeros(
+                n_blocks, BLOCK, HK_T, slot_bytes(D, fmt), dtype=torch.uint8, device=DEV
+            )
+            xk = torch.randn(ctx, HK_T, D, device=DEV)
+            xv = torch.randn(ctx, HK_T, D, device=DEV)
+            mx_store(xk, xv, cache, tb, tp)
+            torch.xpu.synchronize()
+            bt = flat_tables([ctx], tables)
+            alloc = (ctx + BLOCK - 1) // BLOCK * BLOCK
+            kb = torch.empty(1, HK_T, alloc, D, dtype=torch.float16, device=DEV)
+            vb = torch.empty(1, HK_T, alloc, D, dtype=torch.float16, device=DEV)
+            timings = {}
+            for flavor in ("join", "shift"):
+                tmx._SHIFT = flavor == "shift"
+                for _ in range(3):
+                    mx_dequant_cache(cache, bt, kb, vb, ctx)
+                torch.xpu.synchronize()
+                t0 = time.perf_counter()
+                for _ in range(20):
+                    mx_dequant_cache(cache, bt, kb, vb, ctx)
+                torch.xpu.synchronize()
+                timings[flavor] = (time.perf_counter() - t0) / 20
+            tmx._SHIFT = False
+            # content sanity at 8K: first 64 tokens vs reference decode
+            d_content = -1.0
+            if ctx == 8192:
+                got = cache[tb.long().cpu(), tp.long().cpu(), :, :].cpu()
+                ng = D // 32
+                kw = D + ng if fmt in ("mxfp8", "mxk8v4") else D // 2 + ng
+                rk, rv = decode_kv(
+                    got[:64][..., :kw].contiguous(), got[:64][..., kw:].contiguous(), fmt, D
+                )
+                d_content = max(
+                    float((kb[0, :, :64].float().cpu() - rk.permute(1, 0, 2)).abs().max()),
+                    float((vb[0, :, :64].float().cpu() - rv.permute(1, 0, 2)).abs().max()),
+                )
+                if d_content > 0.01:
+                    _fail("dequant", fmt, f"ctx={ctx}: content maxdiff {d_content:.4f}")
+            b_read = ctx * HK_T * slot_bytes(D, fmt)
+            b_write = ctx * HK_T * 2 * D * 2
+            row = {
+                "ms": {f: round(timings[f] * 1e3, 4) for f in timings},
+                "gbps_rw": {
+                    f: round((b_read + b_write) / timings[f] / 1e9, 2) for f in timings
+                },
+                "speedup_shift": round(timings["join"] / timings["shift"], 3),
+                "content_maxdiff_8k": d_content,
+            }
+            _ok(
+                "dequant",
+                fmt,
+                f"ctx={ctx}: join {row['ms']['join']:.3f} ms, "
+                f"shift {row['ms']['shift']:.3f} ms "
+                f"(x{row['speedup_shift']}), "
+                + (f"content d={d_content:.4f}" if d_content >= 0 else "content n/a"),
+            )
+            _rec("dequant", fmt, **{str(ctx): row})
+
+
 def main():
     out = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(".")
     out.mkdir(parents=True, exist_ok=True)
     print(f"p157_mxkv_decode_ab — device={DEV}, torch={torch.__version__}")
     faces_exact()
     face_telemetry()
+    face_dequant()
     R["verdict"] = "PASS" if not FAILED else "FAIL"
     R["failures"] = FAILED
     with open(out / "p157_decode_ab.json", "w", encoding="utf-8", newline="\n") as f:

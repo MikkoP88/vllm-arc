@@ -33,6 +33,7 @@ import torch
 import triton
 import triton.language as tl
 
+from . import triton_mx_decode as _tmx
 from .mx_layout import slot_bytes
 from .triton_mx_decode import _mx_dequant_e2m1
 
@@ -55,6 +56,7 @@ def _mx_full_dequant(
     K4: tl.constexpr,
     V4: tl.constexpr,
     BLOCK_SIZE: tl.constexpr,
+    SHIFT: tl.constexpr = 0,  # 1 = shift-unpack e2m1 (v2 A/B flavor)
 ):
     tok = tl.program_id(0)
     head = tl.program_id(1)
@@ -74,10 +76,16 @@ def _mx_full_dequant(
         if K4:
             kcode = tl.load(cache_ptr + slot + D // 2 + g)
             ksc = tl.exp2(kcode.to(tl.float32) - 127.0)
-            kraw = tl.load(cache_ptr + slot + tl.arange(0, D // 2))
-            klo = _mx_dequant_e2m1(kraw & 0xF)
-            khi = _mx_dequant_e2m1(kraw >> 4)
-            kelems = tl.reshape(tl.join(klo, khi), (D,))
+            if SHIFT:
+                kdd = tl.arange(0, D)
+                kraw = tl.load(cache_ptr + slot + kdd // 2).to(tl.int32)
+                knib = (kraw >> ((kdd % 2) * 4)) & 0xF
+                kelems = _mx_dequant_e2m1(knib)
+            else:
+                kraw = tl.load(cache_ptr + slot + tl.arange(0, D // 2))
+                klo = _mx_dequant_e2m1(kraw & 0xF)
+                khi = _mx_dequant_e2m1(kraw >> 4)
+                kelems = tl.reshape(tl.join(klo, khi), (D,))
             ksc_flat = tl.reshape(
                 tl.broadcast_to(ksc[:, None], (N_GROUPS, 32)), (D,)
             )
@@ -95,10 +103,16 @@ def _mx_full_dequant(
         if V4:
             vcode = tl.load(cache_ptr + slot + v_off + D // 2 + g)
             vsc = tl.exp2(vcode.to(tl.float32) - 127.0)
-            vraw = tl.load(cache_ptr + slot + v_off + tl.arange(0, D // 2))
-            vlo = _mx_dequant_e2m1(vraw & 0xF)
-            vhi = _mx_dequant_e2m1(vraw >> 4)
-            velems = tl.reshape(tl.join(vlo, vhi), (D,))
+            if SHIFT:
+                vdd = tl.arange(0, D)
+                vraw = tl.load(cache_ptr + slot + v_off + vdd // 2).to(tl.int32)
+                vnib = (vraw >> ((vdd % 2) * 4)) & 0xF
+                velems = _mx_dequant_e2m1(vnib)
+            else:
+                vraw = tl.load(cache_ptr + slot + v_off + tl.arange(0, D // 2))
+                vlo = _mx_dequant_e2m1(vraw & 0xF)
+                vhi = _mx_dequant_e2m1(vraw >> 4)
+                velems = tl.reshape(tl.join(vlo, vhi), (D,))
             vsc_flat = tl.reshape(
                 tl.broadcast_to(vsc[:, None], (N_GROUPS, 32)), (D,)
             )
@@ -145,6 +159,9 @@ def mx_dequant_cache(
         f: slot_bytes(d, f) for f in ("mxfp8", "mxfp4", "mxk8v4")
     }
     fmt = next(f for f, b in want.items() if b == sb)
+    # Unpack flavor read at CALL time (module attr, not import-time copy)
+    # so runtime A/B flips of triton_mx_decode._SHIFT propagate here too.
+    shift = bool(_tmx._SHIFT)
     _mx_full_dequant[(t_alloc, hk)](
         cache,
         block_table,
@@ -162,6 +179,7 @@ def mx_dequant_cache(
         K4=fmt == "mxfp4",
         V4=fmt in ("mxfp4", "mxk8v4"),
         BLOCK_SIZE=block_size,
+        SHIFT=shift,
         num_warps=1,
     )
     return fmt
