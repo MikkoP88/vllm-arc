@@ -28,6 +28,7 @@ Usage: arc_garbage_probe.py           (exit 0 = GARBAGE_SUITE_PASS)
 """
 import hashlib
 import json
+import os
 import sys
 import time
 import urllib.error
@@ -35,7 +36,9 @@ import urllib.request
 
 URL = "http://127.0.0.1:8000/v1/chat/completions"
 HEALTH = "http://127.0.0.1:8000/health"
-MODEL = "qwen3.8-27b-fp8"
+# ARC_PROBE_MODEL (P6.47 cert24 gate): served-model override so the suite
+# runs on every model lane (gemma4-31b legs); default = the qwen target.
+MODEL = os.environ.get("ARC_PROBE_MODEL", "qwen3.8-27b-fp8")
 SAMPLING = {"top_p": 0.95, "top_k": 20, "min_p": 0.0,
             "presence_penalty": 0.0, "repetition_penalty": 1.0}
 CTK = {"chat_template_kwargs": {"enable_thinking": False}}
@@ -111,7 +114,7 @@ def main() -> int:
           "messages": [{"role": "user", "content": "".join(
               chr(c) for c in range(32)) + "\x7f"}]},
           want_content=True)
-    big = " ".join("zqxj vkwf gbhp".split() * 40000)  # ~0.5 MB
+    big = " ".join(["zqxj", "vkwf", "gbhp"] * 40000)  # ~0.5 MB
     probe("huge_blob", {"model": MODEL, "max_tokens": MT,
           "temperature": 0.2, **SAMPLING, **CTK,
           "messages": [{"role": "user", "content": big}]},
