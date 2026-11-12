@@ -491,8 +491,12 @@ class MxAttentionImpl(TurboQuantAttentionImpl):
         )
         if _DUMP:
             _maybe_dump(kv_cache, attn_metadata, self)
+        # q passes natively (fp16/bf16): Triton promotes the q*K products
+        # to fp32 in-kernel — bit-equal to the old .float() upcast (A9
+        # dtype face) and two fewer cast kernels per layer. out follows
+        # q's dtype via empty_like, so the .to() below is a no-op guard.
         out = mx_decode(
-            query.float(),
+            query,
             kv_cache,
             attn_metadata.block_table,
             attn_metadata.seq_lens,
@@ -504,7 +508,10 @@ class MxAttentionImpl(TurboQuantAttentionImpl):
     # Prefill: raw-KV flash for first chunks (inherited), MX decode or   #
     # bulk-dequant for continuations — the tq_spec_fix dispatch law      #
     # mirrored 1:1 (patches/tq_spec_fix.py):                             #
-    #   1 < q_len <= 8   split-row single-row decodes (graph-verified)   #
+    #   1 < q_len <= 8   split rows -> ONE batched mx_decode per step    #
+    #                    (_split_verify_decode, LIMIT-LAW per-row        #
+    #                    limits; debug builds keep per-row splits +      #
+    #                    the xcheck3 oracle)                             #
     #   8 < q_len <= 128 multi-row synthetic decode (eager chunked       #
     #                    prefill only — never capture-shaped)           #
     #   q_len > 128      bulk dequant + flash (mx_dequant_cache)         #
@@ -570,6 +577,10 @@ class MxAttentionImpl(TurboQuantAttentionImpl):
             )
             _ac = self._arange_cache
 
+        # Split-branch requests (clean path) — resolved in ONE batched
+        # mx_decode after the loop (see _split_verify_decode).
+        split_rows: list[tuple[int, int, int]] = []
+
         for i in range(num_reqs):
             q_start = qsl[i]
             q_end = qsl[i + 1]
@@ -612,47 +623,60 @@ class MxAttentionImpl(TurboQuantAttentionImpl):
             cached_len = seq_len - q_len
             bt_row = attn_metadata.block_table[i : i + 1]
             if 1 < q_len <= _SPLIT_MAX_Q:
-                _trace("path", f"i={i}", "split", f"q={q_len}", f"sl={seq_len}")
-                # Split-row dispatch (tq_spec_fix call shape): q_len
-                # SEPARATE single-row decodes — the W1-proven-clean call
-                # shape under XPU-graph replay.
+                # Split-row dispatch (tq_spec_fix call shape). The clean
+                # path defers to the post-loop _split_verify_decode — ONE
+                # mx_decode for ALL split rows in the step (MTP verify is
+                # the per-step hot shape: spec=3 makes every decode step a
+                # q_len=k+1 batch, and per-row launches cost ~a kernel per
+                # row per request per layer — ~2k kernels/step at agg8,
+                # the dominant decode-gap term, A10 telemetry directive
+                # 2026-11-12). Debug builds keep the W1-proven per-row
+                # call shape the xcheck3 oracle below validates against.
                 #
-                # LIMIT LAW (P6.47 corruption fix, 2026-11-12): derive
-                # each row's causal limit from ITS OWN slot via the block
-                # table, NOT from seq_lens. MTP verify batches carry the
-                # next-draft row (nat = q+1) and the wheel's seq_lens
-                # counts the allocator extent INCLUDING that row (rig-
-                # proven trace4-8: step-2+ verifies' seq_lens run one
-                # ahead of the verify rows' true positions, so the
-                # seq_lens-derived limits leak the yet-unverified draft
-                # token's K/V into every verify row — chunk_pair
-                # 0->1 + stale last slot, xcheck3). The engine's slot
-                # assignment is the ground truth (v1 [5829,5830]=pos
-                # 5,6; v2 [5831,5832]=pos 7,8 — store+cache bit-clean).
-                # Slot->position inversion is pure recorded device
-                # arithmetic off live buffers (slot_mapping/block_table
-                # refresh at replay — same law as the seq_lens reads it
-                # replaces).
-                sm = attn_metadata.slot_mapping[q_start:q_end]
-                sm_blk = torch.div(sm, kv_cache.shape[1], rounding_mode="floor")
-                sm_pos = sm - sm_blk * kv_cache.shape[1]
-                # bt walk inversion: the row's block's index in bt_row is
-                # its position // block_size (blocks appear once per row).
-                bt_match = bt_row[0].unsqueeze(0) == sm_blk.unsqueeze(1)
-                true_pos = (
-                    bt_match.to(torch.int32).argmax(dim=1).to(sm.dtype) * kv_cache.shape[1]
-                    + sm_pos
-                )
-                sl_rows = (true_pos + 1)[:q_len]
-                for r in range(q_len):
-                    out_r = mx_decode(
-                        q_seq[r : r + 1].float(),
-                        kv_cache,
-                        bt_row,
-                        sl_rows[r : r + 1],
-                        self.scale,
+                # LIMIT LAW (P6.47 corruption fix, 2026-11-12), unchanged
+                # by the batching: derive each row's causal limit from ITS
+                # OWN slot via the block table, NOT from seq_lens. MTP
+                # verify batches carry the next-draft row (nat = q+1) and
+                # the wheel's seq_lens counts the allocator extent
+                # INCLUDING that row (rig-proven trace4-8: step-2+
+                # verifies' seq_lens run one ahead of the verify rows'
+                # true positions, so the seq_lens-derived limits leak the
+                # yet-unverified draft token's K/V into every verify row —
+                # chunk_pair 0->1 + stale last slot, xcheck3). The
+                # engine's slot assignment is the ground truth (v1
+                # [5829,5830]=pos 5,6; v2 [5831,5832]=pos 7,8 —
+                # store+cache bit-clean). Slot->position inversion is pure
+                # recorded device arithmetic off live buffers
+                # (slot_mapping/block_table refresh at replay — same law
+                # as the seq_lens reads it replaces).
+                if _TRACE:
+                    _trace("path", f"i={i}", "split", f"q={q_len}", f"sl={seq_len}")
+                    sm = attn_metadata.slot_mapping[q_start:q_end]
+                    sm_blk = torch.div(
+                        sm, kv_cache.shape[1], rounding_mode="floor"
                     )
-                    output[q_start + r : q_start + r + 1] = out_r.to(query.dtype)
+                    sm_pos = sm - sm_blk * kv_cache.shape[1]
+                    # bt walk inversion: the row's block's index in
+                    # bt_row is its position // block_size (blocks
+                    # appear once per row).
+                    bt_match = bt_row[0].unsqueeze(0) == sm_blk.unsqueeze(1)
+                    true_pos = (
+                        bt_match.to(torch.int32).argmax(dim=1).to(sm.dtype)
+                        * kv_cache.shape[1]
+                        + sm_pos
+                    )
+                    sl_rows = (true_pos + 1)[:q_len]
+                    for r in range(q_len):
+                        out_r = mx_decode(
+                            q_seq[r : r + 1],
+                            kv_cache,
+                            bt_row,
+                            sl_rows[r : r + 1],
+                            self.scale,
+                        )
+                        output[q_start + r : q_start + r + 1] = out_r.to(query.dtype)
+                else:
+                    split_rows.append((i, q_start, q_len))
                 if _TRACE:
                     # Three-way cross-check (debug D2H sync is acceptable
                     # under TRACE; never on the clean path): split rows vs
@@ -864,7 +888,7 @@ class MxAttentionImpl(TurboQuantAttentionImpl):
                 ) + _ac[1 : q_len + 1]
                 synth_bt = bt_row.expand(q_len, -1)
                 out = mx_decode(
-                    q_seq.float(),
+                    q_seq,
                     kv_cache,
                     synth_bt,
                     synth_seq_lens.to(attn_metadata.seq_lens.dtype),
@@ -890,7 +914,84 @@ class MxAttentionImpl(TurboQuantAttentionImpl):
                 )
                 output[q_start:q_end] = out.to(query.dtype)
 
+        if split_rows:
+            self._split_verify_decode(
+                query, output, kv_cache, attn_metadata, split_rows
+            )
+
         return output
+
+    def _split_verify_decode(
+        self,
+        query: torch.Tensor,  # (N, Hq, D)
+        output: torch.Tensor,  # (N, Hq, D) — split rows written in place
+        kv_cache: torch.Tensor,  # (num_blocks, block_size, Hk, slot)
+        attn_metadata: TurboQuantMetadata,
+        split_rows: list[tuple[int, int, int]],
+    ) -> None:
+        """ONE mx_decode for every split-row request in the step.
+
+        The MTP verify hot shape (spec=3 -> q_len=k+1 rows per request,
+        every decode step) previously ran a per-request slot-inversion
+        cascade plus one mx_decode per row, per layer — the dominant
+        decode-gap term (~2k kernels/step at concurrency 8 vs ~80 here,
+        A10 telemetry directive 2026-11-12). Same LIMIT LAW math as the
+        per-row path: each row's causal limit comes from ITS OWN slot
+        via the block-table inversion, computed once per step
+        (layer-invariant) and cached on self keyed to the metadata's
+        identity + slot_mapping version, and the recorded device ops
+        re-read the live slot_mapping/block_table at XPU-graph replay
+        (the same refresh law as the seq_lens reads the inversion
+        replaces).
+        """
+        plan = None
+        smeta = attn_metadata.slot_mapping
+        # One-step cache on self (the metadata may be pooled/reused by
+        # the wheel, so attaching to it could serve a STALE plan — that
+        # would poison every limit in the step). Key on metadata identity
+        # plus the slot_mapping buffer identity/version, and hold the
+        # metadata reference so its id cannot recycle under the cache.
+        key = (id(attn_metadata), smeta.data_ptr(), smeta._version)
+        cached = getattr(self, "_mx_split_cache", None)
+        if cached is not None and cached[0] == key:
+            plan = cached[1]
+        if plan is None:
+            bt = attn_metadata.block_table
+            stride = kv_cache.shape[1]
+            idx_parts = []
+            req_parts: list[int] = []
+            for i, qs, ql in split_rows:
+                idx_parts.append(torch.arange(qs, qs + ql, device=bt.device))
+                req_parts.extend([i] * ql)
+            idx = torch.cat(idx_parts)
+            req_idx = torch.tensor(req_parts, device=bt.device, dtype=torch.long)
+            sm = smeta.index_select(0, idx)
+            bt_rows = bt.index_select(0, req_idx)
+            sm_blk = torch.div(sm, stride, rounding_mode="floor")
+            sm_pos = sm - sm_blk * stride
+            # bt walk inversion (each row against its OWN request's
+            # blocks): the slot's block index in bt = position //
+            # block_size (blocks appear once per row).
+            blk_idx = (
+                (bt_rows == sm_blk.unsqueeze(1))
+                .to(torch.int32)
+                .argmax(dim=1)
+                .to(sm.dtype)
+            )
+            sl_rows = blk_idx * stride + sm_pos + 1
+            plan = (idx, bt_rows, sl_rows)
+            self._mx_split_cache = (key, plan, attn_metadata)
+        idx, bt_rows, sl_rows = plan
+        _trace("path", "batch", "splitbatch", f"R={idx.shape[0]}")
+        q_rows = query.index_select(0, idx)
+        out = mx_decode(
+            q_rows,
+            kv_cache,
+            bt_rows,
+            sl_rows,
+            self.scale,
+        )
+        output.index_copy_(0, idx, out.to(query.dtype))
 
     def _continuation_prefill(
         self,
