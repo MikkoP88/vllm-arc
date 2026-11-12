@@ -317,12 +317,21 @@ leg_mkg() {
   run_leg mkg gemma4-31b 1 $GEMMA_M8 ARC_KVDTYPE=mxk8v4 || true
   grep -Eq "mx_backend_lines=[1-9]" "$P/mkg/markers.txt" || { echo "MX_MARKER: FAIL mkg (expect >=1 worker)"; GATE_FAIL=1; }
 }
+leg_g0() {  # gemma NATIVE-KV control (short): battery texts on the default
+  # fp8_e4m3 KV — the discriminator for gemma thinking-stream degeneration
+  # ("our our" REP-LOOP in reasoning, deterministic across boots/run2+run3).
+  # If g0 shows the same p2/p3 shape, it is gemma baseline behavior at
+  # temp-0 thinking, NOT MX-KV corruption; m8g/m4g/mkg then compare
+  # dtype-vs-dtype only. mx_backend_lines MUST be 0 here.
+  run_leg g0 gemma4-31b 0 $GEMMA_M8 || true
+  grep -q "mx_backend_lines=0" "$P/g0/markers.txt" || { echo "G0_NATIVE: FAIL (MX backend engaged on the control leg)"; GATE_FAIL=1; }
+}
 
 if [ $# -gt 0 ]; then
   for LEG in "$@"; do
     case $LEG in
-      ctrl|m8q|m4q|m8g|m4g|mkq|mkg) leg_$LEG ;;
-      *) echo "UNKNOWN_LEG $LEG (ctrl|m8q|m4q|m8g|m4g|mkq|mkg)"; GATE_FAIL=1 ;;
+      ctrl|m8q|m4q|m8g|m4g|mkq|mkg|g0) leg_$LEG ;;
+      *) echo "UNKNOWN_LEG $LEG (ctrl|m8q|m4q|m8g|m4g|mkq|mkg|g0)"; GATE_FAIL=1 ;;
     esac
   done
 else
