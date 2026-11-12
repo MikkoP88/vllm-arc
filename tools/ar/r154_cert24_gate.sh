@@ -308,12 +308,21 @@ leg_m4g() {
   run_leg m4g gemma4-31b 1 $GEMMA_M8 ARC_KVDTYPE=mxfp4 || true
   grep -Eq "mx_backend_lines=[1-9]" "$P/m4g/markers.txt" || { echo "MX_MARKER: FAIL m4g (expect >=1 worker)"; GATE_FAIL=1; }
 }
+leg_mkq() {  # mxk8v4 (e4m3 K + e2m1 V) — the m4q quality-fix lane (3b92b9f8)
+  run_leg mkq qwen3.8-27b-fp8 1 $QWEN_FP8 ARC_KVDTYPE=mxk8v4 || true
+  grep -Eq "mx_backend_lines=[1-9]" "$P/mkq/markers.txt" || { echo "MX_MARKER: FAIL mkq (expect >=1 worker)"; GATE_FAIL=1; }
+}
+leg_mkg() {
+  [ -d "$P/mkg" ] && mv "$P/mkg" "$P/mkg.run1"
+  run_leg mkg gemma4-31b 1 $GEMMA_M8 ARC_KVDTYPE=mxk8v4 || true
+  grep -Eq "mx_backend_lines=[1-9]" "$P/mkg/markers.txt" || { echo "MX_MARKER: FAIL mkg (expect >=1 worker)"; GATE_FAIL=1; }
+}
 
 if [ $# -gt 0 ]; then
   for LEG in "$@"; do
     case $LEG in
-      ctrl|m8q|m4q|m8g|m4g) leg_$LEG ;;
-      *) echo "UNKNOWN_LEG $LEG (ctrl|m8q|m4q|m8g|m4g)"; GATE_FAIL=1 ;;
+      ctrl|m8q|m4q|m8g|m4g|mkq|mkg) leg_$LEG ;;
+      *) echo "UNKNOWN_LEG $LEG (ctrl|m8q|m4q|m8g|m4g|mkq|mkg)"; GATE_FAIL=1 ;;
     esac
   done
 else

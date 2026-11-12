@@ -9,6 +9,9 @@
 # windows, never leave the rig on an arc image overnight):
 #   q8m8  qwen3.8-27b-fp8 champion chain (LMC=1 spec3) + ARC_KVDTYPE=mxfp8
 #   q8m4  same + ARC_KVDTYPE=mxfp4
+#   q8k4  same + ARC_KVDTYPE=mxk8v4 (e4m3 K + e2m1 V — the m4q quality-fix
+#         lane, 200B/slot: expect m8-class long-run stability at ~0.78x
+#         fp8-KV bytes; the r154 mkq gate leg is its quality proof)
 #   g8m4  gemma4-31b W8A16-mxfp8 weights @131072 + ARC_KVDTYPE=mxfp4 --
 #         THE boundary cell: r140 gm8x (fp8-class KV) BOOT_FAILED at
 #         131072; the 4-bit KV pool (~0.52x bytes) may buy the boot
@@ -183,9 +186,10 @@ for CELL in "$@"; do
   case $CELL in
     q8m8) run_cell q8m8 qwen3.8-27b-fp8 $QWEN ARC_KVDTYPE=mxfp8 ;;
     q8m4) run_cell q8m4 qwen3.8-27b-fp8 $QWEN ARC_KVDTYPE=mxfp4 ;;
+    q8k4) run_cell q8k4 qwen3.8-27b-fp8 $QWEN ARC_KVDTYPE=mxk8v4 ;;
     g8m4) run_cell g8m4 gemma4-31b $GM131 ARC_QUANT=mxfp8 ARC_KVDTYPE=mxfp4 ;;
     g4m4) run_cell g4m4 gemma4-31b $GM131 ARC_QUANT=mxfp4 "ARC_QUANTCFG=$GMQCFG" ARC_MXFP4_MODE=w4a16 ARC_GMU=0.85 ARC_KVDTYPE=mxfp4 ;;
-    *) echo "UNKNOWN_CELL $CELL (q8m8|q8m4|g8m4|g4m4)";;
+    *) echo "UNKNOWN_CELL $CELL (q8m8|q8m4|q8k4|g8m4|g4m4)";;
   esac
 done
 
