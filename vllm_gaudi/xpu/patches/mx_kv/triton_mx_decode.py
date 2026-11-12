@@ -48,10 +48,11 @@ The e2m1 unpack has two flavors on the shared dequant helper: "join"
 (v1's join/reshape interleave — bit-frozen) and "shift"
 (duplicated-load + dynamic nibble shift, pure vector ALU, no
 cross-lane op) — the A/B leg measures before anything defaults.
-Decoder selection: ARC_MXKV_DECODER=v1|v2|v3 (default v1 — the certified
-path and every banked quality verdict stay tied to v1 until the split
-decoder's own gates pass); ARC_MXKV_UNPACK=join|shift (v2/v3 only,
-default join).
+Decoder selection: ARC_MXKV_DECODER=v1|v2|v3 (default v3, the tuned
+GQA-batched split — its A4-A7 offline batteries all PASS; v1 stays the
+bit-frozen escape hatch every pre-A4 banked verdict rode, v2 the
+per-q-head split); ARC_MXKV_UNPACK=join|shift overrides the baked
+per-format flavor (v2/v3 only).
 
 V3 GQA-BATCHED SPLIT (leg A6 evidence): num_stages pipelining is a
 no-op on the v2 tile loop (s1/s2/s3 within noise on every combo) —
@@ -91,13 +92,18 @@ import triton.language as tl
 
 from .mx_layout import slot_bytes
 
-# Decoder selection (decode-perf research, 2026-11-12): v1 stays the
-# default/certified path; v2 (split-KV) is opt-in until its offline A4
-# + engine A/B legs pass. Read once at import — the engine's env law.
-_DECODER = os.environ.get("ARC_MXKV_DECODER", "v1")
-# e2m1 unpack flavor for v2 ONLY ("join" = v1's interleave, bit-frozen;
-# "shift" = duplicated-load + dynamic nibble shift). A/B decides.
-_SHIFT = os.environ.get("ARC_MXKV_UNPACK", "join") == "shift"
+# Decoder selection (A4-A7 offline batteries, 2026-11-12): v3 (GQA-
+# batched split-KV, tuned per format) is the default — the certified v1
+# and the per-q-head v2 stay reachable via ARC_MXKV_DECODER=v1|v2 (v1 is
+# the bit-frozen escape hatch every banked pre-A4 verdict rode). Read
+# once at import — the engine's env law.
+_DECODER = os.environ.get("ARC_MXKV_DECODER", "v3")
+# e2m1 unpack-flavor OVERRIDE for the split decoders ("join" = v1's
+# interleave, bit-frozen; "shift" = duplicated-load + dynamic nibble
+# shift). None (no env) -> per-format _MX_TUNE flavor; the A/B harness
+# flips this module attr per variant (call-time read propagates).
+_ENV_UNPACK = os.environ.get("ARC_MXKV_UNPACK", "")
+_SHIFT = (_ENV_UNPACK == "shift") if _ENV_UNPACK else None
 
 
 @triton.jit
@@ -481,16 +487,19 @@ def _mx_decode_combine(
 _MX_SPLIT_MAX = 32  # wheel parity (max_num_kv_splits)
 _mid_cache: dict = {}
 
-# Per-format (BLOCK_N, num_warps, num_stages) — A5/A6 factorial winners
-# @32K ctx, HK=8/Hq=32 (results/2026-11-12-p647-decode-perf-research/
-# legA5 + legA6): e4m3-payload mxfp8 takes (128, 4); the sub-byte
-# formats hit a register-spill cliff at BLOCK_N=128 (17-20 ms vs 2.4-6.0
-# ms winners — the double-e2m1 payload doubles the tile's live state)
-# and take (64, 8). num_stages is flat (the walk is a pointer chase).
+# Per-format (BLOCK_N, num_warps, num_stages, shift_flavor) — v3
+# factorial winners @32K ctx, HK=8/Hq=32 (results/2026-11-12-p647-
+# decode-perf-research/legA5 + legA6 + legA7 + the flavor sweep): all
+# formats take BLOCK_N=64 under v3's shared walk; warps split by payload
+# (mxfp8/mxk8v4 e4m3-K legs 4, double-e2m1 mxfp4 8); flavor splits by
+# where e2m1 sits — mxk8v4's V-only e2m1 dequant is the hot op under
+# the shared walk and takes shift (no cross-lane join), mxfp4 (both
+# legs e2m1) keeps join; mxfp8 is flavor-flat. v2 winners differed
+# (mxfp8 (128,4) — banked legA6) and are reachable per call.
 _MX_TUNE = {
-    "mxfp8": (128, 4, 2),
-    "mxfp4": (64, 8, 2),
-    "mxk8v4": (64, 8, 2),
+    "mxfp8": (64, 4, 2, False),
+    "mxfp4": (64, 8, 2, False),
+    "mxk8v4": (64, 8, 2, True),
 }
 
 
@@ -633,12 +642,13 @@ def mx_decode(
     slot width, mx_layout law); block_tables int32 [B, max_blocks];
     seq_lens int32 [B]. Returns [B, Hq, D] fp32.
 
-    decoder: None -> ARC_MXKV_DECODER -> "v1" (the certified path);
-    "v2" = split-KV per-q-head stage 1; "v3" = GQA-batched per-kv-head
-    stage 1 (see the module header). block_n/num_warps/num_stages
+    decoder: None -> ARC_MXKV_DECODER -> "v3" (the tuned GQA-batched
+    split); "v2" = split-KV per-q-head stage 1; "v1" = the bit-frozen
+    certified path (see the module header). block_n/num_warps/num_stages
     default to the per-format _MX_TUNE winners for v2/v3 (None) and to
     v1's frozen (128, 4); explicit values override — the A/B harness's
-    tuning face.
+    tuning face. Unpack flavor: ARC_MXKV_UNPACK/_SHIFT override the
+    table's per-format flavor.
     """
     dec = decoder or _DECODER
     if dec != "v1":
@@ -648,14 +658,16 @@ def mx_decode(
             f: slot_bytes(d, f) for f in ("mxfp8", "mxfp4", "mxk8v4")
         }
         fmt = next(f for f, w in want.items() if w == sb)
-        bn_t, nw_t, ns_t = _MX_TUNE[fmt]
+        bn_t, nw_t, ns_t, sh_t = _MX_TUNE[fmt]
         block_n = bn_t if block_n is None else block_n
         num_warps = nw_t if num_warps is None else num_warps
         num_stages = ns_t if num_stages is None else num_stages
+        # flavor: env/harness override (_SHIFT set) > per-format table
+        shift = sh_t if _SHIFT is None else _SHIFT
         launch = _mx_decode_v2 if dec == "v2" else _mx_decode_v3
         return launch(
             q, cache, block_tables, seq_lens, sm_scale, block_size, block_n,
-            _SHIFT, num_warps, num_stages,
+            shift, num_warps, num_stages,
         )
     # v1 is bit-frozen: fixed launch config (BLOCK_N=block_n — default
     # 128 — and its hardcoded num_warps=4); tuning params are v2/v3's.

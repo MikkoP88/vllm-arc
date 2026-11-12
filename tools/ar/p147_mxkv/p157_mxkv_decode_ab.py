@@ -438,6 +438,10 @@ def face_tune():
     factorial for it. Winner combo gets a correctness spot vs the fp64
     reference."""
     print("[face: tune] v3 (BLOCK_N, num_warps, num_stages) sweep @ ctx=32768 (XPU)")
+    # Pin the join flavor for the sweep (the flavor bake — flavor probe
+    # 2026-11-12 — is a separate axis; leaving _SHIFT at whatever the
+    # last telemetry variant set would make the sweep nondeterministic).
+    tmx._SHIFT = False
     combos = tuple(
         (bn, nw, ns)
         for bn, nw in ((64, 4), (64, 8), (128, 4), (128, 8))
