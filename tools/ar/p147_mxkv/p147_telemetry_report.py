@@ -13,12 +13,20 @@ by N_ATTN (~16-18 full-attention layers; derived from the ctrl KV pool:
 pool share) it becomes a per-layer decode cost directly comparable to the
 A9 kernel timings. TTFT deltas carry the prefill/store axis.
 
+Schema (p139_conc.py, r140c line): per-request {ttft_s, total_s,
+n_stream_chunks, itl_ms_p50, itl_ms_p90, itl_ms_p99}; tag c{ctx}_n{nc}
+carries NO cell prefix — the cell is the bank subdirectory. Aggregates
+are MEDIANS across slots (a single scheduler-stalled slot must not move
+the row). Per-user tps follows the rate-accounting law: numerator =
+max_tokens (chunk counting undercounts by ~spec-depth).
+
 Usage: p147_telemetry_report.py <bank_dir> [n_attn]
 Stdlib only. Writes markdown to stdout.
 """
 from __future__ import annotations
 
 import json
+import statistics
 import sys
 from pathlib import Path
 
@@ -29,7 +37,7 @@ N_ATTN_DEFAULT = 16
 
 
 def load_cell(cell_dir: Path, ctx: int, nc: int):
-    fn = cell_dir / f"p139_conc_{cell_dir.name}_c{ctx}_n{nc}.json"
+    fn = cell_dir / f"p139_conc_c{ctx}_n{nc}.json"
     if not fn.exists():
         return None
     try:
@@ -39,14 +47,24 @@ def load_cell(cell_dir: Path, ctx: int, nc: int):
         return None
 
 
-def itl_stats(j):
+def _median(j, key):
+    vals = [r[key] for r in j.get("requests", [])
+            if r.get("error") is None and r.get(key, 0) > 0]
+    return statistics.median(vals) if vals else None
+
+
+def stats(j):
+    """(itl_p50_ms, itl_p90_ms, ttft_s, per_user_tps) medians, or None."""
     rs = [r for r in j.get("requests", []) if r.get("error") is None]
     if not rs:
         return None
-    def mean(k):
-        vals = [r[k] for r in rs if r.get(k, 0) > 0]
-        return sum(vals) / len(vals) if vals else -1.0
-    return mean("itl_ms_p50"), mean("itl_ms_p90")
+    i5 = _median(j, "itl_ms_p50")
+    i9 = _median(j, "itl_ms_p90")
+    tt = _median(j, "ttft_s")
+    mt = j.get("max_tokens", 0)
+    tot = _median(j, "total_s")
+    tps = (mt / tot) if (mt and tot and tot > 0) else None
+    return i5, i9, tt, tps
 
 
 def main():
@@ -64,22 +82,21 @@ def main():
             for c in CELLS:
                 j = load_cell(bank / c, ctx, nc)
                 cells[c] = j
-                if j is None:
-                    continue
-                rows[(ctx, nc, c)] = j
+                if j is not None:
+                    rows[(ctx, nc, c)] = j
+
             def fmt(c, cells=cells):
-                j = cells.get(c)
-                if j is None:
-                    return "-"
-                it = itl_stats(j)
-                it_s = f"{it[0]:.1f}/{it[1]:.1f}" if it else "-"
-                return it_s
+                st = stats(cells[c]) if cells.get(c) else None
+                return f"{st[0]:.1f}/{st[1]:.1f}" if st else "-"
+
             def ttft(c, cells=cells):
-                j = cells.get(c)
-                return f"{j['ttft_mean_s']:.2f}" if j else "-"
+                st = stats(cells[c]) if cells.get(c) else None
+                return f"{st[2]:.2f}" if st else "-"
+
             def tps(c, cells=cells):
-                j = cells.get(c)
-                return f"{j.get('per_user_mean_tps', -1):.1f}" if j else "-"
+                st = stats(cells[c]) if cells.get(c) else None
+                return f"{st[3]:.1f}" if st else "-"
+
             print(f"| {ctx} | {nc} | {fmt('q8')} | {fmt('m8')} | {fmt('m4')}"
                   f" | {ttft('q8')} | {ttft('m8')} | {ttft('m4')}"
                   f" | {tps('q8')} | {tps('m8')} | {tps('m4')} |")
@@ -95,20 +112,19 @@ def main():
         m4 = rows.get((ctx, 1, "m4"))
         if not (q and m8):
             continue
-        qit = itl_stats(q)
-        m8it = itl_stats(m8)
-        m4it = itl_stats(m4) if m4 else None
-        d8 = m8it[0] - qit[0] if (qit and m8it) else None
-        d4 = m4it[0] - qit[0] if (qit and m4it) else None
-        dt8 = m8["ttft_mean_s"] - q["ttft_mean_s"]
+        qs, m8s = stats(q), stats(m8)
+        m4s = stats(m4) if m4 else None
+        d8 = m8s[0] - qs[0] if (qs and m8s) else None
+        d4 = m4s[0] - qs[0] if (qs and m4s) else None
+        dt8 = m8s[2] - qs[2] if (qs and m8s) else None
         cells = [f"| {ctx} "]
         cells.append(f"| {d8:.1f} | {d8 / n_attn:.2f} "
                      if d8 is not None else "| - | - ")
         cells.append(f"| {d4:.1f} | {d4 / n_attn:.2f} "
                      if d4 is not None else "| - | - ")
-        cells.append(f"| {dt8:.2f} |")
-        if m4:
-            cells.append(f" {m4['ttft_mean_s'] - q['ttft_mean_s']:.2f} |")
+        cells.append(f"| {dt8:.2f} |" if dt8 is not None else "| - |")
+        if m4s:
+            cells.append(f" {m4s[2] - qs[2]:.2f} |")
         else:
             cells.append(" - |")
         print("".join(cells))
