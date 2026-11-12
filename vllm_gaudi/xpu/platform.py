@@ -29,6 +29,9 @@ from vllm.platforms.xpu import XPUPlatform
 
 if TYPE_CHECKING:
     from vllm.config import VllmConfig
+    from vllm.v1.attention.selector import AttentionSelectorConfig
+
+    AttentionBackendEnum = str  # wheel type, annotation-only on this path
 
 # Log under the vllm namespace: vLLM's serve-time dictConfig attaches its
 # handler only to the "vllm" logger (propagate=False, no root handler), so a
@@ -122,9 +125,154 @@ _WHEEL_HOOKS = (
     ("lmcache.v1.platform.torch_ops", "lmcint.lmc_twohs_transfer"),  # r43
     ("vllm.v1.core.sched.scheduler", "sched_tail_split"),  # r35
     ("vllm.v1.attention.backends.turboquant_attn", "tq_spec_fix"),  # p619
+    ("vllm.utils.torch_utils", "mx_dtype_map"),  # p647 leg B: mxfp4/mxfp8
+    # -> torch.uint8 allocation dtype (packed uint8-cache class)
+    ("vllm.v1.kv_cache_interface", "mx_kv_mode"),  # p647 leg B: mode alias
+    # element-class alias onto TURBOQUANT members (mode conveys only
+    # packed-uint8-class semantics; format identity travels on the string)
 )
 # gdn_metadata_fastpath and fp8_block_w8a16 are NOT here: they self-install
 # in-place (_XPU_PATCH_MODULES) — no exec-wrap needed.
+
+
+def _widen_cache_dtype_literal(src: str) -> str:
+    """P6.47 leg B: append mxfp4/mxfp8 to the CacheDType Literal in
+    vllm/config/cache.py — a TRUE schema widening (CLI admission, help
+    text, config round-trip all see the real members), not an alias.
+    Post-exec rebinding cannot widen it: pydantic builds the dataclass
+    schema at class-decoration time inside the module exec, and pydantic
+    2.13.5 has no rebuild for dataclass validators (rig-proven
+    2026-11-11: ValidationError on construct, AttributeError on
+    pydantic.rebuild). The anchor is the Literal's last member; the
+    count assert keeps the edit surgical and fails loud on wheel drift.
+    """
+    anchor = '    "fp8_per_token_head",\n'
+    add = '    "mxfp4",\n    "mxfp8",\n'
+    n = src.count(anchor)
+    if n != 1:
+        raise RuntimeError(
+            f"CacheDType Literal anchor count {n} != 1 in vllm/config/cache.py "
+            "(wheel drift — re-survey before shipping the MX KV lane)"
+        )
+    return src.replace(anchor, anchor + add)
+
+
+# MX KV lane (P6.47): the two --kv-cache-dtype strings and the backend
+# qualname both the enum member and get_attn_backend_cls resolve to.
+_MX_KV_DTYPES = ("mxfp4", "mxfp8")
+_MX_BACKEND_PATH = "vllm_gaudi.xpu.patches.mx_kv.engine.MxAttentionBackend"
+
+
+def _add_mxkv_backend_member(src: str) -> str:
+    """P6.47 leg B: give the MX KV lane its OWN backend-family member —
+    MX (OCP microscaling) is not TurboQuant (Hadamard + Lloyd-Max MSE),
+    and the from-scratch lane keeps its identity end-to-end: the enum
+    label, logs, and get_path() all say MXKV (owner directive
+    2026-11-11: MXFP4/MXFP8 are their own family). The member value is
+    our backend's qualname, so even the enum-native get_class() path
+    resolves to the real MX backend. Attention.__init__ resolves
+    AttentionBackendEnum[get_name()] and the wheel enum is closed —
+    the first MX boot failed on exactly that lookup (r149 finding #1).
+
+    This transform is the LATE-IMPORT path only: the registry module is
+    already in sys.modules by the time this platform registers (the
+    base-class import at module scope — vllm.platforms.xpu — pulls it),
+    so the serve path is covered by the register-time member injection
+    (_install_mxkv_enum_member). Rig-proven injection recipe: register
+    in _member_map_ + _value2member_map_; EnumType.__getattr__ then
+    serves attribute access and ["MXKV"] lookups with no setattr.
+    """
+    anchor = (
+        '    TURBOQUANT = "vllm.v1.attention.backends.turboquant_attn.'
+        'TurboQuantAttentionBackend"\n'
+    )
+    add = '    MXKV = "vllm_gaudi.xpu.patches.mx_kv.engine.MxAttentionBackend"\n'
+    n = src.count(anchor)
+    if n != 1:
+        raise RuntimeError(
+            f"AttentionBackendEnum anchor count {n} != 1 in registry.py "
+            "(wheel drift — re-survey before shipping the MX KV lane)"
+        )
+    return src.replace(anchor, anchor + add)
+
+
+def _install_mxkv_enum_member() -> None:
+    """Register-time MXKV member injection into the already-imported
+    AttentionBackendEnum (the common case — see _add_mxkv_backend_member).
+    Idempotent via the member map; wheel-drift loud if the enum internals
+    the recipe touches are gone.
+    """
+    from vllm.v1.attention.backends.registry import AttentionBackendEnum
+
+    member_map = AttentionBackendEnum.__dict__.get("_member_map_")
+    value_map = AttentionBackendEnum.__dict__.get("_value2member_map_")
+    if member_map is None or value_map is None:
+        raise RuntimeError(
+            "AttentionBackendEnum lacks _member_map_/_value2member_map_ "
+            "(wheel drift — re-survey the MXKV member injection recipe)"
+        )
+    if "MXKV" in member_map:
+        return
+    member = object.__new__(AttentionBackendEnum)
+    member._name_ = "MXKV"
+    member._value_ = _MX_BACKEND_PATH
+    member_map["MXKV"] = member
+    value_map[_MX_BACKEND_PATH] = member
+    logger.info(
+        "ArcXpuPlatform: injected AttentionBackendEnum.MXKV -> %s", _MX_BACKEND_PATH
+    )
+
+
+# Source transforms (P6.47 leg B): patches that must edit a wheel
+# module's SOURCE before Python compiles it. The finder wraps the
+# loader's get_code so the module compiles from the transformed text —
+# bypassing the stale-__pycache__ short-circuit (a fresh .pyc would
+# otherwise pass mtime validation and hide the edit). Targets here are
+# disjoint from _WHEEL_HOOKS (no exec-wrap patch; the transform IS the
+# patch).
+_SOURCE_XFORMS = {
+    # target module -> callable(source) -> source
+    "vllm.config.cache": _widen_cache_dtype_literal,
+    "vllm.v1.attention.backends.registry": _add_mxkv_backend_member,
+}
+
+
+def _install_mx_dtype_admission_fallback() -> None:
+    """Late admission when vllm.config.cache was already imported before
+    the finder installed (host tools importing vllm ahead of platform
+    resolution — every serve process boots through the source transform
+    instead). Validation alias: the constructor validates the
+    element-class analogue preset, then the true MX string is restored
+    on the instance before any consumer reads it — every downstream
+    dispatch (dtype map, mode alias, backend routing, impl init) sees
+    the true string. kwargs-only (the engine constructs CacheConfig by
+    keyword); idempotent via the module marker.
+    """
+    import vllm.config.cache as cc
+
+    if getattr(cc, "_arc_mx_admitted", False):
+        return
+    cc._arc_mx_admitted = True
+    alias = {"mxfp4": "turboquant_4bit_nc", "mxfp8": "turboquant_k8v4"}
+    orig_init = cc.CacheConfig.__init__
+
+    def __init__(self, *args, **kwargs):
+        true_dtype = kwargs.get("cache_dtype")
+        mapped = alias.get(true_dtype)
+        if mapped is None:
+            return orig_init(self, *args, **kwargs)
+        kwargs["cache_dtype"] = mapped
+        orig_init(self, *args, **kwargs)
+        # pydantic dataclasses validate at __init__ only — a plain
+        # attribute write after it restores the engine-visible string.
+        self.cache_dtype = true_dtype
+
+    cc.CacheConfig.__init__ = __init__
+    logger.warning(
+        "ArcXpuPlatform: vllm.config.cache imported before platform "
+        "install — mxfp4/mxfp8 admitted via CacheConfig validation alias "
+        "(boot path uses the true Literal source transform)."
+    )
 
 
 def _load_wheel_patch(patch_name: str):
@@ -163,13 +311,17 @@ def _load_wheel_patch(patch_name: str):
 
 class _WheelHookFinder:
     """One-shot meta-path finder wrapping the exec of each _WHEEL_HOOKS
-    target so its patch module can rebind symbols inside it."""
+    target so its patch module can rebind symbols inside it, and the
+    compile of each _SOURCE_XFORMS target so its patch edits the module
+    source before Python ever builds it."""
 
     def __init__(self) -> None:
         self._targets = {t for t, _ in _WHEEL_HOOKS}
+        self._xform_targets = set(_SOURCE_XFORMS)
+        self._pending = self._targets | self._xform_targets
 
     def find_spec(self, fullname, path=None, target=None):  # noqa: D102
-        if fullname not in self._targets:
+        if fullname not in self._pending:
             return None
         from importlib.util import find_spec
 
@@ -177,27 +329,65 @@ class _WheelHookFinder:
         try:
             spec = find_spec(fullname)
         finally:
-            if self._targets:
+            if self._pending:
                 sys.meta_path.insert(0, self)
         if spec is None or spec.loader is None:
-            self._targets.discard(fullname)
+            self._pending.discard(fullname)
             return None
-        orig_exec = spec.loader.exec_module
 
-        def exec_module(module):
-            orig_exec(module)
-            self._targets.discard(fullname)
-            if not self._targets and self in sys.meta_path:
-                sys.meta_path.remove(self)  # last hook fired — retire
+        xform = _SOURCE_XFORMS.get(fullname)
+        if xform is not None and hasattr(spec.loader, "path"):
+            # Compile-from-transformed-source: shadow the loader's
+            # get_code with an instance attribute so the pristine
+            # __pycache__ (mtime-valid against the untouched file) can
+            # not short-circuit the edit.
+            loader = spec.loader
+            orig_get_code = loader.get_code
+
+            def get_code(name):
+                if name == fullname:
+                    src = xform(loader.get_data(loader.path).decode("utf-8"))
+                    return compile(src, loader.path, "exec", dont_inherit=True)
+                return orig_get_code(name)
+
+            loader.get_code = get_code
+
+        if fullname in self._targets:
+            orig_exec = spec.loader.exec_module
             patch_name = dict(_WHEEL_HOOKS)[fullname]
-            try:
-                patch = _load_wheel_patch(patch_name)
-                patch._install(module)
-                logger.info("ArcXpuPlatform: wheel hook %s <- patches.%s OK", fullname.rsplit(".", 1)[-1], patch_name)
-            except Exception as e:  # noqa: BLE001 — visibility law
-                logger.warning("ArcXpuPlatform: wheel hook %s <- patches.%s FAILED: %r", fullname, patch_name, e)
 
-        spec.loader.exec_module = exec_module
+            def exec_module(module):
+                orig_exec(module)
+                self._pending.discard(fullname)
+                if not self._pending and self in sys.meta_path:
+                    sys.meta_path.remove(self)  # last hook fired — retire
+                try:
+                    patch = _load_wheel_patch(patch_name)
+                    patch._install(module)
+                    logger.info(
+                        "ArcXpuPlatform: wheel hook %s <- patches.%s OK",
+                        fullname.rsplit(".", 1)[-1], patch_name)
+                except Exception as e:  # noqa: BLE001 — visibility law
+                    logger.warning("ArcXpuPlatform: wheel hook %s <- patches.%s FAILED: %r", fullname, patch_name, e)
+
+            spec.loader.exec_module = exec_module
+        elif xform is not None:
+            # Transform-only target: retire from pending only AFTER a
+            # successful exec. A find_spec-time discard is not
+            # retry-safe — r148 run2: the admission fallback's
+            # premature vllm.config.cache import died inside the
+            # plugin-load circular window, and the already-discarded
+            # target then re-imported PRISTINE (untransformed) on the
+            # retry, silently dropping the CacheDType widening.
+            orig_exec = spec.loader.exec_module
+
+            def exec_module(module):
+                orig_exec(module)
+                self._pending.discard(fullname)
+                if not self._pending and self in sys.meta_path:
+                    sys.meta_path.remove(self)  # last transform fired — retire
+
+            spec.loader.exec_module = exec_module
         return spec
 
 
@@ -209,6 +399,51 @@ def _install_wheel_hooks() -> None:
     if not _WHEEL_HOOKS:
         return
     sys.meta_path.insert(0, _WheelHookFinder())
+    # Targets already imported before the finder installed (host tools,
+    # import-order drift) fire their patch in-place now: exec-wrap can
+    # only see FUTURE imports, and a silently-skipped patch is
+    # indistinguishable from an applied one (p2r2 visibility law). Each
+    # patch module owns its idempotence.
+    for target, patch_name in _WHEEL_HOOKS:
+        mod = sys.modules.get(target)
+        if mod is None:
+            continue
+        try:
+            _load_wheel_patch(patch_name)._install(mod)
+            logger.info(
+                "ArcXpuPlatform: wheel hook %s <- patches.%s OK (already imported)",
+                target.rsplit(".", 1)[-1], patch_name)
+        except Exception as e:  # noqa: BLE001 — visibility law
+            logger.warning(
+                "ArcXpuPlatform: in-place wheel hook %s <- patches.%s FAILED: %r",
+                target, patch_name, e)
+    # Source transforms cannot apply to an already-imported module —
+    # the late-admission fallback covers that ordering for the cache
+    # Literal. Scope the trigger to the module the fallback actually
+    # patches: vllm.v1.attention.backends.registry is ALWAYS imported
+    # by the platform base-class chain (vllm.platforms.xpu) before this
+    # install runs, and an any()-over-targets check made that pre-import
+    # fire the fallback prematurely inside the plugin-load
+    # circular-import window (r148 run2: the fallback import of
+    # vllm.config.cache died on a partial vllm.utils.torch_utils, and
+    # the failed first exec un-primed the transform — literal+admit
+    # regression).
+    pre = [t for t in _SOURCE_XFORMS if t in sys.modules]
+    if pre:
+        logger.info(
+            "ArcXpuPlatform: source-transform targets already imported at "
+            "install: %s", pre)
+    if "vllm.v1.attention.backends.registry" in sys.modules:
+        try:
+            _install_mxkv_enum_member()
+        except Exception as e:  # noqa: BLE001 — visibility law
+            logger.warning(
+                "ArcXpuPlatform: MXKV enum member injection FAILED: %r", e)
+    if "vllm.config.cache" in sys.modules:
+        try:
+            _install_mx_dtype_admission_fallback()
+        except Exception as e:  # noqa: BLE001 — visibility law
+            logger.warning("ArcXpuPlatform: MX dtype admission fallback FAILED: %r", e)
 
 
 # Monkey-patch torch.accelerator.get_memory_info for Arc/Xe2 XPU — the same
@@ -385,3 +620,27 @@ class ArcXpuPlatform(XPUPlatform):
         # vllm package). Idempotent; failure surfaces in the gate leg.
         _install_xpu_patches("check_if_supports_dtype")
         super().check_if_supports_dtype(dtype)
+
+    # MX KV dtypes (P6.47): the dtype string reaches backend selection
+    # on AttentionSelectorConfig — route it to the MX backend and stamp
+    # the process-wide format (the spec layer carries no dtype string,
+    # so the resolved backend class is the format authority for
+    # customize_spec). Dtypes + path live at module scope (shared with
+    # the register-time enum-member injection).
+    @classmethod
+    def get_attn_backend_cls(
+        cls,
+        selected_backend: AttentionBackendEnum,
+        attn_selector_config: AttentionSelectorConfig,
+        num_heads: int | None = None,
+    ) -> str:
+        kv = getattr(attn_selector_config, "kv_cache_dtype", None)
+        if kv in _MX_KV_DTYPES:
+            from vllm_gaudi.xpu.patches.mx_kv.engine import MxAttentionBackend
+
+            MxAttentionBackend.active_kv_dtype = kv
+            logger.info_once("Using MX KV attention backend (%s).", kv)
+            return _MX_BACKEND_PATH
+        return super().get_attn_backend_cls(
+            selected_backend, attn_selector_config, num_heads=num_heads
+        )

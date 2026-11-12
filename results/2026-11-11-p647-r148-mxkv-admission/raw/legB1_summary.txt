@@ -1,0 +1,15 @@
+[face:platform] ok current_platform=ArcXpuPlatform
+[face:literal] ok members=True/True (source transform)
+[face:admit] ok CacheConfig(cache_dtype=mxfp4/mxfp8) admitted+round-trip
+[face:dtype_map] ok mxfp4/mxfp8 -> uint8
+[face:mode_alias] ok mxfp8=TURBOQUANT_K8V4 mxfp4=TURBOQUANT_4BIT_NC is_turboquant=True
+[face:enum_member] ok MXKV=vllm_gaudi.xpu.patches.mx_kv.engine.MxAttentionBackend (register-time injection)
+[face:routing] ok vllm_gaudi.xpu.patches.mx_kv.engine.MxAttentionBackend
+[face:stamp] ok active_kv_dtype=mxfp8
+[face:slot] ok mxfp8: state_content_bytes=264 want=264
+[face:page] ok mxfp8: page_size_bytes=135168 want=135168
+[face:slot] ok mxfp4: state_content_bytes=136 want=136
+[face:page] ok mxfp4: page_size_bytes=69632 want=69632
+[face:tq_spec_fix] ok builder_forced=False impl_forward_patched=True
+[face:engine_import] ok mx_kv.engine + mx_dequant import OK
+VERDICT p148-admission PASS (14/14 faces)

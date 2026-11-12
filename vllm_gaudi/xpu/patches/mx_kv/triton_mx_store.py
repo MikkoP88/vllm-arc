@@ -11,7 +11,10 @@ AoS slot geometry defined in mx_layout.py:
     mxfp4: [ K e2m1 D/2 ][ Ks x D/32 ][ V e2m1 D/2 ][ Vs x D/32 ]
 
 NUMERICS LAW (bit-exact vs mx_quant.py reference, enforced by the
-offline harness): the E8M0 exponent is derived EXACTLY from the fp32
+offline harness): key and value are loaded through SEPARATE
+token+head strides (upstream store law — the wheel's kernels take
+stride_val_tok/stride_val_head; the two tensors arrive with
+independent layouts); the E8M0 exponent is derived EXACTLY from the fp32
 divide result's bits —
     r = amax / EMAX ; exp = (biased_e - 127) + (mantissa != 0)
     r zero/subnormal -> exp = -127 ; code = clamp(127 + exp, 0, 254)
@@ -29,10 +32,11 @@ from the SAME pass); E8M0 scales cost 1 B per 32 elements (vs the TQ
 fp16 scale+zero 4 B per row), so the decode-side re-read is 8x
 lighter on the metadata path.
 
-GRAPH SAFETY: no host reads, no data-dependent control flow — the
-grid is (N, Hk) exact and every access is unmasked (full D rows);
-safe under XPU-graph capture once integrated (the engine leg wraps
-calls exactly like the wheel's TQ store).
+GRAPH SAFETY: no host reads; the only branch is the device-side
+negative-slot guard (uniform per program, upstream store law — see
+the kernel comment); every access is unmasked (full D rows); safe
+under XPU-graph capture once integrated (the engine leg wraps calls
+exactly like the wheel's TQ store).
 
 Provenance: from-scratch in-house lane (owner directive 2026-11-11);
 kernel structure follows the wheel's sub-byte KV template
@@ -101,6 +105,8 @@ def _mx_fused_store(
     tok_pos_ptr,
     stride_k_n,
     stride_k_h,
+    stride_v_n,
+    stride_v_h,
     stride_c_b,
     stride_c_t,
     stride_c_h,
@@ -111,17 +117,43 @@ def _mx_fused_store(
     tok = tl.program_id(0)
     head = tl.program_id(1)
 
+    # NEGATIVE-SLOT GUARD (upstream store law — triton_turboquant_store.py
+    # guards `if slot < 0` in both kernel variants): rows whose slot id is
+    # negative are SKIPPED, never written. The engine's dummy/warmup
+    # batches map every row to slot -1 (rig-proven: the 8192-row warmup
+    # prefill and the [-1]*8 pad batches, trace9) — without the guard each
+    # such row stores 2x slot_bytes BEFORE the pool base (blk=-1 ->
+    # -stride_c_b + 63*stride_c_t = -1056/-528 B at D=256), an
+    # out-of-bounds write into the tensor allocated immediately before
+    # the pool (P6.47 spec-text-corruption root cause, 2026-11-12).
+    # Device-side uniform branch — resolves per program at replay, so
+    # XPU-graph capture stays safe (same law as the upstream guard).
+    blk = tl.load(tok_block_ptr + tok)
+    if blk < 0:
+        return
+    pos = tl.load(tok_pos_ptr + tok)
+
     # K/V rows as [N_GROUPS, 32] so the group amax is one tl.max(axis=1).
+    # SEPARATE k/v token+head strides (upstream law — the wheel's store
+    # kernels take stride_val_tok/stride_val_head distinct from the key
+    # strides: key and value arrive at the store call with INDEPENDENT
+    # layouts). Sharing keys' strides for the v load read wrong addresses
+    # whenever the layouts differ — stored-V rel-L2 42-80% with K clean
+    # at 2-3% (trace24 chunk_snr, P6.47 root cause #2, 2026-11-12); the
+    # offline harness's matching-stride tensors could never see it.
     g = tl.arange(0, N_GROUPS)
     lane = tl.arange(0, 32)
     offs2 = g[:, None] * 32 + lane[None, :]
-    base = tok.to(tl.int64) * stride_k_n + head * stride_k_h
-    k2 = tl.load(k_ptr + base + offs2).to(tl.float32)
-    v2 = tl.load(v_ptr + base + offs2).to(tl.float32)
+    k2 = tl.load(
+        k_ptr + tok.to(tl.int64) * stride_k_n + head * stride_k_h + offs2
+    ).to(tl.float32)
+    v2 = tl.load(
+        v_ptr + tok.to(tl.int64) * stride_v_n + head * stride_v_h + offs2
+    ).to(tl.float32)
 
     slot = (
-        tl.load(tok_block_ptr + tok).to(tl.int64) * stride_c_b
-        + tl.load(tok_pos_ptr + tok).to(tl.int64) * stride_c_t
+        blk.to(tl.int64) * stride_c_b
+        + pos.to(tl.int64) * stride_c_t
         + head * stride_c_h
     )
     flat = tl.reshape(offs2, (D,))
@@ -168,6 +200,12 @@ def mx_store(
     sb = cache.shape[-1]
     want = {"mxfp8": slot_bytes(d, "mxfp8"), "mxfp4": slot_bytes(d, "mxfp4")}
     fmt = next(f for f, b in want.items() if b == sb)
+    # The kernels index rows assuming element-contiguous D (upstream law);
+    # normalize the never-happens non-contiguous tail case defensively.
+    if keys.stride(2) != 1:
+        keys = keys.contiguous()
+    if values.stride(2) != 1:
+        values = values.contiguous()
     _mx_fused_store[(n, hk)](
         keys,
         values,
@@ -176,6 +214,8 @@ def mx_store(
         tok_pos,
         keys.stride(0),
         keys.stride(1),
+        values.stride(0),
+        values.stride(1),
         cache.stride(0),
         cache.stride(1),
         cache.stride(2),
