@@ -1,0 +1,38 @@
+(Worker_TP1 pid=1507) INFO 11-12 06:52:51 [engine.py:390] MXKV impl: fmt=mxfp8 head=256 slot=528 B (capacity 1.94x fp16 KV) dump=False ord=0
+(Worker_TP1 pid=1507) INFO 11-12 06:52:51 [engine.py:390] MXKV impl: fmt=mxfp8 head=256 slot=528 B (capacity 1.94x fp16 KV) dump=False ord=1
+(Worker_TP0 pid=1335) INFO 11-12 06:52:51 [platform.py:642] Using MX KV attention backend (mxfp8).
+(Worker_TP0 pid=1335) INFO 11-12 06:52:51 [engine.py:390] MXKV impl: fmt=mxfp8 head=256 slot=528 B (capacity 1.94x fp16 KV) dump=False ord=0
+(Worker_TP1 pid=1507) INFO 11-12 06:52:51 [engine.py:390] MXKV impl: fmt=mxfp8 head=256 slot=528 B (capacity 1.94x fp16 KV) dump=False ord=2
+(Worker_TP0 pid=1335) INFO 11-12 06:52:51 [engine.py:390] MXKV impl: fmt=mxfp8 head=256 slot=528 B (capacity 1.94x fp16 KV) dump=False ord=1
+(Worker_TP0 pid=1335) INFO 11-12 06:52:51 [engine.py:390] MXKV impl: fmt=mxfp8 head=256 slot=528 B (capacity 1.94x fp16 KV) dump=False ord=2
+(Worker_TP1 pid=1507) INFO 11-12 06:52:51 [engine.py:390] MXKV impl: fmt=mxfp8 head=256 slot=528 B (capacity 1.94x fp16 KV) dump=False ord=3
+(Worker_TP0 pid=1335) INFO 11-12 06:52:51 [engine.py:390] MXKV impl: fmt=mxfp8 head=256 slot=528 B (capacity 1.94x fp16 KV) dump=False ord=3
+(Worker_TP1 pid=1507) INFO 11-12 06:52:51 [engine.py:390] MXKV impl: fmt=mxfp8 head=256 slot=528 B (capacity 1.94x fp16 KV) dump=False ord=4
+(Worker_TP0 pid=1335) INFO 11-12 06:52:51 [engine.py:390] MXKV impl: fmt=mxfp8 head=256 slot=528 B (capacity 1.94x fp16 KV) dump=False ord=4
+(Worker_TP1 pid=1507) INFO 11-12 06:52:51 [engine.py:390] MXKV impl: fmt=mxfp8 head=256 slot=528 B (capacity 1.94x fp16 KV) dump=False ord=5
+(Worker_TP0 pid=1335) INFO 11-12 06:52:51 [engine.py:390] MXKV impl: fmt=mxfp8 head=256 slot=528 B (capacity 1.94x fp16 KV) dump=False ord=5
+(Worker_TP1 pid=1507) INFO 11-12 06:52:51 [engine.py:390] MXKV impl: fmt=mxfp8 head=256 slot=528 B (capacity 1.94x fp16 KV) dump=False ord=6
+(Worker_TP0 pid=1335) INFO 11-12 06:52:51 [engine.py:390] MXKV impl: fmt=mxfp8 head=256 slot=528 B (capacity 1.94x fp16 KV) dump=False ord=6
+(Worker_TP1 pid=1507) INFO 11-12 06:52:51 [engine.py:390] MXKV impl: fmt=mxfp8 head=256 slot=528 B (capacity 1.94x fp16 KV) dump=False ord=7
+(Worker_TP0 pid=1335) INFO 11-12 06:52:51 [engine.py:390] MXKV impl: fmt=mxfp8 head=256 slot=528 B (capacity 1.94x fp16 KV) dump=False ord=7
+(Worker_TP1 pid=1507) INFO 11-12 06:52:51 [engine.py:390] MXKV impl: fmt=mxfp8 head=256 slot=528 B (capacity 1.94x fp16 KV) dump=False ord=8
+(Worker_TP0 pid=1335) INFO 11-12 06:52:51 [engine.py:390] MXKV impl: fmt=mxfp8 head=256 slot=528 B (capacity 1.94x fp16 KV) dump=False ord=8
+(Worker_TP1 pid=1507) INFO 11-12 06:52:51 [engine.py:390] MXKV impl: fmt=mxfp8 head=256 slot=528 B (capacity 1.94x fp16 KV) dump=False ord=9
+(Worker_TP0 pid=1335) INFO 11-12 06:52:51 [engine.py:390] MXKV impl: fmt=mxfp8 head=256 slot=528 B (capacity 1.94x fp16 KV) dump=False ord=9
+(Worker_TP1 pid=1507) INFO 11-12 06:52:51 [engine.py:390] MXKV impl: fmt=mxfp8 head=256 slot=528 B (capacity 1.94x fp16 KV) dump=False ord=10
+(Worker_TP0 pid=1335) INFO 11-12 06:52:51 [engine.py:390] MXKV impl: fmt=mxfp8 head=256 slot=528 B (capacity 1.94x fp16 KV) dump=False ord=10
+(Worker_TP0 pid=1335) INFO 11-12 06:52:51 [engine.py:390] MXKV impl: fmt=mxfp8 head=256 slot=528 B (capacity 1.94x fp16 KV) dump=False ord=11
+(Worker_TP1 pid=1507) INFO 11-12 06:52:51 [engine.py:390] MXKV impl: fmt=mxfp8 head=256 slot=528 B (capacity 1.94x fp16 KV) dump=False ord=11
+(Worker_TP0 pid=1335) INFO 11-12 06:52:51 [engine.py:390] MXKV impl: fmt=mxfp8 head=256 slot=528 B (capacity 1.94x fp16 KV) dump=False ord=12
+(Worker_TP1 pid=1507) INFO 11-12 06:52:51 [engine.py:390] MXKV impl: fmt=mxfp8 head=256 slot=528 B (capacity 1.94x fp16 KV) dump=False ord=12
+(Worker_TP0 pid=1335) INFO 11-12 06:52:51 [engine.py:390] MXKV impl: fmt=mxfp8 head=256 slot=528 B (capacity 1.94x fp16 KV) dump=False ord=13
+(Worker_TP1 pid=1507) INFO 11-12 06:52:51 [engine.py:390] MXKV impl: fmt=mxfp8 head=256 slot=528 B (capacity 1.94x fp16 KV) dump=False ord=13
+(Worker_TP0 pid=1335) INFO 11-12 06:52:51 [engine.py:390] MXKV impl: fmt=mxfp8 head=256 slot=528 B (capacity 1.94x fp16 KV) dump=False ord=14
+(Worker_TP1 pid=1507) INFO 11-12 06:52:51 [engine.py:390] MXKV impl: fmt=mxfp8 head=256 slot=528 B (capacity 1.94x fp16 KV) dump=False ord=14
+(Worker_TP0 pid=1335) INFO 11-12 06:52:51 [engine.py:390] MXKV impl: fmt=mxfp8 head=256 slot=528 B (capacity 1.94x fp16 KV) dump=False ord=15
+(Worker_TP1 pid=1507) INFO 11-12 06:52:51 [engine.py:390] MXKV impl: fmt=mxfp8 head=256 slot=528 B (capacity 1.94x fp16 KV) dump=False ord=15
+(Worker_TP1 pid=1507) INFO 11-12 06:52:56 [engine.py:390] MXKV impl: fmt=mxfp8 head=256 slot=528 B (capacity 1.94x fp16 KV) dump=False ord=16
+(Worker_TP0 pid=1335) INFO 11-12 06:52:56 [engine.py:390] MXKV impl: fmt=mxfp8 head=256 slot=528 B (capacity 1.94x fp16 KV) dump=False ord=16
+(Worker_TP1 pid=1507) INFO 11-12 06:52:58 [interface.py:933] Setting attention block size to 832 tokens to ensure that attention page size is >= mamba page size.
+(Worker_TP0 pid=1335) INFO 11-12 06:52:58 [interface.py:933] Setting attention block size to 832 tokens to ensure that attention page size is >= mamba page size.
+(EngineCore pid=1031) INFO 11-12 06:56:08 [kv_cache_utils.py:2395] XPU KV cache size: 350,416 tokens, Maximum concurrency for 32,768 tokens per request: 10.69x

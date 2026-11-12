@@ -1,0 +1,35 @@
+=== [r149:legB2] W14 quiesce 06:50:35 ===
+=== [r149:legB2] boot mxfp8 spec=1 graph=0 maxlen=32768 06:50:51 ===
+READY=1 after ~417s 06:58:33
+=== [r149:legB2] generation battery 06:58:33 ===
+PROMPT_OK 7 '\n\nParis'
+PROMPT_OK 209 '\n\n<think>\nThe user wants a Python function that computes the n-th Fibonacci number using an iterative approach (not recu'
+PROMPT_OK 239 '\n\n1. **Identify the criterion** – an element must be in the gaseous state at typical room temperature (about 20 °C / 68 '
+--- serve log greps ---
+(Worker_TP1 pid=1507) INFO 11-12 06:52:51 [engine.py:390] MXKV impl: fmt=mxfp8 head=256 slot=528 B (capacity 1.94x fp16 KV) dump=False ord=0
+(Worker_TP1 pid=1507) INFO 11-12 06:52:51 [engine.py:390] MXKV impl: fmt=mxfp8 head=256 slot=528 B (capacity 1.94x fp16 KV) dump=False ord=1
+(Worker_TP0 pid=1335) INFO 11-12 06:52:51 [platform.py:642] Using MX KV attention backend (mxfp8).
+(Worker_TP0 pid=1335) INFO 11-12 06:52:51 [engine.py:390] MXKV impl: fmt=mxfp8 head=256 slot=528 B (capacity 1.94x fp16 KV) dump=False ord=0
+(Worker_TP1 pid=1507) INFO 11-12 06:52:51 [engine.py:390] MXKV impl: fmt=mxfp8 head=256 slot=528 B (capacity 1.94x fp16 KV) dump=False ord=2
+(Worker_TP0 pid=1335) INFO 11-12 06:52:51 [engine.py:390] MXKV impl: fmt=mxfp8 head=256 slot=528 B (capacity 1.94x fp16 KV) dump=False ord=1
+(Worker_TP0 pid=1335) INFO 11-12 06:52:51 [engine.py:390] MXKV impl: fmt=mxfp8 head=256 slot=528 B (capacity 1.94x fp16 KV) dump=False ord=2
+(Worker_TP1 pid=1507) INFO 11-12 06:52:51 [engine.py:390] MXKV impl: fmt=mxfp8 head=256 slot=528 B (capacity 1.94x fp16 KV) dump=False ord=3
+(Worker_TP0 pid=1335) INFO 11-12 06:52:51 [engine.py:390] MXKV impl: fmt=mxfp8 head=256 slot=528 B (capacity 1.94x fp16 KV) dump=False ord=3
+(Worker_TP1 pid=1507) INFO 11-12 06:52:51 [engine.py:390] MXKV impl: fmt=mxfp8 head=256 slot=528 B (capacity 1.94x fp16 KV) dump=False ord=4
+(Worker_TP0 pid=1335) INFO 11-12 06:52:51 [engine.py:390] MXKV impl: fmt=mxfp8 head=256 slot=528 B (capacity 1.94x fp16 KV) dump=False ord=4
+(Worker_TP1 pid=1507) INFO 11-12 06:52:51 [engine.py:390] MXKV impl: fmt=mxfp8 head=256 slot=528 B (capacity 1.94x fp16 KV) dump=False ord=5
+(Worker_TP0 pid=1335) INFO 11-12 06:52:51 [engine.py:390] MXKV impl: fmt=mxfp8 head=256 slot=528 B (capacity 1.94x fp16 KV) dump=False ord=5
+(Worker_TP1 pid=1507) INFO 11-12 06:52:51 [engine.py:390] MXKV impl: fmt=mxfp8 head=256 slot=528 B (capacity 1.94x fp16 KV) dump=False ord=6
+(Worker_TP0 pid=1335) INFO 11-12 06:52:51 [engine.py:390] MXKV impl: fmt=mxfp8 head=256 slot=528 B (capacity 1.94x fp16 KV) dump=False ord=6
+(Worker_TP1 pid=1507) INFO 11-12 06:52:51 [engine.py:390] MXKV impl: fmt=mxfp8 head=256 slot=528 B (capacity 1.94x fp16 KV) dump=False ord=7
+(Worker_TP0 pid=1335) INFO 11-12 06:52:51 [engine.py:390] MXKV impl: fmt=mxfp8 head=256 slot=528 B (capacity 1.94x fp16 KV) dump=False ord=7
+(Worker_TP1 pid=1507) INFO 11-12 06:52:51 [engine.py:390] MXKV impl: fmt=mxfp8 head=256 slot=528 B (capacity 1.94x fp16 KV) dump=False ord=8
+(Worker_TP0 pid=1335) INFO 11-12 06:52:51 [engine.py:390] MXKV impl: fmt=mxfp8 head=256 slot=528 B (capacity 1.94x fp16 KV) dump=False ord=8
+(Worker_TP1 pid=1507) INFO 11-12 06:52:51 [engine.py:390] MXKV impl: fmt=mxfp8 head=256 slot=528 B (capacity 1.94x fp16 KV) dump=False ord=9
+(Worker_TP0 pid=1335) INFO 11-12 06:52:51 [engine.py:390] MXKV impl: fmt=mxfp8 head=256 slot=528 B (capacity 1.94x fp16 KV) dump=False ord=9
+(Worker_TP1 pid=1507) INFO 11-12 06:52:51 [engine.py:390] MXKV impl: fmt=mxfp8 head=256 slot=528 B (capacity 1.94x fp16 KV) dump=False ord=10
+(Worker_TP0 pid=1335) INFO 11-12 06:52:51 [engine.py:390] MXKV impl: fmt=mxfp8 head=256 slot=528 B (capacity 1.94x fp16 KV) dump=False ord=10
+(Worker_TP0 pid=1335) INFO 11-12 06:52:51 [engine.py:390] MXKV impl: fmt=mxfp8 head=256 slot=528 B (capacity 1.94x fp16 KV) dump=False ord=11
+(Worker_TP1 pid=1507) INFO 11-12 06:52:51 [engine.py:390] MXKV impl: fmt=mxfp8 head=256 slot=528 B (capacity 1.94x fp16 KV) dump=False ord=11
+R149_BOOT_PASS fmt=mxfp8 spec=1 graph=0 maxlen=32768 2026-11-12T06:59:17Z
+W14_RESTORED 2026-11-12T06:59:18Z

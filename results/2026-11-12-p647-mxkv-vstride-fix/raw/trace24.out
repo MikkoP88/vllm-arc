@@ -1,0 +1,35 @@
+=== [r149:legB2] W14 quiesce 06:36:28 ===
+=== [r149:legB2] boot mxfp8 spec=1 graph=0 maxlen=32768 06:36:45 ===
+READY=1 after ~416s 06:44:25
+=== [r149:legB2] generation battery 06:44:25 ===
+PROMPT_OK 229 '\n\nParis\n\nThe capital of France is Paris.\n\nThe capital of France is Paris, France.\n\n France, France,France,France,France,'
+PROMPT_OK 294 '\n\n<think>\nThe user is asking about writing code to find the answer to a question about a specific programming problem. T'
+PROMPT_OK 9 '\n\n1. **\n\n'
+--- serve log greps ---
+(Worker_TP0 pid=1336) INFO 11-12 06:38:44 [platform.py:642] Using MX KV attention backend (mxfp8).
+(Worker_TP0 pid=1336) INFO 11-12 06:38:44 [engine.py:390] MXKV impl: fmt=mxfp8 head=256 slot=528 B (capacity 1.94x fp16 KV) dump=False ord=0
+(Worker_TP1 pid=1508) INFO 11-12 06:38:44 [engine.py:390] MXKV impl: fmt=mxfp8 head=256 slot=528 B (capacity 1.94x fp16 KV) dump=False ord=0
+(Worker_TP0 pid=1336) INFO 11-12 06:38:44 [engine.py:390] MXKV impl: fmt=mxfp8 head=256 slot=528 B (capacity 1.94x fp16 KV) dump=False ord=1
+(Worker_TP1 pid=1508) INFO 11-12 06:38:44 [engine.py:390] MXKV impl: fmt=mxfp8 head=256 slot=528 B (capacity 1.94x fp16 KV) dump=False ord=1
+(Worker_TP0 pid=1336) INFO 11-12 06:38:44 [engine.py:390] MXKV impl: fmt=mxfp8 head=256 slot=528 B (capacity 1.94x fp16 KV) dump=False ord=2
+(Worker_TP1 pid=1508) INFO 11-12 06:38:44 [engine.py:390] MXKV impl: fmt=mxfp8 head=256 slot=528 B (capacity 1.94x fp16 KV) dump=False ord=2
+(Worker_TP0 pid=1336) INFO 11-12 06:38:44 [engine.py:390] MXKV impl: fmt=mxfp8 head=256 slot=528 B (capacity 1.94x fp16 KV) dump=False ord=3
+(Worker_TP0 pid=1336) INFO 11-12 06:38:44 [engine.py:390] MXKV impl: fmt=mxfp8 head=256 slot=528 B (capacity 1.94x fp16 KV) dump=False ord=4
+(Worker_TP1 pid=1508) INFO 11-12 06:38:44 [engine.py:390] MXKV impl: fmt=mxfp8 head=256 slot=528 B (capacity 1.94x fp16 KV) dump=False ord=3
+(Worker_TP0 pid=1336) INFO 11-12 06:38:44 [engine.py:390] MXKV impl: fmt=mxfp8 head=256 slot=528 B (capacity 1.94x fp16 KV) dump=False ord=5
+(Worker_TP1 pid=1508) INFO 11-12 06:38:44 [engine.py:390] MXKV impl: fmt=mxfp8 head=256 slot=528 B (capacity 1.94x fp16 KV) dump=False ord=4
+(Worker_TP0 pid=1336) INFO 11-12 06:38:44 [engine.py:390] MXKV impl: fmt=mxfp8 head=256 slot=528 B (capacity 1.94x fp16 KV) dump=False ord=6
+(Worker_TP1 pid=1508) INFO 11-12 06:38:44 [engine.py:390] MXKV impl: fmt=mxfp8 head=256 slot=528 B (capacity 1.94x fp16 KV) dump=False ord=5
+(Worker_TP0 pid=1336) INFO 11-12 06:38:44 [engine.py:390] MXKV impl: fmt=mxfp8 head=256 slot=528 B (capacity 1.94x fp16 KV) dump=False ord=7
+(Worker_TP1 pid=1508) INFO 11-12 06:38:44 [engine.py:390] MXKV impl: fmt=mxfp8 head=256 slot=528 B (capacity 1.94x fp16 KV) dump=False ord=6
+(Worker_TP0 pid=1336) INFO 11-12 06:38:44 [engine.py:390] MXKV impl: fmt=mxfp8 head=256 slot=528 B (capacity 1.94x fp16 KV) dump=False ord=8
+(Worker_TP1 pid=1508) INFO 11-12 06:38:44 [engine.py:390] MXKV impl: fmt=mxfp8 head=256 slot=528 B (capacity 1.94x fp16 KV) dump=False ord=7
+(Worker_TP0 pid=1336) INFO 11-12 06:38:44 [engine.py:390] MXKV impl: fmt=mxfp8 head=256 slot=528 B (capacity 1.94x fp16 KV) dump=False ord=9
+(Worker_TP1 pid=1508) INFO 11-12 06:38:44 [engine.py:390] MXKV impl: fmt=mxfp8 head=256 slot=528 B (capacity 1.94x fp16 KV) dump=False ord=8
+(Worker_TP0 pid=1336) INFO 11-12 06:38:44 [engine.py:390] MXKV impl: fmt=mxfp8 head=256 slot=528 B (capacity 1.94x fp16 KV) dump=False ord=10
+(Worker_TP1 pid=1508) INFO 11-12 06:38:45 [engine.py:390] MXKV impl: fmt=mxfp8 head=256 slot=528 B (capacity 1.94x fp16 KV) dump=False ord=9
+(Worker_TP0 pid=1336) INFO 11-12 06:38:45 [engine.py:390] MXKV impl: fmt=mxfp8 head=256 slot=528 B (capacity 1.94x fp16 KV) dump=False ord=11
+(Worker_TP1 pid=1508) INFO 11-12 06:38:45 [engine.py:390] MXKV impl: fmt=mxfp8 head=256 slot=528 B (capacity 1.94x fp16 KV) dump=False ord=10
+(Worker_TP0 pid=1336) INFO 11-12 06:38:45 [engine.py:390] MXKV impl: fmt=mxfp8 head=256 slot=528 B (capacity 1.94x fp16 KV) dump=False ord=12
+R149_BOOT_PASS fmt=mxfp8 spec=1 graph=0 maxlen=32768 2026-11-12T06:45:12Z
+W14_RESTORED 2026-11-12T06:45:13Z
