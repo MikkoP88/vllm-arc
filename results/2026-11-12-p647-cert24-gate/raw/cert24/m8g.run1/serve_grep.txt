@@ -1,0 +1,2 @@
+(EngineCore pid=529) INFO 11-12 09:55:20 [kv_cache_utils.py:2395] XPU KV cache size: 51,218 tokens, Maximum concurrency for 40,960 tokens per request: 1.25x
+(Worker_TP0 pid=773) INFO 11-12 09:54:05 [platform.py:642] Using MX KV attention backend (mxfp8).

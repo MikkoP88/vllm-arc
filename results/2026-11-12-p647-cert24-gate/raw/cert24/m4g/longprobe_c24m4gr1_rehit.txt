@@ -1,0 +1,20 @@
+===== essay =====
+{
+ "error": "<HTTPError 404: 'Not Found'>"
+}
+
+===== code =====
+{
+ "error": "<HTTPError 404: 'Not Found'>"
+}
+
+===== multi =====
+{
+ "error": "<HTTPError 404: 'Not Found'>"
+}
+
+===== simple =====
+{
+ "error": "<HTTPError 404: 'Not Found'>"
+}
+

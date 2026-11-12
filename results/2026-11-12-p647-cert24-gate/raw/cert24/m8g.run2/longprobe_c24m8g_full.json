@@ -1,0 +1,19 @@
+{
+ "tag": "c24m8g",
+ "mode": "full",
+ "probe": "v3",
+ "ts": "2026-11-12 11:31:54",
+ "essay": {
+  "error": "RemoteDisconnected('Remote end closed connection without response')"
+ },
+ "code": {
+  "error": "URLError(ConnectionRefusedError(111, 'Connection refused'))"
+ },
+ "multi": {
+  "error": "URLError(ConnectionRefusedError(111, 'Connection refused'))"
+ },
+ "simple": {
+  "error": "URLError(ConnectionRefusedError(111, 'Connection refused'))"
+ },
+ "VERDICT": "CORRUPTION_SIGNAL"
+}

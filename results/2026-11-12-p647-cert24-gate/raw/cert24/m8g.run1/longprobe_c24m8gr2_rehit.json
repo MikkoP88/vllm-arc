@@ -1,0 +1,19 @@
+{
+ "tag": "c24m8gr2",
+ "mode": "rehit",
+ "probe": "v3",
+ "ts": "2026-11-12 10:02:30",
+ "essay": {
+  "error": "<HTTPError 404: 'Not Found'>"
+ },
+ "code": {
+  "error": "<HTTPError 404: 'Not Found'>"
+ },
+ "multi": {
+  "error": "<HTTPError 404: 'Not Found'>"
+ },
+ "simple": {
+  "error": "<HTTPError 404: 'Not Found'>"
+ },
+ "VERDICT": "CORRUPTION_SIGNAL"
+}
