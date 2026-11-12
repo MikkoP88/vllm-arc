@@ -4,8 +4,11 @@
 # capture points end-to-end to locate the root issue).
 #
 # Cells q8 (native fp8_e4m3 KV) / m8 (mxfp8) / m4 (mxfp4) on $IMG, qwen
-# champion chain byte-exact from r155. Streaming capture via the image's
-# p139_conc.py: per-slot ttft_s + ITL p50/p90/p99 (inter-token latency =
+# champion chain byte-exact from r155. Streaming capture via p139_conc.py
+# docker-cp'd into each container (the images do NOT bake it — maiden-run
+# lesson 2026-11-12: exec -d of a missing script exits instantly, no JSON,
+# every cell burns its cap in CONC_TIMEOUT): per-slot ttft_s + ITL
+# p50/p90/p99 (inter-token latency =
 # the decode step time at growing ctx) -- ITL deltas MX-vs-ctrl at conc1
 # isolate the attn-path share (non-attn layers identical), TTFT carries
 # the prefill axis. Rungs {1024, 8192, 32768} x conc {1, 8} minus the
@@ -19,6 +22,8 @@ P=$R/p647/telemA10
 IMG=${IMG:-vllm-arc:v0.30.0-b70-cert25x}
 CNAME=arc-r162
 MT=600
+PROBE=$R/p139_conc.py  # canonical copy (API length-budget fix, r140c law)
+[ -f "$PROBE" ] || { echo "R162_NO_PROBE $PROBE"; exit 1; }
 mkdir -p "$P"
 FAILED=""
 
@@ -111,6 +116,9 @@ run_cell() {
     return 0
   fi
   echo "HEALTH_OK_r162_$CELLN $(date +%H:%M:%S)"
+  docker cp "$PROBE" $CNAME:/root/p139_conc.py || { \
+    echo "R162_PROBE_CP_FAIL_$CELLN"; FAILED="$FAILED $CELLN"; \
+    docker rm -f $CNAME >/dev/null 2>&1; verify_removed || true; return 0; }
   grep -h "ARC_SERVE_LAUNCHED" "$CD/boot.txt" | tail -1 > "$CD/posture.txt"
   docker exec $CNAME grep -E "GPU KV cache size|Maximum concurrency" \
     /root/serve_full.log 2>/dev/null | head -3 > "$CD/markers.txt" || true
