@@ -71,6 +71,17 @@ BLOCK_N=128 (a 17-20 ms cliff vs 2.4-6.0 ms winners) and take (64,
 8) — the table is baked into `_MX_TUNE` and applied per format
 unless the caller overrides.
 
+V4 VERIFY-ROW-SHARED SPLIT (A11 lever 2, 2026-11-12): the A10 e2e
+attribution showed the MX deficit is per-byte ALU work — v2 re-walks
+and re-dequants the same KV tiles up to 24x per step (N_REP q-heads x
+R_TILE MTP verify rows). `_mx_decode_split_rows` grid (G, Hq, 32):
+one program walks the request ONCE and serves all R_TILE=4 verify
+rows (K/V load + dequant shared 4x, per-row limits differ only in the
+final tile, state HALF of v3's spilled N_REP=6 unroll; m_safe NaN
+guard preserves v2's exact empty-marker semantics). Wired behind
+ARC_MXKV_V4_VERIFY=1 in the engine's MTP verify path — default off
+until the p159 probe + A12 ladder earn the flip.
+
 GRAPH SAFETY: seq lens and block tables are read from device buffers
 inside the kernel (the TQ decode pattern) — no host reads, no
 data-dependent host control flow; XPU-graph safe. The mid buffer is
@@ -453,6 +464,134 @@ def _mx_decode_split_gqa(
 
 
 @triton.jit
+def _mx_decode_split_rows(
+    q_ptr,
+    cache_ptr,
+    block_tables_ptr,
+    limits_ptr,  # [R] per-row causal limits (rows grouped: g*R_TILE..+R_TILE-1)
+    mid_ptr,  # [R, Hq, NUM_SPLITS, D+1] f32 — same layout v2/v3 write
+    sm_scale,
+    stride_q_b,
+    stride_q_h,
+    stride_mid_b,
+    stride_mid_h,
+    stride_mid_s,
+    stride_bt_b,
+    stride_c_b,
+    stride_c_t,
+    stride_c_h,
+    D: tl.constexpr,
+    N_GROUPS: tl.constexpr,
+    K4: tl.constexpr,
+    V4: tl.constexpr,
+    R_TILE: tl.constexpr,  # verify rows per group (MTP k4 -> 4)
+    N_REP: tl.constexpr,  # GQA: Hq // Hk (kv-head = hq // N_REP)
+    BLOCK_SIZE: tl.constexpr,  # cache block (tokens per block)
+    BLOCK_N: tl.constexpr,  # decode tile
+    NUM_SPLITS: tl.constexpr,  # grid z; effective count adapts per group
+    SHIFT: tl.constexpr,  # e2m1 unpack flavor (v2/v3 A/B)
+):
+    # v4 stage 1 (A11 lever 2): one program per (row-GROUP, q-head,
+    # split) serving all R_TILE verify rows of one request against ONE
+    # walk. The 4 rows share the request's block-table row and their
+    # causal limits differ only near the walk end (MTP verify: ctx-3..
+    # ctx), so the walk, the gather, and the K/V dequant — the ALU the
+    # A10 attribution showed binding at oversubscription — amortize
+    # R_TILE-fold while the per-row score/acc FMA work is unchanged.
+    # State is HALF of v3's spilled N_REP=6 unroll (4 rows, D=256 accs)
+    # — the A9 verdict on GQA sharing does not apply to this axis.
+    # Per-row limits: a row with no tile in this split keeps the exact
+    # v2 empty-marker semantics (lse=-inf, acc=0) via the m_safe guard
+    # (all-masked tiles would otherwise make scores-m_new = -inf-(-inf)
+    # = NaN). Rows with work run the identical v2 lane math, so v4 vs
+    # per-row v2 differs only by split regrouping (the A11 S-sweep
+    # measured that class at 2-3e-8).
+    g = tl.program_id(0)
+    hq = tl.program_id(1)
+    sid = tl.program_id(2)
+    hk = hq // N_REP  # GQA: the kv-head this q-head reads
+
+    # per-row limits + the group walk end (max over rows)
+    lims = ()
+    walk_end = 0
+    for r in tl.static_range(R_TILE):
+        lim = tl.load(limits_ptr + g * R_TILE + r)
+        lims = lims + (lim,)
+        walk_end = tl.maximum(walk_end, lim)
+
+    n_tiles = (walk_end + BLOCK_N - 1) // BLOCK_N
+    s_eff = tl.minimum(NUM_SPLITS, tl.maximum(1, (n_tiles + 1) // 2))
+    split_len = (walk_end + s_eff - 1) // s_eff
+    split_start = split_len * sid
+    split_end = tl.minimum(split_start + split_len, walk_end)
+
+    offs_d = tl.arange(0, D)
+    qs = ()
+    mis = ()
+    lis = ()
+    accs = ()
+    for r in tl.static_range(R_TILE):
+        qs = qs + (
+            tl.load(
+                q_ptr
+                + (g * R_TILE + r) * stride_q_b
+                + hq * stride_q_h
+                + offs_d
+            ),
+        )
+        mis = mis + (-float("inf"),)
+        lis = lis + (0.0,)
+        accs = accs + (tl.zeros((D,), dtype=tl.float32),)
+
+    if split_start < split_end:
+        v_off = (D // 2 if K4 else D) + N_GROUPS
+        for start_n in range(split_start, split_end, BLOCK_N):
+            offs_n = start_n + tl.arange(0, BLOCK_N)
+            nmask = offs_n < split_end
+            blk = tl.load(
+                block_tables_ptr + g * stride_bt_b + offs_n // BLOCK_SIZE,
+                mask=nmask,
+                other=0,
+            )
+            slot = (
+                blk.to(tl.int64) * stride_c_b
+                + (offs_n % BLOCK_SIZE).to(tl.int64) * stride_c_t
+                + hk.to(tl.int64) * stride_c_h
+            )
+            k = _mx_dequant_block(
+                cache_ptr, slot, 0, nmask, BLOCK_N, D, N_GROUPS, K4, SHIFT
+            )
+            v = _mx_dequant_block(
+                cache_ptr, slot, v_off, nmask, BLOCK_N, D, N_GROUPS, V4, SHIFT
+            )
+            for r in tl.static_range(R_TILE):
+                # the row's effective end inside this walk (v2's split_end
+                # for a per-row call with seq_len=limit)
+                end_r = tl.minimum(lims[r], split_end)
+                rmask = offs_n < end_r
+                scores = tl.sum(qs[r][None, :] * k, axis=1) * sm_scale
+                scores = tl.where(rmask, scores, -float("inf"))
+                m_new = tl.maximum(mis[r], tl.max(scores, 0))
+                m_safe = tl.where(m_new == -float("inf"), 0.0, m_new)
+                p = tl.exp(scores - m_safe)
+                alpha = tl.exp(mis[r] - m_safe)
+                lis = lis[:r] + (lis[r] * alpha + tl.sum(p, 0),) + lis[r + 1 :]
+                accs = (
+                    accs[:r]
+                    + (accs[r] * alpha + tl.sum(p[:, None] * v, axis=0),)
+                    + accs[r + 1 :]
+                )
+                mis = mis[:r] + (m_new,) + mis[r + 1 :]
+
+    for r in tl.static_range(R_TILE):
+        base = (g * R_TILE + r) * stride_mid_b + hq * stride_mid_h + sid * stride_mid_s
+        safe_l = tl.where(lis[r] > 0.0, lis[r], 1.0)
+        tl.store(mid_ptr + base + offs_d, accs[r] / safe_l)
+        lse = tl.where(lis[r] > 0.0, mis[r] + tl.log(safe_l), -float("inf"))
+        tl.store(mid_ptr + base + D, lse)
+
+
+@triton.jit
 def _mx_decode_combine(
     mid_ptr,
     out_ptr,
@@ -612,6 +751,97 @@ def _mx_decode_v2(
         _mx_decode_split, hq, q, cache, block_tables, seq_lens, sm_scale,
         block_size, block_n, shift, num_warps, num_stages,
     )
+
+
+def mx_decode_rows(
+    q: torch.Tensor,
+    cache: torch.Tensor,
+    block_tables: torch.Tensor,
+    limits: torch.Tensor,
+    sm_scale: float,
+    block_size: int = 64,
+    block_n: int | None = None,
+    num_warps: int | None = None,
+    num_stages: int | None = None,
+    r_tile: int = 4,
+) -> torch.Tensor:
+    """v4 verify-row-shared decode (A11 lever 2). q [R, Hq, D];
+    block_tables [G, max_blocks] ONE row per group of r_tile rows
+    (rows g*r_tile..+r_tile share request g's blocks); limits [R] the
+    per-row causal limits (LIMIT-LAW values). Returns [R, Hq, D].
+
+    ONE walk + ONE K/V dequant per tile serve all r_tile rows — the
+    ALU the A10 attribution showed binding at oversubscription
+    amortizes r_tile-fold; per-row state is HALF of v3's spilled GQA
+    unroll. Format, tune, and flavor resolve exactly like mx_decode's
+    v2/v3 lanes (per-format _MX_TUNE winners); mid layout and the
+    combine stage are v2's, so the split regrouping vs per-row v2 is
+    the only numeric difference (A11 S-sweep class: 2-3e-8).
+    """
+    r, hq, d = q.shape
+    if r % r_tile != 0:
+        raise ValueError(f"rows ({r}) not a multiple of r_tile ({r_tile})")
+    g = r // r_tile
+    hk = cache.shape[2]
+    sb = cache.shape[-1]
+    want = {f: slot_bytes(d, f) for f in ("mxfp8", "mxfp4", "mxk8v4")}
+    fmt = next(f for f, w in want.items() if w == sb)
+    bn_t, nw_t, ns_t, sh_t = _MX_TUNE[fmt]
+    block_n = bn_t if block_n is None else block_n
+    num_warps = nw_t if num_warps is None else num_warps
+    num_stages = ns_t if num_stages is None else num_stages
+    shift = sh_t if _SHIFT is None else _SHIFT
+    out = torch.empty_like(q)
+    key = (r, hq, _MX_SPLIT_MAX, d, str(q.device))
+    mid = _mid_cache.get(key)
+    if mid is None:
+        mid = torch.empty(
+            r, hq, _MX_SPLIT_MAX, d + 1, dtype=torch.float32, device=q.device
+        )
+        _mid_cache[key] = mid
+    _mx_decode_split_rows[(g, hq, _MX_SPLIT_MAX)](
+        q,
+        cache,
+        block_tables,
+        limits,
+        mid,
+        sm_scale,
+        q.stride(0),
+        q.stride(1),
+        mid.stride(0),
+        mid.stride(1),
+        mid.stride(2),
+        block_tables.stride(0),
+        cache.stride(0),
+        cache.stride(1),
+        cache.stride(2),
+        D=d,
+        N_GROUPS=d // 32,
+        K4=fmt == "mxfp4",
+        V4=fmt in ("mxfp4", "mxk8v4"),
+        R_TILE=r_tile,
+        N_REP=hq // hk,
+        BLOCK_SIZE=block_size,
+        BLOCK_N=block_n,
+        NUM_SPLITS=_MX_SPLIT_MAX,
+        SHIFT=shift,
+        num_warps=num_warps,
+        num_stages=num_stages,
+    )
+    _mx_decode_combine[(r, hq)](
+        mid,
+        out,
+        mid.stride(0),
+        mid.stride(1),
+        mid.stride(2),
+        out.stride(0),
+        out.stride(1),
+        D=d,
+        NUM_SPLITS=_MX_SPLIT_MAX,
+        BLOCK_S=triton.next_power_of_2(_MX_SPLIT_MAX),
+        num_warps=1,
+    )
+    return out
 
 
 def _mx_decode_v3(

@@ -70,7 +70,7 @@ from .mx_dequant import mx_dequant_cache
 from .mx_layout import offsets as _mx_offsets
 from .mx_layout import slot_bytes
 from .mx_quant import decode_kv as _ref_decode_kv
-from .triton_mx_decode import mx_decode
+from .triton_mx_decode import mx_decode, mx_decode_rows
 from .triton_mx_store import mx_store
 
 # vllm-namespace logger (platform.py law): serve-time dictConfig
@@ -105,6 +105,14 @@ _CONTINUATION_DECODE_THRESHOLD = 128
 _TRACE = os.environ.get("ARC_MXKV_TRACE", "") == "1"
 _TRACE_BUDGET = 200000
 _trace_calls = 0
+
+# v4 verify-row sharing (A11 lever 2, 2026-11-12): ONE walk per request
+# serving all its MTP verify rows (shared K/V dequant — the ALU the A10
+# attribution showed binding at oversubscription). Off by default until
+# the p159 probe + e2e ladder validate; ARC_MXKV_V4_VERIFY=1 opts in.
+# _V4_R_TILE must equal the kernel's group width (spec=3 -> k+1 = 4).
+_V4_VERIFY = os.environ.get("ARC_MXKV_V4_VERIFY", "") == "1"
+_V4_R_TILE = 4
 
 # Ground-truth dump hook (debug-run-only, default off): with
 # ARC_MXKV_DUMP=1, the first attention call after `touch /tmp/mxkv_dump`
@@ -997,18 +1005,40 @@ class MxAttentionImpl(TurboQuantAttentionImpl):
                 .to(sm.dtype)
             )
             sl_rows = blk_idx * stride + sm_pos + 1
-            plan = (idx, bt_rows, sl_rows)
+            # v4 (A11 lever 2): when every split request carries the MTP
+            # verify shape (q_len = R_TILE rows), ONE walk per request can
+            # serve all its rows — group block-table rows, same per-row
+            # limits. Device ops only (capture law above).
+            bt_groups = None
+            if _V4_VERIFY and all(ql == _V4_R_TILE for _, _, ql in split_rows):
+                bt_groups = bt.index_select(
+                    0,
+                    torch.arange(
+                        len(split_rows), device=bt.device, dtype=torch.long
+                    ),
+                )
+            plan = (idx, bt_rows, sl_rows, bt_groups)
             self._mx_split_cache = (key, plan, attn_metadata)
-        idx, bt_rows, sl_rows = plan
+        idx, bt_rows, sl_rows, bt_groups = plan
         _trace("path", "batch", "splitbatch", f"R={idx.shape[0]}")
         q_rows = query.index_select(0, idx)
-        out = mx_decode(
-            q_rows,
-            kv_cache,
-            bt_rows,
-            sl_rows,
-            self.scale,
-        )
+        if bt_groups is not None:
+            out = mx_decode_rows(
+                q_rows,
+                kv_cache,
+                bt_groups,
+                sl_rows,
+                self.scale,
+                r_tile=_V4_R_TILE,
+            )
+        else:
+            out = mx_decode(
+                q_rows,
+                kv_cache,
+                bt_rows,
+                sl_rows,
+                self.scale,
+            )
         output.index_copy_(0, idx, out.to(query.dtype))
 
     def _continuation_prefill(
