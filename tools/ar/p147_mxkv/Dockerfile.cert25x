@@ -1,0 +1,74 @@
+# SPDX-License-Identifier: Apache-2.0
+# Dockerfile.cert25x -- P6.47 cert25x image: cert24 + the v3 decode
+# line (commit-time overlay of the same 10 files cert24x shipped).
+# Built by r158_build_cert25x.sh with FORK_SHA=<content commit>.
+FROM vllm-arc:v0.30.0-b70-cert24
+
+ARG FORK_SHA=unknown
+ARG BUILT=unknown
+
+COPY __init__.py /tmp/mx_kv___init__.py
+COPY engine.py /tmp/mx_kv_engine.py
+COPY mx_dequant.py /tmp/mx_kv_mx_dequant.py
+COPY mx_layout.py /tmp/mx_kv_mx_layout.py
+COPY mx_quant.py /tmp/mx_kv_mx_quant.py
+COPY triton_mx_decode.py /tmp/mx_kv_triton_mx_decode.py
+COPY triton_mx_store.py /tmp/mx_kv_triton_mx_store.py
+COPY mx_dtype_map.py /tmp/mx_dtype_map.py
+COPY mx_kv_mode.py /tmp/mx_kv_mode.py
+COPY platform.py /tmp/platform.py
+
+RUN set -euxo pipefail; \
+    SP=/opt/venv/lib/python3.12/site-packages/vllm_gaudi; \
+    mkdir -p $SP/xpu/patches/mx_kv; \
+    cp /tmp/mx_kv___init__.py       $SP/xpu/patches/mx_kv/__init__.py; \
+    cp /tmp/mx_kv_engine.py         $SP/xpu/patches/mx_kv/engine.py; \
+    cp /tmp/mx_kv_mx_dequant.py     $SP/xpu/patches/mx_kv/mx_dequant.py; \
+    cp /tmp/mx_kv_mx_layout.py      $SP/xpu/patches/mx_kv/mx_layout.py; \
+    cp /tmp/mx_kv_mx_quant.py       $SP/xpu/patches/mx_kv/mx_quant.py; \
+    cp /tmp/mx_kv_triton_mx_decode.py $SP/xpu/patches/mx_kv/triton_mx_decode.py; \
+    cp /tmp/mx_kv_triton_mx_store.py  $SP/xpu/patches/mx_kv/triton_mx_store.py; \
+    cp /tmp/mx_dtype_map.py         $SP/xpu/patches/mx_dtype_map.py; \
+    cp /tmp/mx_kv_mode.py           $SP/xpu/patches/mx_kv_mode.py; \
+    cp /tmp/platform.py             $SP/xpu/platform.py; \
+    rm -f $SP/xpu/__pycache__/platform.cpython-312.pyc; \
+    rm -f $SP/xpu/patches/__pycache__/mx_dtype_map.cpython-312.pyc; \
+    rm -f $SP/xpu/patches/__pycache__/mx_kv_mode.cpython-312.pyc; \
+    rm -rf $SP/xpu/patches/__pycache__/mx_kv; \
+    rm -f /tmp/mx_kv_*.py /tmp/mx_dtype_map.py /tmp/mx_kv_mode.py /tmp/platform.py; \
+    export LD_LIBRARY_PATH=/opt/venv/lib:/opt/venv/lib/python3.12/site-packages/torch/lib; \
+    /opt/venv/bin/python -c \
+      "import inspect;\
+       import vllm_gaudi.xpu.patches.mx_kv.engine as e;\
+       assert hasattr(e, 'MxAttentionBackend'), 'MX backend';\
+       import vllm_gaudi.xpu.patches.mx_kv.triton_mx_store as s;\
+       ssrc = inspect.getsource(s);\
+       assert 'stride_v_n' in ssrc and 'stride_v_h' in ssrc, 'v-stride fix';\
+       assert 'K4' in ssrc and 'V4' in ssrc, 'mxk8v4 kernel legs';\
+       import vllm_gaudi.xpu.patches.mx_kv.triton_mx_decode as t;\
+       tsrc = inspect.getsource(t);\
+       assert '_mx_decode_split_gqa' in tsrc, 'v3 GQA kernel';\
+       assert '_MX_TUNE' in tsrc and '_split_launch' in tsrc, 'tune table + shared launch';\
+       assert t._MX_TUNE == {'mxfp8': (64, 4, 2, False), 'mxfp4': (64, 8, 2, False), 'mxk8v4': (64, 8, 2, True)}, 'baked tune+flavor';\
+       assert t._DECODER == 'v3', 'decoder default v3';\
+       assert t._SHIFT is None, 'flavor override unset by default';\
+       import vllm_gaudi.xpu.patches.mx_kv.mx_layout as lay;\
+       assert lay.slot_bytes(256, 'mxfp8') == 528 and lay.slot_bytes(256, 'mxfp4') == 272\
+           and lay.slot_bytes(256, 'mxk8v4') == 400, 'slot law';\
+       import vllm_gaudi.xpu.patches.mx_dtype_map as d;\
+       import vllm_gaudi.xpu.patches.mx_kv_mode as m;\
+       assert 'mxk8v4' in inspect.getsource(d), 'dtype map';\
+       assert 'mxk8v4' in inspect.getsource(m), 'mode alias';\
+       assert len(e.MX_KV_DTYPES) == 3 and 'mxk8v4' in e.MX_KV_DTYPES, 'engine dtypes';\
+       assert e.MX_TQ_INIT_ALIAS['mxk8v4'] == 'turboquant_k8v4', 'tq alias';\
+       p = open('$SP/xpu/platform.py', encoding='utf-8').read();\
+       assert 'mx_kv.engine.MxAttentionBackend' in p and 'MXKV' in p, 'platform routing';\
+       assert 'mxfp4' in p and 'mxfp8' in p and 'mxk8v4' in p, 'dtype admission';\
+       print('CERT25_V3_DECODE_LIVE engine+store+layout+platform+tune OK')"; \
+    { cat /etc/vllm-arc/IMAGE_MANIFEST; \
+      echo "cert25=P6.47 decode-superiority line (v3 GQA-batched split decoder default): triton_mx_decode.py adds _mx_decode_split_gqa (grid B,Hk,32 — one K/V walk per tile serves all N_REP q-heads; tuple-carried static_range unroll; mid/combine shared with v2 via _split_launch) + per-format _MX_TUNE (BLOCK_N,num_warps,num_stages,flavor: mxfp8 64/4/2/join, mxfp4 64/8/2/join, mxk8v4 64/8/2/shift — flavor sweep: under the shared walk mxk8v4's V-only e2m1 dequant is the hot op, shift wins; mxfp4 double-e2m1 keeps join); ARC_MXKV_DECODER default v3 (v1 bit-frozen escape hatch, v2 per-q-head, both via env); ARC_MXKV_UNPACK becomes a per-format-flavor override. Decode @32K HK=8/Hq=32 vs v1: mxfp8 x10.5 (16.5->1.58 ms), mxfp4 x15-18 (17.5->0.96-1.16 ms), mxk8v4 x7-8 (18.2->2.25-2.52 ms); A4-A8 offline batteries + flavor sweep banked results/2026-11-12-p647-decode-perf-research/"; \
+      echo "cert25_fork_sha=${FORK_SHA}"; \
+      echo "cert25_built=${BUILT}"; \
+    } > /etc/vllm-arc/IMAGE_MANIFEST.p647; \
+    mv /etc/vllm-arc/IMAGE_MANIFEST.p647 /etc/vllm-arc/IMAGE_MANIFEST; \
+    cat /etc/vllm-arc/IMAGE_MANIFEST
