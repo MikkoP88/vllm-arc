@@ -12,8 +12,9 @@ format identity itself travels on the dtype STRING through
 ``MxAttentionBackend.active_kv_dtype``. Everything the mode conveys for
 an MX cache — packed uint8 slot, TQ-class page plumbing — is true.
 
-  mxfp8 -> TURBOQUANT_K8V4   (8-bit key element class)
-  mxfp4 -> TURBOQUANT_4BIT_NC (4-bit key element class)
+  mxfp8  -> TURBOQUANT_K8V4   (8-bit key element class)
+  mxk8v4 -> TURBOQUANT_K8V4   (8-bit key, 4-bit value: the TRUE analogue)
+  mxfp4  -> TURBOQUANT_4BIT_NC (4-bit key element class)
 
 Idempotent via the installed-marker attribute.
 """
@@ -24,7 +25,11 @@ import functools
 
 # Element-class analogues (kept in lockstep with MX_TQ_INIT_ALIAS in
 # mx_kv/engine.py — the same element-width pairing).
-_MX_TQ_ALIAS = {"mxfp8": "turboquant_k8v4", "mxfp4": "turboquant_4bit_nc"}
+_MX_TQ_ALIAS = {
+    "mxfp8": "turboquant_k8v4",
+    "mxk8v4": "turboquant_k8v4",
+    "mxfp4": "turboquant_4bit_nc",
+}
 
 
 def _install(mod) -> None:

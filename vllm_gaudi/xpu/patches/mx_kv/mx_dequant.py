@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-"""mx_dequant.py — MXFP4/MXFP8 whole-cache dequant kernel (P6.47,
+"""mx_dequant.py — MXFP4/MXFP8/MXK8V4 whole-cache dequant kernel (P6.47,
 vllm_gaudi/xpu/patches/mx_kv/).
 
 PURPOSE: bulk-dequantize the cached prefix out of the paged uint8 MX KV
@@ -52,7 +52,8 @@ def _mx_full_dequant(
     stride_k_t,
     D: tl.constexpr,
     N_GROUPS: tl.constexpr,
-    MXFP4: tl.constexpr,
+    K4: tl.constexpr,
+    V4: tl.constexpr,
     BLOCK_SIZE: tl.constexpr,
 ):
     tok = tl.program_id(0)
@@ -66,9 +67,11 @@ def _mx_full_dequant(
             + head.to(tl.int64) * stride_c_h
         )
         g = tl.arange(0, N_GROUPS)
-        if MXFP4:
-            v_off = D // 2 + N_GROUPS
-            # ---- K ----
+        # K block size decides V's offset (mx_layout law); each leg picks
+        # its element path independently (mxk8v4 = e4m3 K + e2m1 V).
+        v_off = (D // 2 if K4 else D) + N_GROUPS
+        # ---- K ----
+        if K4:
             kcode = tl.load(cache_ptr + slot + D // 2 + g)
             ksc = tl.exp2(kcode.to(tl.float32) - 127.0)
             kraw = tl.load(cache_ptr + slot + tl.arange(0, D // 2))
@@ -79,7 +82,17 @@ def _mx_full_dequant(
                 tl.broadcast_to(ksc[:, None], (N_GROUPS, 32)), (D,)
             )
             krow = kelems * ksc_flat
-            # ---- V ----
+        else:
+            kcode = tl.load(cache_ptr + slot + D + g)
+            ksc = tl.exp2(kcode.to(tl.float32) - 127.0)
+            kraw = tl.load(cache_ptr + slot + tl.arange(0, D))
+            kf = kraw.to(tl.float8e4nv, bitcast=True).to(tl.float32)
+            ksc_flat = tl.reshape(
+                tl.broadcast_to(ksc[:, None], (N_GROUPS, 32)), (D,)
+            )
+            krow = kf * ksc_flat
+        # ---- V ----
+        if V4:
             vcode = tl.load(cache_ptr + slot + v_off + D // 2 + g)
             vsc = tl.exp2(vcode.to(tl.float32) - 127.0)
             vraw = tl.load(cache_ptr + slot + v_off + tl.arange(0, D // 2))
@@ -91,17 +104,6 @@ def _mx_full_dequant(
             )
             vrow = velems * vsc_flat
         else:
-            v_off = D + N_GROUPS
-            # ---- K ----
-            kcode = tl.load(cache_ptr + slot + D + g)
-            ksc = tl.exp2(kcode.to(tl.float32) - 127.0)
-            kraw = tl.load(cache_ptr + slot + tl.arange(0, D))
-            kf = kraw.to(tl.float8e4nv, bitcast=True).to(tl.float32)
-            ksc_flat = tl.reshape(
-                tl.broadcast_to(ksc[:, None], (N_GROUPS, 32)), (D,)
-            )
-            krow = kf * ksc_flat
-            # ---- V ----
             vcode = tl.load(cache_ptr + slot + v_off + D + g)
             vsc = tl.exp2(vcode.to(tl.float32) - 127.0)
             vraw = tl.load(cache_ptr + slot + v_off + tl.arange(0, D))
@@ -139,7 +141,9 @@ def mx_dequant_cache(
     hk = cache.shape[2]
     block_size = cache.shape[1]
     sb = cache.shape[-1]
-    want = {"mxfp8": slot_bytes(d, "mxfp8"), "mxfp4": slot_bytes(d, "mxfp4")}
+    want = {
+        f: slot_bytes(d, f) for f in ("mxfp8", "mxfp4", "mxk8v4")
+    }
     fmt = next(f for f, b in want.items() if b == sb)
     _mx_full_dequant[(t_alloc, hk)](
         cache,
@@ -155,7 +159,8 @@ def mx_dequant_cache(
         k_out.stride(2),
         D=d,
         N_GROUPS=d // 32,
-        MXFP4=fmt == "mxfp4",
+        K4=fmt == "mxfp4",
+        V4=fmt in ("mxfp4", "mxk8v4"),
         BLOCK_SIZE=block_size,
         num_warps=1,
     )

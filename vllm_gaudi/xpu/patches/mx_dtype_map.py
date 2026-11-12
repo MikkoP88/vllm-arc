@@ -26,3 +26,4 @@ def _install(mod) -> None:
         )
     table["mxfp4"] = torch.uint8
     table["mxfp8"] = torch.uint8
+    table["mxk8v4"] = torch.uint8

@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-"""triton_mx_decode.py — MXFP4/MXFP8 paged attention decode kernel (P6.47,
+"""triton_mx_decode.py — MXFP4/MXFP8/MXK8V4 paged attention decode kernel (P6.47,
 vllm_gaudi/xpu/patches/mx_kv/).
 
 PURPOSE: single-query-token flash decode from the paged uint8 MX KV
@@ -64,13 +64,13 @@ def _mx_dequant_block(
     BLOCK_N: tl.constexpr,
     D: tl.constexpr,
     N_GROUPS: tl.constexpr,
-    MXFP4: tl.constexpr,
+    SUB4: tl.constexpr,  # payload is e2m1 nibbles (else e4m3 bytes)
 ):
     # slot: [BLOCK_N] int64 slot byte bases; mask: [BLOCK_N] valid lanes.
     # Returns f32 [BLOCK_N, D] dequantized K-or-V rows.
     g = tl.arange(0, N_GROUPS)
     gmask = mask[:, None]
-    if MXFP4:
+    if SUB4:
         codes = tl.load(cache_ptr + slot[:, None] + payload_off + D // 2 + g[None, :], mask=gmask, other=0)
         scale = tl.exp2(codes.to(tl.float32) - 127.0)
         raw = tl.load(
@@ -114,7 +114,8 @@ def _mx_decode(
     stride_c_h,
     D: tl.constexpr,
     N_GROUPS: tl.constexpr,
-    MXFP4: tl.constexpr,
+    K4: tl.constexpr,
+    V4: tl.constexpr,
     N_REP: tl.constexpr,  # GQA: Hq // Hk
     BLOCK_SIZE: tl.constexpr,  # cache block (tokens per block)
     BLOCK_N: tl.constexpr,  # decode tile
@@ -127,7 +128,9 @@ def _mx_decode(
     q = tl.load(q_ptr + b * stride_q_b + hq * stride_q_h + offs_d)
 
     seq_len = tl.load(seq_lens_ptr + b)
-    v_off = (D // 2 + N_GROUPS) if MXFP4 else (D + N_GROUPS)
+    # K block size decides V's offset (mx_layout law; mxk8v4 = e4m3 K +
+    # e2m1 V, the turboquant_k8v4 quality doctrine).
+    v_off = (D // 2 if K4 else D) + N_GROUPS
 
     m_i = -float("inf")
     l_i = 0.0
@@ -146,14 +149,14 @@ def _mx_decode(
             + (offs_n % BLOCK_SIZE).to(tl.int64) * stride_c_t
             + hk.to(tl.int64) * stride_c_h
         )
-        k = _mx_dequant_block(cache_ptr, slot, 0, nmask, BLOCK_N, D, N_GROUPS, MXFP4)
+        k = _mx_dequant_block(cache_ptr, slot, 0, nmask, BLOCK_N, D, N_GROUPS, K4)
         scores = tl.sum(q[None, :] * k, axis=1) * sm_scale
         scores = tl.where(nmask, scores, -float("inf"))
         m_new = tl.maximum(m_i, tl.max(scores, 0))
         p = tl.exp(scores - m_new)
         alpha = tl.exp(m_i - m_new)
         l_i = l_i * alpha + tl.sum(p, 0)
-        v = _mx_dequant_block(cache_ptr, slot, v_off, nmask, BLOCK_N, D, N_GROUPS, MXFP4)
+        v = _mx_dequant_block(cache_ptr, slot, v_off, nmask, BLOCK_N, D, N_GROUPS, V4)
         acc = acc * alpha + tl.sum(p[:, None] * v, axis=0)
         m_i = m_new
 
@@ -180,7 +183,9 @@ def mx_decode(
     bsz, hq, d = q.shape
     hk = cache.shape[2]
     sb = cache.shape[-1]
-    want = {"mxfp8": slot_bytes(d, "mxfp8"), "mxfp4": slot_bytes(d, "mxfp4")}
+    want = {
+        f: slot_bytes(d, f) for f in ("mxfp8", "mxfp4", "mxk8v4")
+    }
     fmt = next(f for f, w in want.items() if w == sb)
     out = torch.empty_like(q)
     _mx_decode[(bsz, hq)](
@@ -200,7 +205,8 @@ def mx_decode(
         cache.stride(2),
         D=d,
         N_GROUPS=d // 32,
-        MXFP4=fmt == "mxfp4",
+        K4=fmt == "mxfp4",
+        V4=fmt in ("mxfp4", "mxk8v4"),
         N_REP=hq // hk,
         BLOCK_SIZE=block_size,
         BLOCK_N=block_n,

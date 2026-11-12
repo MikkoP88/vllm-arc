@@ -125,7 +125,7 @@ _WHEEL_HOOKS = (
     ("lmcache.v1.platform.torch_ops", "lmcint.lmc_twohs_transfer"),  # r43
     ("vllm.v1.core.sched.scheduler", "sched_tail_split"),  # r35
     ("vllm.v1.attention.backends.turboquant_attn", "tq_spec_fix"),  # p619
-    ("vllm.utils.torch_utils", "mx_dtype_map"),  # p647 leg B: mxfp4/mxfp8
+    ("vllm.utils.torch_utils", "mx_dtype_map"),  # p647 leg B: MX kv dtypes
     # -> torch.uint8 allocation dtype (packed uint8-cache class)
     ("vllm.v1.kv_cache_interface", "mx_kv_mode"),  # p647 leg B: mode alias
     # element-class alias onto TURBOQUANT members (mode conveys only
@@ -136,7 +136,7 @@ _WHEEL_HOOKS = (
 
 
 def _widen_cache_dtype_literal(src: str) -> str:
-    """P6.47 leg B: append mxfp4/mxfp8 to the CacheDType Literal in
+    """P6.47 leg B: append mxfp4/mxfp8/mxk8v4 to the CacheDType Literal in
     vllm/config/cache.py — a TRUE schema widening (CLI admission, help
     text, config round-trip all see the real members), not an alias.
     Post-exec rebinding cannot widen it: pydantic builds the dataclass
@@ -147,7 +147,7 @@ def _widen_cache_dtype_literal(src: str) -> str:
     count assert keeps the edit surgical and fails loud on wheel drift.
     """
     anchor = '    "fp8_per_token_head",\n'
-    add = '    "mxfp4",\n    "mxfp8",\n'
+    add = '    "mxfp4",\n    "mxfp8",\n    "mxk8v4",\n'
     n = src.count(anchor)
     if n != 1:
         raise RuntimeError(
@@ -157,9 +157,9 @@ def _widen_cache_dtype_literal(src: str) -> str:
     return src.replace(anchor, anchor + add)
 
 
-# MX KV lane (P6.47): the two --kv-cache-dtype strings and the backend
+# MX KV lane (P6.47): the three --kv-cache-dtype strings and the backend
 # qualname both the enum member and get_attn_backend_cls resolve to.
-_MX_KV_DTYPES = ("mxfp4", "mxfp8")
+_MX_KV_DTYPES = ("mxfp4", "mxfp8", "mxk8v4")
 _MX_BACKEND_PATH = "vllm_gaudi.xpu.patches.mx_kv.engine.MxAttentionBackend"
 
 
@@ -253,7 +253,11 @@ def _install_mx_dtype_admission_fallback() -> None:
     if getattr(cc, "_arc_mx_admitted", False):
         return
     cc._arc_mx_admitted = True
-    alias = {"mxfp4": "turboquant_4bit_nc", "mxfp8": "turboquant_k8v4"}
+    alias = {
+        "mxfp4": "turboquant_4bit_nc",
+        "mxfp8": "turboquant_k8v4",
+        "mxk8v4": "turboquant_k8v4",
+    }
     orig_init = cc.CacheConfig.__init__
 
     def __init__(self, *args, **kwargs):
@@ -270,7 +274,7 @@ def _install_mx_dtype_admission_fallback() -> None:
     cc.CacheConfig.__init__ = __init__
     logger.warning(
         "ArcXpuPlatform: vllm.config.cache imported before platform "
-        "install — mxfp4/mxfp8 admitted via CacheConfig validation alias "
+        "install — MX kv dtypes admitted via CacheConfig validation alias "
         "(boot path uses the true Literal source transform)."
     )
 

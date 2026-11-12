@@ -14,12 +14,18 @@ One slot holds ONE (token, head-of-Hk) pair — K block then V block,
 each immediately followed by its own E8M0 scale bytes so a block walk
 touches contiguous bytes (no separate scale tensor, no gather):
 
-    mxfp8: [ K e4m3 bytes x D ][ Ks x D/32 ][ V e4m3 bytes x D ][ Vs x D/32 ]
-    mxfp4: [ K e2m1 nibbles D/2 ][ Ks x D/32 ][ V e2m1 nibbles D/2 ][ Vs x D/32 ]
+    mxfp8:  [ K e4m3 bytes x D ][ Ks x D/32 ][ V e4m3 bytes x D ][ Vs x D/32 ]
+    mxfp4:  [ K e2m1 nibbles D/2 ][ Ks x D/32 ][ V e2m1 nibbles D/2 ][ Vs x D/32 ]
+    mxk8v4: [ K e4m3 bytes x D ][ Ks x D/32 ][ V e2m1 nibbles D/2 ][ Vs x D/32 ]
+             (the quality-doctrine mix: 8-bit keys keep retrieval precision,
+             4-bit values ride the byte savings — the wheel's certified
+             turboquant_k8v4 "quality-safest preset" analogue; P6.47 gate
+             run1: mxfp4's 4-bit K degrades long-return under churn,
+             essay REP-LOOP post-transition, code/multi hash drift)
 
 D=128 (both certified models' GDN/attn head sizes on this lane): mxfp8
-= 264 B, mxfp4 = 136 B per (token, head) — vs 512 B fp16 KV and 256 B
-certified fp8_e4m3 KV. GQA value heads share nothing here: the store
+= 264 B, mxk8v4 = 200 B, mxfp4 = 136 B per (token, head) — vs 512 B
+fp16 KV and 256 B certified fp8_e4m3 KV (mxk8v4 = 0.78x fp8 bytes). GQA value heads share nothing here: the store
 kernel writes per-Hk-head slots exactly like the wheel's TQ kernels
 (MQ heads recompute K per group at decode).
 
@@ -43,7 +49,7 @@ BYTES_FP8_KV = 2 * D_DEFAULT  # certified fp8_e4m3 KV baseline
 
 
 def slot_bytes(d: int, fmt: str) -> int:
-    """Bytes per (token, head) slot; fmt in {"mxfp4", "mxfp8"}.
+    """Bytes per (token, head) slot; fmt in {"mxfp4", "mxfp8", "mxk8v4"}.
 
     Mirrors mx_quant.slot_bytes (kept here so engine/report layers can
     import layout without importing the quant reference).
@@ -53,6 +59,8 @@ def slot_bytes(d: int, fmt: str) -> int:
         return 2 * d + 2 * n_groups
     if fmt == "mxfp4":
         return d + 2 * n_groups
+    if fmt == "mxk8v4":
+        return 3 * d // 2 + 2 * n_groups
     raise ValueError(f"unknown MX KV format: {fmt}")
 
 
@@ -67,6 +75,13 @@ def offsets(d: int, fmt: str) -> dict[str, int]:
             "ks": d // 2,
             "v": d // 2 + n_groups,
             "vs": d + n_groups,
+        }
+    if fmt == "mxk8v4":
+        return {
+            "k": 0,
+            "ks": d,
+            "v": d + n_groups,
+            "vs": 3 * d // 2 + n_groups,
         }
     raise ValueError(f"unknown MX KV format: {fmt}")
 

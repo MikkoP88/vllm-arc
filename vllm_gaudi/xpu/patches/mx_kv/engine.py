@@ -1,9 +1,9 @@
 # SPDX-License-Identifier: Apache-2.0
-"""engine.py — MXFP4/MXFP8 KV-cache attention backend (P6.47,
+"""engine.py — MXFP4/MXFP8/MXK8V4 KV-cache attention backend (P6.47,
 vllm_gaudi/xpu/patches/mx_kv/).
 
 ENGINE INTEGRATION of the from-scratch MX (OCP microscaling) KV lane
-(leg B). ``--kv-cache-dtype {mxfp4, mxfp8}`` routes here through
+(leg B). ``--kv-cache-dtype {mxfp4, mxfp8, mxk8v4}`` routes here through
 ``ArcXpuPlatform.get_attn_backend_cls`` (platform.py), which also stamps
 ``MxAttentionBackend.active_kv_dtype`` at selection time — the one
 process-wide format selector (spec customization needs the format
@@ -22,7 +22,8 @@ kernels + the engine-proven dispatch shape).
 
 WHAT CHANGES VS TQ (every override below is one of these):
 - slot geometry: MxConfig maps the dtype to mx_layout byte math
-  (mxfp8 264 B, mxfp4 136 B at D=128) — no Hadamard, no centroids,
+  (mxfp8 264 B, mxk8v4 200 B, mxfp4 136 B at D=128) — no Hadamard, no
+  centroids,
   no per-row fp16 scale+zero: E8M0 group scales at 1 B / 32 elements.
 - store: mx_store (triton_mx_store) — fused quantize+pack+scatter.
 - decode: mx_decode (triton_mx_decode) — paged flash decode with
@@ -78,11 +79,15 @@ from .triton_mx_store import mx_store
 # first trace run produced zero lines exactly this way).
 logger = init_logger("vllm.platforms.arc.mxkv")
 
-MX_KV_DTYPES = ("mxfp4", "mxfp8")
+MX_KV_DTYPES = ("mxfp4", "mxfp8", "mxk8v4")
 # Element-class analogues used ONLY to run the parent __init__ (which
 # builds a TurboQuantConfig): same packed-uint8 geometry family, never
 # read by an MX code path after the swap below.
-MX_TQ_INIT_ALIAS = {"mxfp8": "turboquant_k8v4", "mxfp4": "turboquant_4bit_nc"}
+MX_TQ_INIT_ALIAS = {
+    "mxfp8": "turboquant_k8v4",
+    "mxfp4": "turboquant_4bit_nc",
+    "mxk8v4": "turboquant_k8v4",  # e4m3 K + e2m1 V: the TRUE analogue
+}
 
 # tq_spec_fix laws mirrored here (patches/tq_spec_fix.py): verify rows
 # dispatch as SEPARATE single-row decodes — the W1-proven-clean call
@@ -244,15 +249,15 @@ class MxConfig:
     # geometry, never semantically used on an MX code path) ----
     @property
     def key_fp8(self) -> bool:
-        return self.fmt == "mxfp8"
+        return self.fmt in ("mxfp8", "mxk8v4")
 
     @property
     def key_mse_bits(self) -> int:
-        return 8 if self.fmt == "mxfp8" else 4
+        return 8 if self.fmt in ("mxfp8", "mxk8v4") else 4
 
     @property
     def effective_value_quant_bits(self) -> int:
-        return 8 if self.fmt == "mxfp8" else 4
+        return 4 if self.fmt in ("mxfp4", "mxk8v4") else 8
 
     @property
     def norm_correction(self) -> bool:
@@ -294,7 +299,7 @@ class MxAttentionBackend(TurboQuantAttentionBackend):
             raise RuntimeError(
                 "MxAttentionBackend.customize_spec called before platform "
                 "routing stamped active_kv_dtype (ArcXpuPlatform."
-                "get_attn_backend_cls must route mxfp4/mxfp8)."
+                "get_attn_backend_cls must route the MX dtypes)."
             )
         mx = MxConfig.from_cache_dtype(cls.active_kv_dtype, spec.head_size)
         return replace(spec, state_content_bytes=mx.slot_size_aligned)
@@ -671,7 +676,10 @@ class MxAttentionImpl(TurboQuantAttentionImpl):
                     d_ = q_seq.shape[-1]
                     hk_ = kv_cache.shape[2]
                     hq_ = q_seq.shape[1]
-                    fmt_ = "mxfp4" if slot_bytes(d_, "mxfp4") == kv_cache.shape[-1] else "mxfp8"
+                    fmt_ = next(
+                        f for f in MX_KV_DTYPES
+                        if slot_bytes(d_, f) == kv_cache.shape[-1]
+                    )
                     vo = _mx_offsets(d_, fmt_)["v"]
                     bs_ = kv_cache.shape[1]
                     tp_list = true_pos.tolist()

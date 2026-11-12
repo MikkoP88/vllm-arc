@@ -112,7 +112,8 @@ def _mx_fused_store(
     stride_c_h,
     D: tl.constexpr,
     N_GROUPS: tl.constexpr,
-    MXFP4: tl.constexpr,
+    K4: tl.constexpr,
+    V4: tl.constexpr,
 ):
     tok = tl.program_id(0)
     head = tl.program_id(1)
@@ -158,26 +159,30 @@ def _mx_fused_store(
     )
     flat = tl.reshape(offs2, (D,))
 
-    if MXFP4:
-        v_off = D // 2 + N_GROUPS
-        # ---- K: e2m1 nibbles [D/2] + codes [N_GROUPS] ----
+    # K block size decides where V starts (mx_layout law); each leg picks
+    # its element path independently — mxfp8 (0,0), mxfp4 (1,1), mxk8v4
+    # (0,1): 8-bit keys keep retrieval precision, 4-bit values ride the
+    # byte savings (turboquant_k8v4 quality doctrine; P6.47 gate run1:
+    # 4-bit K degrades long-return under churn).
+    v_off = (D // 2 if K4 else D) + N_GROUPS
+    # ---- K ----
+    if K4:
         kcode, kscale = _mx_e8m0(tl.max(tl.abs(k2), axis=1), 6.0)
         knib = _mx_e2m1_nibbles(k2 / kscale[:, None])
         tl.store(cache_ptr + slot + tl.arange(0, D // 2), _mx_pack_nibbles(knib, D))
         tl.store(cache_ptr + slot + D // 2 + g, kcode)
-        # ---- V ----
+    else:
+        kcode, kscale = _mx_e8m0(tl.max(tl.abs(k2), axis=1), 448.0)
+        kq = (k2 / kscale[:, None]).to(tl.float8e4nv).to(tl.uint8, bitcast=True)
+        tl.store(cache_ptr + slot + flat, tl.reshape(kq, (D,)))
+        tl.store(cache_ptr + slot + D + g, kcode)
+    # ---- V ----
+    if V4:
         vcode, vscale = _mx_e8m0(tl.max(tl.abs(v2), axis=1), 6.0)
         vnib = _mx_e2m1_nibbles(v2 / vscale[:, None])
         tl.store(cache_ptr + slot + v_off + tl.arange(0, D // 2), _mx_pack_nibbles(vnib, D))
         tl.store(cache_ptr + slot + v_off + D // 2 + g, vcode)
     else:
-        v_off = D + N_GROUPS
-        # ---- K: e4m3 bytes [D] + codes [N_GROUPS] ----
-        kcode, kscale = _mx_e8m0(tl.max(tl.abs(k2), axis=1), 448.0)
-        kq = (k2 / kscale[:, None]).to(tl.float8e4nv).to(tl.uint8, bitcast=True)
-        tl.store(cache_ptr + slot + flat, tl.reshape(kq, (D,)))
-        tl.store(cache_ptr + slot + D + g, kcode)
-        # ---- V ----
         vcode, vscale = _mx_e8m0(tl.max(tl.abs(v2), axis=1), 448.0)
         vq = (v2 / vscale[:, None]).to(tl.float8e4nv).to(tl.uint8, bitcast=True)
         tl.store(cache_ptr + slot + v_off + flat, tl.reshape(vq, (D,)))
@@ -198,7 +203,9 @@ def mx_store(
     """
     n, hk, d = keys.shape
     sb = cache.shape[-1]
-    want = {"mxfp8": slot_bytes(d, "mxfp8"), "mxfp4": slot_bytes(d, "mxfp4")}
+    want = {
+        f: slot_bytes(d, f) for f in ("mxfp8", "mxfp4", "mxk8v4")
+    }
     fmt = next(f for f, b in want.items() if b == sb)
     # The kernels index rows assuming element-contiguous D (upstream law);
     # normalize the never-happens non-contiguous tail case defensively.
@@ -221,7 +228,8 @@ def mx_store(
         cache.stride(2),
         D=d,
         N_GROUPS=d // 32,
-        MXFP4=fmt == "mxfp4",
+        K4=fmt in ("mxfp4",),
+        V4=fmt in ("mxfp4", "mxk8v4"),
         num_warps=1,
     )
     return fmt
