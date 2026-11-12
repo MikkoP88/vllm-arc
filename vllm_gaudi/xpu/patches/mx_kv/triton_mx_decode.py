@@ -257,9 +257,11 @@ def _mx_decode_split(
 
     seq_len = tl.load(seq_lens_ptr + b)
     # Per-batch effective splits from the DEVICE seq_len (no host read):
-    # aim for >= 8 tiles of serial work per split, bounded by the grid.
+    # aim for >= 2 tiles of serial work per split (splitLen >= BLOCK_N is
+    # not required — masked lanes handle the tail), bounded by the grid.
+    # 1K ctx -> 4 splits, 8K+ -> 32: occupancy where v1 starves.
     n_tiles = (seq_len + BLOCK_N - 1) // BLOCK_N
-    s_eff = tl.minimum(NUM_SPLITS, tl.maximum(1, (n_tiles + 7) // 8))
+    s_eff = tl.minimum(NUM_SPLITS, tl.maximum(1, (n_tiles + 1) // 2))
     split_len = (seq_len + s_eff - 1) // s_eff
     split_start = split_len * sid
     split_end = tl.minimum(split_start + split_len, seq_len)
