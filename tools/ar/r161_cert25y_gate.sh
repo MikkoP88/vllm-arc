@@ -48,7 +48,7 @@ GATE_FAIL=0
 mkdir -p "$P"
 
 # ---- image-content markers: refuse a stale cert25x image ----
-IMG_OK=$(docker run --rm --entrypoint /opt/venv/bin/python "$IMG" - <<'PYEOF' 2>/dev/null
+IMG_OK=$(docker run --rm -i --entrypoint /opt/venv/bin/python "$IMG" - <<'PYEOF' 2>/dev/null
 import re
 from vllm_gaudi.xpu.patches.mx_kv import engine
 from vllm_gaudi.xpu.patches.mx_kv import triton_mx_decode as t
@@ -60,7 +60,11 @@ ok = ok and "_split_verify_decode" in esrc     # batched MTP-verify decode
 print("IMG_CONTENT_OK" if ok else "IMG_CONTENT_STALE")
 PYEOF
 ) || IMG_OK=""
-[ "$IMG_OK" = "IMG_CONTENT_OK" ] \
+# vllm's import-time plugin logger writes INFO lines to STDOUT (a stdout
+# handler is installed at import), so the capture is multi-line — match
+# the verdict by grep, never by string equality (maiden-run lesson,
+# 2026-11-12: equality refused a live cert25y image).
+echo "$IMG_OK" | grep -q "IMG_CONTENT_OK" \
   || { echo "R161_STALE_IMAGE (missing s_eff floor / engine casts still present) IMG=$IMG"; exit 1; }
 echo "R161_IMAGE_CONTENT_OK $IMG"
 
