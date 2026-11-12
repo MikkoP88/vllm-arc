@@ -19,7 +19,7 @@
 set -uo pipefail
 R=/root/build
 P=$R/p647/cert24
-IMG=vllm-arc:v0.30.0-b70-cert24
+IMG=${IMG:-vllm-arc:v0.30.0-b70-cert24}
 CNAME=arc-c24
 GATE_FAIL=0
 mkdir -p "$P"

@@ -24,7 +24,7 @@
 set -uo pipefail
 R=/root/build
 P=$R/p647/r155
-IMG=vllm-arc:v0.30.0-b70-cert24
+IMG=${IMG:-vllm-arc:v0.30.0-b70-cert24}
 MT=600
 mkdir -p "$P"
 FAILED=""
