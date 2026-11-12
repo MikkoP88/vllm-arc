@@ -154,7 +154,7 @@ text_battery() {  # $1 = leg dir $2 = served model $3 = endpoint
     if [ "$EP" = chat ]; then
       curl -s -m 180 http://127.0.0.1:8000/v1/chat/completions -H 'Content-Type: application/json' \
         -d "{\"model\":\"$mdl\",\"messages\":[{\"role\":\"user\",\"content\":\"$q\"}],\"max_tokens\":64,\"temperature\":0}" \
-        | python3 -c 'import json,sys; r=json.load(sys.stdin); c=r["choices"][0]; t=c.get("message",{}).get("content") or c.get("message",{}).get("reasoning_content") or ""; print("PROMPT_OK", len(t), repr(t[:160]))' >> "$CD/probe.out" 2>&1
+        | python3 -c 'import json,sys; r=json.load(sys.stdin); c=r["choices"][0]; m=c.get("message",{}); t=m.get("content") or m.get("reasoning_content") or m.get("reasoning") or ""; print("PROMPT_OK", len(t), repr(t[:160]))' >> "$CD/probe.out" 2>&1
     else
       curl -s -m 180 http://127.0.0.1:8000/v1/completions -H 'Content-Type: application/json' \
         -d "{\"model\":\"$mdl\",\"prompt\":\"$q\",\"max_tokens\":64,\"temperature\":0}" \
@@ -244,6 +244,12 @@ run_leg() {
 
 # derived longprobe with served-model env override (p618 hardcodes the
 # qwen name; gemma legs need their own — one-line edit, provenance kept)
+# + the reasoning-field capture: gemma-4 is a thinking model that IGNORES
+# enable_thinking:false (kwarg accepted, template unaffected) and vLLM
+# 0.30 emits the stream as message.reasoning (NOT reasoning_content —
+# run2 m8g live evidence: content null, reasoning carries "The capital
+# of France is Paris."). Without this read every gemma longprobe hash
+# is EMPTY -> spurious EMPTY/longreturn fails.
 mkdir -p $R/p647
 python3 - << 'PYEOF'
 import re
@@ -253,6 +259,11 @@ if "ARC_PROBE_MODEL" not in src:
     src = src.replace('MODEL = "qwen3.8-27b-fp8"',
                       'MODEL = os.environ.get("ARC_PROBE_MODEL", "qwen3.8-27b-fp8")')
     src = src.replace("import hashlib\n", "import hashlib\nimport os\n", 1)
+if "msg.get(\"reasoning\")" not in src:
+    assert src.count('rsn = msg.get("reasoning_content") or ""') == 1, \
+        "p618 reasoning line drifted"
+    src = src.replace('rsn = msg.get("reasoning_content") or ""',
+                      'rsn = msg.get("reasoning_content") or msg.get("reasoning") or ""')
 open("/root/build/p647/p647_longprobe.py", "w", encoding="utf-8", newline="\n").write(src)
 print("p647_longprobe.py derived OK")
 PYEOF
@@ -268,8 +279,12 @@ GEMMA_M8="ARC_MODEL=/models/gemma4-31b ARC_SERVED=gemma4-31b ARC_QUANT=mxfp8 ARC
 # pair re-run after the two gate-probe fixes (chat-endpoint battery +
 # ARC_PROBE_MODEL on longprobe — run1's gemma longprobe cells 404'd on the
 # default qwen model name and the battery hit gemma's completions-continuation
-# semantics; both artifacts, engine exonerated by m8g==m4g text equality).
-# Prior leg dirs are preserved as <leg>.run1 before a re-run.
+# semantics; both artifacts, engine exonerated by m8g==m4g text equality);
+# run3 = run2 + the reasoning-field capture (gemma thinking ignores
+# enable_thinking:false and vLLM 0.30 emits message.reasoning; without
+# the read, battery + longprobe texts are EMPTY on gemma — run2 m8g live
+# curl evidence). Prior leg dirs are preserved as <leg>.runN before a
+# re-run.
 leg_ctrl() {
   run_leg ctrl qwen3.8-27b-fp8 0 $QWEN_FP8 || true
   MX_LINES=$(grep -c "mx_backend_lines=0" "$P/ctrl/markers.txt" || true)

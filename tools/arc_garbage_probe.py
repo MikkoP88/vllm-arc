@@ -81,7 +81,14 @@ def probe(name: str, body=None, raw=None, expect=(200, 400),
     ok = st in expect and health_ok()
     if ok and want_content and st == 200:
         ch = (resp or {}).get("choices", [{}])[0]
-        msg = ch.get("message", {}).get("content")
+        # reasoning fallback: thinking models whose template ignores
+        # enable_thinking:false put the whole stream in message.reasoning
+        # (vLLM 0.30 field name — NOT reasoning_content; gemma-4 face).
+        msg = (
+            ch.get("message", {}).get("content")
+            or ch.get("message", {}).get("reasoning_content")
+            or ch.get("message", {}).get("reasoning")
+        )
         ok = isinstance(msg, str) and len(msg) >= 0 and st == 200
     print(f"[{name}] status={st} ok={ok}", flush=True)
     if not ok:
@@ -95,7 +102,8 @@ def sanity_sha() -> str:
             "messages": [{"role": "user",
                           "content": "Reply with exactly: HEALTH CHECK OK"}]}
     st, resp = post(body)
-    txt = (resp or {}).get("choices", [{}])[0].get("message", {}).get("content", "")
+    _m = (resp or {}).get("choices", [{}])[0].get("message", {})
+    txt = _m.get("content") or _m.get("reasoning_content") or _m.get("reasoning") or ""
     return f"{st}:{hashlib.sha256(txt.encode()).hexdigest()[:16]}:{txt[:40]!r}"
 
 
