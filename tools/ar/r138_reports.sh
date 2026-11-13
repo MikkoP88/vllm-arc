@@ -1,7 +1,7 @@
 #!/bin/bash
 # r138_reports.sh -- P6.37 close-out phases E+G: per-config performance
 # report matrix on cert23 (shipping image, stock, no probe).
-# Owner close-out directive: individual reports per model x quant x MTP,
+# Close-out requirement: individual reports per model x quant x MTP,
 # decode/TTFT/prefill at ctx 1K/8K/32K/64K/128K (if fit), MTP k3 with
 # temperature 0.0..1.0, all supported --kv-cache-dtype values.
 # Cells (12 boots, ~2.5 h):

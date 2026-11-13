@@ -1,6 +1,6 @@
 #!/bin/bash
 # r147_mxkv_legA.sh -- P6.47 leg A: offline XPU validation of the MX
-# MXFP4/MXFP8 KV-cache primitives (owner directive 2026-11-11).
+# MXFP4/MXFP8 KV-cache primitives (P6.47 goal, 2026-11-11).
 # Runs p147_mxkv_offline.py INSIDE cert23 (docker run, XPU devices) --
 # NO engine boot. Gates: ref (exact-math self-test), bytes (store
 # kernel == reference bytes), decode (vs fp64 exact on dequantized

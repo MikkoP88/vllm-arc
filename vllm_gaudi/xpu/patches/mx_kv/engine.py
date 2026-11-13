@@ -36,7 +36,7 @@ FORMAT DISCOVERY LAW: every kernel infers the format from the cache
 slot width (mx_layout law), so an MxConfig mismatch against the actual
 allocated cache is impossible by construction.
 
-Provenance: from-scratch in-house lane (owner directive 2026-11-11);
+Provenance: from-scratch in-house lane (P6.47, 2026-11-11);
 integration surface follows the wheel's TurboQuant backend
 (v1/attention/backends/turboquant_attn.py — survey
 results/2026-11-11-p647-mxkv-research/wheelref/) and the fork's
@@ -334,7 +334,7 @@ class MxAttentionBackend(TurboQuantAttentionBackend):
 
     @staticmethod
     def get_name() -> str:
-        # MX is its own backend family (owner directive 2026-11-11) —
+        # MX is its own backend family (2026-11-11) —
         # AttentionBackendEnum carries a true MXKV member pointing at
         # THIS class: injected at platform register time
         # (platform._install_mxkv_enum_member — the registry is always

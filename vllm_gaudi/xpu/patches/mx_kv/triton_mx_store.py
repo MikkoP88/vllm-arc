@@ -38,7 +38,7 @@ the kernel comment); every access is unmasked (full D rows); safe
 under XPU-graph capture once integrated (the engine leg wraps calls
 exactly like the wheel's TQ store).
 
-Provenance: from-scratch in-house lane (owner directive 2026-11-11);
+Provenance: from-scratch in-house lane (P6.47, 2026-11-11);
 kernel structure follows the wheel's sub-byte KV template
 (triton_turboquant_store.py — survey
 results/2026-11-11-p647-mxkv-research/wheelref/).

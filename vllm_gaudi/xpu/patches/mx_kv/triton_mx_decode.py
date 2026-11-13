@@ -100,8 +100,8 @@ data-dependent host control flow; XPU-graph safe. The mid buffer is
 allocated once per shape on the eager warmup and reused (allocation
 can never land inside a capture).
 
-V6 DEEP-SPLIT LINE (P6.47 A14, 2026-11-13, owner directive "if kernel
-is issue patch it"): the r162/A13 attribution closed the m8 32K gap as
+V6 DEEP-SPLIT LINE (P6.47 A14, 2026-11-13 kernel-fix
+mandate): the r162/A13 attribution closed the m8 32K gap as
 kernel-explained — 16 x v5 8.79 ms = 140.7 ms ~= the 130 ms conc-1
 e2e delta — and the v5 shape is parallelism-starved, not
 bandwidth-bound: G=1/ctx=32K launches only G x Hk x 32 = 128 CTAs
@@ -120,7 +120,7 @@ static during serving — capture law): ARC_MXKV_V5_SPLITS (default
 256; 32 reproduces the A13 grid), ARC_MXKV_V5_BN, ARC_MXKV_V5_WARPS
 (sweep faces). Probe: p173_v6sweep.py.
 
-Provenance: from-scratch in-house lane (owner directive 2026-11-11);
+Provenance: from-scratch in-house lane (P6.47, 2026-11-11);
 kernel structure follows the wheel's sub-byte KV decode template
 (triton_turboquant_decode.py — survey
 results/2026-11-11-p647-mxkv-research/wheelref/).

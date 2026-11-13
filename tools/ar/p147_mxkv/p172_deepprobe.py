@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 """p172_deepprobe.py — P6.47 A14 deep-attribution kernel probe.
 
-Owner PRIORITY 1 directive 2026-11-13: locate the ROOT delays of the MX
+P6.47 A14 goal (2026-11-13): locate the ROOT delays of the MX
 KV decode lane vs the fp8 ctrl. The r162 e2e ladder isolated conc-1 ITL
 deltas (32K ctx: m8 172.9 ms / m4 112.0 vs q8 42.6; per-attn-layer
 deltas 8.15 / 4.34 ms) but could not split WHERE inside the step the

@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 """p173_v6sweep.py — P6.47 A14 v6 deep-split sweep probe.
 
-Owner PRIORITY 1 + "if kernel is issue patch it" (2026-11-13): the
+P6.47 A14 kernel-fix mandate (2026-11-13): the
 m8 32K decode gap is kernel-explained (16 x v5 8.79 = 140.7 ms ~= the
 130 ms e2e delta) and the v5 grid is parallelism-starved — 128 CTAs
 serially walking 32-tile bt->slot->gather chains at ~3.8 GB/s

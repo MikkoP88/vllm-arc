@@ -1,6 +1,6 @@
 # arc7 kit — JM (joint-matrix / DPAS tensor-core) skinny-M GEMM (P6.34)
 
-Owner directive 2026-11-09: take the skinny family to ALL-AROUND
+Goal (2026-11-09): take the skinny family to ALL-AROUND
 SUPERIORITY over stock on every shape x lane x M cell, for ALL model
 types (shape-generic; not just the two target models). This kit is the
 tensor-core redesign the P6.33 close-out left open.

@@ -1,6 +1,6 @@
 #!/bin/bash
 # r176_devcost_lmc0.sh -- P6.47 A15: K2 device-cost probe + the LMC0
-# TTFT discriminator, one GPU window (owner parity directive 2026-11-13).
+# TTFT discriminator, one GPU window (P6.47 parity goal, 2026-11-13).
 #
 # phase 0 (bare container, cert25za): p174_devcost — splits the v6
 # decode call's ms into wall / device-event / amortized-launcher

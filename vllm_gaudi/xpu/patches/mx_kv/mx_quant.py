@@ -32,7 +32,7 @@ wheel's turboquant_k8v4 precedent): mxfp4's 4-bit keys degrade
 long-return retrieval under KV churn (P6.47 cert24 gate run1 essay
 REP-LOOP; banked results/2026-11-12-p647-mxkv-vstride-fix + gate).
 
-Provenance: from-scratch in-house lane (owner directive 2026-11-11) —
+Provenance: from-scratch in-house lane (P6.47, 2026-11-11) —
 no donor carries MX KV support (survey banked
 results/2026-11-11-p647-mxkv-research/); kernel structure follows the
 wheel's own sub-byte KV template (triton_turboquant_{store,decode},

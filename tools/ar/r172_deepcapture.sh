@@ -1,8 +1,8 @@
 #!/bin/bash
 # r172_deepcapture.sh -- P6.47 A14: deep end-to-end latency attribution
-# capture (owner PRIORITY 1 directive 2026-11-13: "comprehensive
-# capturing using capture points get root delays/latencies of
-# --kv-cache-dtype mxfp4 and mxfp8 vs fp8, AND FIX ALL").
+# capture (2026-11-13 goal: comprehensive
+# capturing using capture points to get root delays/latencies of
+# --kv-cache-dtype mxfp4 and mxfp8 vs fp8, and fix all).
 #
 # The r162 e2e ladder isolated the WHAT (conc-1 ITL 32K: m8 172.9 /
 # m4 112.0 vs q8 42.6 ms; per-layer deltas 8.15/4.34 ms sitting ABOVE

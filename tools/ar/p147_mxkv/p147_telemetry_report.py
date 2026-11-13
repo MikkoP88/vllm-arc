@@ -3,7 +3,7 @@
 """p147_telemetry_report.py - P6.47 A10 attribution over r162 telemetry.
 
 Reads the banked p139_conc JSONs (r162_telemetry_ladder.sh) and emits the
-end-to-end attribution table the owner directive asks for: per rung and
+end-to-end attribution table: per rung and
 concurrency, ITL p50/p90 (decode step time at growing ctx), TTFT (prefill
 axis) and per-user tps for q8 (native fp8_e4m3 KV) vs m8 (mxfp8) vs m4
 (mxfp4). At conc=1 the non-attention layers are identical between cells,

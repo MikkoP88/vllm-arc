@@ -193,9 +193,9 @@ churn included — the release bar "no corruption on ANY kv-cache
 type"). Evidence: `results/2026-11-03-p618-cert7/rig/gate/longprobe_*`,
 `results/2026-11-04-p619-tqverify/rig/gate/`.
 
-## Performance-testing context ladder (standing directive)
+## Performance-testing context ladder (standing rule)
 
-**Directive (2026-11-11):** whenever a performance measurement leg is
+**Standing rule (2026-11-11):** whenever a performance measurement leg is
 scheduled — engine validation, posture sweeps, report-corpus renewal,
 or a rung-fill leg — the context matrix carries the **canonical rung
 ladder {1K, 8K, 32K, 64K, 128K} on every boot where `max_model_len`
@@ -230,7 +230,7 @@ Rules:
   archived — different engine and harness conditions (54.8 s vs
   38–42 s at 64K makes the incomparability measurable).
 
-History and current state: the r138 solo directive carried the full
+History and current state: the r138 solo gate carried the full
 ladder (64K included — the six qwen solo faces), but the r139
 concurrency and r140 annex matrices hardcoded {1K, 8K, 32K, 128K}: 64K
 was feasible on all 11 long-context boots and never scheduled, while

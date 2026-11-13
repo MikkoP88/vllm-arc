@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: Apache-2.0
 """p174_devcost.py — P6.47 A15: device-vs-launcher attribution of the
-v6 decode call (K2 evidence; owner parity directive 2026-11-13).
+v6 decode call (K2 evidence; P6.47 parity goal, 2026-11-13).
 
 The A14 sweep left mxfp8 G1@32K at 5.25 ms/call vs a ~0.2 ms HBM
 envelope — 25x above roofline. Before restructuring the kernel (K2:

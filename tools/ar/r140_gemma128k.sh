@@ -1,6 +1,6 @@
 #!/bin/bash
 # r140_gemma128k.sh -- rig-side gemma 128K annex gate (P6.39).
-# Owner directive (2026-11-11): individual gemma reports to 128K when
+# Standing requirement (2026-11-11): individual gemma reports to 128K when
 # using MXFP4 -- the 4-bit weight savings are what buy the KV headroom
 # for max_model_len 131072 on the 31B two-head-size-GDN geometry. Two
 # boots, postures byte-exact as the r139 gemma cells except ARC_MAXLEN:

@@ -1,7 +1,7 @@
 #!/bin/bash
 # r173_v6sweep.sh -- P6.47 A14: v6 deep-split sweep probe on the
-# PATCHED kernel (owner PRIORITY 1 + "if kernel is issue patch it",
-# 2026-11-13).
+# PATCHED kernel (2026-11-13
+# kernel-fix mandate).
 #
 # The v6 patch (triton_mx_decode.py, this branch): v5 split cap 32 ->
 # 256 with the adaptive >=4-serial-tile s_eff rule, a v5-only BLOCK_N=64

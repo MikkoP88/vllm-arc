@@ -1,6 +1,6 @@
 #!/bin/bash
-# r171_fastcycle.sh -- P6.47 improvement-loop FAST cycle (owner directive
-# 2026-11-13: the full ~4.5h gate starves the improvement loop; iterate
+# r171_fastcycle.sh -- P6.47 improvement-loop FAST cycle (2026-11-13
+# goal: the full ~4.5h gate starves the improvement loop; iterate
 # cheap, run the full battery only at convergence. Model = the TARGET
 # qwen3.8-27b-fp8, champion posture incl. MTP k4 -- corrections 2026-11-13:
 # gemma first, then "use qwen" -- the cycle measures the real lane).

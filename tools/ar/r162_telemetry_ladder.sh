@@ -1,6 +1,6 @@
 #!/bin/bash
 # r162_telemetry_ladder.sh -- P6.47 A10: compact end-to-end decode/TTFT
-# telemetry ladder (owner directive 2026-11-12: comprehensive telemetry
+# telemetry ladder (2026-11-12 requirement: comprehensive telemetry
 # capture points end-to-end to locate the root issue).
 #
 # Cells q8 (native fp8_e4m3 KV) / m8 (mxfp8) / m4 (mxfp4) on $IMG, qwen

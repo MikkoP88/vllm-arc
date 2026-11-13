@@ -30,7 +30,7 @@
 #   L5 mkq    qwen ARC_KVDTYPE=mxk8v4 (e4m3 K + e2m1 V)
 #   L6 mkg    gemma ARC_KVDTYPE=mxk8v4
 #   L7 g0     gemma native fp8_e4m3 KV control (+ ungated longprobe v4)
-# L1-L6 each run the FULL corruption program (owner directive 2026-11-11:
+# L1-L6 each run the FULL corruption program (2026-11-11 standing rule:
 # end-to-end garbage/long-return validation on EVERY MX dtype, both
 # models): 3-prompt temp-0 text battery, suite-13 arc_garbage_probe
 # (malformed inputs + state-integrity), suite-14 longprobe v4 full + 3

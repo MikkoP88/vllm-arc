@@ -9,7 +9,7 @@
 #   L2 m4q    qwen ARC_KVDTYPE=mxfp4 ARC_SPEC=3
 #   L3 m8g    gemma4-31b ARC_KVDTYPE=mxfp8 ARC_SPEC=0 (cert22 gemma line)
 #   L4 m4g    gemma4-31b ARC_KVDTYPE=mxfp4 ARC_SPEC=0
-# L1-L4 each run the FULL corruption program (owner directive 2026-11-11:
+# L1-L4 each run the FULL corruption program (2026-11-11 standing rule:
 # end-to-end garbage/long-return validation on EVERY MX dtype, both
 # models): 3-prompt temp-0 text battery (p1 MUST contain Paris), suite-13
 # arc_garbage_probe (malformed inputs + state-integrity), suite-14

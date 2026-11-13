@@ -34,7 +34,7 @@ POOL ARITHMETIC (report capacity columns use the same functions):
     pool_gib(...)        GiB a (n_tokens, Hk) cache needs
     capacity_mult(fmt)   KV-token capacity multiplier vs fp16 KV
 
-Provenance: from-scratch in-house lane (owner directive 2026-11-11);
+Provenance: from-scratch in-house lane (P6.47, 2026-11-11);
 byte-compatibility contract mirrors the wheel's turboquant slot
 convention (survey: results/2026-11-11-p647-mxkv-research/).
 """
