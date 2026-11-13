@@ -65,11 +65,11 @@ docker run --rm --name arc-p173 \
   -e LD_LIBRARY_PATH=/opt/venv/lib:/opt/venv/lib/python3.12/site-packages/torch/lib \
   -v "$P":/p147:ro -v "$OUT":/out \
   --entrypoint /bin/bash \
-  $IMG -c "set -e; \
+  $IMG -c 'set -e; \
     SP=/opt/venv/lib/python3.12/site-packages/vllm_gaudi/xpu/patches/mx_kv; \
-    rm -rf /work && mkdir -p /work && cp $SP/*.py /work/; \
+    rm -rf /work && mkdir -p /work && cp "$SP"/*.py /work/; \
     cp /p147/p173_triton_mx_decode.py /work/triton_mx_decode.py; \
-    cd /tmp && MXKV_DIR=/work /opt/venv/bin/python /p147/p173_v6sweep.py" \
+    cd /tmp && MXKV_DIR=/work /opt/venv/bin/python /p147/p173_v6sweep.py' \
   > $P/logs/legA14.out 2>&1
 rc=$?
 echo "=== [r173:A14] sweep exit rc=$rc $(date +%H:%M:%S) ==="
