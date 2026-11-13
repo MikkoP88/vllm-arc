@@ -1,0 +1,151 @@
+{
+ "tag": "c24m8q",
+ "mode": "full",
+ "probe": "v3",
+ "ts": "2026-11-13 15:06:55",
+ "essay": {
+  "t0_identical": true,
+  "hashes": [
+   "997102a41c3b",
+   "997102a41c3b",
+   "997102a41c3b"
+  ],
+  "content_hashes": [
+   "5dc2785c6adf",
+   "5dc2785c6adf",
+   "5dc2785c6adf"
+  ],
+  "garble": {
+   "cold": [],
+   "rehit": [],
+   "rehit2": []
+  },
+  "finish": [
+   "stop",
+   "stop",
+   "stop"
+  ],
+  "prompt_tok": 2145,
+  "chars": [
+   3771,
+   3771,
+   3771
+  ],
+  "t1_seed_identical": true,
+  "t1_hashes": [
+   "4830e2eb13c8",
+   "4830e2eb13c8"
+  ],
+  "t1_garble": [],
+  "dt_cold": 16.8
+ },
+ "code": {
+  "t0_identical": true,
+  "hashes": [
+   "a0720d3ab6cd",
+   "a0720d3ab6cd",
+   "a0720d3ab6cd"
+  ],
+  "content_hashes": [
+   "b9ebc02f73e9",
+   "b9ebc02f73e9",
+   "b9ebc02f73e9"
+  ],
+  "garble": {
+   "cold": [],
+   "rehit": [],
+   "rehit2": []
+  },
+  "finish": [
+   "stop",
+   "stop",
+   "stop"
+  ],
+  "prompt_tok": 5051,
+  "chars": [
+   3838,
+   3838,
+   3838
+  ],
+  "t1_seed_identical": true,
+  "t1_hashes": [
+   "5d2644554d9b",
+   "5d2644554d9b"
+  ],
+  "t1_garble": [],
+  "dt_cold": 25.7
+ },
+ "multi": {
+  "t0_identical": true,
+  "hashes": [
+   "1be25382c8bb",
+   "1be25382c8bb",
+   "1be25382c8bb"
+  ],
+  "content_hashes": [
+   "d73d93bfb94b",
+   "d73d93bfb94b",
+   "d73d93bfb94b"
+  ],
+  "garble": {
+   "cold": [],
+   "rehit": [],
+   "rehit2": []
+  },
+  "finish": [
+   "stop",
+   "stop",
+   "stop"
+  ],
+  "prompt_tok": 3400,
+  "chars": [
+   517,
+   517,
+   517
+  ],
+  "t1_seed_identical": true,
+  "t1_hashes": [
+   "f21d16c109c1",
+   "f21d16c109c1"
+  ],
+  "t1_garble": [],
+  "dt_cold": 3.7
+ },
+ "simple": {
+  "t0_identical": true,
+  "hashes": [
+   "84efc84cc142",
+   "84efc84cc142",
+   "84efc84cc142"
+  ],
+  "content_hashes": [
+   "bcbf6958e0f1",
+   "bcbf6958e0f1",
+   "bcbf6958e0f1"
+  ],
+  "garble": {
+   "cold": [],
+   "rehit": [],
+   "rehit2": []
+  },
+  "finish": [
+   "stop",
+   "stop",
+   "stop"
+  ],
+  "prompt_tok": 38,
+  "chars": [
+   1510,
+   1510,
+   1510
+  ],
+  "t1_seed_identical": true,
+  "t1_hashes": [
+   "b74924c4a80b",
+   "b74924c4a80b"
+  ],
+  "t1_garble": [],
+  "dt_cold": 5.0
+ },
+ "VERDICT": "CLEAN"
+}

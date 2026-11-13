@@ -1,0 +1,7 @@
+solo conc1 rep1 wall=4.7s ctok=256 tps=54.4
+solo conc1 rep2 wall=5.0s ctok=256 tps=51.5
+solo conc1 rep3 wall=5.3s ctok=256 tps=48.7
+agg8 conc8 rep1 wall=8.9s ctok=2048 tps=228.8
+agg8 conc8 rep2 wall=8.9s ctok=2048 tps=229.0
+agg8 conc8 rep3 wall=9.0s ctok=2048 tps=227.9
+DECODE_BATTERY_DONE

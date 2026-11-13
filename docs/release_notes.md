@@ -7,7 +7,7 @@ evidence lives. The detailed per-release entries (full change lists,
 fork SHAs, wheel pins, gate numbers) are in
 [`../CHANGELOG.md`](../CHANGELOG.md); superseded doc content is
 archived per-doc under [`history/`](history/). The current certified
-release is **`rel/v0.30.0-b70-cert23`** (`vllm-arc:v0.30.0-b70-cert23`).
+release is **`rel/v0.30.0-b70-cert25zb`** (`vllm-arc:v0.30.0-b70-cert25zb`).
 
 Every release below is based on upstream vllm-gaudi **v0.30.0** with
 the pinned wheel stack (`tools/wheel_guard.sh`; per-release wheel shas
@@ -19,9 +19,27 @@ in the upstream per-version detail files
 
 ---
 
+## rel/v0.30.0-b70-cert25zb — P6.47 MX KV-cache dtype lane (2026-11-13)
+
+Current certified release. cert23-lineage engine + the P6.47 lane:
+`--kv-cache-dtype {mxfp4,mxfp8,mxk8v4}` (Triton MX store/decode in
+`vllm_gaudi/xpu/patches/mx_kv/` + engine dispatch), with the K2
+packed-fp16 dequant and K3 e2m1 fast-unpack lanes default-on
+(bit-identical outputs; `ARC_MXKV_K2=0`/`ARC_MXKV_K3=0` revert).
+Headline: **mxfp4 holds fp8-checkpoint solo decode parity (60.5–62.9
+vs 60.1–61.8 tps) at 1.81× KV capacity** (721,994 vs 398,363 tokens);
+mxk8v4 1.27×. The kernel ladder is measured-converged on all three
+formats; the native `fp8_e4m3` bank is byte-identical across the bake
+(r184 cross-cert), so existing deployments need no action — the lane
+activates only when an MX dtype is selected. Interim chain (cert24
+store-vstride fix, cert25z v5 decoder, cert25za v6 decoder) documented
+in this entry's CHANGELOG section, never tagged. Evidence:
+`results/2026-11-13-p647-cert25zb-certification/`.
+Full detail: [`../CHANGELOG.md`](../CHANGELOG.md).
+
 ## rel/v0.30.0-b70-cert23 — graph-exec double-buffer (2026-11-10)
 
-Current certified release. cert22 engine + one patch module: every XPU
+cert22 engine + one patch module: every XPU
 graph captured ×2 into the manager's shared pool, replays alternate
 execs — removes the torch-2.13 same-exec `XPUGraph.replay()` host block.
 E2E-neutral at every measured posture (fp8-k3 94.5 vs 94.3 tok/s on/off),

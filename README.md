@@ -4,9 +4,9 @@
 
 A fork of [vllm-project/vllm-gaudi](https://github.com/vllm-project/vllm-gaudi) at **v0.30.0** (package name `vllm_gaudi` preserved; the Arc/XPU work lives in `vllm_gaudi/xpu/`).
 
-- Certified release: **`rel/v0.30.0-b70-cert23`** — every gate GREEN with banked evidence. cert23 = the cert22 engine + one patch module, the **graph-exec double-buffer** (every XPU graph captured ×2, replays alternate execs — kills the torch-2.13 same-exec replay host block; engine serial work 40.8 → 12.7 ms/step; **E2E-neutral at every measured posture**, `VLLM_ARC_GRAPH_EXEC_DB=0` kill-switch). Best decode postures on cert23: **qwen mxfp4-W4A16 + spec k5 = 128.3 tok/s (+36 % vs fp8-k3 94.5, project best)**, gemma mxfp4-W4A16 37.1 tok/s (+43 %). Evidence: `results/2026-11-10-p635-telemetry/`. **Per-cert history: [`CHANGELOG.md`](CHANGELOG.md); release summaries: [`docs/release_notes.md`](docs/release_notes.md).**
-- **Project status: complete — the close-out is delivered.** The prefill window is proven device drain with **no remaining lawful lever ≥ 10 %** (cert23 stands); the close-out delivered the per-config performance reports (below), the 64 GB-RAM host defaults (`--shm-size 16g`, 16 GB LMCache CPU tier), and the `ARC_KVDTYPE` knob + kv-cache-dtype report. History: [`CHANGELOG.md`](CHANGELOG.md) + [`docs/history/`](docs/history/) archives; current state: [`docs/STATUS-arc.md`](docs/STATUS-arc.md).
-- **Per-config performance reports** — [`docs/reports/`](docs/reports/README.md): every model × quantization × MTP posture (qwen3.8-27b fp8/MXFP8/MXFP4-W4A16 with k3 + no-MTP, gemma-4-31b fp8/MXFP8/MXFP4), decode speed / TTFT / prefill rate / ITL at 1K–128K context, the MTP-k3 sampling-temperature sweep (0.0–1.0), the `--kv-cache-dtype` comparison (stock set + the TurboQuant presets), line charts of all data, and the complete copyable configuration for each cell — measured on the shipping cert23 image. Every patch module documented with provenance + evidence: [`docs/PATCHES-arc.md`](docs/PATCHES-arc.md).
+- Certified release: **`rel/v0.30.0-b70-cert25zb`** — every gate GREEN with banked evidence. cert25zb = the cert23-lineage engine + **P6.47: the MX KV-cache dtype lane** — `--kv-cache-dtype {mxfp4,mxfp8,mxk8v4}` on `vllm_gaudi/xpu/patches/mx_kv/` with the **K2 packed-fp16 dequant + K3 e2m1 fast-unpack lanes default-on** (bit-identical outputs; `ARC_MXKV_K2=0` / `ARC_MXKV_K3=0` revert). Headline (r184 full battery): **mxfp4 holds fp8-checkpoint solo decode parity (60.5–62.9 vs 60.1–61.8 tps) at 1.81× KV capacity** (721,994 vs 398,363 tokens); mxk8v4 1.27×; the kernel ladder is measured-converged on all three formats. Evidence: `results/2026-11-13-p647-cert25zb-certification/`. **Per-cert history: [`CHANGELOG.md`](CHANGELOG.md); release summaries: [`docs/release_notes.md`](docs/release_notes.md).**
+- **Project status: P6.47 (MX KV-cache dtype lane) certified; the improvement ladder continues** — remaining rungs per the plan (S1 e2m1-V acceptance knee, A1 aux-pipeline fold, F2 continuation dequant tax). The earlier full close-out (per-config performance reports, 64 GB-RAM host defaults, the `ARC_KVDTYPE` knob) stands; history: [`CHANGELOG.md`](CHANGELOG.md) + [`docs/history/`](docs/history/) archives; current state: [`docs/STATUS-arc.md`](docs/STATUS-arc.md).
+- **Per-config performance reports** — [`docs/reports/`](docs/reports/README.md): every model × quantization × MTP posture (qwen3.8-27b fp8/MXFP8/MXFP4-W4A16 with k3 + no-MTP, gemma-4-31b fp8/MXFP8/MXFP4), decode speed / TTFT / prefill rate / ITL at 1K–128K context, the MTP-k3 sampling-temperature sweep (0.0–1.0), the `--kv-cache-dtype` comparison (stock set + the TurboQuant presets), line charts of all data, and the complete copyable configuration for each cell. Every patch module documented with provenance + evidence: [`docs/PATCHES-arc.md`](docs/PATCHES-arc.md).
 - **Improvement-lane status: the in-scope ledger is CLOSED** — every prefill device slice is dispositioned by measurement (GEMM / allreduce / FA / GDN / norms-act; host path clean; the last unmeasured door — cross-stream AR∥GEMM co-tenancy — closed by measurement), the stack sits at the practical in-scope floor, and the transport was proven clean. Per-slice table + closed-route disposition: [`docs/STATUS-arc.md`](docs/STATUS-arc.md).
 
 ## What this fork adds
@@ -26,7 +26,7 @@ A fork of [vllm-project/vllm-gaudi](https://github.com/vllm-project/vllm-gaudi) 
 
 ## Certified performance (dual Arc Pro B70, TP2)
 
-**Current record — measured on the shipping cert23 image** (the full
+**Current record — measured on the shipping cert25zb image** (the full
 validation matrix + the per-config reports, concurrency 1 unless noted;
 full reports with charts and copyable configs:
 [`docs/reports/`](docs/reports/README.md)):
@@ -117,19 +117,19 @@ RIG=<build-host>                                # <- set: your rig/build host
                                                  #    hygiene law, and run
                                                  #    tools/leak_sweep.sh
                                                  #    before pushing)
-SHA=$(git rev-parse rel/v0.30.0-b70-cert23)      # the certified commit
-git archive --format=tar -o /tmp/fork.tar rel/v0.30.0-b70-cert23
+SHA=$(git rev-parse rel/v0.30.0-b70-cert25zb)      # the certified commit
+git archive --format=tar -o /tmp/fork.tar rel/v0.30.0-b70-cert25zb
 scp /tmp/fork.tar root@$RIG:/root/build/
 ssh root@$RIG 'tar -xOf /root/build/fork.tar tools/build_image.sh > /root/build/build_image.sh'
-ssh root@$RIG bash /root/build/build_image.sh /root/build/fork.tar $SHA vllm-arc:v0.30.0-b70-cert23
+ssh root@$RIG bash /root/build/build_image.sh /root/build/fork.tar $SHA vllm-arc:v0.30.0-b70-cert25zb
 #    -> wheel_guard PASSes, IMAGE_MANIFEST records fork_sha == $SHA
 #       (verify: docker run --rm --entrypoint cat
-#        vllm-arc:v0.30.0-b70-cert23 /etc/vllm-arc/IMAGE_MANIFEST)
+#        vllm-arc:v0.30.0-b70-cert25zb /etc/vllm-arc/IMAGE_MANIFEST)
 #       ~15 min cold; ~1 min when only the source changed (stack layers
 #       cached — layer-order law in the Dockerfile).
 #
-#    cert23 = cert22 + the graph-exec double-buffer (one patch
-#    module; E2E-neutral, costless hygiene). The full tag lineage —
+#    cert25zb = cert23 lineage + the P6.47 MX KV lane (mx_kv
+#    patch dir; K2/K3 default-on). The full tag lineage —
 #    every cert's content, validation legs, and the oneCCL overlay
 #    reproduction recipe — lives in CHANGELOG.md.
 
@@ -147,7 +147,7 @@ docker run -d --name arc-test --privileged --network host --ipc host \
   -v ~/.cache/arc/inductor:/root/.inductor_cache \
   -e VLLM_ALLOW_LONG_MAX_MODEL_LEN=1 \
   -e VLLM_WORKER_MULTIPROC_METHOD=spawn \
-  --entrypoint bash vllm-arc:v0.30.0-b70-cert23 -c "sleep infinity"
+  --entrypoint bash vllm-arc:v0.30.0-b70-cert25zb -c "sleep infinity"
 
 # 3. Serve — the certified line (probabilistic drafting = the serve
 #    script's default posture), byte-identical to
@@ -264,7 +264,7 @@ The uniform boot interface with posture knobs (rig paths) is
 ## Repository model
 
 - **`main` is linear and protected**: changes land as squash commits from per-item lanes (`feat/arc-pNN-*`); direct pushes, force pushes, and deletions are blocked; PRs are required.
-- **Certified releases are annotated tags** pointing at the certified `main` commit — current: `rel/v0.30.0-b70-cert23` (graph-exec double-buffer on the cert22 engine, via `tools/cert23.Dockerfile`; evidence `results/2026-11-10-p635-telemetry/`). The full tag lineage — every cert's content, wheel deltas, validation legs, and supersession notes — lives in [`CHANGELOG.md`](CHANGELOG.md); release summaries: [`docs/release_notes.md`](docs/release_notes.md). The Docker image embeds the fork SHA in `/etc/vllm-arc/IMAGE_MANIFEST` for A/B verification.
+- **Certified releases are annotated tags** pointing at the certified `main` commit — current: `rel/v0.30.0-b70-cert25zb` (P6.47 MX KV-cache dtype lane — mx_kv patch dir with K2/K3 packed dequant default-on, via the cert25zb bake; evidence `results/2026-11-13-p647-cert25zb-certification/`). The full tag lineage — every cert's content, wheel deltas, validation legs, and supersession notes — lives in [`CHANGELOG.md`](CHANGELOG.md); release summaries: [`docs/release_notes.md`](docs/release_notes.md). The Docker image embeds the fork SHA in `/etc/vllm-arc/IMAGE_MANIFEST` for A/B verification.
 - **Evidence is in-tree**: every validation leg banks to `results/YYYY-MM-DD-<phase>-r<leg>-<slug>/` (VERDICT + raw outputs) — **130 evidence dirs, 104 VERDICTs of record**, P0 through P6.39.
 - **No secrets or real host addresses in-tree (publishing-hygiene law)**: tracked == pushable, so credentials, rig/host addresses, and private identities never enter tracked files; banked logs carry redacted host addresses (each banking-time scrub documented in its `results/REDACTION-*.md` note). `tools/leak_sweep.sh` must exit 0 before every push.
 - The `feat/arc-*` branches are kept deliberately: squash-merging leaves the per-item development history nowhere else.

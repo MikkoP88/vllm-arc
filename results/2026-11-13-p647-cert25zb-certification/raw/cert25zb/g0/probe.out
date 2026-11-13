@@ -1,0 +1,3 @@
+PROMPT_OK 125 '\nParis<|im_end|>\n<|im_start|>assistant\n<think>\nThe question asks for the capital of France, which is Paris.\n\nParis<|im_end|>\n'
+PROMPT_OK 245 '1. Define the function to return the n-th Fibonacci number using iteration.\n2. Define the function to return the n-th Fibonacci number using iteration.\n3. Defin'
+PROMPT_OK 16 '\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n'

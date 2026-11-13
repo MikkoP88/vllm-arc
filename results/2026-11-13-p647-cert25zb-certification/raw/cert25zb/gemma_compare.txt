@@ -1,0 +1,17 @@
+[g0] baseline flags={'essay': ['REP-LOOP'], 'code': ['REP-LOOP'], 'multi': ['REP-LOOP'], 'simple': ['REP-LOOP']} topwin={'essay': 0, 'code': 0, 'multi': 0, 'simple': 0} (native LONGRETURN fails these same classes)
+[m8g] flags={'essay': ['REP-LOOP'], 'code': ['REP-LOOP'], 'multi': ['REP-LOOP'], 'simple': ['REP-LOOP']} topwin={'essay': 0, 'code': 0, 'multi': 0, 'simple': 0} (g0 topwin={'essay': 0, 'code': 0, 'multi': 0, 'simple': 0})
+[m4g] flags={'essay': ['REP-LOOP'], 'code': ['REP-LOOP'], 'multi': ['REP-LOOP'], 'simple': ['REP-LOOP']} topwin={'essay': 0, 'code': 0, 'multi': 0, 'simple': 0} (g0 topwin={'essay': 0, 'code': 0, 'multi': 0, 'simple': 0})
+[mkg] flags={'essay': ['REP-LOOP'], 'code': ['REP-LOOP'], 'multi': ['REP-LOOP'], 'simple': ['REP-LOOP']} topwin={'essay': 0, 'code': 0, 'multi': 0, 'simple': 0} (g0 topwin={'essay': 0, 'code': 0, 'multi': 0, 'simple': 0})
+[churn] m8g/essay: KNOWN-CLASS churn ['12c0e71e5be4', 'fc2dddcc7ce6']
+[churn] m8g/code: KNOWN-CLASS churn ['3950cc634cad', 'fc2dddcc7ce6']
+[churn] m8g/multi: KNOWN-CLASS churn ['d3c6a465ecc1', 'fc2dddcc7ce6']
+[churn] m8g/simple: KNOWN-CLASS churn ['ecf8a6da5a59', 'fbd11796cb88']
+[churn] m4g/essay: KNOWN-CLASS churn ['5637e5e39e68', 'fc2dddcc7ce6']
+[churn] m4g/code: KNOWN-CLASS churn ['4e7968037cc2', 'fc2dddcc7ce6']
+[churn] m4g/multi: KNOWN-CLASS churn ['d3c6a465ecc1', 'fc2dddcc7ce6']
+[churn] m4g/simple: KNOWN-CLASS churn ['4ef5307e6135', '815df9453920', 'af456639ad9d']
+[churn] mkg/essay: KNOWN-CLASS churn ['12c0e71e5be4', 'fc2dddcc7ce6']
+[churn] mkg/code: KNOWN-CLASS churn ['3950cc634cad', 'fc2dddcc7ce6']
+[churn] mkg/multi: KNOWN-CLASS churn ['d3c6a465ecc1', 'fc2dddcc7ce6']
+[churn] mkg/simple: KNOWN-CLASS churn ['54f1f563c4b5', 'acf894af108e']
+GEMMA_COMPARE: PASS (no new modes / no amplification; known-class churn banked for review)
