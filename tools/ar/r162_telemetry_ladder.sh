@@ -18,7 +18,7 @@
 # /root/build/p647/telemA10/<cell>/. Exit 0 = all cells banked.
 set -uo pipefail
 R=/root/build
-P=$R/p647/telemA10
+P=${P647_BANK:-$R/p647/telemA10}
 IMG=${IMG:-vllm-arc:v0.30.0-b70-cert25x}
 CNAME=arc-r162
 MT=600
