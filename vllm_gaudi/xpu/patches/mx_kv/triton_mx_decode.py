@@ -137,6 +137,19 @@ capture law) on the v5 dot lane only; sub-byte payloads keep the f32
 path until the K3 e2m1 fast-unpack line replaces the unpack itself.
 Probe: p176_k2ab.py.
 
+K3 E2M1 FAST-UNPACK LINE (P6.47, 2026-11-13): after K2 the e2m1
+lanes' residual tax is the f32 decode chain (~18 f32-class ops per
+element including an SFU exp2 — m4 8.68 / mkv4 8.28 vs m8's 4.87 ms
+at 32K). K3 maps each nibble to its e4m3 BYTE with ~10 integer ops
+(the map is exact — every e2m1 value is representable in e4m3;
+base(n') = (n'<<2) + 0x30 holds for e > 0, exceptions 0x00/0x30 at
+n' = 0/1) and rides the same hardware cvt -> packed-fp16 multiply.
+Same single-rounding law as K2 (x_f16 exact, pow2 scale exact ->
+product rounds to fp16 once) — bit-identical to the f32 path. Behind
+ARC_MXKV_K3=1 on the v5 dot lane, independent of K2 so the A/B
+attributes cleanly; join/shift nibble-extraction flavors unchanged.
+Probe: p177_k3ab.py.
+
 Provenance: from-scratch in-house lane (P6.47, 2026-11-11);
 kernel structure follows the wheel's sub-byte KV decode template
 (triton_turboquant_decode.py — survey
@@ -191,6 +204,20 @@ def _f16_scale(s):
 
 
 @triton.jit
+def _e2m1_byte(nib):
+    # K3 lane: e2m1 nibble -> e4m3 byte, the exact map (every e2m1 value
+    # is representable in e4m3). Replaces the f32 where/exp2 decode chain
+    # (~18 f32-class ops/elem incl. an SFU exp2) with ~10 integer ops so
+    # sub-byte payloads ride the hardware cvt -> packed-fp16 multiply the
+    # e4m3 lane uses. base(n') = (n'<<2) + 0x30 holds for n' >= 2 (e > 0);
+    # the e == 0 exceptions are 0x00 (n'=0, value 0) and 0x30 (n'=1, 0.5).
+    n = nib & 7
+    base = (n << 2) + 48
+    cor = tl.where(n < 2, tl.where(n == 0, 48, 4), 0)
+    return (((nib & 8) << 4) | (base - cor)).to(tl.uint8)
+
+
+@triton.jit
 def _mx_dequant_block(
     cache_ptr,
     slot,
@@ -202,38 +229,70 @@ def _mx_dequant_block(
     SUB4: tl.constexpr,  # payload is e2m1 nibbles (else e4m3 bytes)
     SHIFT: tl.constexpr = 0,  # 1 = shift-unpack (v2 A/B flavor; v1 stays join)
     F16OUT: tl.constexpr = 0,  # 1 = e4m3 payloads return packed-fp16 (K2)
+    E2M1FAST: tl.constexpr = 0,  # 1 = e2m1 payloads via e4m3-byte map (K3)
 ):
     # slot: [BLOCK_N] int64 slot byte bases; mask: [BLOCK_N] valid lanes.
     # Returns f32 [BLOCK_N, D] dequantized K-or-V rows (fp16 when F16OUT
-    # and the payload is e4m3 — the K2 packed lane; see module header).
+    # and the payload is e4m3 — the K2 packed lane; fp16 when E2M1FAST
+    # and the payload is e2m1 — the K3 lane; see module header).
     g = tl.arange(0, N_GROUPS)
     gmask = mask[:, None]
     if SUB4:
         codes = tl.load(cache_ptr + slot[:, None] + payload_off + D // 2 + g[None, :], mask=gmask, other=0)
         scale = tl.exp2(codes.to(tl.float32) - 127.0)
-        if SHIFT:
-            # duplicated-load interleave: element d's byte is d//2, its
-            # nibble shift is (d%2)*4 — pure vector ALU, no join/reshape
-            # cross-lane op (semantics identical to the join path).
-            dd = tl.arange(0, D)
-            raw = tl.load(
-                cache_ptr + slot[:, None] + payload_off + (dd // 2)[None, :],
-                mask=gmask,
-                other=0,
-            ).to(tl.int32)
-            nib = (raw >> ((dd % 2) * 4)[None, :]) & 0xF
-            elems = _mx_dequant_e2m1(nib)
-        else:
-            raw = tl.load(
-                cache_ptr + slot[:, None] + payload_off + tl.arange(0, D // 2)[None, :],
-                mask=gmask,
-                other=0,
+        if E2M1FAST:
+            # K3 lane: nibble -> e4m3 byte (exact) -> fp16, pow2 scale
+            # exact in fp16 — same single-rounding law as K2. Nibble
+            # extraction (join/shift flavor) unchanged, byte domain.
+            sc16 = tl.reshape(
+                tl.broadcast_to(_f16_scale(scale)[:, :, None],
+                                (BLOCK_N, N_GROUPS, 32)),
+                (BLOCK_N, D),
             )
-            lo = _mx_dequant_e2m1(raw & 0xF)
-            hi = _mx_dequant_e2m1(raw >> 4)
-            elems = tl.reshape(tl.join(lo, hi), (BLOCK_N, D))
-        sc = tl.reshape(tl.broadcast_to(scale[:, :, None], (BLOCK_N, N_GROUPS, 32)), (BLOCK_N, D))
-        return elems * sc
+            if SHIFT:
+                dd = tl.arange(0, D)
+                raw = tl.load(
+                    cache_ptr + slot[:, None] + payload_off + (dd // 2)[None, :],
+                    mask=gmask,
+                    other=0,
+                ).to(tl.int32)
+                nib = (raw >> ((dd % 2) * 4)[None, :]) & 0xF
+                b = _e2m1_byte(nib)
+                return b.to(tl.float8e4nv, bitcast=True).to(tl.float16) * sc16
+            else:
+                raw = tl.load(
+                    cache_ptr + slot[:, None] + payload_off + tl.arange(0, D // 2)[None, :],
+                    mask=gmask,
+                    other=0,
+                )
+                lo = _e2m1_byte(raw & 0xF)
+                hi = _e2m1_byte(raw >> 4)
+                b8 = tl.reshape(tl.join(lo, hi), (BLOCK_N, D))
+                return b8.to(tl.float8e4nv, bitcast=True).to(tl.float16) * sc16
+        else:
+            if SHIFT:
+                # duplicated-load interleave: element d's byte is d//2, its
+                # nibble shift is (d%2)*4 — pure vector ALU, no join/reshape
+                # cross-lane op (semantics identical to the join path).
+                dd = tl.arange(0, D)
+                raw = tl.load(
+                    cache_ptr + slot[:, None] + payload_off + (dd // 2)[None, :],
+                    mask=gmask,
+                    other=0,
+                ).to(tl.int32)
+                nib = (raw >> ((dd % 2) * 4)[None, :]) & 0xF
+                elems = _mx_dequant_e2m1(nib)
+            else:
+                raw = tl.load(
+                    cache_ptr + slot[:, None] + payload_off + tl.arange(0, D // 2)[None, :],
+                    mask=gmask,
+                    other=0,
+                )
+                lo = _mx_dequant_e2m1(raw & 0xF)
+                hi = _mx_dequant_e2m1(raw >> 4)
+                elems = tl.reshape(tl.join(lo, hi), (BLOCK_N, D))
+            sc = tl.reshape(tl.broadcast_to(scale[:, :, None], (BLOCK_N, N_GROUPS, 32)), (BLOCK_N, D))
+            return elems * sc
     else:
         codes = tl.load(cache_ptr + slot[:, None] + payload_off + D + g[None, :], mask=gmask, other=0)
         scale = tl.exp2(codes.to(tl.float32) - 127.0)
@@ -696,6 +755,7 @@ def _mx_decode_split_dot(
     NUM_SPLITS: tl.constexpr,  # grid z; effective count adapts per group
     SHIFT: tl.constexpr,  # e2m1 unpack flavor
     K2: tl.constexpr = 0,  # 1 = packed-fp16 dequant on e4m3 payloads
+    K3: tl.constexpr = 0,  # 1 = e2m1 payloads via e4m3-byte map (packed)
 ):
     # v5 stage 1 (A11 lever 3, the XMX reopening): the score path as MMA.
     # ONE program per (row-GROUP, KV-HEAD, split) walks the request once
@@ -771,14 +831,14 @@ def _mx_decode_split_dot(
             )
             k = _mx_dequant_block(
                 cache_ptr, slot, 0, nmask, BLOCK_N, D, N_GROUPS, K4, SHIFT,
-                F16OUT=K2 and not K4,
+                F16OUT=K2 and not K4, E2M1FAST=K3 and K4,
             )
             v = _mx_dequant_block(
                 cache_ptr, slot, v_off, nmask, BLOCK_N, D, N_GROUPS, V4, SHIFT,
-                F16OUT=K2 and not V4,
+                F16OUT=K2 and not V4, E2M1FAST=K3 and V4,
             )
-            if K2 and not K4:
-                # K2 packed lane: k is already fp16 — no convert, the
+            if (K2 and not K4) or (K3 and K4):
+                # K2/K3 packed lanes: k is already fp16 — no convert, the
                 # packed multiply already happened at dequant
                 scores = tl.dot(q16, tl.trans(k)) * sm_scale
             else:
@@ -793,7 +853,7 @@ def _mx_decode_split_dot(
             p = tl.exp(scores - m_safe[:, None])
             alpha = tl.exp(m - m_safe)
             lrow = lrow * alpha + tl.sum(p, 1)
-            if K2 and not V4:
+            if (K2 and not V4) or (K3 and V4):
                 acc = acc * alpha[:, None] + tl.dot(p.to(tl.float16), v)
             else:
                 acc = acc * alpha[:, None] + tl.dot(p.to(tl.float16), v.to(tl.float16))
@@ -1155,6 +1215,8 @@ def mx_decode_rows_dot(
     # K2 packed-fp16 dequant lane (r177 scalar-ALU wall; module header).
     # Call-time read — static during serving (capture law).
     k2 = os.environ.get("ARC_MXKV_K2", "") == "1"
+    # K3 e2m1 fast-unpack lane — independent knob so the A/B attributes.
+    k3 = os.environ.get("ARC_MXKV_K3", "") == "1"
     out = torch.empty_like(q)
     key = (r, hq, splits, d, str(q.device))
     mid = _mid_cache.get(key)
@@ -1193,6 +1255,7 @@ def mx_decode_rows_dot(
         NUM_SPLITS=splits,
         SHIFT=shift,
         K2=k2,
+        K3=k3,
         num_warps=num_warps,
         num_stages=num_stages,
     )
