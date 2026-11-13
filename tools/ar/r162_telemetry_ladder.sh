@@ -138,7 +138,11 @@ run_cell() {
   echo "R162_CELL_DONE_$CELLN $(date +%H:%M:%S)"
 }
 
-QWEN="ARC_MODEL=/models/qwen3.8-27b-fp8 ARC_SERVED=qwen3.8-27b-fp8 ARC_GRAPH=1 ARC_SPEC=3 ARC_LMC=1 ARC_FP8=1"
+# P6.47 r168 posture: ARC_LMC is no longer pinned here — the serve
+# script's default applies per lane (1 for q8/m8; auto-off for the m4
+# e2m1-V lane, the r168-discriminated LMCache double-quant garble
+# driver). The battery measures the shipping posture of each cell.
+QWEN="ARC_MODEL=/models/qwen3.8-27b-fp8 ARC_SERVED=qwen3.8-27b-fp8 ARC_GRAPH=1 ARC_SPEC=3 ARC_FP8=1"
 
 echo "=== [r162:A10] W14 quiesce $(date +%H:%M:%S) ==="
 docker stop radiance-test >/dev/null 2>&1 || true

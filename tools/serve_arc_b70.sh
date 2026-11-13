@@ -27,7 +27,13 @@
 #               Evidence: results/2026-11-03-p617a-probcert/ (+p616 lineage).
 #   ARC_LMC     0 no LMCache | 1 D-champion kv-transfer config (P3; default —
 #               the certified posture: LMCacheConnectorV1 + the 10-var
-#               LMCACHE_* chain, keep as a set)
+#               LMCACHE_* chain, keep as a set). P6.47 exception: on
+#               ARC_KVDTYPE mxfp4/mxk8v4 the DEFAULT is 0 (auto-off) —
+#               LMCache prefix-reload double-quantizes V and e2m1-V does
+#               not survive the second quantization (r168 discriminator:
+#               same m4q posture, ARC_LMC=1 essay-rehit REP-LOOP garble
+#               vs ARC_LMC=0 all classes CLEAN; explicit ARC_LMC=1 still
+#               forces it, with a WARN)
 #   ARC_GMU     --gpu-memory-utilization (default 0.8, D-champion certified
 #               posture — V1227_GMU lineage, plan Appendix F)
 #   ARC_MAXLEN  --max-model-len (default 262144 = the certified incumbent
@@ -98,6 +104,19 @@ ARC_IMAGE=${ARC_IMAGE:-vllm-arc:v0.30.0-b70}
 ARC_NAME=${ARC_NAME:-arc-test}
 ARC_GRAPH=${ARC_GRAPH:-0}
 ARC_SPEC=${ARC_SPEC:-3}
+# P6.47 posture (r168 discriminator, 2026-11-13): LMCache's prefix-reload
+# path re-quantizes V on write-back; e2m1-V (mxfp4/mxk8v4) does not survive
+# the second quantization — r161 m4q ARC_LMC=1 banked essay-rehit REP-LOOP
+# garble on full+rehit faces while r168's byte-identical posture with
+# ARC_LMC=0 came back CLEAN on all 4 classes with deterministic hashes.
+# Auto-off LMC on the e2m1-V lanes unless the operator forces ARC_LMC=1.
+KVD_EFF=${ARC_KVDTYPE:-fp8_e4m3}
+if [ -z "${ARC_LMC:-}" ] && { [ "$KVD_EFF" = mxfp4 ] || [ "$KVD_EFF" = mxk8v4 ]; }; then
+  ARC_LMC=0
+  echo "NOTE: ARC_LMC auto-off for ARC_KVDTYPE=$KVD_EFF (LMCache double-quant of e2m1 V; P6.47 r168 evidence)"
+elif [ "${ARC_LMC:-1}" = 1 ] && { [ "$KVD_EFF" = mxfp4 ] || [ "$KVD_EFF" = mxk8v4 ]; }; then
+  echo "WARN: ARC_LMC=1 forced on ARC_KVDTYPE=$KVD_EFF — r168 showed essay-rehit REP-LOOP garble on this combo"
+fi
 ARC_LMC=${ARC_LMC:-1}
 ARC_GMU=${ARC_GMU:-0.8}
 ARC_MAXLEN=${ARC_MAXLEN:-262144}
