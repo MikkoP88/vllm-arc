@@ -1,0 +1,58 @@
+# SPDX-License-Identifier: Apache-2.0
+# Dockerfile.cert25za -- P6.47 cert25za image: cert25z + the A14 v6
+# deep-split kernel line (triton_mx_decode.py only): split cap 32 -> 256
+# with the adaptive >=4-serial-tile s_eff rule, the chunked
+# _mx_decode_combine (one chunk = the certified 32-split math verbatim),
+# and the A14-sweep-winning BN=32 _V5_TUNE (BLOCK_N=64 REFUTED: 0.64-0.85x
+# every cell; BN=32 + adaptive splits: mxfp8 G1 1.76x@8K / 1.66x@32K =
+# 2.09 / 5.25 ms vs A13 v5; G8 1.02-1.05x; mxfp4/mxk8v4 splits-neutral —
+# e2m1 unpack ALU wall is the K2 research lane, m4 stays v2). Correctness
+# A14_V6_SWEEP_PASS <= 1.4e-4 at all boundary shapes x 3 formats. v2/v3/v4
+# lanes byte-identical. Built by r175_build_cert25za.sh with
+# FORK_SHA=<content commit>.
+FROM vllm-arc:v0.30.0-b70-cert25z
+
+ARG FORK_SHA=unknown
+ARG BUILT=unknown
+
+COPY engine.py /tmp/mx_kv_engine.py
+COPY triton_mx_decode.py /tmp/mx_kv_triton_mx_decode.py
+COPY __init__.py /tmp/mx_kv_init.py
+
+RUN set -euxo pipefail; \
+    SP=/opt/venv/lib/python3.12/site-packages/vllm_gaudi; \
+    cp /tmp/mx_kv_engine.py           $SP/xpu/patches/mx_kv/engine.py; \
+    cp /tmp/mx_kv_triton_mx_decode.py $SP/xpu/patches/mx_kv/triton_mx_decode.py; \
+    cp /tmp/mx_kv_init.py             $SP/xpu/patches/mx_kv/__init__.py; \
+    rm -rf $SP/xpu/patches/__pycache__/mx_kv; \
+    rm -f /tmp/mx_kv_engine.py /tmp/mx_kv_triton_mx_decode.py /tmp/mx_kv_init.py; \
+    export LD_LIBRARY_PATH=/opt/venv/lib:/opt/venv/lib/python3.12/site-packages/torch/lib; \
+    /opt/venv/bin/python -c \
+      "import inspect;\
+       import vllm_gaudi.xpu.patches.mx_kv.engine as e;\
+       import vllm_gaudi.xpu.patches.mx_kv.triton_mx_decode as t;\
+       import vllm_gaudi.xpu.patches.mx_kv as pkg;\
+       tsrc = inspect.getsource(t);\
+       esrc = inspect.getsource(e);\
+       isrc = inspect.getsource(pkg);\
+       assert '_mx_decode_combine' in tsrc, 'v6 chunked combine kernel';\
+       assert '_V5_SPLIT_DEFAULT' in tsrc, 'v6 split cap line';\
+       assert 'ARC_MXKV_V5_SPLITS' in tsrc, 'v6 split env knob';\
+       assert 'ARC_MXKV_V5_BN' in tsrc, 'v6 BN env knob';\
+       assert 'n_tiles // 4' in tsrc, 'v6 adaptive >=4-serial-tile rule';\
+       assert t._V5_SPLIT_DEFAULT == 256, 'v6 split cap 256';\
+       assert t._V5_TUNE == {'mxfp8': (32, 4, 2, False), 'mxfp4': (32, 8, 2, False), 'mxk8v4': (32, 8, 2, True)}, 'A14 BN=32 sweep winner tune';\
+       assert t._MX_TUNE == {'mxfp8': (32, 4, 2, False), 'mxfp4': (32, 8, 2, False), 'mxk8v4': (32, 8, 2, True)}, 'A9 scalar tune unchanged';\
+       assert '_DECODER = os.environ.get(\"ARC_MXKV_DECODER\", \"v2\")' in tsrc, 'per-row knob default v2 unchanged';\
+       assert '_V5_DEFAULT' in esrc, 'v5 default flip unchanged';\
+       assert 'ARC_MXKV_VERIFY_DECODER' in esrc, 'verify-decoder override env unchanged';\
+       assert not __import__('re').search(r'query\.float\(\)', esrc), 'native-q decode path';\
+       assert 'mx_decode_rows_dot' in isrc, 'package export unchanged';\
+       print('CERT25ZA_DECODE_LINE_LIVE v6 deep-split + BN=32 tune OK')"; \
+    { cat /etc/vllm-arc/IMAGE_MANIFEST; \
+      echo "cert25za=P6.47 decode-superiority line part 4: A14 v6 deep-split kernel — split cap 32->256 (adaptive s_eff = max(1, n_tiles//4), floor 1; the A14 law: the 32-cap starved the grid at long ctx — 1024 serial tiles on 128 CTAs), chunk-loop _mx_decode_combine over 32-split chunks (idle splits carry the empty marker lse=-inf; one chunk reduces to the certified 32-split math), call-time env knobs ARC_MXKV_V5_SPLITS / ARC_MXKV_V5_BN / _ARC_MXKV_V5_WARPS (static during serving — capture law). A14 sweep verdict (r173, banked outA14): BLOCK_N=64 refuted 0.64-0.85x every cell (register pressure re-climbs the A9 spill slope); BN=32 + adaptive cap wins mxfp8 G1 1.76x@8K / 1.66x@32K, G8 1.02-1.05x; mxfp4/mxk8v4 splits-neutral (e2m1 per-CTA unpack ALU wall — K2 lane), m4 keeps v2. Correctness A14_V6_SWEEP_PASS vs per-row v2 <= 1.4e-4 x9 faces. v2/v3/v4 lanes byte-identical; engine.py/__init__.py re-overlaid byte-identical to cert25z"; \
+      echo "cert25za_fork_sha=${FORK_SHA}"; \
+      echo "cert25za_built=${BUILT}"; \
+    } > /etc/vllm-arc/IMAGE_MANIFEST.p647; \
+    mv /etc/vllm-arc/IMAGE_MANIFEST.p647 /etc/vllm-arc/IMAGE_MANIFEST; \
+    cat /etc/vllm-arc/IMAGE_MANIFEST
