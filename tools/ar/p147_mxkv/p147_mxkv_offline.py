@@ -84,21 +84,25 @@ HK = 2
 HREP = 4  # Hq = HK * HREP = 8 (GQA shape of both certified models)
 BLOCK = 64
 DEV = "xpu"
-FMTS = ("mxfp8", "mxfp4")
-ENCODERS = {"mxfp8": encode_mxfp8, "mxfp4": encode_mxfp4}
+FMTS = ("mxfp8", "mxfp4", "mxk8v4")
+# Role-aware element encoders (mxk8v4 = e4m3 K + e2m1 V — the mixed slot):
+# K and V use the uniform format's single encoder; mxk8v4 composes the
+# per-leg element classes, exactly encode_mxk8v4's math (mx_quant.py).
+KENC = {"mxfp8": encode_mxfp8, "mxfp4": encode_mxfp4, "mxk8v4": encode_mxfp8}
+VENC = {"mxfp8": encode_mxfp8, "mxfp4": encode_mxfp4, "mxk8v4": encode_mxfp4}
 # Format-fidelity sanity floors (vs unquantized fp64 attention), empirically
 # calibrated on leg A: unit-scale random K/V at D=128 is the hardest face —
 # mxfp8 lands ~0.9993, mxfp4 ~0.9883 (round-trip faces of the REFERENCE
-# itself land 0.9997/0.9933). These gates catch implementation regressions;
-# the release bar for end-to-end quality is the in-engine corruption gate
-# (longprobe class, docs/TESTING-arc.md suite 14), not this offline floor.
-COS_FLOOR_ORIG = {"mxfp8": 0.99850, "mxfp4": 0.98500}
+# itself land 0.9997/0.9933). mxk8v4 floors = the 4-bit-V leg (binding
+# side; the 8-bit-K leg is strictly tighter and its content defects are
+# caught exactly by the bytes face).
+COS_FLOOR_ORIG = {"mxfp8": 0.99850, "mxfp4": 0.98500, "mxk8v4": 0.98500}
 # round-trip sanity floors for the REFERENCE itself: max-rel is the wrong
 # metric on mxfp4 (values just under a grid midpoint quantize to 0 —
 # rel ~1.0 is inherent 4-bit behavior, not a defect); cos-sim + relative
 # RMSE capture the actual fidelity.
-COS_FLOOR_REF = {"mxfp8": 0.99950, "mxfp4": 0.99000}
-RMSE_REL_CEIL = {"mxfp8": 0.07, "mxfp4": 0.20}
+COS_FLOOR_REF = {"mxfp8": 0.99950, "mxfp4": 0.99000, "mxk8v4": 0.99000}
+RMSE_REL_CEIL = {"mxfp8": 0.07, "mxfp4": 0.20, "mxk8v4": 0.20}
 R = {}  # results tree
 FAILED = []
 
@@ -123,7 +127,13 @@ def cos_sim(a, b):
 
 def kslot(x, fmt):
     """[K payload | Ks codes] for a [..., D] tensor (mx_layout block)."""
-    enc, codes = ENCODERS[fmt](x)
+    enc, codes = KENC[fmt](x)
+    return torch.cat([enc, codes], dim=-1)
+
+
+def vslot(x, fmt):
+    """[V payload | Vs codes] — V-role elements (e2m1 on mxk8v4)."""
+    enc, codes = VENC[fmt](x)
     return torch.cat([enc, codes], dim=-1)
 
 
@@ -134,10 +144,11 @@ def build_paged(total_tokens, seed=7):
     n_blocks = total_tokens // BLOCK + 2
     perm = torch.randperm(n_blocks, generator=torch.Generator().manual_seed(seed))
     order = perm.tolist()
-    if total_tokens < 2:
-        lens = [total_tokens]
-    else:
-        lens = [max(1, total_tokens // 3), total_tokens - max(1, total_tokens // 3)]
+    lens = (
+        [total_tokens]
+        if total_tokens < 2
+        else [max(1, total_tokens // 3), total_tokens - max(1, total_tokens // 3)]
+    )
     tables, tok_block, tok_pos = [], [], []
     cur = 0
     for ln in lens:
@@ -170,18 +181,25 @@ def face_ref():
     gen = torch.Generator().manual_seed(20261111)
     for fmt in FMTS:
         x = torch.randn(64, HK, D, generator=gen)
-        k, v = decode_kv(kslot(x, fmt), kslot(x, fmt), fmt, D)  # same tensor both
-        _ = v
-        c = cos_sim(k, x)
-        rmse_rel = (k - x).pow(2).mean().sqrt().item() / x.pow(2).mean().sqrt().item()
+        # both roles through their own element class (mxk8v4: e4m3 K /
+        # e2m1 V) — the true mixed-slot round-trip
+        k, v = decode_kv(kslot(x, fmt), vslot(x, fmt), fmt, D)
+        c = min(cos_sim(k, x), cos_sim(v, x))
+        rmse_rel = max(
+            (k - x).pow(2).mean().sqrt().item(), (v - x).pow(2).mean().sqrt().item()
+        ) / x.pow(2).mean().sqrt().item()
         if c < COS_FLOOR_REF[fmt] or rmse_rel > RMSE_REL_CEIL[fmt]:
             _fail("ref", fmt, f"round-trip cos {c:.6f} rmse_rel {rmse_rel:.4f}")
         else:
             _ok("ref", fmt, f"round-trip cos {c:.6f}, rel-RMSE {rmse_rel:.4f}")
         _rec("ref", fmt, round_trip_cos=c, round_trip_rmse_rel=rmse_rel)
         z = torch.zeros(4, HK, D)
-        encz, codesz = ENCODERS[fmt](z)
-        if encz.abs().sum().item() != 0.0 or codesz.max().item() != 0:
+        zeros_ok = True
+        for enc_fn in (KENC[fmt], VENC[fmt]):
+            encz, codesz = enc_fn(z)
+            if encz.abs().sum().item() != 0.0 or codesz.max().item() != 0:
+                zeros_ok = False
+        if not zeros_ok:
             _fail("ref", fmt, "zero rows produced nonzero payload/codes")
         else:
             _ok("ref", fmt, "zero rows encode to zero payload + code 0")
@@ -226,7 +244,7 @@ def face_bytes():
         off = offsets(D, fmt)
         mismatch = 0
         for name, src in (("k", kx), ("v", vx)):
-            ref = kslot(src, fmt)
+            ref = kslot(src, fmt) if name == "k" else vslot(src, fmt)
             got_blk = got[..., off[name] : off[name] + ref.shape[-1]]
             mismatch += int((got_blk != ref).sum())
         if mismatch:
@@ -254,7 +272,8 @@ def _ref_attention(q, k_deq, v_deq, lens):
 def _dequant_cache(cache, tb, tp, fmt):
     got = cache[tb.long().cpu(), tp.long().cpu(), :, :].cpu()
     ng = D // 32
-    kwidth = D + ng if fmt == "mxfp8" else D // 2 + ng
+    # K block width: e4m3 bytes (mxfp8, mxk8v4) or e2m1 nibbles (mxfp4)
+    kwidth = D + ng if fmt in ("mxfp8", "mxk8v4") else D // 2 + ng
     return decode_kv(got[..., :kwidth].contiguous(), got[..., kwidth:].contiguous(), fmt, D)
 
 

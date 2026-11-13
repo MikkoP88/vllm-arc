@@ -1,0 +1,5 @@
+(Worker_TP0 pid=1055) INFO 11-12 07:06:40 [engine.py:212] MXKVTRACE store cache=(7839, 64, 2, 528) stride=(67584, 1056, 528, 1) slots=1 smap=[10889] smax=10889 bs_from_shape1=64 id=126812133148528
+(Worker_TP1 pid=1056) INFO 11-12 07:06:40 [engine.py:212] MXKVTRACE store cache=(7839, 64, 2, 528) stride=(67584, 1056, 528, 1) slots=1 smap=[10889] smax=10889 bs_from_shape1=64 id=132647653480864
+(Worker_TP0 pid=1055) INFO 11-12 07:06:40 [engine.py:212] MXKVTRACE dec B=1 msl=74 id=126812133148528
+(Worker_TP1 pid=1056) INFO 11-12 07:06:40 [engine.py:212] MXKVTRACE dec B=1 msl=74 id=132647653480864
+(APIServer pid=7) INFO:     127.0.0.1:57906 - "POST /v1/completions HTTP/1.1" 200 OK

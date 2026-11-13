@@ -1,0 +1,158 @@
+===== essay =====
+{
+ "t0_identical": false,
+ "hashes": [
+  "d748a1b1493b",
+  "484f71e94d10",
+  "484f71e94d10"
+ ],
+ "content_hashes": [
+  "392bc9dcfb7f",
+  "a0cbd836f2d5",
+  "a0cbd836f2d5"
+ ],
+ "garble": {
+  "cold": [],
+  "rehit": [
+   "REP-LOOP"
+  ],
+  "rehit2": [
+   "REP-LOOP"
+  ]
+ },
+ "finish": [
+  "stop",
+  "length",
+  "length"
+ ],
+ "prompt_tok": 2145,
+ "chars": [
+  4053,
+  13832,
+  13832
+ ],
+ "t1_seed_identical": true,
+ "t1_hashes": [
+  "ea7057547de1",
+  "ea7057547de1"
+ ],
+ "t1_garble": [
+  "REP-LOOP"
+ ],
+ "dt_cold": 61.7
+}
+
+===== code =====
+{
+ "t0_identical": true,
+ "hashes": [
+  "835e22925745",
+  "835e22925745",
+  "835e22925745"
+ ],
+ "content_hashes": [
+  "a81dc92e2c1b",
+  "a81dc92e2c1b",
+  "a81dc92e2c1b"
+ ],
+ "garble": {
+  "cold": [],
+  "rehit": [],
+  "rehit2": []
+ },
+ "finish": [
+  "stop",
+  "stop",
+  "stop"
+ ],
+ "prompt_tok": 5051,
+ "chars": [
+  2547,
+  2547,
+  2547
+ ],
+ "t1_seed_identical": true,
+ "t1_hashes": [
+  "b0bd6c0a4a17",
+  "b0bd6c0a4a17"
+ ],
+ "t1_garble": [],
+ "dt_cold": 90.3
+}
+
+===== multi =====
+{
+ "t0_identical": true,
+ "hashes": [
+  "17d67b534410",
+  "17d67b534410",
+  "17d67b534410"
+ ],
+ "content_hashes": [
+  "6d710d3c7256",
+  "6d710d3c7256",
+  "6d710d3c7256"
+ ],
+ "garble": {
+  "cold": [],
+  "rehit": [],
+  "rehit2": []
+ },
+ "finish": [
+  "stop",
+  "stop",
+  "stop"
+ ],
+ "prompt_tok": 3400,
+ "chars": [
+  548,
+  548,
+  548
+ ],
+ "t1_seed_identical": true,
+ "t1_hashes": [
+  "178ac8c02f3c",
+  "178ac8c02f3c"
+ ],
+ "t1_garble": [],
+ "dt_cold": 10.8
+}
+
+===== simple =====
+{
+ "t0_identical": true,
+ "hashes": [
+  "84efc84cc142",
+  "84efc84cc142",
+  "84efc84cc142"
+ ],
+ "content_hashes": [
+  "bcbf6958e0f1",
+  "bcbf6958e0f1",
+  "bcbf6958e0f1"
+ ],
+ "garble": {
+  "cold": [],
+  "rehit": [],
+  "rehit2": []
+ },
+ "finish": [
+  "stop",
+  "stop",
+  "stop"
+ ],
+ "prompt_tok": 38,
+ "chars": [
+  1510,
+  1510,
+  1510
+ ],
+ "t1_seed_identical": true,
+ "t1_hashes": [
+  "50921c631acc",
+  "50921c631acc"
+ ],
+ "t1_garble": [],
+ "dt_cold": 5.9
+}
+

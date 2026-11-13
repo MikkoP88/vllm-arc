@@ -1,0 +1,8 @@
+=== [r148:legB1] W14 quiesce 21:01:32 ===
+=== [r148:legB1] admission probe in vllm-arc:v0.30.0-b70-cert23 21:01:49 ===
+=== [r148:legB1] probe exit rc=1 21:02:03 ===
+[face:platform] ok current_platform=ArcXpuPlatform
+[face:literal] FAIL members=False/False (fallback path)
+[face:admit] FAIL 1 validation error for CacheConfig
+R148_LEGB1_DONE rc=1 2026-11-11T21:02:03Z
+W14_RESTORED 2026-11-11T21:02:03Z

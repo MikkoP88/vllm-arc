@@ -1,0 +1,6 @@
+[essay] hashes=['484f71e94d10', 'd748a1b1493b'] finish=['stop', 'length', 'length'] chars=[4053, 13832, 13832] t1_seed_identical=True garble_empty=False
+[code] hashes=['835e22925745', 'c82868afe22c'] finish=['stop', 'stop', 'stop'] chars=[2547, 2547, 2547] t1_seed_identical=True garble_empty=True
+[multi] hashes=['17d67b534410', 'b9bacc5bad5c'] finish=['stop', 'stop', 'stop'] chars=[548, 548, 548] t1_seed_identical=True garble_empty=True
+[simple] hashes=['84efc84cc142'] finish=['stop', 'stop', 'stop'] chars=[1510, 1510, 1510] t1_seed_identical=True garble_empty=True
+LONGRETURN: FAIL essay: cross-cycle hash drift ['484f71e94d10', 'd748a1b1493b']; essay: garble flags [['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP']]; essay: truncation finish=['stop', 'length', 'length']; code: cross-cycle hash drift ['835e22925745', 'c82868afe22c']; multi: cross-cycle hash drift ['17d67b534410', 'b9bacc5bad5c']
+T1_SEED: PASS

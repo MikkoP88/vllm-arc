@@ -1,0 +1,19 @@
+{
+ "tag": "c24m4g",
+ "mode": "full",
+ "probe": "v3",
+ "ts": "2026-11-12 10:15:54",
+ "essay": {
+  "error": "<HTTPError 404: 'Not Found'>"
+ },
+ "code": {
+  "error": "<HTTPError 404: 'Not Found'>"
+ },
+ "multi": {
+  "error": "<HTTPError 404: 'Not Found'>"
+ },
+ "simple": {
+  "error": "<HTTPError 404: 'Not Found'>"
+ },
+ "VERDICT": "CORRUPTION_SIGNAL"
+}

@@ -1,0 +1,1030 @@
+{
+  "dequant": {
+    "mxfp4": {
+      "131072": {
+        "content_maxdiff_8k": -1.0,
+        "gbps_rw": {
+          "join": 387.2,
+          "shift": 381.73
+        },
+        "ms": {
+          "join": 1.7548,
+          "shift": 1.78
+        },
+        "speedup_shift": 0.986
+      },
+      "32768": {
+        "content_maxdiff_8k": -1.0,
+        "gbps_rw": {
+          "join": 386.73,
+          "shift": 408.6
+        },
+        "ms": {
+          "join": 0.4392,
+          "shift": 0.4157
+        },
+        "speedup_shift": 1.057
+      },
+      "8192": {
+        "content_maxdiff_8k": 0.0,
+        "gbps_rw": {
+          "join": 457.71,
+          "shift": 503.36
+        },
+        "ms": {
+          "join": 0.0928,
+          "shift": 0.0844
+        },
+        "speedup_shift": 1.1
+      }
+    },
+    "mxfp8": {
+      "131072": {
+        "content_maxdiff_8k": -1.0,
+        "gbps_rw": {
+          "join": 395.38,
+          "shift": 396.02
+        },
+        "ms": {
+          "join": 2.058,
+          "shift": 2.0547
+        },
+        "speedup_shift": 1.002
+      },
+      "32768": {
+        "content_maxdiff_8k": -1.0,
+        "gbps_rw": {
+          "join": 326.7,
+          "shift": 404.79
+        },
+        "ms": {
+          "join": 0.6227,
+          "shift": 0.5025
+        },
+        "speedup_shift": 1.239
+      },
+      "8192": {
+        "content_maxdiff_8k": 0.0,
+        "gbps_rw": {
+          "join": 348.94,
+          "shift": 258.4
+        },
+        "ms": {
+          "join": 0.1457,
+          "shift": 0.1968
+        },
+        "speedup_shift": 0.741
+      }
+    },
+    "mxk8v4": {
+      "131072": {
+        "content_maxdiff_8k": -1.0,
+        "gbps_rw": {
+          "join": 394.27,
+          "shift": 390.6
+        },
+        "ms": {
+          "join": 1.8936,
+          "shift": 1.9114
+        },
+        "speedup_shift": 0.991
+      },
+      "32768": {
+        "content_maxdiff_8k": -1.0,
+        "gbps_rw": {
+          "join": 385.25,
+          "shift": 405.86
+        },
+        "ms": {
+          "join": 0.4845,
+          "shift": 0.4599
+        },
+        "speedup_shift": 1.053
+      },
+      "8192": {
+        "content_maxdiff_8k": 0.0,
+        "gbps_rw": {
+          "join": 454.95,
+          "shift": 409.45
+        },
+        "ms": {
+          "join": 0.1026,
+          "shift": 0.114
+        },
+        "speedup_shift": 0.9
+      }
+    }
+  },
+  "exact": {
+    "mxfp4/v1": {
+      "adversarial": {
+        "cos_same": 1.0,
+        "maxdiff": 2e-08,
+        "v1_delta": 0.0
+      },
+      "len1": {
+        "cos_same": 1.0,
+        "maxdiff": 0.0,
+        "v1_delta": 0.0
+      },
+      "len63": {
+        "cos_same": 1.0,
+        "maxdiff": 2.9e-07,
+        "v1_delta": 0.0
+      },
+      "len64": {
+        "cos_same": 1.0,
+        "maxdiff": 1.6e-07,
+        "v1_delta": 0.0
+      },
+      "len65": {
+        "cos_same": 1.0,
+        "maxdiff": 2.5e-07,
+        "v1_delta": 0.0
+      },
+      "random549": {
+        "cos_same": 1.0,
+        "maxdiff": 9e-08,
+        "v1_delta": 0.0
+      }
+    },
+    "mxfp4/v2join": {
+      "adversarial": {
+        "cos_same": 1.0,
+        "maxdiff": 2e-08,
+        "v1_delta": 1e-08
+      },
+      "len1": {
+        "cos_same": 1.0,
+        "maxdiff": 0.0,
+        "v1_delta": 0.0
+      },
+      "len63": {
+        "cos_same": 1.0,
+        "maxdiff": 1.4e-07,
+        "v1_delta": 3.6e-07
+      },
+      "len64": {
+        "cos_same": 1.0,
+        "maxdiff": 1.5e-07,
+        "v1_delta": 1.2e-07
+      },
+      "len65": {
+        "cos_same": 1.0,
+        "maxdiff": 3.5e-07,
+        "v1_delta": 3.6e-07
+      },
+      "random549": {
+        "cos_same": 1.0,
+        "maxdiff": 1.1e-07,
+        "v1_delta": 9e-08
+      }
+    },
+    "mxfp4/v2shift": {
+      "adversarial": {
+        "cos_same": 1.0,
+        "maxdiff": 2e-08,
+        "v1_delta": 1e-08
+      },
+      "len1": {
+        "cos_same": 1.0,
+        "maxdiff": 0.0,
+        "v1_delta": 0.0
+      },
+      "len63": {
+        "cos_same": 1.0,
+        "maxdiff": 2.6e-07,
+        "v1_delta": 3.6e-07
+      },
+      "len64": {
+        "cos_same": 1.0,
+        "maxdiff": 1.4e-07,
+        "v1_delta": 1.5e-07
+      },
+      "len65": {
+        "cos_same": 1.0,
+        "maxdiff": 1.9e-07,
+        "v1_delta": 2.4e-07
+      },
+      "random549": {
+        "cos_same": 1.0,
+        "maxdiff": 8e-08,
+        "v1_delta": 1.6e-07
+      }
+    },
+    "mxfp4/v3join": {
+      "adversarial": {
+        "cos_same": 1.0,
+        "maxdiff": 2e-08,
+        "v1_delta": 1e-08
+      },
+      "len1": {
+        "cos_same": 1.0,
+        "maxdiff": 0.0,
+        "v1_delta": 0.0
+      },
+      "len63": {
+        "cos_same": 1.0,
+        "maxdiff": 1.4e-07,
+        "v1_delta": 3.6e-07
+      },
+      "len64": {
+        "cos_same": 1.0,
+        "maxdiff": 1.5e-07,
+        "v1_delta": 1.2e-07
+      },
+      "len65": {
+        "cos_same": 1.0,
+        "maxdiff": 3.5e-07,
+        "v1_delta": 3.6e-07
+      },
+      "random549": {
+        "cos_same": 1.0,
+        "maxdiff": 1.1e-07,
+        "v1_delta": 9e-08
+      }
+    },
+    "mxfp4/v3shift": {
+      "adversarial": {
+        "cos_same": 1.0,
+        "maxdiff": 2e-08,
+        "v1_delta": 1e-08
+      },
+      "len1": {
+        "cos_same": 1.0,
+        "maxdiff": 0.0,
+        "v1_delta": 0.0
+      },
+      "len63": {
+        "cos_same": 1.0,
+        "maxdiff": 2.6e-07,
+        "v1_delta": 3.6e-07
+      },
+      "len64": {
+        "cos_same": 1.0,
+        "maxdiff": 1.4e-07,
+        "v1_delta": 1.5e-07
+      },
+      "len65": {
+        "cos_same": 1.0,
+        "maxdiff": 1.9e-07,
+        "v1_delta": 2.4e-07
+      },
+      "random549": {
+        "cos_same": 1.0,
+        "maxdiff": 8e-08,
+        "v1_delta": 1.6e-07
+      }
+    },
+    "mxfp8/v1": {
+      "adversarial": {
+        "cos_same": 1.0,
+        "maxdiff": 3e-08,
+        "v1_delta": 0.0
+      },
+      "len1": {
+        "cos_same": 1.0,
+        "maxdiff": 0.0,
+        "v1_delta": 0.0
+      },
+      "len63": {
+        "cos_same": 1.0,
+        "maxdiff": 2.1e-07,
+        "v1_delta": 0.0
+      },
+      "len64": {
+        "cos_same": 1.0,
+        "maxdiff": 1.3e-07,
+        "v1_delta": 0.0
+      },
+      "len65": {
+        "cos_same": 1.0,
+        "maxdiff": 2e-07,
+        "v1_delta": 0.0
+      },
+      "random549": {
+        "cos_same": 1.0,
+        "maxdiff": 1.3e-07,
+        "v1_delta": 0.0
+      }
+    },
+    "mxfp8/v2join": {
+      "adversarial": {
+        "cos_same": 1.0,
+        "maxdiff": 3e-08,
+        "v1_delta": 0.0
+      },
+      "len1": {
+        "cos_same": 1.0,
+        "maxdiff": 0.0,
+        "v1_delta": 0.0
+      },
+      "len63": {
+        "cos_same": 1.0,
+        "maxdiff": 2.1e-07,
+        "v1_delta": 0.0
+      },
+      "len64": {
+        "cos_same": 1.0,
+        "maxdiff": 1.3e-07,
+        "v1_delta": 0.0
+      },
+      "len65": {
+        "cos_same": 1.0,
+        "maxdiff": 2e-07,
+        "v1_delta": 0.0
+      },
+      "random549": {
+        "cos_same": 1.0,
+        "maxdiff": 1.3e-07,
+        "v1_delta": 6e-08
+      }
+    },
+    "mxfp8/v2shift": {
+      "adversarial": {
+        "cos_same": 1.0,
+        "maxdiff": 3e-08,
+        "v1_delta": 0.0
+      },
+      "len1": {
+        "cos_same": 1.0,
+        "maxdiff": 0.0,
+        "v1_delta": 0.0
+      },
+      "len63": {
+        "cos_same": 1.0,
+        "maxdiff": 2.1e-07,
+        "v1_delta": 0.0
+      },
+      "len64": {
+        "cos_same": 1.0,
+        "maxdiff": 1.3e-07,
+        "v1_delta": 0.0
+      },
+      "len65": {
+        "cos_same": 1.0,
+        "maxdiff": 2e-07,
+        "v1_delta": 0.0
+      },
+      "random549": {
+        "cos_same": 1.0,
+        "maxdiff": 1.3e-07,
+        "v1_delta": 6e-08
+      }
+    },
+    "mxfp8/v3join": {
+      "adversarial": {
+        "cos_same": 1.0,
+        "maxdiff": 3e-08,
+        "v1_delta": 0.0
+      },
+      "len1": {
+        "cos_same": 1.0,
+        "maxdiff": 0.0,
+        "v1_delta": 0.0
+      },
+      "len63": {
+        "cos_same": 1.0,
+        "maxdiff": 2.1e-07,
+        "v1_delta": 0.0
+      },
+      "len64": {
+        "cos_same": 1.0,
+        "maxdiff": 1.3e-07,
+        "v1_delta": 0.0
+      },
+      "len65": {
+        "cos_same": 1.0,
+        "maxdiff": 2e-07,
+        "v1_delta": 0.0
+      },
+      "random549": {
+        "cos_same": 1.0,
+        "maxdiff": 1.3e-07,
+        "v1_delta": 6e-08
+      }
+    },
+    "mxfp8/v3shift": {
+      "adversarial": {
+        "cos_same": 1.0,
+        "maxdiff": 3e-08,
+        "v1_delta": 0.0
+      },
+      "len1": {
+        "cos_same": 1.0,
+        "maxdiff": 0.0,
+        "v1_delta": 0.0
+      },
+      "len63": {
+        "cos_same": 1.0,
+        "maxdiff": 2.1e-07,
+        "v1_delta": 0.0
+      },
+      "len64": {
+        "cos_same": 1.0,
+        "maxdiff": 1.3e-07,
+        "v1_delta": 0.0
+      },
+      "len65": {
+        "cos_same": 1.0,
+        "maxdiff": 2e-07,
+        "v1_delta": 0.0
+      },
+      "random549": {
+        "cos_same": 1.0,
+        "maxdiff": 1.3e-07,
+        "v1_delta": 6e-08
+      }
+    },
+    "mxk8v4/v1": {
+      "adversarial": {
+        "cos_same": 1.0,
+        "maxdiff": 2e-08,
+        "v1_delta": 0.0
+      },
+      "len1": {
+        "cos_same": 1.0,
+        "maxdiff": 0.0,
+        "v1_delta": 0.0
+      },
+      "len63": {
+        "cos_same": 1.0,
+        "maxdiff": 2.6e-07,
+        "v1_delta": 0.0
+      },
+      "len64": {
+        "cos_same": 1.0,
+        "maxdiff": 1.5e-07,
+        "v1_delta": 0.0
+      },
+      "len65": {
+        "cos_same": 1.0,
+        "maxdiff": 1.5e-07,
+        "v1_delta": 0.0
+      },
+      "random549": {
+        "cos_same": 1.0,
+        "maxdiff": 1.1e-07,
+        "v1_delta": 0.0
+      }
+    },
+    "mxk8v4/v2join": {
+      "adversarial": {
+        "cos_same": 1.0,
+        "maxdiff": 2e-08,
+        "v1_delta": 1e-08
+      },
+      "len1": {
+        "cos_same": 1.0,
+        "maxdiff": 0.0,
+        "v1_delta": 0.0
+      },
+      "len63": {
+        "cos_same": 1.0,
+        "maxdiff": 4e-07,
+        "v1_delta": 2.4e-07
+      },
+      "len64": {
+        "cos_same": 1.0,
+        "maxdiff": 1.6e-07,
+        "v1_delta": 2.4e-07
+      },
+      "len65": {
+        "cos_same": 1.0,
+        "maxdiff": 2.1e-07,
+        "v1_delta": 1.8e-07
+      },
+      "random549": {
+        "cos_same": 1.0,
+        "maxdiff": 1.2e-07,
+        "v1_delta": 1.2e-07
+      }
+    },
+    "mxk8v4/v2shift": {
+      "adversarial": {
+        "cos_same": 1.0,
+        "maxdiff": 2e-08,
+        "v1_delta": 1e-08
+      },
+      "len1": {
+        "cos_same": 1.0,
+        "maxdiff": 0.0,
+        "v1_delta": 0.0
+      },
+      "len63": {
+        "cos_same": 1.0,
+        "maxdiff": 3.8e-07,
+        "v1_delta": 1.8e-07
+      },
+      "len64": {
+        "cos_same": 1.0,
+        "maxdiff": 1.5e-07,
+        "v1_delta": 1.2e-07
+      },
+      "len65": {
+        "cos_same": 1.0,
+        "maxdiff": 1.5e-07,
+        "v1_delta": 1.2e-07
+      },
+      "random549": {
+        "cos_same": 1.0,
+        "maxdiff": 1.4e-07,
+        "v1_delta": 9e-08
+      }
+    },
+    "mxk8v4/v3join": {
+      "adversarial": {
+        "cos_same": 1.0,
+        "maxdiff": 2e-08,
+        "v1_delta": 1e-08
+      },
+      "len1": {
+        "cos_same": 1.0,
+        "maxdiff": 0.0,
+        "v1_delta": 0.0
+      },
+      "len63": {
+        "cos_same": 1.0,
+        "maxdiff": 4e-07,
+        "v1_delta": 2.4e-07
+      },
+      "len64": {
+        "cos_same": 1.0,
+        "maxdiff": 1.6e-07,
+        "v1_delta": 2.4e-07
+      },
+      "len65": {
+        "cos_same": 1.0,
+        "maxdiff": 2.1e-07,
+        "v1_delta": 1.8e-07
+      },
+      "random549": {
+        "cos_same": 1.0,
+        "maxdiff": 1.2e-07,
+        "v1_delta": 1.2e-07
+      }
+    },
+    "mxk8v4/v3shift": {
+      "adversarial": {
+        "cos_same": 1.0,
+        "maxdiff": 2e-08,
+        "v1_delta": 1e-08
+      },
+      "len1": {
+        "cos_same": 1.0,
+        "maxdiff": 0.0,
+        "v1_delta": 0.0
+      },
+      "len63": {
+        "cos_same": 1.0,
+        "maxdiff": 3.8e-07,
+        "v1_delta": 1.8e-07
+      },
+      "len64": {
+        "cos_same": 1.0,
+        "maxdiff": 1.5e-07,
+        "v1_delta": 1.2e-07
+      },
+      "len65": {
+        "cos_same": 1.0,
+        "maxdiff": 1.5e-07,
+        "v1_delta": 1.2e-07
+      },
+      "random549": {
+        "cos_same": 1.0,
+        "maxdiff": 1.4e-07,
+        "v1_delta": 9e-08
+      }
+    }
+  },
+  "failures": [],
+  "telemetry": {
+    "device": {
+      "count": 2,
+      "name": "Intel(R) Graphics [0xe223]"
+    },
+    "mxfp4": {
+      "1024": {
+        "decode_ms": {
+          "v1": 0.7903,
+          "v2join": 0.2119,
+          "v2shift": 0.4766,
+          "v3join": 0.1977,
+          "v3shift": 0.6528
+        },
+        "gbps_unique": {
+          "v1": 1.41,
+          "v2join": 5.26,
+          "v2shift": 2.34,
+          "v3join": 5.64,
+          "v3shift": 1.71
+        },
+        "slot_bytes": 136,
+        "speedup_vs_v1": {
+          "v2join": 3.729,
+          "v2shift": 1.658,
+          "v3join": 3.998,
+          "v3shift": 1.211
+        },
+        "v1_delta_max": {
+          "v2join": 7e-08,
+          "v2shift": 6e-08,
+          "v3join": 7e-08,
+          "v3shift": 6e-08
+        }
+      },
+      "131072": {
+        "decode_ms": {
+          "v1": 69.9457,
+          "v2join": 7.9336,
+          "v2shift": 26.8921,
+          "v3join": 3.3082,
+          "v3shift": 11.8792
+        },
+        "gbps_unique": {
+          "v1": 2.04,
+          "v2join": 17.97,
+          "v2shift": 5.3,
+          "v3join": 43.11,
+          "v3shift": 12.0
+        },
+        "slot_bytes": 136,
+        "speedup_vs_v1": {
+          "v2join": 8.816,
+          "v2shift": 2.601,
+          "v3join": 21.143,
+          "v3shift": 5.888
+        },
+        "v1_delta_max": {
+          "v2join": 3e-08,
+          "v2shift": 3e-08,
+          "v3join": 3e-08,
+          "v3shift": 3e-08
+        }
+      },
+      "32768": {
+        "decode_ms": {
+          "v1": 17.5005,
+          "v2join": 2.0169,
+          "v2shift": 6.7142,
+          "v3join": 0.8446,
+          "v3shift": 3.0859
+        },
+        "gbps_unique": {
+          "v1": 2.04,
+          "v2join": 17.68,
+          "v2shift": 5.31,
+          "v3join": 42.21,
+          "v3shift": 11.55
+        },
+        "slot_bytes": 136,
+        "speedup_vs_v1": {
+          "v2join": 8.677,
+          "v2shift": 2.607,
+          "v3join": 20.721,
+          "v3shift": 5.671
+        },
+        "v1_delta_max": {
+          "v2join": 2e-08,
+          "v2shift": 2e-08,
+          "v3join": 2e-08,
+          "v3shift": 2e-08
+        }
+      },
+      "8192": {
+        "decode_ms": {
+          "v1": 4.3892,
+          "v2join": 0.5208,
+          "v2shift": 1.717,
+          "v3join": 0.2258,
+          "v3shift": 0.8336
+        },
+        "gbps_unique": {
+          "v1": 2.03,
+          "v2join": 17.12,
+          "v2shift": 5.19,
+          "v3join": 39.48,
+          "v3shift": 10.69
+        },
+        "slot_bytes": 136,
+        "speedup_vs_v1": {
+          "v2join": 8.428,
+          "v2shift": 2.556,
+          "v3join": 19.441,
+          "v3shift": 5.266
+        },
+        "v1_delta_max": {
+          "v2join": 2e-08,
+          "v2shift": 3e-08,
+          "v3join": 2e-08,
+          "v3shift": 3e-08
+        }
+      }
+    },
+    "mxfp8": {
+      "1024": {
+        "decode_ms": {
+          "v1": 0.7318,
+          "v2join": 0.3499,
+          "v2shift": 0.4868,
+          "v3join": 1.2787,
+          "v3shift": 1.4338
+        },
+        "gbps_unique": {
+          "v1": 2.96,
+          "v2join": 6.18,
+          "v2shift": 4.44,
+          "v3join": 1.69,
+          "v3shift": 1.51
+        },
+        "slot_bytes": 264,
+        "speedup_vs_v1": {
+          "v2join": 2.092,
+          "v2shift": 1.503,
+          "v3join": 0.572,
+          "v3shift": 0.51
+        },
+        "v1_delta_max": {
+          "v2join": 6e-08,
+          "v2shift": 6e-08,
+          "v3join": 6e-08,
+          "v3shift": 6e-08
+        }
+      },
+      "131072": {
+        "decode_ms": {
+          "v1": 66.0422,
+          "v2join": 12.0318,
+          "v2shift": 12.059,
+          "v3join": 14.9078,
+          "v3shift": 14.8315
+        },
+        "gbps_unique": {
+          "v1": 4.19,
+          "v2join": 23.01,
+          "v2shift": 22.96,
+          "v3join": 18.57,
+          "v3shift": 18.66
+        },
+        "slot_bytes": 264,
+        "speedup_vs_v1": {
+          "v2join": 5.489,
+          "v2shift": 5.477,
+          "v3join": 4.43,
+          "v3shift": 4.453
+        },
+        "v1_delta_max": {
+          "v2join": 3e-08,
+          "v2shift": 3e-08,
+          "v3join": 3e-08,
+          "v3shift": 3e-08
+        }
+      },
+      "32768": {
+        "decode_ms": {
+          "v1": 16.5361,
+          "v2join": 3.0056,
+          "v2shift": 3.0017,
+          "v3join": 3.8512,
+          "v3shift": 3.8392
+        },
+        "gbps_unique": {
+          "v1": 4.19,
+          "v2join": 23.03,
+          "v2shift": 23.06,
+          "v3join": 17.97,
+          "v3shift": 18.03
+        },
+        "slot_bytes": 264,
+        "speedup_vs_v1": {
+          "v2join": 5.502,
+          "v2shift": 5.509,
+          "v3join": 4.294,
+          "v3shift": 4.307
+        },
+        "v1_delta_max": {
+          "v2join": 2e-08,
+          "v2shift": 2e-08,
+          "v3join": 2e-08,
+          "v3shift": 2e-08
+        }
+      },
+      "8192": {
+        "decode_ms": {
+          "v1": 4.1799,
+          "v2join": 0.7487,
+          "v2shift": 0.7453,
+          "v3join": 0.9908,
+          "v3shift": 0.9891
+        },
+        "gbps_unique": {
+          "v1": 4.14,
+          "v2join": 23.11,
+          "v2shift": 23.21,
+          "v3join": 17.46,
+          "v3shift": 17.49
+        },
+        "slot_bytes": 264,
+        "speedup_vs_v1": {
+          "v2join": 5.583,
+          "v2shift": 5.608,
+          "v3join": 4.219,
+          "v3shift": 4.226
+        },
+        "v1_delta_max": {
+          "v2join": 3e-08,
+          "v2shift": 3e-08,
+          "v3join": 3e-08,
+          "v3shift": 3e-08
+        }
+      }
+    },
+    "mxk8v4": {
+      "1024": {
+        "decode_ms": {
+          "v1": 0.8189,
+          "v2join": 0.3521,
+          "v2shift": 0.3827,
+          "v3join": 0.6063,
+          "v3shift": 0.5216
+        },
+        "gbps_unique": {
+          "v1": 2.0,
+          "v2join": 4.65,
+          "v2shift": 4.28,
+          "v3join": 2.7,
+          "v3shift": 3.14
+        },
+        "slot_bytes": 200,
+        "speedup_vs_v1": {
+          "v2join": 2.326,
+          "v2shift": 2.14,
+          "v3join": 1.351,
+          "v3shift": 1.57
+        },
+        "v1_delta_max": {
+          "v2join": 6e-08,
+          "v2shift": 5e-08,
+          "v3join": 6e-08,
+          "v3shift": 5e-08
+        }
+      },
+      "131072": {
+        "decode_ms": {
+          "v1": 72.9832,
+          "v2join": 24.3362,
+          "v2shift": 17.1383,
+          "v3join": 18.5053,
+          "v3shift": 8.6233
+        },
+        "gbps_unique": {
+          "v1": 2.87,
+          "v2join": 8.62,
+          "v2shift": 12.24,
+          "v3join": 11.33,
+          "v3shift": 24.32
+        },
+        "slot_bytes": 200,
+        "speedup_vs_v1": {
+          "v2join": 2.999,
+          "v2shift": 4.258,
+          "v3join": 3.944,
+          "v3shift": 8.463
+        },
+        "v1_delta_max": {
+          "v2join": 3e-08,
+          "v2shift": 3e-08,
+          "v3join": 3e-08,
+          "v3shift": 3e-08
+        }
+      },
+      "32768": {
+        "decode_ms": {
+          "v1": 18.2301,
+          "v2join": 5.9275,
+          "v2shift": 4.2499,
+          "v3join": 4.7017,
+          "v3shift": 2.2466
+        },
+        "gbps_unique": {
+          "v1": 2.88,
+          "v2join": 8.85,
+          "v2shift": 12.34,
+          "v3join": 11.15,
+          "v3shift": 23.34
+        },
+        "slot_bytes": 200,
+        "speedup_vs_v1": {
+          "v2join": 3.076,
+          "v2shift": 4.29,
+          "v3join": 3.877,
+          "v3shift": 8.115
+        },
+        "v1_delta_max": {
+          "v2join": 3e-08,
+          "v2shift": 3e-08,
+          "v3join": 3e-08,
+          "v3shift": 3e-08
+        }
+      },
+      "8192": {
+        "decode_ms": {
+          "v1": 4.5634,
+          "v2join": 1.4941,
+          "v2shift": 1.0934,
+          "v3join": 1.2121,
+          "v3shift": 0.6027
+        },
+        "gbps_unique": {
+          "v1": 2.87,
+          "v2join": 8.77,
+          "v2shift": 11.99,
+          "v3join": 10.81,
+          "v3shift": 21.75
+        },
+        "slot_bytes": 200,
+        "speedup_vs_v1": {
+          "v2join": 3.054,
+          "v2shift": 4.174,
+          "v3join": 3.765,
+          "v3shift": 7.571
+        },
+        "v1_delta_max": {
+          "v2join": 3e-08,
+          "v2shift": 3e-08,
+          "v3join": 3e-08,
+          "v3shift": 3e-08
+        }
+      }
+    }
+  },
+  "tune": {
+    "mxfp4": {
+      "maxdiff": 1e-07,
+      "sweep_ms": {
+        "n128w4s1": 8.5231,
+        "n128w4s2": 8.52,
+        "n128w4s3": 8.5163,
+        "n128w8s1": 4.7024,
+        "n128w8s2": 4.7773,
+        "n128w8s3": 4.7417,
+        "n64w4s1": 5.0669,
+        "n64w4s2": 5.1238,
+        "n64w4s3": 5.0791,
+        "n64w8s1": 1.1541,
+        "n64w8s2": 0.9557,
+        "n64w8s3": 1.1468
+      },
+      "winner": [
+        64,
+        8,
+        2
+      ]
+    },
+    "mxfp8": {
+      "maxdiff": 1.6e-07,
+      "sweep_ms": {
+        "n128w4s1": 3.9601,
+        "n128w4s2": 3.8696,
+        "n128w4s3": 3.9449,
+        "n128w8s1": 10.7667,
+        "n128w8s2": 10.7796,
+        "n128w8s3": 10.8064,
+        "n64w4s1": 1.5745,
+        "n64w4s2": 1.5758,
+        "n64w4s3": 1.5743,
+        "n64w8s1": 2.7995,
+        "n64w8s2": 2.7909,
+        "n64w8s3": 2.7894
+      },
+      "winner": [
+        64,
+        4,
+        3
+      ]
+    },
+    "mxk8v4": {
+      "maxdiff": 1.3e-07,
+      "sweep_ms": {
+        "n128w4s1": 5.8124,
+        "n128w4s2": 5.8154,
+        "n128w4s3": 5.8095,
+        "n128w8s1": 10.6959,
+        "n128w8s2": 10.7095,
+        "n128w8s3": 10.7208,
+        "n64w4s1": 3.9347,
+        "n64w4s2": 3.9174,
+        "n64w4s3": 3.8989,
+        "n64w8s1": 4.7674,
+        "n64w8s2": 4.6747,
+        "n64w8s3": 4.7727
+      },
+      "winner": [
+        64,
+        4,
+        3
+      ]
+    }
+  },
+  "verdict": "PASS"
+}

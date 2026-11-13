@@ -1,0 +1,20 @@
+===== essay =====
+{
+ "error": "RemoteDisconnected('Remote end closed connection without response')"
+}
+
+===== code =====
+{
+ "error": "URLError(ConnectionRefusedError(111, 'Connection refused'))"
+}
+
+===== multi =====
+{
+ "error": "URLError(ConnectionRefusedError(111, 'Connection refused'))"
+}
+
+===== simple =====
+{
+ "error": "URLError(ConnectionRefusedError(111, 'Connection refused'))"
+}
+

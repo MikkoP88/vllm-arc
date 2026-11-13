@@ -1,0 +1,6 @@
+[essay] hashes=[] finish=None chars=None t1_seed_identical=None garble_empty=True
+[code] hashes=[] finish=None chars=None t1_seed_identical=None garble_empty=True
+[multi] hashes=[] finish=None chars=None t1_seed_identical=None garble_empty=True
+[simple] hashes=[] finish=None chars=None t1_seed_identical=None garble_empty=True
+LONGRETURN: FAIL essay: cross-cycle hash drift []; code: cross-cycle hash drift []; multi: cross-cycle hash drift []; simple: cross-cycle hash drift []
+T1_SEED: MISS essay,code,multi,simple

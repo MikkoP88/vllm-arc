@@ -1,0 +1,121 @@
+p157_mxkv_decode_ab — device=xpu, torch=2.13.0+xpu
+[face: exact] v2 join+shift vs fp64 exact + vs v1 (XPU)
+  ok   exact/mxfp8/v1: random549: d=1.28e-07 c=1.0000000 v1delta=0.00e+00
+  ok   exact/mxfp8/v2join: random549: d=1.28e-07 c=1.0000000 v1delta=5.96e-08
+  ok   exact/mxfp8/v2shift: random549: d=1.28e-07 c=1.0000000 v1delta=5.96e-08
+  ok   exact/mxfp8/v3join: random549: d=1.28e-07 c=1.0000000 v1delta=5.96e-08
+  ok   exact/mxfp8/v3shift: random549: d=1.28e-07 c=1.0000000 v1delta=5.96e-08
+  ok   exact/mxfp4/v1: random549: d=9.33e-08 c=1.0000000 v1delta=0.00e+00
+  ok   exact/mxfp4/v2join: random549: d=1.13e-07 c=1.0000000 v1delta=8.94e-08
+  ok   exact/mxfp4/v2shift: random549: d=8.32e-08 c=1.0000000 v1delta=1.56e-07
+  ok   exact/mxfp4/v3join: random549: d=1.13e-07 c=1.0000000 v1delta=8.94e-08
+  ok   exact/mxfp4/v3shift: random549: d=8.32e-08 c=1.0000000 v1delta=1.56e-07
+  ok   exact/mxk8v4/v1: random549: d=1.09e-07 c=1.0000000 v1delta=0.00e+00
+  ok   exact/mxk8v4/v2join: random549: d=1.19e-07 c=1.0000000 v1delta=1.19e-07
+  ok   exact/mxk8v4/v2shift: random549: d=1.38e-07 c=1.0000000 v1delta=8.94e-08
+  ok   exact/mxk8v4/v3join: random549: d=1.19e-07 c=1.0000000 v1delta=1.19e-07
+  ok   exact/mxk8v4/v3shift: random549: d=1.38e-07 c=1.0000000 v1delta=8.94e-08
+  ok   exact/mxfp8/v1: adversarial: d=2.79e-08 c=1.0000000 v1delta=0.00e+00
+  ok   exact/mxfp8/v2join: adversarial: d=2.79e-08 c=1.0000000 v1delta=0.00e+00
+  ok   exact/mxfp8/v2shift: adversarial: d=2.79e-08 c=1.0000000 v1delta=0.00e+00
+  ok   exact/mxfp8/v3join: adversarial: d=2.79e-08 c=1.0000000 v1delta=0.00e+00
+  ok   exact/mxfp8/v3shift: adversarial: d=2.79e-08 c=1.0000000 v1delta=0.00e+00
+  ok   exact/mxfp4/v1: adversarial: d=2.34e-08 c=1.0000000 v1delta=0.00e+00
+  ok   exact/mxfp4/v2join: adversarial: d=2.34e-08 c=1.0000000 v1delta=7.45e-09
+  ok   exact/mxfp4/v2shift: adversarial: d=2.34e-08 c=1.0000000 v1delta=5.59e-09
+  ok   exact/mxfp4/v3join: adversarial: d=2.34e-08 c=1.0000000 v1delta=7.45e-09
+  ok   exact/mxfp4/v3shift: adversarial: d=2.34e-08 c=1.0000000 v1delta=5.59e-09
+  ok   exact/mxk8v4/v1: adversarial: d=2.34e-08 c=1.0000000 v1delta=0.00e+00
+  ok   exact/mxk8v4/v2join: adversarial: d=2.34e-08 c=1.0000000 v1delta=7.45e-09
+  ok   exact/mxk8v4/v2shift: adversarial: d=2.34e-08 c=1.0000000 v1delta=5.59e-09
+  ok   exact/mxk8v4/v3join: adversarial: d=2.34e-08 c=1.0000000 v1delta=7.45e-09
+  ok   exact/mxk8v4/v3shift: adversarial: d=2.34e-08 c=1.0000000 v1delta=5.59e-09
+  ok   exact/mxfp8/v1: len1: d=0.00e+00 c=1.0000000 v1delta=0.00e+00
+  ok   exact/mxfp8/v2join: len1: d=0.00e+00 c=1.0000000 v1delta=0.00e+00
+  ok   exact/mxfp8/v2shift: len1: d=0.00e+00 c=1.0000000 v1delta=0.00e+00
+  ok   exact/mxfp8/v3join: len1: d=0.00e+00 c=1.0000000 v1delta=0.00e+00
+  ok   exact/mxfp8/v3shift: len1: d=0.00e+00 c=1.0000000 v1delta=0.00e+00
+  ok   exact/mxfp4/v1: len1: d=0.00e+00 c=1.0000000 v1delta=0.00e+00
+  ok   exact/mxfp4/v2join: len1: d=0.00e+00 c=1.0000000 v1delta=0.00e+00
+  ok   exact/mxfp4/v2shift: len1: d=0.00e+00 c=1.0000000 v1delta=0.00e+00
+  ok   exact/mxfp4/v3join: len1: d=0.00e+00 c=1.0000000 v1delta=0.00e+00
+  ok   exact/mxfp4/v3shift: len1: d=0.00e+00 c=1.0000000 v1delta=0.00e+00
+  ok   exact/mxk8v4/v1: len1: d=0.00e+00 c=1.0000000 v1delta=0.00e+00
+  ok   exact/mxk8v4/v2join: len1: d=0.00e+00 c=1.0000000 v1delta=0.00e+00
+  ok   exact/mxk8v4/v2shift: len1: d=0.00e+00 c=1.0000000 v1delta=0.00e+00
+  ok   exact/mxk8v4/v3join: len1: d=0.00e+00 c=1.0000000 v1delta=0.00e+00
+  ok   exact/mxk8v4/v3shift: len1: d=0.00e+00 c=1.0000000 v1delta=0.00e+00
+  ok   exact/mxfp8/v1: len63: d=2.11e-07 c=1.0000000 v1delta=0.00e+00
+  ok   exact/mxfp8/v2join: len63: d=2.11e-07 c=1.0000000 v1delta=0.00e+00
+  ok   exact/mxfp8/v2shift: len63: d=2.11e-07 c=1.0000000 v1delta=0.00e+00
+  ok   exact/mxfp8/v3join: len63: d=2.11e-07 c=1.0000000 v1delta=0.00e+00
+  ok   exact/mxfp8/v3shift: len63: d=2.11e-07 c=1.0000000 v1delta=0.00e+00
+  ok   exact/mxfp4/v1: len63: d=2.92e-07 c=1.0000000 v1delta=0.00e+00
+  ok   exact/mxfp4/v2join: len63: d=1.39e-07 c=1.0000000 v1delta=3.58e-07
+  ok   exact/mxfp4/v2shift: len63: d=2.59e-07 c=1.0000000 v1delta=3.58e-07
+  ok   exact/mxfp4/v3join: len63: d=1.39e-07 c=1.0000000 v1delta=3.58e-07
+  ok   exact/mxfp4/v3shift: len63: d=2.59e-07 c=1.0000000 v1delta=3.58e-07
+  ok   exact/mxk8v4/v1: len63: d=2.60e-07 c=1.0000000 v1delta=0.00e+00
+  ok   exact/mxk8v4/v2join: len63: d=4.05e-07 c=1.0000000 v1delta=2.38e-07
+  ok   exact/mxk8v4/v2shift: len63: d=3.79e-07 c=1.0000000 v1delta=1.79e-07
+  ok   exact/mxk8v4/v3join: len63: d=4.05e-07 c=1.0000000 v1delta=2.38e-07
+  ok   exact/mxk8v4/v3shift: len63: d=3.79e-07 c=1.0000000 v1delta=1.79e-07
+  ok   exact/mxfp8/v1: len64: d=1.32e-07 c=1.0000000 v1delta=0.00e+00
+  ok   exact/mxfp8/v2join: len64: d=1.32e-07 c=1.0000000 v1delta=0.00e+00
+  ok   exact/mxfp8/v2shift: len64: d=1.32e-07 c=1.0000000 v1delta=0.00e+00
+  ok   exact/mxfp8/v3join: len64: d=1.32e-07 c=1.0000000 v1delta=0.00e+00
+  ok   exact/mxfp8/v3shift: len64: d=1.32e-07 c=1.0000000 v1delta=0.00e+00
+  ok   exact/mxfp4/v1: len64: d=1.58e-07 c=1.0000000 v1delta=0.00e+00
+  ok   exact/mxfp4/v2join: len64: d=1.54e-07 c=1.0000000 v1delta=1.19e-07
+  ok   exact/mxfp4/v2shift: len64: d=1.40e-07 c=1.0000000 v1delta=1.49e-07
+  ok   exact/mxfp4/v3join: len64: d=1.54e-07 c=1.0000000 v1delta=1.19e-07
+  ok   exact/mxfp4/v3shift: len64: d=1.40e-07 c=1.0000000 v1delta=1.49e-07
+  ok   exact/mxk8v4/v1: len64: d=1.48e-07 c=1.0000000 v1delta=0.00e+00
+  ok   exact/mxk8v4/v2join: len64: d=1.57e-07 c=1.0000000 v1delta=2.38e-07
+  ok   exact/mxk8v4/v2shift: len64: d=1.48e-07 c=1.0000000 v1delta=1.19e-07
+  ok   exact/mxk8v4/v3join: len64: d=1.57e-07 c=1.0000000 v1delta=2.38e-07
+  ok   exact/mxk8v4/v3shift: len64: d=1.48e-07 c=1.0000000 v1delta=1.19e-07
+  ok   exact/mxfp8/v1: len65: d=2.01e-07 c=1.0000000 v1delta=0.00e+00
+  ok   exact/mxfp8/v2join: len65: d=2.01e-07 c=1.0000000 v1delta=0.00e+00
+  ok   exact/mxfp8/v2shift: len65: d=2.01e-07 c=1.0000000 v1delta=0.00e+00
+  ok   exact/mxfp8/v3join: len65: d=2.01e-07 c=1.0000000 v1delta=0.00e+00
+  ok   exact/mxfp8/v3shift: len65: d=2.01e-07 c=1.0000000 v1delta=0.00e+00
+  ok   exact/mxfp4/v1: len65: d=2.54e-07 c=1.0000000 v1delta=0.00e+00
+  ok   exact/mxfp4/v2join: len65: d=3.54e-07 c=1.0000000 v1delta=3.58e-07
+  ok   exact/mxfp4/v2shift: len65: d=1.88e-07 c=1.0000000 v1delta=2.38e-07
+  ok   exact/mxfp4/v3join: len65: d=3.54e-07 c=1.0000000 v1delta=3.58e-07
+  ok   exact/mxfp4/v3shift: len65: d=1.88e-07 c=1.0000000 v1delta=2.38e-07
+  ok   exact/mxk8v4/v1: len65: d=1.47e-07 c=1.0000000 v1delta=0.00e+00
+  ok   exact/mxk8v4/v2join: len65: d=2.05e-07 c=1.0000000 v1delta=1.79e-07
+  ok   exact/mxk8v4/v2shift: len65: d=1.47e-07 c=1.0000000 v1delta=1.19e-07
+  ok   exact/mxk8v4/v3join: len65: d=2.05e-07 c=1.0000000 v1delta=1.79e-07
+  ok   exact/mxk8v4/v3shift: len65: d=1.47e-07 c=1.0000000 v1delta=1.19e-07
+[face: telemetry] decode A/B fmt x ctx at HK=8 Hq=32 (XPU)
+  ok   telemetry/mxfp8: ctx=1024: v1 0.732 ms, v2join 0.350 ms (x2.092), v2shift 0.487 ms (x1.503), v3join 1.279 ms (x0.572), v3shift 1.434 ms (x0.51), v1delta<=6.00e-08
+  ok   telemetry/mxfp8: ctx=8192: v1 4.180 ms, v2join 0.749 ms (x5.583), v2shift 0.745 ms (x5.608), v3join 0.991 ms (x4.219), v3shift 0.989 ms (x4.226), v1delta<=3.00e-08
+  ok   telemetry/mxfp8: ctx=32768: v1 16.536 ms, v2join 3.006 ms (x5.502), v2shift 3.002 ms (x5.509), v3join 3.851 ms (x4.294), v3shift 3.839 ms (x4.307), v1delta<=2.00e-08
+  ok   telemetry/mxfp8: ctx=131072: v1 66.042 ms, v2join 12.032 ms (x5.489), v2shift 12.059 ms (x5.477), v3join 14.908 ms (x4.43), v3shift 14.832 ms (x4.453), v1delta<=3.00e-08
+  ok   telemetry/mxfp4: ctx=1024: v1 0.790 ms, v2join 0.212 ms (x3.729), v2shift 0.477 ms (x1.658), v3join 0.198 ms (x3.998), v3shift 0.653 ms (x1.211), v1delta<=7.00e-08
+  ok   telemetry/mxfp4: ctx=8192: v1 4.389 ms, v2join 0.521 ms (x8.428), v2shift 1.717 ms (x2.556), v3join 0.226 ms (x19.441), v3shift 0.834 ms (x5.266), v1delta<=3.00e-08
+  ok   telemetry/mxfp4: ctx=32768: v1 17.500 ms, v2join 2.017 ms (x8.677), v2shift 6.714 ms (x2.607), v3join 0.845 ms (x20.721), v3shift 3.086 ms (x5.671), v1delta<=2.00e-08
+  ok   telemetry/mxfp4: ctx=131072: v1 69.946 ms, v2join 7.934 ms (x8.816), v2shift 26.892 ms (x2.601), v3join 3.308 ms (x21.143), v3shift 11.879 ms (x5.888), v1delta<=3.00e-08
+  ok   telemetry/mxk8v4: ctx=1024: v1 0.819 ms, v2join 0.352 ms (x2.326), v2shift 0.383 ms (x2.14), v3join 0.606 ms (x1.351), v3shift 0.522 ms (x1.57), v1delta<=6.00e-08
+  ok   telemetry/mxk8v4: ctx=8192: v1 4.563 ms, v2join 1.494 ms (x3.054), v2shift 1.093 ms (x4.174), v3join 1.212 ms (x3.765), v3shift 0.603 ms (x7.571), v1delta<=3.00e-08
+  ok   telemetry/mxk8v4: ctx=32768: v1 18.230 ms, v2join 5.928 ms (x3.076), v2shift 4.250 ms (x4.29), v3join 4.702 ms (x3.877), v3shift 2.247 ms (x8.115), v1delta<=3.00e-08
+  ok   telemetry/mxk8v4: ctx=131072: v1 72.983 ms, v2join 24.336 ms (x2.999), v2shift 17.138 ms (x4.258), v3join 18.505 ms (x3.944), v3shift 8.623 ms (x8.463), v1delta<=3.00e-08
+[face: tune] v3 (BLOCK_N, num_warps, num_stages) sweep @ ctx=32768 (XPU)
+  ok   tune/mxfp8: winner BLOCK_N=64 warps=4 stages=3 1.574 ms (sweep {'n64w4s1': 1.5745, 'n64w4s2': 1.5758, 'n64w4s3': 1.5743, 'n64w8s1': 2.7995, 'n64w8s2': 2.7909, 'n64w8s3': 2.7894, 'n128w4s1': 3.9601, 'n128w4s2': 3.8696, 'n128w4s3': 3.9449, 'n128w8s1': 10.7667, 'n128w8s2': 10.7796, 'n128w8s3': 10.8064}); correctness d=1.61e-07
+  ok   tune/mxfp4: winner BLOCK_N=64 warps=8 stages=2 0.956 ms (sweep {'n64w4s1': 5.0669, 'n64w4s2': 5.1238, 'n64w4s3': 5.0791, 'n64w8s1': 1.1541, 'n64w8s2': 0.9557, 'n64w8s3': 1.1468, 'n128w4s1': 8.5231, 'n128w4s2': 8.52, 'n128w4s3': 8.5163, 'n128w8s1': 4.7024, 'n128w8s2': 4.7773, 'n128w8s3': 4.7417}); correctness d=1.04e-07
+  ok   tune/mxk8v4: winner BLOCK_N=64 warps=4 stages=3 3.899 ms (sweep {'n64w4s1': 3.9347, 'n64w4s2': 3.9174, 'n64w4s3': 3.8989, 'n64w8s1': 4.7674, 'n64w8s2': 4.6747, 'n64w8s3': 4.7727, 'n128w4s1': 5.8124, 'n128w4s2': 5.8154, 'n128w4s3': 5.8095, 'n128w8s1': 10.6959, 'n128w8s2': 10.7095, 'n128w8s3': 10.7208}); correctness d=1.28e-07
+[face: dequant] bulk-dequant A/B fmt x ctx (XPU)
+  ok   dequant/mxfp8: ctx=8192: join 0.146 ms, shift 0.197 ms (x0.741), content d=0.0000
+  ok   dequant/mxfp8: ctx=32768: join 0.623 ms, shift 0.502 ms (x1.239), content n/a
+  ok   dequant/mxfp8: ctx=131072: join 2.058 ms, shift 2.055 ms (x1.002), content n/a
+  ok   dequant/mxfp4: ctx=8192: join 0.093 ms, shift 0.084 ms (x1.1), content d=0.0000
+  ok   dequant/mxfp4: ctx=32768: join 0.439 ms, shift 0.416 ms (x1.057), content n/a
+  ok   dequant/mxfp4: ctx=131072: join 1.755 ms, shift 1.780 ms (x0.986), content n/a
+  ok   dequant/mxk8v4: ctx=8192: join 0.103 ms, shift 0.114 ms (x0.9), content d=0.0000
+  ok   dequant/mxk8v4: ctx=32768: join 0.484 ms, shift 0.460 ms (x1.053), content n/a
+  ok   dequant/mxk8v4: ctx=131072: join 1.894 ms, shift 1.911 ms (x0.991), content n/a
+
+VERDICT: PASS

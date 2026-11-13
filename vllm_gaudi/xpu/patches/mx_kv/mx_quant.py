@@ -20,11 +20,17 @@ FORMAT (OCP MX, per 32-element group, per (token, head) row):
   = (sign << 3) | index, two nibbles per byte (even element low).
 
 SLOT LAYOUT (TQ-AoS compatible, per (token, head) in the uint8 paged
-cache [num_blocks, block_size, Hk, slot_bytes]):
-  MXFP8: [K bytes: D][V bytes: D][Ks: D/32][Vs: D/32]   (D=128 -> 264)
-  MXFP4: [K nibbles: D/2][V nibbles: D/2][Ks: D/32][Vs: D/32] (D=128 -> 136)
-Capacity vs fp16 KV (2*2*D): MXFP8 = 1.94x, MXFP4 = 3.76x; vs the
-certified fp8_e4m3 KV (2*D): MXFP4 = 1.88x.
+cache; blocks interleaved [K][Ks][V][Vs] — see mx_layout, the single
+layout source of truth this module mirrors):
+  MXFP8:  K e4m3 D + Ks | V e4m3 D + Vs          (D=128 -> 264 B)
+  MXFP4:  K e2m1 D/2 + Ks | V e2m1 D/2 + Vs      (D=128 -> 136 B)
+  MXK8V4: K e4m3 D + Ks | V e2m1 D/2 + Vs        (D=128 -> 200 B)
+Capacity vs fp16 KV (2*2*D): MXFP8 = 1.94x, MXK8V4 = 2.56x, MXFP4 =
+3.76x; vs the certified fp8_e4m3 KV (2*D): MXK8V4 = 1.28x, MXFP4 = 1.88x.
+MXK8V4 is the quality-doctrine mix (8-bit keys, 4-bit values — the
+wheel's turboquant_k8v4 precedent): mxfp4's 4-bit keys degrade
+long-return retrieval under KV churn (P6.47 cert24 gate run1 essay
+REP-LOOP; banked results/2026-11-12-p647-mxkv-vstride-fix + gate).
 
 Provenance: from-scratch in-house lane (owner directive 2026-11-11) —
 no donor carries MX KV support (survey banked
@@ -50,6 +56,8 @@ def slot_bytes(d: int, fmt: str) -> int:
         return 2 * d + 2 * n_groups
     if fmt == "mxfp4":
         return d + 2 * n_groups
+    if fmt == "mxk8v4":
+        return 3 * d // 2 + 2 * n_groups
     raise ValueError(fmt)
 
 
@@ -116,6 +124,19 @@ def encode_mxfp4(x: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
     return (pairs[..., 0] | (pairs[..., 1] << 4)), code
 
 
+def encode_mxk8v4(
+    k: torch.Tensor, v: torch.Tensor
+) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
+    """Mixed-slot encode: (k e4m3 bytes, k scale codes, v e2m1 nibble
+    bytes, v scale codes). Element math is exactly encode_mxfp8 on K and
+    encode_mxfp4 on V (each leg's own EMAX); the Triton store kernel
+    mirrors the same pair of paths (K4/V4 constexpr split).
+    """
+    kq, kcode = encode_mxfp8(k)
+    vbytes, vcode = encode_mxfp4(v)
+    return kq, kcode, vbytes, vcode
+
+
 def _decode_e2m1(nib: torch.Tensor) -> torch.Tensor:
     """Arithmetic e2m1 decode: idx -> grid value (Triton mirrors this)."""
     idx = (nib & 0x7).float()
@@ -156,6 +177,23 @@ def decode_kv(
         ).reshape(*kl.shape[:-1], d) * torch.exp2(ks.float() - 127.0).repeat_interleave(
             GROUP, dim=-1
         )
+        vl = v_bytes[..., : d // 2]
+        vs = v_bytes[..., d // 2 : d // 2 + n_groups]
+        lo = (vl & 0xF).to(torch.uint8)
+        hi = (vl >> 4).to(torch.uint8)
+        v = torch.stack(
+            [_decode_e2m1(lo), _decode_e2m1(hi)], dim=-1
+        ).reshape(*vl.shape[:-1], d) * torch.exp2(vs.float() - 127.0).repeat_interleave(
+            GROUP, dim=-1
+        )
+        return k, v
+    if fmt == "mxk8v4":
+        # K block = e4m3 (mxfp8 leg), V block = e2m1 (mxfp4 leg) — the
+        # slices arrive per-block ([K][Ks] | [V][Vs], mx_layout law).
+        ks = k_bytes[..., d : d + n_groups]
+        k = k_bytes[..., :d].view(torch.float8_e4m3fn).float() * torch.exp2(
+            ks.float() - 127.0
+        ).repeat_interleave(GROUP, dim=-1)
         vl = v_bytes[..., : d // 2]
         vs = v_bytes[..., d // 2 : d // 2 + n_groups]
         lo = (vl & 0xF).to(torch.uint8)

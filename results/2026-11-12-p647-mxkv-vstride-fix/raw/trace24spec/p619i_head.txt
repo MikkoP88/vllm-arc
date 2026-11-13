@@ -1,0 +1,24 @@
+(Worker_TP1 pid=1508) P619I forward: is_prefill=True n_tok=8192 qlens=(128, 256, 384, 512, 640, 768, 896, 1024) seqs=[128, 128, 128, 128, 128, 128, 128, 128] ndec=0 mql=128 msl=128
+(Worker_TP0 pid=1336) P619I forward: is_prefill=True n_tok=8192 qlens=(128, 256, 384, 512, 640, 768, 896, 1024) seqs=[128, 128, 128, 128, 128, 128, 128, 128] ndec=0 mql=128 msl=128
+(Worker_TP0 pid=1336) P619I forward: is_prefill=True n_tok=192 qlens=(3, 6, 9, 12, 15, 18, 21, 24) seqs=[3, 3, 3, 3, 3, 3, 3, 3] ndec=0 mql=3 msl=3
+(Worker_TP1 pid=1508) P619I forward: is_prefill=True n_tok=192 qlens=(3, 6, 9, 12, 15, 18, 21, 24) seqs=[3, 3, 3, 3, 3, 3, 3, 3] ndec=0 mql=3 msl=3
+(Worker_TP0 pid=1336) P619I forward: is_prefill=True n_tok=128 qlens=(2, 4, 6, 8, 10, 12, 14, 16) seqs=[5, 5, 5, 5, 5, 5, 5, 5] ndec=0 mql=2 msl=5
+(Worker_TP1 pid=1508) P619I forward: is_prefill=True n_tok=128 qlens=(2, 4, 6, 8, 10, 12, 14, 16) seqs=[5, 5, 5, 5, 5, 5, 5, 5] ndec=0 mql=2 msl=5
+(Worker_TP0 pid=1336) P619I forward: is_prefill=True n_tok=3 qlens=(2, 3) seqs=[7, 6] ndec=0 mql=2 msl=7
+(Worker_TP1 pid=1508) P619I forward: is_prefill=True n_tok=3 qlens=(2, 3) seqs=[7, 6] ndec=0 mql=2 msl=7
+(Worker_TP0 pid=1336) P619I forward: is_prefill=False n_tok=2 qlens=(1, 2) seqs=[8, 7] ndec=2 mql=1 msl=8
+(Worker_TP1 pid=1508) P619I forward: is_prefill=False n_tok=2 qlens=(1, 2) seqs=[8, 7] ndec=2 mql=1 msl=8
+(Worker_TP0 pid=1336) P619I forward: is_prefill=True n_tok=2 qlens=(2,) seqs=[10] ndec=0 mql=2 msl=10
+(Worker_TP1 pid=1508) P619I forward: is_prefill=True n_tok=2 qlens=(2,) seqs=[10] ndec=0 mql=2 msl=10
+(Worker_TP1 pid=1508) P619I forward: is_prefill=False n_tok=1 qlens=(1,) seqs=[11] ndec=1 mql=1 msl=11
+(Worker_TP0 pid=1336) P619I forward: is_prefill=False n_tok=1 qlens=(1,) seqs=[11] ndec=1 mql=1 msl=11
+(Worker_TP0 pid=1336) P619I forward: is_prefill=True n_tok=97 qlens=(97,) seqs=[97] ndec=0 mql=97 msl=97
+(Worker_TP1 pid=1508) P619I forward: is_prefill=True n_tok=97 qlens=(97,) seqs=[97] ndec=0 mql=97 msl=97
+(Worker_TP0 pid=1336) P619I forward: is_prefill=True n_tok=6656 qlens=(6656,) seqs=[6656] ndec=0 mql=6656 msl=6656
+(Worker_TP1 pid=1508) P619I forward: is_prefill=True n_tok=6656 qlens=(6656,) seqs=[6656] ndec=0 mql=6656 msl=6656
+(Worker_TP1 pid=1508) P619I forward: is_prefill=True n_tok=1541 qlens=(1541,) seqs=[8197] ndec=0 mql=1541 msl=8197
+(Worker_TP0 pid=1336) P619I forward: is_prefill=True n_tok=1541 qlens=(1541,) seqs=[8197] ndec=0 mql=1541 msl=8197
+(Worker_TP0 pid=1336) P619I forward: is_prefill=True n_tok=14 qlens=(14,) seqs=[14] ndec=0 mql=14 msl=14
+(Worker_TP1 pid=1508) P619I forward: is_prefill=True n_tok=14 qlens=(14,) seqs=[14] ndec=0 mql=14 msl=14
+(Worker_TP1 pid=1508) P619I forward: is_prefill=True n_tok=11 qlens=(11,) seqs=[11] ndec=0 mql=11 msl=11
+(Worker_TP0 pid=1336) P619I forward: is_prefill=True n_tok=11 qlens=(11,) seqs=[11] ndec=0 mql=11 msl=11
