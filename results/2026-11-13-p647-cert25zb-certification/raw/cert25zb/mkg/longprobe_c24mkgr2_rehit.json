@@ -1,0 +1,71 @@
+{
+ "tag": "c24mkgr2",
+ "mode": "rehit",
+ "probe": "v3",
+ "ts": "2026-11-13 18:26:44",
+ "essay": {
+  "post_churn_rehit_identical": true,
+  "hashes": [
+   "fc2dddcc7ce6",
+   "fc2dddcc7ce6"
+  ],
+  "garble": {
+   "r1": [
+    "REP-LOOP"
+   ],
+   "r2": [
+    "REP-LOOP"
+   ]
+  },
+  "prompt_tok": 2104
+ },
+ "code": {
+  "post_churn_rehit_identical": true,
+  "hashes": [
+   "fc2dddcc7ce6",
+   "fc2dddcc7ce6"
+  ],
+  "garble": {
+   "r1": [
+    "REP-LOOP"
+   ],
+   "r2": [
+    "REP-LOOP"
+   ]
+  },
+  "prompt_tok": 5433
+ },
+ "multi": {
+  "post_churn_rehit_identical": true,
+  "hashes": [
+   "fc2dddcc7ce6",
+   "fc2dddcc7ce6"
+  ],
+  "garble": {
+   "r1": [
+    "REP-LOOP"
+   ],
+   "r2": [
+    "REP-LOOP"
+   ]
+  },
+  "prompt_tok": 3446
+ },
+ "simple": {
+  "post_churn_rehit_identical": false,
+  "hashes": [
+   "54f1f563c4b5",
+   "acf894af108e"
+  ],
+  "garble": {
+   "r1": [
+    "REP-LOOP"
+   ],
+   "r2": [
+    "REP-LOOP"
+   ]
+  },
+  "prompt_tok": 57
+ },
+ "VERDICT": "CORRUPTION_SIGNAL"
+}

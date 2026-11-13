@@ -21,7 +21,7 @@ reads, no host syncs: eager-path only by construction (the engine never
 graph-captures chunked-prefill continuations of this size), but the
 kernel is shape-static and replay-safe regardless.
 
-Provenance: from-scratch in-house lane (owner directive 2026-11-11);
+Provenance: from-scratch in-house lane (P6.47, 2026-11-11);
 kernel structure follows the wheel's sub-byte KV dequant template
 (triton_turboquant_decode._tq_full_dequant_kv — survey
 results/2026-11-11-p647-mxkv-research/wheelref/).

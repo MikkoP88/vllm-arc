@@ -1,6 +1,6 @@
 #!/bin/bash
 # r162_telemetry_ladder.sh -- P6.47 A10: compact end-to-end decode/TTFT
-# telemetry ladder (owner directive 2026-11-12: comprehensive telemetry
+# telemetry ladder (2026-11-12 requirement: comprehensive telemetry
 # capture points end-to-end to locate the root issue).
 #
 # Cells q8 (native fp8_e4m3 KV) / m8 (mxfp8) / m4 (mxfp4) on $IMG, qwen
@@ -18,7 +18,7 @@
 # /root/build/p647/telemA10/<cell>/. Exit 0 = all cells banked.
 set -uo pipefail
 R=/root/build
-P=$R/p647/telemA10
+P=${P647_BANK:-$R/p647/telemA10}
 IMG=${IMG:-vllm-arc:v0.30.0-b70-cert25x}
 CNAME=arc-r162
 MT=600
@@ -138,7 +138,11 @@ run_cell() {
   echo "R162_CELL_DONE_$CELLN $(date +%H:%M:%S)"
 }
 
-QWEN="ARC_MODEL=/models/qwen3.8-27b-fp8 ARC_SERVED=qwen3.8-27b-fp8 ARC_GRAPH=1 ARC_SPEC=3 ARC_LMC=1 ARC_FP8=1"
+# P6.47 r168 posture: ARC_LMC is no longer pinned here — the serve
+# script's default applies per lane (1 for q8/m8; auto-off for the m4
+# e2m1-V lane, the r168-discriminated LMCache double-quant garble
+# driver). The battery measures the shipping posture of each cell.
+QWEN="ARC_MODEL=/models/qwen3.8-27b-fp8 ARC_SERVED=qwen3.8-27b-fp8 ARC_GRAPH=1 ARC_SPEC=3 ARC_FP8=1"
 
 echo "=== [r162:A10] W14 quiesce $(date +%H:%M:%S) ==="
 docker stop radiance-test >/dev/null 2>&1 || true

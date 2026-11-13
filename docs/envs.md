@@ -2,7 +2,7 @@
 
 Generated from `vllm_gaudi/envs.py` arc-lane markers + the certified
 serve line (spec depth 3 — a serve-time CLI choice). The qwen fp8 chain
-is identical on the current certified image `vllm-arc:v0.30.0-b70-cert23`
+is identical on the current certified image `vllm-arc:v0.30.0-b70-cert25zb`
 (25 vars incl. `LMCACHE_TRACK_USAGE=false`): every release since the
 chain's certification added ZERO certified serve-line vars — each new
 lane rides an engine env or script arg (`ARC_*`) proven env-free and

@@ -5,8 +5,8 @@
 # [K e4m3][Ks][V e4m3][Vs], mxk8v4 slot 400B [K e4m3][Ks][V e2m1][Vs],
 # mxfp4 slot 272B e2m1 nibbles) as its OWN family — enum member MXKV
 # routed by ArcXpuPlatform.get_attn_backend_cls
-# (owner directive 2026-11-11: "MXFP4/MXFP8 are own family not part of
-# TURBOQUANT"; the admission alias in mx_kv_mode.py is a bounded internal
+# (2026-11-11: MXFP4/MXFP8 are their own family, not part of
+# TURBOQUANT; the admission alias in mx_kv_mode.py is a bounded internal
 # bridge onto TQ-class page plumbing only). mxk8v4 added 2026-11-12
 # (commit 3b92b9f8) against the r154 run1 m4q verdict: 4-bit K degrades
 # long-generation retrieval into a stable REP-LOOP attractor under churn

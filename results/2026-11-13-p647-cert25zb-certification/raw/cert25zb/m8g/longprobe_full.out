@@ -1,0 +1,5 @@
+[essay] t0_identical=False hashes=['12c0e71e5be4', 'fc2dddcc7ce6', 'fc2dddcc7ce6'] garble={'cold': ['REP-LOOP'], 'rehit': ['REP-LOOP'], 'rehit2': ['REP-LOOP']} t1_seed_identical=True prompt_tok=2104 chars=[6156, 6157, 6157]
+[code] t0_identical=False hashes=['3950cc634cad', 'fc2dddcc7ce6', 'fc2dddcc7ce6'] garble={'cold': ['REP-LOOP'], 'rehit': ['REP-LOOP'], 'rehit2': ['REP-LOOP']} t1_seed_identical=True prompt_tok=5433 chars=[6156, 6157, 6157]
+[multi] t0_identical=False hashes=['d3c6a465ecc1', 'fc2dddcc7ce6', 'fc2dddcc7ce6'] garble={'cold': ['REP-LOOP'], 'rehit': ['REP-LOOP'], 'rehit2': ['REP-LOOP']} t1_seed_identical=True prompt_tok=3446 chars=[6154, 6157, 6157]
+[simple] t0_identical=False hashes=['fbd11796cb88', 'ecf8a6da5a59', 'ecf8a6da5a59'] garble={'cold': ['REP-LOOP'], 'rehit': ['REP-LOOP'], 'rehit2': ['REP-LOOP']} t1_seed_identical=True prompt_tok=57 chars=[6178, 6149, 6149]
+LONGPROBE c24m8g full: CORRUPTION_SIGNAL

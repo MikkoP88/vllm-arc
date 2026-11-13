@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """p138_report.py -- P6.37 close-out report generator (local, post-pull).
 
-Reads the r138 bank (faces + postures + outcomes) and emits the owner
+Reads the r138 bank (faces + postures + outcomes) and emits the
 close-out deliverable: per-config performance reports in docs/reports/
 with copyable configuration blocks and SVG line charts of ALL data
 (millstoneai-style: TTFT / decode speed / prefill speed / ITL vs context

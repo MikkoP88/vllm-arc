@@ -1,0 +1,14 @@
+567-(APIServer pid=13) INFO 11-13 16:43:49 [loggers.py:315] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 20.3 tokens/s, Running: 1 reqs, Waiting: 0 reqs, XPU KV cache usage: 2.7%, Prefix cache hit rate: 22.7%
+568:(APIServer pid=13) ERROR 11-13 16:43:58 [serving.py:235] Error with model error=ErrorInfo(message='The model `qwen3.8-27b-fp8` does not exist.', type='NotFoundError', param='model', code=404)
+569-(APIServer pid=13) INFO:     10.100.8.REDACTED:50458 - "POST /v1/chat/completions HTTP/1.1" 404 Not Found
+--
+571-(APIServer pid=13) INFO:     127.0.0.1:39416 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+572:(APIServer pid=13) ERROR 11-13 16:44:07 [serving.py:235] Error with model error=ErrorInfo(message='The model `qwen3.8-27b-fp8` does not exist.', type='NotFoundError', param='model', code=404)
+573-(APIServer pid=13) INFO:     10.100.8.REDACTED:47796 - "POST /v1/chat/completions HTTP/1.1" 404 Not Found
+--
+947-(APIServer pid=13) INFO 11-13 17:27:50 [loggers.py:315] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 25.9 tokens/s, Running: 1 reqs, Waiting: 0 reqs, XPU KV cache usage: 1.6%, Prefix cache hit rate: 69.5%
+948:(APIServer pid=13) ERROR 11-13 17:27:51 [serving.py:235] Error with model error=ErrorInfo(message='The model `qwen3.8-27b-fp8` does not exist.', type='NotFoundError', param='model', code=404)
+949-(APIServer pid=13) INFO:     10.100.8.REDACTED:40566 - "POST /v1/chat/completions HTTP/1.1" 404 Not Found
+950-(APIServer pid=13) INFO 11-13 17:28:00 [loggers.py:315] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 25.6 tokens/s, Running: 1 reqs, Waiting: 0 reqs, XPU KV cache usage: 2.2%, Prefix cache hit rate: 69.5%
+951:(APIServer pid=13) ERROR 11-13 17:28:01 [serving.py:235] Error with model error=ErrorInfo(message='The model `qwen3.8-27b-fp8` does not exist.', type='NotFoundError', param='model', code=404)
+952-(APIServer pid=13) INFO:     10.100.8.REDACTED:41500 - "POST /v1/chat/completions HTTP/1.1" 404 Not Found

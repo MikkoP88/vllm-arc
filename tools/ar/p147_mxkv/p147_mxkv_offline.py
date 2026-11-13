@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: Apache-2.0
 """p147_mxkv_offline.py — P6.47 leg A: offline XPU validation of the
-MXFP4/MXFP8 KV-cache lane (owner directive 2026-11-11).
+MXFP4/MXFP8 KV-cache lane (P6.47 goal, 2026-11-11).
 
 Runs INSIDE a cert23-family container with an XPU device visible (no
 engine boot; radiance-test untouched). Gates, in order:

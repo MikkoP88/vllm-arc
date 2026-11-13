@@ -71,13 +71,88 @@ BLOCK_N=128 (a 17-20 ms cliff vs 2.4-6.0 ms winners) and take (64,
 8) — the table is baked into `_MX_TUNE` and applied per format
 unless the caller overrides.
 
+V4 VERIFY-ROW-SHARED SPLIT (A11 lever 2, 2026-11-12): the A10 e2e
+attribution showed the MX deficit is per-byte ALU work — v2 re-walks
+and re-dequants the same KV tiles up to 24x per step (N_REP q-heads x
+R_TILE MTP verify rows). `_mx_decode_split_rows` grid (G, Hq, 32):
+one program walks the request ONCE and serves all R_TILE=4 verify
+rows (K/V load + dequant shared 4x, per-row limits differ only in the
+final tile, state HALF of v3's spilled N_REP=6 unroll; m_safe NaN
+guard preserves v2's exact empty-marker semantics). Wired behind
+ARC_MXKV_V4_VERIFY=1 in the engine's MTP verify path — default off
+until the p159 probe + A12 ladder earn the flip.
+
+V5 XMX DOT DECODE (A11 lever 3, 2026-11-12): A6's "no tl.dot" non-goal
+rested on the pointer-chase diagnosis; the A9 true-shape rebake and A10
+attribution refuted that premise (v3's GQA unroll spills; the deficit
+is scalar-ALU dequant+FMA, not the walk). `_mx_decode_split_dot`
+grid (G, Hk, 32): the v4 row-group walk with the score path in
+tl.dot — (M_PAD, D) @ (D, BLOCK_N) fp16 operands, f32 accumulate —
+the ctrl fp8 lane's counter-operand economy (dequant -> fp16 feeds
+the XMX MMA pipe). M packs R_TILE x N_REP = 24 lanes (padded to 32;
+MMA >= 16, tl.arange power-of-2). m/l/acc are (M_PAD,) / (M_PAD, D)
+vectors — no tuple unroll. Behind ARC_MXKV_V5_DOT=1, probe p160;
+numerics = fp16-operand class (the ctrl lane's own), gate d <= 2e-3.
+
 GRAPH SAFETY: seq lens and block tables are read from device buffers
 inside the kernel (the TQ decode pattern) — no host reads, no
 data-dependent host control flow; XPU-graph safe. The mid buffer is
 allocated once per shape on the eager warmup and reused (allocation
 can never land inside a capture).
 
-Provenance: from-scratch in-house lane (owner directive 2026-11-11);
+V6 DEEP-SPLIT LINE (P6.47 A14, 2026-11-13 kernel-fix
+mandate): the r162/A13 attribution closed the m8 32K gap as
+kernel-explained — 16 x v5 8.79 ms = 140.7 ms ~= the 130 ms conc-1
+e2e delta — and the v5 shape is parallelism-starved, not
+bandwidth-bound: G=1/ctx=32K launches only G x Hk x 32 = 128 CTAs
+(each serially walking 32 BLOCK_N=32 tiles through the bt -> slot ->
+gather chain num_stages cannot pipeline across) to read 33.5 MB of KV
+at ~3.8 GB/s effective — ~1% of the device's HBM. v6 keeps the v5
+kernel body and (a) raises the v5 split cap 32 -> 256 with an
+adaptive s_eff targeting >= 4 serial tiles per CTA (1024 tiles ->
+1024 CTAs at 32K), (b) moves the dot path to its own BLOCK_N=64 tune
+(double-N MMA, half the tile count), (c) chunk-loops the shared
+combine over 32-split chunks so deep splits never blow SLM (one
+chunk = the certified 32-split math verbatim). v2/v3/v4 lanes are
+untouched: their _MX_TUNE table, 32-split cap, and combine behavior
+are byte-identical (single-chunk path). Env knobs (call-time reads,
+static during serving — capture law): ARC_MXKV_V5_SPLITS (default
+256; 32 reproduces the A13 grid), ARC_MXKV_V5_BN, ARC_MXKV_V5_WARPS
+(sweep faces). Probe: p173_v6sweep.py.
+
+K2 PACKED-F16 DEQUANT LINE (P6.47, 2026-11-13): the r177 stage-split
+probe closed the residual v6 walk as a scalar-ALU throughput wall —
+stage 1 owns 98-99% at 32K, t_s1 is FLAT across splits 32..256 (not
+occupancy, not latency), and num_stages 3/4 is a no-op (pipelining
+refuted on the dot lane as it was on the scalar walk, A6). The wall
+is the per-element f32 dequant chain (bitcast -> f8->f32 convert ->
+f32 scale mul -> f16 convert for the dot operands). K2 moves the
+e4m3-payload dequant into the packed-fp16 domain: e4m3 -> fp16 is
+EXACT, the e8m0 group scale is a power of two (exact in fp16 once
+clamped to the normal range), so the product's single rounding point
+is unchanged — the m8 / mxk8v4-K numerics are bit-identical to the
+f32 path while the multiply runs packed (half the scalar ops).
+Default ON since cert25zb (r178 k2cycleA17 bank: m8 5.941 -> 4.871 ms
+at 32K, 1.22x; bit-identical d=0.0); ARC_MXKV_K2=0 reverts to the f32
+path (call-time read, static during serving — capture law). v5 dot
+lane only; sub-byte payloads keep the f32 path until the K3 e2m1
+fast-unpack line replaces the unpack itself. Probe: p176_k2ab.py.
+
+K3 E2M1 FAST-UNPACK LINE (P6.47, 2026-11-13): after K2 the e2m1
+lanes' residual tax is the f32 decode chain (~18 f32-class ops per
+element including an SFU exp2 — m4 8.68 / mkv4 8.28 vs m8's 4.87 ms
+at 32K). K3 maps each nibble to its e4m3 BYTE with ~10 integer ops
+(the map is exact — every e2m1 value is representable in e4m3;
+base(n') = (n'<<2) + 0x30 holds for e > 0, exceptions 0x00/0x30 at
+n' = 0/1) and rides the same hardware cvt -> packed-fp16 multiply.
+Same single-rounding law as K2 (x_f16 exact, pow2 scale exact ->
+product rounds to fp16 once) — bit-identical to the f32 path. Default
+ON since cert25zb (r179 k3cycleA18 bank: m4 8.640 -> 7.618, 1.14x;
+mkv4 8.624 -> 7.623, 1.13x at 32K); ARC_MXKV_K3=0 reverts. v5 dot
+lane, independent knob so A/Bs attribute cleanly; join/shift
+nibble-extraction flavors unchanged. Probe: p177_k3ab.py.
+
+Provenance: from-scratch in-house lane (P6.47, 2026-11-11);
 kernel structure follows the wheel's sub-byte KV decode template
 (triton_turboquant_decode.py — survey
 results/2026-11-11-p647-mxkv-research/wheelref/).
@@ -120,6 +195,31 @@ def _mx_dequant_e2m1(nib):
 
 
 @triton.jit
+def _f16_scale(s):
+    # K2 lane: e8m0 scales are powers of two — exact in fp16 within the
+    # normal range. Clamp first so an out-of-range group code degrades
+    # gracefully instead of inf/0 in the packed multiply (normalizing
+    # quantizer keeps real scales near 1.0; the clamp is 2 ops per 32
+    # elements — noise).
+    sc = tl.minimum(tl.maximum(s, 1.0 / 16384.0), 32768.0)
+    return sc.to(tl.float16)
+
+
+@triton.jit
+def _e2m1_byte(nib):
+    # K3 lane: e2m1 nibble -> e4m3 byte, the exact map (every e2m1 value
+    # is representable in e4m3). Replaces the f32 where/exp2 decode chain
+    # (~18 f32-class ops/elem incl. an SFU exp2) with ~10 integer ops so
+    # sub-byte payloads ride the hardware cvt -> packed-fp16 multiply the
+    # e4m3 lane uses. base(n') = (n'<<2) + 0x30 holds for n' >= 2 (e > 0);
+    # the e == 0 exceptions are 0x00 (n'=0, value 0) and 0x30 (n'=1, 0.5).
+    n = nib & 7
+    base = (n << 2) + 48
+    cor = tl.where(n < 2, tl.where(n == 0, 48, 4), 0)
+    return (((nib & 8) << 4) | (base - cor)).to(tl.uint8)
+
+
+@triton.jit
 def _mx_dequant_block(
     cache_ptr,
     slot,
@@ -130,37 +230,71 @@ def _mx_dequant_block(
     N_GROUPS: tl.constexpr,
     SUB4: tl.constexpr,  # payload is e2m1 nibbles (else e4m3 bytes)
     SHIFT: tl.constexpr = 0,  # 1 = shift-unpack (v2 A/B flavor; v1 stays join)
+    F16OUT: tl.constexpr = 0,  # 1 = e4m3 payloads return packed-fp16 (K2)
+    E2M1FAST: tl.constexpr = 0,  # 1 = e2m1 payloads via e4m3-byte map (K3)
 ):
     # slot: [BLOCK_N] int64 slot byte bases; mask: [BLOCK_N] valid lanes.
-    # Returns f32 [BLOCK_N, D] dequantized K-or-V rows.
+    # Returns f32 [BLOCK_N, D] dequantized K-or-V rows (fp16 when F16OUT
+    # and the payload is e4m3 — the K2 packed lane; fp16 when E2M1FAST
+    # and the payload is e2m1 — the K3 lane; see module header).
     g = tl.arange(0, N_GROUPS)
     gmask = mask[:, None]
     if SUB4:
         codes = tl.load(cache_ptr + slot[:, None] + payload_off + D // 2 + g[None, :], mask=gmask, other=0)
         scale = tl.exp2(codes.to(tl.float32) - 127.0)
-        if SHIFT:
-            # duplicated-load interleave: element d's byte is d//2, its
-            # nibble shift is (d%2)*4 — pure vector ALU, no join/reshape
-            # cross-lane op (semantics identical to the join path).
-            dd = tl.arange(0, D)
-            raw = tl.load(
-                cache_ptr + slot[:, None] + payload_off + (dd // 2)[None, :],
-                mask=gmask,
-                other=0,
-            ).to(tl.int32)
-            nib = (raw >> ((dd % 2) * 4)[None, :]) & 0xF
-            elems = _mx_dequant_e2m1(nib)
-        else:
-            raw = tl.load(
-                cache_ptr + slot[:, None] + payload_off + tl.arange(0, D // 2)[None, :],
-                mask=gmask,
-                other=0,
+        if E2M1FAST:
+            # K3 lane: nibble -> e4m3 byte (exact) -> fp16, pow2 scale
+            # exact in fp16 — same single-rounding law as K2. Nibble
+            # extraction (join/shift flavor) unchanged, byte domain.
+            sc16 = tl.reshape(
+                tl.broadcast_to(_f16_scale(scale)[:, :, None],
+                                (BLOCK_N, N_GROUPS, 32)),
+                (BLOCK_N, D),
             )
-            lo = _mx_dequant_e2m1(raw & 0xF)
-            hi = _mx_dequant_e2m1(raw >> 4)
-            elems = tl.reshape(tl.join(lo, hi), (BLOCK_N, D))
-        sc = tl.reshape(tl.broadcast_to(scale[:, :, None], (BLOCK_N, N_GROUPS, 32)), (BLOCK_N, D))
-        return elems * sc
+            if SHIFT:
+                dd = tl.arange(0, D)
+                raw = tl.load(
+                    cache_ptr + slot[:, None] + payload_off + (dd // 2)[None, :],
+                    mask=gmask,
+                    other=0,
+                ).to(tl.int32)
+                nib = (raw >> ((dd % 2) * 4)[None, :]) & 0xF
+                b = _e2m1_byte(nib)
+                return b.to(tl.float8e4nv, bitcast=True).to(tl.float16) * sc16
+            else:
+                raw = tl.load(
+                    cache_ptr + slot[:, None] + payload_off + tl.arange(0, D // 2)[None, :],
+                    mask=gmask,
+                    other=0,
+                )
+                lo = _e2m1_byte(raw & 0xF)
+                hi = _e2m1_byte(raw >> 4)
+                b8 = tl.reshape(tl.join(lo, hi), (BLOCK_N, D))
+                return b8.to(tl.float8e4nv, bitcast=True).to(tl.float16) * sc16
+        else:
+            if SHIFT:
+                # duplicated-load interleave: element d's byte is d//2, its
+                # nibble shift is (d%2)*4 — pure vector ALU, no join/reshape
+                # cross-lane op (semantics identical to the join path).
+                dd = tl.arange(0, D)
+                raw = tl.load(
+                    cache_ptr + slot[:, None] + payload_off + (dd // 2)[None, :],
+                    mask=gmask,
+                    other=0,
+                ).to(tl.int32)
+                nib = (raw >> ((dd % 2) * 4)[None, :]) & 0xF
+                elems = _mx_dequant_e2m1(nib)
+            else:
+                raw = tl.load(
+                    cache_ptr + slot[:, None] + payload_off + tl.arange(0, D // 2)[None, :],
+                    mask=gmask,
+                    other=0,
+                )
+                lo = _mx_dequant_e2m1(raw & 0xF)
+                hi = _mx_dequant_e2m1(raw >> 4)
+                elems = tl.reshape(tl.join(lo, hi), (BLOCK_N, D))
+            sc = tl.reshape(tl.broadcast_to(scale[:, :, None], (BLOCK_N, N_GROUPS, 32)), (BLOCK_N, D))
+            return elems * sc
     else:
         codes = tl.load(cache_ptr + slot[:, None] + payload_off + D + g[None, :], mask=gmask, other=0)
         scale = tl.exp2(codes.to(tl.float32) - 127.0)
@@ -169,9 +303,22 @@ def _mx_dequant_block(
             mask=gmask,
             other=0,
         )
-        kf = raw.to(tl.float8e4nv, bitcast=True).to(tl.float32)
-        sc = tl.reshape(tl.broadcast_to(scale[:, :, None], (BLOCK_N, N_GROUPS, 32)), (BLOCK_N, D))
-        return kf * sc
+        if F16OUT:
+            # K2 packed lane: e4m3->fp16 exact, pow2 scale exact in fp16
+            # — single rounding point unchanged (bit-identical to the
+            # f32 path), the multiply runs packed-fp16. (Explicit else:
+            # a constexpr-if return does not dead-stop the tracer —
+            # trailing returns would merge types.)
+            sc16 = tl.reshape(
+                tl.broadcast_to(_f16_scale(scale)[:, :, None],
+                                (BLOCK_N, N_GROUPS, 32)),
+                (BLOCK_N, D),
+            )
+            return raw.to(tl.float8e4nv, bitcast=True).to(tl.float16) * sc16
+        else:
+            kf = raw.to(tl.float8e4nv, bitcast=True).to(tl.float32)
+            sc = tl.reshape(tl.broadcast_to(scale[:, :, None], (BLOCK_N, N_GROUPS, 32)), (BLOCK_N, D))
+            return kf * sc
 
 
 @triton.jit
@@ -453,6 +600,280 @@ def _mx_decode_split_gqa(
 
 
 @triton.jit
+def _mx_decode_split_rows(
+    q_ptr,
+    cache_ptr,
+    block_tables_ptr,
+    limits_ptr,  # [R] per-row causal limits (rows grouped: g*R_TILE..+R_TILE-1)
+    mid_ptr,  # [R, Hq, NUM_SPLITS, D+1] f32 — same layout v2/v3 write
+    sm_scale,
+    stride_q_b,
+    stride_q_h,
+    stride_mid_b,
+    stride_mid_h,
+    stride_mid_s,
+    stride_bt_b,
+    stride_c_b,
+    stride_c_t,
+    stride_c_h,
+    D: tl.constexpr,
+    N_GROUPS: tl.constexpr,
+    K4: tl.constexpr,
+    V4: tl.constexpr,
+    R_TILE: tl.constexpr,  # verify rows per group (MTP k4 -> 4)
+    N_REP: tl.constexpr,  # GQA: Hq // Hk (kv-head = hq // N_REP)
+    BLOCK_SIZE: tl.constexpr,  # cache block (tokens per block)
+    BLOCK_N: tl.constexpr,  # decode tile
+    NUM_SPLITS: tl.constexpr,  # grid z; effective count adapts per group
+    SHIFT: tl.constexpr,  # e2m1 unpack flavor (v2/v3 A/B)
+):
+    # v4 stage 1 (A11 lever 2): one program per (row-GROUP, q-head,
+    # split) serving all R_TILE verify rows of one request against ONE
+    # walk. The 4 rows share the request's block-table row and their
+    # causal limits differ only near the walk end (MTP verify: ctx-3..
+    # ctx), so the walk, the gather, and the K/V dequant — the ALU the
+    # A10 attribution showed binding at oversubscription — amortize
+    # R_TILE-fold while the per-row score/acc FMA work is unchanged.
+    # State is HALF of v3's spilled N_REP=6 unroll (4 rows, D=256 accs)
+    # — the A9 verdict on GQA sharing does not apply to this axis.
+    # Per-row limits: a row with no tile in this split keeps the exact
+    # v2 empty-marker semantics (lse=-inf, acc=0) via the m_safe guard
+    # (all-masked tiles would otherwise make scores-m_new = -inf-(-inf)
+    # = NaN). Rows with work run the identical v2 lane math, so v4 vs
+    # per-row v2 differs only by split regrouping (the A11 S-sweep
+    # measured that class at 2-3e-8).
+    g = tl.program_id(0)
+    hq = tl.program_id(1)
+    sid = tl.program_id(2)
+    hk = hq // N_REP  # GQA: the kv-head this q-head reads
+
+    # per-row limits + the group walk end (max over rows)
+    lims = ()
+    walk_end = 0
+    for r in tl.static_range(R_TILE):
+        lim = tl.load(limits_ptr + g * R_TILE + r)
+        lims = lims + (lim,)
+        walk_end = tl.maximum(walk_end, lim)
+
+    n_tiles = (walk_end + BLOCK_N - 1) // BLOCK_N
+    s_eff = tl.minimum(NUM_SPLITS, tl.maximum(1, (n_tiles + 1) // 2))
+    split_len = (walk_end + s_eff - 1) // s_eff
+    split_start = split_len * sid
+    split_end = tl.minimum(split_start + split_len, walk_end)
+
+    offs_d = tl.arange(0, D)
+    qs = ()
+    mis = ()
+    lis = ()
+    accs = ()
+    for r in tl.static_range(R_TILE):
+        qs = qs + (
+            tl.load(
+                q_ptr
+                + (g * R_TILE + r) * stride_q_b
+                + hq * stride_q_h
+                + offs_d
+            ),
+        )
+        mis = mis + (-float("inf"),)
+        lis = lis + (0.0,)
+        accs = accs + (tl.zeros((D,), dtype=tl.float32),)
+
+    if split_start < split_end:
+        v_off = (D // 2 if K4 else D) + N_GROUPS
+        for start_n in range(split_start, split_end, BLOCK_N):
+            offs_n = start_n + tl.arange(0, BLOCK_N)
+            nmask = offs_n < split_end
+            blk = tl.load(
+                block_tables_ptr + g * stride_bt_b + offs_n // BLOCK_SIZE,
+                mask=nmask,
+                other=0,
+            )
+            slot = (
+                blk.to(tl.int64) * stride_c_b
+                + (offs_n % BLOCK_SIZE).to(tl.int64) * stride_c_t
+                + hk.to(tl.int64) * stride_c_h
+            )
+            k = _mx_dequant_block(
+                cache_ptr, slot, 0, nmask, BLOCK_N, D, N_GROUPS, K4, SHIFT
+            )
+            v = _mx_dequant_block(
+                cache_ptr, slot, v_off, nmask, BLOCK_N, D, N_GROUPS, V4, SHIFT
+            )
+            for r in tl.static_range(R_TILE):
+                # the row's effective end inside this walk (v2's split_end
+                # for a per-row call with seq_len=limit)
+                end_r = tl.minimum(lims[r], split_end)
+                rmask = offs_n < end_r
+                scores = tl.sum(qs[r][None, :] * k, axis=1) * sm_scale
+                scores = tl.where(rmask, scores, -float("inf"))
+                m_new = tl.maximum(mis[r], tl.max(scores, 0))
+                m_safe = tl.where(m_new == -float("inf"), 0.0, m_new)
+                p = tl.exp(scores - m_safe)
+                alpha = tl.exp(mis[r] - m_safe)
+                lis = lis[:r] + (lis[r] * alpha + tl.sum(p, 0),) + lis[r + 1 :]
+                accs = (
+                    accs[:r]
+                    + (accs[r] * alpha + tl.sum(p[:, None] * v, axis=0),)
+                    + accs[r + 1 :]
+                )
+                mis = mis[:r] + (m_new,) + mis[r + 1 :]
+
+    for r in tl.static_range(R_TILE):
+        base = (g * R_TILE + r) * stride_mid_b + hq * stride_mid_h + sid * stride_mid_s
+        safe_l = tl.where(lis[r] > 0.0, lis[r], 1.0)
+        tl.store(mid_ptr + base + offs_d, accs[r] / safe_l)
+        lse = tl.where(lis[r] > 0.0, mis[r] + tl.log(safe_l), -float("inf"))
+        tl.store(mid_ptr + base + D, lse)
+
+
+@triton.jit
+def _mx_decode_split_dot(
+    q_ptr,
+    cache_ptr,
+    block_tables_ptr,
+    limits_ptr,  # [R] per-row causal limits (rows grouped: g*R_TILE..+R_TILE-1)
+    mid_ptr,  # [R, Hq, NUM_SPLITS, D+1] f32 — same layout v2/v3/v4 write
+    sm_scale,
+    stride_q_b,
+    stride_q_h,
+    stride_mid_b,
+    stride_mid_h,
+    stride_mid_s,
+    stride_bt_b,
+    stride_c_b,
+    stride_c_t,
+    stride_c_h,
+    D: tl.constexpr,
+    N_GROUPS: tl.constexpr,
+    K4: tl.constexpr,
+    V4: tl.constexpr,
+    R_TILE: tl.constexpr,  # verify rows per group (MTP k4 -> 4)
+    N_REP: tl.constexpr,  # GQA: Hq // Hk
+    M_LANES: tl.constexpr,  # R_TILE * N_REP real score lanes (24)
+    M_PAD: tl.constexpr,  # next_pow2(M_LANES) — tl.arange/power-of-2 law
+    BLOCK_SIZE: tl.constexpr,  # cache block (tokens per block)
+    BLOCK_N: tl.constexpr,  # decode tile
+    NUM_SPLITS: tl.constexpr,  # grid z; effective count adapts per group
+    SHIFT: tl.constexpr,  # e2m1 unpack flavor
+    K2: tl.constexpr = 0,  # 1 = packed-fp16 dequant on e4m3 payloads
+    K3: tl.constexpr = 0,  # 1 = e2m1 payloads via e4m3-byte map (packed)
+):
+    # v5 stage 1 (A11 lever 3, the XMX reopening): the score path as MMA.
+    # ONE program per (row-GROUP, KV-HEAD, split) walks the request once
+    # (the v4 economy) AND runs the hot multiply-reduce through tl.dot —
+    # (M_PAD, D) @ (D, BLOCK_N) fp16 operands, f32 accumulate — the same
+    # counter-operand economy the ctrl fp8 lane's fused FA kernel uses
+    # (fp8->fp16 convert feeding the XMX pipe; A10 showed the MX deficit
+    # is scalar-ALU dequant+FMA, and A6's pointer-chase no-op was a
+    # BLOCK_N/warps artifact at the wrong shape). M dimension packs the
+    # 4 verify rows x N_REP q-heads of one kv-head = MMA-shaped by
+    # construction (24 real lanes, padded to 32; pad lanes load zeros,
+    # mask to -inf, store nothing). m/l/acc are (M_PAD,) / (M_PAD, D)
+    # vectors — no tuple unroll, no spill ladder. Numerics: fp16 operand
+    # products with f32 accumulation = the ctrl lane's own class (its
+    # e2e quality is the bar); group-scale magnitudes are the original
+    # tensor values (normalizing quantizer), so fp16 cast cannot
+    # overflow on real KV. Gate d <= 2e-3 vs per-row v2.
+    g = tl.program_id(0)
+    hk = tl.program_id(1)
+    sid = tl.program_id(2)
+
+    offs_m = tl.arange(0, M_PAD)
+    lane_ok = offs_m < M_LANES
+    row_b = offs_m // N_REP  # verify row of each score lane
+    rep = offs_m % N_REP  # q-head within the kv-head
+    # per-lane causal limit (a (M_PAD,) gather over the group's rows)
+    ends = tl.load(limits_ptr + g * R_TILE + row_b, mask=lane_ok, other=0)
+    walk_end = tl.max(ends, 0)
+
+    n_tiles = (walk_end + BLOCK_N - 1) // BLOCK_N
+    # v6 deep-split rule: target >= 4 serial tiles per CTA (the A14
+    # law — the old (n_tiles+1)//2 cap of 32 starved the grid at long
+    # ctx: 1024 tiles on 128 CTAs, each tile a serial bt->slot->gather
+    # latency chain). Grid z still bounds s_eff; splits beyond the
+    # walk keep the exact v2 empty-marker semantics via the guard
+    # below, so the only numeric difference vs the old rule is the
+    # split regrouping (A11 S-sweep class: 2-3e-8).
+    s_eff = tl.minimum(NUM_SPLITS, tl.maximum(1, n_tiles // 4))
+    split_len = (walk_end + s_eff - 1) // s_eff
+    split_start = split_len * sid
+    split_end = tl.minimum(split_start + split_len, walk_end)
+
+    offs_d = tl.arange(0, D)
+    # q tile (M_PAD, D) fp16: lane m reads row g*R_TILE+row_b[m] at head
+    # hk*N_REP+rep[m]; pad lanes read zeros.
+    q16 = tl.load(
+        q_ptr
+        + (g * R_TILE + row_b)[:, None] * stride_q_b
+        + (hk * N_REP + rep)[:, None] * stride_q_h
+        + offs_d[None, :],
+        mask=lane_ok[:, None],
+        other=0.0,
+    ).to(tl.float16)
+
+    m = tl.full((M_PAD,), -float("inf"), dtype=tl.float32)
+    lrow = tl.zeros((M_PAD,), dtype=tl.float32)
+    acc = tl.zeros((M_PAD, D), dtype=tl.float32)
+
+    if split_start < split_end:
+        v_off = (D // 2 if K4 else D) + N_GROUPS
+        for start_n in range(split_start, split_end, BLOCK_N):
+            offs_n = start_n + tl.arange(0, BLOCK_N)
+            nmask = offs_n < split_end
+            blk = tl.load(
+                block_tables_ptr + g * stride_bt_b + offs_n // BLOCK_SIZE,
+                mask=nmask,
+                other=0,
+            )
+            slot = (
+                blk.to(tl.int64) * stride_c_b
+                + (offs_n % BLOCK_SIZE).to(tl.int64) * stride_c_t
+                + hk.to(tl.int64) * stride_c_h
+            )
+            k = _mx_dequant_block(
+                cache_ptr, slot, 0, nmask, BLOCK_N, D, N_GROUPS, K4, SHIFT,
+                F16OUT=K2 and not K4, E2M1FAST=K3 and K4,
+            )
+            v = _mx_dequant_block(
+                cache_ptr, slot, v_off, nmask, BLOCK_N, D, N_GROUPS, V4, SHIFT,
+                F16OUT=K2 and not V4, E2M1FAST=K3 and V4,
+            )
+            if (K2 and not K4) or (K3 and K4):
+                # K2/K3 packed lanes: k is already fp16 — no convert, the
+                # packed multiply already happened at dequant
+                scores = tl.dot(q16, tl.trans(k)) * sm_scale
+            else:
+                scores = tl.dot(q16, tl.trans(k).to(tl.float16)) * sm_scale
+            # per-lane causal + tile + pad-lane mask, v2's -inf semantics
+            rmask = (offs_n[None, :] < tl.minimum(ends[:, None], split_end)) & (
+                lane_ok[:, None] & nmask[None, :]
+            )
+            scores = tl.where(rmask, scores, -float("inf"))
+            m_new = tl.maximum(m, tl.max(scores, 1))
+            m_safe = tl.where(m_new == -float("inf"), 0.0, m_new)
+            p = tl.exp(scores - m_safe[:, None])
+            alpha = tl.exp(m - m_safe)
+            lrow = lrow * alpha + tl.sum(p, 1)
+            if (K2 and not V4) or (K3 and V4):
+                acc = acc * alpha[:, None] + tl.dot(p.to(tl.float16), v)
+            else:
+                acc = acc * alpha[:, None] + tl.dot(p.to(tl.float16), v.to(tl.float16))
+            m = m_new
+
+    safe_l = tl.where(lrow > 0.0, lrow, 1.0)
+    out = acc / safe_l[:, None]
+    lse = tl.where(lrow > 0.0, m + tl.log(safe_l), -float("inf"))
+    base = (
+        (g * R_TILE + row_b) * stride_mid_b
+        + (hk * N_REP + rep) * stride_mid_h
+        + sid * stride_mid_s
+    )
+    tl.store(mid_ptr + base[:, None] + offs_d[None, :], out, mask=lane_ok[:, None])
+    tl.store(mid_ptr + base + D, lse, mask=lane_ok)
+
+
+@triton.jit
 def _mx_decode_combine(
     mid_ptr,
     out_ptr,
@@ -463,33 +884,50 @@ def _mx_decode_combine(
     stride_o_h,
     D: tl.constexpr,
     NUM_SPLITS: tl.constexpr,
-    BLOCK_S: tl.constexpr,  # next_power_of_2(NUM_SPLITS)
+    BLOCK_S: tl.constexpr,  # split-chunk tile (32 — SLM law, NOT pow2(NUM_SPLITS))
 ):
     # Stage 2: log-sum-exp weighted combine of the split partials.
     # out = sum_s w_s * (acc_s/l_s) / sum_s w_s with w_s = exp(lse_s -
     # max_s lse_s) — the standard flash-decoding split reduction; empty
     # splits carry lse=-inf -> w=0; an all-empty sequence (l_sum=0)
     # reduces to defined zeros (v1 zero-seq semantics).
+    #
+    # v6 chunked form (A14 deep-split law): NUM_SPLITS now runs to 256
+    # on the v5 lane, and a (NUM_SPLITS, D) tile blows SLM past 32
+    # splits — so the reduction runs as a running (m, l, acc) over
+    # 32-split chunks. One chunk (the 32-split lanes v2/v3/v4) is the
+    # certified single-pass math verbatim: init m=-inf/l=0/acc=0 makes
+    # the first-chunk update collapse to the direct form.
     b = tl.program_id(0)
     hq = tl.program_id(1)
-    offs_s = tl.arange(0, BLOCK_S)
-    smask = offs_s < NUM_SPLITS
     offs_d = tl.arange(0, D)
     base = b * stride_mid_b + hq * stride_mid_h
-    m = tl.load(
-        mid_ptr + base + offs_s * stride_mid_s + D, mask=smask, other=-float("inf")
-    )
-    m_star = tl.max(m, 0)
-    # exp(-inf - (-inf)) = nan: clamp the anchor when every split is empty.
-    safe_star = tl.where(m_star == -float("inf"), 0.0, m_star)
-    w = tl.exp(m - safe_star)
-    accs = tl.load(
-        mid_ptr + base + offs_s[:, None] * stride_mid_s + offs_d[None, :],
-        mask=smask[:, None],
-        other=0.0,
-    )
-    l_sum = tl.sum(w, 0)
-    out = tl.sum(w[:, None] * accs, axis=0) / tl.where(l_sum > 0.0, l_sum, 1.0)
+    m_run = -float("inf")
+    l_run = 0.0
+    acc_run = tl.zeros((D,), dtype=tl.float32)
+    for s0 in range(0, NUM_SPLITS, BLOCK_S):
+        offs_s = s0 + tl.arange(0, BLOCK_S)
+        smask = offs_s < NUM_SPLITS
+        m = tl.load(
+            mid_ptr + base + offs_s * stride_mid_s + D,
+            mask=smask,
+            other=-float("inf"),
+        )
+        m_new = tl.maximum(m_run, tl.max(m, 0))
+        # exp(-inf - (-inf)) = nan: clamp the anchor when every split
+        # so far is empty.
+        safe = tl.where(m_new == -float("inf"), 0.0, m_new)
+        w = tl.exp(m - safe)
+        w_run = tl.exp(m_run - safe)
+        accs = tl.load(
+            mid_ptr + base + offs_s[:, None] * stride_mid_s + offs_d[None, :],
+            mask=smask[:, None],
+            other=0.0,
+        )
+        acc_run = acc_run * w_run + tl.sum(w[:, None] * accs, axis=0)
+        l_run = l_run * w_run + tl.sum(w, 0)
+        m_run = m_new
+    out = acc_run / tl.where(l_run > 0.0, l_run, 1.0)
     tl.store(out_ptr + b * stride_o_b + hq * stride_o_h + offs_d, out)
 
 
@@ -512,6 +950,34 @@ _MX_TUNE = {
     "mxfp4": (32, 8, 2, False),
     "mxk8v4": (32, 8, 2, True),
 }
+
+# v6 deep-split tune for the v5 dot lane ONLY (A14): the split cap is
+# a call-time env read (static during serving — capture law) so the
+# offline sweep can walk it without re-imports: ARC_MXKV_V5_SPLITS=32
+# + BN=32 reproduces the A13 v5 grid for A/B. Flavor follows _MX_TUNE's
+# per-format law.
+#
+# A14 sweep verdict (r173, cert25z, winner table banked outA14):
+# BLOCK_N=64 is REFUTED at every cell — mxfp8 G8 0.64-0.69x, mxfp4
+# 0.68-0.74x, mxk8v4 0.79-0.85x (the double-N tile's extra register
+# pressure re-climbs the A9 spill slope even without the tuple unroll;
+# only mxfp8 G1@8K partially recovers at 1.48-1.54x, still behind
+# BN=32's 1.76x). BN=32 + the adaptive split cap is the winner:
+# mxfp8 G1 1.76x@8K / 1.66x@32K (2.09 / 5.25 ms), G8 1.02-1.05x;
+# mxfp4/mxk8v4 splits-neutral (their binder is the per-CTA e2m1
+# unpack ALU wall, not grid starvation — K2 research lane). Tune table
+# mirrors _MX_TUNE's BN=32 warps law.
+_V5_SPLIT_DEFAULT = 256
+_V5_TUNE = {
+    "mxfp8": (32, 4, 2, False),
+    "mxfp4": (32, 8, 2, False),
+    "mxk8v4": (32, 8, 2, True),
+}
+
+
+def _v5_splits() -> int:
+    s = int(os.environ.get("ARC_MXKV_V5_SPLITS", "") or _V5_SPLIT_DEFAULT)
+    return max(1, min(1024, s))
 
 
 def _split_launch(
@@ -612,6 +1078,205 @@ def _mx_decode_v2(
         _mx_decode_split, hq, q, cache, block_tables, seq_lens, sm_scale,
         block_size, block_n, shift, num_warps, num_stages,
     )
+
+
+def mx_decode_rows(
+    q: torch.Tensor,
+    cache: torch.Tensor,
+    block_tables: torch.Tensor,
+    limits: torch.Tensor,
+    sm_scale: float,
+    block_size: int = 64,
+    block_n: int | None = None,
+    num_warps: int | None = None,
+    num_stages: int | None = None,
+    r_tile: int = 4,
+) -> torch.Tensor:
+    """v4 verify-row-shared decode (A11 lever 2). q [R, Hq, D];
+    block_tables [G, max_blocks] ONE row per group of r_tile rows
+    (rows g*r_tile..+r_tile share request g's blocks); limits [R] the
+    per-row causal limits (LIMIT-LAW values). Returns [R, Hq, D].
+
+    ONE walk + ONE K/V dequant per tile serve all r_tile rows — the
+    ALU the A10 attribution showed binding at oversubscription
+    amortizes r_tile-fold; per-row state is HALF of v3's spilled GQA
+    unroll. Format, tune, and flavor resolve exactly like mx_decode's
+    v2/v3 lanes (per-format _MX_TUNE winners); mid layout and the
+    combine stage are v2's, so the split regrouping vs per-row v2 is
+    the only numeric difference (A11 S-sweep class: 2-3e-8).
+    """
+    r, hq, d = q.shape
+    if r % r_tile != 0:
+        raise ValueError(f"rows ({r}) not a multiple of r_tile ({r_tile})")
+    g = r // r_tile
+    hk = cache.shape[2]
+    sb = cache.shape[-1]
+    want = {f: slot_bytes(d, f) for f in ("mxfp8", "mxfp4", "mxk8v4")}
+    fmt = next(f for f, w in want.items() if w == sb)
+    bn_t, nw_t, ns_t, sh_t = _MX_TUNE[fmt]
+    block_n = bn_t if block_n is None else block_n
+    num_warps = nw_t if num_warps is None else num_warps
+    num_stages = ns_t if num_stages is None else num_stages
+    shift = sh_t if _SHIFT is None else _SHIFT
+    out = torch.empty_like(q)
+    key = (r, hq, _MX_SPLIT_MAX, d, str(q.device))
+    mid = _mid_cache.get(key)
+    if mid is None:
+        mid = torch.empty(
+            r, hq, _MX_SPLIT_MAX, d + 1, dtype=torch.float32, device=q.device
+        )
+        _mid_cache[key] = mid
+    _mx_decode_split_rows[(g, hq, _MX_SPLIT_MAX)](
+        q,
+        cache,
+        block_tables,
+        limits,
+        mid,
+        sm_scale,
+        q.stride(0),
+        q.stride(1),
+        mid.stride(0),
+        mid.stride(1),
+        mid.stride(2),
+        block_tables.stride(0),
+        cache.stride(0),
+        cache.stride(1),
+        cache.stride(2),
+        D=d,
+        N_GROUPS=d // 32,
+        K4=fmt == "mxfp4",
+        V4=fmt in ("mxfp4", "mxk8v4"),
+        R_TILE=r_tile,
+        N_REP=hq // hk,
+        BLOCK_SIZE=block_size,
+        BLOCK_N=block_n,
+        NUM_SPLITS=_MX_SPLIT_MAX,
+        SHIFT=shift,
+        num_warps=num_warps,
+        num_stages=num_stages,
+    )
+    _mx_decode_combine[(r, hq)](
+        mid,
+        out,
+        mid.stride(0),
+        mid.stride(1),
+        mid.stride(2),
+        out.stride(0),
+        out.stride(1),
+        D=d,
+        NUM_SPLITS=_MX_SPLIT_MAX,
+        BLOCK_S=triton.next_power_of_2(_MX_SPLIT_MAX),
+        num_warps=1,
+    )
+    return out
+
+
+def mx_decode_rows_dot(
+    q: torch.Tensor,
+    cache: torch.Tensor,
+    block_tables: torch.Tensor,
+    limits: torch.Tensor,
+    sm_scale: float,
+    block_size: int = 64,
+    block_n: int | None = None,
+    num_warps: int | None = None,
+    num_stages: int | None = None,
+    r_tile: int = 4,
+) -> torch.Tensor:
+    """v5 XMX verify-row decode (A11 lever 3): the v4 row-group walk with
+    the score path in tl.dot — (M_PAD, D) @ (D, BLOCK_N) fp16 operands,
+    f32 accumulate; M packs the r_tile verify rows x N_REP q-heads of one
+    kv-head (24 real lanes, padded to 32 for the tl.arange power-of-2
+    law; MMA wants >= 16). q [R, Hq, D]; block_tables [G, max_blocks]
+    one row per group; limits [R] per-row causal limits. Returns
+    [R, Hq, D]. Numerics: fp16 operand products with f32 accumulation —
+    the ctrl fp8 lane's own class (gate d <= 2e-3 vs per-row v2)."""
+    r, hq, d = q.shape
+    if r % r_tile != 0:
+        raise ValueError(f"rows ({r}) not a multiple of r_tile ({r_tile})")
+    g = r // r_tile
+    hk = cache.shape[2]
+    if hq % hk != 0:
+        raise ValueError(f"Hq ({hq}) not a multiple of Hk ({hk})")
+    n_rep = hq // hk
+    sb = cache.shape[-1]
+    want = {f: slot_bytes(d, f) for f in ("mxfp8", "mxfp4", "mxk8v4")}
+    fmt = next(f for f, w in want.items() if w == sb)
+    # v6 line: the dot lane runs its OWN tune (BLOCK_N=64 MMA) and its
+    # OWN split cap (256, adaptive >= 4-tile rule in-kernel). Env
+    # overrides are call-time reads — static during serving (capture
+    # law) — so the sweep harness walks the space without re-imports.
+    bn_t, nw_t, ns_t, sh_t = _V5_TUNE[fmt]
+    bn_env = os.environ.get("ARC_MXKV_V5_BN")
+    nw_env = os.environ.get("ARC_MXKV_V5_WARPS")
+    block_n = int(bn_env) if bn_env else (bn_t if block_n is None else block_n)
+    num_warps = int(nw_env) if nw_env else (nw_t if num_warps is None else num_warps)
+    num_stages = ns_t if num_stages is None else num_stages
+    shift = sh_t if _SHIFT is None else _SHIFT
+    splits = _v5_splits()
+    # K2 packed-fp16 dequant lane (r177 scalar-ALU wall; module header).
+    # Default ON since cert25zb; "0" reverts to the f32 path. Call-time
+    # read — static during serving (capture law).
+    k2 = os.environ.get("ARC_MXKV_K2", "1") != "0"
+    # K3 e2m1 fast-unpack lane — independent knob so the A/B attributes.
+    # Default ON since cert25zb; "0" reverts to the f32 unpack.
+    k3 = os.environ.get("ARC_MXKV_K3", "1") != "0"
+    out = torch.empty_like(q)
+    key = (r, hq, splits, d, str(q.device))
+    mid = _mid_cache.get(key)
+    if mid is None:
+        mid = torch.empty(
+            r, hq, splits, d + 1, dtype=torch.float32, device=q.device
+        )
+        _mid_cache[key] = mid
+    m_lanes = r_tile * n_rep
+    _mx_decode_split_dot[(g, hk, splits)](
+        q,
+        cache,
+        block_tables,
+        limits,
+        mid,
+        sm_scale,
+        q.stride(0),
+        q.stride(1),
+        mid.stride(0),
+        mid.stride(1),
+        mid.stride(2),
+        block_tables.stride(0),
+        cache.stride(0),
+        cache.stride(1),
+        cache.stride(2),
+        D=d,
+        N_GROUPS=d // 32,
+        K4=fmt == "mxfp4",
+        V4=fmt in ("mxfp4", "mxk8v4"),
+        R_TILE=r_tile,
+        N_REP=n_rep,
+        M_LANES=m_lanes,
+        M_PAD=triton.next_power_of_2(m_lanes),
+        BLOCK_SIZE=block_size,
+        BLOCK_N=block_n,
+        NUM_SPLITS=splits,
+        SHIFT=shift,
+        K2=k2,
+        K3=k3,
+        num_warps=num_warps,
+        num_stages=num_stages,
+    )
+    _mx_decode_combine[(r, hq)](
+        mid,
+        out,
+        mid.stride(0),
+        mid.stride(1),
+        mid.stride(2),
+        out.stride(0),
+        out.stride(1),
+        D=d,
+        NUM_SPLITS=splits,
+        BLOCK_S=32,
+        num_warps=1,
+    )
+    return out
 
 
 def _mx_decode_v3(

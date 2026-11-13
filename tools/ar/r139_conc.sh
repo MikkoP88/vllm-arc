@@ -1,6 +1,6 @@
 #!/bin/bash
 # r139_conc.sh -- rig-side P6.37 concurrency-sweep gate (close-out E addendum).
-# Owner directive (2026-11-11): every individual report carries measured
+# Standing requirement (2026-11-11): every individual report carries measured
 # concurrency 1/2/3/4/8 series (tables + charts) + temperature 0.0 AND 1.0
 # values, the KV report gains the gemma comparison and the turboquant_*
 # presets, all world-class per the millstone example. Banked data covers

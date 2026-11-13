@@ -1,0 +1,52 @@
+# SPDX-License-Identifier: Apache-2.0
+# Dockerfile.cert25z -- P6.47 cert25z image: cert25y + the A11 v4/v5
+# verify-kernel line and the v5 default flip (A13/r167: v5 XMX tl.dot
+# beats the v2 batch at every mxfp8 (1.21-1.90x) and mxk8v4
+# (1.33-2.86x) cell, correctness <=1.2e-4; mxfp4 stays v2 — 0.94-1.05x
+# wash, bit-stability inside the e2m1-V investigation). Three-file
+# overlay on cert25y; built by r169_build_cert25z.sh with
+# FORK_SHA=<content commit>.
+FROM vllm-arc:v0.30.0-b70-cert25y
+
+ARG FORK_SHA=unknown
+ARG BUILT=unknown
+
+COPY engine.py /tmp/mx_kv_engine.py
+COPY triton_mx_decode.py /tmp/mx_kv_triton_mx_decode.py
+COPY __init__.py /tmp/mx_kv_init.py
+
+RUN set -euxo pipefail; \
+    SP=/opt/venv/lib/python3.12/site-packages/vllm_gaudi; \
+    cp /tmp/mx_kv_engine.py           $SP/xpu/patches/mx_kv/engine.py; \
+    cp /tmp/mx_kv_triton_mx_decode.py $SP/xpu/patches/mx_kv/triton_mx_decode.py; \
+    cp /tmp/mx_kv_init.py             $SP/xpu/patches/mx_kv/__init__.py; \
+    rm -rf $SP/xpu/patches/__pycache__/mx_kv; \
+    rm -f /tmp/mx_kv_engine.py /tmp/mx_kv_triton_mx_decode.py /tmp/mx_kv_init.py; \
+    export LD_LIBRARY_PATH=/opt/venv/lib:/opt/venv/lib/python3.12/site-packages/torch/lib; \
+    /opt/venv/bin/python -c \
+      "import inspect, re;\
+       import vllm_gaudi.xpu.patches.mx_kv.engine as e;\
+       import vllm_gaudi.xpu.patches.mx_kv.triton_mx_decode as t;\
+       import vllm_gaudi.xpu.patches.mx_kv as pkg;\
+       tsrc = inspect.getsource(t);\
+       esrc = inspect.getsource(e);\
+       isrc = inspect.getsource(pkg);\
+       assert 'tl.maximum(1, n_tiles)' in tsrc, 'v3 s_eff 1-tile floor';\
+       assert '_mx_decode_split_rows' in tsrc, 'v4 verify-row kernel';\
+       assert '_mx_decode_split_dot' in tsrc, 'v5 XMX tl.dot kernel';\
+       assert t._MX_TUNE == {'mxfp8': (32, 4, 2, False), 'mxfp4': (32, 8, 2, False), 'mxk8v4': (32, 8, 2, True)}, 'A9 tune+flavor table';\
+       assert '_DECODER = os.environ.get(\"ARC_MXKV_DECODER\", \"v2\")' in tsrc, 'per-row knob default v2 unchanged';\
+       assert '_split_verify_decode' in esrc, 'batched MTP-verify decode';\
+       assert '_V5_DEFAULT' in esrc, 'v5 default flip';\
+       assert 'ARC_MXKV_VERIFY_DECODER' in esrc, 'verify-decoder override env';\
+       assert 'mx_decode_rows_dot' in esrc, 'v5 dispatch';\
+       assert not re.search(r'query\.float\(\)', esrc), 'native-q decode path';\
+       assert 'mx_decode_rows_dot' in isrc, 'package export';\
+       print('CERT25Z_DECODE_LINE_LIVE v4+v5 kernels + v5 default flip OK')"; \
+    { cat /etc/vllm-arc/IMAGE_MANIFEST; \
+      echo "cert25z=P6.47 decode-superiority line part 3: A11 verify-kernel line — v4 _mx_decode_split_rows (one walk per request for all R_TILE=4 MTP verify rows; r166 A12 correctness exact but timing REFUTED 0.20-0.49x mxfp4 / 0.72-0.88x mxfp8 / 0.58-0.79x mxk8v4 at G8 — A/B only via ARC_MXKV_V4_VERIFY=1) and v5 _mx_decode_split_dot (the row-group walk with the score path in tl.dot: fp16 operands, f32 accumulate, M=R_TILE*N_REP=24 lanes padded to 32; r167 A13 1.21-1.90x mxfp8 / 1.33-2.86x mxk8v4 vs the v2 batch, correctness <=1.2e-4). Default flip: mxfp8+mxk8v4 verify decode -> v5, mxfp4 stays v2 (0.94-1.05x wash; bit-stability inside the open e2m1-V quality line — r161 acceptance telemetry: MTP verify acceptance exactly 0.0% at 32K on e2m1-V lanes, healthy 50-80% short-ctx, m8q never dies). ARC_MXKV_VERIFY_DECODER={v2,v4,v5} overrides per boot; ARC_MXKV_DECODER keeps the certified v1|v2|v3 per-row semantics. Evidence banked results/2026-11-12-p647-decode-perf-research/ + the r161/r166/r167 gatelog banks"; \
+      echo "cert25z_fork_sha=${FORK_SHA}"; \
+      echo "cert25z_built=${BUILT}"; \
+    } > /etc/vllm-arc/IMAGE_MANIFEST.p647; \
+    mv /etc/vllm-arc/IMAGE_MANIFEST.p647 /etc/vllm-arc/IMAGE_MANIFEST; \
+    cat /etc/vllm-arc/IMAGE_MANIFEST

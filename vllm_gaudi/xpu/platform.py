@@ -167,8 +167,8 @@ def _add_mxkv_backend_member(src: str) -> str:
     """P6.47 leg B: give the MX KV lane its OWN backend-family member —
     MX (OCP microscaling) is not TurboQuant (Hadamard + Lloyd-Max MSE),
     and the from-scratch lane keeps its identity end-to-end: the enum
-    label, logs, and get_path() all say MXKV (owner directive
-    2026-11-11: MXFP4/MXFP8 are their own family). The member value is
+    label, logs, and get_path() all say MXKV
+    (2026-11-11: MXFP4/MXFP8 are their own family). The member value is
     our backend's qualname, so even the enum-native get_class() path
     resolves to the real MX backend. Attention.__init__ resolves
     AttentionBackendEnum[get_name()] and the wheel enum is closed —

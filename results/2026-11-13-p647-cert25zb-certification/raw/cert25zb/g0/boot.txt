@@ -1,0 +1,3 @@
+ARC_CONTAINER_FRESH image=vllm-arc:v0.30.0-b70-cert25zb id=adecf4d606d8 model=/models/gemma4-31b (recreated from none)
+9e6121ddf33aa7743020b8172a41f10ec1b7ef4b0bb82937006cb0b1a5572e19
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert25zb name=arc-c25 model=/models/gemma4-31b served=gemma4-31b quant=mxfp8 qcfg= graph=1 spec=0 gmu=0.8 maxlen=40960 mnbt=8192 seqs=64 fp8=0 xgc=0 tmpl=__qwen_default__ rp=<qwen3> tp=<qwen3_coder> port=8000 18:49:36

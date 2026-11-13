@@ -1,0 +1,80 @@
+=== [ctrl] boot 14:46:47 env=[ARC_MODEL=/models/qwen3.8-27b-fp8 ARC_SERVED=qwen3.8-27b-fp8 ARC_GRAPH=1 ARC_SPEC=3 ARC_FP8=1] ===
+HEALTH_OK_ctrl 14:57:16
+ERROR=0
+TRACEBACK=0
+=== [ctrl] done 14:58:19 ===
+=== [m8q] boot 14:58:19 env=[ARC_MODEL=/models/qwen3.8-27b-fp8 ARC_SERVED=qwen3.8-27b-fp8 ARC_GRAPH=1 ARC_SPEC=3 ARC_FP8=1 ARC_KVDTYPE=mxfp8] ===
+HEALTH_OK_m8q 15:05:16
+=== GARBAGE_SUITE_PASS (probes=15 fails=0) ===
+LONGRETURN: PASS
+T1_SEED: PASS
+ERROR=0
+TRACEBACK=0
+=== [m8q] done 15:16:01 ===
+=== [m4q] boot 15:16:01 env=[ARC_MODEL=/models/qwen3.8-27b-fp8 ARC_SERVED=qwen3.8-27b-fp8 ARC_GRAPH=1 ARC_SPEC=3 ARC_FP8=1 ARC_KVDTYPE=mxfp4] ===
+HEALTH_OK_m4q 15:21:06
+=== GARBAGE_SUITE_PASS (probes=15 fails=0) ===
+LONGRETURN: PASS
+T1_SEED: PASS
+ERROR=0
+TRACEBACK=0
+=== [m4q] done 15:30:27 ===
+=== [m8g] boot 15:30:27 env=[ARC_MODEL=/models/gemma4-31b ARC_SERVED=gemma4-31b ARC_QUANT=mxfp8 ARC_GMU=0.8 ARC_GRAPH=1 ARC_SPEC=0 ARC_LMC=0 ARC_RPC=1200 ARC_MAXLEN=40960 ARC_FP8=0 ARC_KVDTYPE=mxfp8] ===
+HEALTH_OK_m8g 15:34:41
+=== GARBAGE_SUITE_PASS (probes=15 fails=0) ===
+LONGRETURN: FAIL essay: cross-cycle hash drift ['12c0e71e5be4', 'fc2dddcc7ce6']; essay: garble flags [['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP']]; essay: truncation finish=['length', 'length', 'length']; code: cross-cycle hash drift ['3950cc634cad', 'fc2dddcc7ce6']; code: garble flags [['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP']]; code: truncation finish=['length', 'length', 'length']; multi: cross-cycle hash drift ['d3c6a465ecc1', 'fc2dddcc7ce6']; multi: garble flags [['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP']]; multi: truncation finish=['length', 'length', 'length']; simple: cross-cycle hash drift ['ecf8a6da5a59', 'fbd11796cb88']; simple: garble flags [['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP']]; simple: truncation finish=['length', 'length', 'length']
+T1_SEED: PASS
+ERROR=0
+TRACEBACK=0
+=== [m8g] done 16:33:53 ===
+=== [m4g] boot 16:33:53 env=[ARC_MODEL=/models/gemma4-31b ARC_SERVED=gemma4-31b ARC_QUANT=mxfp8 ARC_GMU=0.8 ARC_GRAPH=1 ARC_SPEC=0 ARC_LMC=0 ARC_RPC=1200 ARC_MAXLEN=40960 ARC_FP8=0 ARC_KVDTYPE=mxfp4] ===
+HEALTH_OK_m4g 16:38:07
+=== GARBAGE_SUITE_PASS (probes=15 fails=0) ===
+LONGRETURN: FAIL essay: cross-cycle hash drift ['252ee3808838', '5637e5e39e68', 'a084d4f2e35d', 'fc2dddcc7ce6']; essay: garble flags [['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP']]; essay: truncation finish=['length', 'length', 'length']; code: cross-cycle hash drift ['4e7968037cc2', '54861ff6fb6e', 'ea483e94fd68', 'fc2dddcc7ce6']; code: garble flags [['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP']]; code: truncation finish=['length', 'length', 'length']; multi: cross-cycle hash drift ['afc60dd6f050', 'd3c6a465ecc1', 'fc2dddcc7ce6']; multi: garble flags [['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP']]; multi: truncation finish=['length', 'length', 'length']; simple: cross-cycle hash drift ['4ef5307e6135', '815df9453920', 'af456639ad9d']; simple: garble flags [['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP']]; simple: truncation finish=['length', 'stop', 'length']
+T1_SEED: MISS simple
+ERROR=4
+TRACEBACK=0
+ERRAUDIT: FAIL (/root/build/p647/cert25zb/m4g)
+=== [m4g] done 17:28:47 ===
+=== [mkq] boot 17:28:47 env=[ARC_MODEL=/models/qwen3.8-27b-fp8 ARC_SERVED=qwen3.8-27b-fp8 ARC_GRAPH=1 ARC_SPEC=3 ARC_FP8=1 ARC_KVDTYPE=mxk8v4] ===
+HEALTH_OK_mkq 17:35:43
+=== GARBAGE_SUITE_PASS (probes=15 fails=0) ===
+LONGRETURN: PASS
+T1_SEED: PASS
+ERROR=0
+TRACEBACK=0
+=== [mkq] done 17:45:18 ===
+=== [mkg] boot 17:45:18 env=[ARC_MODEL=/models/gemma4-31b ARC_SERVED=gemma4-31b ARC_QUANT=mxfp8 ARC_GMU=0.8 ARC_GRAPH=1 ARC_SPEC=0 ARC_LMC=0 ARC_RPC=1200 ARC_MAXLEN=40960 ARC_FP8=0 ARC_KVDTYPE=mxk8v4] ===
+HEALTH_OK_mkg 17:49:32
+=== GARBAGE_SUITE_PASS (probes=15 fails=0) ===
+LONGRETURN: FAIL essay: cross-cycle hash drift ['12c0e71e5be4', 'fc2dddcc7ce6']; essay: garble flags [['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP']]; essay: truncation finish=['length', 'length', 'length']; code: cross-cycle hash drift ['3950cc634cad', 'fc2dddcc7ce6']; code: garble flags [['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP']]; code: truncation finish=['length', 'length', 'length']; multi: cross-cycle hash drift ['d3c6a465ecc1', 'fc2dddcc7ce6']; multi: garble flags [['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP']]; multi: truncation finish=['length', 'length', 'length']; simple: cross-cycle hash drift ['54f1f563c4b5', 'acf894af108e']; simple: garble flags [['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP']]; simple: truncation finish=['length', 'length', 'length']
+T1_SEED: PASS
+ERROR=0
+TRACEBACK=0
+=== [mkg] done 18:49:33 ===
+=== [g0] boot 18:49:33 env=[ARC_MODEL=/models/gemma4-31b ARC_SERVED=gemma4-31b ARC_QUANT=mxfp8 ARC_GMU=0.8 ARC_GRAPH=1 ARC_SPEC=0 ARC_LMC=0 ARC_RPC=1200 ARC_MAXLEN=40960 ARC_FP8=0] ===
+HEALTH_OK_g0 19:02:24
+=== GARBAGE_SUITE_PASS (probes=15 fails=0) ===
+LONGRETURN: FAIL essay: garble flags [['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP']]; essay: truncation finish=['length', 'length', 'length']; code: garble flags [['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP']]; code: truncation finish=['length', 'length', 'length']; multi: garble flags [['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP']]; multi: truncation finish=['length', 'length', 'length']; simple: garble flags [['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP']]; simple: truncation finish=['length', 'length', 'length']
+T1_SEED: PASS
+ERROR=0
+TRACEBACK=0
+=== [g0] done 19:43:20 ===
+[g0] baseline flags={'essay': ['REP-LOOP'], 'code': ['REP-LOOP'], 'multi': ['REP-LOOP'], 'simple': ['REP-LOOP']} topwin={'essay': 0, 'code': 0, 'multi': 0, 'simple': 0} (native LONGRETURN fails these same classes)
+[churn] m8g/essay: KNOWN-CLASS churn ['12c0e71e5be4', 'fc2dddcc7ce6']
+[churn] m8g/code: KNOWN-CLASS churn ['3950cc634cad', 'fc2dddcc7ce6']
+[churn] m8g/multi: KNOWN-CLASS churn ['d3c6a465ecc1', 'fc2dddcc7ce6']
+[churn] m8g/simple: KNOWN-CLASS churn ['ecf8a6da5a59', 'fbd11796cb88']
+[churn] m4g/essay: KNOWN-CLASS churn ['5637e5e39e68', 'fc2dddcc7ce6']
+[churn] m4g/code: KNOWN-CLASS churn ['4e7968037cc2', 'fc2dddcc7ce6']
+[churn] m4g/multi: KNOWN-CLASS churn ['d3c6a465ecc1', 'fc2dddcc7ce6']
+[churn] m4g/simple: KNOWN-CLASS churn ['4ef5307e6135', '815df9453920', 'af456639ad9d']
+[churn] mkg/essay: KNOWN-CLASS churn ['12c0e71e5be4', 'fc2dddcc7ce6']
+[churn] mkg/code: KNOWN-CLASS churn ['3950cc634cad', 'fc2dddcc7ce6']
+[churn] mkg/multi: KNOWN-CLASS churn ['d3c6a465ecc1', 'fc2dddcc7ce6']
+[churn] mkg/simple: KNOWN-CLASS churn ['54f1f563c4b5', 'acf894af108e']
+GEMMA_COMPARE: PASS (no new modes / no amplification; known-class churn banked for review)
+LEG_ARTIFACTS /root/build/p647/cert25zb
+P647_CERT25ZB_GATE_COMPLETE -- GATE_FAIL=1 (fix before cert)
+W14_RESTORED 2026-11-13T19:43:21Z
+G0_XCERT_IDENTICAL

@@ -1,6 +1,6 @@
 #!/bin/bash
 # r136_vmatrix.sh -- P6.35-V full validation matrix on cert23 (the shipping
-# image, db default ON). Owner-directed matrix: qwen3.8-27b x {fp8, mxfp8,
+# image, db default ON). Validation matrix: qwen3.8-27b x {fp8, mxfp8,
 # mxfp4-W4A16} x {spec0, k3, k5} + gemma-4-31b x {fp8, mxfp8, mxfp4-W4A16}
 # spec0 (gemma has no MTP head; LMC=0 posture per gemma4-lmc memory).
 # Cells already double-covered on cert23 (qwen fp8 k3: dbon 94.5 + dboff

@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
-"""mx_kv — MXFP4/MXFP8/MXK8V4 KV-cache lane (P6.47, in-house, owner
-directive 2026-11-11).
+"""mx_kv — MXFP4/MXFP8/MXK8V4 KV-cache lane (P6.47, in-house,
+2026-11-11).
 
 Layered entry point for the MX (OCP microscaling) KV-cache-dtype
 support on --kv-cache-dtype {mxfp4, mxfp8, mxk8v4} (mxk8v4 = e4m3 K +
@@ -30,7 +30,7 @@ from .mx_quant import (
     encode_mxfp8,
     encode_mxk8v4,
 )
-from .triton_mx_decode import mx_decode
+from .triton_mx_decode import mx_decode, mx_decode_rows, mx_decode_rows_dot
 from .triton_mx_store import mx_store
 
 __all__ = [
@@ -44,6 +44,8 @@ __all__ = [
     "encode_mxfp8",
     "encode_mxk8v4",
     "mx_decode",
+    "mx_decode_rows",
+    "mx_decode_rows_dot",
     "mx_store",
     "offsets",
     "pool_bytes",

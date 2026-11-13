@@ -12,6 +12,37 @@ the fork SHA it was built from.
 Phase labels P0–P6.38 refer to the plan's execution phases; every phase's
 raw evidence is banked under `results/YYYY-MM-DD-<phase>-*/`.
 
+## rel/v0.30.0-b70-cert25zb — P6.47: MX KV-cache dtype lane, K2/K3 packed dequant (2026-11-13)
+
+- `--kv-cache-dtype {mxfp4,mxfp8,mxk8v4}` on qwen3.8-27b-fp8 (dual B70, TP2):
+  Triton MX store/decode primitives in `vllm_gaudi/xpu/patches/mx_kv/` +
+  engine dispatch. Interim certified chain on this lane (never tagged, per
+  the close-out release law): cert24 (store separate-strides fix — spec/eager
+  text-corruption root cause), cert25z (v5 split-dot decoder default), cert25za
+  (v6 GQA-batched split decoder; m8 32K/n1 ITL 173.3 → 95.8 ms).
+- cert25zb content: **K2 packed-fp16 dequant + K3 e2m1 fast-unpack default-on**
+  (`ARC_MXKV_K2=0` / `ARC_MXKV_K3=0` revert). K2: e4m3→fp16 exact + e8m0 pow2
+  scale in fp16 — single rounding point unchanged, bit-identical d=0.0; m8
+  kernel 5.94 → 4.87 ms @32K. K3: nibble→e4m3 byte via ~10 int ops riding K2's
+  convert; m4 8.64 → 7.62, mkv4 8.62 → 7.62.
+- **Kernel ladder CLOSED on all three formats** (r182/r183): m8 walk = 66 %
+  dot+load floor + irreducible 1.62 ms f8→f16 hardware convert (Xe2 has no
+  native fp8 dot; persistent-cache variant rejected — would surrender the
+  capacity product); LUT rung and join/shift rung measured dead/wash.
+- **r184 full §10 battery: CERTIFIED** (`results/2026-11-13-p647-cert25zb-
+  certification/`). Qwen absolute gates 4/4 (ctrl/m8q/m4q/mkq). Headline:
+  mxfp4 holds ctrl solo decode parity (60.5–62.9 vs 60.1–61.8 tps) at
+  **1.81× KV capacity** (721,994 vs 398,363 tokens); mxk8v4 1.27×; mxfp8
+  capacity parity. Gemma comparative PASS (REP-LOOP native baseline class,
+  no new modes). g0 native bank byte-identical to cert25z — the bake touches
+  nothing on the native path. The battery's single counted gate item (m4g
+  erraudit ERROR=4) re-adjudicated to 0 real errors: external-client 404s
+  against the gemma-served leg (banked evidence + redaction note).
+- Evidence: `results/2026-11-11-p647-mxkv-research/`, `results/2026-11-11-
+  p647-r147-mxkv-lega/`, `results/2026-11-12-p647-cert24-gate/`,
+  `results/2026-11-12-p647-decode-perf-research/`, `results/2026-11-12-
+  p647-mxkv-vstride-fix/`, `results/2026-11-13-p647-cert25zb-certification/`.
+
 ## rel/v0.30.0-b70-cert23 — P6.34/P6.35: graph-exec double-buffer (2026-11-10)
 
 - cert22 engine + one patch module, `vllm_gaudi/xpu/patches/graph_exec_doublebuffer.py`:
@@ -268,20 +299,20 @@ raw evidence is banked under `results/YYYY-MM-DD-<phase>-*/`.
 
 ## Serve-layer and analysis phases (no cert — engine bytes unchanged)
 
-- **P6.46 performance-testing context-ladder directive (2026-11-11)**:
+- **P6.46 performance-testing context ladder (2026-11-11)**:
   a bank audit (r138/r139/r140) proved every scheduled rung was swept
   to its KV wall — 128K walls hit exactly on all 11 long-context
   cells (n2–n7 by quant), gemma main hit its shallow 8K/32K walls —
   but 64K was in NO concurrency or annex matrix: the gates hardcoded
   CTXS {1K, 8K, 32K, 128K} while the rung was feasible on all 11
   boots (walls n4–n14 from pools 288,972–959,909). The r138 SOLO
-  directive did carry the full ladder — the six qwen 64K solo faces
+  gate did carry the full ladder — the six qwen 64K solo faces
   are the only cert23-era 64K data (older r29/r46-era 64K probes are
   pre-cert image/harness: 54.8 s vs 38–42 s TTFT — archived under the
   comparability law, never merged). The gm8x refusal banks the mxfp8
   long-context boundary (5.83 GiB KV needed > 5.3 available;
   engine-estimated max length 103,296 — 128K genuinely needs MXFP4
-  weights). LANDED DIRECTIVE: `docs/TESTING-arc.md` gains the standing
+  weights). LANDED RULE: `docs/TESTING-arc.md` gains the standing
   **performance-testing context ladder** section — canonical rung
   ladder {1K, 8K, 32K, 64K, 128K} on every boot where `max_model_len`
   and the booted pool permit, wall sweep `n_max = pool // (ctx + 664)`
@@ -293,7 +324,7 @@ raw evidence is banked under `results/YYYY-MM-DD-<phase>-*/`.
   64K fill leg is ~60 faces across the 11 reachable cells on the
   updated gates, and `p139_report.py` picks the faces up with no
   generator change (P6.45 ladder rows + P6.44 connect lines already
-  render the empty slots). No rig work run — the directive fires when
+  render the empty slots). No rig work run — the rule fires when
   a leg is needed. Docs + gate scripts only; no engine bytes changed —
   cert23 stands.
 - **P6.45 canonical rung rows in every context table (2026-11-11)**: extends
