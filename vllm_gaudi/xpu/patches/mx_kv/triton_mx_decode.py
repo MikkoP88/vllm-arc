@@ -835,18 +835,27 @@ _MX_TUNE = {
     "mxk8v4": (32, 8, 2, True),
 }
 
-# v6 deep-split tune for the v5 dot lane ONLY (A14): BLOCK_N=64
-# double-N MMA tiles (half the walk's tile count; the scalar lanes'
-# BLOCK_N=128 spill cliff does not bind the dot body — no tuple
-# unroll, (M_PAD, D) register state). The split cap is a call-time env
-# read (static during serving — capture law) so the offline sweep can
-# walk it without re-imports: ARC_MXKV_V5_SPLITS=32 + BN=32 reproduces
-# the A13 v5 grid for A/B. Flavor follows _MX_TUNE's per-format law.
+# v6 deep-split tune for the v5 dot lane ONLY (A14): the split cap is
+# a call-time env read (static during serving — capture law) so the
+# offline sweep can walk it without re-imports: ARC_MXKV_V5_SPLITS=32
+# + BN=32 reproduces the A13 v5 grid for A/B. Flavor follows _MX_TUNE's
+# per-format law.
+#
+# A14 sweep verdict (r173, cert25z, winner table banked outA14):
+# BLOCK_N=64 is REFUTED at every cell — mxfp8 G8 0.64-0.69x, mxfp4
+# 0.68-0.74x, mxk8v4 0.79-0.85x (the double-N tile's extra register
+# pressure re-climbs the A9 spill slope even without the tuple unroll;
+# only mxfp8 G1@8K partially recovers at 1.48-1.54x, still behind
+# BN=32's 1.76x). BN=32 + the adaptive split cap is the winner:
+# mxfp8 G1 1.76x@8K / 1.66x@32K (2.09 / 5.25 ms), G8 1.02-1.05x;
+# mxfp4/mxk8v4 splits-neutral (their binder is the per-CTA e2m1
+# unpack ALU wall, not grid starvation — K2 research lane). Tune table
+# mirrors _MX_TUNE's BN=32 warps law.
 _V5_SPLIT_DEFAULT = 256
 _V5_TUNE = {
-    "mxfp8": (64, 4, 2, False),
-    "mxfp4": (64, 8, 2, False),
-    "mxk8v4": (64, 8, 2, True),
+    "mxfp8": (32, 4, 2, False),
+    "mxfp4": (32, 8, 2, False),
+    "mxk8v4": (32, 8, 2, True),
 }
 
 
