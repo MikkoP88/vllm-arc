@@ -109,28 +109,28 @@ ARC_SPEC=${ARC_SPEC:-3}
 # the second quantization — r161 m4q ARC_LMC=1 banked essay-rehit REP-LOOP
 # garble on full+rehit faces while r168's byte-identical posture with
 # ARC_LMC=0 came back CLEAN on all 4 classes with deterministic hashes.
-# P6.47 Phase 5 (2026-11-13, owner LMC-MX regression fix directive): the
-# regression is CLASS-WIDE, not e2m1-only — LMCache has no MX dtype, so
-# every MX lane stores re-expanded fp16-sized blobs on the PREFILL
-# CRITICAL PATH: r172 deepA14 serve-log store-line sums c8192 q8 2264 ms /
-# m8 3386 ms / m4 0 (auto-off) vs TTFT 3.07/6.04/2.92 s — the m8 TTFT
-# +2.97 s delta is dominated by the +1122 ms store delta at 0.88 GB/s
-# offload throughput, and the packed mxfp8 cache (half the fp8 lane's
-# bytes) stores MORE than q8. r176 leg B (m8 ARC_LMC=0) closes the
-# discriminator: TTFT below q8, smoke clean, ITL unchanged (LMC is
-# prefill-path only). Auto-off LMC on ALL MX KV dtypes unless the
-# operator forces ARC_LMC=1 (F1b — MX-native LMCache storage — stays a
-# documented lane, pinned-dep upstream change).
+# P6.47 Phase 5, r176 amendment (2026-11-13): the earlier class-wide
+# auto-off was narrowed back to the e2m1-V lanes. The r176 clean A/B on
+# cert25za (replica vs ARC_LMC=0, m8, rungs {8192,32768} n1) measured the
+# LMCache store cost at 26 ms TTFT @8K / 259 ms @32K with ITL unchanged —
+# the p620 off-thread store worker keeps the fp16-expanded stores OFF the
+# prefill critical path (stores overlap decode), so the r172 m8 TTFT
+# +2.97 s reading (instrumented leg, first-request cold effects) does not
+# reproduce under matched clean conditions. mxfp8 keeps the default
+# LMCache posture; forcing ARC_LMC=1 on e2m1-V lanes carries the r168
+# correctness risk. F1b (MX-native LMCache storage, pinned dep) stays a
+# documented lane — the remaining LMC-MX cost is store-bytes capacity
+# (fp16-expanded blobs), not latency.
 KVD_EFF=${ARC_KVDTYPE:-fp8_e4m3}
 case "$KVD_EFF" in
-  mxfp4|mxk8v4|mxfp8) MX_LANE=1 ;;
-  *) MX_LANE=0 ;;
+  mxfp4|mxk8v4) E2M1V_LANE=1 ;;
+  *) E2M1V_LANE=0 ;;
 esac
-if [ -z "${ARC_LMC:-}" ] && [ "$MX_LANE" = 1 ]; then
+if [ -z "${ARC_LMC:-}" ] && [ "$E2M1V_LANE" = 1 ]; then
   ARC_LMC=0
-  echo "NOTE: ARC_LMC auto-off for ARC_KVDTYPE=$KVD_EFF (LMC-MX regression: e2m1-V double-quant garble r168 + prefill-critical fp16 store tax r172/r176; P6.47 Phase 5)"
-elif [ "${ARC_LMC:-1}" = 1 ] && [ "$MX_LANE" = 1 ]; then
-  echo "WARN: ARC_LMC=1 forced on ARC_KVDTYPE=$KVD_EFF — r168 showed essay-rehit REP-LOOP garble (e2m1-V lanes) and r172 banked the prefill store tax (all MX lanes)"
+  echo "NOTE: ARC_LMC auto-off for ARC_KVDTYPE=$KVD_EFF (e2m1-V double-quant garble on prefix reload, r168; P6.47 Phase 5)"
+elif [ "${ARC_LMC:-1}" = 1 ] && [ "$E2M1V_LANE" = 1 ]; then
+  echo "WARN: ARC_LMC=1 forced on ARC_KVDTYPE=$KVD_EFF — r168 banked essay-rehit REP-LOOP garble on e2m1-V lanes"
 fi
 ARC_LMC=${ARC_LMC:-1}
 ARC_GMU=${ARC_GMU:-0.8}
