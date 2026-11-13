@@ -33,7 +33,7 @@ grep -q "ARC_MXKV_V4_VERIFY" "$W/vllm_gaudi/xpu/patches/mx_kv/engine.py" 2>/dev/
   || { echo "R166_STALE_TREE (no v4 engine wiring) -- ship first"; exit 1; }
 grep -q "p159_v4rows" "$W/tools/ar/p147_mxkv/p159_v4rows.py" 2>/dev/null \
   || { echo "R166_STALE_TREE (probe missing) -- ship it first"; exit 1; }
-grep -q "R_TILE = 4" "$W/tools/ar/p147_mxkv/p159_v4rows.py" 2>/dev/null \
+grep -q "RTILE = 4" "$W/tools/ar/p147_mxkv/p159_v4rows.py" 2>/dev/null \
   || { echo "R166_STALE_TREE (probe is not the true-shape variant)"; exit 1; }
 
 echo "=== [r166:A12] W14 quiesce $(date +%H:%M:%S) ==="
