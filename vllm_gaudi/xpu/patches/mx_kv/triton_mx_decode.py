@@ -132,10 +132,11 @@ EXACT, the e8m0 group scale is a power of two (exact in fp16 once
 clamped to the normal range), so the product's single rounding point
 is unchanged — the m8 / mxk8v4-K numerics are bit-identical to the
 f32 path while the multiply runs packed (half the scalar ops).
-Behind ARC_MXKV_K2=1 (call-time read, static during serving —
-capture law) on the v5 dot lane only; sub-byte payloads keep the f32
-path until the K3 e2m1 fast-unpack line replaces the unpack itself.
-Probe: p176_k2ab.py.
+Default ON since cert25zb (r178 k2cycleA17 bank: m8 5.941 -> 4.871 ms
+at 32K, 1.22x; bit-identical d=0.0); ARC_MXKV_K2=0 reverts to the f32
+path (call-time read, static during serving — capture law). v5 dot
+lane only; sub-byte payloads keep the f32 path until the K3 e2m1
+fast-unpack line replaces the unpack itself. Probe: p176_k2ab.py.
 
 K3 E2M1 FAST-UNPACK LINE (P6.47, 2026-11-13): after K2 the e2m1
 lanes' residual tax is the f32 decode chain (~18 f32-class ops per
@@ -145,10 +146,11 @@ at 32K). K3 maps each nibble to its e4m3 BYTE with ~10 integer ops
 base(n') = (n'<<2) + 0x30 holds for e > 0, exceptions 0x00/0x30 at
 n' = 0/1) and rides the same hardware cvt -> packed-fp16 multiply.
 Same single-rounding law as K2 (x_f16 exact, pow2 scale exact ->
-product rounds to fp16 once) — bit-identical to the f32 path. Behind
-ARC_MXKV_K3=1 on the v5 dot lane, independent of K2 so the A/B
-attributes cleanly; join/shift nibble-extraction flavors unchanged.
-Probe: p177_k3ab.py.
+product rounds to fp16 once) — bit-identical to the f32 path. Default
+ON since cert25zb (r179 k3cycleA18 bank: m4 8.640 -> 7.618, 1.14x;
+mkv4 8.624 -> 7.623, 1.13x at 32K); ARC_MXKV_K3=0 reverts. v5 dot
+lane, independent knob so A/Bs attribute cleanly; join/shift
+nibble-extraction flavors unchanged. Probe: p177_k3ab.py.
 
 Provenance: from-scratch in-house lane (P6.47, 2026-11-11);
 kernel structure follows the wheel's sub-byte KV decode template
@@ -1213,10 +1215,12 @@ def mx_decode_rows_dot(
     shift = sh_t if _SHIFT is None else _SHIFT
     splits = _v5_splits()
     # K2 packed-fp16 dequant lane (r177 scalar-ALU wall; module header).
-    # Call-time read — static during serving (capture law).
-    k2 = os.environ.get("ARC_MXKV_K2", "") == "1"
+    # Default ON since cert25zb; "0" reverts to the f32 path. Call-time
+    # read — static during serving (capture law).
+    k2 = os.environ.get("ARC_MXKV_K2", "1") != "0"
     # K3 e2m1 fast-unpack lane — independent knob so the A/B attributes.
-    k3 = os.environ.get("ARC_MXKV_K3", "") == "1"
+    # Default ON since cert25zb; "0" reverts to the f32 unpack.
+    k3 = os.environ.get("ARC_MXKV_K3", "1") != "0"
     out = torch.empty_like(q)
     key = (r, hq, splits, d, str(q.device))
     mid = _mid_cache.get(key)

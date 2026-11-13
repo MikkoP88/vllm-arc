@@ -141,11 +141,10 @@ def v2_reference(q, cache, bt, lims):
 
 
 def envs(k2, k3):
+    # "0" (not pop) — the lanes are default-ON since cert25zb; popping
+    # would silently re-enable them against the flipped kernel.
     for k, on in (("ARC_MXKV_K2", k2), ("ARC_MXKV_K3", k3)):
-        if on:
-            os.environ[k] = "1"
-        else:
-            os.environ.pop(k, None)
+        os.environ[k] = "1" if on else "0"
 
 
 def main():

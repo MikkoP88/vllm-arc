@@ -144,7 +144,9 @@ def k2on():
 
 
 def k2off():
-    os.environ.pop("ARC_MXKV_K2", None)
+    # "0" (not pop) — the lane is default-ON since cert25zb; popping
+    # would silently re-enable it against the flipped kernel.
+    os.environ["ARC_MXKV_K2"] = "0"
 
 
 def main():

@@ -123,11 +123,10 @@ def wall_ms(fn, reps, warm=2):
 
 
 def envs(k2, k3, bn=None, nw=None, sp=None):
+    # "0" (not pop) for the lane knobs — default-ON since cert25zb;
+    # popping would silently re-enable them against the flipped kernel.
     for k, on in (("ARC_MXKV_K2", k2), ("ARC_MXKV_K3", k3)):
-        if on:
-            os.environ[k] = "1"
-        else:
-            os.environ.pop(k, None)
+        os.environ[k] = "1" if on else "0"
     for k, v in (("ARC_MXKV_V5_BN", bn),
                  ("ARC_MXKV_V5_WARPS", nw),
                  ("ARC_MXKV_V5_SPLITS", sp)):
