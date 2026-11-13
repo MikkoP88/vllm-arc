@@ -35,8 +35,14 @@ from pathlib import Path
 
 import torch
 
+_here = Path(__file__).resolve()
+# repo-tree fallback only when 4-deep in the tree — mount-root copies
+# (r173 runs the probe from /p147) have no parents[3] and the eager
+# form crashes before the MXKV_DIR env can win (r172 phase-0 lesson)
 _TREE = (
-    Path(__file__).resolve().parents[3] / "vllm_gaudi" / "xpu" / "patches" / "mx_kv"
+    _here.parents[3] / "vllm_gaudi" / "xpu" / "patches" / "mx_kv"
+    if len(_here.parents) > 3
+    else _here
 )
 _MXKV_DIR = Path(os.environ.get("MXKV_DIR", "") or _TREE)
 

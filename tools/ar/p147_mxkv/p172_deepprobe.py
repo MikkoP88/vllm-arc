@@ -47,8 +47,15 @@ import torch
 _INSTALLED = Path(
     "/opt/venv/lib/python3.12/site-packages/vllm_gaudi/xpu/patches/mx_kv"
 )
+_here = Path(__file__).resolve()
+# repo-tree fallback only when the probe actually sits 4-deep in the
+# tree (in-container copies at /tmp or a mount root have no parents[3]
+# — eager evaluation crashed the phase-0 probe before the installed
+# check could win; r172 leg 07:17)
 _TREE = (
-    Path(__file__).resolve().parents[3] / "vllm_gaudi" / "xpu" / "patches" / "mx_kv"
+    _here.parents[3] / "vllm_gaudi" / "xpu" / "patches" / "mx_kv"
+    if len(_here.parents) > 3
+    else _INSTALLED
 )
 
 
