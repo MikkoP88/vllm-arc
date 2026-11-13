@@ -1,0 +1,70 @@
+# SPDX-License-Identifier: Apache-2.0
+# Dockerfile.cert25zb -- P6.47 cert25zb image: cert25za + the K2/K3
+# packed-fp16 dequant lanes (triton_mx_decode.py) + the HEAD re-overlay
+# of engine.py/__init__.py (docs-sweep phrasing only). The r177
+# stage-split probe closed the residual v6 walk as a scalar-ALU
+# throughput wall in the per-element f32 dequant chain. K2 moves
+# e4m3-payload dequant into the packed-fp16 domain (e4m3->fp16 exact,
+# e8m0 pow2 scale exact in fp16 once clamped to normal range — single
+# rounding point unchanged, bit-identical d=0.0); K3 maps each e2m1
+# nibble to its e4m3 byte with ~10 integer ops (exact map, 16/16
+# host-verified) riding the same hardware cvt -> packed-fp16 multiply.
+# Both lanes default ON (ARC_MXKV_K2=0 / ARC_MXKV_K3=0 revert to the
+# f32 paths; independent knobs so A/Bs attribute). Evidence: r178
+# k2cycleA17 mxfp8 5.941->4.871 ms at 32K (1.22x), 2.924->1.527 at 8K
+# (1.91x); r179 k3cycleA18 mxfp4 8.640->7.618 (1.14x), mxk8v4
+# 8.624->7.623 (1.13x); r180 k2tuneA19 (BN=32, warps=4, splits=256)
+# confirmed optimal under the packed lanes. Correctness d<=2e-3 vs
+# per-row v2 across all formats and boundary shapes. Built by
+# r181_build_cert25zb.sh with FORK_SHA=<content commit>.
+FROM vllm-arc:v0.30.0-b70-cert25za
+
+ARG FORK_SHA=unknown
+ARG BUILT=unknown
+
+COPY engine.py /tmp/mx_kv_engine.py
+COPY triton_mx_decode.py /tmp/mx_kv_triton_mx_decode.py
+COPY __init__.py /tmp/mx_kv_init.py
+
+RUN set -euxo pipefail; \
+    SP=/opt/venv/lib/python3.12/site-packages/vllm_gaudi; \
+    cp /tmp/mx_kv_engine.py           $SP/xpu/patches/mx_kv/engine.py; \
+    cp /tmp/mx_kv_triton_mx_decode.py $SP/xpu/patches/mx_kv/triton_mx_decode.py; \
+    cp /tmp/mx_kv_init.py             $SP/xpu/patches/mx_kv/__init__.py; \
+    rm -rf $SP/xpu/patches/__pycache__/mx_kv; \
+    rm -f /tmp/mx_kv_engine.py /tmp/mx_kv_triton_mx_decode.py /tmp/mx_kv_init.py; \
+    export LD_LIBRARY_PATH=/opt/venv/lib:/opt/venv/lib/python3.12/site-packages/torch/lib; \
+    /opt/venv/bin/python -c \
+      "import inspect;\
+       import vllm_gaudi.xpu.patches.mx_kv.engine as e;\
+       import vllm_gaudi.xpu.patches.mx_kv.triton_mx_decode as t;\
+       import vllm_gaudi.xpu.patches.mx_kv as pkg;\
+       tsrc = inspect.getsource(t);\
+       esrc = inspect.getsource(e);\
+       isrc = inspect.getsource(pkg);\
+       assert '_mx_decode_combine' in tsrc, 'v6 chunked combine kernel';\
+       assert '_V5_SPLIT_DEFAULT' in tsrc, 'v6 split cap line';\
+       assert 'ARC_MXKV_V5_SPLITS' in tsrc, 'v6 split env knob';\
+       assert 'ARC_MXKV_V5_BN' in tsrc, 'v6 BN env knob';\
+       assert 'n_tiles // 4' in tsrc, 'v6 adaptive >=4-serial-tile rule';\
+       assert t._V5_SPLIT_DEFAULT == 256, 'v6 split cap 256';\
+       assert t._V5_TUNE == {'mxfp8': (32, 4, 2, False), 'mxfp4': (32, 8, 2, False), 'mxk8v4': (32, 8, 2, True)}, 'A14 BN=32 sweep winner tune';\
+       assert t._MX_TUNE == {'mxfp8': (32, 4, 2, False), 'mxfp4': (32, 8, 2, False), 'mxk8v4': (32, 8, 2, True)}, 'A9 scalar tune unchanged';\
+       assert '_DECODER = os.environ.get(\"ARC_MXKV_DECODER\", \"v2\")' in tsrc, 'per-row knob default v2 unchanged';\
+       assert '_f16_scale' in tsrc, 'K2 packed-f16 scale helper';\
+       assert '_e2m1_byte' in tsrc, 'K3 e2m1 byte-map helper';\
+       assert 'F16OUT' in tsrc and 'E2M1FAST' in tsrc, 'K2/K3 kernel constexprs';\
+       assert 'os.environ.get(\"ARC_MXKV_K2\", \"1\") != \"0\"' in tsrc, 'K2 lane default-on';\
+       assert 'os.environ.get(\"ARC_MXKV_K3\", \"1\") != \"0\"' in tsrc, 'K3 lane default-on';\
+       assert '_V5_DEFAULT' in esrc, 'v5 default flip unchanged';\
+       assert 'ARC_MXKV_VERIFY_DECODER' in esrc, 'verify-decoder override env unchanged';\
+       assert not __import__('re').search(r'query\.float\(\)', esrc), 'native-q decode path';\
+       assert 'mx_decode_rows_dot' in isrc, 'package export unchanged';\
+       print('CERT25ZB_DECODE_LINE_LIVE K2/K3 packed lanes default-on OK')"; \
+    { cat /etc/vllm-arc/IMAGE_MANIFEST; \
+      echo "cert25zb=P6.47 decode-superiority line part 5: K2/K3 packed-fp16 dequant lanes default-on — K2 moves e4m3-payload dequant into the packed-fp16 domain (e4m3->fp16 exact, e8m0 pow2 scale exact once clamped — single rounding point unchanged, bit-identical d=0.0 vs the f32 path); K3 maps each e2m1 nibble to its e4m3 byte with ~10 integer ops (exact map, 16/16 host-verified) riding the same hardware cvt -> packed-fp16 multiply. r177 stage-split evidence closed the residual v6 walk as a scalar-ALU throughput wall in the per-element f32 dequant chain (stage 1 owns 98-99% at 32K, t_s1 FLAT across splits, num_stages no-op). Banks: r178 k2cycleA17 mxfp8 5.941->4.871 ms at 32K (1.22x), 2.924->1.527 at 8K (1.91x); r179 k3cycleA18 mxfp4 8.640->7.618 (1.14x), mxk8v4 8.624->7.623 (1.13x), all bit-identical; r180 k2tuneA19 (BN=32, warps=4, splits=256) confirmed optimal under the packed lanes (BN=64 re-refuted; same-config cross-leg deltas are position noise — Triton compiles idle the GPU and warm=2 does not re-ramp clocks). ARC_MXKV_K2=0 / ARC_MXKV_K3=0 revert to the f32 paths (independent knobs, call-time reads static during serving — capture law). v2/v3/v4/v6 lanes otherwise byte-identical; engine.py/__init__.py re-overlaid from HEAD (docs-sweep phrasing only, behavior-identical)"; \
+      echo "cert25zb_fork_sha=${FORK_SHA}"; \
+      echo "cert25zb_built=${BUILT}"; \
+    } > /etc/vllm-arc/IMAGE_MANIFEST.p647; \
+    mv /etc/vllm-arc/IMAGE_MANIFEST.p647 /etc/vllm-arc/IMAGE_MANIFEST; \
+    cat /etc/vllm-arc/IMAGE_MANIFEST
