@@ -12,6 +12,10 @@
 #     g0 was battery-only; the m8g CORRUPTION_SIGNAL disposition needs
 #     the native lane's long-return shape; thinking-mode reasoning
 #     degeneration is documented gemma baseline behavior at temp-0).
+#     Run1 fix 2026-11-13: the probe now runs IN-LEG (run_leg FULL=lp
+#     mode) — run1 probed after teardown and banked 4x connection-
+#     refused as "baseline", vacuous-failing GEMMA_COMPARE (gate-script
+#     ordering-defect law).
 #   - gate start asserts the cert25y image content markers (s_eff floor,
 #     engine cast-free decode path) — a stale cert25x image would
 #     silently re-run yesterday's kernel.
@@ -370,6 +374,13 @@ run_leg() {
       garble_check "$CD/longprobe_rehit$cyc.out" "$GQ"
     done
     longreturn_summary c24$LEGN "$CD" "$GQ"
+  elif [ "$FULL" = lp ]; then
+    # g0 baseline mode: longprobe full face ONLY, ungated, IN-LEG (server
+    # is up here). The r161 run1 shape ran it AFTER run_leg's teardown ->
+    # 4x ConnectionRefusedError banked as "baseline evidence" and a
+    # vacuous GEMMA_COMPARE (every MX leg a "NEW" regression vs g0 []).
+    ( cd "$CD" && ARC_PROBE_MODEL="$SERVED" python3 $R/p647/p647_longprobe.py c24$LEGN full > longprobe_full.out 2>&1 )
+    grep -E "^\[|LONGPROBE" "$CD/longprobe_full.out"
   fi
   curl -s -m 10 http://127.0.0.1:8000/metrics > "$CD/metrics.txt" || true
   docker cp $CNAME:/root/serve_full.log "$CD/serve.log" >/dev/null 2>&1 || echo "serve.log MISSING $LEGN"
@@ -464,17 +475,13 @@ leg_g0() {  # gemma NATIVE-KV control: battery texts on the default
   # If g0 shows the same p2/p3 shape, it is gemma baseline behavior at
   # temp-0 thinking, NOT MX-KV corruption; m8g/m4g/mkg then compare
   # dtype-vs-dtype only. mx_backend_lines MUST be 0 here.
-  run_leg g0 gemma4-31b 0 $GEMMA_M8 || true
+  [ -d "$P/g0" ] && mv "$P/g0" "$P/g0.run1"
+  # FULL=lp: battery + the longprobe v4 full face IN-LEG, UNGATED (gemma
+  # thinking-mode baseline may flag; the gate compares MX-vs-native, not
+  # vs CLEAN). r161 run1's post-telemetry probe refused connection — see
+  # the lp branch in run_leg.
+  run_leg g0 gemma4-31b lp $GEMMA_M8 || true
   grep -q "mx_backend_lines=0" "$P/g0/markers.txt" || { echo "G0_NATIVE: FAIL (MX backend engaged on the control leg)"; GATE_FAIL=1; }
-  # r161: g0 longprobe v4 as UNGATED evidence — r159's g0 was battery-only,
-  # so the m8g CORRUPTION_SIGNAL had no native-lane long-return shape to
-  # compare against. v4 banks top-window counts + raw heads, which is
-  # exactly the disposition evidence (benign quoting ~4-8x vs pathological
-  # loops 100x+). Deliberately NOT garble_check'd: gemma thinking-mode
-  # baseline may flag; the gate compares MX-vs-native, not vs CLEAN.
-  ( cd "$P/g0" && ARC_PROBE_MODEL=gemma4-31b \
-      python3 $R/p647/p647_longprobe.py c25yg0 full > longprobe_full.out 2>&1 ) || true
-  grep -E "^\[|LONGPROBE" "$P/g0/longprobe_full.out" || true
   echo "G0_LONGPROBE_EVIDENCE_BANKED (ungated baseline discriminator)"
 }
 
