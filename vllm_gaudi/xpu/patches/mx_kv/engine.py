@@ -125,10 +125,13 @@ _V4_R_TILE = 4
 # class). mxfp4 is a 0.94-1.05x wash (e2m1-K dequant binds, not MMA)
 # and stays on v2 to keep bit-identical numerics inside the open
 # e2m1-V quality investigation (r161: verify acceptance 0.0% at 32K).
-# ARC_MXKV_DECODER={v2,v4,v5} overrides the per-format default per
-# boot; the legacy opt-in flags below win over everything.
+# ARC_MXKV_VERIFY_DECODER={v2,v4,v5} overrides the per-format default
+# per boot (verify-batch path only — ARC_MXKV_DECODER stays the
+# certified v1|v2|v3 knob for the per-row kernel and must not see
+# these values: mx_decode's launcher maps any non-v2 to v3); the
+# legacy opt-in flags below win over everything.
 _V5_DOT = os.environ.get("ARC_MXKV_V5_DOT", "") == "1"
-_DECODER_OVERRIDE = os.environ.get("ARC_MXKV_DECODER", "")
+_DECODER_OVERRIDE = os.environ.get("ARC_MXKV_VERIFY_DECODER", "")
 _V5_DEFAULT = ("mxfp8", "mxk8v4")
 
 # Ground-truth dump hook (debug-run-only, default off): with
