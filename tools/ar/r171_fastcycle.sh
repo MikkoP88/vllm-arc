@@ -1,27 +1,30 @@
 #!/bin/bash
 # r171_fastcycle.sh -- P6.47 improvement-loop FAST cycle (owner directive
 # 2026-11-13: the full ~4.5h gate starves the improvement loop; iterate
-# cheap, run the full battery only at convergence).
+# cheap, run the full battery only at convergence. Model = the TARGET
+# qwen3.8-27b-fp8, champion posture incl. MTP k4 -- corrections 2026-11-13:
+# gemma first, then "use qwen" -- the cycle measures the real lane).
 #
-# One cycle = single model gemma4-31b (ARC_SPEC=0 -- no MTP, isolates the
-# plain decode path) x the three MX KV dtypes (mxfp8 / mxfp4 / mxk8v4),
-# SIMPLE corruption check only. Budget <= ~30 min per cycle: 3 boots
-# (~5-7 min each) + battery + decode battery + a light cold/churn/rehit
-# smoke probe + erraudit per leg. NO longprobe 4x3-face program, NO
-# 3-cycle churn, NO ctrl leg, NO gemma_compare -- those live in the
-# r170-pattern full battery, which runs when a change line converges.
-# Gemma quality gates are SHAPE-only (reploop-classifier-baseline law:
-# think-spam REP-LOOP is native-KV baseline; determinism is baseline-
-# churny on 4-bit V -- r170 m4g evidence), so the smoke probe gates:
-# non-empty answers, no traceback, not all-finish=length, server alive
-# after churn. Promote to the full battery before any cert/release.
+# One cycle = qwen3.8-27b-fp8 x the three MX KV dtypes (mxfp8 / mxfp4 /
+# mxk8v4), SIMPLE corruption check only. Budget <= ~30 min per cycle:
+# 3 boots (~5-6 min each) + markers + smoke probe (6 fixed prompts,
+# 256-token cap, cold + 60s churn + rehit) + decode battery + erraudit
+# per leg. ARC_LMC is NOT pinned: the serve script's r168 posture applies
+# per lane (on for mxfp8, auto-off for the e2m1-V lanes mxfp4/mxk8v4).
+# Smoke gates (abs, qwen-clean-baseline law): 6/6 non-empty answers in
+# BOTH rounds, Paris on p1, no traceback, not every answer finish=length.
+# Hashes are BANKED, never gated (full determinism is the r170 battery's
+# job). NO longprobe 4x3-face program, NO 3-cycle churn, NO ctrl leg --
+# those stay in the r170-pattern full battery, which runs only when a
+# change line converges (no room for improvement) before any cert/release.
 # W14 quiesce before, trap restore after. Artifacts ->
 # ${P647_BANK:-/root/build/p647/fastcycle}/<leg>/.
 set -uo pipefail
 R=/root/build
-P=${P647_BANK:-$R/p647/fastcycle}
+P=${P647_BANK:-/root/build/p647/fastcycle}
 IMG=${IMG:-vllm-arc:v0.30.0-b70-cert25z}
 CNAME=arc-fc
+SERVED=qwen3.8-27b-fp8
 CYCLE_FAIL=0
 mkdir -p "$P"
 
@@ -65,15 +68,12 @@ boot_wait() {
   [ "$ok" = "1" ]
 }
 
-smoke_probe() {  # $1 = leg dir $2 = served model — SIMPLE corruption check:
-  # 6 fixed chat prompts, temp-0, max_tokens=256 (keeps gemma think-spam
-  # OFF the length cap -- the full-face REP-LOOP program is the r170
-  # battery's job). Round A cold; 60s churn; round B rehit. Gates:
-  # 6/6 PROMPT_OK non-empty in BOTH rounds, no traceback, not every
-  # answer finish=length (an all-cap face = decode-path breakage, not
-  # baseline spam), server alive after churn. Hashes are BANKED, never
-  # gated (baseline churn law).
-  local CD=$1 mdl=$2 r b lens
+smoke_probe() {  # $1 = leg dir — SIMPLE corruption check: 6 fixed
+  # completions prompts, temp-0, max_tokens=256. Round A cold; 60s churn;
+  # round B rehit. Gates: 6/6 PROMPT_OK non-empty in BOTH rounds, Paris
+  # on p1, no traceback, not every answer finish=length (all-cap face =
+  # decode-path breakage). Hashes banked, never gated.
+  local CD=$1 r b empty cap
   for r in A B; do
     : > "$CD/smoke_$r.out"
     for q in "What is the capital of France? Answer with just the city name." \
@@ -82,9 +82,9 @@ smoke_probe() {  # $1 = leg dir $2 = served model — SIMPLE corruption check:
              "Summarize the plot of Hamlet in two sentences." \
              "Convert 42 from decimal to hexadecimal." \
              "List the first four planets of the solar system in order."; do
-      curl -s -m 120 http://127.0.0.1:8000/v1/chat/completions -H 'Content-Type: application/json' \
-        -d "{\"model\":\"$mdl\",\"messages\":[{\"role\":\"user\",\"content\":\"$q\"}],\"max_tokens\":256,\"temperature\":0,\"seed\":171}" \
-        | python3 -c 'import json,sys; r=json.load(sys.stdin); c=r["choices"][0]; m=c.get("message",{}); t=m.get("content") or m.get("reasoning_content") or m.get("reasoning") or ""; print("PROMPT_OK", len(t), c.get("finish_reason"), repr(t[:120]))' >> "$CD/smoke_$r.out" 2>&1
+      curl -s -m 120 http://127.0.0.1:8000/v1/completions -H 'Content-Type: application/json' \
+        -d "{\"model\":\"$SERVED\",\"prompt\":\"$q\",\"max_tokens\":256,\"temperature\":0,\"seed\":171}" \
+        | python3 -c 'import json,sys; r=json.load(sys.stdin); c=r["choices"][0]; t=c.get("text") or ""; print("PROMPT_OK", len(t), c.get("finish_reason"), repr(t[:120]))' >> "$CD/smoke_$r.out" 2>&1
     done
     [ "$r" = A ] || break
     python3 - > "$CD/churn.out" 2>&1 << 'PYEOF' || true
@@ -93,7 +93,7 @@ t_end = time.time() + 60
 i = 0
 while time.time() < t_end:
     i += 1
-    d = json.dumps({"model": "gemma4-31b", "prompt": f"churn {i} " + "x" * 400,
+    d = json.dumps({"model": "qwen3.8-27b-fp8", "prompt": f"churn {i} " + "x" * 400,
                     "max_tokens": 256, "temperature": 0}).encode()
     urllib.request.urlopen(urllib.request.Request(
         "http://127.0.0.1:8000/v1/completions", d,
@@ -105,12 +105,13 @@ PYEOF
     b=$(grep -c "^PROMPT_OK" "$CD/smoke_$r.out" || true)
     [ "$b" = "6" ] || { echo "SMOKE: FAIL (round $r: ${b:-0}/6 answered)"; CYCLE_FAIL=1; }
     grep -q "Traceback" "$CD/smoke_$r.out" && { echo "SMOKE: FAIL (traceback round $r)"; CYCLE_FAIL=1; }
-    lens=$(grep -cE "^PROMPT_OK 0 " "$CD/smoke_$r.out" || true)
-    [ "${lens:-0}" = "0" ] || { echo "SMOKE: FAIL (round $r: empty answers)"; CYCLE_FAIL=1; }
-    local cap; cap=$(grep -c "length" "$CD/smoke_$r.out" || true)
+    empty=$(grep -cE "^PROMPT_OK 0 " "$CD/smoke_$r.out" || true)
+    [ "${empty:-0}" = "0" ] || { echo "SMOKE: FAIL (round $r: empty answers)"; CYCLE_FAIL=1; }
+    cap=$(grep -c "length" "$CD/smoke_$r.out" || true)
     [ "${cap:-0}" -lt 6 ] || { echo "SMOKE: FAIL (round $r: every answer hit the cap)"; CYCLE_FAIL=1; }
   done
-  echo "SMOKE: $([ "$CYCLE_FAIL" = 0 ] && echo PASS || echo FAIL) in $CD"
+  grep -q "Paris" "$CD/smoke_A.out" || { echo "P1_PARIS: FAIL $CD"; CYCLE_FAIL=1; }
+  echo "SMOKE: gates applied in $CD (hashes banked)"
 }
 
 run_leg() {
@@ -139,10 +140,10 @@ run_leg() {
   grep -Eq "mx_backend_lines=[1-9]" "$CD/markers.txt" \
     || { echo "MX_MARKER: FAIL $LEGN"; CYCLE_FAIL=1; }
   curl -s -m 120 http://127.0.0.1:8000/v1/completions -H 'Content-Type: application/json' \
-    -d '{"model":"gemma4-31b","prompt":"warmup","max_tokens":16,"temperature":0}' > /dev/null
+    -d "{\"model\":\"$SERVED\",\"prompt\":\"warmup\",\"max_tokens\":16,\"temperature\":0}" > /dev/null
   sleep 3
-  smoke_probe "$CD" gemma4-31b
-  python3 $R/r113_battery.py decode gemma4-31b > "$CD/battery.txt" 2>&1 || echo "BATTERY_NONZERO_EXIT $LEGN"
+  smoke_probe "$CD"
+  python3 $R/r113_battery.py decode "$SERVED" > "$CD/battery.txt" 2>&1 || echo "BATTERY_NONZERO_EXIT $LEGN"
   tail -6 "$CD/battery.txt"
   docker cp $CNAME:/root/serve_full.log "$CD/serve.log" >/dev/null 2>&1 || true
   docker exec $CNAME sh -c 'echo ERROR=$(grep -c ERROR /root/serve_full.log); echo TRACEBACK=$(grep -c Traceback /root/serve_full.log)' \
@@ -157,7 +158,9 @@ run_leg() {
   echo "=== [$LEGN] done $(date +%H:%M:%S) ==="
 }
 
-GEMMA="ARC_MODEL=/models/gemma4-31b ARC_SERVED=gemma4-31b ARC_QUANT=mxfp8 ARC_GMU=0.8 ARC_GRAPH=1 ARC_SPEC=0 ARC_LMC=0 ARC_RPC=1200 ARC_MAXLEN=40960 ARC_FP8=0"
+# champion chain; ARC_LMC intentionally unpinned -- per-lane default
+# (on for mxfp8, auto-off for the e2m1-V lanes; r168 posture)
+QWEN="ARC_MODEL=/models/qwen3.8-27b-fp8 ARC_SERVED=qwen3.8-27b-fp8 ARC_GRAPH=1 ARC_SPEC=3 ARC_FP8=1"
 
 echo "=== [r171:fastcycle] W14 quiesce $(date +%H:%M:%S) ==="
 docker stop radiance-test >/dev/null 2>&1 || true
@@ -170,9 +173,9 @@ docker rm -f $CNAME >/dev/null 2>&1 || true
 sleep 5
 
 T0=$(date +%s)
-run_leg m8g $GEMMA ARC_KVDTYPE=mxfp8   || true
-run_leg m4g $GEMMA ARC_KVDTYPE=mxfp4   || true
-run_leg mkg $GEMMA ARC_KVDTYPE=mxk8v4  || true
+run_leg m8q $QWEN ARC_KVDTYPE=mxfp8   || true
+run_leg m4q $QWEN ARC_KVDTYPE=mxfp4   || true
+run_leg mkq $QWEN ARC_KVDTYPE=mxk8v4  || true
 T1=$(date +%s)
 
 cd "$P"
