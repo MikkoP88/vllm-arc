@@ -100,6 +100,26 @@ data-dependent host control flow; XPU-graph safe. The mid buffer is
 allocated once per shape on the eager warmup and reused (allocation
 can never land inside a capture).
 
+V6 DEEP-SPLIT LINE (P6.47 A14, 2026-11-13, owner directive "if kernel
+is issue patch it"): the r162/A13 attribution closed the m8 32K gap as
+kernel-explained — 16 x v5 8.79 ms = 140.7 ms ~= the 130 ms conc-1
+e2e delta — and the v5 shape is parallelism-starved, not
+bandwidth-bound: G=1/ctx=32K launches only G x Hk x 32 = 128 CTAs
+(each serially walking 32 BLOCK_N=32 tiles through the bt -> slot ->
+gather chain num_stages cannot pipeline across) to read 33.5 MB of KV
+at ~3.8 GB/s effective — ~1% of the device's HBM. v6 keeps the v5
+kernel body and (a) raises the v5 split cap 32 -> 256 with an
+adaptive s_eff targeting >= 4 serial tiles per CTA (1024 tiles ->
+1024 CTAs at 32K), (b) moves the dot path to its own BLOCK_N=64 tune
+(double-N MMA, half the tile count), (c) chunk-loops the shared
+combine over 32-split chunks so deep splits never blow SLM (one
+chunk = the certified 32-split math verbatim). v2/v3/v4 lanes are
+untouched: their _MX_TUNE table, 32-split cap, and combine behavior
+are byte-identical (single-chunk path). Env knobs (call-time reads,
+static during serving — capture law): ARC_MXKV_V5_SPLITS (default
+256; 32 reproduces the A13 grid), ARC_MXKV_V5_BN, ARC_MXKV_V5_WARPS
+(sweep faces). Probe: p173_v6sweep.py.
+
 Provenance: from-scratch in-house lane (owner directive 2026-11-11);
 kernel structure follows the wheel's sub-byte KV decode template
 (triton_turboquant_decode.py — survey
@@ -662,7 +682,14 @@ def _mx_decode_split_dot(
     walk_end = tl.max(ends, 0)
 
     n_tiles = (walk_end + BLOCK_N - 1) // BLOCK_N
-    s_eff = tl.minimum(NUM_SPLITS, tl.maximum(1, (n_tiles + 1) // 2))
+    # v6 deep-split rule: target >= 4 serial tiles per CTA (the A14
+    # law — the old (n_tiles+1)//2 cap of 32 starved the grid at long
+    # ctx: 1024 tiles on 128 CTAs, each tile a serial bt->slot->gather
+    # latency chain). Grid z still bounds s_eff; splits beyond the
+    # walk keep the exact v2 empty-marker semantics via the guard
+    # below, so the only numeric difference vs the old rule is the
+    # split regrouping (A11 S-sweep class: 2-3e-8).
+    s_eff = tl.minimum(NUM_SPLITS, tl.maximum(1, n_tiles // 4))
     split_len = (walk_end + s_eff - 1) // s_eff
     split_start = split_len * sid
     split_end = tl.minimum(split_start + split_len, walk_end)
@@ -741,33 +768,50 @@ def _mx_decode_combine(
     stride_o_h,
     D: tl.constexpr,
     NUM_SPLITS: tl.constexpr,
-    BLOCK_S: tl.constexpr,  # next_power_of_2(NUM_SPLITS)
+    BLOCK_S: tl.constexpr,  # split-chunk tile (32 — SLM law, NOT pow2(NUM_SPLITS))
 ):
     # Stage 2: log-sum-exp weighted combine of the split partials.
     # out = sum_s w_s * (acc_s/l_s) / sum_s w_s with w_s = exp(lse_s -
     # max_s lse_s) — the standard flash-decoding split reduction; empty
     # splits carry lse=-inf -> w=0; an all-empty sequence (l_sum=0)
     # reduces to defined zeros (v1 zero-seq semantics).
+    #
+    # v6 chunked form (A14 deep-split law): NUM_SPLITS now runs to 256
+    # on the v5 lane, and a (NUM_SPLITS, D) tile blows SLM past 32
+    # splits — so the reduction runs as a running (m, l, acc) over
+    # 32-split chunks. One chunk (the 32-split lanes v2/v3/v4) is the
+    # certified single-pass math verbatim: init m=-inf/l=0/acc=0 makes
+    # the first-chunk update collapse to the direct form.
     b = tl.program_id(0)
     hq = tl.program_id(1)
-    offs_s = tl.arange(0, BLOCK_S)
-    smask = offs_s < NUM_SPLITS
     offs_d = tl.arange(0, D)
     base = b * stride_mid_b + hq * stride_mid_h
-    m = tl.load(
-        mid_ptr + base + offs_s * stride_mid_s + D, mask=smask, other=-float("inf")
-    )
-    m_star = tl.max(m, 0)
-    # exp(-inf - (-inf)) = nan: clamp the anchor when every split is empty.
-    safe_star = tl.where(m_star == -float("inf"), 0.0, m_star)
-    w = tl.exp(m - safe_star)
-    accs = tl.load(
-        mid_ptr + base + offs_s[:, None] * stride_mid_s + offs_d[None, :],
-        mask=smask[:, None],
-        other=0.0,
-    )
-    l_sum = tl.sum(w, 0)
-    out = tl.sum(w[:, None] * accs, axis=0) / tl.where(l_sum > 0.0, l_sum, 1.0)
+    m_run = -float("inf")
+    l_run = 0.0
+    acc_run = tl.zeros((D,), dtype=tl.float32)
+    for s0 in range(0, NUM_SPLITS, BLOCK_S):
+        offs_s = s0 + tl.arange(0, BLOCK_S)
+        smask = offs_s < NUM_SPLITS
+        m = tl.load(
+            mid_ptr + base + offs_s * stride_mid_s + D,
+            mask=smask,
+            other=-float("inf"),
+        )
+        m_new = tl.maximum(m_run, tl.max(m, 0))
+        # exp(-inf - (-inf)) = nan: clamp the anchor when every split
+        # so far is empty.
+        safe = tl.where(m_new == -float("inf"), 0.0, m_new)
+        w = tl.exp(m - safe)
+        w_run = tl.exp(m_run - safe)
+        accs = tl.load(
+            mid_ptr + base + offs_s[:, None] * stride_mid_s + offs_d[None, :],
+            mask=smask[:, None],
+            other=0.0,
+        )
+        acc_run = acc_run * w_run + tl.sum(w[:, None] * accs, axis=0)
+        l_run = l_run * w_run + tl.sum(w, 0)
+        m_run = m_new
+    out = acc_run / tl.where(l_run > 0.0, l_run, 1.0)
     tl.store(out_ptr + b * stride_o_b + hq * stride_o_h + offs_d, out)
 
 
@@ -790,6 +834,25 @@ _MX_TUNE = {
     "mxfp4": (32, 8, 2, False),
     "mxk8v4": (32, 8, 2, True),
 }
+
+# v6 deep-split tune for the v5 dot lane ONLY (A14): BLOCK_N=64
+# double-N MMA tiles (half the walk's tile count; the scalar lanes'
+# BLOCK_N=128 spill cliff does not bind the dot body — no tuple
+# unroll, (M_PAD, D) register state). The split cap is a call-time env
+# read (static during serving — capture law) so the offline sweep can
+# walk it without re-imports: ARC_MXKV_V5_SPLITS=32 + BN=32 reproduces
+# the A13 v5 grid for A/B. Flavor follows _MX_TUNE's per-format law.
+_V5_SPLIT_DEFAULT = 256
+_V5_TUNE = {
+    "mxfp8": (64, 4, 2, False),
+    "mxfp4": (64, 8, 2, False),
+    "mxk8v4": (64, 8, 2, True),
+}
+
+
+def _v5_splits() -> int:
+    s = int(os.environ.get("ARC_MXKV_V5_SPLITS", "") or _V5_SPLIT_DEFAULT)
+    return max(1, min(1024, s))
 
 
 def _split_launch(
@@ -1014,21 +1077,28 @@ def mx_decode_rows_dot(
     sb = cache.shape[-1]
     want = {f: slot_bytes(d, f) for f in ("mxfp8", "mxfp4", "mxk8v4")}
     fmt = next(f for f, w in want.items() if w == sb)
-    bn_t, nw_t, ns_t, sh_t = _MX_TUNE[fmt]
-    block_n = bn_t if block_n is None else block_n
-    num_warps = nw_t if num_warps is None else num_warps
+    # v6 line: the dot lane runs its OWN tune (BLOCK_N=64 MMA) and its
+    # OWN split cap (256, adaptive >= 4-tile rule in-kernel). Env
+    # overrides are call-time reads — static during serving (capture
+    # law) — so the sweep harness walks the space without re-imports.
+    bn_t, nw_t, ns_t, sh_t = _V5_TUNE[fmt]
+    bn_env = os.environ.get("ARC_MXKV_V5_BN")
+    nw_env = os.environ.get("ARC_MXKV_V5_WARPS")
+    block_n = int(bn_env) if bn_env else (bn_t if block_n is None else block_n)
+    num_warps = int(nw_env) if nw_env else (nw_t if num_warps is None else num_warps)
     num_stages = ns_t if num_stages is None else num_stages
     shift = sh_t if _SHIFT is None else _SHIFT
+    splits = _v5_splits()
     out = torch.empty_like(q)
-    key = (r, hq, _MX_SPLIT_MAX, d, str(q.device))
+    key = (r, hq, splits, d, str(q.device))
     mid = _mid_cache.get(key)
     if mid is None:
         mid = torch.empty(
-            r, hq, _MX_SPLIT_MAX, d + 1, dtype=torch.float32, device=q.device
+            r, hq, splits, d + 1, dtype=torch.float32, device=q.device
         )
         _mid_cache[key] = mid
     m_lanes = r_tile * n_rep
-    _mx_decode_split_dot[(g, hk, _MX_SPLIT_MAX)](
+    _mx_decode_split_dot[(g, hk, splits)](
         q,
         cache,
         block_tables,
@@ -1054,7 +1124,7 @@ def mx_decode_rows_dot(
         M_PAD=triton.next_power_of_2(m_lanes),
         BLOCK_SIZE=block_size,
         BLOCK_N=block_n,
-        NUM_SPLITS=_MX_SPLIT_MAX,
+        NUM_SPLITS=splits,
         SHIFT=shift,
         num_warps=num_warps,
         num_stages=num_stages,
@@ -1068,8 +1138,8 @@ def mx_decode_rows_dot(
         out.stride(0),
         out.stride(1),
         D=d,
-        NUM_SPLITS=_MX_SPLIT_MAX,
-        BLOCK_S=triton.next_power_of_2(_MX_SPLIT_MAX),
+        NUM_SPLITS=splits,
+        BLOCK_S=32,
         num_warps=1,
     )
     return out
