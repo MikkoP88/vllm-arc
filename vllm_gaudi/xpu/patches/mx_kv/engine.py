@@ -108,16 +108,28 @@ _trace_calls = 0
 
 # v4 verify-row sharing (A11 lever 2, 2026-11-12): ONE walk per request
 # serving all its MTP verify rows (shared K/V dequant — the ALU the A10
-# attribution showed binding at oversubscription). Off by default until
-# the p159 probe + e2e ladder validate; ARC_MXKV_V4_VERIFY=1 opts in.
-# _V4_R_TILE must equal the kernel's group width (spec=3 -> k+1 = 4).
+# attribution showed binding at oversubscription). REFUTED as a timing
+# win by the p159 probe (r166: 0.20-0.49x mxfp4, 0.72-0.88x mxfp8,
+# 0.58-0.79x mxk8v4 at G8 — row-sharing serializes the dequant and
+# loses program parallelism); reachable only via ARC_MXKV_V4_VERIFY=1
+# for A/B. _V4_R_TILE must equal the kernel's group width (spec=3 ->
+# k+1 = 4).
 _V4_VERIFY = os.environ.get("ARC_MXKV_V4_VERIFY", "") == "1"
 _V4_R_TILE = 4
 # v5 (A11 lever 3): the same row-group dispatch with the XMX tl.dot
 # kernel (score path as fp16 MMA — the ctrl lane's economy). Takes
-# precedence over v4 when both are set (the p160 A/B face). Off by
-# default until the p160 probe + e2e ladder validate.
+# precedence over v4 when both are set (the p160 A/B face).
+# DEFAULT ON for mxfp8 + mxk8v4 (A13 probe, r167 2026-11-13): v5 beats
+# the v2 batch at every cell — mxfp8 1.21-1.90x (G8@32K 43.9 vs
+# 83.5 ms), mxk8v4 1.33-2.86x, correctness <=1.2e-4 (fp16-operand
+# class). mxfp4 is a 0.94-1.05x wash (e2m1-K dequant binds, not MMA)
+# and stays on v2 to keep bit-identical numerics inside the open
+# e2m1-V quality investigation (r161: verify acceptance 0.0% at 32K).
+# ARC_MXKV_DECODER={v2,v4,v5} overrides the per-format default per
+# boot; the legacy opt-in flags below win over everything.
 _V5_DOT = os.environ.get("ARC_MXKV_V5_DOT", "") == "1"
+_DECODER_OVERRIDE = os.environ.get("ARC_MXKV_DECODER", "")
+_V5_DEFAULT = ("mxfp8", "mxk8v4")
 
 # Ground-truth dump hook (debug-run-only, default off): with
 # ARC_MXKV_DUMP=1, the first attention call after `touch /tmp/mxkv_dump`
@@ -1010,12 +1022,27 @@ class MxAttentionImpl(TurboQuantAttentionImpl):
                 .to(sm.dtype)
             )
             sl_rows = blk_idx * stride + sm_pos + 1
-            # v4 (A11 lever 2): when every split request carries the MTP
-            # verify shape (q_len = R_TILE rows), ONE walk per request can
-            # serve all its rows — group block-table rows, same per-row
-            # limits. Device ops only (capture law above).
+            # v4/v5 (A11 levers 2-3): when every split request carries the
+            # MTP verify shape (q_len = R_TILE rows), ONE walk per request
+            # can serve all its rows — group block-table rows, same
+            # per-row limits. Device ops only (capture law above). The
+            # decoder choice rides the plan (per-format default at module
+            # top: v5 for mxfp8/mxk8v4, v2 for mxfp4; env overrides win).
+            decoder = _DECODER_OVERRIDE or (
+                "v5"
+                if _V5_DOT
+                else (
+                    "v4"
+                    if _V4_VERIFY
+                    else (
+                        "v5"
+                        if self.mx_config.fmt in _V5_DEFAULT
+                        else "v2"
+                    )
+                )
+            )
             bt_groups = None
-            if (_V4_VERIFY or _V5_DOT) and all(
+            if decoder != "v2" and all(
                 ql == _V4_R_TILE for _, _, ql in split_rows
             ):
                 bt_groups = bt.index_select(
@@ -1024,14 +1051,14 @@ class MxAttentionImpl(TurboQuantAttentionImpl):
                         len(split_rows), device=bt.device, dtype=torch.long
                     ),
                 )
-            plan = (idx, bt_rows, sl_rows, bt_groups)
+            plan = (idx, bt_rows, sl_rows, bt_groups, decoder)
             self._mx_split_cache = (key, plan, attn_metadata)
-        idx, bt_rows, sl_rows, bt_groups = plan
+        idx, bt_rows, sl_rows, bt_groups, decoder = plan
         _trace("path", "batch", "splitbatch", f"R={idx.shape[0]}")
         q_rows = query.index_select(0, idx)
         if bt_groups is not None:
-            out = (
-                mx_decode_rows_dot(
+            if decoder == "v5":
+                out = mx_decode_rows_dot(
                     q_rows,
                     kv_cache,
                     bt_groups,
@@ -1039,8 +1066,8 @@ class MxAttentionImpl(TurboQuantAttentionImpl):
                     self.scale,
                     r_tile=_V4_R_TILE,
                 )
-                if _V5_DOT
-                else mx_decode_rows(
+            else:
+                out = mx_decode_rows(
                     q_rows,
                     kv_cache,
                     bt_groups,
@@ -1048,7 +1075,6 @@ class MxAttentionImpl(TurboQuantAttentionImpl):
                     self.scale,
                     r_tile=_V4_R_TILE,
                 )
-            )
         else:
             out = mx_decode(
                 q_rows,
