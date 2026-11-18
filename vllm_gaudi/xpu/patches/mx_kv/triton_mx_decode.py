@@ -94,6 +94,25 @@ MMA >= 16, tl.arange power-of-2). m/l/acc are (M_PAD,) / (M_PAD, D)
 vectors — no tuple unroll. Behind ARC_MXKV_V5_DOT=1, probe p160;
 numerics = fp16-operand class (the ctrl lane's own), gate d <= 2e-3.
 
+V7 FA-SHAPED WALK (Phase 7 attempt 1, 2026-11-19): the T1 attribution
+(r191) put the converged v5/v2 kernels 20-35x over ctrl FA at G1@32K
+and r182's ablation floor showed the residual is the serial
+bt->slot->gather latency chain — which num_stages cannot pipeline
+(data-dependent addresses; A6/r177). `_mx_decode_split_dot2` is the v5
+kernel with the walk restructured by hand into RAW-TILE DOUBLE
+BUFFERING: each loop iteration loads the NEXT tile's block ids at the
+loop top and its RAW packed bytes right after the current tile's
+scores dot (covered by the softmax + p.V dot), dequantizing at consume
+time — steady-state tile latency max(load, dot) instead of the sum.
+Raw tiles are 4-8 KB/side (vs 16-32 KB dequantized) so the double
+buffer rides registers below the spill ladder. Join flavor only (the
+r183-certified unpack; SHIFT is accepted for signature parity and
+ignored — the two flavors are semantically identical). Numerics: the
+v5 class verbatim, gate d <= 2e-3. Behind ARC_MXKV_V7=1 (call-time
+read in mx_decode_rows_dot — capture law); ships only if the T1-cell
+A/B (G1/G8 x 8K/32K x 3 formats, threshold <= 1.0 ms at G1@32K) earns
+it; 3 structural attempts max (plan Phase 7 containment).
+
 GRAPH SAFETY: seq lens and block tables are read from device buffers
 inside the kernel (the TQ decode pattern) — no host reads, no
 data-dependent host control flow; XPU-graph safe. The mid buffer is
@@ -874,6 +893,292 @@ def _mx_decode_split_dot(
 
 
 @triton.jit
+def _mx_decode_split_dot2(
+    q_ptr,
+    cache_ptr,
+    block_tables_ptr,
+    limits_ptr,  # [R] per-row causal limits (rows grouped: g*R_TILE..+R_TILE-1)
+    mid_ptr,  # [R, Hq, NUM_SPLITS, D+1] f32 — same layout v2/v3/v4/v5 write
+    sm_scale,
+    stride_q_b,
+    stride_q_h,
+    stride_mid_b,
+    stride_mid_h,
+    stride_mid_s,
+    stride_bt_b,
+    stride_c_b,
+    stride_c_t,
+    stride_c_h,
+    D: tl.constexpr,
+    N_GROUPS: tl.constexpr,
+    K4: tl.constexpr,
+    V4: tl.constexpr,
+    R_TILE: tl.constexpr,
+    N_REP: tl.constexpr,
+    M_LANES: tl.constexpr,
+    M_PAD: tl.constexpr,
+    BLOCK_SIZE: tl.constexpr,
+    BLOCK_N: tl.constexpr,
+    NUM_SPLITS: tl.constexpr,
+    SHIFT: tl.constexpr,  # accepted for v5 signature parity; IGNORED —
+    # v7 implements the join flavor only (the r183-certified unpack;
+    # join and shift are semantically identical, so ignoring is sound)
+    K2: tl.constexpr = 0,  # 1 = packed-fp16 dequant on e4m3 payloads
+    K3: tl.constexpr = 0,  # 1 = e2m1 payloads via e4m3-byte map (packed)
+):
+    # v7 (Phase 7 attempt 1, 2026-11-19): the v5 split-dot with the FA
+    # walk discipline — RAW-TILE DOUBLE BUFFERING. The T1 attribution
+    # verdict (r191): the converged v5/v2 kernels sit 20-35x over ctrl
+    # FA at G1@32K and r182's ablation floor (dot+load+addr+reductions)
+    # is the bt->slot->gather latency chain; Triton's num_stages
+    # pipeliner cannot prefetch through it because the gather addresses
+    # are DATA-DEPENDENT (slot = f(loaded bt); r177's stages no-op).
+    # v7 breaks the chain by hand: each iteration prefetches the NEXT
+    # tile's block ids at the loop top (max cover) and its RAW packed
+    # bytes right after the current tile's scores dot (covered by the
+    # softmax + p.V dot), while dequantizing at consume time. Raw tiles
+    # are 4-8 KB per side (vs 16-32 KB dequantized) so the double
+    # buffer rides registers without the spill ladder. Steady-state
+    # tile latency: max(load, dot) instead of the sum. Everything else
+    # is v5 verbatim — mid/combine two-launch, the v6 >=4-tile split
+    # rule, m/l law, K2/K3 packed lanes, join-flavor nibble interleave.
+    # Numerics: the v5 class, gate d <= 2e-3. Behind ARC_MXKV_V7=1
+    # (call-time read in mx_decode_rows_dot — capture law).
+    g = tl.program_id(0)
+    hk = tl.program_id(1)
+    sid = tl.program_id(2)
+
+    offs_m = tl.arange(0, M_PAD)
+    lane_ok = offs_m < M_LANES
+    row_b = offs_m // N_REP
+    rep = offs_m % N_REP
+    ends = tl.load(limits_ptr + g * R_TILE + row_b, mask=lane_ok, other=0)
+    walk_end = tl.max(ends, 0)
+
+    n_tiles = (walk_end + BLOCK_N - 1) // BLOCK_N
+    s_eff = tl.minimum(NUM_SPLITS, tl.maximum(1, n_tiles // 4))
+    split_len = (walk_end + s_eff - 1) // s_eff
+    split_start = split_len * sid
+    split_end = tl.minimum(split_start + split_len, walk_end)
+
+    offs_d = tl.arange(0, D)
+    q16 = tl.load(
+        q_ptr
+        + (g * R_TILE + row_b)[:, None] * stride_q_b
+        + (hk * N_REP + rep)[:, None] * stride_q_h
+        + offs_d[None, :],
+        mask=lane_ok[:, None],
+        other=0.0,
+    ).to(tl.float16)
+
+    m = tl.full((M_PAD,), -float("inf"), dtype=tl.float32)
+    lrow = tl.zeros((M_PAD,), dtype=tl.float32)
+    acc = tl.zeros((M_PAD, D), dtype=tl.float32)
+
+    if split_start < split_end:
+        v_off = (D // 2 if K4 else D) + N_GROUPS
+        offs_g = tl.arange(0, N_GROUPS)
+        # raw spans: payload width per side (e2m1 nibbles are D//2 bytes)
+        offs_pk = tl.arange(0, D // 2) if K4 else tl.arange(0, D)
+        offs_pv = tl.arange(0, D // 2) if V4 else tl.arange(0, D)
+        k_sc_off = (D // 2 if K4 else D) + 0  # scale bytes follow K payload
+        v_sc_off = v_off + (D // 2 if V4 else D)
+
+        # ---- prologue: tile 0 raw fetch
+        offs_nc = split_start + tl.arange(0, BLOCK_N)
+        nmask_c = offs_nc < split_end
+        bt_c = tl.load(
+            block_tables_ptr + g * stride_bt_b + offs_nc // BLOCK_SIZE,
+            mask=nmask_c,
+            other=0,
+        )
+        slot_c = (
+            bt_c.to(tl.int64) * stride_c_b
+            + (offs_nc % BLOCK_SIZE).to(tl.int64) * stride_c_t
+            + hk.to(tl.int64) * stride_c_h
+        )
+        gmask_c = nmask_c[:, None]
+        codesk_c = tl.load(
+            cache_ptr + slot_c[:, None] + k_sc_off + offs_g[None, :],
+            mask=gmask_c, other=0,
+        )
+        rawk_c = tl.load(
+            cache_ptr + slot_c[:, None] + 0 + offs_pk[None, :],
+            mask=gmask_c, other=0,
+        )
+        codesv_c = tl.load(
+            cache_ptr + slot_c[:, None] + v_sc_off + offs_g[None, :],
+            mask=gmask_c, other=0,
+        )
+        rawv_c = tl.load(
+            cache_ptr + slot_c[:, None] + v_off + offs_pv[None, :],
+            mask=gmask_c, other=0,
+        )
+
+        n_walk = (split_end - split_start + BLOCK_N - 1) // BLOCK_N
+        for t in range(0, n_walk):
+            # ---- prefetch: NEXT tile's block ids at the loop top
+            # (independent gather, one full tile of cover)
+            offs_nn = split_start + (t + 1) * BLOCK_N + tl.arange(0, BLOCK_N)
+            nmask_n = offs_nn < split_end
+            bt_n = tl.load(
+                block_tables_ptr + g * stride_bt_b + offs_nn // BLOCK_SIZE,
+                mask=nmask_n,
+                other=0,
+            )
+
+            # ---- consume current: K dequant-at-use + scores dot
+            if K4:
+                if K3:
+                    sc16k = tl.reshape(
+                        tl.broadcast_to(
+                            _f16_scale(tl.exp2(codesk_c.to(tl.float32) - 127.0))[:, :, None],
+                            (BLOCK_N, N_GROUPS, 32),
+                        ),
+                        (BLOCK_N, D),
+                    )
+                    lok = _e2m1_byte(rawk_c & 0xF)
+                    hik = _e2m1_byte(rawk_c >> 4)
+                    b8k = tl.reshape(tl.join(lok, hik), (BLOCK_N, D))
+                    k16 = b8k.to(tl.float8e4nv, bitcast=True).to(tl.float16) * sc16k
+                else:
+                    sc_k = tl.reshape(
+                        tl.broadcast_to(
+                            tl.exp2(codesk_c.to(tl.float32) - 127.0)[:, :, None],
+                            (BLOCK_N, N_GROUPS, 32),
+                        ),
+                        (BLOCK_N, D),
+                    )
+                    lok = _mx_dequant_e2m1(rawk_c & 0xF)
+                    hik = _mx_dequant_e2m1(rawk_c >> 4)
+                    k16 = tl.reshape(tl.join(lok, hik), (BLOCK_N, D)) * sc_k
+            else:
+                if K2:
+                    sc16k = tl.reshape(
+                        tl.broadcast_to(
+                            _f16_scale(tl.exp2(codesk_c.to(tl.float32) - 127.0))[:, :, None],
+                            (BLOCK_N, N_GROUPS, 32),
+                        ),
+                        (BLOCK_N, D),
+                    )
+                    k16 = rawk_c.to(tl.float8e4nv, bitcast=True).to(tl.float16) * sc16k
+                else:
+                    sc_k = tl.reshape(
+                        tl.broadcast_to(
+                            tl.exp2(codesk_c.to(tl.float32) - 127.0)[:, :, None],
+                            (BLOCK_N, N_GROUPS, 32),
+                        ),
+                        (BLOCK_N, D),
+                    )
+                    k16 = rawk_c.to(tl.float8e4nv, bitcast=True).to(tl.float32) * sc_k
+            scores = tl.dot(q16, tl.trans(k16).to(tl.float16)) * sm_scale
+
+            # ---- issue: next tile's raw bytes right after the scores
+            # dot (covered by softmax + p.V + the next iteration's head)
+            slot_n = (
+                bt_n.to(tl.int64) * stride_c_b
+                + (offs_nn % BLOCK_SIZE).to(tl.int64) * stride_c_t
+                + hk.to(tl.int64) * stride_c_h
+            )
+            gmask_n = nmask_n[:, None]
+            codesk_n = tl.load(
+                cache_ptr + slot_n[:, None] + k_sc_off + offs_g[None, :],
+                mask=gmask_n, other=0,
+            )
+            rawk_n = tl.load(
+                cache_ptr + slot_n[:, None] + 0 + offs_pk[None, :],
+                mask=gmask_n, other=0,
+            )
+
+            # ---- consume current: mask + online softmax (v5 law)
+            rmask = (offs_nc[None, :] < tl.minimum(ends[:, None], split_end)) & (
+                lane_ok[:, None] & nmask_c[None, :]
+            )
+            scores = tl.where(rmask, scores, -float("inf"))
+            m_new = tl.maximum(m, tl.max(scores, 1))
+            m_safe = tl.where(m_new == -float("inf"), 0.0, m_new)
+            p = tl.exp(scores - m_safe[:, None])
+            alpha = tl.exp(m - m_safe)
+            lrow = lrow * alpha + tl.sum(p, 1)
+
+            # ---- consume current: V dequant-at-use + p.V dot
+            if V4:
+                if K3:
+                    sc16v = tl.reshape(
+                        tl.broadcast_to(
+                            _f16_scale(tl.exp2(codesv_c.to(tl.float32) - 127.0))[:, :, None],
+                            (BLOCK_N, N_GROUPS, 32),
+                        ),
+                        (BLOCK_N, D),
+                    )
+                    lov = _e2m1_byte(rawv_c & 0xF)
+                    hiv = _e2m1_byte(rawv_c >> 4)
+                    b8v = tl.reshape(tl.join(lov, hiv), (BLOCK_N, D))
+                    v16 = b8v.to(tl.float8e4nv, bitcast=True).to(tl.float16) * sc16v
+                else:
+                    sc_v = tl.reshape(
+                        tl.broadcast_to(
+                            tl.exp2(codesv_c.to(tl.float32) - 127.0)[:, :, None],
+                            (BLOCK_N, N_GROUPS, 32),
+                        ),
+                        (BLOCK_N, D),
+                    )
+                    lov = _mx_dequant_e2m1(rawv_c & 0xF)
+                    hiv = _mx_dequant_e2m1(rawv_c >> 4)
+                    v16 = tl.reshape(tl.join(lov, hiv), (BLOCK_N, D)) * sc_v
+            else:
+                if K2:
+                    sc16v = tl.reshape(
+                        tl.broadcast_to(
+                            _f16_scale(tl.exp2(codesv_c.to(tl.float32) - 127.0))[:, :, None],
+                            (BLOCK_N, N_GROUPS, 32),
+                        ),
+                        (BLOCK_N, D),
+                    )
+                    v16 = rawv_c.to(tl.float8e4nv, bitcast=True).to(tl.float16) * sc16v
+                else:
+                    sc_v = tl.reshape(
+                        tl.broadcast_to(
+                            tl.exp2(codesv_c.to(tl.float32) - 127.0)[:, :, None],
+                            (BLOCK_N, N_GROUPS, 32),
+                        ),
+                        (BLOCK_N, D),
+                    )
+                    v16 = rawv_c.to(tl.float8e4nv, bitcast=True).to(tl.float32) * sc_v
+            acc = acc * alpha[:, None] + tl.dot(p.to(tl.float16), v16.to(tl.float16))
+            m = m_new
+
+            # ---- issue: next tile's V raw bytes under the p.V dot's tail
+            codesv_n = tl.load(
+                cache_ptr + slot_n[:, None] + v_sc_off + offs_g[None, :],
+                mask=gmask_n, other=0,
+            )
+            rawv_n = tl.load(
+                cache_ptr + slot_n[:, None] + v_off + offs_pv[None, :],
+                mask=gmask_n, other=0,
+            )
+
+            # ---- rotate the double buffer
+            offs_nc = offs_nn
+            nmask_c = nmask_n
+            codesk_c = codesk_n
+            rawk_c = rawk_n
+            codesv_c = codesv_n
+            rawv_c = rawv_n
+
+    safe_l = tl.where(lrow > 0.0, lrow, 1.0)
+    out = acc / safe_l[:, None]
+    lse = tl.where(lrow > 0.0, m + tl.log(safe_l), -float("inf"))
+    base = (
+        (g * R_TILE + row_b) * stride_mid_b
+        + (hk * N_REP + rep) * stride_mid_h
+        + sid * stride_mid_s
+    )
+    tl.store(mid_ptr + base[:, None] + offs_d[None, :], out, mask=lane_ok[:, None])
+    tl.store(mid_ptr + base + D, lse, mask=lane_ok)
+
+
+@triton.jit
 def _mx_decode_combine(
     mid_ptr,
     out_ptr,
@@ -1230,7 +1535,18 @@ def mx_decode_rows_dot(
         )
         _mid_cache[key] = mid
     m_lanes = r_tile * n_rep
-    _mx_decode_split_dot[(g, hk, splits)](
+    # v7 (Phase 7 attempt 1): the FA-shaped walk — raw-tile double
+    # buffering, dequant-at-consume (kernel docstring + module header).
+    # Opt-in via ARC_MXKV_V7=1, call-time read — static during serving
+    # (capture law); the certified v5 stays the default until the
+    # T1-cell A/B earns the flip. SHIFT passes through for signature
+    # parity (v7 ignores it; join is the implemented flavor).
+    kernel = (
+        _mx_decode_split_dot2
+        if os.environ.get("ARC_MXKV_V7", "0") == "1"
+        else _mx_decode_split_dot
+    )
+    kernel[(g, hk, splits)](
         q,
         cache,
         block_tables,
