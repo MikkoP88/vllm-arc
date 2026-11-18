@@ -1,0 +1,28 @@
+p172_deepprobe — device=xpu, torch=2.13.0+xpu
+mxkv_src=/opt/venv/lib/python3.12/site-packages/vllm_gaudi/xpu/patches/mx_kv
+shape: D=256 HK=4 Hq=24 R_TILE=4
+WARN: mx_dequant_cache not exported — face E skipped
+[mxfp8] G=1 ctx=1024: ship(v5) 0.934 +aux 1.127 (aux 0.194) | v2 1.961 v4 1.746 v5 2.581 ms finite=True
+[mxfp8] G=1 ctx=8192: ship(v5) 1.524 +aux 1.549 (aux 0.025) | v2 3.597 v4 4.399 v5 1.528 ms finite=True
+[mxfp8] G=1 ctx=32768: ship(v5) 4.864 +aux 4.884 (aux 0.019) | v2 10.683 v4 17.193 v5 4.861 ms finite=True
+[mxfp8] G=8 ctx=8192: ship(v5) 10.371 +aux 10.516 (aux 0.145) | v2 21.052 v4 35.032 v5 10.402 ms finite=True
+[mxfp8] G=8 ctx=32768: ship(v5) 35.472 +aux 35.504 (aux 0.032) | v2 83.452 v4 135.912 v5 35.548 ms finite=True
+[mxfp8] store ctx=8192: 0.221 ms/layer
+[mxfp8] store ctx=32768: 0.943 ms/layer
+[mxfp4] G=1 ctx=1024: ship(v2batch) 0.961 +aux 0.717 (aux -0.244) | v2 0.698 v4 2.064 v5 1.594 ms finite=True
+[mxfp4] G=1 ctx=8192: ship(v2batch) 2.077 +aux 2.093 (aux 0.016) | v2 2.475 v4 9.230 v5 2.273 ms finite=True
+[mxfp4] G=1 ctx=32768: ship(v2batch) 8.058 +aux 8.109 (aux 0.051) | v2 8.071 v4 34.769 v5 7.714 ms finite=True
+[mxfp4] G=8 ctx=8192: ship(v2batch) 15.882 +aux 15.907 (aux 0.026) | v2 15.912 v4 74.588 v5 15.858 ms finite=True
+[mxfp4] G=8 ctx=32768: ship(v2batch) 60.945 +aux 61.099 (aux 0.155) | v2 61.241 v4 279.616 v5 58.298 ms finite=True
+[mxfp4] store ctx=8192: 0.169 ms/layer
+[mxfp4] store ctx=32768: 0.713 ms/layer
+[mxk8v4] G=1 ctx=1024: ship(v5) 1.390 +aux 0.859 (aux -0.530) | v2 0.828 v4 1.213 v5 1.845 ms finite=True
+[mxk8v4] G=1 ctx=8192: ship(v5) 2.230 +aux 2.210 (aux -0.020) | v2 3.359 v4 4.164 v5 2.211 ms finite=True
+[mxk8v4] G=1 ctx=32768: ship(v5) 7.604 +aux 7.666 (aux 0.063) | v2 11.099 v4 15.828 v5 7.659 ms finite=True
+[mxk8v4] G=8 ctx=8192: ship(v5) 16.046 +aux 16.043 (aux -0.002) | v2 22.085 v4 33.742 v5 16.052 ms finite=True
+[mxk8v4] G=8 ctx=32768: ship(v5) 58.436 +aux 58.361 (aux -0.075) | v2 88.489 v4 126.343 v5 58.408 ms finite=True
+[mxk8v4] store ctx=8192: 0.182 ms/layer
+[mxk8v4] store ctx=32768: 0.737 ms/layer
+[plan] G=1 ctx=8192 bt_cols=128: 0.574 ms/step (0.036 ms/layer amortized)
+[plan] G=8 ctx=8192 bt_cols=128: 0.954 ms/step (0.060 ms/layer amortized)
+A14_PROBE_DONE rc=0
