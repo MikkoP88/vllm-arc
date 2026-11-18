@@ -1,0 +1,19 @@
+[18:42:24Z] === r190 quietwait start: waiting for full quiet (cap 43200s, 2 stable polls) ===
+[06:52:04Z] === r190 quietwait start: waiting for full quiet (cap 43200s, 2 stable polls) ===
+[16:03:35Z] === r190 quietwait start: waiting for full quiet (cap 43200s, 2 stable polls) ===
+[16:36:44Z] === r190 quietwait start: waiting for full quiet (cap 43200s, 2 stable polls) ===
+[04:37:17Z] WATCH_TIMEOUT: rig not quiet after 43200s -- surfacing to session
+[04:39:49Z] === r190 quietwait start: waiting for full quiet (cap 43200s, 2 stable polls) ===
+[16:40:24Z] WATCH_TIMEOUT: rig not quiet after 43200s -- surfacing to session
+[21:00:34Z] === r190 quietwait start: waiting for full quiet (cap 43200s, 2 stable polls) ===
+[21:00:35Z] === r190 quietwait start: waiting for full quiet (cap 43200s, 2 stable polls) ===
+[21:00:35Z] R190_FORCE_FIRE=1 -- firing chain directly (manual, post-verification)
+[21:00:35Z] port 8000 clear (or W14-held) -- launching chain
+[21:00:35Z] preserved boot-fail mkq -> mkq_bootfail_gpuconflict
+[21:00:35Z] firing r185b (mkq rerun)
+[21:14:41Z] r185b rc=0 -- bank trio report in /root/build/p647/acceptA23/acceptknee.txt
+[21:14:41Z] firing r186 (ctrl cell)
+[21:31:28Z] r186 rc=0 -- ctrl report in /root/build/p647/ctrlA24/ctrlcurve.txt
+[21:31:28Z] final W14 state: DOWN
+[21:31:28Z] === r190 quietwait complete ===
+[21:32:36Z] CHAIN_DONE present -- standing down

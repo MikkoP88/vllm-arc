@@ -95,6 +95,12 @@ set -euo pipefail
 #   ARC_SKINNY_M   passed into the serve env when set (p633: on = the
 #                  M<=8 skinny kernels opt-in; unset/off = stock routes,
 #                  the certified default after the r127 e2e falsification)
+#   ARC_MXKV_VERIFY_DECODER / ARC_MXKV_K2 / ARC_MXKV_K3 passed into the
+#                  serve env when set (p647 decode-parity directive: the
+#                  verify-decoder v2->v5 flip A/B and the K2/K3 packed-
+#                  dequant reverts at serve time; unset = the engine's
+#                  per-format defaults — v2 for mxfp4, v5+K2/K3 for
+#                  mxfp8/mxk8v4 — the certified cert25zb line).
 #   VLLM_ARC_GRAPH_EXEC_DB passed into the serve env when set (p635 D1:
 #                  unset = patch default ON (graphs captured x2 into the
 #                  shared pool, replays alternate — torch 2.13 same-exec
@@ -379,6 +385,9 @@ ${ARC_MXFP4_MODE:+export ARC_MXFP4_MODE=${ARC_MXFP4_MODE};}
 ${ARC_MXFP8_MODE:+export ARC_MXFP8_MODE=${ARC_MXFP8_MODE};}
 ${ARC_SKINNY_M:+export ARC_SKINNY_M=${ARC_SKINNY_M};}
 ${VLLM_ARC_GRAPH_EXEC_DB:+export VLLM_ARC_GRAPH_EXEC_DB=${VLLM_ARC_GRAPH_EXEC_DB};}
+${ARC_MXKV_VERIFY_DECODER:+export ARC_MXKV_VERIFY_DECODER=${ARC_MXKV_VERIFY_DECODER};}
+${ARC_MXKV_K2:+export ARC_MXKV_K2=${ARC_MXKV_K2};}
+${ARC_MXKV_K3:+export ARC_MXKV_K3=${ARC_MXKV_K3};}
 $LMC_ENV
 $GRAPH_ENV
 exec /opt/venv/bin/vllm serve --model /models/target \

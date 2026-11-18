@@ -1,0 +1,12 @@
+p181_acceptknee — bank=/root/build/p647/ctrlA24 (acceptance% / mean-len / itl p50 / eff ms-per-token)
+[ctrlq]
+| ctx | n1 acc% / len / itl / eff / ss | n8 acc% / len / itl / eff / ss |
+|---|---|---|
+| 4096 | 91.5% / 3.75 / 40 / 10.7 / 41 | 74.9% / 3.25 / 59 / 18.0 / 213 |
+| 8192 | 89.1% / 3.67 / 40 / 11.0 / 42 | 84.1% / 3.52 / 61 / 17.4 / 266 |
+| 16384 | 82.1% / 3.46 / 41 / 11.9 / 43 | 76.2% / 3.29 / 67 / 20.3 / 593 |
+| 32768 | 78.2% / 3.34 / 43 / 12.7 / 43 | 75.5% / 3.27 / 79 / 24.3 / 1671 |
+[ctrlq] KNEE (first acc < 15%): none
+--- knees ---
+[ctrlq] none
+ACCEPT_KNEE_PASS
