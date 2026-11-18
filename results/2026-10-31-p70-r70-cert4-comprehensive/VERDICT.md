@@ -1,6 +1,6 @@
 # P6.10 — comprehensive cert4 measurement campaign (r70)
 
-**Date**: 2026-10-31 · **Phase**: P6.10 (owner directives: "cert4 has to
+**Date**: 2026-10-31 · **Phase**: P6.10 (directives: "cert4 has to
 be measured comprehensively and all information has to be exist based
 on last certificated image not from other image" + "all feature,
 performance and etc... informations has to be more detailed,
@@ -75,7 +75,7 @@ Warm v2 (fresh seeds 6157/6159/6161, run on the soak boot after cycle 1
 | U32k (32,567 tok) | 17.297 s | **1.109 s** |
 | U8k warm-hit re-fires | prime 3.048 s | **0.902 / 0.902 / 0.906 s** |
 
-**Tier attribution (answers the owner's "LMCache hits or some else
+**Tier attribution (answers the "LMCache hits or some else
 hits?")**: engine log during the warm window — "Prefix cache hit rate"
 41.2 → 46.2 % climbing, **"External prefix cache hit rate: 0.0 %"**
 throughout; LMCache lines in the window: 62 async **stores**, **zero

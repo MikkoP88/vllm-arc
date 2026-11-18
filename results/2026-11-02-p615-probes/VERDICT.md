@@ -1,6 +1,6 @@
 # p615 probes — comprehensive solo + concurrent performance matrix, all 12 faces (2026-11-02/03)
 
-Owner directives (2026-11-02): *"all testing results has to contains also
+Directives (2026-11-02): *"all testing results has to contains also
 decode, prefill, TTFT performance number solo and concurrent"*, *"result has
 to be comprehensive performance analyzes"*, *"check all performace test are
 in line the forks older test so user can easily compare"*. This dir banks
@@ -69,7 +69,7 @@ accepted tokens** (MTP k4; B1 39004/9929, B5 27843/7062, TQ4-def
 at 6-way ≈ **440 tok/s**. Solo 84.5 vs concurrent ~73 per-stream = **−13 %
 per-stream cost for 6× parallelism** (memory-bound batching).
 
-## Table 2b — decode at t1.0 xhigh (sampled), solo + concurrent, per KV quantization (owner ask 2026-11-03; banked P6.14/cert6 legs, default posture per dtype)
+## Table 2b — decode at t1.0 xhigh (sampled), solo + concurrent, per KV quantization (request 2026-11-03; banked P6.14/cert6 legs, default posture per dtype)
 
 | Quantization | t1.0 solo pair (tok/s) | t1.0 4-way agg#2 (tok/s) | Reading |
 |---|---|---|---|

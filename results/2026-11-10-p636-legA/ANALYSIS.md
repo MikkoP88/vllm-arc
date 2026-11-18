@@ -136,5 +136,5 @@ lever exists (all sub-ms or zero). Decode: device weight-stream floor +
 bounded ≤10 % host tail (D2), previously and now confirmed not worth the
 risk to the certified champion. **No remaining lawful lever ≥ 10 %.**
 P6.36 closes as evidence-only (no engine bytes changed; cert23 stands).
-→ Proceed to owner close-out: phases E (per-config reports), F (64 GB-RAM
+→ Proceed to close-out: phases E (per-config reports), F (64 GB-RAM
 host compatibility), G (kv-cache-dtype reports), full docs overhaul.

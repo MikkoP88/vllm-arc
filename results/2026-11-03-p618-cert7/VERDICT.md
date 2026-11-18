@@ -23,7 +23,7 @@ the broken first build's log kept as `rig/cert7_build1_brokentag.out`)
 | run7n t1.0 xhigh | **banked (above band)** | agg#2 **218.29**, solo 70.91/68.11 (cert6: 186.48 / 61.73/61.79). The probabilistic-drafting t1.0 face (P6.17) is the engine's highest-variance face; the move is improving, uniform across streams, no ragged leg. No code delta touches sampling — recorded, not gated |
 | integrity + det | **PASS** | 5/5 + 3/3 (and again 5/5 + 3/3 on the leg-1b boot) |
 | spec gate | **PASS** | pos1 **0.9258** ≥ 0.5 hard; acceptance 0.837 vs 0.85 target (recorded miss, mean len 3.51) |
-| **LONG-RETURN GATE** (owner hard gate) | **PASS — corruption faces 100 % CLEAN** | see below |
+| **LONG-RETURN GATE** (hard gate) | **PASS — corruption faces 100 % CLEAN** | see below |
 | erraudit | **PASS** | **0 ERROR / 0 Traceback**; WARN raw 43 (cert6: 44) |
 | WARN class-set | **PASS — zero fork-added** | 30 unique classes; **0 new vs cert6**; the one absent cert6 class is the traffic-conditioned Triton-JIT `_topk_topp_kernel` warmup note (fires under battery traffic, not config — leg-1b's lighter traffic didn't trigger it) |
 
@@ -89,7 +89,7 @@ layer on every entry point — proven live (G0, both presets, ~65 s to
 loud refusal, startup never reached) — and the certified default
 `fp8_e4m3` posture is untouched: t0 family in-band, integrity/
 determinism/spec green, zero errors, zero fork-added warnings, and the
-owner's long-return gate 100 % CLEAN on every corruption/looping face
+the long-return gate 100 % CLEAN on every corruption/looping face
 across 3 churn cycles. `rel/v0.30.0-b70-cert7` = **current certified
 release** pending the p618e currency flip.
 

@@ -1,6 +1,6 @@
 # p616b — probabilistic draft sampling: FULL 5-DTYPE MATRIX + integrity discriminator (2026-11-03)
 
-Owner directive 2026-11-03: *"all performance numbers has to be retested
+Directive 2026-11-03: *"all performance numbers has to be retested
 and this fix branch is only validated to merge if has real impact to
 performance … cannot affect negatively to current certificated
 configurations."* This dir banks P6.16b: every dtype default face
@@ -139,7 +139,7 @@ the t≥0.5 posture; at t0 it is functionally greedy — measured in-band).
 | (iv) det 3/3 / integrity 5/5 / 0 new WARN | det **PASS all**; integrity 5/5 all dtypes in isolation; matrix-order flakes on tq4/k3v4 classified by b2 (posture × churn, not reproducible ×4); 0 new WARN class |
 | (v) real impact: tail elimination at EV ≥ −10 % | **PASS beyond the gate** — agg +29/+44/+54/+91 % on fp8/tq4/k3v4/3bit, k8v4 −0.3 %; every measured sampled face uniform |
 
-Merge decision (owner rule "only validated to merge if real impact"):
+Merge decision (rule: "only validated to merge if real impact"):
 **validated — as an opt-in posture.** Default-adoption rule not met
 (k8v4 < +10 %) → default remains greedy → certified configurations are
 byte-untouched by construction. → P6.16c: `ARC_SPEC_METHOD` serve hook

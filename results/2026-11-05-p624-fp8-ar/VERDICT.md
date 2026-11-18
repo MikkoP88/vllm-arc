@@ -76,7 +76,7 @@ reproducible.
 
 # P6.24 r100 — bottleneck scan: ALL DOORS CLOSED, v4 stands (2026-11-05)
 
-Owner directive: beat the cert9 baseline on every face with the highest
+Directive: beat the cert9 baseline on every face with the highest
 possible margin; find bottlenecks end-to-end until no options remain.
 r99 already beats every banked face (U32k −3.8%, C32k −4.6%, U8k −13.0%,
 U64k −8.2%); r100 measured the remaining optimization doors directly over

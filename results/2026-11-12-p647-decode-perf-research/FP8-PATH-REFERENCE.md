@@ -1,6 +1,6 @@
 # FP8 KV reference-path analysis — why the baseline is fast and always clean
 
-**Date:** 2026-11-12 · **Leg:** decode-perf research (A10 line) · **Owner directive:** "do
+**Date:** 2026-11-12 · **Leg:** decode-perf research (A10 line) · **Directive:** "do
 deep analyze end-to-end --kv-cache-dtype FP8 path why it has so good performance and is
 always corruption free even this hardware do not support native FP8."
 

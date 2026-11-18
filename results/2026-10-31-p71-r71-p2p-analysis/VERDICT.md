@@ -1,6 +1,6 @@
 # P6.11 / r71 — TP2 allreduce P2P-path solvability analysis + executed legs
 
-**Date**: 2026-10-31 · **Owner directives**: (1) commit + host-validate
+**Date**: 2026-10-31 · **Directives**: (1) commit + host-validate
 the ACS tooling; (2) "oneCCL never selected the P2P path (most common,
 pure config) — check: boot log with CCL_LOG_LEVEL=2; fix: enable the
 level-zero IPC/P2P knobs verified against the image's build"; (3)
@@ -19,7 +19,7 @@ soak; the two dynamic legs executed at the idle window after it,
 | Driver/link reality (directive 3b) | **CLOSED — DIRECT P2P, no defect** (r71b, executed): D2D 256 MiB fp16 copies **10.23 GB/s BOTH directions** (median of 20, min/max within 0.02), `torch.xpu.can_device_access_peer` **True** both ways. ~82 % of the Gen3×16 per-direction ceiling with the cross-socket topology baked in. The sysfs/lspci 2.5 GT/s ×1 attributes are conclusively a MISREPORT. Nothing to fix at driver/link/BIOS. Evidence: `r71b_d2d.txt`. |
 | oneCCL never selected P2P (directive 2) | **CLOSED — SOLVED-ALREADY: the champion chain selects the P2P path** (r71a, executed at `CCL_LOG_LEVEL=debug`): **every collective in the window chose the device-kernel P2P path** — 32,082 allreduce + 1,028 allgather calls, ALL `selected algo: … algo topo sycl`, zero host/offload selections; **pidfd IPC exchange "verified successfully" AND exercised** (280 `pidfd_open`, 292 `zeMemGetIpcHandle` / 280 `zeMemOpenIpcHandle`, 2,334 `fill_remote_handle` peer exports); `zeDeviceCanAccessPeer`/`zeDeviceGetP2PProperties` consulted for the p2p matrix; **`has_shm 0` on all 2,876 provider-selection lines** (no host-staged path anywhere). Evidence: `r71a_extracts.txt` + full gz logs. |
 
-**Combined answer to the owner's question**: the TP2 allreduce is **NOT
+**Combined answer to the question**: the TP2 allreduce is **NOT
 host-bounced** — it already rides direct GPU↔GPU P2P at ~10 GB/s, driven
 by oneCCL's `topo sycl` kernels over pidfd-exchanged ze IPC handles. The
 PCIe/Gen4/Gen5 "fix the link" lane closes; the ~30.4 % AR slice

@@ -1,6 +1,6 @@
 # P6.13 rung-3 gate verdict — sliced final-span store (2026-11-01)
 
-**Posture (A/B leg, owner window):** probe image
+**Posture (A/B leg, attended window):** probe image
 `vllm-arc:v0.30.0-b70-cert4-p73probe` (cert4 + repo lmcint adapter, md5
 `9a1e9227…` == repo, docker-commit law) on `arc-test`; serve =
 `serve_arc_b70_p73.sh` = r48l posture (`--long-prefill-token-threshold 2048`
@@ -70,7 +70,7 @@ profile is **NOT added to the certified long-context posture**.
 2. **Profile: experimental, uncertified.** `LMC_STORE_SLICE_TOKENS=4096`
    demonstrably de-concentrates the final-span store (TTFT −1.5…−3.5 s at
    64k, zero one-shot stores, full-hit + mid-drain integrity clean) but the
-   pre-registered adopt rule was not met; enabling it stays an owner call on
+   pre-registered adopt rule was not met; enabling it stays an operator call on
    the corrected bar (§2). Recorded in CONFIGURATION-arc's long-context
    profile as experimental.
 3. W14 restored post-window — after a lived 5-attempt failure chain whose

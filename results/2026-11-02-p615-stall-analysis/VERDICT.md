@@ -1,6 +1,6 @@
 # p615 stall analysis — bystander-gap taxonomy from banked cert6 timelines (2026-11-02)
 
-**Owner directive:** "do realy deep analyze and research is anyway to
+**Directive:** "do realy deep analyze and research is anyway to
 minimize all gap p95 U32k/U64k or fixes … if is possible minimize also
 fp8 stall." This is the analysis phase (master plan P6.15) — zero new
 rig traffic; it decomposes the ALREADY-BANKED cert6 release-gate

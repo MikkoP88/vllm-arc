@@ -1,6 +1,6 @@
 # p615 B6 — turboquant_k8v4 + MNBT 4096: quality-safest preset's balanced stall face (2026-11-02)
 
-Owner follow-up ("result has to be comprehensive performance analyzes … why
+Follow-up ("result has to be comprehensive performance analyzes … why
 comprehensive analyze missing all turboquant types?"): P6.15's knob legs had
 sampled only `4bit_nc`; B6–B8 complete the dtype × knob matrix with the
 balanced face (MNBT 4096) for every remaining preset. One-variable leg off

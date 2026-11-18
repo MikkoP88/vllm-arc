@@ -1,12 +1,12 @@
 # P6.13 — rung 3: sliced final-span store (feasibility + design + predictions)
 
-**Owner directive (2026-11-01):** "run deep analyze is this possible fix
+**Directive (2026-11-01):** "run deep analyze is this possible fix
 and if is write plan to fix and start to implementeing start-to-end fix"
 — following the END-stall deep analysis
 (`results/2026-11-01-p65-end-stall-analysis/ANALYSIS.md`, commit
 1890174e).
 
-**Status: GATED (2026-11-01 owner window) — see `VERDICT.md`. Short form:
+**Status: GATED (2026-11-01 attended window) — see `VERDICT.md`. Short form:
 every safety/regression face GREEN (integrity 5/5 + determinism 3/3, run7n
 dead-center 300.48 / 84.41-84.57, U32k/C32k families unchanged, zero
 ERROR/WARN-fork-added); mechanism confirmed exactly (63 232-class = 0 all
@@ -33,7 +33,7 @@ default-OFF; the enabling profile stays experimental/uncertified.**
   time-aligned with the END) is scheduler-side; the P6.6 lane already
   rejected the scheduler lever family on evidence (r66a/b/c). The M4
   discriminating capture (empty-queue U64k end-window) remains the
-  owner-window item from the END-stall annex. M3/M5 are ms-class —
+  attended-window item from the END-stall annex. M3/M5 are ms-class —
   untouched by design.
 
 ## 2. Why the fix is safe: call-shape equivalence
@@ -151,7 +151,7 @@ family unchanged; else record RED and keep default-OFF.
 
 ## 7. What was NOT done (and why)
 
-- No rig boot / no image build — GPU work is owner-window-only. The
+- No rig boot / no image build — GPU work is attended-window-only. The
   gate script below is ready; it reuses `/root/build/p65/` harness
   (p65_timeline_v51.py) and the r48l probe-image flow (docker commit,
   the race-free path proven by r48i/r48iv2's failure).

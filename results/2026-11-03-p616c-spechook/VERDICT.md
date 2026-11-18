@@ -1,6 +1,6 @@
 # p616c — ARC_SPEC_METHOD serve hook: end-to-end validation (2026-11-03)
 
-Close-out of the owner P6.16 directive (*"run full analyze and research
+Close-out of the P6.16 directive (*"run full analyze and research
 how to implement fix inline … start-to-end implementations and fix
 deployment"*): the P6.16b-proven probabilistic draft posture ships as an
 **opt-in serve-layer knob** — `ARC_SPEC_METHOD=probabilistic` in

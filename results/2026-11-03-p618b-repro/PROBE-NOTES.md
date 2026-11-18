@@ -1,6 +1,6 @@
 # P6.18b — TurboQuant corruption reproduction battery (cert6, 2026-11-03)
 
-Owner report: `--kv-cache-dtype turboquant_k8v4` corrupt returns; all TQ
+Report: `--kv-cache-dtype turboquant_k8v4` corrupt returns; all TQ
 presets to be re-validated. Campaign: 6 faces on rig 10.20.3.REDACTED
 (`/root/build/p618/repro/`, script `p618b_repro.sh`, probe
 `p618_longprobe.py`) — fp8 control, k8v4, tq4, k3v4, 3bit, k8v4+LMC=0.
@@ -41,9 +41,9 @@ presets to be re-validated. Campaign: 6 faces on rig 10.20.3.REDACTED
   object. r42's 5/5 was a harness artifact (immediate same-content rehits
   never engaged the LMC load path; single-page prompts; no churn).
 
-## Reframe for P6.18 (owner report context)
+## Reframe for P6.18 (report context)
 
-k8v4 owner-visible garble may be (a) the same resume defect amplified by
+k8v4 user-visible garble may be (a) the same resume defect amplified by
 TQ quantization noise (wrong-resume KV → incoherent, not just near-tie
 flip) or (b) an additional TQ-specific byte defect. Discriminators in
 this battery: k8v4 garble detectors vs fp8's clean-but-flipped text;
@@ -98,7 +98,7 @@ k8v4lmc0 leg (LMC off) — flips vanishing there pin the LMC path (H1).
 - **H3 (pending tq4/k3v4/3bit v2 readings)**: a TQ byte defect in the
   pool-view store/load path (4-bit packing / lagged-flush window)
   adding real KV corruption on top of H2 — would show as REP-LOOP/JUNK
-  garble in real text. Owner-visible k8v4 garble = H2 amplified by TQ
+  garble in real text. User-visible k8v4 garble = H2 amplified by TQ
   quant noise if H3 is dead.
 - Upstream context: vllm upstream does NOT support mamba/hybrid prefix
   caching at all in this era (vLLM #61970 "pending Mamba boundary
@@ -119,7 +119,7 @@ k8v4lmc0 leg (LMC off) — flips vanishing there pin the LMC path (H1).
   class is in the forward computation (quant kernels), not cache
   resume; (b) deterministic (identical bytes every phase) → engine
   self-consistent, no state-dependent corruption on this face. This
-  is the owner-visible "corrupt returns" face reproducing on the most
+  is the user-visible "corrupt returns" face reproducing on the most
   aggressive preset. chars 4667 vs the requested 400-word conclusion
   (~2.5k chars) = overlong degenerate generation, classic
   degraded-quant signature — but the probe's source text is
@@ -207,7 +207,7 @@ k8v4lmc0 leg (LMC off) — flips vanishing there pin the LMC path (H1).
   WITH LMCache DISABLED. The resume-flip class lives in the engine
   GPU-APC path, not the LMC store/load path. (fp8 already proved it
   independent of dtype; lmc0 proves it independent of LMC.)
-- **Class B on k8v4 CONFIRMED (the owner's reported dtype)**: all
+- **Class B on k8v4 CONFIRMED (the reported dtype)**: all
   four classes REP-LOOP cold-included with LMC off — the "corrupt
   returns" report reproduces without any LMCache involvement; the
   degeneration is the dtype's forward compute (TQ KV dequant/quant
@@ -248,12 +248,12 @@ k8v4lmc0 leg (LMC off) — flips vanishing there pin the LMC path (H1).
   (needs a specific cache-pressure sequence); one clean pass does
   not clear a dtype. Consequence for p618d: the long gate must
   AMPLIFY — multiple churn+rehit cycles per dtype, not one —
-  to make Class A absence certifiable (owner's "100% sure").
+  to make Class A absence certifiable (the "100% sure").
   k8v4lmc0's flip (different boot, LMC off) stands as the
   engine-local proof; fp8 v1's 4 flips stand as the default-dtype
   proof.
 
-## k8v4v3 re-pass (LMC=1) — both classes on the owner's dtype
+## k8v4v3 re-pass (LMC=1) — both classes on the dtype
 
 - Class B: SAME cross-dtype attractor hashes as k8v4lmc0 (essay
   700bbba1f878, code 76a92299e7ea, multi 971d33b4163e) — REP-LOOP
@@ -263,7 +263,7 @@ k8v4lmc0 leg (LMC off) — flips vanishing there pin the LMC path (H1).
   971d33b4163e → 8853a9d894bb → back, chars 3118 → 7676 → 3118
   (the flipped trajectory runs the attractor 2.5× longer before
   stopping). With k8v4lmc0's [essay] flip, Class A is now observed
-  on the owner's dtype in BOTH LMC modes → engine-local, twice.
+  on the dtype in BOTH LMC modes → engine-local, twice.
 - [multi] t1_seed_identical=False — the seeded-sampling break seen
   on 3bit reproduces on k8v4 (probabilistic-draft lane suspect;
   needs its own discriminator in p618c: greedy lane A/B).
@@ -279,7 +279,7 @@ k8v4lmc0 leg (LMC off) — flips vanishing there pin the LMC path (H1).
 ## Verdict (battery + re-pass, 2026-11-03; diag/diag2 forensics appended below)
 
 **TWO distinct defect classes, both reproduced and both outside the
-certified battery's field of view. The owner's turboquant_k8v4
+certified battery's field of view. The turboquant_k8v4
 "corrupt returns" report = Class B (primary, always-on) with Class A
 (temp-0 flips) layered on top.**
 
@@ -313,7 +313,7 @@ certified battery's field of view. The owner's turboquant_k8v4
    real text, zero flags, all identities hold. TurboQuant is STOCK
    vllm wheel code (triton_turboquant_{store,decode}.py et al.);
    every broken preset carries 4-bit-class V (per-slot scalar affine
-   16-level) — V precision is the binding constraint. Owner-visible
+   16-level) — V precision is the binding constraint. User-visible
    "corruption" on TQ = this class; NOT a cache defect.
 
 3. **Dead hypotheses**: H1/H3-as-store/load (LMC roundtrip byte
@@ -325,13 +325,13 @@ certified battery's field of view. The owner's turboquant_k8v4
 4. **Certified-battery blindness**: integrity 5/5 + det 3/3 passed
    on EVERY leg incl. the degenerate ones — the certified gates
    never measured long-generation text quality, truncation, or
-   t1-seed reproducibility. p618d adds the LONG-RETURN GATE (owner
+   t1-seed reproducibility. p618d adds the LONG-RETURN GATE (gate
    directive: 100% sure no corruption or looping) with churn
    amplification (≥3 cycles) on every dtype.
 
 Disposition into p618c: Class A = resume-coherence fix in
 vllm_gaudi/xpu/patches (+ upstream-style + plan-§1 naming laws,
-owner directives 2026-11-03); Class B = XPU numeric roundtrip test
+directives 2026-11-03); Class B = XPU numeric roundtrip test
 through the boot-selected TQ store→decode pair; if numerics correct
 → TQ dtypes deprecated for this model (serve guard + docs — new
 quant kernels are scope-law-blocked), fp8 default untouched.
@@ -376,7 +376,7 @@ ARC_SNAP_PROBE + LMCACHE_LOG_LEVEL=DEBUG)
   degenerate attractor. Consequences: (a) no engine "fix" is
   possible or warranted for A beyond documentation (within-path
   determinism guaranteed; cross-path byte-identity is not a
-  guarantee any cached system can make); (b) the owner's
+  guarantee any cached system can make); (b) the
   "100% sure no corruption or looping" gate = per-dtype CLEAN text
   (no loops/junk/truncation) + within-path identity + t1-seed
   reproducibility — achievable on fp8, NOT achievable on TQ dtypes

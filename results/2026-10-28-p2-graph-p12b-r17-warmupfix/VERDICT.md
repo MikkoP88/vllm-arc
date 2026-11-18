@@ -50,7 +50,7 @@ with its own counterfactual. Defect-b: CLOSED at the posture level.
 - The warmup adds ~10 s (trimmed) to first traffic on every boot; the
   certified-image acceptance bench must absorb that (warm-hit gate measures
   post-warm behavior).
-- Upstream issue text (model v3 + warmup workaround) awaits owner sign-off.
+- Upstream issue text (model v3 + warmup workaround) awaits sign-off.
 
 ## Artifacts
 

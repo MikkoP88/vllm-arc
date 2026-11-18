@@ -4,7 +4,7 @@
 # evidence banked), p11 CLOSED void-on-dense, p50 CLOSED-as-evidence-complete, p14
 # DIAGNOSED with an in-scope follow-up lane. Product posture MERGES to main (squash of
 # the linear chain feat/arc-p33-draft-chain = p12+p12b+p32+p30+p31+p10 code + r18–r29
-# evidence), per owner instruction "p12b → main at close" — the linear chain makes the
+# evidence), per standing instruction "p12b → main at close" — the linear chain makes the
 # tip the complete carrier.
 
 Product posture at close: upstream v0.30 + platform patches (P1, on main) + graph
@@ -50,7 +50,7 @@ amendment, r29); profile legs LAST; STOP radiance before arc legs, restore W14 a
   P2 product code (p12b stream hygiene + interlock; p32 speculator coercion; p30 MTP
   wiring; p31 gate; p10 fastpath) + the full r18–r29 evidence chain. Defect-level
   gates all PASS; the missed rows are proven-unreachable performance targets, not code
-  defects — exactly the owner's "p12b → main at close" instruction (the chain is
+  defects — exactly the "p12b → main at close" instruction (the chain is
   linear, the tip is the complete carrier).
 - Evidence-only legs live inside that squash as results/ dirs (no posture changes).
 - p14 reval + P4 open on fresh branches per the one-branch-per-item law.

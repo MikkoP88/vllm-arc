@@ -1,6 +1,6 @@
 # p615c — t1.0-xhigh collapse mechanism: WHEN / WHY / FIX (2026-11-03)
 
-Owner ask (2026-11-03): *"when this collapse happened — k8v4 solo200
+Request (2026-11-03): *"when this collapse happened — k8v4 solo200
 n=200 dt=7.67 s tps=26.08 ← collapse leg: 3× the wall time — and why, and
 is a possible fix?"*
 

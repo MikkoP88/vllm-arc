@@ -1,6 +1,6 @@
 # P6.25 — the overlap door: measured CLOSED (r101, 2026-11-06)
 
-Owner directive (verbatim, 2026-11-06): *"Identify and eliminate all remaining
+Directive (verbatim, 2026-11-06): *"Identify and eliminate all remaining
 Prefill bottlenecks, performance bottlenecks, optimize critical paths, minimize
 runtime overhead, and eliminate remaining latency gaps, this is code
 optimization work no existing knob testing or hardware stuff. Do realy deep

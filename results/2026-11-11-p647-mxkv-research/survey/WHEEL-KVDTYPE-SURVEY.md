@@ -33,7 +33,7 @@ template for a sub-byte per-token-head KV mode.
 
 **Verdict: no lawful donor or upstream source carries MXFP4/MXFP8
 KV-cache support. The lane is a from-scratch in-house implementation
-(owner directive 2026-11-11), on the wheel's own sub-byte KV-mode
+(directive 2026-11-11), on the wheel's own sub-byte KV-mode
 template (TQ AoS kernels + int4_per_token_head), injected via the
 fork's `_WHEEL_HOOKS` exec-wrap (pins untouched).**
 

@@ -1,13 +1,13 @@
 # P6.5 annex — why the END of a long-context request stalls bystander streams
 
-**Question (owner, 2026-11-01):** "deep analyze why ending of prompt
+**Question (2026-11-01):** "deep analyze why ending of prompt
 request answer stall all other concurrent streams on long context — I
 think start when prefill hits maybe can stall, but why also end stalls?"
 
 **Scope:** analysis only, from banked evidence (r48a–r48l, r66 series,
 r43a/b probes) + code walk of the live connector/scheduler paths. No rig
 work; the one confirming capture this analysis proposes is listed as an
-owner-window item at the end. Parent lane: P6.5
+attended-window item at the end. Parent lane: P6.5
 (`results/2026-10-31-p65-r48a-stall-capture/VERDICT.md`, corrected
 matrix after the r48f harness reversal).
 
@@ -55,7 +55,7 @@ face, bystander table around the long stream's completion:
      scheduler_v030.py:2561-2588), overlapped with the in-flight GPU
      step under async scheduling (:2603-2610 deferred frees).
 
-So the owner's observation is real but scale/posture-dependent: the
+So the observation is real but scale/posture-dependent: the
 end-stall appears on LONGER contexts (≥64k), on the thr2048+LMC
 postures, and/or in workloads with queued follow-on requests. Five
 mechanisms, evidence-graded:
@@ -98,7 +98,7 @@ the +24.6 s is the store path ([vii-a], a 64k×concurrency phenomenon;
 at 32k it is zero: r48h LMC 22.78 s ≈ nolmc 22.39 s, gaps 729/1291 vs
 705/1262).
 
-To a bystander this reads exactly as the owner describes: the stall
+To a bystander this reads exactly as described: the stall
 starts at prefill, keeps worsening, and only releases around the long
 request's boundary events — so "it also stalls at the end."
 
@@ -123,7 +123,7 @@ first 8192-token chunk into the next step → bystanders take a fresh
 correlation says "the end caused it"; the mechanism is the next START
 riding the end's admission. On the certified ≤32k posture — where the
 end's own work is ≤302 ms (W_F1_end) — this aliasing is the DOMINANT
-perceived end-stall. The owner's client patterns make it prominent:
+perceived end-stall. The client patterns make it prominent:
 r48g's wave-2 drained near-solo (+89 s) precisely because faces admitted
 after the long one; a sequential client (next request fires on
 completion) makes every end coincide with a fresh prefill by
@@ -143,7 +143,7 @@ context; never measured dominant.
 
 The START stall is chunk-step compute ([ii]/[viii]: bystander ITT = step
 time). The END stall is NOT its mirror — the engine does no long compute
-at end. What the owner sees at long context is the superposition of:
+at end. What is observed at long context is the superposition of:
 
 1. **M1** — the store tail (final-span/one-shot store +1 step) landing in
    the answer's first, bystander-shared step: 1.6–2.2 s max-gap class at
@@ -180,7 +180,7 @@ work inside shared steps or gates the next step's composition.
   quantified). A pacing law that keeps a fresh long prefill's first
   chunk OUT of bystander-shared steps would also erase the M4 aliasing.
 
-## 9. Confirming capture (owner-attended-window item, not run)
+## 9. Confirming capture (attended-window item, not run)
 
 One discriminating leg, no new code: U64k fresh face on the certified
 default posture with **zero queued requests behind it** (wave-2

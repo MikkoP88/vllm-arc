@@ -57,7 +57,7 @@ engine leg must size the grid against real B×Hq and queue a split-KV
 variant if small-batch decode shows the same ceiling. Store cost is
 negligible (prefill path).
 
-## Standing laws applied on this lane (owner directives 2026-11-11)
+## Standing laws applied on this lane (directives 2026-11-11)
 
 - Corruption/garbage validation is END-TO-END (live engine, both
   models, suite-13 + suite-14 class) — offline faces here prove the

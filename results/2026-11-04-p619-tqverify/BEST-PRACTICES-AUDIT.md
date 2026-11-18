@@ -1,6 +1,6 @@
 # BEST-PRACTICES-AUDIT — P6.19 TQ spec-verify fix (cert8, 2026-11-04)
 
-Owner directive (P6.19e, 2026-11-04): *"do deep research and analyze all
+Directive (P6.19e, 2026-11-04): *"do deep research and analyze all
 fix and changes are included in line best practise project patches."*
 Same standard as the P6.18c audit (`../2026-11-03-p618-cert7/` tree):
 every change patterned against (a) the wheel's own code — the upstream

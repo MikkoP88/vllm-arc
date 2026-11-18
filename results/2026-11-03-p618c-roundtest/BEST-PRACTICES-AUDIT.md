@@ -1,6 +1,6 @@
 # P6.18 best-practices audit — are all fix changes in line with upstream practice?
 
-**Date**: 2026-11-03 (owner directive: "deep research and analyze all fix
+**Date**: 2026-11-03 (directive: "deep research and analyze all fix
 changes are included in line best practise project patches") · **Scope**:
 every artifact the P6.18 campaign changed — the cert7 platform guard
 (`vllm_gaudi/xpu/platform.py`, commit `848dd7ef`), the evidence trees

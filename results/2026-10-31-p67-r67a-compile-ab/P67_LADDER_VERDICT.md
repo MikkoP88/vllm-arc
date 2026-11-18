@@ -1,6 +1,6 @@
 # P6.7 ladder verdict — rungs A and C CLOSED NEGATIVE, rung B re-scoped
 
-**Date**: 2026-10-31 · owner ladder directive (plan §12 P6.7 LADDER
+**Date**: 2026-10-31 · ladder directive (plan §12 P6.7 LADDER
 EXPANSION): rung A compile, rung B ESIMD FA fusion + GDN chunk-scan, rung C
 direct fp8 XMX GEMM — "included if none of regressions".
 
@@ -13,7 +13,7 @@ capture ladders must respect it under FULL_AND_PIECEWISE.
 
 ## Rung C — direct fp8 XMX GEMM: CLOSED NEGATIVE on banked + new evidence
 
-The owner's condition was "where an on-image kernel exists". It exists:
+The condition was "where an on-image kernel exists". It exists:
 `XPUFp8BlockScaledMMKernel` (vllm/model_executor/kernels/linear/scaled_mm/
 xpu.py:192) → `torch.ops._xpu_C.fp8_gemm` — native oneDNN block-scaled
 W8A8, exactly our 128×128 checkpoint format. But it is NOT unexploited:
@@ -51,7 +51,7 @@ The capture overturns the premise AND re-aims the target:
 3. GDN chunk-scan (5 `gdn::Chunk*` kernels ×336) = 4.7% — marginal alone.
 4. NEW unlisted lever: TP2 allreduce family ≈ **30.4%** of device time at
    U32k (ring 2.25 s + ReduceCopy 2.26 s → `c10d::allreduce_` verified +
-   barrier 0.15 s). Second-largest slice; not owner-named — recorded as the
+   barrier 0.15 s). Second-largest slice; not part of the request — recorded as the
    top recommendation beyond the named rungs (needs its own message-size
    capture; candidates: one-shot for small chunks, overlap, fused AR+norm).
 

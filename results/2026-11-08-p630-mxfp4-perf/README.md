@@ -1,6 +1,6 @@
 # P6.30 — MXFP4 online-quantization performance: root cause + W4A16 fix (r113–r120e)
 
-Owner directive (2026-11-07): *"Prefill, Decode and TTFT performance number
+Directive (2026-11-07): *"Prefill, Decode and TTFT performance number
 HAS TO BE SUPERIOR ON MXFP4 versus FP8! RUN FULL DIAGNOSTIG AND ANALYZE OF
 PERFORMANCE ISSUES AND FIX ROOT ISSUE, THIS MAJOR ISSUE!"* — plus the P6.30
 directive to make online MXFP4/MXFP8 quantization work and validate on

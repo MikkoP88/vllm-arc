@@ -1,6 +1,6 @@
 # p615 B4 — fp8 + MNBT 4096: stalls halved, capacity +6.8 %, TTFT +13/+8 % (2026-11-02)
 
-The owner's fp8 ask ("if is possible minimize also fp8 stall"). One-variable
+The fp8 ask ("if is possible minimize also fp8 stall"). One-variable
 leg off the fp8 default posture: `fp8_e4m3`, `ARC_MNBT=4096` (chunk floor
 4×832 = 3328-token chunks, confirmed by **3328-class × 74** store lines;
 832×268 are the bystander decode-chunk stores), no thr. Battery clean:

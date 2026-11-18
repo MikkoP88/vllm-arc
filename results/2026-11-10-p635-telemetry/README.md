@@ -1,6 +1,6 @@
 # P6.35 — End-to-end telemetry: decode/prefill/TTFT root-cause (leg A banked)
 
-Owner directive 2026-11-10: comprehensive telemetry end-to-end to locate
+Directive 2026-11-10: comprehensive telemetry end-to-end to locate
 root issues in **Decode, Prefill, TTFT**; plan every improvement; full
 validation matrix (gemma-4-31B + qwen3.8-27b × MTP on/off × FP8/MXFP8/
 MXFP4) at certification.
@@ -114,7 +114,7 @@ standalone tokenizer bench `p135_tok.py`) decomposes the non-engine slice.
 - EXEC/PINP lines log `r?` — V2 GPUModelRunner has no `rank` attr
   (Worker lines do).
 
-## Improvement plan (owner: "comprehensive plan for every improvement")
+## Improvement plan (ruling: "comprehensive plan for every improvement")
 
 D-decode host-stall lanes (one fix per leg, gated e2e, upstream-shaped):
 
@@ -135,13 +135,13 @@ D-decode host-stall lanes (one fix per leg, gated e2e, upstream-shaped):
    split names. Device prefill (8.6 tok/ms) is near its own envelope
    (chunk EXEC 867 ms/7,488 tok at 27B TP2 is the weight+KV floor for
    chunked prefill; secondary target: chunk-gap overlap).
-4. **P6.35-V — full validation matrix** (owner-specified): gemma-4-31B
+4. **P6.35-V — full validation matrix** (specified): gemma-4-31B
    (no MTP) × {fp8, mxfp8, mxfp4} + qwen3.8-27b × {MTP k3, MTP off} ×
    {fp8, mxfp8, mxfp4} — arc_pybench battery both models; cert23 if any
    engine code changes; all docs + both remotes + gh release
    (cert-release-sequence law).
 
-Answer to owner's Rust question (2026-11-10): solvable in Python —
+Answer to the Rust question (2026-11-10): solvable in Python —
 upstream runs this architecture on CUDA at 5–15 ms/step host; our 40 ms
 is stack-specific (eager CCL Python calls, per-op glue, metadata
 rebuilds), not a language wall; a Rust engine would violate the fork
@@ -298,7 +298,7 @@ runs them off-trace.
 
 ### Next lanes (priority order)
 
-1. **P6.35-P posture sweep** (stock cert22, owner-matrix core):
+1. **P6.35-P posture sweep** (stock cert22, requested-matrix core):
    spec{3,5} × quant{fp8, mxfp4/W4A16} solo faces — W4A16 quarters
    weight bytes (floor 23 → ~11.5 ms) and k5 raises tokens/read;
    both certified lanes (cert20/cert11). Winner posture → P6.35-V
@@ -420,7 +420,7 @@ p135_face_*.json,boot.txt}`; logs redacted (law 8;
 
 ## P6.35-V full validation matrix (vmatrix/, 2026-11-10 17:38Z complete)
 
-Owner-directed matrix on cert23 — 11 cells + fp8-k3 gate references, 0
+Operator-directed matrix on cert23 — 11 cells + fp8-k3 gate references, 0
 tracebacks, db markers correct at every spec depth (spec0=2, k3/k5=6).
 Full tables and postures in **`vmatrix/README.md`**. Headlines:
 

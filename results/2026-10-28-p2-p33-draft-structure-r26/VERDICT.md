@@ -1,4 +1,4 @@
-# VERDICT — p33 draft-structure probe leg (r26): owner premise FALSIFIED by measurement — the MTP draft is TWO back-to-back gapless graph replays and the cost is replay CONTENT, not per-replay overhead. Chained-graph lever DEAD by evidence; redirected to draft-content attribution (r27 profile). Golden instrument: cross-boot nondeterminism floor discovered on mode=none (1/5 drift vs banked ref) — protocol amendment recorded below.
+# VERDICT — p33 draft-structure probe leg (r26): stated premise FALSIFIED by measurement — the MTP draft is TWO back-to-back gapless graph replays and the cost is replay CONTENT, not per-replay overhead. Chained-graph lever DEAD by evidence; redirected to draft-content attribution (r27 profile). Golden instrument: cross-boot nondeterminism floor discovered on mode=none (1/5 drift vs banked ref) — protocol amendment recorded below.
 
 Posture: product stack VERBATIM (mode=none + FULL_DECODE_ONLY spec capture [1..320],
 MTP k4, VLLM_XPU_ENABLE_XPU_GRAPH=1, ARC_TRACE_FLIP=1) + meta-path probes (p10 fastpath,
@@ -58,7 +58,7 @@ on this stack** (reduction/AR scheduling order flipping near-tie argmax). Conseq
 
 ## p33 chained-graph lever: CLOSED by measurement (never built — evidence law)
 
-The owner's framing (chain 4 draft replays into 1, save ~3×3.5 ms) has no object: only
+The framing (chain 4 draft replays into 1, save ~3×3.5 ms) has no object: only
 ONE boundary exists and its gap is 0.01 ms. Chaining prefill+fused into one graph would
 save ≤0.01 ms and add capture-complexity risk. **Lane closed.** The ≤7 ms draft target,
 if reachable, lives in replay CONTENT (collectives/lm_head), attributed by r27.
@@ -80,7 +80,7 @@ if reachable, lives in replay CONTENT (collectives/lm_head), attributed by r27.
 Boot product posture timers-OFF + p10 only with `--profiler-config` (r19 pattern), warm +
 c1 steady-decode window (LAST on boot per aggregation-hang law): (1) attribute the
 15.2 ms draft window (collectives/ccl vs lm_head GEMM vs FA vs other); (2) forward-window
-AR share (owner AR-attribution ask; contingency proposal + scope check if >10 ms).
+AR share (AR-attribution request; contingency proposal + scope check if >10 ms).
 Candidate one-flag upstream lever if draft comm-dominated:
 `speculative_config.use_local_argmax_reduction=true` (Qwen3_5MTP implements
 LocalArgmaxMixin.get_top_tokens; validation path exists in DraftModelSpeculator).

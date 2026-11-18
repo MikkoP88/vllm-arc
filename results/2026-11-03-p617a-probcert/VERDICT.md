@@ -8,7 +8,7 @@ for the validation boots d/e (sha256 57ff1564…, identical to
 `tools/serve_arc_b70.sh` on this branch; pre-flip bytes preserved on the rig
 as `/root/build/serve_arc_b70_p616.sh`).
 
-**Owner directives (2026-11-03):** the certified line is
+**Directives (2026-11-03):** the certified line is
 `ARC_SPEC_METHOD=probabilistic`; ALL record values come from that lane —
 missing faces measured; prob lanes are the superior lanes; old non-prob-lane
 record values cleaned from the current docs (kept only as the labeled opt-out
@@ -93,9 +93,9 @@ bytes; `greedy` → the exact pre-P6.17 bytes; `ARC_SPEC=0` → no spec flag.
 - **Certified line:** `ARC_SPEC_METHOD=probabilistic` — now the serve
   script's DEFAULT (unset → prob bytes). `ARC_SPEC_METHOD=greedy` = the
   opt-out historical lane (pre-P6.17 bytes, byte-identical at t0).
-- **Owner override recorded:** the P6.16 pre-registered default-flip rule
+- **Override recorded:** the P6.16 pre-registered default-flip rule
   (every dtype ≥ +10 % agg) would have kept greedy (k8v4 EV-neutral at
-  −0.3 %); the owner directives of 2026-11-03 override it — prob is the
+  −0.3 %); the directives of 2026-11-03 override it — prob is the
   certified default on the strength of fp8 +29 % / tq4 +44 % / k3v4 +54 % /
   3bit +91 %, uniform sampled solo streams, and the correct-sampler
   property. Ledger in PERFORMANCE-arc "Default-flip ledger".

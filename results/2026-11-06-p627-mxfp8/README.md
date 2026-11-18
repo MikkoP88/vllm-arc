@@ -1,9 +1,9 @@
 # P6.27 — MXFP8 validation: intel-ai AutoRound checkpoint (2026-11-06)
 
-Directive (owner, 2026-11-06): full MXFP8 testing/validation on
+Directive (2026-11-06): full MXFP8 testing/validation on
 `intel-ai/Qwen3.8-27B-MXFP8-MXFP8MTP-CT-AutoRound`; deep-analyze any
 issue, fix start-to-end if needed, certify, update docs. Scope-law
-basis (plan §P6.27): owner-named model route; same arch family as the
+basis (plan §P6.27): requested model route; same arch family as the
 target (`Qwen3_5ForConditionalGeneration` text config, dense hybrid-GDN,
 MTP drafter in-checkpoint and quantized).
 
@@ -115,7 +115,7 @@ behavior; spec gates pass on every leg that shows it (0.9853 / 0.9951
 
 ## Verdict
 
-The owner-named MXFP8 checkpoint boots, serves, speculates (k3, on the
+The requested MXFP8 checkpoint boots, serves, speculates (k3, on the
 quantized MTP drafter), and measures clean under the full certified
 posture on the unmodified cert11 image — the r106 recon's predictions
 held byte-for-byte (no platform rejection, native `XPUMxFp8LinearKernel`

@@ -1,11 +1,11 @@
 # P6.26 — MXFP4 support: validation + fix (2026-11-06)
 
-Directive (owner, 2026-11-06): full MXFP4 testing/validation on
+Directive (2026-11-06): full MXFP4 testing/validation on
 `amd/Qwen3.8-27B-Quark-AWQ-MXFP4` and `RedHatAI/Qwen3.8-27B-MXFP4xFP8`;
 deep-analyze any issue, fix start-to-end upstream-style, certify image,
 update docs. Scope-law basis (plan §3/App I): both checkpoints are
-owner-named model routes — line-C/D "target model only" law applies to
-the *engine*, not to owner-directed probe models (P6.26 directive
+requested model routes — line-C/D "target model only" law applies to
+the *engine*, not to operator-directed probe models (P6.26 directive
 recorded plan §P6.26).
 
 Harnesses: `tools/ar/r102_mxfp4_recon*.sh` (wheel recon, 8 parts),
@@ -169,7 +169,7 @@ evidence law working as designed.
 
 ## Verdict
 
-Both owner-named MXFP4 checkpoints boot, serve, speculate (k3), and
+Both requested MXFP4 checkpoints boot, serve, speculate (k3), and
 measure clean under the full certified posture on the patched platform.
 Fix is minimal, upstream-patterned (HpuPlatform precedent), wheel-free,
 and carries no dispatch change for existing lanes (table-keyed

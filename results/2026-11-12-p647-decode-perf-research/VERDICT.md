@@ -1,6 +1,6 @@
 # P6.47 decode-path research — can MXFP4/MXFP8 be tuned to superiority vs the native baseline?
 
-**Date:** 2026-11-12 · **Leg:** decode-perf research (pre-A4) · **Owner directive:** "do
+**Date:** 2026-11-12 · **Leg:** decode-perf research (pre-A4) · **Directive:** "do
 realy deep research and analyze is possible tune --kv-cache-dtype MXFP4 and MXFP8 types
 superior versus baseline? removing all bottlenecks, improve and make more effiency
 end-to-end path."

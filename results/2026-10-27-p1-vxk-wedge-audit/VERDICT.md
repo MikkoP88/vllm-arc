@@ -1,7 +1,7 @@
 # VERDICT — p1-vxk-wedge-audit (2026-10-27)
 
 **AUDIT: NOT CLEAN — §6 contingency invoked (v88-lineage wheel rebuild +
-device-gate). Triggered by owner question mid-p2r3e; the §10 P1 gate row's
+device-gate). Triggered by review question mid-p2r3e; the §10 P1 gate row's
 wedge-audit item had never been executed/recorded (P1 VERDICT gate table
 omitted it).**
 

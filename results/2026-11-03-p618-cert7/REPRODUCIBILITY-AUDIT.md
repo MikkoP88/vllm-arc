@@ -1,6 +1,6 @@
 # P6.18e reproducibility audit — `vllm-arc:v0.30.0-b70-cert7` rebuildable from the fork (2026-11-04)
 
-Owner directive: *every fix / improvement / change carried by the certified
+Directive: *every fix / improvement / change carried by the certified
 image must exist in the project, in line with the upstream best-practice
 patch set — so any user can build a new certified image from the fork.*
 

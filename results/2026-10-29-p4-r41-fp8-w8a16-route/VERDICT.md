@@ -63,7 +63,7 @@ degradation — tracked as the existing optional diagnostic.
 2. golden_ref re-bank + full 18-cell matrix on the certified image.
 3. k5 candidate re-decision on the new posture (re-canonicalizes sha
    batteries; k5's +6.7/7.8% was measured on the OLD forward).
-4. Optional residual lanes (post-bars, owner-gated): acceptance-decay
+4. Optional residual lanes (post-bars, review-gated): acceptance-decay
    diagnostic (drafter-quant override one-boot), c4 adder shape, ESIMD
    M≤2 port (~0.1 ms/step), k1k matrix cells re-run.
 

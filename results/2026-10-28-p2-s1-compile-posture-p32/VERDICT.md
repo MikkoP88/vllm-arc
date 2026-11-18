@@ -44,7 +44,7 @@ FULL decode sizes + piecewise phases).
   chain; AR-attribution).
 - Golden-logits instrument promoted to standing gate tool (correctness gate
   (c) for every future posture leg; ref = results golden_ref.json).
-- For the upstream-issue text (owner-gated): 0.30 XPU dense+MTP ×
+- For the upstream-issue text (review-gated): 0.30 XPU dense+MTP ×
   FULL_AND_PIECEWISE = acceptance collapse + greedy drift; W14 sizes do not
   rescue it.
 
