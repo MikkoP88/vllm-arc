@@ -1,6 +1,6 @@
 # p614 L1v2 — fix v3 image (p614c2) TQ4 leg: ALL GATES PASS (2026-11-02)
 
-**Context:** owner directive 2026-11-02 (fix turboquant lagged store).
+**Context:** directive 2026-11-02 (fix turboquant lagged store).
 Image `vllm-arc:v0.30.0-b70-p614c2` (fork_sha 6f1a09d9, repo ==
 image-native adapter md5 `33812d19…`), fix v3 = TQ branch first in
 `_arc_attn_pool_view` + kernel-block→page merge + wheel-derived slot.
@@ -48,10 +48,10 @@ bypassed.
 
 ## Disposition
 
-Store-path defect: FIXED (owner directive's "fix all issues" for the
+Store-path defect: FIXED (directive's "fix all issues" for the
 lagged store under TQ — confirmed at live geometry HS=262 BS=1664).
 Remaining TQ4 costs are QUALITY-side and inherent to 4-bit sampled
-throughput (t1.0 xhigh raggedness, bystander gaps) — owner-call
+throughput (t1.0 xhigh raggedness, bystander gaps) — operator call
 material per the A/B disposition; `turboquant_k8v4` (HS=388) is the
 quality-safest candidate and is characterized next. Default fp8 face:
 non-regression battery (L2) on the same image; then remaining preset

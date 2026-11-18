@@ -23,7 +23,7 @@
 | 13 | tq_spec_fix | ok | P6.19 impl-forward patch carries over (`impl_forward_patched=True`) |
 | 14 | engine_import | ok | `mx_kv.engine` + `mx_dequant` import clean |
 
-## Naming law (owner directive 2026-11-11)
+## Naming law (directive 2026-11-11)
 
 MXFP4/MXFP8 are their **own backend family**, not TurboQuant. The lane
 now carries a true `AttentionBackendEnum.MXKV` member whose value is the

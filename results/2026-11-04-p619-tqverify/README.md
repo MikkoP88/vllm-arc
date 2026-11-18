@@ -1,6 +1,6 @@
 # P6.19 — TurboQuant spec-verify corruption: ROOT-CAUSED and FIXED (2026-11-04)
 
-Owner directive (reopening P6.18's precision-ceiling disposition):
+Directive (reopening P6.18's precision-ceiling disposition):
 *"Reopen fix this is not true! Issue is fixaple, this ISSUE HAS TO BE
 FIXED SO NO CORRUBTION ON ANY KV CACHE TYPE!, this project images do
 not have same issue do analyze why. Do deep analyze and research, and
@@ -81,7 +81,7 @@ Knobs (all documented in `docs/envs.md`):
 | `VLLM_ARC_TQ_VERIFY_MODE` | `split` | `split` = shipping (stock kernels, graph-safe). `mq` = single-pass MQ kernel — **experimental** (see §5). `synth` = stock multi-row synthetic-decode (pre-fix behavior, forensics only) |
 | `VLLM_ARC_TQ_MQ_SPLITS` | `32` | KV splits for the MQ kernel (`mq` mode only) |
 
-## 4. All-dtype shipping gate (t9) — the owner's corruption bar
+## 4. All-dtype shipping gate (t9) — the corruption bar
 
 Fix v6 mounted, **shipping default (split)**, no mode env, XPU
 graphs on, spec k=3, one boot per dtype (`p619c/t9_*/`,

@@ -1,6 +1,6 @@
 # p614 L2 — default-face non-regression battery on p614c2 (2026-11-02)
 
-**Context:** owner directive 2026-11-02. The fix's gate law: with
+**Context:** directive 2026-11-02. The fix's gate law: with
 `--kv-cache-dtype fp8_e4m3` (the certified default) NOTHING may change
 vs cert5. Image `vllm-arc:v0.30.0-b70-p614c2` (manifest fork_sha
 6f1a09d9, `rig/manifest.txt`). Batteries mirror the cert5 gate

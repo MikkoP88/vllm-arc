@@ -1,7 +1,7 @@
 # P6.21b — dense-FA headroom: roofline, route falsification, v2 open (2026-11-05)
 
 Item: the FA-lane decision ladder after the ar_quant sub-lane closed
-negative (same owner directive, plan P6.21). The banked p72 record left
+negative (same directive, plan P6.21). The banked p72 record left
 one decisive number unmeasured: the stock kernel's distance to the
 silicon roofline — the "v2 economics = parity" note assumed stock sits
 near the ceiling. Five legs (r87-r91, all throwaway cert9 containers,

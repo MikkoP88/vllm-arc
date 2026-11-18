@@ -1,7 +1,8 @@
 # REDACTION 2026-10-31 — rig host address scrubbed from banked results
 
-**Directive**: owner, 2026-10-31 — "run full sweep and add plan: never
-upload any secrets, ip address and etc." Tracked tree == pushable tree
+**Directive** (2026-10-31): run a full sweep and add a standing rule —
+never publish secrets, host addresses, or credentials in tracked files.
+Tracked tree == pushable tree
 (plan §11 rule 9, added the same day); the rig's real address
 (`10.20.3.<host>`) appeared in 32 banked `results/` files and was scrubbed.
 
@@ -31,7 +32,7 @@ upload any secrets, ip address and etc." Tracked tree == pushable tree
 ## E-law note
 
 Banked results bytes are immutable by the evidence law; this edit is the
-one sanctioned exception (owner directive, hygiene > byte-preservation
+one sanctioned exception (directive, hygiene > byte-preservation
 for HOST ADDRESSES only), and it is recorded here + in the squash commit
 so the audit trail stays complete. The address itself remains valid
 locally: it lives in the untracked layer (`CLAUDE.local.md`, plan §9).
@@ -43,7 +44,8 @@ log files (origin mirror + github branches/tags). History rewrite is
 REJECTED: certified `rel/*` tags and IMAGE_MANIFEST `fork_sha` lines pin
 commit SHAs — rewriting invalidates the certification chain. The law
 (plan §11 rule 9) protects the tree forward; if the repo's visibility
-ever changes, the owner decides on a rebuild-from-scratch re-publish.
+ever changes, a rebuild-from-scratch re-publish is a deliberate review
+decision.
 
 ## Files
 
@@ -76,7 +78,7 @@ ssh password helpers, credential assignments, private-key blocks, bearer
 strings — all zero), no MAC addresses, no Windows
 usernames, no other RFC1918 addresses in fork-own files (upstream
 placeholders `${{ secrets.* }}` in `.github/` and `api_key="EMPTY"`
-examples are upstream content and contain no real values). The owner's
+examples are upstream content and contain no real values). The
 git identity email in `2026-10-30-p5-r45-env-log-audit/evidence.txt` is
 commit-metadata-public by design (marker-free commit law) and was left
 as banked bytes.

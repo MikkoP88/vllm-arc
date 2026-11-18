@@ -23,9 +23,9 @@ wheel_guard PASS, in-build gates PASS. **r46u glue repro image-native on
 the tag-built image: 13/13 PASS, ALL_GREEN** (evidence/cert2_repro.txt).
 Build log: evidence/cert2_build.log (stack layers cached; ~7 min).
 
-## Part 2 — non-spec performance testing on cert2 (owner-requested)
+## Part 2 — non-spec performance testing on cert2 (requested)
 
-Per owner directive: non-spec PERFORMANCE TESTING only — non-spec stays
+Per directive: non-spec PERFORMANCE TESTING only — non-spec stays
 out of the recommended configurations (docs unchanged on that point;
 `speculative_config=None` serves are a testing/baseline posture, run as
 `ARC_SPEC=0` through the uniform tool or by omitting

@@ -1,6 +1,6 @@
 # P6.10 provenance inventory — which current-record numbers were cert4-native before r70
 
-**Owner directive (2026-10-31)**: "cert4 has to be measured comprehensively
+**Directive (2026-10-31)**: "cert4 has to be measured comprehensively
 and all information has to be exist based on last certificated image not
 from other image." This table is the audit that scoped the r70 campaign:
 every number in the current record (README "Certified performance" +
@@ -26,7 +26,7 @@ measured it. r70 = the campaign that closes every NO row natively on
 | greedy acceptance % (85.6 %) | r46t counters | **p46** (original-cert engine) | leg A spec gate (t0 window) |
 | TTFT t1 ladder 8k/16k/32k | 3.4/7.3/15.6 s | r42/r43 legs — **original cert** | leg A solo ladder U8k/**U16k**/U32k/U64k (U16k is new — no image ever measured it) |
 | TTFT t1 64k | 40.9 s (concurrent-load) | r46 leg — **original cert** | leg A U64k solo (39.19 s already cert4-native via r67; r70 re-runs for same-session n) |
-| warm t2 8k/16k/32k + warm-hit 740 ms | 848/675/1178 ms; 740 ms | cert-era prewarm battery — **original cert** | leg A warm re-hit probe, **with cache-tier attribution** (owner question: engine-APC `cached_tokens` vs LMCache connector — probe records both, engine-log window banked around it) |
+| warm t2 8k/16k/32k + warm-hit 740 ms | 848/675/1178 ms; 740 ms | cert-era prewarm battery — **original cert** | leg A warm re-hit probe, **with cache-tier attribution** (review question: engine-APC `cached_tokens` vs LMCache connector — probe records both, engine-log window banked around it) |
 | temp sweep xhigh 0.2–1.0 + alt face | r46t tables | **p46** | leg A sweep + alt battery (same session, cert4) |
 | MTP-over-no-spec ratio 1.57×/2.05× | r46t baseline legs | **p46** | leg B no-spec boot (t0 + t1.0 xhigh + alt) |
 | 8 h soak 46 cycles zero errors | r46 soak | **original cert** | leg C soak (4 h default — same-day rig window; labeled honestly, not as 8 h) |

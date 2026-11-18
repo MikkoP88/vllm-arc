@@ -1,6 +1,6 @@
 # R46T parity — did cert4 (r70, native) regress anything the p46 campaign measured?
 
-Owner question (2026-10-31): "was all performance number on line r46t
+Review question (2026-10-31): "was all performance number on line r46t
 without any regression?" Answer: **no regression**. Every comparable
 face reproduces within the cross-boot engine-neutral band (±5 %, r47c
 comparator law); most cells are at-or-faster. Deltas that look larger

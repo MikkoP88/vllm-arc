@@ -1,6 +1,6 @@
 # p614 L1v1 — first fix image (p614c1, fix v1) TQ4 leg (2026-11-02)
 
-**Context:** owner directive 2026-11-02 (fix turboquant lagged-store).
+**Context:** directive 2026-11-02 (fix turboquant lagged-store).
 Fix v1 (commit preceding 6f1a09d9's amend) taught `_arc_attn_pool_view`
 the TQ packed layout and gave the engine a uint8 TWO_HS geometry with
 `hidden_dim_size = H_kv * 268` from the then-current static reading of
@@ -24,7 +24,7 @@ decisive partial results that pinned the remaining root cause (banked in
 | U32k / U64k TTFT | 16.69 s / 33.46 s | TQ wins hold (−28 % / −34 % vs fp8 family) |
 | KV capacity | 757,641 tokens | +1.87× at the same 6.92 GiB pool |
 | bystander gaps p95/max | 3184/3288 (U32k), 3500/3504 ms (U64k) | unchanged vs A/B — inherent TQ cost, not the store bug |
-| t1.0 xhigh | agg 92.76, solo 77.35/25.86 | still collapsed — 4-bit quality cost (owner-call material), not the store bug |
+| t1.0 xhigh | agg 92.76, solo 77.35/25.86 | still collapsed — 4-bit quality cost (operator call material), not the store bug |
 
 ## What L1v1 proved / disproved
 

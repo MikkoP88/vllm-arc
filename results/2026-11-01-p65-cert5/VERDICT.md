@@ -1,6 +1,6 @@
 # P6.13 cert5 — certified release close-out (sliced final-span store, default-OFF)
 
-**Date**: 2026-11-01 · **Phase**: P6.13 close (plan §12; owner directive
+**Date**: 2026-11-01 · **Phase**: P6.13 close (plan §12; directive
 2026-11-01: "cut the certified image")
 **Release**: tag `rel/v0.30.0-b70-cert5` = main `3e268627` (P6.13 merge
 `1195dffa` + the W14-recreate-law correction; squash lineage

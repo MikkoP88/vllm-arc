@@ -35,7 +35,7 @@ for 2176-token chunks — the curve now has four measured points
 Reading: 3bit_nc + MNBT 4096 is the **max-capacity near-low-stall face**
 (3.98× KV, stalls −40/−56 % vs its default, −52/−69 % vs fp8 default) at a
 moderate TTFT cost — but its dtype carries the largest sampled-throughput
-and quality face costs of the family (owner-call per P6.14).
+and quality face costs of the family (operator call per P6.14).
 
 Redaction: serve_full.log +125 (8×rig +48, 11×node +77),
 preexisting_arc-test.json +5 (1×host) — arithmetic-exact, raw-ref grep 0 —

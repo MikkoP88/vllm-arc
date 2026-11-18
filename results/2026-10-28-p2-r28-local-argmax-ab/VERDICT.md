@@ -38,7 +38,7 @@ structure lines and the flag-echo line), serve_r28_final.log. `scripts/`: r28_se
 (flag posture), r28_sitecustomize.py + r28_probe.py (byte-identical p33 probe),
 r28_boot.sh, r28_bench.sh, r28_teardown.sh. Rig restored to W14 (teardown leg brrvks7fl).
 
-Next per owner mission order: p50 evidence-only (expected moot — r25/r27 laws), p14
+Next per mission order: p50 evidence-only (expected moot — r25/r27 laws), p14
 prefill-parity diagnosis (TTFT ladder 5794/11997/25764/58546 vs bars
 3944/8083/17447/41565; prefill is EAGER on our posture → profiler-visible), then the
 P2 close-out package (rows DONE / unreachable-with-proof).

@@ -4,7 +4,7 @@
 **Serve**: fresh `arc-test` from `vllm-arc:v0.30.0-b70-cert2`, certified posture
 (graph=1, spec k=3, LMCache on), `LMCACHE_LOG_LEVEL=DEBUG` via
 `/root/build/p61_serve.sh`; health 200; log `/root/serve_full.log`.
-**Question (owner directive)**: LMCache enabled and working, but the engine log
+**Question (directive)**: LMCache enabled and working, but the engine log
 reads `External prefix cache hit rate: 0.0%` forever — is the cache broken?
 
 ## VERDICT: EXTERNAL_RETRIEVAL_WORKS — the 0.0% is upstream-designed behavior
@@ -47,7 +47,7 @@ in 1.68 s. Evidence:
    external portion — only at `scheduler.py:1196` when `queries != 0`. The
    external tier is designed as a **supplement** (KVConnectorBase_V1: "beyond
    what is already computed"): when the local APC already covers a repeated
-   prefix (owner's steady serve: 48% internal hit rate), the external
+   prefix (the steady serve: 48% internal hit rate), the external
    contribution is 0 by construction. Not a bug — the upstream contract.
 2. **Fresh prefixes.** No repeat anywhere → connector answers 0 → true zero.
 3. **Cumulative-average display.** Even when hits occur, the logged rate is

@@ -1,6 +1,6 @@
 # p614 L3 — remaining TurboQuant preset legs on p614c2: ALL GATES PASS (2026-11-02)
 
-**Context:** owner directive 2026-02 (fix + max out ALL turboquant
+**Context:** directive 2026-02 (fix + max out ALL turboquant
 types). After L1v2 (4bit_nc) and L2 (default + slice faces), the three
 remaining first-class TQ presets ran the same one-variable leg
 (`--kv-cache-dtype` only; script `../2026-11-02-p614-l1v2/rig/p614_tq_leg.sh`,
@@ -37,7 +37,7 @@ through the integrity re-hits). t1.0 xhigh (the A/B's −53 % quality
 face): **k8v4 agg 173.39 (−8.5 % vs fp8's 189.41 — by far the best TQ
 preset)**; 4bit 93.05, k3v4 88.95, 3bit 89.58; every TQ preset shows
 the ragged solo pair (~77–86 + ~26 tok/s) — sampled-throughput quality
-cost of quantized KV, dtype-wide, owner-call material per the A/B
+cost of quantized KV, dtype-wide, operator call material per the A/B
 disposition.
 
 ## Reading

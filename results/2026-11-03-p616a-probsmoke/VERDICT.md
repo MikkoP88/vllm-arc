@@ -1,6 +1,6 @@
 # p616a — probabilistic draft sampling: BOOT+SMOKE (2026-11-03)
 
-Owner directive 2026-11-03: implement the upstream-direction fix inline,
+Directive 2026-11-03: implement the upstream-direction fix inline,
 start-to-end; nothing may regress the certified configurations. This dir
 banks the P6.16a smoke leg — **Fix A: upstream-config-native
 `draft_sample_method="probabilistic"`** (pinned vllm 0.30.0 wheel,

@@ -1,4 +1,4 @@
-# P6.22 — TP2 allreduce lane (owner directive 2026-11-05, task #61)
+# P6.22 — TP2 allreduce lane (directive 2026-11-05, task #61)
 
 Item: close the last un-dispositioned prefill device slice — the TP2
 allreduce family (~30.4 % of rank0 device time at U32k, r67b) — with
@@ -201,7 +201,7 @@ advantage anyway.
 
 Remaining routes (all out of scope for this lane, banked for the
 record): (a) quantized AR — halves the bytes but changes numerics;
-owner has not named it; (b) AR/compute overlap — r83 proved the
+not yet requested; (b) AR/compute overlap — r83 proved the
 device compute-saturated stream at prefill (nothing to overlap with
 on-stream); (c) the out-of-place clone before every AR (the
 XpuCommunicator seam) — measured inside r67b elementwise misc at

@@ -1,10 +1,10 @@
 # r46t — real-world temperature / MTP-depth campaign (P5 close-out)
 
 **VERDICT: GREEN — recommendation: MTP k3 (`num_speculative_tokens: 3`).**
-k5 dropped from recommendation and testing per owner directive; all k5
+k5 dropped from recommendation and testing per directive; all k5
 testing slots replaced by k3. Full evidence in `leg/` (this directory).
 
-## Owner directives executed (in order)
+## Directives executed (in order)
 
 1. Real-world temperature sweep 0.2/0.4/0.6/0.8/1.0 (0.8 added mid-run).
 2. All testing configurations carry the real-world sampling set
@@ -76,10 +76,9 @@ agg 93.7 (warmup) / **299.9** steady — vs k4's certified 297.7/297.9
 (tie, +0.7 %); solo 84.5/84.5 vs k4's 85.0–85.2 (−0.7 %). Acceptance
 85.6 % greedy (k5 was 89.2 %). k3 costs ~nothing on the certified face.
 
-## Recommendation (data-driven, per owner directive)
+## Recommendation (data-driven, per directive)
 
-**k3** — best overall across the real-world conditions the owner
-defined as the target (xhigh-thinking sampled serving): +5.8 % steady
+**k3** — best overall across the real-world conditions defined as the target (xhigh-thinking sampled serving): +5.8 % steady
 agg and +3.8 % steady solo over k4 on the 5-temp xhigh sweep; ties k4
 on the certified greedy face (±0.7 %); only loses the near-deterministic
 non-thinking alt solo face (where acceptance ≥82 % rewards depth).

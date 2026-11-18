@@ -1,4 +1,4 @@
-# P6.23 — docs-currency audit (owner directive 2026-11-05, task #70)
+# P6.23 — docs-currency audit (directive 2026-11-05, task #70)
 
 Directive: "deep analyze all documents so all information is based on the
 latest certified image and is clean from old information, containing only
@@ -23,7 +23,7 @@ clean; no shorthand in paste-blocks; verify counts.
 | # | Doc : site | Stale claim | Fix | Basis |
 |---|---|---|---|---|
 | F1 | README:8 status bullet | "P0–P6.20 complete"; P6.20 tail "kernel-level compute is the only remaining lever — AR 30.4 %/FA 20.3 %" | status → **P0–P6.22 complete**; tail extended with the P6.21/P6.22 negative closes (0.33× ESIMD, 2.06× AR) | P6.21a/b/c + P6.22 evidence dirs; commit 5d40c6e5 |
-| F2 | README:9 lanes bullet | "Open improvement lanes … ESIMD dense-FA kernel project r67b re-scope" + "TP2 allreduce path question is closed — r71" | rewritten: **ledger CLOSED** — every slice dispositioned (GEMM/AR/FA/GDN/host); remaining routes (quantized AR, AR/compute overlap) are owner-naming-required, not open lanes; r71 pointer kept as transport-clean evidence | P6.21c + P6.22 verdicts; r83 device-saturation |
+| F2 | README:9 lanes bullet | "Open improvement lanes … ESIMD dense-FA kernel project r67b re-scope" + "TP2 allreduce path question is closed — r71" | rewritten: **ledger CLOSED** — every slice dispositioned (GEMM/AR/FA/GDN/host); remaining routes (quantized AR, AR/compute overlap) are requires an explicit request, not open lanes; r71 pointer kept as transport-clean evidence | P6.21c + P6.22 verdicts; r83 device-saturation |
 | F3 | README:287 | "108 evidence dirs, 101 VERDICTs" | **113 dirs** / 101 VERDICTs (recount: `ls results/ \| grep -c '^2'` = 113 ≡ `git ls-tree -d HEAD:results` = 113; `find -iname 'VERDICT*.md'` = 101, unchanged) | mechanical, 2026-11-05 |
 | F4 | README serve block | README:183 claims "byte-identical to CONFIGURATION-arc.md Step 2" but two comment lines differed (`CCL_ZE_IPC_EXCHANGE` comment; `LMCACHE_TRACK_USAGE` 1-line vs 4-line) | README aligned to canonical CONFIGURATION wording; post-fix diff of the script body (#!/bin/bash → serve_full.log): **58/58 lines byte-identical** | config-parity standard; diff banked below |
 | F5 | README "What this fork adds" | no Telemetry row despite step_trace (P6.20) + ar_trace (P6.22) instruments shipping in-tree | row added (silent-off diagnostics class, registry-exempt) | `vllm_gaudi/xpu/patches/{step_trace,ar_trace}.py` |

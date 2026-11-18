@@ -43,7 +43,7 @@ clean, agg 274.41. Cofactor leg: compiled prefill with cudagraph_mode
 NONE also clean — compiled prefill ALONE is harmless; the flip needs
 compiled-prefill-loose × live-capture-machinery.
 
-## Ranked fix (owner-approved, plan Appendix C)
+## Ranked fix (approved, plan Appendix C)
 
 1. **r13**: `--compilation-config {"mode":"none"}` + graphs ON
    (FULL_DECODE_ONLY, capture sizes unchanged) — CompilationMode.NONE is
@@ -56,11 +56,11 @@ compiled-prefill-loose × live-capture-machinery.
 3. W14-style FULL_AND_PIECEWISE stays a P2+ experiment, blocked until
    defect-a (speculator) is fixed; P4 prefill-parity bars decide.
 
-NOT pursued (owner directive): fixing inductor-XPU queue selection inside
+NOT pursued (directive): fixing inductor-XPU queue selection inside
 torch — banked as falsified/deferred; upstream issue (naming the
-extern-mm window under FULL_DECODE_ONLY) only after owner sign-off.
+extern-mm window under FULL_DECODE_ONLY) only after sign-off.
 
-## Gate for r13 (owner: one clean leg is NOT the gate)
+## Gate for r13 (ruling: one clean leg is NOT the gate)
 
 Re-run the exact kill sequence several times + soak shape: serialized
 bench, burst ×3, zero dmesg engine resets, per plan §10/leg discipline.

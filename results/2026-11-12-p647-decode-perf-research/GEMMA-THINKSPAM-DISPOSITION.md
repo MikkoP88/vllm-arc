@@ -1,7 +1,7 @@
 # m8g CORRUPTION_SIGNAL disposition — gemma4-31b think-spam is baseline
 
 **Date:** 2026-11-12 · **Leg:** r164 g0 native-KV longprobe (cert25x image) ·
-**Owner directives:** "ALL --kv-cache-dtype TYPES HAS TO BE CORRUPTION/GARBAGE FREE"
+**Directives:** "ALL --kv-cache-dtype TYPES HAS TO BE CORRUPTION/GARBAGE FREE"
 (interpreted per the baseline law: no KV-dtype-attributable corruption — measured
 against the same-image native control, never vs CLEAN for a model whose baseline
 degenerates).

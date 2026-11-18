@@ -1,7 +1,7 @@
 # P6.20 — prefill-path optimization evidence (2026-11-04)
 
 Item: eliminate host-side prefill bottlenecks and the U32k/U64k p95 gap
-(plan §P6.20; owner directive: code optimization, telemetry-driven,
+(plan §P6.20; directive: code optimization, telemetry-driven,
 certified image at the end). Code delta: `vllm_gaudi/xpu/patches/lmcint/
 vllm_v1_adapter.py` (L1 evsync + L3 off-thread store + L6 dispatch-late),
 new `vllm_gaudi/xpu/patches/step_trace.py` (ARC_STEP_TRACE per-step host

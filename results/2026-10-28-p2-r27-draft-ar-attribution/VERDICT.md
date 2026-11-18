@@ -1,4 +1,4 @@
-# VERDICT — r27 draft-content + forward-AR attribution leg: BOTH owner asks answered in one pass. Draft tail is 56% lm_head GEMM weight-read (physically irreducible in scope) → p33 ≤7 ms target UNREACHABLE as stated; forward TP allreduce ≈ 0–8 ms (≤ ~8%, central ~2–5 ms) → NO >10 ms contingency triggered. Method law: XPU graph replays are INVISIBLE to the torch profiler — attribution done via eager-proxy posture with per-kernel durations; every number reconciles with the banked wall laws.
+# VERDICT — r27 draft-content + forward-AR attribution leg: BOTH requested analyses answered in one pass. Draft tail is 56% lm_head GEMM weight-read (physically irreducible in scope) → p33 ≤7 ms target UNREACHABLE as stated; forward TP allreduce ≈ 0–8 ms (≤ ~8%, central ~2–5 ms) → NO >10 ms contingency triggered. Method law: XPU graph replays are INVISIBLE to the torch profiler — attribution done via eager-proxy posture with per-kernel durations; every number reconciles with the banked wall laws.
 
 Two phases, one rig session (boots 18:45 graphed → 18:52 eager; profile LAST on each boot per aggregation-hang law; teardown + W14 restore after).
 
@@ -56,7 +56,7 @@ vocab all-gathers (4×~1.2 MB draft + 2.5 MB verify transfer) → expected
 incremental; it cannot approach ≤7 ms. Recommend target revision to ~13 ms
 or closing the lane with this attribution.
 
-### Ask 2 — forward AR share (owner contingency bar: >10 ms)
+### Ask 2 — forward AR share (contingency bar: >10 ms)
 
 Forward wall 49–55 ms ≈ GEMM+attn content alone (48 layer-GEMM + 2.1 verify
 lm_head + FA/GDN/quant/norm ~4 ms ≈ 54 ms) → lock-step collective residual

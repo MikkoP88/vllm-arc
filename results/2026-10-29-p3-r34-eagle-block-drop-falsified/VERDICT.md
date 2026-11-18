@@ -1,6 +1,6 @@
 # r34 — warm-hit via `disable_eagle_block_drop`: mechanism CONFIRMED, integrity BROKEN — falsified and reverted
 
-Date: 2026-10-29 (rig legs 16:24–17:20). Posture: r33 product + owner-pinned
+Date: 2026-10-29 (rig legs 16:24–17:20). Posture: r33 product + requested
 `--mamba-cache-mode align` (plan Appendix F). Boot script
 `/root/build/r30/r30_serve.sh` (rig); the single leg change was
 `"disable_eagle_block_drop":true` inside the speculative-config JSON.
@@ -64,7 +64,7 @@ wrong values, mt=1 re-hit flips.
 
 ## Re-gate battery (E4 clean boot, first-traffic, timers-off)
 
-ARC_SNAP_PROBE stripped; align flag kept (owner pin — exonerated: the +356 ms
+ARC_SNAP_PROBE stripped; align flag kept (retained on request — exonerated: the +356 ms
 on today's probe boots was telemetry cost, clean boot returns to r33 numbers).
 
 | cell | r33 | r34 reverted | verdict |

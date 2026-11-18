@@ -95,4 +95,4 @@ r29_prefill_analyze.py. Rig restored to W14 (teardown verified).
 
 Next: P2 close-out package (this leg supplies the last two numbers: TPOT
 timers-off + TTFT ladder), then P3 per §12. p14 follow-up = §12-14 C-bake reval
-(arstage/v64-TTFTFIX first), owner-gated scheduling.
+(arstage/v64-TTFTFIX first), review-gated scheduling.

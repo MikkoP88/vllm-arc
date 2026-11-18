@@ -36,7 +36,7 @@ One-variable leg off the same image (sed substitution verified **1/0**,
 | G7 run7n t0 | **PASS** | agg#2 **299.67** (band 282.33–312.05), solo 85.63/85.78 (band 80.26–88.70) |
 | capacity | **reproduced** | KV pool **757,641 tokens = 2.89×** (vs fp8 405,491 / 1.55×) at the same 6.92 GiB |
 | TTFT | **reproduced** | U32k **15.85 s** / U64k **33.98 s** (fp8 same-rig: 23.16/50.77 → −32/−33 %) |
-| t1.0 xhigh | banked | agg 93.76, solo 77.30/25.85 — the known TQ-inherent ragged pair (dtype-wide, owner-call) |
+| t1.0 xhigh | banked | agg 93.76, solo 77.30/25.85 — the known TQ-inherent ragged pair (dtype-wide, operator call) |
 | bystander gaps | banked | W_U32k_start p95 **3227** / max 3329 ms; W_U64k_start p95 **3780** / max 3918 ms (fp8: 1273–1304 / 1574–1604); end windows clean (58.4/54.3 ms p95); baseline p50 55.8 ms |
 
 ## Verdict
@@ -50,7 +50,7 @@ errors, kit D2H live both workers, external tier participating),
 integrity/determinism/spec all hold, capacity +1.87× and U-bar TTFT
 −32/−33 % reproduce exactly. TQ-inherent costs (ragged t1.0 solo pair,
 bystander gaps ~2.5×) are dtype-wide, unchanged by the release, and
-remain owner-call material (per-preset matrix:
+remain operator call material (per-preset matrix:
 `results/2026-11-02-p614-l3/VERDICT.md`).
 
 `rel/v0.30.0-b70-cert6` = **current certified release**.

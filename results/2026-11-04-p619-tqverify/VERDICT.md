@@ -15,7 +15,7 @@ per-leg evidence `rig/gate/`), post-gate annexes `rig/p619e_annex.sh`
 | [0] manifest + fix-in-image + guard-gone + p48/p73 image-native | **PASS** | `manifest.txt` fork_sha `e47739b0…` == tag; hook_entries=2 (`p619` entry live); zero `deprecated on vllm-arc` (P6.18 guard removed); `p48_verify.out` 28/28, `p73_verify.out` 11/11 |
 | [1] fp8 posture (health/flip/integrity+det/run7n t0+t1.0/spec) | **PASS** | health ~295 s, KV pool 400,739 (byte-value cert7), SLICE_ENV_ABSENT=0, fix-engaged-on-fp8=0 (control: hooked module never imports), integrity 5/5 + det 3/3, run7n t0 agg#2 300.65 / solo 84.53-84.57 + t1.0 221.36 / solo 70.98-68.14, spec pos1 0.9258 hard-PASS (acceptance 0.837 vs 0.85 target — recorded, identical posture to cert7) |
 | [2] fp8 long-return (full + 3 churn cycles) | t0 corruption lane **100 % CLEAN**; t1-seed content lane: 1 window-repetition flag `[code]` — **annex-dispositioned benign** (below) | 4 classes single-hash cold/rehit/rehit2 + all churn rehits: essay `648d66ae32c9`, code `507d389dc258`, multi `0627e973e7b1`, simple `84efc84cc142` (code/simple = the cert7 family values byte-exact) |
-| [3] TQ all-dtype (owner bar: no corruption on ANY kv-cache dtype) | **PASS** — zero garble on every dtype × lane; two identity faces dispositioned (Class-A / 3-bit floor), neither corruption-class | k8v4 bar PASS (below); k3v4/q4nc/q3nc full longprobes below; posture line `v6 installed (active=True mode=split mq_kernel=True)` on every TQ boot |
+| [3] TQ all-dtype (bar: no corruption on ANY kv-cache dtype) | **PASS** — zero garble on every dtype × lane; two identity faces dispositioned (Class-A / 3-bit floor), neither corruption-class | k8v4 bar PASS (below); k3v4/q4nc/q3nc full longprobes below; posture line `v6 installed (active=True mode=split mq_kernel=True)` on every TQ boot |
 | [4] mq annex (opt-in `VLLM_ARC_TQ_VERIFY_MODE=mq`) | **PASS after re-run** — gate FATAL was a script sed bug (incident 2); annex re-run: `mode=mq` engaged, flip stop 9.4 s, tps solo 53.83/54.31, **agg8 284.81** (1.21× split, in-family of t8g 289.23) | `rig/mqannex2/` |
 | [5] W14 restore + verify | **PASS** (via EXIT trap after the [4] FATAL; generation-verified in the annex) | `rig/incidents/`, annex console `[C]` |
 
@@ -66,7 +66,7 @@ cold-garble + t1_seed_identical) = CLEAN; finish stop ×3, chars stable.
 
 Verdict: content-lane false-positive of the repetition heuristic on
 probabilistic (temp-1.0) sampled code — the deterministic serving
-guarantee (t0 within-path byte-identity) is untouched. The owner bar
+guarantee (t0 within-path byte-identity) is untouched. The bar
 ("no corruption on ANY kv-cache type") reads the corruption class
 (p618b Class-B: attractor loops/junk/bleed on the deterministic lane):
 **zero occurrences across all five dtypes, cold and warm, churn
@@ -131,8 +131,7 @@ mq annex); integrity 5/5 + determinism 3/3.
 
 ## Disposition
 
-**SHIP — `rel/v0.30.0-b70-cert8` = the certified release.** The owner
-bar holds: zero corruption-class occurrences on every kv-cache dtype
+**SHIP — `rel/v0.30.0-b70-cert8` = the certified release.** The bar holds: zero corruption-class occurrences on every kv-cache dtype
 (fp8 + all four turboquant presets), cold and warm, churn included;
 TQ presets are servable again (split dispatch certified, mq opt-in);
 the two observed identity faces are the documented engine-class

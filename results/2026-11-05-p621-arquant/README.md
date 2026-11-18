@@ -1,7 +1,7 @@
 # P6.21 — W13H ar_quant donor port: quantized-transport TP2 all-reduce (2026-11-05)
 
 Item: the next optimization lane after P6.20 closed the prefill host path
-(owner directive 2026-11-04: code optimization, telemetry-driven, certified
+(directive 2026-11-04: code optimization, telemetry-driven, certified
 image at the end). Lane chosen by the P6.21 deep-analysis re-read of the
 banked r67b op-class capture: GEMM 39.7 % already optimal (P6.7 rung C
 closed negative), **TP2 allreduce family = 30.4 % of rank0 device time at

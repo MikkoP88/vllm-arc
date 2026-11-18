@@ -1,6 +1,6 @@
 # P6.47 research bank — MXFP4/MXFP8 KV-cache-dtype deep survey
 
-**Date:** 2026-11-11 · **Phase:** P6.47 (owner directive: add MXFP4 and
+**Date:** 2026-11-11 · **Phase:** P6.47 (directive: add MXFP4 and
 MXFP8 supports on `--kv-cache-dtype`, full testing/validation on
 google/gemma-4-31B + Qwen/Qwen3.8-27B, telemetry-driven, cert image at
 the end, all docs updated, corruption/garbage gates end-to-end)

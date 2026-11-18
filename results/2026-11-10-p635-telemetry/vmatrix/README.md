@@ -1,6 +1,6 @@
 # P6.35-V full validation matrix (cert23) — 2026-11-10
 
-Owner-directed full matrix on the shipping image `vllm-arc:v0.30.0-b70-cert23`
+Operator-directed full matrix on the shipping image `vllm-arc:v0.30.0-b70-cert23`
 (graph-exec double-buffer default ON, released as PR #92 / tag
 `rel/v0.30.0-b70-cert23`): **qwen3.8-27b × {fp8, mxfp8, mxfp4-W4A16} ×
 {spec0, k3, k5}** and **gemma-4-31b × {fp8, mxfp8, mxfp4-W4A16} spec0**

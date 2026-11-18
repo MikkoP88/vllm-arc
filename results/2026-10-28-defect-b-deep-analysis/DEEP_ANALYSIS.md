@@ -1,7 +1,7 @@
 # Defect-b deep analysis + solution-source research + plan rev-4 analysis
-Owner directive 2026-10-28: "do realy deep analyze and research of issue and
-code, also check do solution live in any sources" + "VLLM-ARC-MASTER-PLAN
-has been updated, do deep analyze and research of plan".
+Directive (2026-10-28): perform a deep analysis and root-cause research
+of the defect and the surrounding code, search all available sources for
+an existing solution, and analyze the updated master plan (rev 4).
 Branch feat/arc-p12b-graph-stream-hygiene @ 50c41b45. All legs banked in
 results/; rig raws in /root/build/legs/arc-*.
 
@@ -149,9 +149,9 @@ lack; no newer release exists to take.
 validate large-as-first on the patched boot → P2 gates (graphs+MTP, TPOT,
 acceptance) → arc4 wheel (9th site) before P3 → upstream issue text now
 describes model v3 (first eager large AR after decode-graph capture
-warps the default queue; owner sign-off before filing).
+warps the default queue; sign-off before filing).
 
-## 5. PLAN REV-4 ANALYSIS (owner's 2026-10-28 update, mtime 12:11)
+## 5. PLAN REV-4 ANALYSIS (the 2026-10-28 update, mtime 12:11)
 
 Read in full (1019 lines). What changed and its impact:
 
@@ -180,7 +180,7 @@ Read in full (1019 lines). What changed and its impact:
    "Upstream gap" note (0.30 XPUPlatform never gates FULL_DECODE_ONLY ×
    compiled prefill) remains valid as an upstream-issue candidate — but the
    issue text must now describe the kernel-path mechanism, not the compile
-   mechanism (owner sign-off still required before filing).
+   mechanism (sign-off still required before filing).
 5. Unchanged and still governing: scope law (Appendix I §1 — arcitech is
    OUTSIDE the sanctioned source list; evidence-only), §0 superiority
    contract, §10 gates, §12 order, banking directive.
@@ -193,7 +193,7 @@ Read in full (1019 lines). What changed and its impact:
   **W14 restore owed at session end.**
 - Queue: lane W warmup patch (p12b) → patched-boot large-as-first
   validation → P2 gates → arc4 wheel (9th site) before P3. Upstream issue
-  (model v3 text) after owner sign-off.
+  (model v3 text) after sign-off.
 
 ## Sources
 

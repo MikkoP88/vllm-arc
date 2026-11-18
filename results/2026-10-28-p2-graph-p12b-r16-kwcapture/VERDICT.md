@@ -89,7 +89,7 @@ phantom capture; our integrity guard kills the step (500s). A first
 request small enough (≤ ~512 tok / < 8 MB AR) initializes the path
 cleanly and the engine stays stable for large requests afterwards.
 
-## Fix lane (recommendation to owner)
+## Fix lane (recommendation)
 
 **Boot-time warmup in our platform layer (vllm_gaudi/xpu/patches)**: after
 graph capture warmup completes and before serving traffic, run an internal
@@ -98,7 +98,7 @@ at boot if the wedge hits (integrity law fires at deploy time, never in
 user traffic). Evidence: this leg's controlled pair. NOT arcitech's env
 (refuted by leg B), NOT the kernel wheel (closed), NOT lane-A prefill
 routing (kernel exonerated — lane A demoted to perf option only).
-Upstream issue candidate (after owner sign-off): vllm 0.30 XPU TP>1:
+Upstream issue candidate (after sign-off): vllm 0.30 XPU TP>1:
 first eager large AR after decode-graph capture wedges the default stream
 (queue reads recording; no capture open) — vllm#49924/#62781 class.
 

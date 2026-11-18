@@ -1,6 +1,6 @@
 # TQ4 A/B — temporary `--kv-cache-dtype turboquant_4bit_nc` test (2026-11-02)
 
-**Owner directive:** run a temporary performance test changing ONLY
+**Directive:** run a temporary performance test changing ONLY
 `--kv-cache-dtype fp8_e4m3` → `turboquant_4bit_nc`; return current vs
 temporary numbers.
 
@@ -56,7 +56,7 @@ mechanism behind the two integrity FAILs (cold≠rehit divergence) and it
 means the KV-reuse tier (the 0.99–1.11 s warm re-hit faces) is
 unreliable under TQ4 as-is.
 
-## Reading (owner decision material, nothing adopted)
+## Reading (decision material, nothing adopted)
 
 - **Wins are real and large:** +87 % KV capacity, −31/−34 % long-prompt
   TTFT, greedy t0 slightly above family (small context, decode-bound —
@@ -74,7 +74,7 @@ unreliable under TQ4 as-is.
   posture. If the KV-capacity or TTFT win is wanted, the prerequisites
   would be (a) making the lagged store TQ-aware (or disabling the defer
   profile under TQ and re-testing the plain store path), and (b) an
-  owner call on the sampled-throughput quality cost. No engine change
+  operator call on the sampled-throughput quality cost. No engine change
   was made by this leg.
 
 **Baseline provenance:** all "current" numbers re-derived from

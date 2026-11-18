@@ -55,7 +55,7 @@ kernel-kit delta (twin v21 vs radiance-inherited) by what the split shows.
   Lever re-aimed: phase decomposition of the compile-independent step.
 - W14-style FULL_AND_PIECEWISE remains a recorded clean-booting posture
   (survival PASS) — relevant only if acceptance were ever fixed upstream
-  (noted for the upstream-issue text, owner-gated).
+  (noted for the upstream-issue text, review-gated).
 
 ## Artifacts (legs_pull/)
 

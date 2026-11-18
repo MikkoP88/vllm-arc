@@ -478,7 +478,7 @@ this event rate.
 
 - **The certified posture itself FAILS the gate, hard**: during a 64k
   fresh prefill bystanders see p50 3.7-s gaps (8 chunk steps × ~4.3–5.6 s;
-  70× the 53-ms baseline); at 32k, 4×4.2 s. This IS the owner's reported
+  70× the 53-ms baseline); at 32k, 4×4.2 s. This IS the reported
   stall ("streams stop decoding when one stream with long context starts").
 - The upstream knob built for exactly this (`--long-prefill-token-threshold`)
   is **length-dependent with the connector as-is**: at 32k it nearly meets

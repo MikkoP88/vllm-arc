@@ -36,7 +36,7 @@ compile-vs-cache theory is FALSIFIED as the sole cause. Canary stays armed.**
   prefill interplay), or state left by an earlier process in the same
   container/device session. The canary instrument (20536a5d) answers the
   execution question the moment a poisoned boot recurs.
-- Separately this session: the vxk wedge audit (owner check-request)
+- Separately this session: the vxk wedge audit (verification request)
   found the pinned wheel BARE — p13 contingency running in parallel
   (results/2026-10-27-p1-vxk-wedge-audit/). Defect-b and the wedge are
   discriminated (five independent discriminators, see that VERDICT).

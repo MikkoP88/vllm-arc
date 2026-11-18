@@ -70,7 +70,7 @@ All-CLI-knob leg on our stack: `cudagraph_mode=FULL_AND_PIECEWISE`,
 `sizes [4,8,16,32,64]`, `max_cudagraph_capture_size 64`, compile ON
 (PIECEWISE needs the compiled pieces — W14's exact serve line).
 - Clean → graph posture (mode/sizes/count) is the mechanism; the W14
-  posture becomes the P2 candidate posture (owner gates: defect-a block,
+  posture becomes the P2 candidate posture (gates: defect-a block,
   P4 prefill-parity bars).
 - Flips → posture insufficient; the GDN kernel path is the poison and
   the fix lane is the p10 ESIMD QSA/GDN import (radiance sanctioned,

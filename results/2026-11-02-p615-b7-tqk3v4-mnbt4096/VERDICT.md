@@ -1,6 +1,6 @@
 # p615 B7 — turboquant_k3v4_nc + MNBT 4096: max-capacity NC preset's balanced stall face (2026-11-02)
 
-All-presets completion set (owner directive: comprehensive analysis across
+All-presets completion set (directive: comprehensive analysis across
 every turboquant type). One-variable leg off the k3v4_nc default face:
 `turboquant_k3v4_nc`, `ARC_MNBT=4096`, no thr. **k3v4_nc's KV page is 1856**
 → chunks floor to 2×1856 = **3712-token** (confirmed **3712-class × 58**
@@ -32,7 +32,7 @@ than 4bit's 3328 but the NC prefill is fast).
 
 k3v4_nc + MNBT 4096 = the max-capacity low-stall face (3.48× KV with
 fp8-default TTFT and ~2.0–2.3 s stalls); its sampled-throughput cost is the
-known TQ NC face (t1.0 xhigh −53 %, owner-call).
+known TQ NC face (t1.0 xhigh −53 %, operator call).
 
 Redaction: serve_full.log +125 (8×rig +48, 11×node +77),
 preexisting_arc-test.json +5 (1×host) — arithmetic-exact, raw-ref grep 0 —
