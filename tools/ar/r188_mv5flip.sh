@@ -1,6 +1,5 @@
 #!/bin/bash
-# r188_mv5flip.sh -- P6.47 decode-parity fast-cycle 1 (owner directive
-# 2026-11-14): flip the MTP VERIFY decoder to v5 dot on the mxfp4 lane
+# r188_mv5flip.sh -- P6.47 decode-parity fast-cycle 1 (2026-11-14): flip the MTP VERIFY decoder to v5 dot on the mxfp4 lane
 # (ARC_MXKV_VERIFY_DECODER=v5 -- new serve_arc_b70.sh pass-through) and
 # re-run the r185 acceptance ladder cell-for-cell. Evidence chain: r185
 # closed the r161 e2m1-V quality investigation (KNEE=none on cert25zb,

@@ -27,13 +27,16 @@
 #               Evidence: results/2026-11-03-p617a-probcert/ (+p616 lineage).
 #   ARC_LMC     0 no LMCache | 1 D-champion kv-transfer config (P3; default —
 #               the certified posture: LMCacheConnectorV1 + the 10-var
-#               LMCACHE_* chain, keep as a set). P6.47 exception: on
-#               ARC_KVDTYPE mxfp4/mxk8v4 the DEFAULT is 0 (auto-off) —
-#               LMCache prefix-reload double-quantizes V and e2m1-V does
-#               not survive the second quantization (r168 discriminator:
-#               same m4q posture, ARC_LMC=1 essay-rehit REP-LOOP garble
-#               vs ARC_LMC=0 all classes CLEAN; explicit ARC_LMC=1 still
-#               forces it, with a WARN)
+#               LMCACHE_* chain, keep as a set). P6.47 exception: on ALL
+#               ARC_KVDTYPE MX lanes (mxfp4/mxk8v4/mxfp8) the DEFAULT is 0
+#               (auto-off) — e2m1-V correctness (r168 discriminator: same
+#               m4q posture, ARC_LMC=1 essay-rehit REP-LOOP garble vs
+#               ARC_LMC=0 all classes CLEAN) and the P6.47 Phase 6
+#               decode-parity posture (r176 clean A/B on mxfp8: LMC-off
+#               leaves ITL unchanged — 67.28->67.25 ms @8K, 95.76->95.78
+#               @32K — and saves the 26/259 ms TTFT store tax while
+#               freeing the store worker + its fp16-expanded blob
+#               capacity; explicit ARC_LMC=1 still forces it, with a WARN)
 #   ARC_GMU     --gpu-memory-utilization (default 0.8, D-champion certified
 #               posture — V1227_GMU lineage, plan Appendix F)
 #   ARC_MAXLEN  --max-model-len (default 262144 = the certified incumbent
@@ -122,21 +125,23 @@ ARC_SPEC=${ARC_SPEC:-3}
 # the p620 off-thread store worker keeps the fp16-expanded stores OFF the
 # prefill critical path (stores overlap decode), so the r172 m8 TTFT
 # +2.97 s reading (instrumented leg, first-request cold effects) does not
-# reproduce under matched clean conditions. mxfp8 keeps the default
-# LMCache posture; forcing ARC_LMC=1 on e2m1-V lanes carries the r168
-# correctness risk. F1b (MX-native LMCache storage, pinned dep) stays a
-# documented lane — the remaining LMC-MX cost is store-bytes capacity
-# (fp16-expanded blobs), not latency.
+# reproduce under matched clean conditions. P6.47 Phase 6 (2026-11-18)
+# extends the auto-off to ALL MX lanes including mxfp8: the r176 A/B
+# shows LMC-off is e2e-neutral-to-positive on mxfp8 (ITL unchanged, TTFT
+# −26/−259 ms, store worker + blob capacity freed), and the decode-parity
+# goal runs the MX lanes LMCache-free by posture. F1b (MX-native LMCache
+# storage, pinned dep) stays a documented lane for future cross-request
+# prefix-reuse workloads.
 KVD_EFF=${ARC_KVDTYPE:-fp8_e4m3}
 case "$KVD_EFF" in
-  mxfp4|mxk8v4) E2M1V_LANE=1 ;;
-  *) E2M1V_LANE=0 ;;
+  mxfp4|mxk8v4|mxfp8) MX_LANE=1 ;;
+  *) MX_LANE=0 ;;
 esac
-if [ -z "${ARC_LMC:-}" ] && [ "$E2M1V_LANE" = 1 ]; then
+if [ -z "${ARC_LMC:-}" ] && [ "$MX_LANE" = 1 ]; then
   ARC_LMC=0
-  echo "NOTE: ARC_LMC auto-off for ARC_KVDTYPE=$KVD_EFF (e2m1-V double-quant garble on prefix reload, r168; P6.47 Phase 5)"
-elif [ "${ARC_LMC:-1}" = 1 ] && [ "$E2M1V_LANE" = 1 ]; then
-  echo "WARN: ARC_LMC=1 forced on ARC_KVDTYPE=$KVD_EFF — r168 banked essay-rehit REP-LOOP garble on e2m1-V lanes"
+  echo "NOTE: ARC_LMC auto-off for ARC_KVDTYPE=$KVD_EFF (MX lane posture: e2m1-V double-quant garble r168 + decode-parity LMC-free run, r176 A/B; P6.47 Phase 6)"
+elif [ "${ARC_LMC:-1}" = 1 ] && [ "$MX_LANE" = 1 ]; then
+  echo "WARN: ARC_LMC=1 forced on ARC_KVDTYPE=$KVD_EFF — r168 banked essay-rehit REP-LOOP garble on e2m1-V lanes; r176 measured the mxfp8 store tax"
 fi
 ARC_LMC=${ARC_LMC:-1}
 ARC_GMU=${ARC_GMU:-0.8}
