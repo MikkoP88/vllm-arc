@@ -1534,9 +1534,12 @@ def mx_decode_rows_dot(
     # cost, so floor 1-2 re-opens — deep splits REMOVE serial
     # bt->slot->gather chain tiles instead of pipelining them (the r192
     # toolchain verdict: no in-language prefetch on the XPU lane).
-    # Default 4 = the certified A14 rule, bit-frozen; call-time read —
-    # static during serving (capture law).
-    tfl = int(os.environ.get("ARC_MXKV_V5_TFLOOR", "4") or 4)
+    # DEFAULT 2 since r195 (2026-11-19): the e2e confirmation banked
+    # m8q n1 -10.4% at 32K / -5 at 16K, mkq -4%, m4q null (v2 lane),
+    # no regressions, ACCEPT_KNEE_PASS x3. The kernel constexpr stays 4
+    # (certified-signature freeze); this launcher default is the flip
+    # site. Call-time read — static during serving (capture law).
+    tfl = int(os.environ.get("ARC_MXKV_V5_TFLOOR", "2") or 2)
     # K2 packed-fp16 dequant lane (r177 scalar-ALU wall; module header).
     # Default ON since cert25zb; "0" reverts to the f32 path. Call-time
     # read — static during serving (capture law).

@@ -129,8 +129,14 @@ _V4_R_TILE = 4
 # cell (+8..14 ms — the v2 batch grid (R x Hq x splits) out-parallelizes
 # v5's (G x HK x splits) at G=1; v5's plan-build bt_groups tax does not
 # amortize) while WINNING n8 long-ctx (32K ss 1978->1703, aggregate p50
-# 1551->696). The G-adaptive dispatch (v5 once G crosses a banked
-# threshold) is the Phase 6 follow-up lane.
+# 1551->696).
+# G-ADAPTIVE mxfp4 DISPATCH (Phase 7 closing rung, 2026-11-19): dispatch
+# by the split-batch request count at plan build — v2 below the knee,
+# v5 at/above it (ARC_MXKV_V5_G_MIN, default 8 = the n8 face; the B1
+# bank's knee sits between the 8K and 16K observed-concurrency
+# steady-state cells). Capture-lawful: the count is a host-known shape
+# at plan-build time and the plan cache freezes the choice per shape.
+_V5_G_MIN = int(os.environ.get("ARC_MXKV_V5_G_MIN", "8") or 8)
 # ARC_MXKV_VERIFY_DECODER={v2,v4,v5} overrides the per-format default
 # per boot (verify-batch path only — ARC_MXKV_DECODER stays the
 # certified v1|v2|v3 knob for the per-row kernel and must not see
@@ -1052,7 +1058,17 @@ class MxAttentionImpl(TurboQuantAttentionImpl):
                     else (
                         "v5"
                         if self.mx_config.fmt in _V5_DEFAULT
-                        else "v2"
+                        else (
+                            # G-adaptive mxfp4 (B1 verdict): v2 below the
+                            # knee (n1 — the v2 batch grid wins at G=1),
+                            # v5 at/above it (n8 long-ctx — 32K ss -14%).
+                            "v5"
+                            if (
+                                self.mx_config.fmt == "mxfp4"
+                                and len(split_rows) >= _V5_G_MIN
+                            )
+                            else "v2"
+                        )
                     )
                 )
             )
@@ -1069,7 +1085,11 @@ class MxAttentionImpl(TurboQuantAttentionImpl):
                         else (
                             "env-flag"
                             if (_V5_DOT or _V4_VERIFY)
-                            else "format-default"
+                            else (
+                                "g-adaptive"
+                                if self.mx_config.fmt == "mxfp4"
+                                else "format-default"
+                            )
                         )
                     ),
                 )
