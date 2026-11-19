@@ -1,0 +1,49 @@
+p184_tfloor — device=xpu, torch=2.13.0+xpu
+mxkv_src=/opt/venv/lib/python3.12/site-packages/vllm_gaudi/xpu/patches/mx_kv
+shape: D=256 HK=4 Hq=24 R_TILE=4
+== correctness vs certified (4,256), d = max|out - base| ==
+[mxfp8] G=1 ctx=8192 tf=2,sp=256: d=8.916e-06 finite=True OK
+[mxfp8] G=1 ctx=8192 tf=2,sp=512: d=8.916e-06 finite=True OK
+[mxfp8] G=1 ctx=8192 tf=1,sp=256: d=1.085e-05 finite=True OK
+[mxfp8] G=1 ctx=8192 tf=1,sp=512: d=1.085e-05 finite=True OK
+[mxfp8] G=1 ctx=8192 tf=1,sp=1024: d=1.085e-05 finite=True OK
+[mxfp8] G=8 ctx=32768 tf=2,sp=256: d=0.000e+00 finite=True OK
+[mxfp8] G=8 ctx=32768 tf=2,sp=512: d=5.178e-06 finite=True OK
+[mxfp8] G=8 ctx=32768 tf=1,sp=256: d=0.000e+00 finite=True OK
+[mxfp8] G=8 ctx=32768 tf=1,sp=512: d=5.178e-06 finite=True OK
+[mxfp8] G=8 ctx=32768 tf=1,sp=1024: d=6.195e-06 finite=True OK
+[mxfp4] G=1 ctx=8192 tf=2,sp=256: d=9.974e-06 finite=True OK
+[mxfp4] G=1 ctx=8192 tf=2,sp=512: d=9.974e-06 finite=True OK
+[mxfp4] G=1 ctx=8192 tf=1,sp=256: d=1.097e-05 finite=True OK
+[mxfp4] G=1 ctx=8192 tf=1,sp=512: d=1.097e-05 finite=True OK
+[mxfp4] G=1 ctx=8192 tf=1,sp=1024: d=1.097e-05 finite=True OK
+[mxfp4] G=8 ctx=32768 tf=2,sp=256: d=0.000e+00 finite=True OK
+[mxfp4] G=8 ctx=32768 tf=2,sp=512: d=5.113e-06 finite=True OK
+[mxfp4] G=8 ctx=32768 tf=1,sp=256: d=0.000e+00 finite=True OK
+[mxfp4] G=8 ctx=32768 tf=1,sp=512: d=5.113e-06 finite=True OK
+[mxfp4] G=8 ctx=32768 tf=1,sp=1024: d=6.146e-06 finite=True OK
+[mxk8v4] G=1 ctx=8192 tf=2,sp=256: d=8.991e-06 finite=True OK
+[mxk8v4] G=1 ctx=8192 tf=2,sp=512: d=8.991e-06 finite=True OK
+[mxk8v4] G=1 ctx=8192 tf=1,sp=256: d=1.092e-05 finite=True OK
+[mxk8v4] G=1 ctx=8192 tf=1,sp=512: d=1.092e-05 finite=True OK
+[mxk8v4] G=1 ctx=8192 tf=1,sp=1024: d=1.092e-05 finite=True OK
+[mxk8v4] G=8 ctx=32768 tf=2,sp=256: d=0.000e+00 finite=True OK
+[mxk8v4] G=8 ctx=32768 tf=2,sp=512: d=5.151e-06 finite=True OK
+[mxk8v4] G=8 ctx=32768 tf=1,sp=256: d=0.000e+00 finite=True OK
+[mxk8v4] G=8 ctx=32768 tf=1,sp=512: d=5.151e-06 finite=True OK
+[mxk8v4] G=8 ctx=32768 tf=1,sp=1024: d=6.180e-06 finite=True OK
+CORRECTNESS_WORST_d=1.097e-05
+== perf: (TILE_FLOOR, SPLITS) sweep, ms/call ==
+[mxfp8] G=1 ctx=8192: tf4/sp256 1.807 | tf2/sp256 1.642 | tf2/sp512 1.848 | tf1/sp256 1.590 | tf1/sp512 1.893 | tf1/sp1024 2.611
+[mxfp8] G=1 ctx=32768: tf4/sp256 4.897 | tf2/sp256 4.849 | tf2/sp512 5.150 | tf1/sp256 4.885 | tf1/sp512 5.192 | tf1/sp1024 6.040
+[mxfp8] G=8 ctx=8192: tf4/sp256 10.451 | tf2/sp256 10.356 | tf2/sp512 12.466 | tf1/sp256 11.172 | tf1/sp512 13.059 | tf1/sp1024 17.219
+[mxfp8] G=8 ctx=32768: tf4/sp256 35.712 | tf2/sp256 35.496 | tf2/sp512 37.267 | tf1/sp256 35.466 | tf1/sp512 37.272 | tf1/sp1024 42.944
+[mxfp4] G=1 ctx=8192: tf4/sp256 2.532 | tf2/sp256 2.203 | tf2/sp512 2.529 | tf1/sp256 2.220 | tf1/sp512 2.528 | tf1/sp1024 3.185
+[mxfp4] G=1 ctx=32768: tf4/sp256 7.615 | tf2/sp256 7.636 | tf2/sp512 7.935 | tf1/sp256 7.627 | tf1/sp512 7.954 | tf1/sp1024 8.691
+[mxfp4] G=8 ctx=8192: tf4/sp256 15.928 | tf2/sp256 15.939 | tf2/sp512 17.778 | tf1/sp256 16.259 | tf1/sp512 18.040 | tf1/sp1024 21.712
+[mxfp4] G=8 ctx=32768: tf4/sp256 58.294 | tf2/sp256 58.228 | tf2/sp512 59.675 | tf1/sp256 58.276 | tf1/sp512 59.817 | tf1/sp1024 64.718
+[mxk8v4] G=1 ctx=8192: tf4/sp256 2.482 | tf2/sp256 2.216 | tf2/sp512 2.493 | tf1/sp256 2.242 | tf1/sp512 2.526 | tf1/sp1024 3.220
+[mxk8v4] G=1 ctx=32768: tf4/sp256 7.605 | tf2/sp256 7.606 | tf2/sp512 7.952 | tf1/sp256 7.714 | tf1/sp512 7.920 | tf1/sp1024 8.711
+[mxk8v4] G=8 ctx=8192: tf4/sp256 16.068 | tf2/sp256 16.150 | tf2/sp512 18.097 | tf1/sp256 16.357 | tf1/sp512 18.217 | tf1/sp1024 22.421
+[mxk8v4] G=8 ctx=32768: tf4/sp256 58.340 | tf2/sp256 58.630 | tf2/sp512 59.933 | tf1/sp256 58.600 | tf1/sp512 60.038 | tf1/sp1024 64.853
+TFL_PASS

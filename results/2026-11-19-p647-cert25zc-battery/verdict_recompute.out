@@ -1,0 +1,45 @@
+== r197 cert25zc verdict recompute (amended gate 7fe72efc) ==
+[ctrl] mx=0 lmcache=4 tracebacks=0
+[ctrl] probe: PROMPT_OK=3/3 Paris=1 tracebacks=0
+[ctrl] LMC posture: on OK
+[m8q] mx=1 lmcache=0 tracebacks=0
+[m8q] probe: PROMPT_OK=3/3 Paris=1 tracebacks=0
+[m8q] LMC posture: auto-off OK
+[m8q] suite-13 garbage: PASS
+[m8q] longreturn: LONGRETURN: PASS T1_SEED: PASS (gated=1)
+[m8q] erraudit: ERROR=0
+[m4q] mx=1 lmcache=0 tracebacks=0
+[m4q] probe: PROMPT_OK=3/3 Paris=1 tracebacks=0
+[m4q] LMC posture: auto-off OK
+[m4q] suite-13 garbage: PASS
+[m4q] longreturn: LONGRETURN: PASS T1_SEED: PASS (gated=1)
+[m4q] erraudit: ERROR=0
+[m8g] mx=1 lmcache=0 tracebacks=0
+[m8g] probe: PROMPT_OK=3/3 Paris=0 tracebacks=0
+[m8g] suite-13 garbage: PASS
+[m8g] longreturn: LONGRETURN: FAIL T1_SEED: PASS (gated=0)
+[m8g] erraudit: ERROR=0
+[m4g] mx=1 lmcache=0 tracebacks=0
+[m4g] probe: PROMPT_OK=3/3 Paris=0 tracebacks=0
+[m4g] suite-13 garbage: PASS
+[m4g] longreturn: LONGRETURN: FAIL T1_SEED: MISS (gated=0)
+[m4g] erraudit: ERROR=0
+[mkq] mx=1 lmcache=0 tracebacks=0
+[mkq] probe: PROMPT_OK=3/3 Paris=1 tracebacks=0
+[mkq] LMC posture: auto-off OK
+[mkq] suite-13 garbage: PASS
+[mkq] longreturn: LONGRETURN: PASS T1_SEED: PASS (gated=1)
+[mkq] erraudit: ERROR=0
+[mkg] mx=1 lmcache=0 tracebacks=0
+[mkg] probe: PROMPT_OK=3/3 Paris=0 tracebacks=0
+[mkg] suite-13 garbage: PASS
+[mkg] longreturn: LONGRETURN: FAIL T1_SEED: PASS (gated=0)
+[mkg] erraudit: ERROR=0
+[g0] mx=0 lmcache=0 tracebacks=0
+[g0] probe: PROMPT_OK=3/3 Paris=1 tracebacks=0
+[g0] suite-13 garbage: PASS
+[g0] longreturn: LONGRETURN: FAIL T1_SEED: PASS (gated=0)
+[g0] erraudit: ERROR=0
+[compare] GEMMA_COMPARE: PASS (no new modes / no amplification; known-class churn banked for review)
+
+P647_CERT25ZC_BATTERY_VERDICT: PASS (all legs under the amended gate)

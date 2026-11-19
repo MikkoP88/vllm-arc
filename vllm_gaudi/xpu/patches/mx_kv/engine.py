@@ -122,9 +122,21 @@ _V4_R_TILE = 4
 # DEFAULT ON for mxfp8 + mxk8v4 (A13 probe, r167 2026-11-13): v5 beats
 # the v2 batch at every cell — mxfp8 1.21-1.90x (G8@32K 43.9 vs
 # 83.5 ms), mxk8v4 1.33-2.86x, correctness <=1.2e-4 (fp16-operand
-# class). mxfp4 is a 0.94-1.05x wash (e2m1-K dequant binds, not MMA)
-# and stays on v2 to keep bit-identical numerics inside the open
-# e2m1-V quality investigation (r161: verify acceptance 0.0% at 32K).
+# class). mxfp4 stays on v2 (Phase 6 B1, r188 2026-11-19): A13's
+# "0.94-1.05x wash" predated K3 — with the e2m1 fast-unpack the v5
+# KERNEL runs 7.618 vs the v2 batch's ~8.2-9.2 ms (r179 k3cycleA18) —
+# but the e2e A/B REFUTED the blanket flip: m4qv5 regresses n1 at every
+# cell (+8..14 ms — the v2 batch grid (R x Hq x splits) out-parallelizes
+# v5's (G x HK x splits) at G=1; v5's plan-build bt_groups tax does not
+# amortize) while WINNING n8 long-ctx (32K ss 1978->1703, aggregate p50
+# 1551->696).
+# G-ADAPTIVE mxfp4 DISPATCH (Phase 7 closing rung, 2026-11-19): dispatch
+# by the split-batch request count at plan build — v2 below the knee,
+# v5 at/above it (ARC_MXKV_V5_G_MIN, default 8 = the n8 face; the B1
+# bank's knee sits between the 8K and 16K observed-concurrency
+# steady-state cells). Capture-lawful: the count is a host-known shape
+# at plan-build time and the plan cache freezes the choice per shape.
+_V5_G_MIN = int(os.environ.get("ARC_MXKV_V5_G_MIN", "8") or 8)
 # ARC_MXKV_VERIFY_DECODER={v2,v4,v5} overrides the per-format default
 # per boot (verify-batch path only — ARC_MXKV_DECODER stays the
 # certified v1|v2|v3 knob for the per-row kernel and must not see
@@ -133,6 +145,10 @@ _V4_R_TILE = 4
 _V5_DOT = os.environ.get("ARC_MXKV_V5_DOT", "") == "1"
 _DECODER_OVERRIDE = os.environ.get("ARC_MXKV_VERIFY_DECODER", "")
 _V5_DEFAULT = ("mxfp8", "mxk8v4")
+# one-time dispatch markers (the posture-line pattern): fmt+decoder
+# pairs already logged by this process — keeps every serve log carrying
+# the verify-decoder engagement line without per-step spam.
+_DECODER_LOGGED: set[tuple[str, str]] = set()
 
 # Ground-truth dump hook (debug-run-only, default off): with
 # ARC_MXKV_DUMP=1, the first attention call after `touch /tmp/mxkv_dump`
@@ -1030,7 +1046,9 @@ class MxAttentionImpl(TurboQuantAttentionImpl):
             # can serve all its rows — group block-table rows, same
             # per-row limits. Device ops only (capture law above). The
             # decoder choice rides the plan (per-format default at module
-            # top: v5 for mxfp8/mxk8v4, v2 for mxfp4; env overrides win).
+            # top; env overrides win). Logged once per process per format
+            # — every leg's serve log carries the engagement marker the
+            # A/B banks cite (the posture-line pattern).
             decoder = _DECODER_OVERRIDE or (
                 "v5"
                 if _V5_DOT
@@ -1040,10 +1058,41 @@ class MxAttentionImpl(TurboQuantAttentionImpl):
                     else (
                         "v5"
                         if self.mx_config.fmt in _V5_DEFAULT
-                        else "v2"
+                        else (
+                            # G-adaptive mxfp4 (B1 verdict): v2 below the
+                            # knee (n1 — the v2 batch grid wins at G=1),
+                            # v5 at/above it (n8 long-ctx — 32K ss -14%).
+                            "v5"
+                            if (
+                                self.mx_config.fmt == "mxfp4"
+                                and len(split_rows) >= _V5_G_MIN
+                            )
+                            else "v2"
+                        )
                     )
                 )
             )
+            _dkey = (self.mx_config.fmt, decoder)
+            if _dkey not in _DECODER_LOGGED:
+                _DECODER_LOGGED.add(_dkey)
+                logger.info(
+                    "MXKV verify decoder=%s fmt=%s source=%s",
+                    decoder,
+                    self.mx_config.fmt,
+                    (
+                        "env-override"
+                        if _DECODER_OVERRIDE
+                        else (
+                            "env-flag"
+                            if (_V5_DOT or _V4_VERIFY)
+                            else (
+                                "g-adaptive"
+                                if self.mx_config.fmt == "mxfp4"
+                                else "format-default"
+                            )
+                        )
+                    ),
+                )
             bt_groups = None
             if decoder != "v2" and all(
                 ql == _V4_R_TILE for _, _, ql in split_rows

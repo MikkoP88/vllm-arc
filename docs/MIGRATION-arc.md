@@ -2,12 +2,12 @@
 
 Migration addendum banked at P5 close-out (2026-10-30) per the banking
 law; identities re-pointed at each certification close-out — currently
-**cert25zb (2026-11-13, the P6.47 MX KV-cache dtype lane on the
-cert23-lineage engine)**. Every prior cert's content, wheels, fork SHAs, gate
+**cert25zc (2026-11-19, cert25zb content + the Phase-7 closing rung of
+the MX decode ladder)**. Every prior cert's content, wheels, fork SHAs, gate
 evidence, and migration notes live in
 [`../CHANGELOG.md`](../CHANGELOG.md). Target: serve
 **qwen3.8-27b-fp8** (dense hybrid-GDN, **MTP k3 recommended** — the
-real-world campaign of record) on `vllm-arc:v0.30.0-b70-cert25zb`,
+real-world campaign of record) on `vllm-arc:v0.30.0-b70-cert25zc`,
 replacing the W14 incumbent (`radiance-test`, flash-next k3) as the
 rig's serving stack. Everything below is rig-proven.
 
@@ -15,10 +15,10 @@ rig's serving stack. Everything below is rig-proven.
 
 | item | value |
 |---|---|
-| image | `vllm-arc:v0.30.0-b70-cert25zb` (cert23 lineage + the P6.47 MX KV-cache dtype lane — `vllm_gaudi/xpu/patches/mx_kv/` Triton store/decode + engine dispatch for `--kv-cache-dtype {mxfp4,mxfp8,mxk8v4}`, **K2 packed-fp16 dequant + K3 e2m1 fast-unpack default-on** (`ARC_MXKV_K2=0`/`ARC_MXKV_K3=0` revert; bit-identical outputs); built via the cert25zb bake (`tools/ar/p147_mxkv/Dockerfile.cert25zb` on the cert25za base) with build-time asserts + `IMAGE_MANIFEST` rows incl. `cert25zb_fork_sha`; gate evidence `results/2026-11-13-p647-cert25zb-certification/`). Prior images, wheel shas, and Dockerfile asserts: [`../CHANGELOG.md`](../CHANGELOG.md) |
-| fork SHA baked | cert25zb content commit per the image's `IMAGE_MANIFEST` (`cert25zb_fork_sha`; verify: `docker run --rm --entrypoint cat vllm-arc:v0.30.0-b70-cert25zb /etc/vllm-arc/IMAGE_MANIFEST`) == annotated tag `rel/v0.30.0-b70-cert25zb` on main. Full per-cert SHA chain: [`../CHANGELOG.md`](../CHANGELOG.md) |
-| validation image | `vllm-arc:v0.30.0-b70-cert25zb` itself — r184 full §10 battery, 8 legs + gemma compare (qwen absolute gates 4/4 PASS: ctrl/m8q/m4q/mkq — LONGRETURN + T1_SEED + erraudit clean; gemma comparative PASS, KNOWN-CLASS churn only; the single counted erraudit item re-adjudicated to 0 real errors — external-client 404s, banked evidence; cross-cert: g0 native bank byte-identical to cert25z). Headline: mxfp4 solo decode parity at 1.81× KV capacity (721,994 vs 398,363 tokens); evidence `results/2026-11-13-p647-cert25zb-certification/` |
-| canonical serve script | rig `/root/build/serve_arc_b70.sh` (the uniform boot interface; carries the **25-var chain** incl. `LMCACHE_TRACK_USAGE=false`; run with `ARC_IMAGE=vllm-arc:v0.30.0-b70-cert25zb ARC_GRAPH=1 ARC_SPEC=3`; lane knobs — **`ARC_KVDTYPE`** kv-cache dtype pass-through, default `fp8_e4m3` (`fp8` ≈ incumbent; `auto` (fp16 KV) refuses at maxlen 262144 but serves at 131072; `turboquant_*` presets servable; `fp8_e5m2` hard-refused on Xe2); `ARC_SKINNY_M` (unset/off = stock — certified default); `ARC_QUANT=mxfp8` + `ARC_MXFP8_MODE` + **`ARC_MAXLEN`** (gemma 8-bit weights need 40960); `ARC_QUANT=mxfp4` + `ARC_MXFP4_MODE` + `ARC_QUANTCFG` hybrid ignore list; `ARC_ATTN_FA2` (`=0` = pure triton); gemma-4 lane: `ARC_MODEL`/`ARC_SERVED`/`ARC_TEMPLATE` + **`ARC_LMC=0`** + **`ARC_RPC_TIMEOUT=1200`** + **`ARC_SPEC=0`**; opt-in `export CCL_SYCL_ALLREDUCE_FP8=1`; **the certified default is probabilistic drafting** — unset or `ARC_SPEC_METHOD=probabilistic` (same bytes), `greedy` = opt-out, `ARC_SPEC=0` = no spec; full per-knob semantics: `docs/envs.md` + CONFIGURATION-arc) |
+| image | `vllm-arc:v0.30.0-b70-cert25zc` (cert25zb content + the Phase-7 closing rung — TILE_FLOOR launcher default 2 `ARC_MXKV_V5_TFLOOR`, G-adaptive mxfp4 verify-decoder dispatch `ARC_MXKV_V5_G_MIN=8`, v7 research kernel dormant `ARC_MXKV_V7=0`; MX lanes LMCache-free by Phase-6 auto-off, ctrl LMC-on; built via the cert25zc bake (`tools/ar/r196_build_cert25zc.sh` — inline Dockerfile on the cert25zb base) with build-time asserts + `IMAGE_MANIFEST` rows incl. `cert25zc_fork_sha`; gate evidence `results/2026-11-19-p647-cert25zc-battery/` + fastcycle `results/2026-11-19-p647-zc-fastcycle/`). Prior images, wheel shas, and Dockerfile asserts: [`../CHANGELOG.md`](../CHANGELOG.md) |
+| fork SHA baked | cert25zc content commit per the image's `IMAGE_MANIFEST` (`cert25zc_fork_sha=dd74715079dc6c23fd4ad2feb1a700294515d423`; verify: `docker run --rm --entrypoint cat vllm-arc:v0.30.0-b70-cert25zc /etc/vllm-arc/IMAGE_MANIFEST`) == annotated tag `rel/v0.30.0-b70-cert25zc` on main. Full per-cert SHA chain: [`../CHANGELOG.md`](../CHANGELOG.md) |
+| validation image | `vllm-arc:v0.30.0-b70-cert25zc` itself — r197 full §10 battery, 8 legs + gemma compare (qwen absolute gates 4/4 PASS: ctrl/m8q/m4q/mkq — LONGRETURN + T1_SEED + garbage + erraudit clean; gemma comparative PASS, KNOWN-CLASS churn only; verdict re-derived under the amended gate 7fe72efc from banked markers per the recompute law). Headline: the Phase-7 closing rung held e2e — mxfp4 n8 32K agg decode p50 1547→583 ms (−62%, r196b fastcycle + r197 battery); evidence `results/2026-11-19-p647-cert25zc-battery/` |
+| canonical serve script | rig `/root/build/serve_arc_b70.sh` (the uniform boot interface; carries the **25-var chain** incl. `LMCACHE_TRACK_USAGE=false`; run with `ARC_IMAGE=vllm-arc:v0.30.0-b70-cert25zc ARC_GRAPH=1 ARC_SPEC=3`; lane knobs — **`ARC_KVDTYPE`** kv-cache dtype pass-through, default `fp8_e4m3` (`fp8` ≈ incumbent; `auto` (fp16 KV) refuses at maxlen 262144 but serves at 131072; `turboquant_*` presets servable; `fp8_e5m2` hard-refused on Xe2); `ARC_SKINNY_M` (unset/off = stock — certified default); `ARC_QUANT=mxfp8` + `ARC_MXFP8_MODE` + **`ARC_MAXLEN`** (gemma 8-bit weights need 40960); `ARC_QUANT=mxfp4` + `ARC_MXFP4_MODE` + `ARC_QUANTCFG` hybrid ignore list; `ARC_ATTN_FA2` (`=0` = pure triton); gemma-4 lane: `ARC_MODEL`/`ARC_SERVED`/`ARC_TEMPLATE` + **`ARC_LMC=0`** + **`ARC_RPC_TIMEOUT=1200`** + **`ARC_SPEC=0`**; opt-in `export CCL_SYCL_ALLREDUCE_FP8=1`; **the certified default is probabilistic drafting** — unset or `ARC_SPEC_METHOD=probabilistic` (same bytes), `greedy` = opt-out, `ARC_SPEC=0` = no spec; full per-knob semantics: `docs/envs.md` + CONFIGURATION-arc) |
 | long-context profile | rig `/root/build/serve_arc_b70_defer2.sh` (the canonical chain + `--long-prefill-token-threshold 2048` + `LMC_DEFER_CHUNK_STORE=1` + `LMC_DEFER_MIN_TOKENS=40960` — opt-in, see CONFIGURATION-arc "fp8 stall levers") |
 | A/B fallback | same script with `ARC_SPEC=4` (MTP k4 — documented alternative for near-deterministic workloads) |
 | golden reference | rig `/root/build/p25/golden_ref.json` (md5 `e02cbb07…`; covers k4 AND k5) |
@@ -31,14 +31,18 @@ installs (lmcache 0.5.6+arc1 closure vendored; in-build import gate +
 the in-image `_WHEEL_HOOKS` registry (`_load_wheel_patch`
 standalone loader).
 
-**cert25zb migration note**: for an existing cert23-lineage deployment
-serving the default `fp8_e4m3` KV, there is **no action and no behavior
-change** — the P6.47 lane activates only when `--kv-cache-dtype` selects
-an MX format, and the certified native/g0 bank is byte-identical across
-the bake (r184 cross-cert evidence). To adopt the capacity lane, add
-`ARC_KVDTYPE=mxfp4` (1.81× KV tokens at solo decode parity) or
-`mxk8v4`/`mxfp8`; `ARC_MXKV_K2=0`/`ARC_MXKV_K3=0` revert the packed
-dequant lanes. Per-prior-cert migration notes:
+**cert25zc migration note**: for an existing cert25zb deployment there
+is **no action** — the closing-rung knobs ship as the new defaults
+(TILE_FLOOR 2, G-adaptive mxfp4 dispatch) with certified-equivalent or
+better decode (r195 tfe2: m8q n1 32K 106→95 ms ITL −10.4%, m4q the
+byte-identical null lane, mkq −4..−2%; r188 B1: m4q n8 32K ss −14%),
+and the MX lanes now serve LMCache-free (Phase-6 auto-off posture,
+r176 A/B: neutral-to-positive). For a cert23-lineage deployment serving
+the default `fp8_e4m3` KV, nothing changes — the P6.47 lane activates
+only when `--kv-cache-dtype` selects an MX format. To adopt the
+capacity lane, add `ARC_KVDTYPE=mxfp4` (1.81× KV tokens at solo decode
+parity) or `mxk8v4`/`mxfp8`; `ARC_MXKV_K2=0`/`ARC_MXKV_K3=0` revert
+the packed dequant lanes. Per-prior-cert migration notes:
 [`../CHANGELOG.md`](../CHANGELOG.md).
 
 ## 2. Boot procedure (from W14-serving state)
@@ -49,7 +53,7 @@ dequant lanes. Per-prior-cert migration notes:
 #                  export SSH_ASKPASS=/tmp/askpass.sh
 #                  SSH_ASKPASS_REQUIRE=force DISPLAY=:0)
 docker stop radiance-test                      # frees port 8000 + both GPUs
-ARC_IMAGE=vllm-arc:v0.30.0-b70-cert25zb ARC_NAME=arc-test ARC_GRAPH=1 ARC_SPEC=3 \
+ARC_IMAGE=vllm-arc:v0.30.0-b70-cert25zc ARC_NAME=arc-test ARC_GRAPH=1 ARC_SPEC=3 \
   bash /root/build/serve_arc_b70.sh            # boot + serve as one unit
 # draft posture: unset/probabilistic = CERTIFIED; the certified
 # line can be written explicitly as ARC_SPEC_METHOD=probabilistic (same
@@ -63,7 +67,7 @@ The script boots the certified container (`--privileged` REQUIRED —
 pidfd IPC law; `--network host --ipc host`, the model
 mount, cache mounts, and the 2 boot-layer `-e` vars) and execs the
 serve line with the full 25-var chain — env + CLI as one unit by
-construction. Boot takes ~5–6 min to health 200 on cert25zb qwen legs
+construction. Boot takes ~5–6 min to health 200 on cert25zc qwen legs
 (the cert23-lineage ×2 graph captures add ~29 s over the cert22 base's
 285–295 s; gemma native-KV legs take ~13 min — the larger KV pool
 profile, r184). Verify

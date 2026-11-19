@@ -1,0 +1,37 @@
+p185_bnsweep — device=xpu, torch=2.13.0+xpu
+mxkv_src=/opt/venv/lib/python3.12/site-packages/vllm_gaudi/xpu/patches/mx_kv
+shape: D=256 HK=4 Hq=24 R_TILE=4
+== correctness vs (32,2,256), d = max|out - base| ==
+[mxfp8] G=1 ctx=8192 bn=64,tf=1: d=8.743e-06 finite=True OK
+[mxfp8] G=1 ctx=8192 bn=64,tf=2: d=1.143e-05 finite=True OK
+[mxfp8] G=1 ctx=8192 bn=64,tf=4: d=1.348e-05 finite=True OK
+[mxfp8] G=8 ctx=32768 bn=64,tf=1: d=4.289e-06 finite=True OK
+[mxfp8] G=8 ctx=32768 bn=64,tf=2: d=4.289e-06 finite=True OK
+[mxfp8] G=8 ctx=32768 bn=64,tf=4: d=6.584e-06 finite=True OK
+[mxfp4] G=1 ctx=8192 bn=64,tf=1: d=8.717e-06 finite=True OK
+[mxfp4] G=1 ctx=8192 bn=64,tf=2: d=1.006e-05 finite=True OK
+[mxfp4] G=1 ctx=8192 bn=64,tf=4: d=1.284e-05 finite=True OK
+[mxfp4] G=8 ctx=32768 bn=64,tf=1: d=3.955e-06 finite=True OK
+[mxfp4] G=8 ctx=32768 bn=64,tf=2: d=3.955e-06 finite=True OK
+[mxfp4] G=8 ctx=32768 bn=64,tf=4: d=6.046e-06 finite=True OK
+[mxk8v4] G=1 ctx=8192 bn=64,tf=1: d=8.648e-06 finite=True OK
+[mxk8v4] G=1 ctx=8192 bn=64,tf=2: d=1.172e-05 finite=True OK
+[mxk8v4] G=1 ctx=8192 bn=64,tf=4: d=1.348e-05 finite=True OK
+[mxk8v4] G=8 ctx=32768 bn=64,tf=1: d=4.267e-06 finite=True OK
+[mxk8v4] G=8 ctx=32768 bn=64,tf=2: d=4.267e-06 finite=True OK
+[mxk8v4] G=8 ctx=32768 bn=64,tf=4: d=6.174e-06 finite=True OK
+CORRECTNESS_WORST_d=1.348e-05
+== perf: (BLOCK_N, TILE_FLOOR, SPLITS) sweep, ms/call ==
+[mxfp8] G=1 ctx=8192: bn32/tf2 1.539 | bn64/tf1 3.424 | bn64/tf2 3.259 | bn64/tf4 3.178
+[mxfp8] G=1 ctx=32768: bn32/tf2 4.166 | bn64/tf1 11.206 | bn64/tf2 11.265 | bn64/tf4 11.319
+[mxfp8] G=8 ctx=8192: bn32/tf2 9.062 | bn64/tf1 24.394 | bn64/tf2 24.092 | bn64/tf4 23.986
+[mxfp8] G=8 ctx=32768: bn32/tf2 30.505 | bn64/tf1 86.291 | bn64/tf2 86.387 | bn64/tf4 85.576
+[mxfp4] G=1 ctx=8192: bn32/tf2 2.311 | bn64/tf1 3.420 | bn64/tf2 3.392 | bn64/tf4 3.344
+[mxfp4] G=1 ctx=32768: bn32/tf2 6.897 | bn64/tf1 12.020 | bn64/tf2 11.838 | bn64/tf4 11.700
+[mxfp4] G=8 ctx=8192: bn32/tf2 14.575 | bn64/tf1 26.048 | bn64/tf2 25.574 | bn64/tf4 25.132
+[mxfp4] G=8 ctx=32768: bn32/tf2 52.263 | bn64/tf1 93.092 | bn64/tf2 92.642 | bn64/tf4 90.134
+[mxk8v4] G=1 ctx=8192: bn32/tf2 2.379 | bn64/tf1 3.423 | bn64/tf2 3.429 | bn64/tf4 3.342
+[mxk8v4] G=1 ctx=32768: bn32/tf2 6.890 | bn64/tf1 11.899 | bn64/tf2 12.010 | bn64/tf4 11.917
+[mxk8v4] G=8 ctx=8192: bn32/tf2 14.645 | bn64/tf1 26.005 | bn64/tf2 25.797 | bn64/tf4 25.194
+[mxk8v4] G=8 ctx=32768: bn32/tf2 52.962 | bn64/tf1 92.271 | bn64/tf2 92.720 | bn64/tf4 91.301
+BNS_PASS

@@ -1,0 +1,4 @@
+(Worker_TP1 pid=1138) INFO 11-19 02:05:19 [engine.py:1078] MXKV verify decoder=v5 fmt=mxfp4 source=g-adaptive
+(Worker_TP0 pid=1026) INFO 11-19 02:05:19 [engine.py:1078] MXKV verify decoder=v5 fmt=mxfp4 source=g-adaptive
+(Worker_TP1 pid=1138) INFO 11-19 02:05:36 [engine.py:1078] MXKV verify decoder=v2 fmt=mxfp4 source=g-adaptive
+(Worker_TP0 pid=1026) INFO 11-19 02:05:36 [engine.py:1078] MXKV verify decoder=v2 fmt=mxfp4 source=g-adaptive

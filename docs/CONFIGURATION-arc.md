@@ -10,12 +10,12 @@ complete control surface + naming map); test definitions in
 
 | Item | Value |
 |---|---|
-| Image | `vllm-arc:v0.30.0-b70-cert25zb` — **the certified release**, tag `rel/v0.30.0-b70-cert25zb` (cert23 lineage + the P6.47 MX KV-cache dtype lane: `--kv-cache-dtype {mxfp4,mxfp8,mxk8v4}` via `vllm_gaudi/xpu/patches/mx_kv/`, K2 packed-fp16 dequant + K3 e2m1 fast-unpack default-on, `ARC_MXKV_K2=0`/`ARC_MXKV_K3=0` revert, bit-identical outputs; mxfp4 holds fp8-checkpoint solo decode parity at 1.81× KV capacity; evidence `results/2026-11-13-p647-cert25zb-certification/`; **recommended decode posture (serve-line choice)**: `ARC_QUANT=mxfp4 ARC_MXFP4_MODE=w4a16 ARC_QUANTCFG='{"ignore":["*visual*","*linear_attn*","mtp.fc"]}' ARC_GMU=0.85 ARC_SPEC=5 ARC_FP8=0` = 123.9 tok/s (+52% vs k3) with TTFT 3.98 s < baseline). Prior certified images (wheel shas, Dockerfile asserts, gate evidence): [`../CHANGELOG.md`](../CHANGELOG.md) |
-| Manifest | `/etc/vllm-arc/IMAGE_MANIFEST` inside the image — fork SHA of record, wheel pins, dependency closure (`lmcache_closure=`), build host, and one description + `cert<N>_fork_sha` (+ wheel-sha/built) row set per release layered on it (base `fork_sha=aa2ee17d…` from cert9 + the cert10 oneCCL overlay rows; per-cert stamps through `cert25zb_fork_sha`). The per-cert row inventory: [`../CHANGELOG.md`](../CHANGELOG.md) |
+| Image | `vllm-arc:v0.30.0-b70-cert25zc` — **the certified release**, tag `rel/v0.30.0-b70-cert25zc` (cert25zb content + the Phase-7 closing rung of the MX decode ladder: `ARC_MXKV_V5_TFLOOR` launcher default 2, G-adaptive mxfp4 verify-decoder dispatch `ARC_MXKV_V5_G_MIN=8`, v7 research kernel dormant `ARC_MXKV_V7=0`; all MX lanes LMCache-free by serve-script auto-off, ctrl keeps LMC-on; evidence `results/2026-11-19-p647-cert25zc-battery/`; **recommended decode posture (serve-line choice)**: `ARC_QUANT=mxfp4 ARC_MXFP4_MODE=w4a16 ARC_QUANTCFG='{"ignore":["*visual*","*linear_attn*","mtp.fc"]}' ARC_GMU=0.85 ARC_SPEC=5 ARC_FP8=0` = 123.9 tok/s (+52% vs k3) with TTFT 3.98 s < baseline). Prior certified images (wheel shas, Dockerfile asserts, gate evidence): [`../CHANGELOG.md`](../CHANGELOG.md) |
+| Manifest | `/etc/vllm-arc/IMAGE_MANIFEST` inside the image — fork SHA of record, wheel pins, dependency closure (`lmcache_closure=`), build host, and one description + `cert<N>_fork_sha` (+ wheel-sha/built) row set per release layered on it (base `fork_sha=aa2ee17d…` from cert9 + the cert10 oneCCL overlay rows; per-cert stamps through `cert25zc_fork_sha`). The per-cert row inventory: [`../CHANGELOG.md`](../CHANGELOG.md) |
 | Base | upstream vllm-gaudi v0.30.0 + pinned wheels (vllm 0.30.0+xpu, triton 3.7.2+xpu, lmcache 0.5.6+arc1; `vllm_xpu_kernels` 0.1.14.1 base, overlaid by the certified arc wheels — current `+arc5`, lineage + md5s in `external_patches/wheels.pins.md5`) |
 
 Superseded images: every prior certified image is superseded by
-cert25zb and must never be presented as current; two early images carry
+cert25zc and must never be presented as current; two early images carry
 do-not-serve warnings (no `turboquant_*` dtypes on cert6/cert7). The full lineage
 table with per-image carried-content and evidence:
 [`../CHANGELOG.md`](../CHANGELOG.md).
@@ -46,7 +46,7 @@ docker run -d --name arc-test \
   -v /root/build/inductor_cache:/root/.inductor_cache \
   -e VLLM_ALLOW_LONG_MAX_MODEL_LEN=1 \
   -e VLLM_WORKER_MULTIPROC_METHOD=spawn \
-  --entrypoint /bin/bash vllm-arc:v0.30.0-b70-cert25zb -c 'sleep infinity'
+  --entrypoint /bin/bash vllm-arc:v0.30.0-b70-cert25zc -c 'sleep infinity'
 ```
 
 These are the validated boot bytes (rig `r46t_campaign.sh:54-63`,
@@ -509,7 +509,7 @@ Boot = the same uniform interface; three knobs route a non-default
 model (host dir, served name, quant flag):
 
 ```bash
-ARC_IMAGE=vllm-arc:v0.30.0-b70-cert25zb \
+ARC_IMAGE=vllm-arc:v0.30.0-b70-cert25zc \
   ARC_MODEL=/models/qwen3.8-27b-quark-awq-mxfp4 \
   ARC_SERVED=qwen3.8-27b-quark-awq-mxfp4 \
   ARC_QUANT= \
@@ -701,7 +701,7 @@ The certified line on the uniform boot interface (no image change, no
 CLI edit — the env states the default explicitly):
 
 ```bash
-ARC_SPEC_METHOD=probabilistic ARC_IMAGE=vllm-arc:v0.30.0-b70-cert25zb \
+ARC_SPEC_METHOD=probabilistic ARC_IMAGE=vllm-arc:v0.30.0-b70-cert25zc \
   ARC_GRAPH=1 ARC_SPEC=3 bash /root/build/serve_arc_b70.sh
 # appends "draft_sample_method":"probabilistic" to --speculative-config
 # (this is also the DEFAULT when ARC_SPEC_METHOD is unset;
