@@ -11,8 +11,10 @@
 # (half/quarter the tiles = half/quarter the bt-chain fixed costs,
 # longer gather runs). BN rides the existing lawful knob
 # ARC_MXKV_V5_BN (no code change); TILE_FLOOR via ARC_MXKV_V5_TFLOOR.
-# Sweep: (BN, TF, SPLITS) in {(32,2,256) base, (64,2,256), (64,4,256),
-# (128,2,256), (128,4,256)} at the T1 money cells. Gate: correctness
+# Sweep: (BN, TF, SPLITS) in {(32,2,256) base, (64,1,256), (64,2,256),
+# (64,4,256)} at the T1 money cells (BN=128 dropped after the first
+# fire: OutOfResources 147,456 B shared vs 131,072 B limit — the A9
+# cliff quantized; not forceloaded at lower stages). Gate: correctness
 # d <= 2e-3 vs (32,2,256) (BNS_PASS); perf table banks for the winner
 # call in the analysis. Offline docker-run pattern
 # (r179/r189/r191/r192/r193); probe-only; quiesces W14 itself (port guard
@@ -79,14 +81,14 @@ timeout 900 docker run --rm --name $CNAME \
     && cp /p147/triton_mx_decode.py $SITE/triton_mx_decode.py \
     && cp /p147/p185_bnsweep.py /tmp/ && cd /tmp \
     && /opt/venv/bin/python -u p185_bnsweep.py" \
-  > "$P/tfloor.txt" 2>&1
+  > "$P/bnsweep.txt" 2>&1
 PRC=$?
 echo "=== [r194:bnsweep] probe exit rc=$PRC $(date +%H:%M:%S) ==="
-grep -E "^\[|^CORRECTNESS|^==|^TFL|mxkv_src" "$P/tfloor.txt" | tail -55
+grep -E "^\[|^CORRECTNESS|^==|^TFL|mxkv_src" "$P/bnsweep.txt" | tail -55
 [ "$PRC" = 0 ] || { echo "R194_PROBE_FAIL rc=$PRC"; exit 1; }
-grep -q "BNS_PASS" "$P/tfloor.txt" \
+grep -q "BNS_PASS" "$P/bnsweep.txt" \
   || { echo "R194_VERDICT_FAIL"; exit 1; }
 cd "$P"
-sha256sum tfloor.txt > SHA256SUMS 2>/dev/null || true
+sha256sum bnsweep.txt > SHA256SUMS 2>/dev/null || true
 echo "R194_DONE $(date -u +%Y-%m-%dT%H:%M:%SZ)"
 exit 0

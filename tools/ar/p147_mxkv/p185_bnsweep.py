@@ -68,7 +68,11 @@ DEV = "xpu"
 SCALE = 1.0 / math.sqrt(D)
 FMTS = ("mxfp8", "mxfp4", "mxk8v4")
 
-CONFIGS = ((32, 2, 256), (64, 2, 256), (64, 4, 256), (128, 2, 256), (128, 4, 256))
+# (BN, TF, SP). BN=128 is OUT on measured physics: the compiled kernel
+# wants 147,456 B shared vs the 131,072 B hardware limit (r194 first
+# fire — OutOfResources, the A9 cliff quantized). tf1 added at bn64 to
+# complete the BN x TF interaction picture.
+CONFIGS = ((32, 2, 256), (64, 1, 256), (64, 2, 256), (64, 4, 256))
 PERF_CELLS = ((1, 8192), (1, 32768), (8, 8192), (8, 32768))
 COR_CELLS = ((1, 8192), (8, 32768))
 
