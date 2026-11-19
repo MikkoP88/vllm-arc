@@ -34,7 +34,7 @@ and never mix into current-record tables (comparator law).
 | Layer | Identity |
 |---|---|
 | Hardware | dual Intel Arc Pro B70 (BMG-G31, 32 GB each — 31.89 GiB visible), TP2, both cards on one CPU socket (`ZE_AFFINITY_MASK=0,1` exposes both device indices) |
-| Engine image | **current**: `vllm-arc:v0.30.0-b70-cert25zb` — tag `rel/v0.30.0-b70-cert25zb` (cert23 lineage + the P6.47 MX KV-cache dtype lane: `--kv-cache-dtype {mxfp4,mxfp8,mxk8v4}` with K2/K3 packed dequant default-on, `ARC_MXKV_K2=0`/`ARC_MXKV_K3=0` revert; evidence `results/2026-11-13-p647-cert25zb-certification/` — mxfp4 solo decode parity at 1.81× KV tokens; the r184 g0 native bank is byte-identical to cert25z, so the native lane's numbers carry unchanged). The decode posture gains are POSTURE: mx4-W4A16+k5 123.9 tok/s, re-read 128.3 in the validation matrix (`…/vmatrix/`). **Carried-record provenance**: the record numbers below were measured natively under the certified probabilistic posture and re-verified at every later cert's gate; under `fp8_e4m3` the compute bytes are identical through cert25zb (per-cert chain: [`../CHANGELOG.md`](../CHANGELOG.md)) |
+| Engine image | **current**: `vllm-arc:v0.30.0-b70-cert25zc` — tag `rel/v0.30.0-b70-cert25zc` (cert23 lineage + the P6.47 MX KV-cache dtype lane with K2/K3 packed dequant default-on + the Phase-7 closing rung: TILE_FLOOR launcher default 2, G-adaptive mxfp4 verify-decoder dispatch, v7 research kernel dormant; evidence `results/2026-11-19-p647-cert25zc-battery/` + fastcycle `results/2026-11-19-p647-zc-fastcycle/` — headline mxfp4 n8 32K agg decode p50 1547→583 ms (−62%); the native `fp8_e4m3` bank is byte-identical across the bake, so the carried record numbers remain the probabilistic-lane measurements). The decode posture gains are POSTURE: mx4-W4A16+k5 123.9 tok/s, re-read 128.3 in the validation matrix (`…/vmatrix/`). **Carried-record provenance**: the record numbers below were measured natively under the certified probabilistic posture and re-verified at every later cert's gate; under `fp8_e4m3` the compute bytes are identical through cert25zc (per-cert chain: [`../CHANGELOG.md`](../CHANGELOG.md)) |
 | Wheels | md5-pinned at build (`tools/wheel_guard.sh`, 4 pins: vllm/triton/vxk/lmcache 0.5.6+arc1) |
 | Serve line | the certified 25-var env chain + CLI ([`CONFIGURATION-arc.md`](CONFIGURATION-arc.md)): MTP k3 **+ probabilistic drafting (the certified default)**, `mode:none`, FULL_DECODE_ONLY graphs (85 capture sizes, 1–320), MNBT 8192, LMCacheConnectorV1 `kv_both` |
 | Record campaigns | prob-lane record: 5 fresh boots (comprehensive + family + no-spec A/B + default-path + greedy opt-out validation) — `results/2026-11-03-p617a-probcert/`; greedy-lane family baseline — `results/2026-10-31-p70-r70-cert4-comprehensive/` |
@@ -96,10 +96,12 @@ accepted/drafts + 1** (the +1 bonus token). Windows are counter deltas
 snapshotted before/after each battery, so each face's acceptance covers
 that face's traffic only.
 
-## Current certified image — cert25zb (`rel/v0.30.0-b70-cert25zb`): the current record
+## Current certified image — cert25zc (`rel/v0.30.0-b70-cert25zc`): the current record
 
-**Current release = rel/v0.30.0-b70-cert25zb** (cert23 lineage + the
-P6.47 MX KV-cache dtype lane, K2/K3 packed dequant default-on; the
+**Current release = rel/v0.30.0-b70-cert25zc** (cert25zb content + the
+Phase-7 closing rung of the MX decode ladder — TILE_FLOOR 2,
+G-adaptive mxfp4 verify-decoder dispatch; K2/K3 packed dequant
+default-on; the
 native `fp8_e4m3` bank is byte-identical across the bake, so the
 carried record numbers are the probabilistic-lane measurements,
 re-verified and discriminated in-band at every later cert's gate —

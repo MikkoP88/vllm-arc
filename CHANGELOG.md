@@ -12,6 +12,43 @@ the fork SHA it was built from.
 Phase labels P0–P6.38 refer to the plan's execution phases; every phase's
 raw evidence is banked under `results/YYYY-MM-DD-<phase>-*/`.
 
+## rel/v0.30.0-b70-cert25zc — P6.47: Phase-7 MX decode closing rung (2026-11-19)
+
+- cert25zc = cert25zb content + **the Phase-7 closing rung of the MX
+  decode ladder**: TILE_FLOOR launcher default 4→2 (`ARC_MXKV_V5_TFLOOR`;
+  kernel constexpr stays 4 — certified-signature freeze), G-adaptive mxfp4
+  verify-decoder dispatch (`ARC_MXKV_V5_G_MIN=8` — small-G legs keep the
+  split path, big-G flip to the verify decoder), v7 research kernel DORMANT
+  (`ARC_MXKV_V7=0`). MX lanes now serve **LMCache-free** (Phase-6 auto-off
+  posture; r176 A/B neutral-to-positive), ctrl keeps the certified LMC-on.
+- Built by r196 (`tools/ar/r196_build_cert25zc.sh` — inline Dockerfile on
+  the cert25zb base) with build-time asserts; `IMAGE_MANIFEST`
+  `cert25zc_fork_sha=dd74715079dc6c23fd4ad2feb1a700294515d423`.
+- **Closing-rung gains** (r195 tfe2 / r188 B1, held e2e at r196b/r197):
+  m8q n1 32K ITL 106→95 ms (−10.4%); m4q n8 32K steady-state agg −14%;
+  headline mxfp4 n8 32K agg decode p50 **1547→583 ms (−62%)**
+  (`results/2026-11-19-p647-zc-fastcycle/`).
+- **r197 full §10 battery: CERTIFIED**
+  (`results/2026-11-19-p647-cert25zc-battery/`, 192 files banked +
+  SHA256SUMS-verified + law-8 redaction pass). Qwen absolute gates 4/4
+  (ctrl/m8q/m4q/mkq — LONGRETURN + T1_SEED + garbage + erraudit clean);
+  gemma comparative PASS (REP-LOOP native baseline class, no new modes).
+  Verdict of record re-derived from banked markers under the amended gate
+  7fe72efc (m8q asserts the Phase-6 LMC auto-off posture) per the
+  recompute-from-banked-artifacts law — `verdict_recompute.sh` banked.
+- Decode smoke (256-tok solo / 2048-tok agg8, tps medians): ctrl 59.9/304.1;
+  m8q 54.2/236.7 (0.78×); m4q 57.2/229.0 (0.75×); mkq 55.9/226.6 (0.74×).
+  The remaining ~0.74–0.78× agg8 gap is the Triton split-dot structural
+  deficit — the **arc7 MX-native kernel (Phase 8)** is the open line.
+- Evidence: `results/2026-11-19-p647-v7a-attempt1/`,
+  `results/2026-11-19-p647-v7a-attempt2-tfloor/`,
+  `results/2026-11-19-p647-v7a-attempt3-bnsweep/`,
+  `results/2026-11-19-p647-tf2-e2e/`, `results/2026-11-18-p647-b1-v5flip/`,
+  `results/2026-11-14-p647-s1-acceptknee/`,
+  `results/2026-11-18-p647-t1-attribution/`,
+  `results/2026-11-19-p647-zc-fastcycle/`,
+  `results/2026-11-19-p647-cert25zc-battery/`.
+
 ## rel/v0.30.0-b70-cert25zb — P6.47: MX KV-cache dtype lane, K2/K3 packed dequant (2026-11-13)
 
 - `--kv-cache-dtype {mxfp4,mxfp8,mxk8v4}` on qwen3.8-27b-fp8 (dual B70, TP2):
