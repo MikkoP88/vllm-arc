@@ -775,6 +775,12 @@ def _mx_decode_split_dot(
     BLOCK_N: tl.constexpr,  # decode tile
     NUM_SPLITS: tl.constexpr,  # grid z; effective count adapts per group
     SHIFT: tl.constexpr,  # e2m1 unpack flavor
+    TILE_FLOOR: tl.constexpr = 4,  # v6 deep-split floor: >= this many
+    # serial tiles per CTA. 4 = the certified A14 rule (bit-frozen
+    # default); env-swept via ARC_MXKV_V5_TFLOOR (r193) — the K2/K3
+    # packed lanes cut the per-tile ALU cost, re-opening the split-depth
+    # balance: floor 1-2 trades combine cost against REMOVING serial
+    # chain tiles (the r192 toolchain verdict: no in-language prefetch).
     K2: tl.constexpr = 0,  # 1 = packed-fp16 dequant on e4m3 payloads
     K3: tl.constexpr = 0,  # 1 = e2m1 payloads via e4m3-byte map (packed)
 ):
@@ -807,14 +813,17 @@ def _mx_decode_split_dot(
     walk_end = tl.max(ends, 0)
 
     n_tiles = (walk_end + BLOCK_N - 1) // BLOCK_N
-    # v6 deep-split rule: target >= 4 serial tiles per CTA (the A14
-    # law — the old (n_tiles+1)//2 cap of 32 starved the grid at long
+    # v6 deep-split rule: target >= TILE_FLOOR serial tiles per CTA (the
+    # A14 law — the old (n_tiles+1)//2 cap of 32 starved the grid at long
     # ctx: 1024 tiles on 128 CTAs, each tile a serial bt->slot->gather
     # latency chain). Grid z still bounds s_eff; splits beyond the
     # walk keep the exact v2 empty-marker semantics via the guard
     # below, so the only numeric difference vs the old rule is the
-    # split regrouping (A11 S-sweep class: 2-3e-8).
-    s_eff = tl.minimum(NUM_SPLITS, tl.maximum(1, n_tiles // 4))
+    # split regrouping (A11 S-sweep class: 2-3e-8). TILE_FLOOR defaults
+    # to the certified 4; r193 sweeps 1-2 post-K2/K3 (deep splits
+    # REMOVE serial chain tiles instead of pipelining them — the r192
+    # toolchain verdict closed the in-language prefetch lane).
+    s_eff = tl.minimum(NUM_SPLITS, tl.maximum(1, n_tiles // TILE_FLOOR))
     split_len = (walk_end + s_eff - 1) // s_eff
     split_start = split_len * sid
     split_end = tl.minimum(split_start + split_len, walk_end)
@@ -923,6 +932,7 @@ def _mx_decode_split_dot2(
     SHIFT: tl.constexpr,  # accepted for v5 signature parity; IGNORED —
     # v7 implements the join flavor only (the r183-certified unpack;
     # join and shift are semantically identical, so ignoring is sound)
+    TILE_FLOOR: tl.constexpr = 4,  # v5 parity (the r193 sweep knob)
     K2: tl.constexpr = 0,  # 1 = packed-fp16 dequant on e4m3 payloads
     K3: tl.constexpr = 0,  # 1 = e2m1 payloads via e4m3-byte map (packed)
 ):
@@ -956,7 +966,7 @@ def _mx_decode_split_dot2(
     walk_end = tl.max(ends, 0)
 
     n_tiles = (walk_end + BLOCK_N - 1) // BLOCK_N
-    s_eff = tl.minimum(NUM_SPLITS, tl.maximum(1, n_tiles // 4))
+    s_eff = tl.minimum(NUM_SPLITS, tl.maximum(1, n_tiles // TILE_FLOOR))
     split_len = (walk_end + s_eff - 1) // s_eff
     split_start = split_len * sid
     split_end = tl.minimum(split_start + split_len, walk_end)
@@ -1519,6 +1529,14 @@ def mx_decode_rows_dot(
     num_stages = ns_t if num_stages is None else num_stages
     shift = sh_t if _SHIFT is None else _SHIFT
     splits = _v5_splits()
+    # r193 deep-split re-sweep: the v6 >=4-tile floor was tuned pre-K2/K3
+    # (per-tile scalar-ALU dominated); the packed lanes cut the per-tile
+    # cost, so floor 1-2 re-opens — deep splits REMOVE serial
+    # bt->slot->gather chain tiles instead of pipelining them (the r192
+    # toolchain verdict: no in-language prefetch on the XPU lane).
+    # Default 4 = the certified A14 rule, bit-frozen; call-time read —
+    # static during serving (capture law).
+    tfl = int(os.environ.get("ARC_MXKV_V5_TFLOOR", "4") or 4)
     # K2 packed-fp16 dequant lane (r177 scalar-ALU wall; module header).
     # Default ON since cert25zb; "0" reverts to the f32 path. Call-time
     # read — static during serving (capture law).
@@ -1574,6 +1592,7 @@ def mx_decode_rows_dot(
         BLOCK_N=block_n,
         NUM_SPLITS=splits,
         SHIFT=shift,
+        TILE_FLOOR=tfl,
         K2=k2,
         K3=k3,
         num_warps=num_warps,
