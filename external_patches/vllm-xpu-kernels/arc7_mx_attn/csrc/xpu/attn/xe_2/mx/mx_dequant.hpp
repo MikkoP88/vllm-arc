@@ -1,26 +1,30 @@
-// In-register MX dequant for the arc7 MX-native paged-decode kernel:
-// the structural mirror of cutlass-sycl's cute::quantize_block_wise
-// (include/cute/quantization/quantize.hpp), inverted. Where quantize
-// reduces abs-max, emits e8m0 codes and converts down, we consume the
-// packed payload + e8m0 codes already in cache and convert up, in the
-// copy-fragment layout, leaving the layout change to the stock
-// subgroup reorder() — the same division of labor the stock fp8 path
-// uses (cast in registers, reorder to the MMA fragment).
+// In-register MX dequant for the arc7 MX-native paged-decode kernel.
+// Consumes the packed payload + e8m0 codes already in cache and
+// converts up, in the copy-fragment layout, leaving the layout change
+// to the stock subgroup reorder() — the same division of labor the
+// stock fp8 path uses (cast in registers, reorder to the MMA fragment).
 //
-// The two fragments arrive per-thread from 2D-block copies of the SAME
-// K (or V) tile: `bytes` holds the packed payload rows, `scales` the
-// e8m0 group codes for those rows. Row/column ownership between the
-// data copy and the scale copy is not assumed to match — each scale
-// value is replicated across the subgroup with group_broadcast keyed
-// by the SENDING lane's coordinates, so correctness never depends on
-// copy-atom ownership details (32 bytes per (16-row x 64-element)
-// d-tile; amortized over the tile's 1k MACs).
+// Scale access is COORDINATE-DRIVEN DIRECT READ: the caller passes the
+// gmem scale surface as a (dst-row, group) view plus the partitioned
+// coordinate views of the byte and destination fragments. Each
+// destination value computes its (row, group) from its coordinate and
+// reads the e8m0 code from the surface; repeated (row, group) reads
+// hit L1 (the scale tile is a few hundred bytes and the K/V payload
+// prefetch has already touched those cache lines' neighborhood), and a
+// 4-entry register cache hoists the reads out of the unrolled loop.
+// This replaces an earlier subgroup-broadcast design: replicating the
+// full tile's scales per work-item costs ~tile_k*groups SG shuffles
+// per d-tile, which would have dominated the MMA by ~8x.
+//
+// Row/element orientation differs per operand: K fragments carry
+// (k, d) coordinates (row = mode 0); the V surface family carries
+// (v, k) (row = mode 1). RowIsMode0 selects the reading.
 //
 // Coordinate access follows the in-tree convention (the masking paths
 // in chunk_prefill_mainloop.hpp): the caller passes identity-tensor
 // coordinate views partitioned by the same thread slices that produced
-// the fragments, so every fragment value's logical (row, col) lookup
-// folds at compile time.
+// the fragments. The byte-lookup match folds at compile time for
+// static fragment layouts.
 #pragma once
 
 #include <cstdint>
@@ -47,29 +51,28 @@ e4m3_to_float(uint8_t b) {
 
 }  // namespace detail
 
-// dequant_dtile — one d-tile of one K (or V) row-block.
+// dequant_dtile — one d-tile (K) or v-step (V) of one row-block.
 //
 //   bytes        : per-thread u8 fragment, payload bytes of the tile
 //                 (e4m3: 1 byte/element; e2m1: 2 elements/byte,
 //                 element 2j = low nibble, 2j+1 = high)
-//   byte_coords  : partitioned coordinate view -> (row, byte_col)
-//   scales       : per-thread u8 fragment, e8m0 codes of the tile's
-//                 groups (DPerTile / kMxGroupSize per row)
-//   scale_coords : partitioned coordinate view -> (row, group)
-//   dst          : per-thread float fragment, DPerTile elements per
-//                  row in the copy-layout family, filled by logical
-//                  coordinate via dst_coords ((row, elem))
+//   byte_coords  : partitioned coordinate view -> (x, row) of each
+//                  byte value (x = byte column for K, byte row for V)
+//   scales       : gmem u8 surface view (row, group) for the CURRENT
+//                  (sub-)surface; indexed directly by coordinate
+//   dst          : per-thread ElementQ fragment in the dequant copy's
+//                  layout (the fragment reorder() converts into the
+//                  MMA operand)
+//   dst_coords   : partitioned coordinate view -> (x, row) of each
+//                  destination value (x = element column/row)
 //
-// Every loop runs over static fragment sizes and unrolls fully; the
-// group-broadcast phase is the only cross-lane traffic.
+// Every loop runs over static fragment sizes and unrolls fully.
 template <
     bool KIsE4M3,
-    int DPerTile,
-    int Rows,
+    bool RowIsMode0,
     class ByteFrag,
     class ByteCrd,
-    class ScaleFrag,
-    class ScaleCrd,
+    class ScaleTensor,
     class DstFrag,
     class DstCrd>
 CUTE_HOST_DEVICE
@@ -77,58 +80,61 @@ void
 dequant_dtile(
     ByteFrag const& bytes,
     ByteCrd const& byte_coords,
-    ScaleFrag const& scales,
-    ScaleCrd const& scale_coords,
+    ScaleTensor const& scales,
     DstFrag& dst,
     DstCrd const& dst_coords) {
-  constexpr int kGroupsPerTile = DPerTile / kMxGroupSize;
   constexpr int kElemsPerByte = KIsE4M3 ? 1 : 2;
 
-  auto sg = sycl::ext::oneapi::this_work_item::get_sub_group();
-  constexpr int kSG = cute::intel::sg_size;
+  // Per-WI scale cache: the destination fragment of one 64-wide tile
+  // spans few (row, group) pairs; anything beyond 4 entries still
+  // reads correctly through L1.
+  int cr[4] = {-1, -1, -1, -1};
+  int cg[4] = {-1, -1, -1, -1};
+  float cv[4];
 
-  // Phase 1 — replicate the tile's scale factors subgroup-wide.
-  // Every lane broadcasts each of its scale values together with the
-  // (row, group) coordinates that value lives at; each broadcast is
-  // claimed by exactly one (lane, sv), so after the loop every thread
-  // holds scales_full[row * kGroupsPerTile + group] = 2^(code-127).
-  float scales_full[Rows * kGroupsPerTile];
-  CUTE_UNROLL
-  for (int sv = 0; sv < ScaleFrag::size(); ++sv) {
-    float f = e8m0_to_scale(scales(sv));
-    auto crd = scale_coords(sv);
-    int row = int(cute::get<0>(crd));
-    int grp = int(cute::get<1>(crd));
-    CUTE_UNROLL
-    for (int lane = 0; lane < kSG; ++lane) {
-      float v = sycl::group_broadcast(sg, f, lane);
-      int r = sycl::group_broadcast(sg, row, lane);
-      int g = sycl::group_broadcast(sg, grp, lane);
-      scales_full[r * kGroupsPerTile + g] = v;
-    }
-  }
-
-  // Phase 2 — dequant this thread's payload bytes into its dst values.
-  // A dst value (row, elem) reads byte (row, elem / kElemsPerByte) and
-  // scale group (elem / kMxGroupSize). The byte lookup is a coordinate
-  // match against this thread's byte fragment (static size, unrolled,
-  // folds away); fragments from the same tiled-copy family make the
-  // match thread-local.
   CUTE_UNROLL
   for (int dv = 0; dv < DstFrag::size(); ++dv) {
-    auto crd = dst_coords(dv);
-    int row = int(cute::get<0>(crd));
-    int elem = int(cute::get<1>(crd));  // 0..DPerTile-1
-    float scale = scales_full[row * kGroupsPerTile + elem / kMxGroupSize];
+    auto dc = dst_coords(dv);
+    int row = RowIsMode0 ? int(cute::get<0>(dc)) : int(cute::get<1>(dc));
+    int elem = RowIsMode0 ? int(cute::get<1>(dc)) : int(cute::get<0>(dc));
+    int grp = elem / kMxGroupSize;
+
+    float scale = 0.f;
+    bool hit = false;
+    CUTE_UNROLL
+    for (int i = 0; i < 4; ++i) {
+      if (cr[i] == row && cg[i] == grp) {
+        scale = cv[i];
+        hit = true;
+      }
+    }
+    if (!hit) {
+      scale = e8m0_to_scale(scales(row, grp));
+      CUTE_UNROLL
+      for (int i = 0; i < 4; ++i) {
+        if (cr[i] < 0) {
+          cr[i] = row;
+          cg[i] = grp;
+          cv[i] = scale;
+          break;
+        }
+      }
+    }
+
+    // Payload byte for this element: coordinate match against this
+    // thread's byte fragment (static size, unrolled; folds away when
+    // the copy layouts make the match thread-local).
     uint8_t b = 0;
     CUTE_UNROLL
     for (int bv = 0; bv < ByteFrag::size(); ++bv) {
       auto bc = byte_coords(bv);
-      if (int(cute::get<0>(bc)) == row &&
-          int(cute::get<1>(bc)) == elem / kElemsPerByte) {
+      int brow = RowIsMode0 ? int(cute::get<0>(bc)) : int(cute::get<1>(bc));
+      int bx = RowIsMode0 ? int(cute::get<1>(bc)) : int(cute::get<0>(bc));
+      if (brow == row && bx == elem / kElemsPerByte) {
         b = bytes(bv);
       }
     }
+
     float val;
     if constexpr (KIsE4M3) {
       val = detail::e4m3_to_float(b);
