@@ -70,6 +70,7 @@ from .mx_dequant import mx_dequant_cache
 from .mx_layout import offsets as _mx_offsets
 from .mx_layout import slot_bytes
 from .mx_quant import decode_kv as _ref_decode_kv
+from .native_decode import mx_decode_native
 from .triton_mx_decode import mx_decode, mx_decode_rows, mx_decode_rows_dot
 from .triton_mx_store import mx_store
 
@@ -145,6 +146,16 @@ _V5_G_MIN = int(os.environ.get("ARC_MXKV_V5_G_MIN", "8") or 8)
 _V5_DOT = os.environ.get("ARC_MXKV_V5_DOT", "") == "1"
 _DECODER_OVERRIDE = os.environ.get("ARC_MXKV_VERIFY_DECODER", "")
 _V5_DEFAULT = ("mxfp8", "mxk8v4")
+# arc7 (Phase 8): the MX-NATIVE vendor-class decode kernel (CUTLASS/Xe2,
+# wheel-side external_patches/vllm-xpu-kernels/arc7_mx_attn/ — the vendor
+# structure ported to MX formats, dequant fused into the load path).
+# DORMANT until certified: Triton v2/v5 stay the certified default; the
+# env routes the verify-batch path through native_decode.mx_decode_native
+# (the arc7mx wheel's torch op). The engine refuses with a warning when
+# the GQA group exceeds the q16 policy bucket (plan-build-time, so the
+# warning rides shape builds only). Validation ladder: r198 offline
+# correctness -> r199 T1 perf -> r200 fastcycle -> r201 battery -> cert26.
+_NATIVE = os.environ.get("ARC_MXKV_NATIVE", "") == "1"
 # one-time dispatch markers (the posture-line pattern): fmt+decoder
 # pairs already logged by this process — keeps every serve log carrying
 # the verify-decoder engagement line without per-step spam.
@@ -1049,25 +1060,36 @@ class MxAttentionImpl(TurboQuantAttentionImpl):
             # top; env overrides win). Logged once per process per format
             # — every leg's serve log carries the engagement marker the
             # A/B banks cite (the posture-line pattern).
-            decoder = _DECODER_OVERRIDE or (
-                "v5"
-                if _V5_DOT
-                else (
-                    "v4"
-                    if _V4_VERIFY
+            _g = query.shape[1] // kv_cache.shape[2]
+            if _NATIVE and _g > 16:
+                logger.warning(
+                    "MXKV native refused: G=%d exceeds the q16 policy "
+                    "bucket — the Triton lanes serve this shape",
+                    _g,
+                )
+            decoder = (
+                "native"
+                if _NATIVE and _g <= 16
+                else _DECODER_OVERRIDE or (
+                    "v5"
+                    if _V5_DOT
                     else (
-                        "v5"
-                        if self.mx_config.fmt in _V5_DEFAULT
+                        "v4"
+                        if _V4_VERIFY
                         else (
-                            # G-adaptive mxfp4 (B1 verdict): v2 below the
-                            # knee (n1 — the v2 batch grid wins at G=1),
-                            # v5 at/above it (n8 long-ctx — 32K ss -14%).
                             "v5"
-                            if (
-                                self.mx_config.fmt == "mxfp4"
-                                and len(split_rows) >= _V5_G_MIN
+                            if self.mx_config.fmt in _V5_DEFAULT
+                            else (
+                                # G-adaptive mxfp4 (B1 verdict): v2 below the
+                                # knee (n1 — the v2 batch grid wins at G=1),
+                                # v5 at/above it (n8 long-ctx — 32K ss -14%).
+                                "v5"
+                                if (
+                                    self.mx_config.fmt == "mxfp4"
+                                    and len(split_rows) >= _V5_G_MIN
+                                )
+                                else "v2"
                             )
-                            else "v2"
                         )
                     )
                 )
@@ -1083,18 +1105,22 @@ class MxAttentionImpl(TurboQuantAttentionImpl):
                         "env-override"
                         if _DECODER_OVERRIDE
                         else (
-                            "env-flag"
-                            if (_V5_DOT or _V4_VERIFY)
+                            "native-env"
+                            if decoder == "native"
                             else (
-                                "g-adaptive"
-                                if self.mx_config.fmt == "mxfp4"
-                                else "format-default"
+                                "env-flag"
+                                if (_V5_DOT or _V4_VERIFY)
+                                else (
+                                    "g-adaptive"
+                                    if self.mx_config.fmt == "mxfp4"
+                                    else "format-default"
+                                )
                             )
                         )
                     ),
                 )
             bt_groups = None
-            if decoder != "v2" and all(
+            if decoder not in ("v2", "native") and all(
                 ql == _V4_R_TILE for _, _, ql in split_rows
             ):
                 bt_groups = bt.index_select(
@@ -1108,7 +1134,17 @@ class MxAttentionImpl(TurboQuantAttentionImpl):
         idx, bt_rows, sl_rows, bt_groups, decoder = plan
         _trace("path", "batch", "splitbatch", f"R={idx.shape[0]}")
         q_rows = query.index_select(0, idx)
-        if bt_groups is not None:
+        if decoder == "native":
+            out = mx_decode_native(
+                q_rows,
+                kv_cache,
+                bt_rows,
+                sl_rows,
+                self.scale,
+                attn_metadata.max_seq_len,
+                self.mx_config.fmt,
+            )
+        elif bt_groups is not None:
             if decoder == "v5":
                 out = mx_decode_rows_dot(
                     q_rows,

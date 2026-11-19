@@ -26,6 +26,13 @@ from typing import Optional
 
 import torch
 
+try:
+    from . import _vllm_fa2_C  # noqa: F401  (dlopens the extension — the
+    # package __init__ does NOT; arc4 law: a bare package import leaves
+    # torch.ops._vllm_fa2_C empty)
+except ImportError:
+    pass
+
 from .flash_attn_interface import (
     _as_int32_device_tensor,
     _infer_num_xe_cores,

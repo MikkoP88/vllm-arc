@@ -1,6 +1,6 @@
 # arc7_mx_attn — MX-native paged-decode kernel (P6.47 Phase 8)
 
-Wheel section for `vllm-xpu-kernels` 0.1.14.1+arc7: the MX KV lanes
+Wheel section for `vllm-xpu-kernels` 0.1.14.1+arc7mx: the MX KV lanes
 (mxfp4 / mxfp8 / mxk8v4) get the same vendor-class fused decode kernel
 the fp8 ctrl lane rides, with MX dequant fused into the load path.
 
@@ -30,18 +30,59 @@ csrc/xpu/attn/xe_2/mx/
                              plumbing stock)
   mx_paged_decode.hpp        config/launcher (fork of paged_decode.hpp)
   mx_paged_decode_xe2.cpp    entry + runtime dtype/fmt dispatch
-patches/
-  attn_interface.{h,cpp}.patch   dispatch entry (pure addition)
-  torch_bindings.patch           pybind registration
-  CMakeLists.patch               source-list entries
-apply_arc7.py               rig-side patcher (arc6 discipline: exact
-                            anchors, refuses on miss/double-apply)
-build_vxk_wheel_arc7.sh     host-swap wheel build (arc6 pattern)
-vxk_arc7_inner.sh           in-builder build script
+apply_arc7mx.py             rig-side patcher (arc6 discipline: exact
+                            anchors, refuses on miss/double-apply; base
+                            = the certified arc6 tarball, provenance
+                            asserts skinny-present/jm-absent; edits
+                            embedded per the arc6/arc7 kit law)
+vxk_arc7mx_bootstrap.sh     one-time builder-venv reconstruction (the
+                            jm-era builder container is gone; arc3
+                            postmortem recipe)
+build_vxk_wheel_arc7mx.sh   host orchestrator: builder (re)creation +
+                            host-swap wheel build (arc6 pattern)
+vxk_arc7mx_inner.sh         in-builder build script (+arc7mx, resume
+                            mode VXK_ARC7MX_CLEAN)
 vllm_xpu_kernels/mx_attn_interface.py   python API (mirrors
                             flash_attn_interface decode branch incl.
                             build_decode_split_plan semantics)
 ```
+
+## Integration surface (verified against the tree's bytes 2026-11-19)
+
+The xe_2 kernel library GLOBs `*.cpp` recursively
+(`cmake/utils.cmake::add_xe2_kernel_library`), so the module joins the
+build with ZERO CMake changes. `apply_arc7mx.py` makes exactly these
+edits (all pure insertions, anchor-verified in a local sandbox run):
+
+- `csrc/xpu/attn/attn_interface.h`: `cutlass_mx_paged_decode_interface`
+  declaration after the stock decode decl.
+- `csrc/xpu/attn/attn_interface.cpp`: mx include inside the XE2 ifdef +
+  the arch-guarded forwarder (vendor layering: fa2 op -> attn_interface
+  -> xe2 entry).
+- `csrc/flash_attn/flash_api.cpp`: `mx_paged_decode_op` in
+  FLASH_NAMESPACE (queue via `vllmGetQueue`; decode buffers undefined --
+  the xe2 entry allocates per the vendor shapes) + the
+  `mx_paged_decode` TORCH_LIBRARY def/impl via `make_pytorch_shim`
+  (same int/float/optional conversions as `varlen_fwd`).
+
+Wheel version `+arc7mx` (the `+arc7` label belongs to the P6.34 jm lab
+line): arc6-certified content + the mx module only. Base tarball
+`/root/build/vxk-arc6-cert22-src.tgz` (taken pre-jm == exactly the
+certified wheel's source, .deps warm cache carried).
+
+## vllm side (fork tree)
+
+`vllm_gaudi/xpu/patches/mx_kv/native_decode.py` bridges the engine's
+split-row plan to the kernel's contract (one row per (request, draft
+token) = its own one-query "sequence": cu_seqlens_q = arange(R+1),
+seqused_k = the plan's per-row limits, block_table = the per-row
+gathered tables; all device ops -- capture law; max_seqlen_k from the
+metadata's host-known field). `engine.py` gates it behind
+`ARC_MXKV_NATIVE=1` (DORMANT until certified; Triton v2/v5 stay the
+default; G>16 refuses with a warning) on the `_split_verify_decode`
+path -- the MTP verify hot shape. The per-row non-spec decode path
+stays Triton for the first cut (r199's money cells are the verify
+shapes); it adopts native after r198 proves correctness.
 
 ## Layout contract (zero re-layout: our TQ-AoS slots ARE the surfaces)
 
@@ -62,7 +103,7 @@ D=128 throughout this lane. Nibble law (mx_quant.py): element `2j` =
 LOW nibble of byte `j`, `2j+1` = HIGH; `value = e2m1(nibble) *
 2^(code-127)`.
 
-## Status (2026-11-19, second authoring pass)
+## Status (2026-11-19, third authoring pass — cert25zc released)
 
 - `mx_types.hpp`, `mx_dequant.hpp` — complete first implementations.
 - `mx_paged_decode_kernel.hpp` — first pass: the stock kernel fork
@@ -75,7 +116,8 @@ LOW nibble of byte `j`, `2j+1` = HIGH; `value = e2m1(nibble) *
   pollution), split default = the flash_api `get_num_splits` rule.
 - `mx_paged_decode_xe2.{h,cpp}` — first pass entry: slot-offset table
   (mirrors mx_layout.py), C++-side decode-buffer allocation (vendor
-  shapes), fmt x qgroup runtime dispatch.
+  shapes; undefined buffers get the vendor shapes here, so the fa2 op
+  passes undefined tensors), fmt x qgroup runtime dispatch.
 - `mx_paged_decode_mainloop.hpp` — SKELETON: stock control flow
   (paging, surface split, softmax, loop structure) complete; the MX
   dequant insertion points are designed and marked, but the
@@ -84,11 +126,22 @@ LOW nibble of byte `j`, `2j+1` = HIGH; `value = e2m1(nibble) *
   must be resolved against the actual cute XPU copy/MMA APIs during
   rig-side compile iteration (r198's build loop) — the cutlass-sycl
   headers only exist in the builder's `.deps`, so this iterates there.
-- `mx_attn_interface.py` — first pass python surface (split-plan
-  mirror; seqused_k rides the cu_seqlens_k slot per the vendor decode
-  flow).
-- Patches (attn_interface/torch_bindings/CMake), apply + build
-  scripts, vllm-side wiring: pending (post-cert25zc-release).
+- `mx_attn_interface.py` — python surface (split-plan mirror;
+  seqused_k rides the cu_seqlens_k slot per the vendor decode flow;
+  `_vllm_fa2_C` import guard per the arc4 dlopen law).
+- Integration + build layer AUTHORED AND SANDBOX-VERIFIED
+  (2026-11-19): `apply_arc7mx.py` (all six anchor edits applied
+  byte-exact in a local sandbox against the tree's pulled bytes;
+  idempotence-refuse verified), `vxk_arc7mx_bootstrap.sh` /
+  `build_vxk_wheel_arc7mx.sh` / `vxk_arc7mx_inner.sh`.
+- vllm side AUTHORED: `native_decode.py` bridge + `engine.py`
+  `ARC_MXKV_NATIVE=1` wiring (verify-batch path; dormant by default;
+  ruff-clean under the repo face). NOT yet compile-iterated: the first
+  engine boot with the env set is r200's fastcycle face (r198 tests
+  the kernel offline first).
+- NEXT: rig compile iteration (r198) — ship the kit, run apply +
+  build, resolve the mainloop fragment plumbing against real compiler
+  errors, then the validation ladder below.
 
 ## Validation ladder (master plan §P6.47 Phase 8)
 
@@ -100,7 +153,7 @@ r201 full §10 battery -> cert26. Kernel ships dormant behind
 
 ## Build laws
 
-oneAPI 2026.0.0 toolchain, `vxk-arc3-builder` host-swap (arc6 tree kept
-at `/root/build/vxk-arc6-kept`), `.deps` carried, wheel version
-`0.1.14.1+arc7`. Same ABI laws as arc3-arc6 (`external_patches/
-vllm-xpu-kernels/README.md`).
+oneAPI 2026.0.0 toolchain, `vxk-arc3-builder` host-swap (live arc6+jm
+tree kept at `/root/build/vxk-arc7jm-kept`), `.deps` carried from the
+certified base tarball, wheel version `0.1.14.1+arc7mx`. Same ABI laws
+as arc3-arc6 (`external_patches/vllm-xpu-kernels/README.md`).
