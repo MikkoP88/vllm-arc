@@ -24,6 +24,13 @@ fi
 echo "=== VXK_ARC7MX bootstrap $(date) ==="
 python3 --version
 
+# CMake FindPython needs the dev headers/libpython (the omix image ships
+# none; diagnosed live on the first r198 configure, 2026-11-19). Ubuntu
+# archives are reachable from the rig (same egress as pypi).
+if [ ! -f /usr/include/python3.12/Python.h ]; then
+  apt-get update -qq && apt-get install -y -qq python3.12-dev
+fi
+
 rm -rf "$VENV"
 python3 -m venv --without-pip "$VENV"
 

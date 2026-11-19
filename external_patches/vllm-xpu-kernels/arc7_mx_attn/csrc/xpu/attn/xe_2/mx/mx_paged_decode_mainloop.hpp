@@ -71,8 +71,10 @@ make_block_2d_copy_bwidth(
     XMode const& x_mode,
     YMode const& y_mode) {
   // (N, Width) coordinate space: the K-extent of the B tile in BYTES.
+  // (mma.tile_mnk() is a member call — its static-typed values pass
+  // through un-wrapped, exactly like the stock select<1,2>(...) pair.)
   auto tile_nk = make_shape(
-      Int<get<0>(select<1, 2>(mma.tile_mnk()))>{}, Int<Width>{});
+      get<0>(select<1, 2>(mma.tile_mnk())), Int<Width>{});
 
   auto thr_vmnk = mma.get_thr_layout_vmnk();
   auto shape_vmnk = shape(thr_vmnk);
@@ -100,7 +102,7 @@ CUTE_HOST_DEVICE auto
 make_block_2d_copy_bwidth(
     TiledMMA const& mma, Stride<Strides...> const& gstride) {
   auto cB = make_identity_tensor(make_shape(
-      Int<get<0>(select<1, 2>(mma.tile_mnk()))>{}, Int<Width>{}));
+      get<0>(select<1, 2>(mma.tile_mnk())), Int<Width>{}));
   using MMAType = typename TiledMMA::ValTypeB;
   auto op = block_2d_selector<ValType, MMAType>(
       mma.get_slice(0).atom_partition_B(cB).layout(), gstride);
@@ -124,8 +126,10 @@ make_block_2d_copy_bheight(
     XMode const& x_mode,
     YMode const& y_mode) {
   // (Height, K) coordinate space: the N-extent of the B tile in BYTES.
+  // (mma.tile_mnk() is a member call — its static-typed values pass
+  // through un-wrapped, exactly like the stock select<1,2>(...) pair.)
   auto tile_nk = make_shape(
-      Int<Height>{}, Int<get<1>(select<1, 2>(mma.tile_mnk()))>{});
+      Int<Height>{}, get<1>(select<1, 2>(mma.tile_mnk())));
 
   auto thr_vmnk = mma.get_thr_layout_vmnk();
   auto shape_vmnk = shape(thr_vmnk);
@@ -153,7 +157,7 @@ CUTE_HOST_DEVICE auto
 make_block_2d_copy_bheight(
     TiledMMA const& mma, Stride<Strides...> const& gstride) {
   auto cB = make_identity_tensor(make_shape(
-      Int<Height>{}, Int<get<1>(select<1, 2>(mma.tile_mnk()))>{}));
+      Int<Height>{}, get<1>(select<1, 2>(mma.tile_mnk()))));
   using MMAType = typename TiledMMA::ValTypeB;
   auto op = block_2d_selector<ValType, MMAType>(
       mma.get_slice(0).atom_partition_B(cB).layout(), gstride);
@@ -395,11 +399,21 @@ struct MxDecodeFwdMainloop<
         get<1>(V_2D.shape())));                                    // (v,k)
     Tensor cP = make_identity_tensor(take<0, 2>(TileShapeQK{}));   // (q,k)
 
-    // Dequant-facing scale surfaces for the CURRENT (sub-)surface: K
-    // scales as (k, k_groups); V scales re-viewed to (k, v_groups) —
-    // dequant's scale contract is (dst-row, group) either way. The
-    // 2^24 surface split below/lambda updates these alongside the
-    // payload surfaces.
+    // Dequant-facing byte + scale surfaces for the CURRENT
+    // (sub-)surface: payload bytes as (row, byte-col) — K bytes are
+    // already (k, k_bytes), V bytes re-viewed to (k, v_bytes) — and
+    // scales as (k, groups) either way. dequant's contract is
+    // (dst-row, byte/scale-col) with coordinates read directly from
+    // gmem (L1-resident from the prefetches; first-pass byte-fragment
+    // lookup removed — the custom-extent and stock copies distribute
+    // tiles on incompatible work-item grids). The 2^24 surface split
+    // below/lambda updates these alongside the payload surfaces.
+    [[maybe_unused]] auto kb_surf = K_2D;
+    [[maybe_unused]] auto vb_surf = make_tensor(
+        V_2D.data(),
+        make_layout(
+            make_shape(get<1>(V_2D.shape()), get<0>(V_2D.shape())),
+            make_stride(get<1>(V_2D.stride()), get<0>(V_2D.stride()))));
     [[maybe_unused]] auto ks_surf = KS_2D;
     [[maybe_unused]] auto vs_surf = make_tensor(
         VS_2D.data(),
@@ -524,6 +538,13 @@ struct MxDecodeFwdMainloop<
           get<0>(V_2D.shape()) * Int<kElemsPerByteV>{},
           PagedKV ? rows_per_surface : v_cols_total));  // (v,k)
 
+      kb_surf = K_2D_0;
+      vb_surf = make_tensor(
+          V_2D_0.data(),
+          make_layout(
+              make_shape(get<1>(V_2D_0.shape()), get<0>(V_2D_0.shape())),
+              make_stride(
+                  get<1>(V_2D_0.stride()), get<0>(V_2D_0.stride()))));
       ks_surf = KS_2D_0;
       vs_surf = make_tensor(
           VS_2D_0.data(),
@@ -555,14 +576,6 @@ struct MxDecodeFwdMainloop<
         Step<X, _1, _1>{});  // (k,d,K,DD)
     Tensor gV =
         local_tile(cV, tile_shape_vb, make_coord(get<1>(blk_qv), _));  // (vb,k,K)
-    Tensor gV_split = local_tile(
-        gV,
-        make_shape(
-            get<0>(TileShapePV{}),
-            Int<kVBytesPerStep>{},
-            get<2>(TileShapePV{})),
-        make_coord(_, _, 0),
-        Step<X, _1, _1>{});  // (vb,k,VV,K)
     Tensor gVD =
         local_tile(cVD, tile_shape_v, make_coord(get<1>(blk_qv), _));  // (v,k,K)
     Tensor gVD_split = local_tile(
@@ -572,16 +585,20 @@ struct MxDecodeFwdMainloop<
         Step<X, _1, _1>{});  // (v,k,VV,K)
 
     /* Create global -> register copies. copy_kd/copy_vd are built
-    over element-view proxies (same stride shape as the byte surfaces;
-    only base+strides reach the constructor and these copies never
-    issue loads — dequant fills their fragments by coordinate). */
+    over element-typed pointer proxies (reinterpret cast: static_cast
+    cannot cross unsigned char* -> ElementQ*; the ctor consumes only
+    value_type + the stride pattern — shape unused by
+    make_block_2d_copy_B(mma, gmem) — and these copies never issue
+    loads, dequant fills their fragments by coordinate). */
     TiledCopyQ copy_q{Q_2D};
     TiledCopyK copy_kb{K_2D_0};
-    TiledCopyKD copy_kd{
-        make_tensor(recast<ElementQ const>(K_2D_0.data()), K_2D_0.layout())};
+    TiledCopyKD copy_kd{make_tensor(
+        make_gmem_ptr(reinterpret_cast<ElementQ*>(raw_pointer_cast(K_2D_0.data()))),
+        K_2D_0.layout())};
     TiledCopyV copy_vb{V_2D_0};
-    TiledCopyVD copy_vd{
-        make_tensor(recast<ElementQ const>(V_2D_0.data()), V_2D_0.layout())};
+    TiledCopyVD copy_vd{make_tensor(
+        make_gmem_ptr(reinterpret_cast<ElementQ*>(raw_pointer_cast(V_2D_0.data()))),
+        V_2D_0.layout())};
 
     /* Create MMAs */
     TiledMMAQK mma_qk{};
@@ -589,18 +606,17 @@ struct MxDecodeFwdMainloop<
 
     /* Slice TiledCopy/TiledMMA operations down to work-item level */
     auto thr_copy_q = copy_q.get_slice(thr_id);
-    auto thr_copy_kb = copy_kb.get_slice(thr_id);
     auto thr_copy_kd = copy_kd.get_slice(thr_id);
-    auto thr_copy_vb = copy_vb.get_slice(thr_id);
     auto thr_copy_vd = copy_vd.get_slice(thr_id);
     auto thr_mma_qk = mma_qk.get_slice(thr_id);
     auto thr_mma_pv = mma_pv.get_slice(thr_id);
 
-    /* Partition coordinate tensors for copy */
+    /* Partition coordinate tensors for copy. Byte-tile partitions are
+    PREFETCH-ONLY now (pKBgK/pVbgV): dequant reads payload bytes and
+    scales directly from the gmem surfaces by coordinate (see the
+    kb/vb/ks/vs_surf decls above). */
     auto tQgQ = thr_copy_q.partition_S(gQ);          // (atom_val,q',d',D)
-    auto tKBgK = thr_copy_kb.partition_S(gK);        // (atom_val,k',kb',K,DB)
     auto tKDgKD = thr_copy_kd.partition_S(gKD);      // (atom_val,k',d',K,DD)
-    auto tVbgV = thr_copy_vb.partition_S(gV_split);  // (atom_val,vb',k',VV,K)
     auto tVDgVD = thr_copy_vd.partition_S(gVD_split);  // (atom_val,v',k',VV,K)
 
     /* Create register fragments for MMA and copies. tKrDeq/tVrDeq
@@ -609,12 +625,10 @@ struct MxDecodeFwdMainloop<
     is absorbed by the byte->element coordinate mapping in dequant). */
     auto tQrQ = thr_copy_q.partition_sg_fragment_D(gQ(_, _, 0));
     auto tSrQ = thr_mma_qk.partition_sg_fragment_A(gQ(_, _, 0));
-    auto tKrU8 = thr_copy_kb.partition_sg_fragment_D(gK(_, _, 0, 0));
     auto tKrDeq = thr_copy_kd.partition_sg_fragment_D(gKD(_, _, 0, 0));
     auto tSrK = thr_mma_qk.partition_sg_fragment_B(gKD(_, _, 0, 0));
     auto tSrS = thr_mma_qk.partition_sg_fragment_C(cP);
     auto tArP = thr_mma_pv.partition_sg_fragment_A(cP);
-    auto tVrU8 = thr_copy_vb.partition_sg_fragment_D(gV_split(_, _, 0, 0));
     auto tVrDeq = thr_copy_vd.partition_sg_fragment_D(gVD_split(_, _, 0, 0));
     auto tArV = thr_mma_pv.partition_sg_fragment_B(gVD_split(_, _, 0, 0));
 
@@ -665,9 +679,6 @@ struct MxDecodeFwdMainloop<
         copy_kb = TiledCopyK{K_2D_n};
         copy_vb = TiledCopyV{V_2D_n};
 
-        auto thr_copy_kb_n = copy_kb.get_slice(thr_id);
-        auto thr_copy_vb_n = copy_vb.get_slice(thr_id);
-
         prefetch_kb = make_block_2d_prefetch(copy_kb);
         prefetch_vb =
             make_block_2d_prefetch<SGPerWG::value>(tile_shape_vb, V_2D_n);
@@ -696,14 +707,6 @@ struct MxDecodeFwdMainloop<
             Step<X, _1, _1>{});  // (k,d,K,DD)
         Tensor gV_n = local_tile(
             cV_n, tile_shape_vb, make_coord(get<1>(blk_qv), _));  // (vb,k,K)
-        Tensor gV_split_n = local_tile(
-            gV_n,
-            make_shape(
-                get<0>(TileShapePV{}),
-                Int<kVBytesPerStep>{},
-                get<2>(TileShapePV{})),
-            make_coord(_, _, 0),
-            Step<X, _1, _1>{});  // (vb,k,VV,K)
         Tensor gVD_n = local_tile(
             cVD_n, tile_shape_v, make_coord(get<1>(blk_qv), _));  // (v,k,K)
         Tensor gVD_split_n = local_tile(
@@ -715,14 +718,19 @@ struct MxDecodeFwdMainloop<
         // copy_kd/copy_vd are stride-shaped and never issue loads, so
         // their sub-surface state stays valid — only their coordinate
         // tensors need the refresh.
-        tKBgK = thr_copy_kb_n.partition_S(gK_n);
         tKDgKD = thr_copy_kd.partition_S(gKD_n);
-        tVbgV = thr_copy_vb_n.partition_S(gV_split_n);
         tVDgVD = thr_copy_vd.partition_S(gVD_split_n);
 
         pKBgK = prefetch_kb.get_slice(thr_id).partition_S(gK_n);
         pVbgV = prefetch_vb.get_slice(thr_id).partition_S(gV_n);
 
+        kb_surf = K_2D_n;
+        vb_surf = make_tensor(
+            V_2D_n.data(),
+            make_layout(
+                make_shape(get<1>(V_2D_n.shape()), get<0>(V_2D_n.shape())),
+                make_stride(
+                    get<1>(V_2D_n.stride()), get<0>(V_2D_n.stride()))));
         ks_surf = KS_2D_n;
         vs_surf = make_tensor(
             VS_2D_n.data(),
@@ -754,31 +762,26 @@ struct MxDecodeFwdMainloop<
 
     /* Main loop, blocked in k. */
     for (int K = blk_k0; K < blk_k1; K++) {
-      auto tKBgK_cache =
-          PagedKV ? tKBgK(_, _, _, tile_idx, _) : tKBgK(_, _, _, K, _);
       auto tKDgKD_cache =
           PagedKV ? tKDgKD(_, _, _, tile_idx, _) : tKDgKD(_, _, _, K, _);
-      auto tVbgV_cache =
-          PagedKV ? tVbgV(_, _, _, _, tile_idx) : tVbgV(_, _, _, _, K);
       auto tVDgVD_cache =
           PagedKV ? tVDgVD(_, _, _, _, tile_idx) : tVDgVD(_, _, _, _, K);
 
       /* GEMM 1: S = K * Q */
       clear(tSrS);
-      for (int D = 0; D < size<4>(tKBgK); D++) {
+      for (int D = 0; D < size<4>(tKDgKD); D++) {
         copy(copy_q, tQgQ(_, _, _, D), tQrQ);
-        copy(copy_kb, tKBgK_cache(_, _, _, D), tKrU8);
         reorder(tQrQ, tSrQ);
 
         // MX dequant: u8 payload -> bf16 in the dequant copy's
-        // fragment layout (scales read from the scale surface by
-        // coordinate; L1 absorbs the per-group reuse), then the stock
-        // reorder performs only the layout change into the MMA
-        // operand. DB == DD for every format, so the byte-tile index
-        // D also indexes the element-tile coordinate view.
+        // fragment layout (payload bytes AND scales read directly
+        // from the gmem surfaces by coordinate — L1-resident from the
+        // prefetches), then the stock reorder performs only the
+        // layout change into the MMA operand. DB == DD for every
+        // format, so the byte-tile index D also indexes the
+        // element-tile coordinate view.
         mx::dequant_dtile<Mx::k_is_e4m3, true>(
-            tKrU8,
-            tKBgK_cache(_, _, _, D),
+            kb_surf,
             ks_surf,
             tKrDeq,
             tKDgKD_cache(_, _, _, D));
@@ -811,7 +814,7 @@ struct MxDecodeFwdMainloop<
       /* k masking for remainder tiles (stock) */
       if (check_remainder_k && K == blk_k1 - 1) {
         FragSCol k_rem_mask;
-        int k = get<0>(tKBgK(0, 0, 0, K, 0)) + get_sub_group().get_local_id()[0];
+        int k = get<0>(tKDgKD(0, 0, 0, K, 0)) + get_sub_group().get_local_id()[0];
         CUTLASS_PRAGMA_UNROLL
         for (int i = 0; i < k_rem_mask.size(); i++, k += intel::sg_size) {
           k_rem_mask(i) =
@@ -830,12 +833,11 @@ struct MxDecodeFwdMainloop<
       /* GEMM 2: A += P * V, split in v dimension */
       CUTLASS_PRAGMA_UNROLL
       for (int VV = 0; VV < VTiles; VV++) {
-        copy(copy_vb, tVbgV_cache(_, _, _, VV), tVrU8);
         // V dequant: the V surface family carries (v, k) coordinates,
-        // so the row (the scale/k dimension) is mode 1.
+        // so the row (the scale/k dimension) is mode 1; bytes and
+        // scales read directly from the gmem surfaces by coordinate.
         mx::dequant_dtile<Mx::v_is_e4m3, false>(
-            tVrU8,
-            tVbgV_cache(_, _, _, VV),
+            vb_surf,
             vs_surf,
             tVrDeq,
             tVDgVD_cache(_, _, _, VV));

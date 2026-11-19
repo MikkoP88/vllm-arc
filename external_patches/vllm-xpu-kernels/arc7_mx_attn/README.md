@@ -111,7 +111,7 @@ D=128 throughout this lane. Nibble law (mx_quant.py): element `2j` =
 LOW nibble of byte `j`, `2j+1` = HIGH; `value = e2m1(nibble) *
 2^(code-127)`.
 
-## Status (2026-11-19, fourth authoring pass — mainloop plumbing resolved)
+## Status (2026-11-19, fifth pass — mx TU compiles clean on rig)
 
 - `mx_types.hpp`, `mx_dequant.hpp` — complete. `dequant_dtile` is the
   coordinate-driven design (see below): per-destination-value scale
@@ -158,6 +158,42 @@ LOW nibble of byte `j`, `2j+1` = HIGH; `value = e2m1(nibble) *
 - NEXT: rig compile iteration (r198) — ship the kit, run apply +
   build, resolve the remaining compile risks against real compiler
   errors, then the validation ladder below.
+
+### r198 compile-iteration postmortem (rig, 6 rounds, ~50 s/round)
+
+The `arc7mx_preflight_mx.sh` loop (compile ONLY the mx TU via its exact
+compile_commands.json command, `-o` redirected to /tmp; the arc8
+pre-flight-the-changed-TU law) drove six error classes to zero:
+
+1. **CMake FindPython** — fresh omix builder lacked `Python.h`:
+   `python3.12-dev` apt-installed in `vxk_arc7mx_bootstrap.sh`.
+2. **Missing include** — `cutlass::device_memory` (workspace
+   allocation) needed `cutlass/util/device_memory.h` (resolves from
+   the `tools/util/include` extra root).
+3. **Transcription parens** — 2 unclosed parens (SGPerWG / FragC
+   sites) vs the vendor anchor.
+4. **constexpr member-call law** — `Int<get<0>(select<1,2>(
+   mma.tile_mnk()))>` is ill-formed (member call in a constant
+   template arg); the stock pattern passes the member-call value
+   through UNwrapped and only the custom extent as `Int<Width>{}`
+   (4 sites: bwidth/bheight tile_nk + cB).
+5. **cute recast is tensor-level** — no iterator recast; the
+   dequant-destination copy proxies are raw-pointer views:
+   `make_tensor(make_gmem_ptr(reinterpret_cast<ElementQ*>(
+   raw_pointer_cast(K_2D_0.data()))), K_2D_0.layout())`
+   (`static_cast` cannot cross `unsigned char*` -> `ElementQ*`).
+   The tensor-taking TiledCopy ctor consumes only value_type +
+   stride; these copies never issue loads (identity partitions
+   supply coordinates).
+6. **Tree-local member laws** — `SubgroupTensor::size()` is
+   non-static (call `dst.size()`, never `DstFrag::size()`), and
+   `bfloat16_t(float)` is explicit (element writes need
+   `typename DstFrag::value_type(val * scale)`).
+
+Debug law learned the hard way: a clang "candidate template
+ignored: substitution failure" with NO reason text means an earlier
+hard error was deduplicated — diagnose from the FIRST error in the
+FULL output (`PREFLIGHT_TAIL=4000`), never the tail window.
 
 ### Design notes (fourth pass)
 

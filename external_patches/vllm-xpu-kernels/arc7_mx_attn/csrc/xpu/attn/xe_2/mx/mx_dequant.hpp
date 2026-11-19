@@ -4,17 +4,22 @@
 // to the stock subgroup reorder() — the same division of labor the
 // stock fp8 path uses (cast in registers, reorder to the MMA fragment).
 //
-// Scale access is COORDINATE-DRIVEN DIRECT READ: the caller passes the
-// gmem scale surface as a (dst-row, group) view plus the partitioned
-// coordinate views of the byte and destination fragments. Each
-// destination value computes its (row, group) from its coordinate and
-// reads the e8m0 code from the surface; repeated (row, group) reads
-// hit L1 (the scale tile is a few hundred bytes and the K/V payload
-// prefetch has already touched those cache lines' neighborhood), and a
-// 4-entry register cache hoists the reads out of the unrolled loop.
-// This replaces an earlier subgroup-broadcast design: replicating the
-// full tile's scales per work-item costs ~tile_k*groups SG shuffles
-// per d-tile, which would have dominated the MMA by ~8x.
+// BOTH the payload bytes and the scales are read COORDINATE-DRIVEN
+// DIRECT from gmem: the caller passes (row, column) views of the byte
+// and scale surfaces plus the partitioned coordinate view of the
+// destination fragment. Each destination value computes its (row,
+// byte, group) from its coordinate and reads the u8 codes directly;
+// the tile's cache lines are already L2/L1-resident from the
+// prefetches, so these are L1 hits, and a 4-entry register cache hoists
+// the scale reads out of the unrolled loop.
+//
+// This replaces the FIRST-PASS byte-fragment lookup, which was broken
+// by construction: the custom-extent byte copies and the stock
+// dequant-destination copies distribute the SAME tile across
+// work-items on DIFFERENT sub-grids (different tv_layouts), so a
+// work-item-local coordinate match only succeeded where the grids
+// coincided — every 8th element, with the rest reading b=0. Direct
+// gmem reads are layout-coupling-free by construction.
 //
 // Row/element orientation differs per operand: K fragments carry
 // (k, d) coordinates (row = mode 0); the V surface family carries
@@ -23,8 +28,7 @@
 // Coordinate access follows the in-tree convention (the masking paths
 // in chunk_prefill_mainloop.hpp): the caller passes identity-tensor
 // coordinate views partitioned by the same thread slices that produced
-// the fragments. The byte-lookup match folds at compile time for
-// static fragment layouts.
+// the fragments.
 #pragma once
 
 #include <cstdint>
@@ -53,33 +57,29 @@ e4m3_to_float(uint8_t b) {
 
 // dequant_dtile — one d-tile (K) or v-step (V) of one row-block.
 //
-//   bytes        : per-thread u8 fragment, payload bytes of the tile
-//                 (e4m3: 1 byte/element; e2m1: 2 elements/byte,
-//                 element 2j = low nibble, 2j+1 = high)
-//   byte_coords  : partitioned coordinate view -> (x, row) of each
-//                  byte value (x = byte column for K, byte row for V)
-//   scales       : gmem u8 surface view (row, group) for the CURRENT
-//                  (sub-)surface; indexed directly by coordinate
+//   bytes        : gmem u8 view (row, byte-col), FULL surface width;
+//                 column = global element / kElemsPerByte
+//   scales       : gmem u8 view (row, group), full width; indexed
+//                  directly by coordinate
 //   dst          : per-thread ElementQ fragment in the dequant copy's
 //                  layout (the fragment reorder() converts into the
 //                  MMA operand)
 //   dst_coords   : partitioned coordinate view -> (x, row) of each
-//                  destination value (x = element column/row)
+//                  destination value (x = element column/row); global
+//                  within the surface, matching the byte/scale views
 //
 // Every loop runs over static fragment sizes and unrolls fully.
 template <
     bool KIsE4M3,
     bool RowIsMode0,
-    class ByteFrag,
-    class ByteCrd,
+    class ByteView,
     class ScaleTensor,
     class DstFrag,
     class DstCrd>
 CUTE_HOST_DEVICE
 void
 dequant_dtile(
-    ByteFrag const& bytes,
-    ByteCrd const& byte_coords,
+    ByteView const& bytes,
     ScaleTensor const& scales,
     DstFrag& dst,
     DstCrd const& dst_coords) {
@@ -92,8 +92,10 @@ dequant_dtile(
   int cg[4] = {-1, -1, -1, -1};
   float cv[4];
 
+  // SubgroupTensor::size() is a non-static member in this tree (unlike
+  // cute::Tensor's static size()) — call it on the object.
   CUTE_UNROLL
-  for (int dv = 0; dv < DstFrag::size(); ++dv) {
+  for (int dv = 0; dv < dst.size(); ++dv) {
     auto dc = dst_coords(dv);
     int row = RowIsMode0 ? int(cute::get<0>(dc)) : int(cute::get<1>(dc));
     int elem = RowIsMode0 ? int(cute::get<1>(dc)) : int(cute::get<0>(dc));
@@ -121,19 +123,10 @@ dequant_dtile(
       }
     }
 
-    // Payload byte for this element: coordinate match against this
-    // thread's byte fragment (static size, unrolled; folds away when
-    // the copy layouts make the match thread-local).
-    uint8_t b = 0;
-    CUTE_UNROLL
-    for (int bv = 0; bv < ByteFrag::size(); ++bv) {
-      auto bc = byte_coords(bv);
-      int brow = RowIsMode0 ? int(cute::get<0>(bc)) : int(cute::get<1>(bc));
-      int bx = RowIsMode0 ? int(cute::get<1>(bc)) : int(cute::get<0>(bc));
-      if (brow == row && bx == elem / kElemsPerByte) {
-        b = bytes(bv);
-      }
-    }
+    // Payload byte for this element: direct gmem read by coordinate
+    // (L1-resident from the tile prefetch; element 2j = low nibble,
+    // 2j+1 = high nibble of byte j — the mx_layout quantizer law).
+    uint8_t b = bytes(row, elem / kElemsPerByte);
 
     float val;
     if constexpr (KIsE4M3) {
@@ -141,7 +134,9 @@ dequant_dtile(
     } else {
       val = e2m1_to_float(uint8_t(elem & 1 ? (b >> 4) : (b & 0xF)));
     }
-    dst(dv) = val * scale;
+    // bfloat16_t's float ctor is explicit (no implicit conversion on
+    // assignment); build the element type directly.
+    dst(dv) = typename DstFrag::value_type(val * scale);
   }
 }
 

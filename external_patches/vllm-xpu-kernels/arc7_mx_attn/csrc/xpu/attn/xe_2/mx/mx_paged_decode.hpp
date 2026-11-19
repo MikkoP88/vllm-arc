@@ -21,6 +21,7 @@
 #include "cutlass/gemm/device/gemm_universal_adapter.h"
 #include "flash_attention_v2/collective/fmha_fusion.hpp"
 #include "cutlass/util/packed_stride.hpp"
+#include "cutlass/util/device_memory.h"  // workspace allocation (stock include)
 #include <cute/tensor.hpp>
 
 #include <sycl/ext/intel/experimental/grf_size_properties.hpp>
