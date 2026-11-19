@@ -104,6 +104,11 @@ set -euo pipefail
 #                  dequant reverts at serve time; unset = the engine's
 #                  per-format defaults — v2 for mxfp4, v5+K2/K3 for
 #                  mxfp8/mxk8v4 — the certified cert25zb line).
+#   ARC_MXKV_V5_TFLOOR / ARC_MXKV_V5_SPLITS / ARC_MXKV_V5_BN passed
+#                  into the serve env when set (p647 Phase 7 closing
+#                  rung: the v5 split-depth/tile tune surface — TFLOOR=2
+#                  is the r193 banked winner, pending e2e/default flip;
+#                  unset = certified defaults 4/256/per-format BN).
 #   VLLM_ARC_GRAPH_EXEC_DB passed into the serve env when set (p635 D1:
 #                  unset = patch default ON (graphs captured x2 into the
 #                  shared pool, replays alternate — torch 2.13 same-exec
@@ -393,6 +398,13 @@ ${VLLM_ARC_GRAPH_EXEC_DB:+export VLLM_ARC_GRAPH_EXEC_DB=${VLLM_ARC_GRAPH_EXEC_DB
 ${ARC_MXKV_VERIFY_DECODER:+export ARC_MXKV_VERIFY_DECODER=${ARC_MXKV_VERIFY_DECODER};}
 ${ARC_MXKV_K2:+export ARC_MXKV_K2=${ARC_MXKV_K2};}
 ${ARC_MXKV_K3:+export ARC_MXKV_K3=${ARC_MXKV_K3};}
+# P6.47 Phase 7 closing rung (r193 verdict): the v5 split-depth/tile
+# tune surface — TFLOOR 2 banked the universal winner at the T1 cells
+# (-9..-13% at <=8K G1, neutral 32K/G8); SPLITS/BN ride along for
+# future tuning legs. Unset = certified defaults (4/256/per-format).
+${ARC_MXKV_V5_TFLOOR:+export ARC_MXKV_V5_TFLOOR=${ARC_MXKV_V5_TFLOOR};}
+${ARC_MXKV_V5_SPLITS:+export ARC_MXKV_V5_SPLITS=${ARC_MXKV_V5_SPLITS};}
+${ARC_MXKV_V5_BN:+export ARC_MXKV_V5_BN=${ARC_MXKV_V5_BN};}
 $LMC_ENV
 $GRAPH_ENV
 exec /opt/venv/bin/vllm serve --model /models/target \
