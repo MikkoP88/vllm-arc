@@ -445,10 +445,13 @@ PYEOF
 docker stop radiance-test >/dev/null 2>&1
 sleep 5
 
-# ARC_LMC is NOT pinned here (r168 posture, 2026-11-13): the serve
-# script's default applies per lane — LMC on for ctrl/m8q (e4m3-V
-# tolerates the prefix-reload requant), auto-off for the e2m1-V lanes
-# m4q/mkq (the double-quant REP-LOOP driver; leg postures assert it).
+# ARC_LMC is NOT pinned here: the serve script's default applies per
+# lane. Phase 6 posture amendment (commit cde08345, 2026-11-18,
+# r176 A/B evidence): auto-off extends to ALL MX lanes including mxfp8
+# (LMC-off e2e-neutral-to-positive — ITL unchanged, TTFT -26/-259 ms,
+# store worker + blob capacity freed; decode-parity runs MX
+# LMC-free). LMC stays ON for the q8 ctrl lane only (the incumbent's
+# own store tax, not this fork's regression). Leg postures assert it.
 QWEN_FP8="ARC_MODEL=/models/qwen3.8-27b-fp8 ARC_SERVED=qwen3.8-27b-fp8 ARC_GRAPH=1 ARC_SPEC=3 ARC_FP8=1"
 GEMMA_M8="ARC_MODEL=/models/gemma4-31b ARC_SERVED=gemma4-31b ARC_QUANT=mxfp8 ARC_GMU=0.8 ARC_GRAPH=1 ARC_SPEC=0 ARC_LMC=0 ARC_RPC=1200 ARC_MAXLEN=40960 ARC_FP8=0"
 
@@ -474,8 +477,10 @@ leg_ctrl() {
 leg_m8q() {
   run_leg m8q qwen3.8-27b-fp8 1 $QWEN_FP8 ARC_KVDTYPE=mxfp8 || true
   grep -Eq "mx_backend_lines=[1-9]" "$P/m8q/markers.txt" || { echo "MX_MARKER: FAIL m8q (expect >=1 worker)"; GATE_FAIL=1; }
-  grep -Eq "lmcache_lines=[1-9]" "$P/m8q/markers.txt" \
-    || { echo "LMC_POSTURE: FAIL (m8q lost the certified LMC-on posture)"; GATE_FAIL=1; }
+  # Phase 6 posture (cde08345): ALL MX lanes LMC-off by serve-script
+  # auto-off — m8q included (r176 A/B: neutral-to-positive; r184's
+  # LMC-on expectation predates the amendment)
+  lmc_autooff_check "$P/m8q"
 }
 leg_m4q() {
   run_leg m4q qwen3.8-27b-fp8 1 $QWEN_FP8 ARC_KVDTYPE=mxfp4 || true
