@@ -32,7 +32,9 @@ if docker ps --format '{{.Names}}' 2>/dev/null | grep -q '^arc-r'; then
   echo "R195_BUSY (arc leg in flight)"; exit 2
 fi
 if ss -tln 2>/dev/null | grep -q ':8000 '; then
-  echo "R195_PORT_HELD"; exit 3
+  if ! docker ps --format '{{.Names}}' 2>/dev/null | grep -qx 'radiance-test'; then
+    echo "R195_PORT_HELD (unknown holder)"; exit 3
+  fi
 fi
 mkdir -p "$P"
 
