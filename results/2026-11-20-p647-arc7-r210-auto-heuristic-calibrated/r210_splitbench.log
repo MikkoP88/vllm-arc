@@ -1,0 +1,56 @@
+p200h_splitbench -- device=xpu, torch=2.13.0+xpu
+  mxfp8 ctx=8192 splits= 1 plan=[1, 1]: device 5.022 ms (wall 5.081, host 0.059), canary 0.00e+00
+  mxfp8 ctx=8192 splits= 2 plan=[2, 2]: device 2.695 ms (wall 2.722, host 0.027), canary 4.88e-04
+  mxfp8 ctx=8192 splits= 4 plan=[4, 4]: device 1.497 ms (wall 1.521, host 0.024), canary 4.88e-04
+  mxfp8 ctx=8192 splits= 8 plan=[8, 8]: device 0.847 ms (wall 0.887, host 0.040), canary 4.88e-04
+  mxfp8 ctx=8192 splits=16 plan=[16, 16]: device 0.567 ms (wall 0.594, host 0.027), canary 4.88e-04
+  mxfp8 ctx=8192 splits=24 plan=[24, 24]: device 0.501 ms (wall 0.522, host 0.021), canary 4.88e-04
+  mxfp8 ctx=8192 splits=32 plan=[32, 32]: device 0.452 ms (wall 0.479, host 0.027), canary 4.88e-04
+  mxfp8 ctx=8192 splits=48 plan=[43, 48]: device 0.448 ms (wall 0.476, host 0.027), canary 4.88e-04
+  mxfp8 ctx=8192 splits=64 plan=[43, 64]: device 0.450 ms (wall 0.487, host 0.037), canary 4.88e-04
+  mxfp8 ctx=32768 splits= 1 plan=[1, 1]: device 19.882 ms (wall 19.909, host 0.027), canary 0.00e+00
+  mxfp8 ctx=32768 splits= 2 plan=[2, 2]: device 10.128 ms (wall 10.153, host 0.025), canary 2.44e-04
+  mxfp8 ctx=32768 splits= 4 plan=[4, 4]: device 5.176 ms (wall 5.205, host 0.028), canary 2.44e-04
+  mxfp8 ctx=32768 splits= 8 plan=[8, 8]: device 2.705 ms (wall 2.737, host 0.032), canary 2.44e-04
+  mxfp8 ctx=32768 splits=16 plan=[16, 16]: device 1.533 ms (wall 1.557, host 0.024), canary 2.44e-04
+  mxfp8 ctx=32768 splits=24 plan=[24, 24]: device 1.154 ms (wall 1.192, host 0.039), canary 2.44e-04
+  mxfp8 ctx=32768 splits=32 plan=[32, 32]: device 0.945 ms (wall 0.969, host 0.024), canary 2.44e-04
+  mxfp8 ctx=32768 splits=48 plan=[48, 48]: device 0.797 ms (wall 0.824, host 0.027), canary 2.44e-04
+  mxfp8 ctx=32768 splits=64 plan=[64, 64]: device 0.720 ms (wall 0.759, host 0.038), canary 2.44e-04
+  mxfp4 ctx=8192 splits= 1 plan=[1, 1]: device 3.772 ms (wall 3.800, host 0.028), canary 0.00e+00
+  mxfp4 ctx=8192 splits= 2 plan=[2, 2]: device 1.975 ms (wall 2.015, host 0.040), canary 4.88e-04
+  mxfp4 ctx=8192 splits= 4 plan=[4, 4]: device 1.097 ms (wall 1.125, host 0.028), canary 4.88e-04
+  mxfp4 ctx=8192 splits= 8 plan=[8, 8]: device 0.695 ms (wall 0.715, host 0.020), canary 4.88e-04
+  mxfp4 ctx=8192 splits=16 plan=[16, 16]: device 0.470 ms (wall 0.497, host 0.027), canary 4.88e-04
+  mxfp4 ctx=8192 splits=24 plan=[24, 24]: device 0.438 ms (wall 0.463, host 0.025), canary 4.88e-04
+  mxfp4 ctx=8192 splits=32 plan=[32, 32]: device 0.523 ms (wall 0.570, host 0.046), canary 4.88e-04
+  mxfp4 ctx=8192 splits=48 plan=[43, 48]: device 0.428 ms (wall 0.459, host 0.030), canary 4.88e-04
+  mxfp4 ctx=8192 splits=64 plan=[43, 64]: device 0.436 ms (wall 0.460, host 0.024), canary 4.88e-04
+  mxfp4 ctx=32768 splits= 1 plan=[1, 1]: device 14.073 ms (wall 14.102, host 0.028), canary 0.00e+00
+  mxfp4 ctx=32768 splits= 2 plan=[2, 2]: device 7.239 ms (wall 7.261, host 0.022), canary 2.44e-04
+  mxfp4 ctx=32768 splits= 4 plan=[4, 4]: device 3.750 ms (wall 3.772, host 0.022), canary 2.44e-04
+  mxfp4 ctx=32768 splits= 8 plan=[8, 8]: device 1.978 ms (wall 2.019, host 0.041), canary 2.44e-04
+  mxfp4 ctx=32768 splits=16 plan=[16, 16]: device 1.164 ms (wall 1.188, host 0.024), canary 1.22e-04
+  mxfp4 ctx=32768 splits=24 plan=[24, 24]: device 0.861 ms (wall 0.888, host 0.027), canary 2.44e-04
+  mxfp4 ctx=32768 splits=32 plan=[32, 32]: device 0.738 ms (wall 0.778, host 0.040), canary 2.44e-04
+  mxfp4 ctx=32768 splits=48 plan=[48, 48]: device 0.670 ms (wall 0.690, host 0.021), canary 2.44e-04
+  mxfp4 ctx=32768 splits=64 plan=[64, 64]: device 0.608 ms (wall 0.636, host 0.028), canary 2.44e-04
+  mxk8v4 ctx=8192 splits= 1 plan=[1, 1]: device 3.539 ms (wall 3.572, host 0.033), canary 0.00e+00
+  mxk8v4 ctx=8192 splits= 2 plan=[2, 2]: device 1.867 ms (wall 1.888, host 0.022), canary 4.88e-04
+  mxk8v4 ctx=8192 splits= 4 plan=[4, 4]: device 1.054 ms (wall 1.079, host 0.025), canary 4.88e-04
+  mxk8v4 ctx=8192 splits= 8 plan=[8, 8]: device 0.659 ms (wall 0.680, host 0.021), canary 4.88e-04
+  mxk8v4 ctx=8192 splits=16 plan=[16, 16]: device 0.462 ms (wall 0.489, host 0.027), canary 4.88e-04
+  mxk8v4 ctx=8192 splits=24 plan=[24, 24]: device 0.411 ms (wall 0.440, host 0.028), canary 4.88e-04
+  mxk8v4 ctx=8192 splits=32 plan=[32, 32]: device 0.414 ms (wall 0.440, host 0.026), canary 4.88e-04
+  mxk8v4 ctx=8192 splits=48 plan=[43, 48]: device 0.407 ms (wall 0.439, host 0.032), canary 4.88e-04
+  mxk8v4 ctx=8192 splits=64 plan=[43, 64]: device 0.419 ms (wall 0.449, host 0.030), canary 4.88e-04
+  mxk8v4 ctx=32768 splits= 1 plan=[1, 1]: device 13.185 ms (wall 13.212, host 0.026), canary 0.00e+00
+  mxk8v4 ctx=32768 splits= 2 plan=[2, 2]: device 6.806 ms (wall 6.827, host 0.022), canary 2.44e-04
+  mxk8v4 ctx=32768 splits= 4 plan=[4, 4]: device 3.510 ms (wall 3.531, host 0.021), canary 2.44e-04
+  mxk8v4 ctx=32768 splits= 8 plan=[8, 8]: device 1.862 ms (wall 1.889, host 0.027), canary 2.44e-04
+  mxk8v4 ctx=32768 splits=16 plan=[16, 16]: device 1.097 ms (wall 1.124, host 0.027), canary 2.44e-04
+  mxk8v4 ctx=32768 splits=24 plan=[24, 24]: device 0.844 ms (wall 0.865, host 0.021), canary 2.44e-04
+  mxk8v4 ctx=32768 splits=32 plan=[32, 32]: device 0.722 ms (wall 0.748, host 0.026), canary 2.44e-04
+  mxk8v4 ctx=32768 splits=48 plan=[48, 48]: device 0.671 ms (wall 0.698, host 0.027), canary 2.44e-04
+  mxk8v4 ctx=32768 splits=64 plan=[64, 64]: device 0.624 ms (wall 0.664, host 0.040), canary 2.44e-04
+P200H_DONE
