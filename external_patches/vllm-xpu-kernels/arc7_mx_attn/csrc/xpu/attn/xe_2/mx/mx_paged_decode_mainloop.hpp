@@ -996,6 +996,12 @@ struct MxDecodeFwdMainloop<
           for (int D = 0; D < size<4>(pKBgK); D++) {
             prefetch(prefetch_kb, pKBgK(_, _, _, elocal, D));
           }
+          // r202: the V prefetch rides the same hoist — the staging
+          // copy's gmem reads warm through softmax+PV+next-QK (the
+          // old current-tile issue at the copy's doorstep covered
+          // nothing; V surfaces share the K surface geometry, and
+          // surface-crossers keep the mid-loop warmer below).
+          prefetch(prefetch_vb, pVbgV(_, _, _, elocal));
         }
       }
 

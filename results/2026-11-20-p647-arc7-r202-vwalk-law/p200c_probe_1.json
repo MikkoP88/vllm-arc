@@ -1,0 +1,62 @@
+{
+ "mxfp8": {
+  "1024": {
+   "wall_ms": 1.6646,
+   "device_ms": 1.5881,
+   "host_ms": 0.0765,
+   "device_gbps": 1.36
+  },
+  "8192": {
+   "wall_ms": 0.7025,
+   "device_ms": 0.6733,
+   "host_ms": 0.0291,
+   "device_gbps": 25.7
+  },
+  "32768": {
+   "wall_ms": 2.5893,
+   "device_ms": 2.5551,
+   "host_ms": 0.0342,
+   "device_gbps": 27.09
+  }
+ },
+ "mxfp4": {
+  "1024": {
+   "wall_ms": 0.7112,
+   "device_ms": 0.6872,
+   "host_ms": 0.0239,
+   "device_gbps": 1.62
+  },
+  "8192": {
+   "wall_ms": 0.6595,
+   "device_ms": 0.6174,
+   "host_ms": 0.0421,
+   "device_gbps": 14.44
+  },
+  "32768": {
+   "wall_ms": 2.1645,
+   "device_ms": 2.1193,
+   "host_ms": 0.0452,
+   "device_gbps": 16.82
+  }
+ },
+ "mxk8v4": {
+  "1024": {
+   "wall_ms": 0.9012,
+   "device_ms": 0.8691,
+   "host_ms": 0.0322,
+   "device_gbps": 1.89
+  },
+  "8192": {
+   "wall_ms": 0.6566,
+   "device_ms": 0.6274,
+   "host_ms": 0.0292,
+   "device_gbps": 20.89
+  },
+  "32768": {
+   "wall_ms": 2.4487,
+   "device_ms": 2.416,
+   "host_ms": 0.0327,
+   "device_gbps": 21.7
+  }
+ }
+}

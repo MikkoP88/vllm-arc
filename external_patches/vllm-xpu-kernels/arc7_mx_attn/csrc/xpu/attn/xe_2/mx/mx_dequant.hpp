@@ -345,12 +345,19 @@ dequant_vslm(
     }
   }
 
+  // r202: the walk's (k, v) decode rides the PINNED form-(ii) law
+  // directly. The asserts above already make a distribution change a
+  // COMPILE error, so the per-element tv_coord evaluation (runtime
+  // idx2crd on wi + the hierarchical layout apply, 32x per VV step)
+  // was pure ALU overhead on the ~0.9 ms V-dequant slice: k_loc =
+  // kr[(i>>1)&7] (the same r200g law the scale vector uses — kr[r]
+  // is register 2r's row, v1 = r) and v_loc = t1 + 8*(i&1) +
+  // 16*(i>>4) (t1 = (wi>>1)&7 is the thr mode-1 coordinate).
+  int t1 = (wi >> 1) & 7;
   CUTE_UNROLL
   for (int i = 0; i < dst.size(); ++i) {
-    // Form (ii): tv codomain mode 0 = v (element), mode 1 = k (row).
-    auto pc = detail::tv_coord(dst.tv_layout(), wi, i);
-    int v_loc = int(cute::get<0>(pc));
-    int k_loc = int(cute::get<1>(pc));
+    int k_loc = kr[(i >> 1) & 7];
+    int v_loc = t1 + 8 * (i & 1) + 16 * (i >> 4);
 
     uint8_t b = slm[k_loc * slm_pitch + (VIsE4m3 ? v_loc : (v_loc >> 1))];
     float val = VIsE4m3 ? detail::e4m3_to_float(b)
