@@ -932,7 +932,15 @@ struct MxDecodeFwdMainloop<
         copy(copy_q, tQgQ(_, _, _, D), tQrQ);
         reorder(tQrQ, tSrQ);
 
-        if constexpr (Mx::k_is_e4m3) {
+        if (params.vlane_probe >= 6) {
+          // r200g probe 6/7/8: const-K — severs the whole K load chain
+          // (byte copy -> dequant -> reorder). Timing floor only: a
+          // severed chain understates (const-fill ablation law).
+          CUTLASS_PRAGMA_UNROLL
+          for (int i = 0; i < tSrK.size(); ++i) {
+            tSrK(i) = typename decltype(tSrK)::value_type(1.f);
+          }
+        } else if constexpr (Mx::k_is_e4m3) {
           // r199b e4m3 load path: the REAL vectorized 2D-block byte
           // copy fills tKrB, dequant runs register-to-register into
           // its ElementQ mirror (group scales are the only gmem
@@ -981,8 +989,8 @@ struct MxDecodeFwdMainloop<
       gather then reads stale SLM), 4 stages WITHOUT the barrier
       (isolates the barrier's serialization cost). */
       uint8_t* vst = reinterpret_cast<uint8_t*>(&smem.v_stage);
-      bool stage_on =
-          params.vlane_probe != 1 && params.vlane_probe != 3;
+      bool stage_on = params.vlane_probe != 1 && params.vlane_probe != 3 &&
+          params.vlane_probe != 7 && params.vlane_probe != 8;
       if (stage_on) {
         CUTLASS_PRAGMA_UNROLL
         for (int VP = 0; VP < kVCopySteps; VP++) {
@@ -1063,7 +1071,17 @@ struct MxDecodeFwdMainloop<
       }
 
       /* Apply softmax and scaling */
-      softmax(effective_scale, K == blk_k0, tSrS, tA_max, tA_sum, tArA);
+      if (params.vlane_probe == 8) {
+        // r200g probe 8: const-P — skip the softmax math entirely
+        // (max/sum stay neutral, epilogue LSE garbage). Timing floor
+        // only: severed chains understate.
+        CUTLASS_PRAGMA_UNROLL
+        for (int i = 0; i < tSrS.size(); ++i) {
+          tSrS(i) = ElementS(1.f);
+        }
+      } else {
+        softmax(effective_scale, K == blk_k0, tSrS, tA_max, tA_sum, tArA);
+      }
       /* Split-P TRIPLE (deliberate deviation, r198 element-ledger +
        * mini-ledger law): a plain bf16 P operand leaves a 2^-9
        * relative error whose random walk flips the output's last bit
@@ -1104,7 +1122,8 @@ struct MxDecodeFwdMainloop<
         // flat-basis bridge derivation was wrong) AND classified
         // Generic in reorder_atom_xe (scalar shuffles, +0.36 ms on the
         // e2m1 lanes); staging deletes both problems at once.
-        if (params.vlane_probe == 2 || params.vlane_probe == 3) {
+        if (params.vlane_probe >= 2 && params.vlane_probe != 4 &&
+            params.vlane_probe != 5 && params.vlane_probe != 6) {
           // r200c probe 2/3: const-fill (timing only — severs the
           // gather chain; a structural floor, not a reachable target).
           CUTLASS_PRAGMA_UNROLL

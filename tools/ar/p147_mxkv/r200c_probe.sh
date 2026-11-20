@@ -3,9 +3,11 @@
 # the in-kernel probe knob (ARC_MXKV_VPROBE; wheel mx_paged_decode.hpp
 # args comment has the mode table). Runs the r199 attribution harness
 # once per probe mode (0=full, 1=skip staging, 2=skip gather,
-# 3=floor, 4=no barrier, 5=no scales) -- stage costs are the diffs
-# against mode 0 on the SAME wheel. Const-fill law: probe floors are
-# structural lower bounds, not targets.
+# 3=floor, 4=no barrier, 5=no scales, 6=const-K [skip the K
+# copy+dequant+reorder chain], 7=compute floor [const-K + const-V +
+# skip staging], 8=gemm/epilogue floor [7 + const-P, skip softmax])
+# -- stage costs are the diffs against mode 0 on the SAME wheel.
+# Const-fill law: probe floors are structural lower bounds, not targets.
 # Prereqs: r200c wheel at /root/build/wheels-arc-vxk (probe fields
 # compiled in) + p199 work tree. W14 quiesce before, KEEP_DOWN batch
 # mode like r199. Artifacts -> /root/build/p199/out/p200c_probe_<n>.json
@@ -56,7 +58,7 @@ done
 ss -tln 2>/dev/null | grep -q ':8000 ' && echo "R200C_WARN_PORT8000_STILL_HELD"
 sleep 5
 
-for PROBE in 0 1 2 3 4 5; do
+for PROBE in 0 1 2 3 4 5 6 7 8; do
   docker rm -f $CNAME >/dev/null 2>&1
   echo "=== [r200c] probe mode $PROBE $(date +%H:%M:%S) ==="
   docker run --rm --name $CNAME \
