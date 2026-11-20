@@ -1,16 +1,28 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: Apache-2.0
-"""p200h_splitbench.py -- arc7 Phase-8 r200h: num_kv_splits sweep for the
-MX-NATIVE CUTLASS/Xe2 paged-decode kernel (arc7mx wheel).
+"""p200h_splitbench.py -- arc7 Phase-8 r200h/r207: num_kv_splits sweep for
+the MX-NATIVE CUTLASS/Xe2 paged-decode kernel (arc7mx wheel).
 
 The r199/p198 telemetry compares native (kernel default num_kv_splits=1:
 a serial 2048-k-tile walk per (head, seq) workgroup -- 16 WGs total at
 HQ=8 x batch=2) against the Triton v2 decoder, which launches its own
-block-split grid. This bench sweeps the kernel's EXISTING num_splits_kv
-path (forced8 faces already gate its correctness in r198) at 1/2/4/8/16
-to attribute how much of the offline gap is under-occupancy rather than
-per-tile cost. Also records |splits_n - splits_1| max-abs as a cheap
-corruption canary per cell (the real gate stays the r198 forced8 face).
+block-split grid. This bench sweeps the kernel's num_splits_kv path at
+1/2/4/8/16/24/32/48/64. num_splits_kv acts as the CAP on the per-seq
+host split plan (work-list path), and ARC_MXKV_WGTARGET (set to 64
+here) scales the plan's tiles-per-WG target so per-seq splits actually
+track the cap -- t(s) therefore measures true split-scaling to 64.
+
+r207 law (the first extended run's lesson): s>16 used to die inside
+can_implement (max_num_kv_splits was 16) with a Status the torch op
+swallows -- NO kernel launched, the "measured" time was host overhead,
+and the canary FALSE-PASSED because torch.empty_like recycled the
+allocator block still holding the previous correct output. The canary
+now writes into a NaN-poisoned buffer: a non-launching cell shows
+CANARY_NAN and is invalid on its face.
+
+Also records |splits_n - splits_1| max-abs as a cheap corruption canary
+per cell (the real gate stays the r198 forced8 face) and prints the
+per-seq split plan per cell for evidence.
 
 Runs INSIDE a cert25zc-family container with the arc7mx wheel installed
 (same posture as r198/p199). Usage: p200h_splitbench.py OUT_DIR.
@@ -21,11 +33,15 @@ from __future__ import annotations
 import importlib.util
 import json
 import math
+import os
 import sys
 import time
 from pathlib import Path
 
 import torch
+
+# r207: make the per-seq plan track the sweep cap (see docstring).
+os.environ.setdefault("ARC_MXKV_WGTARGET", "64")
 
 # Load the mx_kv package by FILE PATH under a synthetic top-level name
 # (p147 law: the wheel's vllm_gaudi would win resolution otherwise).
@@ -50,7 +66,12 @@ mxkv = _load_mxkv()
 mx_store = mxkv.mx_store
 slot_bytes = mxkv.slot_bytes
 
-from vllm_xpu_kernels.mx_attn_interface import mx_paged_decode  # noqa: E402
+from vllm_xpu_kernels.mx_attn_interface import (  # noqa: E402
+    _infer_num_xe_cores,
+    _kv_tile_from_block_size,
+    _mx_build_decode_split_plan,
+    mx_paged_decode,
+)
 
 D = 128
 HK = 2
@@ -59,7 +80,7 @@ HQ = HK * HREP
 BLOCK = 16
 DEV = "xpu"
 FMTS = ("mxfp8", "mxfp4", "mxk8v4")
-SPLITS = (1, 2, 4, 8, 16)
+SPLITS = (1, 2, 4, 8, 16, 24, 32, 48, 64)
 
 
 def build_paged(total_tokens, seed=7):
@@ -100,7 +121,7 @@ def flat_tables(lens, tables):
     return bt
 
 
-def native_call(q_bf, cache, fmt, lens, bt, splits):
+def native_call(q_bf, cache, fmt, lens, bt, splits, out=None):
     cu_q = torch.arange(len(lens) + 1, dtype=torch.int32, device=DEV)
     sl = torch.tensor(lens, dtype=torch.int32, device=DEV)
     return mx_paged_decode(
@@ -114,6 +135,7 @@ def native_call(q_bf, cache, fmt, lens, bt, splits):
         softmax_scale=1.0 / math.sqrt(D),
         num_splits_kv=splits,
         host_kv_lens=torch.tensor(lens) if splits > 1 else None,
+        out=out,
     )
 
 
@@ -167,6 +189,10 @@ def main():
                 native_call(q, cache, fmt, lens, bt, 1).float().cpu()
             )  # splits=1 reference for the canary
             cell = {}
+            # r207: the plan the sweep cap + WGTARGET actually produce
+            # (evidence per cell -- t(s) is a plan-splits curve).
+            ncores = _infer_num_xe_cores(torch.device(DEV))
+            kt = _kv_tile_from_block_size(BLOCK)
             for sp in SPLITS:
                 # B023 law: bind the loop variables through defaults so
                 # the closure cannot capture a later iteration's binding.
@@ -174,17 +200,34 @@ def main():
                     native_call(q, cache, fmt, lens, bt, sp)
                 )
                 wall, dev, host = bench(call)
+                # NaN-poisoned canary (r207 law): a kernel that never
+                # launches leaves the poison intact -> CANARY_NAN.
+                poison = torch.full_like(q, float("nan"))
                 d_canary = (
-                    (call().float().cpu() - ref1).abs().max().item()
+                    native_call(q, cache, fmt, lens, bt, sp, out=poison)
+                    .float()
+                    .cpu()
+                    .sub(ref1)
+                    .abs()
+                    .max()
+                    .item()
                 )
+                if math.isnan(d_canary):
+                    print(f"  !! {fmt} ctx={ctx} splits={sp}: CANARY_NAN "
+                          "(kernel did not launch?)")
+                    d_canary = -1.0
+                plan_splits, _wl = _mx_build_decode_split_plan(
+                    lens, kt, sp, ncores, HK)
+                plan_str = list(plan_splits.tolist())
                 cell[str(sp)] = {
                     "wall_ms": round(wall * 1e3, 4),
                     "device_ms": round(dev * 1e3, 4),
                     "host_ms": round(host * 1e3, 4),
                     "canary_vs_splits1": round(d_canary, 6),
+                    "plan_splits": plan_str,
                 }
                 print(
-                    f"  {fmt} ctx={ctx} splits={sp:2d}: "
+                    f"  {fmt} ctx={ctx} splits={sp:2d} plan={plan_str}: "
                     f"device {dev*1e3:.3f} ms (wall {wall*1e3:.3f}, "
                     f"host {host*1e3:.3f}), canary {d_canary:.2e}"
                 )

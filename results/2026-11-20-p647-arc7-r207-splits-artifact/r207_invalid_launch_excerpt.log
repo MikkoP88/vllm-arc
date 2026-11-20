@@ -1,0 +1,8 @@
+Invalid Problem Size occurrences: 576 (= 24 calls/cell x 4 splits {24,32,48,64} x 6 cells)
+First lines (8K cells; problem shape batch x heads x max_q x max_k x D x vD):
+Invalid Problem Size: 2x8x1x5462x128x128
+Invalid Problem Size: 2x8x1x5462x128x128
+Invalid Problem Size: 2x8x1x5462x128x128
+Invalid Problem Size: 2x8x1x5462x128x128
+Invalid Problem Size: 2x8x1x5462x128x128
+Invalid Problem Size: 2x8x1x5462x128x128
