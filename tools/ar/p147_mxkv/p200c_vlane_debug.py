@@ -180,11 +180,18 @@ def main() -> int:
     vtiles = 4
     kbps = v_bytes // vtiles          # 16 for mxk8v4
     pitch = v_bytes                    # 64
+    # r203 permuted V frame: within each VV-step byte window the kernel
+    # scatters logical col c to phys (c & mask)*4 + (c >> sh) (mask/sh
+    # = 7/3 e4m3, 3/2 e2m1) so each (k-row, WI) quad is one u32;
+    # invert before comparing to the payload bytes.
+    mult = 8 if V_IS_E4M3 else 4
     a_bad = []
     for k in range(BLOCK):
         for j in range(pitch):
+            w, p = divmod(j, kbps)
+            c = w * kbps + (p >> 2) + mult * (p & 3)
             got = A[k * 128 + j]
-            want = int(cache_host[k, k_width + j])
+            want = int(cache_host[k, k_width + c])
             if got != want:
                 a_bad.append((k, j, got, want))
     verdict["stages"]["A_staged_image"] = {

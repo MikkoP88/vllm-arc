@@ -1,0 +1,120 @@
+214861d13886c7f991dac00b0dee8c28  /root/build/wheels-arc-vxk/vllm_xpu_kernels-0.1.14.1+arc7mx-cp312-cp312-linux_x86_64.whl
+214861d13886c7f991dac00b0dee8c28  /root/build/wheels-arc-vxk/fix/vllm_xpu_kernels-0.1.14.1+arc7mx-r203.whl
+=== [r203] synth2 mxfp8 16:52:31 ===
+"ALL_STAGES_OK: corruption is downstream (softmax/PV)"
+A mismatches: 0  B ok: True  C mismatches: 0
+=== [r203] synth2 mxfp8 rc=0 16:52:46 ===
+=== [r203] synth2 mxk8v4 16:52:46 ===
+"A_BAD: staging (bwidth copy + scatter) misplaces bytes"
+A mismatches: 572  B ok: True  C mismatches: 760
+=== [r203] synth2 mxk8v4 rc=0 16:53:01 ===
+=== [r203] faces 16:53:01 ===
+=== [r198] W14 quiesce 16:53:01 ===
+=== [r198] offline harness in vllm-arc:v0.30.0-b70-cert25zc + arc7mx wheel 16:53:06 ===
+[r198] wheel: /root/build/wheels-arc-vxk/vllm_xpu_kernels-0.1.14.1+arc7mx-cp312-cp312-linux_x86_64.whl
+=== [r198] harness exit rc=1 16:53:50 ===
+[face: native-exact] native decode vs fp64 exact on dequantized cache
+  ok   native-exact/mxfp8: random549: d=1.65e-03 d_rounded=0.00e+00 cos=0.9999985 d_v2=8.49e-08
+  FAIL native-exact/mxfp4: random549: d=6.90e-01 d_rounded=6.90e-01 cos=0.4806249 d_v2=1.06e-07
+  FAIL native-exact/mxk8v4: random549: d=7.00e-01 d_rounded=6.98e-01 cos=0.4862647 d_v2=1.10e-07
+[face: native-v2] native vs certified Triton v2 on the same cache
+  ok   native-v2/mxfp8: random549: d=9.61e-04 d_rounded=4.77e-07 cos=0.9999986
+  FAIL native-v2/mxfp4: random549: d=6.14e-01 d_rounded=6.13e-01 cos=0.5260822
+  FAIL native-v2/mxk8v4: random549: d=6.13e-01 d_rounded=6.13e-01 cos=0.5241312
+[face: bitwise] seq_len==1 dequant bit-math oracle (O == bf16(V_deq))
+  ok   bitwise/mxfp8: 0/1024 mismatches — dequant bit law exact
+  FAIL bitwise/mxfp4: 500/1024 mismatched bf16 bit patterns
+  FAIL bitwise/mxk8v4: 500/1024 mismatched bf16 bit patterns
+[face: softmax-probe] one-hot V rows expose P exactly
+[face: element-ledger] worst-element decomposition, short lens
+[face: robust] adversarial rows + block-16 boundary lens (shuffled tables)
+  ok   robust/mxfp8: adversarial: d=4.85e-04 d_rounded=0.00e+00 cos=0.9999995 d_v2=4.11e-08
+  FAIL robust/mxfp4: adversarial: d=5.00e-01 d_rounded=5.00e-01 cos=0.3804105 d_v2=4.27e-08
+  FAIL robust/mxk8v4: adversarial: d=4.06e-01 d_rounded=4.06e-01 cos=0.3489296 d_v2=2.10e-08
+  ok   robust/mxfp8: signed: d=2.42e-04 d_rounded=0.00e+00 cos=0.9999986 d_v2=2.71e-08
+  FAIL robust/mxfp4: signed: d=1.05e-01 d_rounded=1.05e-01 cos=0.4815078 d_v2=1.42e-08
+  FAIL robust/mxk8v4: signed: d=1.18e-01 d_rounded=1.18e-01 cos=0.4601886 d_v2=1.95e-08
+  ok   robust/mxfp8: len1: d=0.00e+00 d_rounded=0.00e+00 cos=1.0000000 d_v2=0.00e+00
+  FAIL robust/mxfp4: len1: d=3.50e+00 d_rounded=3.50e+00 cos=0.6151824 d_v2=0.00e+00
+  FAIL robust/mxk8v4: len1: d=3.50e+00 d_rounded=3.50e+00 cos=0.5690907 d_v2=0.00e+00
+  ok   robust/mxfp8: len15: d=4.00e-03 d_rounded=0.00e+00 cos=0.9999986 d_v2=3.04e-07
+  FAIL robust/mxfp4: len15: d=2.88e+00 d_rounded=2.88e+00 cos=0.4205870 d_v2=3.09e-07
+  FAIL robust/mxk8v4: len15: d=3.44e+00 d_rounded=3.45e+00 cos=0.4385684 d_v2=4.06e-07
+  ok   robust/mxfp8: len16: d=5.74e-03 d_rounded=0.00e+00 cos=0.9999986 d_v2=2.90e-07
+  FAIL robust/mxfp4: len16: d=2.55e+00 d_rounded=2.55e+00 cos=0.5152923 d_v2=2.10e-07
+  FAIL robust/mxk8v4: len16: d=2.49e+00 d_rounded=2.49e+00 cos=0.5330080 d_v2=3.40e-07
+  ok   robust/mxfp8: len17: d=4.44e-03 d_rounded=0.00e+00 cos=0.9999987 d_v2=2.48e-07
+  FAIL robust/mxfp4: len17: d=2.97e+00 d_rounded=2.97e+00 cos=0.4515058 d_v2=2.59e-07
+  FAIL robust/mxk8v4: len17: d=2.13e+00 d_rounded=2.13e+00 cos=0.4806745 d_v2=2.91e-07
+[face: splits] forced split-KV (ReduceSplitK) + default plan at ctx 8192
+  ok   splits/mxfp8: forced8: d=3.14e-04 d_rounded=4.88e-04 cos=0.9999973
+  ok   splits/mxfp8: default: d=2.95e-04 d_rounded=4.88e-04 cos=0.9999973
+  FAIL splits/mxfp4: forced8: d=1.32e-01 d_rounded=1.32e-01 cos=0.4435266
+  FAIL splits/mxfp4: default: d=1.32e-01 d_rounded=1.32e-01 cos=0.4435262
+  FAIL splits/mxk8v4: forced8: d=1.39e-01 d_rounded=1.39e-01 cos=0.4407436
+  FAIL splits/mxk8v4: default: d=1.39e-01 d_rounded=1.39e-01 cos=0.4407613
+[face: telemetry] native vs Triton v2 decode timings (always-loop datapoint)
+  ok   telemetry/mxfp8 ctx=1024: v2 0.202 ms, native 0.410 ms (0.49x), 5.3 GB/s effective
+  ok   telemetry/mxfp8 ctx=8192: v2 0.219 ms, native 0.424 ms (0.52x), 40.8 GB/s effective
+  ok   telemetry/mxfp8 ctx=32768: v2 0.767 ms, native 1.402 ms (0.55x), 49.3 GB/s effective
+  ok   telemetry/mxfp4 ctx=1024: v2 0.198 ms, native 0.557 ms (0.36x), 2.0 GB/s effective
+  ok   telemetry/mxfp4 ctx=8192: v2 0.197 ms, native 0.565 ms (0.35x), 15.8 GB/s effective
+  ok   telemetry/mxfp4 ctx=32768: v2 0.660 ms, native 1.947 ms (0.34x), 18.3 GB/s effective
+  ok   telemetry/mxk8v4 ctx=1024: v2 0.198 ms, native 0.431 ms (0.46x), 3.8 GB/s effective
+  ok   telemetry/mxk8v4 ctx=8192: v2 0.426 ms, native 0.444 ms (0.96x), 29.5 GB/s effective
+  ok   telemetry/mxk8v4 ctx=32768: v2 1.575 ms, native 1.461 ms (1.08x), 35.9 GB/s effective
+VERDICT: FAIL (22 failures)
+R198_DONE rc=1 2026-11-20T16:53:50Z
+W14_LEFT_DOWN (debug batch mode -- restore manually when done)
+=== [r203] faces rc=1 16:53:50 ===
+=== [r203] probes 0-8 16:53:50 ===
+=== [r200c] W14 quiesce 16:53:50 ===
+=== [r200c] probe mode 0 16:53:55 ===
+=== [r200c] probe 0 exit rc=0 16:54:25 ===
+=== [r200c] probe mode 1 16:54:26 ===
+=== [r200c] probe 1 exit rc=0 16:54:56 ===
+=== [r200c] probe mode 2 16:54:56 ===
+=== [r200c] probe 2 exit rc=0 16:55:26 ===
+=== [r200c] probe mode 3 16:55:26 ===
+=== [r200c] probe 3 exit rc=0 16:55:56 ===
+=== [r200c] probe mode 4 16:55:56 ===
+=== [r200c] probe 4 exit rc=0 16:56:26 ===
+=== [r200c] probe mode 5 16:56:26 ===
+=== [r200c] probe 5 exit rc=0 16:56:56 ===
+=== [r200c] probe mode 6 16:56:56 ===
+=== [r200c] probe 6 exit rc=0 16:57:26 ===
+=== [r200c] probe mode 7 16:57:26 ===
+=== [r200c] probe 7 exit rc=0 16:57:56 ===
+=== [r200c] probe mode 8 16:57:56 ===
+=== [r200c] probe 8 exit rc=0 16:58:25 ===
+  mxfp4 ctx=32768: wall 0.191 ms = device 0.147 + host 0.045 ms (243.3 GB/s device-effective)
+  mxfp4 ctx=32768: wall 0.209 ms = device 0.175 + host 0.034 ms (203.5 GB/s device-effective)
+  mxfp4 ctx=32768: wall 1.009 ms = device 0.964 + host 0.044 ms (37.0 GB/s device-effective)
+  mxfp4 ctx=32768: wall 1.175 ms = device 1.130 + host 0.044 ms (31.5 GB/s device-effective)
+  mxfp4 ctx=32768: wall 1.206 ms = device 1.162 + host 0.044 ms (30.7 GB/s device-effective)
+  mxfp4 ctx=32768: wall 1.760 ms = device 1.716 + host 0.044 ms (20.8 GB/s device-effective)
+  mxfp4 ctx=32768: wall 1.991 ms = device 1.956 + host 0.035 ms (18.2 GB/s device-effective)
+  mxfp4 ctx=32768: wall 2.000 ms = device 1.966 + host 0.034 ms (18.1 GB/s device-effective)
+  mxfp4 ctx=32768: wall 2.010 ms = device 1.967 + host 0.043 ms (18.1 GB/s device-effective)
+  mxfp8 ctx=32768: wall 0.458 ms = device 0.409 + host 0.048 ms (169.1 GB/s device-effective)
+  mxfp8 ctx=32768: wall 0.489 ms = device 0.456 + host 0.033 ms (151.6 GB/s device-effective)
+  mxfp8 ctx=32768: wall 0.686 ms = device 0.655 + host 0.031 ms (105.6 GB/s device-effective)
+  mxfp8 ctx=32768: wall 0.871 ms = device 0.839 + host 0.032 ms (82.5 GB/s device-effective)
+  mxfp8 ctx=32768: wall 0.932 ms = device 0.901 + host 0.031 ms (76.8 GB/s device-effective)
+  mxfp8 ctx=32768: wall 1.216 ms = device 1.185 + host 0.031 ms (58.4 GB/s device-effective)
+  mxfp8 ctx=32768: wall 1.285 ms = device 1.254 + host 0.031 ms (55.2 GB/s device-effective)
+  mxfp8 ctx=32768: wall 1.307 ms = device 1.277 + host 0.030 ms (54.2 GB/s device-effective)
+  mxfp8 ctx=32768: wall 1.309 ms = device 1.277 + host 0.032 ms (54.2 GB/s device-effective)
+  mxk8v4 ctx=32768: wall 0.196 ms = device 0.165 + host 0.031 ms (318.1 GB/s device-effective)
+  mxk8v4 ctx=32768: wall 0.236 ms = device 0.204 + host 0.032 ms (257.2 GB/s device-effective)
+  mxk8v4 ctx=32768: wall 0.875 ms = device 0.842 + host 0.033 ms (62.3 GB/s device-effective)
+  mxk8v4 ctx=32768: wall 0.876 ms = device 0.844 + host 0.032 ms (62.1 GB/s device-effective)
+  mxk8v4 ctx=32768: wall 1.027 ms = device 0.995 + host 0.032 ms (52.7 GB/s device-effective)
+  mxk8v4 ctx=32768: wall 1.310 ms = device 1.276 + host 0.033 ms (41.1 GB/s device-effective)
+  mxk8v4 ctx=32768: wall 1.448 ms = device 1.416 + host 0.032 ms (37.0 GB/s device-effective)
+  mxk8v4 ctx=32768: wall 1.451 ms = device 1.419 + host 0.032 ms (36.9 GB/s device-effective)
+  mxk8v4 ctx=32768: wall 1.540 ms = device 1.507 + host 0.033 ms (34.8 GB/s device-effective)
+R200C_DONE rc=0 2026-11-20T16:58:25Z
+W14_LEFT_DOWN (debug batch mode -- restore manually when done)
+=== [r203] probes rc=0 16:58:26 ===
+R203_CHAIN_DONE 2026-11-20T16:58:26Z

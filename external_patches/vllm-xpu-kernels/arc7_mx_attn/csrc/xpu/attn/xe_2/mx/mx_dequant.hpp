@@ -80,9 +80,25 @@ namespace detail {
 CUTE_HOST_DEVICE
 inline float
 e4m3_to_float(uint8_t b) {
-  cutlass::float_e4m3_t e;
-  e.storage = b;
-  return static_cast<float>(e);
+  // r203 LEAN decode (in-cache law): the TQ-AoS quantizer saturates
+  // (torch float8_e4m3fn semantics), so the e4m3 NaN band 0x7F/0xFF
+  // never lands in cache and the cutlass generic convert (NaN check +
+  // normal/subnormal branch + subnormal normalize while-loop, ~20 ops
+  // per byte on the shared K/V decode slice) reduces to predicated
+  // bit assembly. Normals: bits = s | (e+120)<<23 | m<<20 (bias 7 ->
+  // 127). Subnormals (e==0): value = m * 2^-9, exact as a float
+  // multiply; the sign select keeps -0.0 bitwise (the faces gate is
+  // bit-exact). A stray NaN-band byte decodes as 57344 — any writer
+  // violating the saturation law fails the faces loudly.
+  uint32_t s = uint32_t(b >> 7);
+  uint32_t e = (uint32_t(b) >> 3) & 0xF;
+  uint32_t m = uint32_t(b) & 7;
+  uint32_t bits = (s << 31) | ((e + 120) << 23) | (m << 20);
+  float fn;
+  __builtin_memcpy(&fn, &bits, 4);
+  float sub = float(m) * 0x1p-9f;
+  sub = s ? -sub : sub;
+  return (e == 0) ? sub : fn;
 }
 
 // Evaluate a subgroup tv_layout at flat (work-item, register) indices.
@@ -345,26 +361,34 @@ dequant_vslm(
     }
   }
 
-  // r202: the walk's (k, v) decode rides the PINNED form-(ii) law
-  // directly. The asserts above already make a distribution change a
-  // COMPILE error, so the per-element tv_coord evaluation (runtime
-  // idx2crd on wi + the hierarchical layout apply, 32x per VV step)
-  // was pure ALU overhead on the ~0.9 ms V-dequant slice: k_loc =
-  // kr[(i>>1)&7] (the same r200g law the scale vector uses — kr[r]
-  // is register 2r's row, v1 = r) and v_loc = t1 + 8*(i&1) +
-  // 16*(i>>4) (t1 = (wi>>1)&7 is the thr mode-1 coordinate).
+  // r203 PERMUTED-FRAME READ: the staging scatter lands bytes by the
+  // transpose law (see the mainloop's staging block), so this WI's
+  // four payload bytes of each k-row are ONE aligned u32 — 8 u32
+  // loads per VV step replace the 32 scattered byte transactions that
+  // r202 isolated as the ~0.9 ms V-dequant slice. Register i's byte
+  // within the u32 is j = (i&1) + 2*(i>>4) (= v>>3, compile-time under
+  // the unroll); the e2m1 nibble phase is t1&1 (all of a WI's v share
+  // t1's parity). k_loc = kr[(i>>1)&7] and v_loc = t1 + 8*(i&1) +
+  // 16*(i>>4) are the r202 form-law arithmetic (t1 = (wi>>1)&7).
   int t1 = (wi >> 1) & 7;
+  int qbase = VIsE4m3 ? 4 * t1 : 4 * (t1 >> 1);
+  int nib_phase = t1 & 1;
+  uint32_t u[8];
+  CUTE_UNROLL
+  for (int r = 0; r < 8; ++r) {
+    u[r] = *reinterpret_cast<const uint32_t*>(
+        slm + kr[r] * slm_pitch + qbase);
+  }
   CUTE_UNROLL
   for (int i = 0; i < dst.size(); ++i) {
-    int k_loc = kr[(i >> 1) & 7];
-    int v_loc = t1 + 8 * (i & 1) + 16 * (i >> 4);
-
-    uint8_t b = slm[k_loc * slm_pitch + (VIsE4m3 ? v_loc : (v_loc >> 1))];
+    int r = (i >> 1) & 7;
+    int j = (i & 1) + 2 * (i >> 4);
+    uint8_t b = uint8_t((u[r] >> (8 * j)) & 0xFF);
     float val = VIsE4m3 ? detail::e4m3_to_float(b)
                         : e2m1_to_float(uint8_t(
-                              (v_loc & 1) ? (b >> 4) : (b & 0xF)));
+                              nib_phase ? (b >> 4) : (b & 0xF)));
 
-    dst(i) = typename DstFrag::value_type(val * sc[(i >> 1) & 7]);
+    dst(i) = typename DstFrag::value_type(val * sc[r]);
   }
 }
 

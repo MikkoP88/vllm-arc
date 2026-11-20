@@ -1034,8 +1034,29 @@ struct MxDecodeFwdMainloop<
           CUTLASS_PRAGMA_UNROLL
           for (int i = 0; i < tVrDB.size(); ++i) {
             auto pc = mx::detail::tv_coord(tVrDB.tv_layout(), thr_id, i);
-            vst[int(cute::get<0>(pc)) * kVStagePitch +
-                VP * kVCopyWidth + int(cute::get<1>(pc))] =
+            // r203 PERMUTED V frame: dequant_vslm reads each (k-row,
+            // WI) quad as ONE u32, so the scatter lands bytes by the
+            // transpose law — e4m3: byte col c of a VV step goes to
+            // (c&7)*4 + (c>>3) (the form-(ii) WI holds v = t1+8j, so
+            // its four bytes become phys 4*t1+j); e2m1: the copy step
+            // spans a VV PAIR — step s = vb>>4, byte c = vb&15 goes to
+            // s*16 + (c&3)*4 + (c>>2) (the WI's nibbles share t1&1 and
+            // sit one per byte of phys 4*q+j, q = t1>>1). Byte-write
+            // count is unchanged; only the destination column moves.
+            int vb = int(cute::get<1>(pc));
+            int col;
+            if constexpr (Mx::v_is_e4m3) {
+              col = VP * kVCopyWidth + ((vb & 7) * 4 + (vb >> 3));
+            } else {
+              // phys2 applies to the STEP-LOCAL byte (vb & 15): the
+              // r203a bug fed the full pair-spanning vb, overflowing
+              // the high half into the next VV step's window (mxfp4/
+              // mxk8v4 bitwise 500/1024, A_BAD 572 — e4m3 was clean).
+              int bl = vb & 15;
+              col = (VP * 2 + (vb >> 4)) * kVBytesPerStep +
+                    ((bl & 3) * 4 + (bl >> 2));
+            }
+            vst[int(cute::get<0>(pc)) * kVStagePitch + col] =
                 uint8_t(tVrDB(i));
           }
         }
