@@ -111,7 +111,90 @@ D=128 throughout this lane. Nibble law (mx_quant.py): element `2j` =
 LOW nibble of byte `j`, `2j+1` = HIGH; `value = e2m1(nibble) *
 2^(code-127)`.
 
-## Status (2026-11-19, fifth pass — mx TU compiles clean on rig)
+## Status (2026-11-19, sixth pass — tv_layout coordinate law)
+
+- First r198 run (fragment-lookup wheel) failed every face: the
+  custom-extent byte copies and the stock dequant-destination copies
+  distribute the same tile across work-items on different sub-grids,
+  so a work-item-local coordinate match only hit grid coincidences.
+- Second r198 run (coordinate-read redesign) still failed — but with a
+  decisive signature: bitwise probe showed exactly the elements at
+  `d % 8 == 0` correct, rest garbage. Root cause (see mx_dequant.hpp
+  COORDINATE LAW): copy `partition_S` of an identity tensor returns
+  WI-CANONICAL coordinates in this tree (the SG-scoped copy atom
+  exposes the subgroup, not the work-item, as its thread mode — the
+  vendor's own remainder mask compensates with `+ local_id`).
+- Fix: per-WI positions come from the DESTINATION fragment's
+  `tv_layout()` — `partition_sg_fragment_D` builds it over the
+  tidfrg_D (thr, val) mapping whose codomain IS the tile's 2D
+  coordinate space (ScaledBasis strides; instantiated K-lane evidence:
+  row = t1(wi) + 8*v0(dv), elem = t0(wi) + 2*v1(dv) + 16*v2(dv),
+  injective over the tile). `tv_coord` evaluates it at flat
+  (work-item, register) via `idx2crd` against the rank-3
+  (Thr, Val, Rest) nesting; the tile origin is anchored to the
+  identity slot-0 tuple minus its own tv position (self-correcting).
+  QK B-tile frame mode 0 is the row (k); PV B-tile mode 0 is the
+  element (v) — `kFrame0IsRow` selects.
+- mx TU compiles clean through the redesign (preflight RC=0).
+
+## Softmax-path precision law (2026-11-19/20, probe + ledger decomposition)
+
+The tv_layout fix cleared bitwise to 0/1024 on ALL formats (after
+canonicalizing +-0: a -0.0 e2m1 value (nibble 8, 1/16 of elements)
+accumulates as (+0)+(-0)=+0 inside the PV DPAS — IEEE RN sums
+opposite-signed zeros to +0; sign-of-zero is an accumulation
+property, not a dequant property). The residual exact-face failures
+(4-9e-3 on boundary-lens payloads, d_v2 ~ 3e-7) decomposed via the
+ONE-HOT-V PROBE (v_t = e_t quantizes exactly on every lane, so
+O == P bit-visible; len 15 = one k-tile, no rescale):
+
+- max|dp| == max|p - bf16(p)| exactly (1.71e-3 mxfp8) — the P-bf16
+  cast (the shared XE_DPAS_TT<..., float, bfloat16_t> PV atom) is the
+  DOMINANT term;
+- a 10-14% tail (n(dp > 1.5*cast) = 13-17/120) beyond the cast —
+  sycl::native::exp2 carries ~1e-3 relative error (vendor stock uses
+  it in both fmha mainloops); fixed by precise `sycl::exp2`;
+- certified Triton v2 (precise exp, fp32 dot) matches the fp64 oracle
+  at 3e-7 — the plan's r198 gate (d <= 2e-3) is v2's bar.
+
+The tf32 PV atom (interim fix, run 9-12) shrank the walk but the
+ELEMENT-LEDGER census exposed the surviving structure: every
+max-diff element sits at steps=1.00 — got and the pure-cast law
+C = bf16(p64@v64) are the two ADJACENT bf16 grid points around ref
+(a rounding FLIP), while a 12-23 element tail per cell runs >1 step
+at small magnitudes (the 2^-11 P-walk at cancellation elements, where
+O nearly vanishes but the per-term errors do not). THE FLIP LAW:
+whether the gate passes depends on WHICH magnitude flips —
+random549's native-v2 9.6e-4 is exactly one step at [0.125,0.25),
+passing by luck; the same flip at [1,2) is 7.8e-3 and fails. A
+payload-independent gate needs pre-cast agreement with v2 to
+SUB-HALF-ULP, which no P-cast short of fp32 provides.
+
+Final fix (deviation from stock, documented in-tree): P rides the PV
+gemm as a SPLIT bf16 TRIPLE — p = bf16(p) + bf16(r1) + bf16(r2),
+r1 = p − bf16(p), r2 = r1 − bf16(r1) — holding p to 2^-27 relative
+(below fp32's own accumulation noise, i.e. v2-grade; the flips and
+the walk both vanish, and the PAIR's 2^-18 floor — which the
+mini-ledger showed as 1-2% of |O| at single deep-cancellation
+elements, e.g. ref 2.8e-6 from 0.3-magnitude terms — is gone). Every
+gemm uses the full-rate bf16 atom, so the interim tf32 atom is
+reverted and both MMAs again share one `XE_DPAS_TT<M, float,
+bfloat16_t>`; no fp32-operand DPAS exists on Xe2 anyway. The softmax
+keeps the precise `sycl::exp2`. Perf priced at r199.
+
+Companion harness law (same run): the element-local 1-ulp rule
+accepts being within one rounding of EITHER the fp64 truth or the
+CERTIFIED v2 decoder's output — at deep-cancellation elements even
+the certified fp32 pipeline diverges from fp64 by 2+ grid steps
+(mini-ledger len17: v2 itself 2 steps off bf16(ref)); the v2 side
+holds the kernel to v2's own rounding behavior, zero free parameters.
+
+Harness laws hardened the same day: element-local 1-ulp rounded-match
+(the global 2^-8*max|ref| proxy underestimates an element's own ulp
+by up to 2x — every marginal cell sat at exactly 1 ulp of the diff
+element's binade) and the v2-calibration chain (|native-ref| <=
+2e-3 + |v2-ref|: composes the native-v2 face law with v2's own
+deviation; zero free parameters).
 
 - `mx_types.hpp`, `mx_dequant.hpp` — complete. `dequant_dtile` is the
   coordinate-driven design (see below): per-destination-value scale

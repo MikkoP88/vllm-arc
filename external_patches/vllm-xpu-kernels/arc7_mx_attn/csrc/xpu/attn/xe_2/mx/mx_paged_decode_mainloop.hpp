@@ -629,6 +629,11 @@ struct MxDecodeFwdMainloop<
     auto tSrK = thr_mma_qk.partition_sg_fragment_B(gKD(_, _, 0, 0));
     auto tSrS = thr_mma_qk.partition_sg_fragment_C(cP);
     auto tArP = thr_mma_pv.partition_sg_fragment_A(cP);
+    // Split-P residual operands: the pair/triple decomposition of the
+    // softmax probabilities (see the softmax/reorder site) -- tArP2
+    // carries bf16(p - bf16(p)), tArP3 the second residual.
+    auto tArP2 = thr_mma_pv.partition_sg_fragment_A(cP);
+    auto tArP3 = thr_mma_pv.partition_sg_fragment_A(cP);
     auto tVrDeq = thr_copy_vd.partition_sg_fragment_D(gVD_split(_, _, 0, 0));
     auto tArV = thr_mma_pv.partition_sg_fragment_B(gVD_split(_, _, 0, 0));
 
@@ -774,13 +779,13 @@ struct MxDecodeFwdMainloop<
         reorder(tQrQ, tSrQ);
 
         // MX dequant: u8 payload -> bf16 in the dequant copy's
-        // fragment layout (payload bytes AND scales read directly
-        // from the gmem surfaces by coordinate — L1-resident from the
-        // prefetches), then the stock reorder performs only the
-        // layout change into the MMA operand. DB == DD for every
-        // format, so the byte-tile index D also indexes the
-        // element-tile coordinate view.
-        mx::dequant_dtile<Mx::k_is_e4m3, true>(
+        // fragment layout, then the stock reorder performs only the
+        // layout change into the MMA operand. Positions come from the
+        // fragment's tv_layout (per-WI; partition_S identity views are
+        // WI-canonical in this tree) anchored to the identity slot-0
+        // tuple — see mx_dequant.hpp for the coordinate law. The QK
+        // B-tile frame is (k, d): tv codomain mode 0 IS the row.
+        mx::dequant_dtile<Mx::k_is_e4m3, true, true>(
             kb_surf,
             ks_surf,
             tKrDeq,
@@ -828,21 +833,52 @@ struct MxDecodeFwdMainloop<
 
       /* Apply softmax and scaling */
       softmax(effective_scale, K == blk_k0, tSrS, tA_max, tA_sum, tArA);
+      /* Split-P TRIPLE (deliberate deviation, r198 element-ledger +
+       * mini-ledger law): a plain bf16 P operand leaves a 2^-9
+       * relative error whose random walk flips the output's last bit
+       * at rounding-midpoint magnitudes -- adjacent-grid-step
+       * disagreements vs the certified v2 envelope (tf32 operands
+       * only shrank the walk). A PAIR holds p to 2^-18 relative --
+       * enough for every normal output -- but at deep-cancellation
+       * elements (|O| ~ 2^-13 of the p*V term scale) that floor is
+       * still 1-2% of |O| (mini-ledger: single elements at 2 and 38
+       * grid steps while C == F32 exactly). The TRIPLE
+       * bf16(p) + bf16(r1) + bf16(r2), r1 = p - bf16(p),
+       * r2 = r1 - bf16(r1), holds p to 2^-27 relative -- below fp32's
+       * own accumulation noise, i.e. v2-grade -- and every gemm rides
+       * the full-rate bf16 atom (register operands; the PV gemms are
+       * a small share of this memory-bound walk -- priced at r199). */
+      FragS tSrS2 = tSrS;
+      FragS tSrS3;
+      CUTLASS_PRAGMA_UNROLL
+      for (int i = 0; i < tSrS.size(); i++) {
+        tSrS2(i) = tSrS(i) - static_cast<float>(bfloat16_t(tSrS(i)));
+      }
+      CUTLASS_PRAGMA_UNROLL
+      for (int i = 0; i < tSrS.size(); i++) {
+        tSrS3(i) = tSrS2(i) - static_cast<float>(bfloat16_t(tSrS2(i)));
+      }
       reorder(tSrS, tArP);
+      reorder(tSrS2, tArP2);
+      reorder(tSrS3, tArP3);
 
       /* GEMM 2: A += P * V, split in v dimension */
       CUTLASS_PRAGMA_UNROLL
       for (int VV = 0; VV < VTiles; VV++) {
-        // V dequant: the V surface family carries (v, k) coordinates,
-        // so the row (the scale/k dimension) is mode 1; bytes and
-        // scales read directly from the gmem surfaces by coordinate.
-        mx::dequant_dtile<Mx::v_is_e4m3, false>(
+        // V dequant: the V surface family carries (v, k) tuples, so
+        // the row (the scale/k dimension) is tuple mode 1. The PV
+        // B-tile frame is (v, k): tv codomain mode 0 is the ELEMENT;
+        // positions from the fragment tv_layout per the coordinate
+        // law in mx_dequant.hpp.
+        mx::dequant_dtile<Mx::v_is_e4m3, false, false>(
             vb_surf,
             vs_surf,
             tVrDeq,
             tVDgVD_cache(_, _, _, VV));
         reorder(tVrDeq, tArV);
         cute::gemm(mma_pv, tArP, tArV, tArA(_, _, _, VV));
+        cute::gemm(mma_pv, tArP2, tArV, tArA(_, _, _, VV));
+        cute::gemm(mma_pv, tArP3, tArV, tArA(_, _, _, VV));
       }
 
       barrier();
@@ -874,7 +910,12 @@ struct MxDecodeFwdMainloop<
     }
   }
 
-  // Single step of blocked softmax (stock, verbatim).
+  // Single step of blocked softmax (stock structure; exp2 precision is
+  // the ONE deliberate deviation: stock's sycl::native::exp2 carries
+  // ~1e-3 relative error that showed as the beyond-cast tail in the
+  // r198 softmax-probe (n(dp > 1.5*cast) = 13-17/120); the certified v2
+  // envelope (d <= 2e-3 vs fp64 oracle, matched by v2 at 3e-7) needs
+  // the precise sycl::exp2. Perf-priced at r199.)
   CUTLASS_DEVICE
   void
   softmax(
@@ -895,14 +936,14 @@ struct MxDecodeFwdMainloop<
 
     CUTLASS_PRAGMA_UNROLL
     for (int i = 0; i < tS.size(); i++)
-      tS(i) = sycl::native::exp2(scale * tS(i) - broadcast<0>(tS_max, tS, i));
+      tS(i) = sycl::exp2(scale * tS(i) - broadcast<0>(tS_max, tS, i));
 
     if (!first_block) {
       FragSRow rescale;
 
       CUTLASS_PRAGMA_UNROLL
       for (int i = 0; i < tS_max.size(); i++) {
-        rescale(i) = sycl::native::exp2(tS_prev_max(i) - tS_max(i));
+        rescale(i) = sycl::exp2(tS_prev_max(i) - tS_max(i));
         tS_sum(i) *= rescale(i);
       }
 

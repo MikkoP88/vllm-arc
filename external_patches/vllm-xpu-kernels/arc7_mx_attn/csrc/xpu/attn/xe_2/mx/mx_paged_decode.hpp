@@ -378,8 +378,17 @@ template <
 struct MxPagedDecodeConfig {
   static constexpr int SGTileQ =
       get<0>(shape_div(TileShapeQK{}, shape(SubgroupLayoutQK{})))();
-  // The MMA is typed on Q (bf16 MACs — the dequant feeds converted
-  // fragments, exactly as the stock fp8 lane types on ElementQ).
+  // Both MMAs ride bf16 DPAS (full rate; the dequant feeds converted
+  // fragments exactly as the stock fp8 lane types on ElementQ). P
+  // enters the PV gemm as a SPLIT bf16 TRIPLE (mainloop): p = bf16(p)
+  // + bf16(r1) + bf16(r2), r1 = p - bf16(p), r2 = r1 - bf16(r1),
+  // holds p to 2^-27 relative -- below fp32's own accumulation noise.
+  // The plain bf16 cast deviates up to ~8e-3 from the certified v2
+  // envelope where rounding flips the output's last bit (r198
+  // element-ledger: adjacent-grid-step flips dominate; tf32 only
+  // shrank the walk), a PAIR's 2^-18 floor still showed 1-2% of |O|
+  // at deep-cancellation elements (r198 mini-ledger), and no
+  // fp32-operand DPAS exists on Xe2 (cute/arch/mma_xe.hpp set).
   using MMAOperation = XE_DPAS_TT<cute::gcd(SGTileQ, 8), float, bfloat16_t>;
   using SubgroupLayoutPV =
       decltype(cutlass::fmha::collective::get_sg_layout_pv(SubgroupLayoutQK{}));
