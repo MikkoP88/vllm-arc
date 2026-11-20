@@ -96,26 +96,24 @@ e8m0_to_scale(uint8_t code) {
 }
 
 // e2m1 nibble (4 bits: s|ee|m) -> float. Values: 0, .5, 1, 1.5, 2, 3,
-// 4, 6 and negatives; subnormals at ee==0 (0 / 0.5). Assembled by bit
-// math — no table, no ldexp call.
+// 4, 6 and negatives; subnormals at ee==0 (0 / 0.5). r204 lean
+// BRANCHLESS assembly (mirrors the r203b e4m3 lean — the ee==0 branch
+// defeated predication on the e2m1-K/V hot walks): normals assemble
+// directly, bits = s | (126+ee)<<23 | m<<22; the subnormal band is
+// m * 0.5, exact as a float multiply, with the sign on a negate
+// select (keeps -0.0 bitwise — the faces gate is bit-exact).
 CUTE_HOST_DEVICE
 inline float
 e2m1_to_float(uint8_t nibble) {
   const uint32_t s = uint32_t(nibble >> 3) & 1u;
   const uint32_t ee = uint32_t(nibble >> 1) & 3u;
   const uint32_t m = uint32_t(nibble) & 1u;
-  uint32_t bits;
-  if (ee == 0) {
-    bits = m ? 0x3F000000u : 0u;  // 0.5f or 0.0f
-  } else {
-    // normal: 2^(ee-1) * (1 + m/2) -> exponent 127 + ee - 1,
-    // mantissa MSB = m (value 0.5 in the 23-bit field => bit 22).
-    bits = (127u + ee - 1u) << 23 | (m << 22);
-  }
-  bits |= s << 31;
-  float f;
-  __builtin_memcpy(&f, &bits, 4);
-  return f;
+  const uint32_t bits = (s << 31) | ((126u + ee) << 23) | (m << 22);
+  float fn;
+  __builtin_memcpy(&fn, &bits, 4);
+  float sub = float(m) * 0.5f;
+  sub = s ? -sub : sub;
+  return (ee == 0) ? sub : fn;
 }
 
 // One packed byte -> two dequantized floats (element 2j = low nibble,

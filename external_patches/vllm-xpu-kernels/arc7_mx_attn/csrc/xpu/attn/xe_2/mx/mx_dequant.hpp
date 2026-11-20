@@ -222,6 +222,14 @@ dequant_reg(
   // spill); the walk selects between them on the runtime bit goff.
   // A form that breaks the law trips `direct` and falls back to
   // per-element reads: correct, merely slow.
+  //
+  // r204 NOTE (reverted tight walk): the ((2,8),((2,8),N)) tight law
+  // belongs to the DEQUANT DST fragment (dequant_dtile's assert pins
+  // it) — the COPY fragment riding in src carries its own tv_layout
+  // whose thr first sub-mode is NOT extent 2 (preflight static_assert
+  // fired at instantiation), so the t0/t1 law arithmetic cannot be
+  // validated against this object yet; dump the copy form before
+  // trying again.
   int kr[8];
   CUTE_UNROLL
   for (int r = 0; r < 8; ++r) {
@@ -492,58 +500,31 @@ dequant_dtile(
       }
     }
 
-    // r201b K-lane scale VECTOR, lean form (see dequant_reg for the
-    // full law and the r201 generic-dedup regression that motivated
-    // it): the staged byte windows above already issue together; the
-    // 4-entry scanned scale cache was the last dependent-load chain.
-    // The staging loop above reads the row PER WINDOW (v0, v2) — so
-    // the row is constant in v1 but varies over BOTH v0 and v2: EIGHT
-    // rows per WI at slot = v0 + 2*v2 = (dv & 1) + 2*(dv >> 4), at
-    // most two groups per d-tile — kr[8] + two flat vectors sc0/sc1
-    // (r200g's flat-index law; a 2-D sc[slot][goff] with runtime goff
-    // would demote to scratch and replay the r201 spill).
-    int kr[8];
-    CUTE_UNROLL
-    for (int r = 0; r < 8; ++r) {
-      auto pc0 = detail::tv_coord(tv, wi, r);
-      kr[r] = org_row +
-          (kFrame0IsRow ? int(cute::get<0>(pc0)) : int(cute::get<1>(pc0)));
-    }
+    // r204 LAW-ARITHMETIC WALK (same law as dequant_reg; the form is
+    // pinned by assert_staged_tv_form above, so the r201b runtime
+    // guard retires): the tight law is TWO rows per WI — row =
+    // t1(wi) + 8*v0 (the staged banks r = 0/1 ARE those rows), elem
+    // = t0 + 2*v1 + 16*v2, nibble phase = t0 (byte origins are
+    // even). FOUR scale loads issue upfront (2 rows x 2 groups);
+    // goff = (off + org_elem%32) >> 5 is exact for any tile origin.
+    int t0 = wi & 1;
+    int t1 = (wi >> 1) & 7;
     int grp0 = org_elem / kMxGroupSize;
-    float sc0[8], sc1[8];
-    CUTE_UNROLL
-    for (int r = 0; r < 8; ++r) {
-      sc0[r] = e8m0_to_scale(scales(kr[r], grp0));
-      sc1[r] = e8m0_to_scale(scales(kr[r], grp0 + 1));
-    }
-    bool direct = true;
+    int org_emod = org_elem & (kMxGroupSize - 1);
+    int row0 = org_row + t1;
+    float sc00 = e8m0_to_scale(scales(row0, grp0));
+    float sc01 = e8m0_to_scale(scales(row0, grp0 + 1));
+    float sc10 = e8m0_to_scale(scales(row0 + 8, grp0));
+    float sc11 = e8m0_to_scale(scales(row0 + 8, grp0 + 1));
 
     // SubgroupTensor::size() is a non-static member in this tree
     // (unlike cute::Tensor's static size()) — call it on the object.
     CUTE_UNROLL
     for (int dv = 0; dv < dst.size(); ++dv) {
-      // Same coordinate law as the scalar path (cheap ALU; only the
-      // byte fetch below changed).
-      auto pc = detail::tv_coord(tv, wi, dv);
-      int row = org_row +
-          (kFrame0IsRow ? int(cute::get<0>(pc)) : int(cute::get<1>(pc)));
-      int elem = org_elem +
-          (kFrame0IsRow ? int(cute::get<1>(pc)) : int(cute::get<0>(pc)));
-      int grp = elem / kMxGroupSize;
-
-      float scale = 0.f;
-      if (direct) {
-        int slot = (dv & 1) + 2 * (dv >> 4);
-        int goff = grp - grp0;
-        if (kr[slot] != row || goff < 0 || goff > 1) {
-          direct = false;
-          scale = e8m0_to_scale(scales(row, grp));
-        } else {
-          scale = goff ? sc1[slot] : sc0[slot];
-        }
-      } else {
-        scale = e8m0_to_scale(scales(row, grp));
-      }
+      int off = t0 + 2 * ((dv >> 1) & 7) + 16 * (dv >> 4);
+      int goff = (off + org_emod) >> 5;
+      float scale =
+          goff ? (dv & 1 ? sc11 : sc01) : (dv & 1 ? sc10 : sc00);
 
       // Staged byte fetch. Address the staging array by the DECODED
       // val coordinates (compile-time per dv after unrolling — a
@@ -551,14 +532,14 @@ dequant_dtile(
       // byte-within-row jb = v1 + 8*v2 holds for BOTH nibble phases,
       // since (t0 + 2*v1 + 16*v2) / 2 = t0/2 + v1 + 8*v2 and
       // t0/2 == 0. Element 2j = low nibble, 2j+1 = high nibble of
-      // byte j — the mx_layout quantizer law; phase is elem & 1.
+      // byte j — the mx_layout quantizer law; phase is t0.
       int v0 = dv & 1;
       int v1 = (dv >> 1) & 7;
       int v2 = dv >> 4;
       int jb = v1 + 8 * v2;
       uint32_t b = (st[v0][jb >> 2] >> ((jb & 3) * 8)) & 0xFF;
 
-      float val = e2m1_to_float(uint8_t(elem & 1 ? (b >> 4) : (b & 0xF)));
+      float val = e2m1_to_float(uint8_t(t0 ? (b >> 4) : (b & 0xF)));
       // bfloat16_t's float ctor is explicit (no implicit conversion on
       // assignment); build the element type directly.
       dst(dv) = typename DstFrag::value_type(val * scale);
