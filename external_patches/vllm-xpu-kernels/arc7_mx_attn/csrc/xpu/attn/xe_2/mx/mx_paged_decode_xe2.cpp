@@ -41,7 +41,11 @@ int mx_get_num_splits(
   if (block_size == 16) {
     kv_tile = 16;
     sg_per_wg = 1;
-    policy_split_cap = 16;
+    // r207: 16 -> 64. The old cap equaled the kernel's (sanity-only)
+    // max_num_kv_splits and pinned auto at 16 splits; the splits sweep
+    // shows the walk still scales there (r207 bank). Reduce cap and
+    // splits_bw still bound the request for short/mixed batches.
+    policy_split_cap = 64;
   } else if (block_size == 32) {
     kv_tile = 32;
     sg_per_wg = 2;

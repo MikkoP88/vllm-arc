@@ -89,7 +89,15 @@ class MxXeFMHAFwdSplitKVKernel {
   static constexpr int SharedStorageSize =
       is_empty_v<SharedStorage> ? size_t(0) : sizeof(SharedStorage);
 
-  static constexpr int max_num_kv_splits = SGPerWG::value * intel::sg_size;
+  // r207: the split coordinate comes from the work-group id (the
+  // scheduler's decomposition over (q, split, head, batch) — uniform
+  // legacy — or the host work item's split_idx), never from the thread
+  // layout, so SGPerWG*sg_size (16 at page 16) was a sanity bound, not
+  // a structural one. The decode buffers are sized from num_kv_splits
+  // on every path and writer/reduce agree on those strides; 64 matches
+  // the widest policy cap. Evidence: forced s>16 used to die in
+  // can_implement with a swallowed Status (r207 splits-artifact bank).
+  static constexpr int max_num_kv_splits = 64;
   static constexpr int dpas_max_repeat_count = 8;
   static constexpr bool Sink = CollectiveEpilogue::Sink;
   using ElementSink = typename CollectiveEpilogue::ElementSink;

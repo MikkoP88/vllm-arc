@@ -22,6 +22,7 @@ on the caller's existing path.
 
 from __future__ import annotations
 
+import os
 from typing import Optional
 
 import torch
@@ -37,7 +38,7 @@ from .flash_attn_interface import (
     _as_int32_device_tensor,
     _infer_num_xe_cores,
     _kv_tile_from_block_size,
-    build_decode_split_plan,
+    _min_blocks_for_split,
 )
 
 # Format ids shared with the C++ entry (mx_attn_interface.h).
@@ -52,6 +53,60 @@ _FORMATS = {
 }
 
 _GROUP = 32  # elements per e8m0 scale group (MX law)
+
+
+def _mx_build_decode_split_plan(
+    kv_lens,
+    kv_tile: int,
+    num_kv_splits: int,
+    num_xe_cores: int,
+    num_heads_kv: int,
+):
+    """Vendor build_decode_split_plan semantics with the Xe-core
+    oversubscription factor knobbed (ARC_MXKV_WGTARGET; 2 = vendor
+    parity, higher pushes per-seq splits past the auto policy cap —
+    r207 splits-headroom leg). Same guarantees as the vendor contract:
+    splits_per_seq[i] <= num_kv_splits and the work items partition
+    [0, kv_tiles) exactly once per seq."""
+    oversub = max(1, int(os.environ.get("ARC_MXKV_WGTARGET", "2") or "2"))
+    if isinstance(kv_lens, torch.Tensor):
+        kv_lens_list = kv_lens.to(dtype=torch.int32, device="cpu").tolist()
+    else:
+        kv_lens_list = [int(v) for v in kv_lens]
+
+    tiles_per_seq = [
+        max(1, (kv + kv_tile - 1) // kv_tile) for kv in kv_lens_list]
+    total_tiles = sum(tiles_per_seq)
+
+    min_wgs = max(1, num_xe_cores * oversub // max(1, num_heads_kv))
+    target_tiles_per_wg = max(4, total_tiles // min_wgs)
+
+    min_blocks_for_split = _min_blocks_for_split(kv_tile)
+
+    splits_per_seq = []
+    work_items = []
+    for i, n_tiles in enumerate(tiles_per_seq):
+        if (n_tiles <= target_tiles_per_wg
+                or n_tiles < min_blocks_for_split
+                or num_kv_splits <= 1):
+            n_splits = 1
+        else:
+            n_splits = ((n_tiles + target_tiles_per_wg - 1)
+                        // target_tiles_per_wg)
+            n_splits = min(n_splits, num_kv_splits, n_tiles)
+        splits_per_seq.append(n_splits)
+
+        base, rem = divmod(n_tiles, n_splits)
+        start = 0
+        for s in range(n_splits):
+            count = base + (1 if s < rem else 0)
+            work_items.append([i, start, count, s])
+            start += count
+
+    return (
+        torch.tensor(splits_per_seq, dtype=torch.int32),
+        torch.tensor(work_items, dtype=torch.int32),
+    )
 
 
 def _slot_bytes(d: int, fmt: int) -> int:
@@ -134,7 +189,7 @@ def mx_paged_decode(
         kv_tile = _kv_tile_from_block_size(block_size)
         num_xe_cores = _infer_num_xe_cores(q.device)
         num_heads_kv = cache.size(2)
-        splits_cpu, work_list_cpu = build_decode_split_plan(
+        splits_cpu, work_list_cpu = _mx_build_decode_split_plan(
             host_kv_lens,
             kv_tile=kv_tile,
             num_kv_splits=num_splits_kv,

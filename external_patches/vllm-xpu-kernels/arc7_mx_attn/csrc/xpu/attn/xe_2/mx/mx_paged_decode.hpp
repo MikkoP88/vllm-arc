@@ -32,6 +32,7 @@
 #include "xpu/attn/xe_2/collective/chunk_prefill_scheduler.hpp"
 #include "xpu/attn/xe_2/collective/chunk_prefill_epilogue.hpp"
 #include "xpu/attn/xe_2/kernel/paged_decode_kernel.hpp"  // DecodeProblemShape, ReduceSplitK
+#include "xpu/attn/xe_2/mx/mx_reduce_split.hpp"  // r208: fork-owned reduce (S>threads)
 
 #include "xpu/attn/xe_2/fmha_utils.hpp"
 #include "xpu/attn/xe_2/mx/mx_types.hpp"
@@ -528,7 +529,10 @@ struct MxPagedDecodeConfig {
         CollectiveEpilogue,
         Scheduler>;
 
-    using ReduceSplitKernel = cutlass::fmha::kernel::ReduceSplitK<
+    // r208: fork-owned reduce -- the stock ReduceSplitK loads one split
+    // per THREAD (breaks past 16 at page 16) and its combine-loop break
+    // assumes the uniform-ceil partition (drops plan tail splits).
+    using ReduceSplitKernel = cutlass::fmha::kernel::MxReduceSplitK<
         ProblemShapeType,
         cutlass::fmha::kernel::XeReduceSplitKTileScheduler,
         FMHAKernel>;
