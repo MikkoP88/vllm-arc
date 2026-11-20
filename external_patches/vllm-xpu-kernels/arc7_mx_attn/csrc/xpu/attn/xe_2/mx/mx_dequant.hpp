@@ -183,12 +183,44 @@ dequant_reg(
       (RowIsMode0 ? int(cute::get<1>(c0)) : int(cute::get<0>(c0))) -
       (kFrame0IsRow ? int(cute::get<1>(p00)) : int(cute::get<0>(p00)));
 
-  // Per-WI scale cache: the byte fragment of one tile spans few
-  // (row, group) pairs; anything beyond 4 entries still reads correctly
-  // through L1.
-  int cr[4] = {-1, -1, -1, -1};
-  int cg[4] = {-1, -1, -1, -1};
-  float cv[4];
+  // r201b K-lane scale VECTOR (r200g's V-lane law, LEAN form): the old
+  // 4-entry scanned cache reset per call, and the QK B-form spans more
+  // (row, group) pairs than 4 slots — most elements missed, and every
+  // miss was an exposed scalar gmem load (r200h: the K load chain is
+  // 58-66% of the walk; probe 5 only ablates V scales, so this slice
+  // hid inside it). The first r201 attempt used a generic dedup
+  // (16-slot int tables + scans) and REGRESSED 2.5x — the tables
+  // spilled and the unrolled dedup walks blew up the hot loop. The
+  // lean law instead derives the index from the fragment's own tv
+  // form. The QK B-tile is NOT the PV B-tile's form-(ii) (v1 advances
+  // the row there); its bitwise-validated e2m1 staging proves the row
+  // is CONSTANT in v1 and varies over (v0, v2) — bank v0's window v2
+  // stages row(v0 + 16*v2) — i.e. EIGHT rows per WI at
+  //   slot = v0 + 2*v2 = (i & 1) + 2*(i >> 4)
+  // (the mirror of the V law with the val roles swapped; registers
+  // 0..7 are the v1=0 representatives), with the d-tile's columns
+  // covering at most two scale groups. kr[8] reads the rows through
+  // tv_coord at registers 0..7; the scales ride TWO flat vectors
+  // sc0/sc1[8] (r200g's flat-index law — a 2-D sc[slot][goff] with
+  // runtime goff would demote the array to scratch and replay the r201
+  // spill); the walk selects between them on the runtime bit goff.
+  // A form that breaks the law trips `direct` and falls back to
+  // per-element reads: correct, merely slow.
+  int kr[8];
+  CUTE_UNROLL
+  for (int r = 0; r < 8; ++r) {
+    auto pc0 = detail::tv_coord(src.tv_layout(), wi, r);
+    kr[r] = org_row +
+        (kFrame0IsRow ? int(cute::get<0>(pc0)) : int(cute::get<1>(pc0)));
+  }
+  int grp0 = org_col / kMxGroupSize;
+  float sc0[8], sc1[8];
+  CUTE_UNROLL
+  for (int r = 0; r < 8; ++r) {
+    sc0[r] = e8m0_to_scale(scales(kr[r], grp0));
+    sc1[r] = e8m0_to_scale(scales(kr[r], grp0 + 1));
+  }
+  bool direct = true;
 
   // SubgroupTensor::size() is a non-static member in this tree (unlike
   // cute::Tensor's static size()) — call it on the object.
@@ -204,25 +236,22 @@ dequant_reg(
     int grp = col / kMxGroupSize;
 
     float scale = 0.f;
-    bool hit = false;
-    CUTE_UNROLL
-    for (int s = 0; s < 4; ++s) {
-      if (cr[s] == row && cg[s] == grp) {
-        scale = cv[s];
-        hit = true;
+    if (direct) {
+      // Direct index: slot = (i&1) + 2*(i>>4) selects the row slot
+      // (compile-time under the unroll; the kr guard itself folds to
+      // a compile-time compare of the two tv offsets), the column's
+      // group offset goff = grp - grp0 selects between the two flat
+      // vectors — the only runtime index is this 0/1 select.
+      int slot = (i & 1) + 2 * (i >> 4);
+      int goff = grp - grp0;
+      if (kr[slot] != row || goff < 0 || goff > 1) {
+        direct = false;
+        scale = e8m0_to_scale(scales(row, grp));
+      } else {
+        scale = goff ? sc1[slot] : sc0[slot];
       }
-    }
-    if (!hit) {
+    } else {
       scale = e8m0_to_scale(scales(row, grp));
-      CUTE_UNROLL
-      for (int s = 0; s < 4; ++s) {
-        if (cr[s] < 0) {
-          cr[s] = row;
-          cg[s] = grp;
-          cv[s] = scale;
-          break;
-        }
-      }
     }
 
     // Byte from the loaded fragment register — no per-element memory.
@@ -432,6 +461,32 @@ dequant_dtile(
       }
     }
 
+    // r201b K-lane scale VECTOR, lean form (see dequant_reg for the
+    // full law and the r201 generic-dedup regression that motivated
+    // it): the staged byte windows above already issue together; the
+    // 4-entry scanned scale cache was the last dependent-load chain.
+    // The staging loop above reads the row PER WINDOW (v0, v2) — so
+    // the row is constant in v1 but varies over BOTH v0 and v2: EIGHT
+    // rows per WI at slot = v0 + 2*v2 = (dv & 1) + 2*(dv >> 4), at
+    // most two groups per d-tile — kr[8] + two flat vectors sc0/sc1
+    // (r200g's flat-index law; a 2-D sc[slot][goff] with runtime goff
+    // would demote to scratch and replay the r201 spill).
+    int kr[8];
+    CUTE_UNROLL
+    for (int r = 0; r < 8; ++r) {
+      auto pc0 = detail::tv_coord(tv, wi, r);
+      kr[r] = org_row +
+          (kFrame0IsRow ? int(cute::get<0>(pc0)) : int(cute::get<1>(pc0)));
+    }
+    int grp0 = org_elem / kMxGroupSize;
+    float sc0[8], sc1[8];
+    CUTE_UNROLL
+    for (int r = 0; r < 8; ++r) {
+      sc0[r] = e8m0_to_scale(scales(kr[r], grp0));
+      sc1[r] = e8m0_to_scale(scales(kr[r], grp0 + 1));
+    }
+    bool direct = true;
+
     // SubgroupTensor::size() is a non-static member in this tree
     // (unlike cute::Tensor's static size()) — call it on the object.
     CUTE_UNROLL
@@ -446,25 +501,17 @@ dequant_dtile(
       int grp = elem / kMxGroupSize;
 
       float scale = 0.f;
-      bool hit = false;
-      CUTE_UNROLL
-      for (int i = 0; i < 4; ++i) {
-        if (cr[i] == row && cg[i] == grp) {
-          scale = cv[i];
-          hit = true;
+      if (direct) {
+        int slot = (dv & 1) + 2 * (dv >> 4);
+        int goff = grp - grp0;
+        if (kr[slot] != row || goff < 0 || goff > 1) {
+          direct = false;
+          scale = e8m0_to_scale(scales(row, grp));
+        } else {
+          scale = goff ? sc1[slot] : sc0[slot];
         }
-      }
-      if (!hit) {
+      } else {
         scale = e8m0_to_scale(scales(row, grp));
-        CUTE_UNROLL
-        for (int i = 0; i < 4; ++i) {
-          if (cr[i] < 0) {
-            cr[i] = row;
-            cg[i] = grp;
-            cv[i] = scale;
-            break;
-          }
-        }
       }
 
       // Staged byte fetch. Address the staging array by the DECODED

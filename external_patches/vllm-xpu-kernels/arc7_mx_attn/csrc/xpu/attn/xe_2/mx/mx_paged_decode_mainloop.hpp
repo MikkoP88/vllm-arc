@@ -969,6 +969,36 @@ struct MxDecodeFwdMainloop<
         cute::gemm(mma_qk, tSrQ, tSrK, tSrS);
       }
 
+      /* r201 K-prefetch DISTANCE: stock issued the next tile's K
+      prefetch at the loop END — immediately before the consuming copy
+      (distance ~0: the prefetch could not cover its own latency, and
+      the r200h decomposition put the whole K load chain at 58-66% of
+      the walk). Hoisted here — right after this tile's K bytes are
+      consumed — the loads warm through the V staging, softmax and PV
+      body, and the page-table walk rides the same cover. Tiles that
+      cross an LSC surface boundary skip the early issue (the current
+      partitions cannot address them); the loop-end path still warms
+      those, as before. */
+      {
+        int early_next = K + 1;
+        if constexpr (PagedKV) {
+          int epage = early_next * get<1>(TileShapeQK{}) / params.page_size;
+          if (epage < params.max_pages_per_seq) {
+            early_next = params.ptr_page_table[b_offset + epage] *
+                page_stride_tiles + early_next % tiles_per_page;
+          } else {
+            early_next = params.max_pages_per_seq * tiles_per_page - 1;
+          }
+        }
+        int esurf = PagedKV ? early_next / tiles_per_surface : 0;
+        if (!has_large_surface || esurf == k_pre_surf) {
+          int elocal = early_next - esurf * tiles_per_surface;
+          for (int D = 0; D < size<4>(pKBgK); D++) {
+            prefetch(prefetch_kb, pKBgK(_, _, _, elocal, D));
+          }
+        }
+      }
+
       /* V prefetch for GEMM 2 */
       prefetch(prefetch_vb, pVbgV(_, _, _, tile_idx));
 
