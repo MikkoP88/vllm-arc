@@ -1,0 +1,51 @@
+[face: native-exact] native decode vs fp64 exact on dequantized cache
+  ok   native-exact/mxfp8: random549: d=1.65e-03 d_rounded=0.00e+00 cos=0.9999985 d_v2=8.49e-08
+  ok   native-exact/mxfp4: random549: d=9.75e-04 d_rounded=0.00e+00 cos=0.9999986 d_v2=1.06e-07
+  ok   native-exact/mxk8v4: random549: d=1.72e-03 d_rounded=1.53e-05 cos=0.9999986 d_v2=1.10e-07
+[face: native-v2] native vs certified Triton v2 on the same cache
+  ok   native-v2/mxfp8: random549: d=9.61e-04 d_rounded=4.77e-07 cos=0.9999986
+  ok   native-v2/mxfp4: random549: d=9.70e-04 d_rounded=0.00e+00 cos=0.9999987
+  ok   native-v2/mxk8v4: random549: d=9.59e-04 d_rounded=9.54e-07 cos=0.9999987
+[face: bitwise] seq_len==1 dequant bit-math oracle (O == bf16(V_deq))
+  ok   bitwise/mxfp8: 0/1024 mismatches — dequant bit law exact
+  ok   bitwise/mxfp4: 0/1024 mismatches — dequant bit law exact
+  ok   bitwise/mxk8v4: 0/1024 mismatches — dequant bit law exact
+[face: softmax-probe] one-hot V rows expose P exactly
+[face: element-ledger] worst-element decomposition, short lens
+[face: robust] adversarial rows + block-16 boundary lens (shuffled tables)
+  ok   robust/mxfp8: adversarial: d=4.85e-04 d_rounded=0.00e+00 cos=0.9999995 d_v2=4.11e-08
+  ok   robust/mxfp4: adversarial: d=2.39e-04 d_rounded=0.00e+00 cos=0.9999997 d_v2=4.27e-08
+  ok   robust/mxk8v4: adversarial: d=4.87e-04 d_rounded=0.00e+00 cos=0.9999991 d_v2=2.10e-08
+  ok   robust/mxfp8: signed: d=2.42e-04 d_rounded=0.00e+00 cos=0.9999986 d_v2=2.71e-08
+  ok   robust/mxfp4: signed: d=2.31e-04 d_rounded=0.00e+00 cos=0.9999986 d_v2=1.42e-08
+  ok   robust/mxk8v4: signed: d=2.37e-04 d_rounded=0.00e+00 cos=0.9999986 d_v2=1.95e-08
+  ok   robust/mxfp8: len1: d=0.00e+00 d_rounded=0.00e+00 cos=1.0000000 d_v2=0.00e+00
+  ok   robust/mxfp4: len1: d=0.00e+00 d_rounded=0.00e+00 cos=1.0000000 d_v2=0.00e+00
+  ok   robust/mxk8v4: len1: d=0.00e+00 d_rounded=0.00e+00 cos=1.0000000 d_v2=0.00e+00
+  ok   robust/mxfp8: len15: d=4.00e-03 d_rounded=0.00e+00 cos=0.9999986 d_v2=3.04e-07
+  ok   robust/mxfp4: len15: d=6.52e-03 d_rounded=0.00e+00 cos=0.9999986 d_v2=3.09e-07
+  ok   robust/mxk8v4: len15: d=6.71e-03 d_rounded=0.00e+00 cos=0.9999986 d_v2=4.06e-07
+  ok   robust/mxfp8: len16: d=5.74e-03 d_rounded=0.00e+00 cos=0.9999986 d_v2=2.90e-07
+  ok   robust/mxfp4: len16: d=6.96e-03 d_rounded=0.00e+00 cos=0.9999986 d_v2=2.10e-07
+  ok   robust/mxk8v4: len16: d=3.87e-03 d_rounded=0.00e+00 cos=0.9999986 d_v2=3.40e-07
+  ok   robust/mxfp8: len17: d=4.44e-03 d_rounded=0.00e+00 cos=0.9999987 d_v2=2.48e-07
+  ok   robust/mxfp4: len17: d=4.33e-03 d_rounded=4.47e-08 cos=0.9999988 d_v2=2.59e-07
+  ok   robust/mxk8v4: len17: d=3.90e-03 d_rounded=0.00e+00 cos=0.9999986 d_v2=2.91e-07
+[face: splits] forced split-KV (ReduceSplitK) + default plan at ctx 8192
+  ok   splits/mxfp8: forced8: d=3.14e-04 d_rounded=4.88e-04 cos=0.9999973
+  ok   splits/mxfp8: default: d=2.95e-04 d_rounded=4.88e-04 cos=0.9999973
+  ok   splits/mxfp4: forced8: d=3.13e-04 d_rounded=4.88e-04 cos=0.9999972
+  ok   splits/mxfp4: default: d=3.14e-04 d_rounded=4.88e-04 cos=0.9999973
+  ok   splits/mxk8v4: forced8: d=2.96e-04 d_rounded=4.88e-04 cos=0.9999973
+  ok   splits/mxk8v4: default: d=3.38e-04 d_rounded=4.88e-04 cos=0.9999972
+[face: telemetry] native vs Triton v2 decode timings (always-loop datapoint)
+  ok   telemetry/mxfp8 ctx=1024: v2 0.199 ms, native 0.429 ms (0.46x), 5.0 GB/s effective
+  ok   telemetry/mxfp8 ctx=8192: v2 0.218 ms, native 0.443 ms (0.49x), 39.0 GB/s effective
+  ok   telemetry/mxfp8 ctx=32768: v2 0.764 ms, native 1.479 ms (0.52x), 46.8 GB/s effective
+  ok   telemetry/mxfp4 ctx=1024: v2 0.196 ms, native 0.314 ms (0.62x), 3.6 GB/s effective
+  ok   telemetry/mxfp4 ctx=8192: v2 0.196 ms, native 0.317 ms (0.62x), 28.1 GB/s effective
+  ok   telemetry/mxfp4 ctx=32768: v2 0.660 ms, native 0.980 ms (0.67x), 36.4 GB/s effective
+  ok   telemetry/mxk8v4 ctx=1024: v2 0.192 ms, native 0.298 ms (0.65x), 5.5 GB/s effective
+  ok   telemetry/mxk8v4 ctx=8192: v2 0.427 ms, native 0.311 ms (1.37x), 42.2 GB/s effective
+  ok   telemetry/mxk8v4 ctx=32768: v2 1.573 ms, native 0.948 ms (1.66x), 55.3 GB/s effective
+VERDICT: PASS

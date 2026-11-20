@@ -1,0 +1,48 @@
+=== [r200c] W14 quiesce 18:57:38 ===
+=== [r200c] probe mode 0 18:57:43 ===
+=== [r200c] probe 0 exit rc=0 18:58:12 ===
+=== [r200c] probe mode 1 18:58:12 ===
+=== [r200c] probe 1 exit rc=0 18:58:42 ===
+=== [r200c] probe mode 2 18:58:42 ===
+=== [r200c] probe 2 exit rc=0 18:59:12 ===
+=== [r200c] probe mode 3 18:59:12 ===
+=== [r200c] probe 3 exit rc=0 18:59:42 ===
+=== [r200c] probe mode 4 18:59:42 ===
+=== [r200c] probe 4 exit rc=0 19:00:12 ===
+=== [r200c] probe mode 5 19:00:12 ===
+=== [r200c] probe 5 exit rc=0 19:00:42 ===
+=== [r200c] probe mode 6 19:00:42 ===
+=== [r200c] probe 6 exit rc=0 19:01:12 ===
+=== [r200c] probe mode 7 19:01:12 ===
+=== [r200c] probe 7 exit rc=0 19:01:42 ===
+=== [r200c] probe mode 8 19:01:42 ===
+=== [r200c] probe 8 exit rc=0 19:02:12 ===
+  mxfp4 ctx=32768: wall 0.169 ms = device 0.138 + host 0.031 ms (257.6 GB/s device-effective)
+  mxfp4 ctx=32768: wall 0.195 ms = device 0.163 + host 0.032 ms (218.3 GB/s device-effective)
+  mxfp4 ctx=32768: wall 0.565 ms = device 0.533 + host 0.032 ms (66.9 GB/s device-effective)
+  mxfp4 ctx=32768: wall 0.576 ms = device 0.544 + host 0.032 ms (65.6 GB/s device-effective)
+  mxfp4 ctx=32768: wall 0.598 ms = device 0.564 + host 0.033 ms (63.2 GB/s device-effective)
+  mxfp4 ctx=32768: wall 0.963 ms = device 0.918 + host 0.045 ms (38.8 GB/s device-effective)
+  mxfp4 ctx=32768: wall 1.009 ms = device 0.978 + host 0.031 ms (36.4 GB/s device-effective)
+  mxfp4 ctx=32768: wall 1.071 ms = device 1.026 + host 0.046 ms (34.8 GB/s device-effective)
+  mxfp4 ctx=32768: wall 1.096 ms = device 1.051 + host 0.045 ms (33.9 GB/s device-effective)
+  mxfp8 ctx=32768: wall 0.428 ms = device 0.382 + host 0.046 ms (181.0 GB/s device-effective)
+  mxfp8 ctx=32768: wall 0.472 ms = device 0.426 + host 0.046 ms (162.5 GB/s device-effective)
+  mxfp8 ctx=32768: wall 0.758 ms = device 0.728 + host 0.031 ms (95.1 GB/s device-effective)
+  mxfp8 ctx=32768: wall 0.844 ms = device 0.812 + host 0.032 ms (85.2 GB/s device-effective)
+  mxfp8 ctx=32768: wall 0.934 ms = device 0.902 + host 0.032 ms (76.7 GB/s device-effective)
+  mxfp8 ctx=32768: wall 1.314 ms = device 1.269 + host 0.045 ms (54.5 GB/s device-effective)
+  mxfp8 ctx=32768: wall 1.366 ms = device 1.335 + host 0.031 ms (51.8 GB/s device-effective)
+  mxfp8 ctx=32768: wall 1.390 ms = device 1.359 + host 0.032 ms (50.9 GB/s device-effective)
+  mxfp8 ctx=32768: wall 1.405 ms = device 1.360 + host 0.045 ms (50.9 GB/s device-effective)
+  mxk8v4 ctx=32768: wall 0.190 ms = device 0.147 + host 0.044 ms (357.5 GB/s device-effective)
+  mxk8v4 ctx=32768: wall 0.217 ms = device 0.173 + host 0.044 ms (303.7 GB/s device-effective)
+  mxk8v4 ctx=32768: wall 0.531 ms = device 0.499 + host 0.032 ms (105.0 GB/s device-effective)
+  mxk8v4 ctx=32768: wall 0.566 ms = device 0.521 + host 0.045 ms (100.6 GB/s device-effective)
+  mxk8v4 ctx=32768: wall 0.619 ms = device 0.586 + host 0.033 ms (89.4 GB/s device-effective)
+  mxk8v4 ctx=32768: wall 0.948 ms = device 0.917 + host 0.031 ms (57.2 GB/s device-effective)
+  mxk8v4 ctx=32768: wall 1.010 ms = device 0.978 + host 0.032 ms (53.6 GB/s device-effective)
+  mxk8v4 ctx=32768: wall 1.025 ms = device 0.993 + host 0.032 ms (52.8 GB/s device-effective)
+  mxk8v4 ctx=32768: wall 1.067 ms = device 1.034 + host 0.033 ms (50.7 GB/s device-effective)
+R200C_DONE rc=0 2026-11-20T19:02:12Z
+W14_LEFT_DOWN (debug batch mode -- restore manually when done)
