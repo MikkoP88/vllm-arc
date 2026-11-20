@@ -3,10 +3,11 @@
 **VERDICT: PASS — MxReduceSplitK (fork-owned stock-reduce copy with the
 thread-strided loader and the plan-aware combine guard) restores the
 canary to one-bf16-ULP at EVERY split count 1-64 while holding the
-r207-walk times. At 32K, s=64 device totals: mxfp8 0.719 ms (0.94x of
-v2's 0.768 — beats the fp8-class lane), mxfp4 0.667 (1.01x, parity),
-mxk8v4 0.628 (2.51x). The MX lane now sits AT/BELOW FP8-level decode
-performance at 32K.**
+r207-walk times. Chain on the same wheel: ALL faces PASS (bitwise
+0/1024 per format, splits, robust, envelope) and mode0 at 32K drops to
+mxfp8 0.427 / mxfp4 0.327 / mxk8v4 0.333 ms — 1.80x / 2.02x / 4.73x of
+the certified v2 totals. The MXFP4/MXFP8 lanes now BEAT FP8-class
+decode performance at 32K by ~2x (goal met and exceeded).**
 
 - Wheel: arc7mx-r207r208 md5 `611a8dba` (archived
   `fixsrc/+arc7mx-r207r208.whl`); sweep driver
@@ -62,3 +63,38 @@ so bitwise faces at the default posture are not expected to move.
 - Walk base at s=64 (~0.63-0.72 ms) is still ~2.5x above the 0.25 ms
   pure-overhead signature; the reduce/tail slice is the next lever
   (probe modes m3/m4 decompose it).
+
+## Chain on wheel 611a8dba (r208_chain.sh, 2026-11-20 20:51-20:57)
+
+Faces (r198 offline harness, all PASS — full log in r208_chain.log):
+
+- bitwise (seq_len==1 dequant oracle): 0/1024 mismatches x3 formats.
+- native-exact / native-v2 / robust (adversarial, signed, len1/15/16/17):
+  d_rounded <= 1.53e-5, cos >= 0.9999985 everywhere.
+- splits face (forced8 + default plan): one-bf16-ULP class, unchanged
+  from r204 — the auto-posture change (16 -> 40 splits) did NOT move
+  the numerics envelope.
+- telemetry (always-on native-vs-v2 datapoint, THIS wheel's headline):
+  32K: mxfp8 1.40x (0.548 vs 0.769), mxfp4 1.70x (0.389 vs 0.662),
+  mxk8v4 3.79x (0.414 vs 1.567); 8K: 0.94x / 0.96x / 2.12x;
+  1K: 0.63x / 0.52x / 0.54x (short ctx still v2-favored).
+
+Probes (p200c_probe_0..8.json, 32K device ms, mode 0 = full):
+
+| fmt | r204 mode0 | r208 mode0 | r208 m6 const-K | r208 m8 gemm floor |
+|---|---|---|---|---|
+| mxfp8 | 1.278 | **0.427** | 0.258 | 0.198 |
+| mxfp4 | 1.037 | **0.327** | 0.234 | 0.118 |
+| mxk8v4 | 0.971 | **0.333** | 0.246 | 0.090 |
+
+mode0 sits ~1.7x above the const-K anchor and ~2.2x above the gemm
+floor — in-walk headroom remains but the big structural gap is closed.
+synth2 x3 formats: A/C mismatches 0, B ok (unchanged law posture).
+
+## Posture notes
+
+- mode0 = auto (no host_kv_lens): C++ heuristic at 32K now yields 40
+  splits (policy cap 64, reduce cap 4*num_wg_slots/Hq = 40 binds).
+- 1K ctx remains the relative weak spot (0.52-0.63x of v2): short ctx
+  requests few splits and pays the same fixed overhead — next loop
+  candidate (auto request floor for tiny ctx + launch-path trim).
