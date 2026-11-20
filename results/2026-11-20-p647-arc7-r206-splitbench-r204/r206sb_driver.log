@@ -1,0 +1,6 @@
+=== [r206sb] W14 quiesce 19:31:14 ===
+=== [r206sb] splitbench on r204 wheel 19:31:30 ===
+=== [r206sb] splitbench rc=0 19:32:03 ===
+2fb3b721e71e0984f32418d5688fe59b  /root/build/wheels-arc-vxk/vllm_xpu_kernels-0.1.14.1+arc7mx-cp312-cp312-linux_x86_64.whl
+R206SB_DONE rc=0 2026-11-20T19:32:03Z
+W14_RESTORE_FIRED_fullres 2026-11-20T19:32:04Z
