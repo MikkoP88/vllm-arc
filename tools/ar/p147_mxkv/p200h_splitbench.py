@@ -80,7 +80,22 @@ HQ = HK * HREP
 BLOCK = 16
 DEV = "xpu"
 FMTS = ("mxfp8", "mxfp4", "mxk8v4")
-SPLITS = (1, 2, 4, 8, 16, 24, 32, 48, 64)
+# r210: ctx list and split list are env-tunable so the same binary runs
+# the 1K calibration sweep (P200H_CTX=1024 P200H_SPLITS=1,2,3,4,5,6,8,
+# 10,12,16 -- the vendor plan's 4-tiles-per-WG floor caps plannable
+# splits at n_tiles/4, so >16 is unreachable at 64 tiles/seq).
+SPLITS = tuple(
+    int(s)
+    for s in os.environ.get(
+        "P200H_SPLITS", "1,2,4,8,16,24,32,48,64"
+    ).split(",")
+    if s.strip()
+)
+CTXS = tuple(
+    int(c)
+    for c in os.environ.get("P200H_CTX", "8192,32768").split(",")
+    if c.strip()
+)
 
 
 def build_paged(total_tokens, seed=7):
@@ -164,7 +179,7 @@ def main():
     R = {}
     for fmt in FMTS:
         rows = {}
-        for ctx in (8192, 32768):
+        for ctx in CTXS:
             gen = torch.Generator().manual_seed(ctx)
             xk = torch.randn(ctx, HK, D, generator=gen).to(DEV)
             xv = torch.randn(ctx, HK, D, generator=gen).to(DEV)

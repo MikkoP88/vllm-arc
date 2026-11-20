@@ -71,10 +71,25 @@ int mx_get_num_splits(
   int splits = std::max(splits_par, splits_bw);
 
   // Reduction-cost cap: ReduceSplitK output volume scales with
-  // splits * num_heads_q; keep it bounded (vendor knee).
+  // splits * num_heads_q; keep it bounded (stock 4-slots/head knee,
+  // RESTORED in r210: the r209 8x lift let 32K run 64 splits = +0-13%
+  // worse on the probe A/B; 40 slots/head is the measured optimum on
+  // BOTH probe (B=32) and telemetry (B=1) geometries, and the r207/r208
+  // bench sweep that favored 64 was a 2-seq slot-fill artifact — 4 WGs
+  // per split-set wants deep splits, engine batches do not).
   int splits_reduce_cap =
       std::max(1, 4 * num_wg_slots / std::max(1, num_heads_q));
   splits = std::min(splits, splits_reduce_cap);
+
+  // r210 workload bound: splits_par over-requests at small batch +
+  // short ctx (B=1 1K asked 40 splits for 64 tiles = 1.6 tiles/split
+  // and lost 12% to the 5-split posture, r209 telemetry chain). Cap at
+  // the SAME divisor as the bandwidth estimate (kv_tiles/12) — never
+  // denser than the bw knee. Measured: 1K optimum s=5 = 64/12 (r210 1K
+  // forced sweep: s=1 is latency-bound 1.5x, plateau 0.43-0.53, best
+  // at 5); at 8K/32K the bound is loose (42/170) and the 4x reduce cap
+  // binds at 40 — the r209 probe A/B showed 32 there costs +58-65%.
+  splits = std::min(splits, std::max(1, kv_tiles / 12));
 
   return std::min(splits, policy_split_cap);
 }
