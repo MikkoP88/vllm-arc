@@ -1,0 +1,33 @@
+=== [r211e1] W14 quiesce 22:36:42 ===
+=== [r211e1] timeline probe mode 0 22:36:59 ===
+=== [r211e1] mode 0 exit rc=0 22:37:29 ===
+=== [r211e1] timeline probe mode 3 22:37:29 ===
+=== [r211e1] mode 3 exit rc=0 22:37:58 ===
+=== [r211e1] timeline probe mode 8 22:37:58 ===
+=== [r211e1] mode 8 exit rc=0 22:38:28 ===
+  !! mxfp4 splits=1: CANARY_NAN (no launch?)
+  mxfp4 splits= 1: dev 245.5us [227.0-501.6] gap 88.8us host 335.9us bracketed 169.6us canary -1.00e+00
+  mxfp4 splits= 1: dev 330.3us [324.1-547.1] gap 2.2us host 333.9us bracketed 337.5us canary 0.00e+00
+  mxfp4 splits= 1: dev 521.3us [511.0-647.8] gap 1.8us host 520.5us bracketed 538.9us canary 0.00e+00
+  !! mxfp4 splits=5: CANARY_NAN (no launch?)
+  mxfp4 splits= 5: dev 449.8us [440.0-460.7] gap 49.2us host 498.9us bracketed 373.9us canary 0.00e+00
+  mxfp4 splits= 5: dev 453.8us [405.8-918.5] gap 89.4us host 546.7us bracketed 435.1us canary -1.00e+00
+  mxfp4 splits= 5: dev 568.5us [538.1-966.1] gap 2.5us host 571.0us bracketed 559.1us canary 9.77e-04
+  !! mxfp8 splits=1: CANARY_NAN (no launch?)
+  mxfp8 splits= 1: dev 232.2us [226.4-244.3] gap 80.2us host 311.7us bracketed 231.4us canary -1.00e+00
+  mxfp8 splits= 1: dev 469.8us [466.7-473.2] gap 2.0us host 470.4us bracketed 461.2us canary 0.00e+00
+  mxfp8 splits= 1: dev 697.6us [694.7-701.8] gap 2.0us host 699.6us bracketed 717.3us canary 0.00e+00
+  !! mxfp8 splits=5: CANARY_NAN (no launch?)
+  mxfp8 splits= 5: dev 427.5us [417.0-468.8] gap 83.5us host 506.1us bracketed 460.8us canary -1.00e+00
+  mxfp8 splits= 5: dev 573.4us [559.4-1405.3] gap 1.9us host 576.3us bracketed 648.3us canary 9.77e-04
+  mxfp8 splits= 5: dev 839.2us [511.6-943.8] gap 3.7us host 840.9us bracketed 445.5us canary 0.00e+00
+  !! mxk8v4 splits=1: CANARY_NAN (no launch?)
+  mxk8v4 splits= 1: dev 237.2us [229.3-246.4] gap 80.9us host 318.8us bracketed 226.0us canary -1.00e+00
+  mxk8v4 splits= 1: dev 318.6us [315.3-326.7] gap 1.9us host 319.8us bracketed 312.4us canary 0.00e+00
+  mxk8v4 splits= 1: dev 486.8us [483.1-490.9] gap 2.0us host 486.9us bracketed 519.9us canary 0.00e+00
+  !! mxk8v4 splits=5: CANARY_NAN (no launch?)
+  mxk8v4 splits= 5: dev 421.9us [403.4-464.7] gap 81.8us host 502.5us bracketed 417.3us canary -1.00e+00
+  mxk8v4 splits= 5: dev 450.8us [439.6-479.6] gap 58.9us host 506.8us bracketed 411.1us canary 0.00e+00
+  mxk8v4 splits= 5: dev 528.3us [511.4-626.2] gap 2.0us host 527.4us bracketed 540.9us canary 9.77e-04
+R211_E1_DONE rc=0 2026-11-20T22:38:28Z
+W14_RESTORE_FIRED_fullres 2026-11-20T22:38:28Z

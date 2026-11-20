@@ -1,0 +1,8 @@
+p202_timeline -- device=xpu, vprobe=3, ctx=1024, reps=60, torch=2.13.0+xpu
+  mxfp8 splits= 5: dev 839.2us [511.6-943.8] gap 3.7us host 840.9us bracketed 445.5us canary 0.00e+00
+  mxfp8 splits= 1: dev 469.8us [466.7-473.2] gap 2.0us host 470.4us bracketed 461.2us canary 0.00e+00
+  mxfp4 splits= 5: dev 449.8us [440.0-460.7] gap 49.2us host 498.9us bracketed 373.9us canary 0.00e+00
+  mxfp4 splits= 1: dev 330.3us [324.1-547.1] gap 2.2us host 333.9us bracketed 337.5us canary 0.00e+00
+  mxk8v4 splits= 5: dev 450.8us [439.6-479.6] gap 58.9us host 506.8us bracketed 411.1us canary 0.00e+00
+  mxk8v4 splits= 1: dev 318.6us [315.3-326.7] gap 1.9us host 319.8us bracketed 312.4us canary 0.00e+00
+P202_DONE
