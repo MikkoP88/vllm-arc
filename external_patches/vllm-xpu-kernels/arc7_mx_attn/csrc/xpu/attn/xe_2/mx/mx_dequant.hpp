@@ -90,17 +90,24 @@ e4m3_to_float(uint8_t b) {
 // (instantiated evidence, K lane: ((2,8), ((2,8),4), (1,1))): idx2crd
 // expands the flat indices into the hierarchical coordinates the
 // layout consumes; the Rest modes (extent 1 for our tile slices) park
-// at zero. The return value is the tile-local coordinate pair.
+// at zero. MMA B-fragments (partition_sg_fragment_B, r200b tArV)
+// carry the rank-2 nesting (Thr, Val) with no Rest mode — same
+// decode, one fewer coordinate. The return value is the tile-local
+// coordinate pair.
 template <class TVLayout>
 CUTE_HOST_DEVICE auto
 tv_coord(TVLayout const& tv, int wi, int dv) {
   static_assert(
-      cute::rank_v<TVLayout> == 3,
-      "unexpected tv_layout nesting (expected (Thr, Val, Rest))");
+      cute::rank_v<TVLayout> == 2 || cute::rank_v<TVLayout> == 3,
+      "unexpected tv_layout nesting (expected (Thr, Val[, Rest]))");
   auto thr_crd = cute::idx2crd(wi, cute::shape<0>(tv));
   auto val_crd = cute::idx2crd(dv, cute::shape<1>(tv));
-  auto rest_crd = cute::idx2crd(0, cute::shape<2>(tv));
-  return tv(cute::make_coord(thr_crd, val_crd, rest_crd));
+  if constexpr (cute::rank_v<TVLayout> == 3) {
+    auto rest_crd = cute::idx2crd(0, cute::shape<2>(tv));
+    return tv(cute::make_coord(thr_crd, val_crd, rest_crd));
+  } else {
+    return tv(cute::make_coord(thr_crd, val_crd));
+  }
 }
 
 // Pin the staged-read addressing law to the tv form it was derived
@@ -223,6 +230,105 @@ dequant_reg(
     // bfloat16_t's float ctor is explicit (no implicit conversion on
     // assignment); build the element type directly.
     dst(i) = typename DstFrag::value_type(val * scale);
+  }
+}
+
+// dequant_vslm — one v-step of the r200b SLM-staged V lane. The
+// k-tile's V payload bytes were cooperatively staged into SLM in the
+// dense (k, byte) frame by the mainloop's form-(i) copy + tv-decoded
+// scatter; this walk fills the PV B-operand fragment DIRECTLY (form
+// (ii), (v, k) tv) — no reorder, no cross-WI register exchange, and
+// no tv-basis games (coordinates are read as TUPLES from the dst's
+// own tv, the proven r198 orientation). Byte and nibble laws are
+// identical to the r198 walk; only the byte source moved to SLM.
+// One code path for both payload dtypes (VIsE4m3 picks the byte law).
+//
+//   slm         : this VV step's byte window base (rows at slm_pitch)
+//   scales      : gmem u8 view (k row, group), full width; indexed
+//                 directly by coordinate
+//   dst         : per-WI ElementQ PV B-operand fragment (tArV)
+//   k_row_base  : global (surface-local) k row of the tile, from the
+//                 identity-slot-0 anchor law
+//   v_base      : global v element of this VV step's first element
+//   skip_scales : r200c probe 5 — true = val only, scale 1 (timing)
+template <
+    bool VIsE4m3,
+    class ScaleTensor,
+    class DstFrag>
+CUTE_HOST_DEVICE
+void
+dequant_vslm(
+    uint8_t const* slm,
+    int slm_pitch,
+    ScaleTensor const& scales,
+    DstFrag& dst,
+    int k_row_base,
+    int v_base,
+    bool skip_scales = false) {
+  // The mainloop resolves get_sub_group via its function-scope
+  // using-directive (vendor pattern); this header sits outside it.
+  using namespace sycl::ext::oneapi::this_work_item;
+  auto wi = get_sub_group().get_local_id()[0];
+
+  // Pin the dst tv to the form-(ii) B-fragment law this walk decodes
+  // (instantiated evidence, r200b tArV: thr ((2,8)), val ((2,8),(2,1))
+  // — v = t1 + 8*v0 + 16*v2, k = t0 + 2*v1, mode 0 = v; CONFIRMED
+  // exhaustively by the r200f synth-v2 validator: C-stage 0/2048
+  // mismatches on both payload dtypes at HK=2). A distribution change
+  // fails HERE at compile time instead of corrupting silently
+  // downstream (the assert_staged_tv_form law).
+  static_assert(
+      cute::rank_v<decltype(dst.tv_layout())> == 2,
+      "dequant_vslm expects the B-fragment (Thr, Val) tv nesting");
+  constexpr auto vslm_thr_sh = cute::shape<0>(decltype(dst.tv_layout()){});
+  static_assert(
+      cute::size(vslm_thr_sh) == 16 &&
+          cute::size(cute::shape<0>(vslm_thr_sh)) == 2,
+      "thr mode must be ((2,8)) for the form-(ii) V walk");
+  constexpr auto vslm_val_sh = cute::shape<1>(decltype(dst.tv_layout()){});
+  static_assert(
+      cute::size(cute::get<0>(vslm_val_sh)) == 16 &&
+          cute::size(cute::shape<0>(cute::get<0>(vslm_val_sh))) == 2 &&
+          cute::size(vslm_val_sh) == 32,
+      "val mode must be ((2,8),2) for the form-(ii) V walk");
+
+  // Per-VV scale VECTOR, direct-indexed: the pinned form-(ii) law
+  // gives register i the row k_loc = t0 + 2*v1 with v1 = (i>>1)&7 —
+  // exactly 8 rows per WI — and the group is constant within a VV
+  // step (v spans [0,32)). So scales ride sc[v1] with zero scan and
+  // zero eviction (r200f probe 5: the 4-entry scanned cache thrashed
+  // at ~50% miss and cost 1.8-1.9 ms of the 32K walk; rows are read
+  // through tv_coord at even registers — kr[r] == k_loc(2r) — so the
+  // vector stays derived from the layout, not a parallel law).
+  int kr[8];
+  float sc[8];
+  CUTE_UNROLL
+  for (int r = 0; r < 8; ++r) {
+    auto pc0 = detail::tv_coord(dst.tv_layout(), wi, 2 * r);
+    kr[r] = int(cute::get<1>(pc0));
+    sc[r] = 1.f;
+  }
+  if (!skip_scales) {
+    int grp0 = v_base / kMxGroupSize;
+    CUTE_UNROLL
+    for (int r = 0; r < 8; ++r) {
+      sc[r] = e8m0_to_scale(scales(k_row_base + kr[r], grp0));
+    }
+  }
+
+  CUTE_UNROLL
+  for (int i = 0; i < dst.size(); ++i) {
+    // Form (ii): tv codomain mode 0 = v (element), mode 1 = k (row).
+    auto pc = detail::tv_coord(dst.tv_layout(), wi, i);
+    int v_loc = int(cute::get<0>(pc));
+    int k_loc = int(cute::get<1>(pc));
+
+    uint8_t b = slm[k_loc * slm_pitch + (VIsE4m3 ? v_loc : (v_loc >> 1))];
+    float val = VIsE4m3 ? detail::e4m3_to_float(b)
+                        : e2m1_to_float(uint8_t(
+                              (v_loc & 1) ? (b >> 4) : (b & 0xF)));
+
+    dst(i) = typename DstFrag::value_type(val * sc[(i >> 1) & 7]);
   }
 }
 

@@ -11,16 +11,46 @@
 // r199b LOAD PATH (after the r199a V1 const-fill ablation attributed
 // ~90-97% of device time at 32K ctx to the dequant's scattered
 // per-element scalar reads): e4m3 lanes load payload tiles with the
-// REAL vectorized 2D-block byte copies (tKrB/tVrB fragments; the same
-// copy_kb/copy_vb descriptors that previously only prefetched) and
-// dequant register-to-register into ElementQ mirrors sharing the tv
-// layout (mx::dequant_reg); e2m1 lanes keep the coordinate walk but
-// fetch bytes through staged u32 window loads (mx::dequant_dtile).
-// Scale codes are still read from the scale surfaces by COORDINATE
-// (L1-cached, 4-entry register hoist) — no scale copies, no scale
-// fragments, no cross-lane traffic (an earlier subgroup-broadcast
-// design would have spent ~tile_k*groups shuffles per d-tile, ~8x the
-// MMA itself).
+// REAL vectorized 2D-block byte copies (the same descriptors that
+// previously only prefetched) and dequant register-to-register into
+// ElementQ mirrors sharing the tv layout (mx::dequant_reg); e2m1
+// lanes keep the coordinate walk but fetch bytes through staged u32
+// window loads (mx::dequant_dtile). Scale codes are still read from
+// the scale surfaces by COORDINATE (L1-cached, 4-entry register
+// hoist) — no scale copies, no scale fragments, no cross-lane traffic
+// (an earlier subgroup-broadcast design would have spent
+// ~tile_k*groups shuffles per d-tile, ~8x the MMA itself).
+//
+// r200a DENSE V LANE (after r199b's cross-format triangulation showed
+// the V lane dominant in BOTH forms — V-scalar ~5.2 ms and V-copy
+// ~4.4 ms of ~5.5 ms @32K — and form (ii) (8 rows x stride-4
+// bytes/WI) defeating the 2D-block copy as badly as the scalar walk):
+// V is treated EXACTLY like K through the transposed vb_surf view
+// (k, v_bytes) — bytes contiguous, rows strided by slot pitch, the K
+// surface's structure. The V tile rides a form-(i) bwidth byte copy
+// (copy_vdb -> tVrDB) in that frame. The attempt to finish the lane
+// IN REGISTERS (dequant in the K orientation + a 4-arg reorder with a
+// basis-swapped slayout bridging into tArV) FAILED: 33/33 faces on
+// all formats (full scramble — the tv-codomain flat-basis bridge
+// derivation was wrong) and classify_xe_reorder demoted the crossed
+// permutation to Generic (scalar shuffles, +0.36 ms on the e2m1
+// lanes). r199b's e2m1 register path for V never existed and the
+// (vb, k)-frame V copies are gone entirely.
+//
+// r200b SLM-STAGED V LANE (replaces the failed register bridge): the
+// dense form-(i) copy loads the k-tile's V bytes (all VV steps), each
+// WI scatter-writes its bytes to SLM at tv-decoded LOCAL (k, vb)
+// coordinates, one barrier() orders write->read (the loop-end barrier
+// orders use->write across tiles), and mx::dequant_vslm walks tArV's
+// form-(ii) slots reading SLM + scales and writing tArV directly. NO
+// reorder, NO cross-WI register traffic, NO dtype branch (VIsE4m3 is
+// a template flag: nibble select vs whole byte). The layout change
+// happens at the scatter's coordinate decode — exact by construction,
+// the same decoder that passed r199b's bitwise faces. Anchor law
+// (dequant_reg): identity slot 0 minus its own tv position gives the
+// dense-frame (k-row, v-byte) tile base. SGPerWG=1: SharedStorage is
+// exclusive to the one subgroup; v_stage is 16 rows x VTiles*
+// kVBytesPerStep bytes (2 KiB e4m3 / 1 KiB e2m1).
 //
 // Cache geometry (mx_layout.py law; no re-layout ever): one uint8 pool
 // [num_blocks, block, Hk, slot_bytes]; per slot
@@ -269,14 +299,17 @@ struct MxDecodeFwdMainloop<
   // v-extent (elements) of one VV step of the PV MMA; its byte width.
   static constexpr int kVStepElems = get<1>(TileShapePV{});
   static constexpr int kVBytesPerStep = kVStepElems / kElemsPerByteV;
+  // r200b SLM V staging: one k-tile of V payload bytes in the dense
+  // (k, byte) frame — full v-byte width as the row pitch.
+  static constexpr int kVStagePitch = VTiles * kVBytesPerStep;
 
-  // Tiled copies. Q is the stock A-copy. The K/V payload copies are
-  // B-copies over the u8 byte surfaces (byte-extent builders above;
-  // for e4m3 the extents equal the stock element tiles and the stock
-  // derivation applies verbatim). The dequant-destination copies
-  // (copy_kd/copy_vd) are full stock-width B-copies typed at the
-  // dequant output: they never issue loads (mx::dequant_dtile fills
-  // their fragments by coordinate) — they exist so the destination
+  // Tiled copies. Q is the stock A-copy. The K payload copy is a
+  // B-copy over the u8 byte surface (byte-extent builder above; for
+  // e4m3 the extents equal the stock element tiles and the stock
+  // derivation applies verbatim). The dequant-destination copy
+  // (copy_kd) is a full stock-width B-copy typed at the dequant
+  // output: it never issues loads (mx::dequant_dtile fills its
+  // fragments by coordinate) — it exists so the destination
   // fragments and their matching coordinate views carry the stock
   // MMA-facing layout that reorder() converts into the MMA operands.
   using TiledCopyQ =
@@ -285,10 +318,47 @@ struct MxDecodeFwdMainloop<
       TiledMMAQK{}, decltype(stride(TensorK2D{})){}));
   using TiledCopyKD = decltype(make_block_2d_copy_B<ElementQ>(
       TiledMMAQK{}, decltype(stride(TensorK2D{})){}));
-  using TiledCopyV = decltype(make_block_2d_copy_bheight<uint8_t, kVBytesPerStep>(
-      TiledMMAPV{}, decltype(stride(TensorV2D{})){}));
-  using TiledCopyVD = decltype(make_block_2d_copy_B<ElementQ>(
-      TiledMMAPV{}, decltype(stride(TensorV2D{})){}));
+  // r200a dense V copies: the (vb, k) payload surface re-viewed
+  // row-major (k, v_bytes) has the K surface's exact structure (rows
+  // strided by slot pitch, bytes contiguous), so the bwidth builder
+  // over TiledMMAQK hands the V tile the SAME form-(i) per-WI
+  // distribution the K lane rides — 2 rows x contiguous-phase bytes —
+  // instead of the PV B-operand's form (ii) (8 rows x stride-4 bytes)
+  // that defeats both the 2D-block copy and window compression.
+  //
+  // r200d PITCH LAW (supersedes the retracted r200c width diagnosis):
+  // the vendored 2D-block copy op encodes the row pitch in 16-byte
+  // units, so the (k, byte) payload surface's row pitch — the cache's
+  // seq stride, i.e. num_kv_heads * slot_bytes — must be a multiple of
+  // 16. Odd head counts (1 x 264, 1 x 200: pitch 8 mod 16) round up to
+  // +8 bytes/row: row 0 lands byte-exact while row k reads
+  // cache[v_off + (slot+8)*k] (r200d correlator, exact window match on
+  // both payload dtypes). The r200c "width 16 loads row 0 only" reading
+  // was this same drift at HK=1 — width-independent, since the r200c
+  // and r200d A-images were byte-identical. Production qgroup geometry
+  // (even head counts) and every stock dtype slot (256/128 bytes) are
+  // always aligned; the host entry refuses misaligned pitches outright.
+  // Width 32 is the shipped copy geometry regardless: e4m3 stages one
+  // VV step per copy (kVBytesPerStep verbatim), e2m1 stages VV pairs
+  // (2 x 16) — proven byte-exact at HK=2 (r200f synth-v2 A-stage 0/0
+  // and 42/42 faces on the r200d wheel).
+  static constexpr int kVCopyWidth =
+      Mx::v_is_e4m3 ? kVBytesPerStep : 2 * kVBytesPerStep;
+  static constexpr int kVCopySteps =
+      Mx::v_is_e4m3 ? VTiles : VTiles / 2;
+  static_assert(
+      kVCopyWidth >= 32,
+      "bwidth V byte copies need width >= 32 (2D-block copy row window "
+      "law: width 16 does not cover a staged VV pair)");
+  static_assert(
+      kVCopyWidth * kVCopySteps == VTiles * kVBytesPerStep,
+      "V copy steps must cover the tile's full staged width");
+  using TensorVDnsStride = decltype(make_stride(
+      get<1>(stride(TensorV2D{})),
+      get<0>(stride(TensorV2D{}))));  // (k_row_stride, byte_stride)
+  using TiledCopyVDB = decltype(make_block_2d_copy_bwidth<
+      uint8_t,
+      kVCopyWidth>(TiledMMAQK{}, TensorVDnsStride{}));
 
   //
   // Accumulator types (identical to stock)
@@ -328,20 +398,39 @@ struct MxDecodeFwdMainloop<
     int window_size_right;
     // Physical stride between paged blocks in seq-position units
     int page_stride_elements;
+    // r200c V-lane probe (ARC_MXKV_VPROBE via the config's run();
+    // ablation telemetry only — never set on serving paths):
+    //   0 full lane | 1 skip staging (gather reads stale SLM) |
+    //   2 skip gather (tArV const-fill) | 3 skip both (floor) |
+    //   4 staging without the barrier | 5 gather without scale reads.
+    int vlane_probe = 0;
+    // r200c debug lane (args.debug_buf layout documented at the args
+    // struct; SINGLE-workgroup shapes only — WGs race on the buffer).
+    void* debug_buf = nullptr;
   };
 
   // Kernel-facing parameters
   using Params = Arguments;
 
   // SLM data
-  struct SharedStorage {};
+  struct SharedStorage {
+    // r200b: the k-tile's V payload bytes staged dense (k-major, full
+    // v-byte row width) — written by the form-(i) copy + tv-decoded
+    // scatter, read by the form-(ii) dequant straight into tArV. One
+    // subgroup per workgroup (SGPerWG=1), so no per-SG offsets. Full
+    // overwrite each k-tile; the loop's barriers order write->read
+    // within a tile and use->write across tiles.
+    alignas(16) uint8_t v_stage[get<1>(TileShapeQK{}) * kVStagePitch];
+  };
 
   Params params;
+  SharedStorage& smem;
 
   //
   // Methods
   //
-  MxDecodeFwdMainloop(Params const& params_, SharedStorage&) : params(params_) {}
+  MxDecodeFwdMainloop(Params const& params_, SharedStorage& smem_)
+      : params(params_), smem(smem_) {}
 
   static constexpr Params
   to_underlying_arguments(Arguments const& args, void* /* workspace */) {
@@ -355,7 +444,9 @@ struct MxDecodeFwdMainloop<
         args.total_seqlen_kv,
         args.window_size_left,
         args.window_size_right,
-        args.page_stride_elements};
+        args.page_stride_elements,
+        args.vlane_probe,
+        args.debug_buf};
   }
 
   CUTLASS_HOST_DEVICE static bool can_implement(Arguments const&) {
@@ -406,6 +497,11 @@ struct MxDecodeFwdMainloop<
     Tensor cVD = make_identity_tensor(make_shape(
         get<0>(V_2D.shape()) * Int<kElemsPerByteV>{},
         get<1>(V_2D.shape())));                                    // (v,k)
+    // r200a dense V frame identity (vb_surf's frame): payload
+    // re-viewed (k, v_bytes), byte-granular (e4m3 copy coordinates).
+    [[maybe_unused]] Tensor cVdns = make_identity_tensor(make_shape(
+        get<1>(V_2D.shape()),
+        get<0>(V_2D.shape())));                                     // (k,vb)
     Tensor cP = make_identity_tensor(take<0, 2>(TileShapeQK{}));   // (q,k)
 
     // Dequant-facing byte + scale surfaces for the CURRENT
@@ -546,6 +642,9 @@ struct MxDecodeFwdMainloop<
       cVD = make_identity_tensor(make_shape(
           get<0>(V_2D.shape()) * Int<kElemsPerByteV>{},
           PagedKV ? rows_per_surface : v_cols_total));  // (v,k)
+      cVdns = make_identity_tensor(make_shape(
+          PagedKV ? rows_per_surface : v_cols_total,
+          get<0>(V_2D.shape())));  // (k,vb)
 
       kb_surf = K_2D_0;
       vb_surf = make_tensor(
@@ -585,12 +684,6 @@ struct MxDecodeFwdMainloop<
         Step<X, _1, _1>{});  // (k,d,K,DD)
     Tensor gV =
         local_tile(cV, tile_shape_vb, make_coord(get<1>(blk_qv), _));  // (vb,k,K)
-    // Byte-granular VV split for the e4m3 LOAD path (r199b): mirrors
-    // gVD_split's construction on the byte tensor. For e4m3 the tile's
-    // mode-0 extent equals the element split's (1 byte/element); e2m1
-    // lanes never index this view (staged dequant reads the surfaces).
-    [[maybe_unused]] Tensor gVb_split = local_tile(
-        gV, TileShapePV{}, make_coord(_, _, 0), Step<X, _1, _1>{});  // (vb,k,VV,K)
     Tensor gVD =
         local_tile(cVD, tile_shape_v, make_coord(get<1>(blk_qv), _));  // (v,k,K)
     Tensor gVD_split = local_tile(
@@ -598,22 +691,34 @@ struct MxDecodeFwdMainloop<
         TileShapePV{},
         make_coord(_, _, 0),
         Step<X, _1, _1>{});  // (v,k,VV,K)
+    // r200a dense V tile view in the (k, v_bytes) frame — the same
+    // tiling law as gK (mode 0 kept, modes 1-2 tiled), so the bwidth
+    // copy distributes it form-(i) like the K tiles it mirrors.
+    // r200c: byte-tile width = kVCopyWidth (VV pairs on e2m1 — the
+    // width-16 A-stage verdict above); mode 3 walks copy steps.
+    [[maybe_unused]] Tensor gVdns = local_tile(
+        cVdns,
+        make_shape(
+            get<0>(TileShapeQK{}),
+            Int<tile_k>{},
+            Int<kVCopyWidth>{}),
+        make_coord(_, _, _),
+        Step<X, _1, _1>{});  // (k,vb,K,VP)
 
-    /* Create global -> register copies. copy_kd/copy_vd are built
-    over element-typed pointer proxies (reinterpret cast: static_cast
+    /* Create global -> register copies. copy_kd is built
+    over an element-typed pointer proxy (reinterpret cast: static_cast
     cannot cross unsigned char* -> ElementQ*; the ctor consumes only
     value_type + the stride pattern — shape unused by
-    make_block_2d_copy_B(mma, gmem) — and these copies never issue
-    loads, dequant fills their fragments by coordinate). */
+    make_block_2d_copy_B(mma, gmem) — and the copy never issues
+    loads, dequant fills its fragments by coordinate). r200a: copy_vdb
+    is the REAL V byte load (form-(i) dense-frame bwidth distribution);
+    r200b stages its fragment into SLM for dequant_vslm. */
     TiledCopyQ copy_q{Q_2D};
     TiledCopyK copy_kb{K_2D_0};
     TiledCopyKD copy_kd{make_tensor(
         make_gmem_ptr(reinterpret_cast<ElementQ*>(raw_pointer_cast(K_2D_0.data()))),
         K_2D_0.layout())};
-    TiledCopyV copy_vb{V_2D_0};
-    TiledCopyVD copy_vd{make_tensor(
-        make_gmem_ptr(reinterpret_cast<ElementQ*>(raw_pointer_cast(V_2D_0.data()))),
-        V_2D_0.layout())};
+    TiledCopyVDB copy_vdb{vb_surf};
 
     /* Create MMAs */
     TiledMMAQK mma_qk{};
@@ -623,27 +728,26 @@ struct MxDecodeFwdMainloop<
     auto thr_copy_q = copy_q.get_slice(thr_id);
     auto thr_copy_kb = copy_kb.get_slice(thr_id);
     auto thr_copy_kd = copy_kd.get_slice(thr_id);
-    auto thr_copy_vb = copy_vb.get_slice(thr_id);
-    auto thr_copy_vd = copy_vd.get_slice(thr_id);
+    auto thr_copy_vdb = copy_vdb.get_slice(thr_id);
     auto thr_mma_qk = mma_qk.get_slice(thr_id);
     auto thr_mma_pv = mma_pv.get_slice(thr_id);
 
     /* Partition coordinate tensors for copy. On e4m3 lanes the byte
-    tiles are the REAL load path (r199b): tKBgK/tVbgV hand copy() the
-    same vectorized 2D-block descriptors the prefetches warm. On e2m1
+    tiles are the REAL load path (r199b): tKBgK hands copy() the same
+    vectorized 2D-block descriptors the prefetches warm — r200a gives
+    the V lane the same via the dense (k, v_bytes) frame. On e2m1
     lanes dequant reads payload bytes through staged u32 windows from
     the gmem surfaces (kb/vb/ks/vs_surf above) and only the prefetch
     partitions matter. */
     auto tQgQ = thr_copy_q.partition_S(gQ);          // (atom_val,q',d',D)
     auto tKBgK = thr_copy_kb.partition_S(gK);        // (atom_val,k',kb',K,DB)
     auto tKDgKD = thr_copy_kd.partition_S(gKD);      // (atom_val,k',d',K,DD)
-    auto tVbgV = thr_copy_vb.partition_S(gVb_split); // (atom_val,vb',k',VV,K)
-    auto tVDgVD = thr_copy_vd.partition_S(gVD_split);  // (atom_val,v',k',VV,K)
+    auto tVDBgV = thr_copy_vdb.partition_S(gVdns);   // (atom_val,k',vb',K,VV)
 
-    /* Create register fragments for MMA and copies. tKrDeq/tVrDeq
-    come from the ELEMENT-dim tiles, so their sizes are the MMA-facing
-    element counts regardless of payload format (e2m1's 2x expansion
-    is absorbed by the byte->element coordinate mapping in dequant). */
+    /* Create register fragments for MMA and copies. tKrDeq comes
+    from the ELEMENT-dim tiles, so its size is the MMA-facing element
+    count regardless of payload format (e2m1's 2x expansion is
+    absorbed by the byte->element coordinate mapping in dequant). */
     auto tQrQ = thr_copy_q.partition_sg_fragment_D(gQ(_, _, 0));
     auto tSrQ = thr_mma_qk.partition_sg_fragment_A(gQ(_, _, 0));
     [[maybe_unused]] auto tKrDeq =
@@ -656,24 +760,27 @@ struct MxDecodeFwdMainloop<
     // carries bf16(p - bf16(p)), tArP3 the second residual.
     auto tArP2 = thr_mma_pv.partition_sg_fragment_A(cP);
     auto tArP3 = thr_mma_pv.partition_sg_fragment_A(cP);
-    [[maybe_unused]] auto tVrDeq =
-        thr_copy_vd.partition_sg_fragment_D(gVD_split(_, _, 0, 0));
     auto tArV = thr_mma_pv.partition_sg_fragment_B(gVD_split(_, _, 0, 0));
 
-    // r199b e4m3 load-path fragments: tKrB/tVrB receive the REAL byte
-    // copies; tKrBq/tVrBq are ElementQ mirrors on the SAME tv layout
+    // r199b e4m3 K load-path fragments: tKrB receives the REAL byte
+    // copy; tKrBq is an ElementQ mirror on the SAME tv layout
     // (make_subgroup_tensor preserves it — src and dst registers map
-    // 1:1), so mx::dequant_reg fills them register-to-register and the
+    // 1:1), so mx::dequant_reg fills it register-to-register and the
     // stock reorder() performs only the layout change. e2m1 lanes leave
-    // them unused (the staged dequant keeps the tKrDeq/tVrDeq walk).
+    // them unused (the staged dequant keeps the tKrDeq walk).
     [[maybe_unused]] auto tKrB =
         thr_copy_kb.partition_sg_fragment_D(gK(_, _, 0, 0));
     [[maybe_unused]] auto tKrBq = make_subgroup_tensor(
         make_tensor<ElementQ>(tKrB.layout()), tKrB.tv_layout());
-    [[maybe_unused]] auto tVrB =
-        thr_copy_vb.partition_sg_fragment_D(gVb_split(_, _, 0, 0));
-    [[maybe_unused]] auto tVrBq = make_subgroup_tensor(
-        make_tensor<ElementQ>(tVrB.layout()), tVrB.tv_layout());
+
+    // r200a/r200b dense V fragment: tVrDB receives the dense byte copy
+    // (all formats — e2m1 included, the dense frame makes the copy
+    // format-blind); r200b scatter-stages its bytes into SLM at
+    // tv-decoded (k, vb) local coordinates and dequant_vslm walks
+    // tArV's form-(ii) slots straight out of SLM. No register
+    // mirror, no reorder, no dtype branch.
+    [[maybe_unused]] auto tVrDB =
+        thr_copy_vdb.partition_sg_fragment_D(gVdns(_, _, 0, 0));
 
     /* Create TiledCopy objects for prefetches */
     auto prefetch_q = make_block_2d_prefetch(copy_q);
@@ -720,7 +827,13 @@ struct MxDecodeFwdMainloop<
         auto VS_2D_n = make_vs_surface(k_surf);
 
         copy_kb = TiledCopyK{K_2D_n};
-        copy_vb = TiledCopyV{V_2D_n};
+        auto vb_surf_n = make_tensor(
+            V_2D_n.data(),
+            make_layout(
+                make_shape(get<1>(V_2D_n.shape()), get<0>(V_2D_n.shape())),
+                make_stride(
+                    get<1>(V_2D_n.stride()), get<0>(V_2D_n.stride()))));
+        copy_vdb = TiledCopyVDB{vb_surf_n};
 
         prefetch_kb = make_block_2d_prefetch(copy_kb);
         prefetch_vb =
@@ -731,9 +844,8 @@ struct MxDecodeFwdMainloop<
             get<0>(K_2D_n.shape()),
             get<1>(K_2D_n.shape()) * Int<kElemsPerByteK>{}));  // (k,d)
         Tensor cV_n = make_identity_tensor(V_2D_n.shape());  // (vb,k)
-        Tensor cVD_n = make_identity_tensor(make_shape(
-            get<0>(V_2D_n.shape()) * Int<kElemsPerByteV>{},
-            get<1>(V_2D_n.shape())));  // (v,k)
+        Tensor cVdns_n = make_identity_tensor(make_shape(
+            get<1>(V_2D_n.shape()), get<0>(V_2D_n.shape())));  // (k,vb)
 
         Tensor gK_n = local_tile(
             cK_n,
@@ -750,37 +862,30 @@ struct MxDecodeFwdMainloop<
             Step<X, _1, _1>{});  // (k,d,K,DD)
         Tensor gV_n = local_tile(
             cV_n, tile_shape_vb, make_coord(get<1>(blk_qv), _));  // (vb,k,K)
-        Tensor gVD_n = local_tile(
-            cVD_n, tile_shape_v, make_coord(get<1>(blk_qv), _));  // (v,k,K)
-        Tensor gVD_split_n = local_tile(
-            gVD_n,
-            TileShapePV{},
-            make_coord(_, _, 0),
-            Step<X, _1, _1>{});  // (v,k,VV,K)
+        Tensor gVdns_n = local_tile(
+            cVdns_n,
+            make_shape(
+                get<0>(TileShapeQK{}),
+                Int<tile_k>{},
+                Int<kVCopyWidth>{}),
+            make_coord(_, _, _),
+            Step<X, _1, _1>{});  // (k,vb,K,VP)
 
-        // copy_kd/copy_vd are stride-shaped and never issue loads, so
-        // their sub-surface state stays valid — only their coordinate
+        // copy_kd is stride-shaped and never issues loads, so its
+        // sub-surface state stays valid — only its coordinate
         // tensors need the refresh.
         tKDgKD = thr_copy_kd.partition_S(gKD_n);
-        tVDgVD = thr_copy_vd.partition_S(gVD_split_n);
 
         pKBgK = prefetch_kb.get_slice(thr_id).partition_S(gK_n);
         pVbgV = prefetch_vb.get_slice(thr_id).partition_S(gV_n);
 
-        // r199b: the byte-LOAD partitions follow the rebuilt copies
-        // (same state-refresh law as the prefetch partitions above).
+        // r199b/r200a: the byte-LOAD partitions follow the rebuilt
+        // copies (same state-refresh law as the prefetch partitions).
         tKBgK = copy_kb.get_slice(thr_id).partition_S(gK_n);
-        Tensor gVb_split_n = local_tile(
-            gV_n, TileShapePV{}, make_coord(_, _, 0), Step<X, _1, _1>{});
-        tVbgV = copy_vb.get_slice(thr_id).partition_S(gVb_split_n);
+        tVDBgV = copy_vdb.get_slice(thr_id).partition_S(gVdns_n);
 
         kb_surf = K_2D_n;
-        vb_surf = make_tensor(
-            V_2D_n.data(),
-            make_layout(
-                make_shape(get<1>(V_2D_n.shape()), get<0>(V_2D_n.shape())),
-                make_stride(
-                    get<1>(V_2D_n.stride()), get<0>(V_2D_n.stride()))));
+        vb_surf = vb_surf_n;
         ks_surf = KS_2D_n;
         vs_surf = make_tensor(
             VS_2D_n.data(),
@@ -814,12 +919,12 @@ struct MxDecodeFwdMainloop<
     for (int K = blk_k0; K < blk_k1; K++) {
       [[maybe_unused]] auto tKDgKD_cache =
           PagedKV ? tKDgKD(_, _, _, tile_idx, _) : tKDgKD(_, _, _, K, _);
-      [[maybe_unused]] auto tVDgVD_cache =
-          PagedKV ? tVDgVD(_, _, _, _, tile_idx) : tVDgVD(_, _, _, _, K);
       [[maybe_unused]] auto tKBgK_cache =
           PagedKV ? tKBgK(_, _, _, tile_idx, _) : tKBgK(_, _, _, K, _);
-      [[maybe_unused]] auto tVbgV_cache =
-          PagedKV ? tVbgV(_, _, _, _, tile_idx) : tVbgV(_, _, _, _, K);
+      // r200a/r200b dense V partition caches the K mode (tile index),
+      // VV stays live for the stage + split-P loops.
+      [[maybe_unused]] auto tVDBgV_cache =
+          PagedKV ? tVDBgV(_, _, _, tile_idx, _) : tVDBgV(_, _, _, K, _);
 
       /* GEMM 1: S = K * Q */
       clear(tSrS);
@@ -858,6 +963,71 @@ struct MxDecodeFwdMainloop<
 
       /* V prefetch for GEMM 2 */
       prefetch(prefetch_vb, pVbgV(_, _, _, tile_idx));
+
+      /* r200b: stage the k-tile's V payload into SLM (dense (k, v_bytes)
+      frame, ALL VV steps at once). The form-(i) copy fills tVrDB with
+      this WI's bytes; each WI scatter-writes them at tv-decoded LOCAL
+      (k, vb) coordinates — the layout change happens in the coordinate
+      decode, exact by construction (same decoder that passed r199b
+      bitwise). One subgroup per workgroup (SGPerWG=1): no per-SG
+      offsets. The barrier orders write->read within the tile; the
+      loop-end barrier orders use->write across tiles. Stale bytes on
+      remainder k-tiles are finite (previous tile's payload) and land
+      under p=0 rows.
+      r200c: copies run at kVCopyWidth (VV PAIRS on e2m1 — the width-16
+      law above); a copy step VP's bytes scatter to VP*kVCopyWidth + vb,
+      which equals the per-VV layout (VP*2+s)*kVBytesPerStep + vb.
+      Probe gates: 1/3 skip the staging entirely (timing runs — the
+      gather then reads stale SLM), 4 stages WITHOUT the barrier
+      (isolates the barrier's serialization cost). */
+      uint8_t* vst = reinterpret_cast<uint8_t*>(&smem.v_stage);
+      bool stage_on =
+          params.vlane_probe != 1 && params.vlane_probe != 3;
+      if (stage_on) {
+        CUTLASS_PRAGMA_UNROLL
+        for (int VP = 0; VP < kVCopySteps; VP++) {
+          copy(copy_vdb, tVDBgV_cache(_, _, _, VP), tVrDB);
+          CUTLASS_PRAGMA_UNROLL
+          for (int i = 0; i < tVrDB.size(); ++i) {
+            auto pc = mx::detail::tv_coord(tVrDB.tv_layout(), thr_id, i);
+            vst[int(cute::get<0>(pc)) * kVStagePitch +
+                VP * kVCopyWidth + int(cute::get<1>(pc))] =
+                uint8_t(tVrDB(i));
+          }
+        }
+        if (params.vlane_probe != 4) {
+          barrier();
+        }
+      }
+
+      // Tile bases, the dequant_reg anchor law: identity slot 0
+      // (WI-canonical) minus its own tv position, both in the dense
+      // (k, vb) frame. v_byte_base is in surface BYTES; the element
+      // base for the scales' group index is derived at the call site.
+      auto pv00 = mx::detail::tv_coord(tVrDB.tv_layout(), 0, 0);
+      auto cv0 = tVDBgV_cache(_, _, _, 0)(0);
+      int v_krow_base = int(cute::get<0>(cv0)) - int(cute::get<0>(pv00));
+      int v_byte_base = int(cute::get<1>(cv0)) - int(cute::get<1>(pv00));
+
+      // r200c debug lane (single-WG shapes only): A = the staged SLM
+      // image (this k-tile, padded 128-byte row pitch), B = anchors,
+      // C = per-VV gathered fragments (written in the VV loop).
+      uint8_t* dbg = reinterpret_cast<uint8_t*>(params.debug_buf);
+      int dbg_tile = K - blk_k0;
+      bool dbg_on = dbg != nullptr && dbg_tile < 4;
+      if (dbg_on) {
+        if (thr_id == 0) {
+          int64_t* dbgB = reinterpret_cast<int64_t*>(dbg + 8192);
+          dbgB[2 * dbg_tile + 0] = v_krow_base;
+          dbgB[2 * dbg_tile + 1] = v_byte_base;
+        }
+        uint8_t* dbgA = dbg + dbg_tile * 2048;
+        for (int j = thr_id;
+             j < get<1>(TileShapeQK{}) * kVStagePitch;
+             j += 16) {
+          dbgA[(j / kVStagePitch) * 128 + (j % kVStagePitch)] = vst[j];
+        }
+      }
 
       /* Local/sliding window masking (stock) */
       if constexpr (LocalMask) {
@@ -926,29 +1096,43 @@ struct MxDecodeFwdMainloop<
       /* GEMM 2: A += P * V, split in v dimension */
       CUTLASS_PRAGMA_UNROLL
       for (int VV = 0; VV < VTiles; VV++) {
-        if constexpr (Mx::v_is_e4m3) {
-          // r199b e4m3 load path (mirror of the K lane): real byte
-          // copy, register-to-register dequant, stock reorder.
-          copy(copy_vb, tVbgV_cache(_, _, _, VV), tVrB);
-          mx::dequant_reg<false, false>(
-              vs_surf, tVrB, tVrBq, tVbgV_cache(_, _, _, VV));
-          reorder(tVrBq, tArV);
+        // r200b SLM V lane: dequant_vslm walks tArV's form-(ii) slots
+        // straight out of the staged bytes (per-WI tv decode; group
+        // scales through the 4-entry cache) — no register bridge, no
+        // reorder, no dtype branch. The r200a cross-frame reorder
+        // failed faces (33/33, full scramble — the tv-codomain
+        // flat-basis bridge derivation was wrong) AND classified
+        // Generic in reorder_atom_xe (scalar shuffles, +0.36 ms on the
+        // e2m1 lanes); staging deletes both problems at once.
+        if (params.vlane_probe == 2 || params.vlane_probe == 3) {
+          // r200c probe 2/3: const-fill (timing only — severs the
+          // gather chain; a structural floor, not a reachable target).
+          CUTLASS_PRAGMA_UNROLL
+          for (int i = 0; i < tArV.size(); ++i) {
+            tArV(i) = typename decltype(tArV)::value_type(1.f);
+          }
         } else {
-          // V dequant (e2m1, staged): the V surface family carries
-          // (v, k) tuples, so the row (the scale/k dimension) is tuple
-          // mode 1. The PV B-tile frame is (v, k): tv codomain mode 0
-          // is the ELEMENT; positions from the fragment tv_layout per
-          // the coordinate law in mx_dequant.hpp.
-          mx::dequant_dtile<false, false>(
-              vb_surf,
+          mx::dequant_vslm<Mx::v_is_e4m3>(
+              vst + VV * kVBytesPerStep,
+              kVStagePitch,
               vs_surf,
-              tVrDeq,
-              tVDgVD_cache(_, _, _, VV));
-          reorder(tVrDeq, tArV);
+              tArV,
+              v_krow_base,
+              v_byte_base * kElemsPerByteV + VV * kVStepElems,
+              params.vlane_probe == 5);
         }
         cute::gemm(mma_pv, tArP, tArV, tArA(_, _, _, VV));
         cute::gemm(mma_pv, tArP2, tArV, tArA(_, _, _, VV));
         cute::gemm(mma_pv, tArP3, tArV, tArA(_, _, _, VV));
+        if (dbg_on) {
+          float* dbgC =
+              reinterpret_cast<float*>(dbg + 8256) +
+              ((dbg_tile * VTiles + VV) * 16 + thr_id) * 32;
+          CUTLASS_PRAGMA_UNROLL
+          for (int i = 0; i < tArV.size(); ++i) {
+            dbgC[i] = float(tArV(i));
+          }
+        }
       }
 
       barrier();

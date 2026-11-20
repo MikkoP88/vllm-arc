@@ -26,6 +26,9 @@
 
 #include <sycl/ext/intel/experimental/grf_size_properties.hpp>
 
+#include <cstdlib>  // getenv/atoi (r200c probe knob)
+#include <cstdio>   // FILE/fwrite (r200c debug dump)
+
 #include "xpu/attn/xe_2/collective/chunk_prefill_scheduler.hpp"
 #include "xpu/attn/xe_2/collective/chunk_prefill_epilogue.hpp"
 #include "xpu/attn/xe_2/kernel/paged_decode_kernel.hpp"  // DecodeProblemShape, ReduceSplitK
@@ -85,6 +88,22 @@ struct mx_paged_decode_args_t {
   int64_t q_stride_heads = 0;
   int64_t q_stride_batch = 0;
   int page_stride_elements = 0;
+  // r200c V-lane probe (env ARC_MXKV_VPROBE, injected by the config's
+  // run(); ablation telemetry ONLY — never set on serving paths):
+  //   0 full lane | 1 skip staging (gather reads stale SLM; timing
+  //   only) | 2 skip gather (tArV const-fill) | 3 skip both (floor) |
+  //   4 staging without the barrier | 5 gather without scale reads.
+  // Diffs against the full run attribute the V lane stage-by-stage.
+  int vlane_probe = 0;
+  // r200c debug lane (env ARC_MXKV_DEBUG allocates a static device
+  // buffer in the config's run() and dumps it to /tmp/mxkv_debug.bin
+  // after each call; SINGLE-WORKGROUP problem shapes only — multiple
+  // WGs race on the buffer). Layout (bytes): A @0, 4 k-tiles x 16
+  // rows x 128 (padded row pitch; live bytes = kVStagePitch per row);
+  // B @8192, 8 int64 = per-tile (v_krow_base, v_byte_base); C @8256,
+  // 4 tiles x VTiles x 16 WI x 32 floats = dequant_vslm outputs.
+  // Null = off, zero cost.
+  void* debug_buf = nullptr;
 };
 
 template <class FMHAKernel, class ReductionSplitKernel>
@@ -198,6 +217,21 @@ struct MxDecodeKernelLauncher {
         args.v_stride_heads,
         " v_stride_page=",
         args.v_stride_page);
+    // PITCH LAW (r200d correlator, both payload dtypes): the 2D-block
+    // byte copies encode the cache row pitch in 16-byte units, so a row
+    // pitch of 8 mod 16 (odd head count x 264/200-byte MX slots) rounds
+    // up +8 bytes/row — row 0 lands exact while row k reads
+    // cache[v_off + (slot+8)*k]: silent corruption. Refuse it loudly;
+    // even head counts (production qgroup geometry) and every stock
+    // dtype slot (256/128 bytes) keep the pitch aligned.
+    TORCH_CHECK(
+        args.k_stride_seq % 16 == 0 && args.v_stride_seq % 16 == 0,
+        "mx_paged_decode: KV row pitch must be 16-byte aligned for the "
+        "2D-block byte copies (pitch law): k_stride_seq=",
+        args.k_stride_seq,
+        " v_stride_seq=",
+        args.v_stride_seq,
+        " (odd head count x MX slot bytes drifts +8/row)");
     stride_K = StrideK{
         static_cast<int>(args.k_stride_seq),
         _1{},
@@ -262,7 +296,9 @@ struct MxDecodeKernelLauncher {
          args.total_seqlen_k,
          args.window_size_left,
          args.window_size_right,
-         args.page_stride_elements},
+         args.page_stride_elements,
+         args.vlane_probe,
+         args.debug_buf},
         {},
         hw_info,
         args.num_kv_splits};
@@ -404,6 +440,26 @@ struct MxPagedDecodeConfig {
 
   template <class Scheduler>
   static void run(sycl::queue& queue, const mx_paged_decode_args_t& args) {
+    // r200c: the probe knob rides an env var so the ablation harness
+    // needs no API changes (read once per call; unset = full lane).
+    mx_paged_decode_args_t args_p = args;
+    if (const char* vprobe = std::getenv("ARC_MXKV_VPROBE")) {
+      args_p.vlane_probe = std::atoi(vprobe);
+    }
+    // r200c debug lane: env-gated static device buffer + post-launch
+    // D2H dump (see args.debug_buf layout comment). Leak-once on
+    // purpose — ablation diagnosis only, never on serving paths.
+    static void* dbg_dev = nullptr;
+    static uint8_t* dbg_host = nullptr;
+    constexpr size_t kDbgBufBytes = 8256 + 4 * 4 * 16 * 32 * 4;
+    if (std::getenv("ARC_MXKV_DEBUG")) {
+      if (dbg_dev == nullptr) {
+        dbg_dev = sycl::malloc_device(kDbgBufBytes, queue);
+        dbg_host = new uint8_t[kDbgBufBytes];
+      }
+      queue.memset(dbg_dev, 0xAA, kDbgBufBytes);
+      args_p.debug_buf = dbg_dev;
+    }
     cutlass::KernelHardwareInfo hw_info;
     hw_info.sm_count =
         cutlass::KernelHardwareInfo::query_device_multiprocessor_count(
@@ -479,7 +535,16 @@ struct MxPagedDecodeConfig {
 
     MxDecodeKernelLauncher<FMHAKernel, ReduceSplitKernel> launcher;
 
-    launcher.run(queue, args, hw_info);
+    launcher.run(queue, args_p, hw_info);
+
+    if (args_p.debug_buf != nullptr) {
+      constexpr size_t kDbgBufBytes = 8256 + 4 * 4 * 16 * 32 * 4;
+      queue.memcpy(dbg_host, dbg_dev, kDbgBufBytes).wait();
+      if (std::FILE* f = std::fopen("/tmp/mxkv_debug.bin", "wb")) {
+        std::fwrite(dbg_host, 1, kDbgBufBytes, f);
+        std::fclose(f);
+      }
+    }
   }
 
   static void

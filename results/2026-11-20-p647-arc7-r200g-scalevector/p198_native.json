@@ -1,0 +1,329 @@
+{
+  "bitwise": {
+    "mxfp4": {
+      "bit_mismatches": 0
+    },
+    "mxfp8": {
+      "bit_mismatches": 0
+    },
+    "mxk8v4": {
+      "bit_mismatches": 0
+    }
+  },
+  "element_ledger": {
+    "mxfp4": {
+      "d_A": 0.0,
+      "d_B": 0.0078125,
+      "d_C": 0.0,
+      "d_ref": 0.0046902210326935645,
+      "n_over_one_step": 0
+    },
+    "mxfp8": {
+      "d_A": 1.52587890625e-05,
+      "d_B": 0.015625,
+      "d_C": 1.52587890625e-05,
+      "d_ref": 0.006200132507928835,
+      "n_over_one_step": 0
+    },
+    "mxk8v4": {
+      "d_A": 1.1920928955078125e-07,
+      "d_B": 0.0078125,
+      "d_C": 1.1920928955078125e-07,
+      "d_ref": 0.0074790908267758915,
+      "n_over_one_step": 0
+    }
+  },
+  "failures": [],
+  "native-exact": {
+    "mxfp4": {
+      "random549": {
+        "cos_same": 0.9999985767485188,
+        "gated": true,
+        "maxdiff": 0.0009747521429485095,
+        "maxdiff_rounded": 0.0
+      }
+    },
+    "mxfp8": {
+      "random549": {
+        "cos_same": 0.999998480012063,
+        "gated": true,
+        "maxdiff": 0.001649606660991898,
+        "maxdiff_rounded": 0.0
+      }
+    },
+    "mxk8v4": {
+      "random549": {
+        "cos_same": 0.999998616261178,
+        "gated": true,
+        "maxdiff": 0.001722661188743091,
+        "maxdiff_rounded": 1.52587890625e-05
+      }
+    }
+  },
+  "native-v2": {
+    "mxfp4": {
+      "random549": {
+        "cos_same": 0.9999987273166023,
+        "gated": true,
+        "maxdiff": 0.0009701251983642578,
+        "maxdiff_rounded": 0.0
+      }
+    },
+    "mxfp8": {
+      "random549": {
+        "cos_same": 0.9999985698060393,
+        "gated": true,
+        "maxdiff": 0.0009606778621673584,
+        "maxdiff_rounded": 4.76837158203125e-07
+      }
+    },
+    "mxk8v4": {
+      "random549": {
+        "cos_same": 0.9999987311526196,
+        "gated": true,
+        "maxdiff": 0.0009593367576599121,
+        "maxdiff_rounded": 9.5367431640625e-07
+      }
+    }
+  },
+  "robust": {
+    "mxfp4": {
+      "adversarial": {
+        "cos_same": 0.9999997253838526,
+        "gated": true,
+        "maxdiff": 0.00023853108184188065,
+        "maxdiff_rounded": 0.0
+      },
+      "len1": {
+        "cos_same": 1.0,
+        "gated": true,
+        "maxdiff": 0.0,
+        "maxdiff_rounded": 0.0
+      },
+      "len15": {
+        "cos_same": 0.9999986071878268,
+        "gated": true,
+        "maxdiff": 0.006515448969737214,
+        "maxdiff_rounded": 0.0
+      },
+      "len16": {
+        "cos_same": 0.9999985601614341,
+        "gated": true,
+        "maxdiff": 0.006962789710351469,
+        "maxdiff_rounded": 0.0
+      },
+      "len17": {
+        "cos_same": 0.9999987504924084,
+        "gated": true,
+        "maxdiff": 0.004326235271729484,
+        "maxdiff_rounded": 4.470348358154297e-08
+      },
+      "signed": {
+        "cos_same": 0.9999986298304429,
+        "gated": true,
+        "maxdiff": 0.00023148516850354794,
+        "maxdiff_rounded": 0.0
+      }
+    },
+    "mxfp8": {
+      "adversarial": {
+        "cos_same": 0.99999945899014,
+        "gated": true,
+        "maxdiff": 0.00048455434380653695,
+        "maxdiff_rounded": 0.0
+      },
+      "len1": {
+        "cos_same": 1.0,
+        "gated": true,
+        "maxdiff": 0.0,
+        "maxdiff_rounded": 0.0
+      },
+      "len15": {
+        "cos_same": 0.999998600276056,
+        "gated": true,
+        "maxdiff": 0.0039987770758256325,
+        "maxdiff_rounded": 0.0
+      },
+      "len16": {
+        "cos_same": 0.9999985923790888,
+        "gated": true,
+        "maxdiff": 0.005739126857122745,
+        "maxdiff_rounded": 0.0
+      },
+      "len17": {
+        "cos_same": 0.9999986600838224,
+        "gated": true,
+        "maxdiff": 0.004444250063780686,
+        "maxdiff_rounded": 0.0
+      },
+      "signed": {
+        "cos_same": 0.9999986111132076,
+        "gated": true,
+        "maxdiff": 0.00024173334796759316,
+        "maxdiff_rounded": 0.0
+      }
+    },
+    "mxk8v4": {
+      "adversarial": {
+        "cos_same": 0.9999990805233079,
+        "gated": true,
+        "maxdiff": 0.0004865991617314658,
+        "maxdiff_rounded": 0.0
+      },
+      "len1": {
+        "cos_same": 1.0000000000000002,
+        "gated": true,
+        "maxdiff": 0.0,
+        "maxdiff_rounded": 0.0
+      },
+      "len15": {
+        "cos_same": 0.9999986105269041,
+        "gated": true,
+        "maxdiff": 0.006709303726484261,
+        "maxdiff_rounded": 0.0
+      },
+      "len16": {
+        "cos_same": 0.9999985949928409,
+        "gated": true,
+        "maxdiff": 0.003873964124001983,
+        "maxdiff_rounded": 0.0
+      },
+      "len17": {
+        "cos_same": 0.9999986398737637,
+        "gated": true,
+        "maxdiff": 0.0039015719226029866,
+        "maxdiff_rounded": 0.0
+      },
+      "signed": {
+        "cos_same": 0.999998567663883,
+        "gated": true,
+        "maxdiff": 0.00023672901599319784,
+        "maxdiff_rounded": 0.0
+      }
+    }
+  },
+  "softmax_probe": {
+    "mxfp4": {
+      "max_dp": 0.0009619161242153118,
+      "onehot_v": true
+    },
+    "mxfp8": {
+      "max_dp": 0.0017107493936184826,
+      "onehot_v": true
+    },
+    "mxk8v4": {
+      "max_dp": 0.0017107493936184826,
+      "onehot_v": true
+    }
+  },
+  "splits": {
+    "mxfp4": {
+      "default": {
+        "cos_same": 0.9999973342291814,
+        "gated": true,
+        "maxdiff": 0.00031382982969256623,
+        "maxdiff_rounded": 0.00048828125
+      },
+      "forced8": {
+        "cos_same": 0.9999972212650597,
+        "gated": true,
+        "maxdiff": 0.00031346705647949946,
+        "maxdiff_rounded": 0.00048828125
+      }
+    },
+    "mxfp8": {
+      "default": {
+        "cos_same": 0.9999972941876295,
+        "gated": true,
+        "maxdiff": 0.00029460395924577054,
+        "maxdiff_rounded": 0.00048828125
+      },
+      "forced8": {
+        "cos_same": 0.9999973131424441,
+        "gated": true,
+        "maxdiff": 0.00031401348774937055,
+        "maxdiff_rounded": 0.00048828125
+      }
+    },
+    "mxk8v4": {
+      "default": {
+        "cos_same": 0.999997217843919,
+        "gated": true,
+        "maxdiff": 0.0003381673463978968,
+        "maxdiff_rounded": 0.00048828125
+      },
+      "forced8": {
+        "cos_same": 0.9999973012105393,
+        "gated": true,
+        "maxdiff": 0.00029606990972989855,
+        "maxdiff_rounded": 0.00048828125
+      }
+    }
+  },
+  "telemetry": {
+    "device": {
+      "name": "Intel(R) Graphics [0xe223]"
+    },
+    "mxfp4": {
+      "1024": {
+        "native_gbps": 1.1,
+        "native_ms": 1.0105,
+        "speedup": 0.195,
+        "v2_ms": 0.1967
+      },
+      "32768": {
+        "native_gbps": 9.47,
+        "native_ms": 3.7637,
+        "speedup": 0.175,
+        "v2_ms": 0.66
+      },
+      "8192": {
+        "native_gbps": 8.61,
+        "native_ms": 1.0354,
+        "speedup": 0.191,
+        "v2_ms": 0.1977
+      }
+    },
+    "mxfp8": {
+      "1024": {
+        "native_gbps": 1.68,
+        "native_ms": 1.2846,
+        "speedup": 0.157,
+        "v2_ms": 0.2016
+      },
+      "32768": {
+        "native_gbps": 12.47,
+        "native_ms": 5.5483,
+        "speedup": 0.139,
+        "v2_ms": 0.7699
+      },
+      "8192": {
+        "native_gbps": 11.75,
+        "native_ms": 1.4726,
+        "speedup": 0.15,
+        "v2_ms": 0.2202
+      }
+    },
+    "mxk8v4": {
+      "1024": {
+        "native_gbps": 1.37,
+        "native_ms": 1.1975,
+        "speedup": 0.164,
+        "v2_ms": 0.1961
+      },
+      "32768": {
+        "native_gbps": 11.46,
+        "native_ms": 4.5733,
+        "speedup": 0.345,
+        "v2_ms": 1.5772
+      },
+      "8192": {
+        "native_gbps": 10.64,
+        "native_ms": 1.2319,
+        "speedup": 0.347,
+        "v2_ms": 0.4273
+      }
+    }
+  },
+  "verdict": "PASS"
+}
