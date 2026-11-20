@@ -1,0 +1,38 @@
+=== VXK_ARC7MX toolchain probe Fri Nov 20 02:59:35 UTC 2026 ===
+Intel(R) oneAPI DPC++/C++ Compiler 2026.0.0 (2026.0.0.20260331)
+ENV_READY torch 2.13.0+xpu
+=== probe done ===
+VXK_ARC7MX_BUILD_START Fri Nov 20 02:59:39 UTC 2026
+Processing ./.
+  Preparing metadata (pyproject.toml): started
+  Preparing metadata (pyproject.toml): finished with status 'done'
+  /opt/arcvenv/lib/python3.12/site-packages/setuptools_scm/_integration/version_inference.py:236: BuildBackendWarning: version of None already set
+    warnings.warn(f"version of {self.dist_name} already set")
+Building wheels for collected packages: vllm-xpu-kernels
+  Building wheel for vllm-xpu-kernels (pyproject.toml): started
+  Building wheel for vllm-xpu-kernels (pyproject.toml): still running...
+  Building wheel for vllm-xpu-kernels (pyproject.toml): still running...
+  Building wheel for vllm-xpu-kernels (pyproject.toml): still running...
+  Building wheel for vllm-xpu-kernels (pyproject.toml): still running...
+  Building wheel for vllm-xpu-kernels (pyproject.toml): finished with status 'done'
+  /opt/arcvenv/lib/python3.12/site-packages/setuptools_scm/_integration/version_inference.py:236: BuildBackendWarning: version of None already set
+    warnings.warn(f"version of {self.dist_name} already set")
+  Created wheel for vllm-xpu-kernels: filename=vllm_xpu_kernels-0.1.14.1+arc7mx-cp312-cp312-linux_x86_64.whl size=356272098 sha256=76aa5339c5dc98c7bf20b273193600de4145ad7657b94c7d140f53176bb29972
+  Stored in directory: /tmp/pip-ephem-wheel-cache-056ek6m3/wheels/6d/68/95/da3e3ab83fae265658ef6c20eb405532a6a3221787a60efa39
+Successfully built vllm-xpu-kernels
+VXK_ARC7MX_BUILD_EXIT rc=0 Fri Nov 20 03:15:19 UTC 2026
+total 3172860
+drwxr-xr-x 3 root root      4096 Nov 19 18:48 .
+drwxr-xr-x 1 root root      4096 Nov 20 02:43 ..
+drwxr-xr-x 2 root root      4096 Nov  9 11:26 fix
+-rw-r--r-- 1 root root  28701871 Oct 28 19:58 lmcache-0.5.5-cp312-cp312-manylinux_2_35_x86_64.whl
+-rw-r--r-- 1 root root  31313864 Oct 30 22:01 lmcache-0.5.6-cp312-cp312-manylinux_2_35_x86_64.whl
+-rw-r--r-- 1 root root 355630038 Oct 27 18:18 vllm_xpu_kernels-0.1.14.1+arc1-cp312-cp312-linux_x86_64.whl
+-rw-r--r-- 1 root root 356642220 Oct 27 20:22 vllm_xpu_kernels-0.1.14.1+arc2-cp312-cp312-linux_x86_64.whl
+-rw-r--r-- 1 root root 352236146 Oct 27 22:27 vllm_xpu_kernels-0.1.14.1+arc3-cp312-cp312-linux_x86_64.whl
+-rw-r--r-- 1 root root 352246683 Nov  8 01:24 vllm_xpu_kernels-0.1.14.1+arc4-cp312-cp312-linux_x86_64.whl
+-rw-r--r-- 1 root root 352263735 Nov  8 11:01 vllm_xpu_kernels-0.1.14.1+arc5-cp312-cp312-linux_x86_64.whl
+-rw-r--r-- 1 root root 354341761 Nov  9 00:59 vllm_xpu_kernels-0.1.14.1+arc6-cp312-cp312-linux_x86_64.whl
+-rw-r--r-- 1 root root 354385185 Nov  9 18:38 vllm_xpu_kernels-0.1.14.1+arc7-cp312-cp312-linux_x86_64.whl
+-rw-r--r-- 1 root root 356272098 Nov 20 03:15 vllm_xpu_kernels-0.1.14.1+arc7mx-cp312-cp312-linux_x86_64.whl
+-rw-r--r-- 1 root root 354920052 Nov  9 21:23 vllm_xpu_kernels-0.1.14.1+arc9-cp312-cp312-linux_x86_64.whl

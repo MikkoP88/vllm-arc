@@ -1,6 +1,6 @@
 // In-register MX dequant for the arc7 MX-native paged-decode kernel.
-// Converts the packed payload + e8m0 codes up to ElementQ in the
-// dequant-copy fragment layout, leaving the layout change to the stock
+// Converts the packed payload + e8m0 codes up to ElementQ in a
+// copy-fragment layout, leaving the layout change to the stock
 // subgroup reorder() — the same division of labor the stock fp8 path
 // uses (cast in registers, reorder to the MMA fragment).
 //
@@ -29,10 +29,34 @@
 // describe the same (WI-0, register-0) element, so any canonical
 // slot-0 offset cancels and only the tile base remains.
 //
-// Payload bytes and scales are then read coordinate-driven direct
-// from gmem (L1-resident from the copy prefetches; a 4-entry register
-// cache hoists repeat scale reads out of the unrolled loop). Which
-// codomain mode is the surface ROW differs per operand: the QK B-tile
+// r199b LOAD-PATH LAW (after the r199a V1 const-fill ablation
+// attributed ~90-97% of device time to the dequant's read path at
+// 32K ctx — the loop structure itself already ran 3x faster than the
+// certified v2 Triton decoder): the per-element scattered scalar gmem
+// reads are replaced wholesale.
+//
+//   e4m3 lanes (mxfp8 K/V, mxk8v4 K): dequant_reg — the mainloop
+//   loads the payload tile with the REAL vectorized 2D-block byte
+//   copy (the same copy_kb/copy_vb machinery that until now only
+//   prefetched), and dequant reads each byte from the source
+//   FRAGMENT register (src and dst share one tv layout, so index i
+//   maps 1:1). No per-element memory traffic at all; only the group
+//   scales still touch gmem (4 reads/WI/tile, register-cached).
+//
+//   e2m1 lanes (mxfp4 K/V, mxk8v4 V): the element tile carries 2
+//   elements per byte, so a byte-copy fragment cannot be reordered
+//   into the MMA operand (half the values). Instead the same
+//   dequant_dtile coordinate walk stages each (row, byte-window) ONCE
+//   as a pair of u32 loads: the val form ((2,8),N) puts a WI's
+//   elements at elem = t0 + 2*v1 + 16*v2, so dv = v0 + 2*v1 + 16*v2
+//   addresses byte windows [8*v2, 8*v2+8) of row(v0) — 16 u32 loads
+//   per WI per K d-tile (8 per V step) replace 64 scattered u8 reads.
+//   u32 alignment is guaranteed by construction: slot pitches are
+//   136/200/264 bytes, payload offsets 0/68/132 — all multiples of 4.
+//   The tv form is pinned by static_assert; the r198 faces (bitwise
+//   at seq_len==1) re-verify any distribution drift loudly.
+//
+// Which codomain mode is the surface ROW differs per operand: the QK B-tile
 // frame is (k, d) (mode 0 = row), the PV B-tile is (v, k) (mode 0 =
 // element) — kFrame0IsRow selects. The IDENTITY tuple orientation
 // also differs: K carries (k, d) (row = mode 0), V carries (v, k)
@@ -79,12 +103,138 @@ tv_coord(TVLayout const& tv, int wi, int dv) {
   return tv(cute::make_coord(thr_crd, val_crd, rest_crd));
 }
 
+// Pin the staged-read addressing law to the tv form it was derived
+// from: thr ((2,8)) and val ((2,8),N) — i.e. register dv decodes as
+// dv = v0 + 2*v1 + 16*v2 and the tile coordinate advance is
+// elem = t0(wi) + 2*v1 + 16*v2, row = t1(wi) + 8*v0 (r198 instantiated
+// evidence on both lanes; N = 4 for the 64-element K d-tile, 2 for the
+// 32-element V step). A distribution change fails HERE at compile time
+// instead of corrupting silently downstream.
+template <class TVLayout>
+CUTE_HOST_DEVICE void
+assert_staged_tv_form(TVLayout const& tv) {
+  static_assert(cute::is_static_v<TVLayout>, "tv_layout must be static");
+  static_assert(
+      cute::rank_v<TVLayout> == 3,
+      "unexpected tv_layout nesting (expected (Thr, Val, Rest))");
+  constexpr auto thr_sh = cute::shape<0>(TVLayout{});
+  static_assert(
+      cute::size(thr_sh) == 16 && cute::size(cute::shape<0>(thr_sh)) == 2,
+      "thr mode must be ((2,8)) for the staged byte-window law");
+  constexpr auto val_sh = cute::shape<1>(TVLayout{});
+  static_assert(
+      cute::size(cute::get<0>(val_sh)) == 16 &&
+          cute::size(cute::shape<0>(cute::get<0>(val_sh))) == 2 &&
+          cute::size(val_sh) % 16 == 0,
+      "val mode must be ((2,8),N) for the staged byte-window law");
+  (void) tv;
+}
+
 }  // namespace detail
 
-// dequant_dtile — one d-tile (K) or v-step (V) of one row-block.
+// dequant_reg — one d-tile (K) or v-step (V) of one row-block, from a
+// LOADED byte fragment. The mainloop issues the real 2D-block byte
+// copy into src (u8 fragment carrying its own tv_layout); dst is the
+// mainloop-built ElementQ fragment with the SAME tv layout (register
+// i maps 1:1). e4m3 only: 1 byte = 1 element.
+//
+//   scales      : gmem u8 view (row, group), full width; indexed
+//                 directly by coordinate
+//   src         : per-WI u8 byte fragment (the copy destination)
+//   dst         : per-WI ElementQ fragment, same tv layout as src
+//   src_coords  : WI-canonical identity view of the same byte tile;
+//                 only slot 0 is read (tile-origin anchor)
+template <
+    bool RowIsMode0,
+    bool kFrame0IsRow,
+    class ScaleTensor,
+    class SrcFrag,
+    class DstFrag,
+    class CoordView>
+CUTE_HOST_DEVICE
+void
+dequant_reg(
+    ScaleTensor const& scales,
+    SrcFrag const& src,
+    DstFrag& dst,
+    CoordView const& src_coords) {
+  // The mainloop resolves get_sub_group via its function-scope
+  // using-directive (vendor pattern); this header sits outside it.
+  using namespace sycl::ext::oneapi::this_work_item;
+  auto wi = get_sub_group().get_local_id()[0];
+
+  // Tile origin: identity slot 0 (WI-canonical) minus its own tv
+  // position — both describe (WI 0, register 0), so the difference is
+  // the tile base in surface BYTE coordinates (for e4m3 the byte
+  // column IS the element column).
+  auto p00 = detail::tv_coord(src.tv_layout(), 0, 0);
+  auto c0 = src_coords(0);
+  int org_row =
+      (RowIsMode0 ? int(cute::get<0>(c0)) : int(cute::get<1>(c0))) -
+      (kFrame0IsRow ? int(cute::get<0>(p00)) : int(cute::get<1>(p00)));
+  int org_col =
+      (RowIsMode0 ? int(cute::get<1>(c0)) : int(cute::get<0>(c0))) -
+      (kFrame0IsRow ? int(cute::get<1>(p00)) : int(cute::get<0>(p00)));
+
+  // Per-WI scale cache: the byte fragment of one tile spans few
+  // (row, group) pairs; anything beyond 4 entries still reads correctly
+  // through L1.
+  int cr[4] = {-1, -1, -1, -1};
+  int cg[4] = {-1, -1, -1, -1};
+  float cv[4];
+
+  // SubgroupTensor::size() is a non-static member in this tree (unlike
+  // cute::Tensor's static size()) — call it on the object.
+  CUTE_UNROLL
+  for (int i = 0; i < src.size(); ++i) {
+    // This work-item's register i: tile-local (row, byte column) from
+    // the fragment's own tv_layout, plus the tile base.
+    auto pc = detail::tv_coord(src.tv_layout(), wi, i);
+    int row = org_row +
+        (kFrame0IsRow ? int(cute::get<0>(pc)) : int(cute::get<1>(pc)));
+    int col = org_col +
+        (kFrame0IsRow ? int(cute::get<1>(pc)) : int(cute::get<0>(pc)));
+    int grp = col / kMxGroupSize;
+
+    float scale = 0.f;
+    bool hit = false;
+    CUTE_UNROLL
+    for (int s = 0; s < 4; ++s) {
+      if (cr[s] == row && cg[s] == grp) {
+        scale = cv[s];
+        hit = true;
+      }
+    }
+    if (!hit) {
+      scale = e8m0_to_scale(scales(row, grp));
+      CUTE_UNROLL
+      for (int s = 0; s < 4; ++s) {
+        if (cr[s] < 0) {
+          cr[s] = row;
+          cg[s] = grp;
+          cv[s] = scale;
+          break;
+        }
+      }
+    }
+
+    // Byte from the loaded fragment register — no per-element memory.
+    float val = detail::e4m3_to_float(uint8_t(src(i)));
+    // bfloat16_t's float ctor is explicit (no implicit conversion on
+    // assignment); build the element type directly.
+    dst(i) = typename DstFrag::value_type(val * scale);
+  }
+}
+
+// dequant_dtile — one d-tile (K) or v-step (V) of one row-block,
+// e2m1 lanes: staged wide reads. Same contract as before r199b
+// (destination fragment in the dequant copy's layout; reorder()
+// converts it into the MMA operand) but the payload bytes reach
+// registers through paired u32 window loads instead of 64 scattered
+// scalar reads — see the r199b LOAD-PATH LAW above.
 //
 //   bytes        : gmem u8 view (row, byte-col), FULL surface width;
-//                 column = global element / kElemsPerByte
+//                 column = global element / 2
 //   scales       : gmem u8 view (row, group), full width; indexed
 //                  directly by coordinate
 //   dst          : per-WI ElementQ fragment in the dequant copy's
@@ -93,12 +243,7 @@ tv_coord(TVLayout const& tv, int wi, int dv) {
 //                  per-WI position decoding
 //   dst_coords   : WI-canonical identity view of the same tile; only
 //                  slot 0 is read (tile-origin anchor)
-//   kFrame0IsRow : tv codomain mode 0 is the surface row (K lane) vs
-//                  the element (V lane)
-//
-// Every loop runs over static fragment sizes and unrolls fully.
 template <
-    bool KIsE4M3,
     bool RowIsMode0,
     bool kFrame0IsRow,
     class ByteView,
@@ -112,16 +257,16 @@ dequant_dtile(
     ScaleTensor const& scales,
     DstFrag& dst,
     CoordView const& dst_coords) {
-  constexpr int kElemsPerByte = KIsE4M3 ? 1 : 2;
   // The mainloop resolves get_sub_group via its function-scope
   // using-directive (vendor pattern); this header sits outside it.
   using namespace sycl::ext::oneapi::this_work_item;
   auto wi = get_sub_group().get_local_id()[0];
+  auto tv = dst.tv_layout();
 
   // Tile origin: identity slot 0 (WI-canonical) minus its own tv
   // position — both describe (WI 0, register 0), so the difference is
   // the tile base in surface coordinates.
-  auto p00 = detail::tv_coord(dst.tv_layout(), 0, 0);
+  auto p00 = detail::tv_coord(tv, 0, 0);
   auto c0 = dst_coords(0);
   int org_row =
       (RowIsMode0 ? int(cute::get<0>(c0)) : int(cute::get<1>(c0))) -
@@ -130,20 +275,117 @@ dequant_dtile(
       (RowIsMode0 ? int(cute::get<1>(c0)) : int(cute::get<0>(c0))) -
       (kFrame0IsRow ? int(cute::get<1>(p00)) : int(cute::get<0>(p00)));
 
-  // Per-WI scale cache: the destination fragment of one tile spans few
-  // (row, group) pairs; anything beyond 4 entries still reads correctly
-  // through L1.
+  // FORM GATE (compile-time; uniform across the subgroup): both MMAs
+  // ride the SAME DPAS atom, but the N/K extents swap between the QK
+  // B-tile (N = 16 rows, K = 64 elems — val mode ((2,8),N), the
+  // r198-evidenced K form) and the PV B-tile (N = 32 v, K = 16 rows —
+  // val mode (2,8,2): v1 advances the ROW). Contiguous 8-byte windows
+  // per (row, v2) exist only in the first case; the second (e2m1 V)
+  // has 8 rows x stride-4 byte positions with no compressible window
+  // and falls back to the r198 PASS scalar walk until its structural
+  // fix (SLM staging / repacked lane). The val-mode nesting IS the
+  // form discriminator at compile time; the staged branch then pins
+  // the full law (thr form + first-16 val form) with
+  // assert_staged_tv_form, which only instantiates there.
+  constexpr bool kStagedValForm =
+      cute::size(cute::get<0>(cute::shape<1>(decltype(tv){}))) == 16;
+
+  // Per-WI scale cache (unchanged law).
   int cr[4] = {-1, -1, -1, -1};
   int cg[4] = {-1, -1, -1, -1};
   float cv[4];
 
-  // SubgroupTensor::size() is a non-static member in this tree (unlike
-  // cute::Tensor's static size()) — call it on the object.
+  if constexpr (kStagedValForm) {
+    // Staged byte windows: the val form dv = v0 + 2*v1 + 16*v2
+    // (asserted) makes register dv = v0 + 16*v2 the representative of
+    // window (row(v0), bytes [8*v2, 8*v2+8)). K d-tile: 2x4 windows
+    // (64 elements, 2 u32 each); a same-form V step would be 2x2.
+    detail::assert_staged_tv_form(tv);
+    using TV = decltype(tv);
+    constexpr int kV2Max = int(cute::size(cute::shape<1>(TV{}))) / 16;
+    static_assert(kV2Max >= 1, "val count must be a multiple of 16");
+    uint32_t st[2][2 * kV2Max];
+
+    CUTE_UNROLL
+    for (int r = 0; r < 2; ++r) {
+      CUTE_UNROLL
+      for (int g = 0; g < kV2Max; ++g) {
+        auto pg = detail::tv_coord(tv, wi, r + 16 * g);
+        int row = org_row +
+            (kFrame0IsRow ? int(cute::get<0>(pg)) : int(cute::get<1>(pg)));
+        int elem = org_elem +
+            (kFrame0IsRow ? int(cute::get<1>(pg)) : int(cute::get<0>(pg)));
+        // 8-byte window holding elements [16*g, 16*g+16) of this row:
+        // bytes (elem>>1) & ~7 .. +8. Both nibble phases (t0 = 0/1)
+        // share the window — phases only select the nibble.
+        int w = (elem >> 1) & ~7;
+        const uint32_t* p =
+            reinterpret_cast<const uint32_t*>(&bytes(row, w));
+        st[r][2 * g + 0] = p[0];
+        st[r][2 * g + 1] = p[1];
+      }
+    }
+
+    // SubgroupTensor::size() is a non-static member in this tree
+    // (unlike cute::Tensor's static size()) — call it on the object.
+    CUTE_UNROLL
+    for (int dv = 0; dv < dst.size(); ++dv) {
+      // Same coordinate law as the scalar path (cheap ALU; only the
+      // byte fetch below changed).
+      auto pc = detail::tv_coord(tv, wi, dv);
+      int row = org_row +
+          (kFrame0IsRow ? int(cute::get<0>(pc)) : int(cute::get<1>(pc)));
+      int elem = org_elem +
+          (kFrame0IsRow ? int(cute::get<1>(pc)) : int(cute::get<0>(pc)));
+      int grp = elem / kMxGroupSize;
+
+      float scale = 0.f;
+      bool hit = false;
+      CUTE_UNROLL
+      for (int i = 0; i < 4; ++i) {
+        if (cr[i] == row && cg[i] == grp) {
+          scale = cv[i];
+          hit = true;
+        }
+      }
+      if (!hit) {
+        scale = e8m0_to_scale(scales(row, grp));
+        CUTE_UNROLL
+        for (int i = 0; i < 4; ++i) {
+          if (cr[i] < 0) {
+            cr[i] = row;
+            cg[i] = grp;
+            cv[i] = scale;
+            break;
+          }
+        }
+      }
+
+      // Staged byte fetch. Address the staging array by the DECODED
+      // val coordinates (compile-time per dv after unrolling — a
+      // runtime index here would push st[] to scratch):
+      // byte-within-row jb = v1 + 8*v2 holds for BOTH nibble phases,
+      // since (t0 + 2*v1 + 16*v2) / 2 = t0/2 + v1 + 8*v2 and
+      // t0/2 == 0. Element 2j = low nibble, 2j+1 = high nibble of
+      // byte j — the mx_layout quantizer law; phase is elem & 1.
+      int v0 = dv & 1;
+      int v1 = (dv >> 1) & 7;
+      int v2 = dv >> 4;
+      int jb = v1 + 8 * v2;
+      uint32_t b = (st[v0][jb >> 2] >> ((jb & 3) * 8)) & 0xFF;
+
+      float val = e2m1_to_float(uint8_t(elem & 1 ? (b >> 4) : (b & 0xF)));
+      // bfloat16_t's float ctor is explicit (no implicit conversion on
+      // assignment); build the element type directly.
+      dst(dv) = typename DstFrag::value_type(val * scale);
+    }
+    return;
+  }
+
+  // FALLBACK (e2m1 V form): the r198 PASS scalar walk, verbatim.
   CUTE_UNROLL
   for (int dv = 0; dv < dst.size(); ++dv) {
-    // This work-item's register dv: tile-local (row, element) from the
-    // fragment's own tv_layout, plus the tile base.
-    auto pc = detail::tv_coord(dst.tv_layout(), wi, dv);
+    auto pc = detail::tv_coord(tv, wi, dv);
     int row = org_row +
         (kFrame0IsRow ? int(cute::get<0>(pc)) : int(cute::get<1>(pc)));
     int elem = org_elem +
@@ -172,19 +414,8 @@ dequant_dtile(
       }
     }
 
-    // Payload byte for this element: direct gmem read by coordinate
-    // (L1-resident from the tile prefetch; element 2j = low nibble,
-    // 2j+1 = high nibble of byte j — the mx_layout quantizer law).
-    uint8_t b = bytes(row, elem / kElemsPerByte);
-
-    float val;
-    if constexpr (KIsE4M3) {
-      val = detail::e4m3_to_float(b);
-    } else {
-      val = e2m1_to_float(uint8_t(elem & 1 ? (b >> 4) : (b & 0xF)));
-    }
-    // bfloat16_t's float ctor is explicit (no implicit conversion on
-    // assignment); build the element type directly.
+    uint8_t b = bytes(row, elem / 2);
+    float val = e2m1_to_float(uint8_t(elem & 1 ? (b >> 4) : (b & 0xF)));
     dst(dv) = typename DstFrag::value_type(val * scale);
   }
 }

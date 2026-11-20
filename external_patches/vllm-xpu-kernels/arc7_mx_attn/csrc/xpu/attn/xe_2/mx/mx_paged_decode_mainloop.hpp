@@ -5,13 +5,22 @@
 // paged tile indirection, 2^24-row surface split, register-resident
 // online softmax, split-KV accumulation. The stock fp8 path casts
 // fp8->bf16 inside reorder(); the MX path dequants uint8 payload +
-// e8m0 group codes to bf16 in the copy-fragment layout
-// (mx::dequant_dtile) and then rides the SAME stock reorder() for the
-// layout change. Scale codes are read from the scale surfaces by
-// COORDINATE (L1-cached, 4-entry register hoist) — no scale copies,
-// no scale fragments, no cross-lane traffic (an earlier
-// subgroup-broadcast design would have spent ~tile_k*groups shuffles
-// per d-tile, ~8x the MMA itself).
+// e8m0 group codes to bf16 in a copy-fragment layout and then rides
+// the SAME stock reorder() for the layout change.
+//
+// r199b LOAD PATH (after the r199a V1 const-fill ablation attributed
+// ~90-97% of device time at 32K ctx to the dequant's scattered
+// per-element scalar reads): e4m3 lanes load payload tiles with the
+// REAL vectorized 2D-block byte copies (tKrB/tVrB fragments; the same
+// copy_kb/copy_vb descriptors that previously only prefetched) and
+// dequant register-to-register into ElementQ mirrors sharing the tv
+// layout (mx::dequant_reg); e2m1 lanes keep the coordinate walk but
+// fetch bytes through staged u32 window loads (mx::dequant_dtile).
+// Scale codes are still read from the scale surfaces by COORDINATE
+// (L1-cached, 4-entry register hoist) — no scale copies, no scale
+// fragments, no cross-lane traffic (an earlier subgroup-broadcast
+// design would have spent ~tile_k*groups shuffles per d-tile, ~8x the
+// MMA itself).
 //
 // Cache geometry (mx_layout.py law; no re-layout ever): one uint8 pool
 // [num_blocks, block, Hk, slot_bytes]; per slot
@@ -576,6 +585,12 @@ struct MxDecodeFwdMainloop<
         Step<X, _1, _1>{});  // (k,d,K,DD)
     Tensor gV =
         local_tile(cV, tile_shape_vb, make_coord(get<1>(blk_qv), _));  // (vb,k,K)
+    // Byte-granular VV split for the e4m3 LOAD path (r199b): mirrors
+    // gVD_split's construction on the byte tensor. For e4m3 the tile's
+    // mode-0 extent equals the element split's (1 byte/element); e2m1
+    // lanes never index this view (staged dequant reads the surfaces).
+    [[maybe_unused]] Tensor gVb_split = local_tile(
+        gV, TileShapePV{}, make_coord(_, _, 0), Step<X, _1, _1>{});  // (vb,k,VV,K)
     Tensor gVD =
         local_tile(cVD, tile_shape_v, make_coord(get<1>(blk_qv), _));  // (v,k,K)
     Tensor gVD_split = local_tile(
@@ -606,17 +621,23 @@ struct MxDecodeFwdMainloop<
 
     /* Slice TiledCopy/TiledMMA operations down to work-item level */
     auto thr_copy_q = copy_q.get_slice(thr_id);
+    auto thr_copy_kb = copy_kb.get_slice(thr_id);
     auto thr_copy_kd = copy_kd.get_slice(thr_id);
+    auto thr_copy_vb = copy_vb.get_slice(thr_id);
     auto thr_copy_vd = copy_vd.get_slice(thr_id);
     auto thr_mma_qk = mma_qk.get_slice(thr_id);
     auto thr_mma_pv = mma_pv.get_slice(thr_id);
 
-    /* Partition coordinate tensors for copy. Byte-tile partitions are
-    PREFETCH-ONLY now (pKBgK/pVbgV): dequant reads payload bytes and
-    scales directly from the gmem surfaces by coordinate (see the
-    kb/vb/ks/vs_surf decls above). */
+    /* Partition coordinate tensors for copy. On e4m3 lanes the byte
+    tiles are the REAL load path (r199b): tKBgK/tVbgV hand copy() the
+    same vectorized 2D-block descriptors the prefetches warm. On e2m1
+    lanes dequant reads payload bytes through staged u32 windows from
+    the gmem surfaces (kb/vb/ks/vs_surf above) and only the prefetch
+    partitions matter. */
     auto tQgQ = thr_copy_q.partition_S(gQ);          // (atom_val,q',d',D)
+    auto tKBgK = thr_copy_kb.partition_S(gK);        // (atom_val,k',kb',K,DB)
     auto tKDgKD = thr_copy_kd.partition_S(gKD);      // (atom_val,k',d',K,DD)
+    auto tVbgV = thr_copy_vb.partition_S(gVb_split); // (atom_val,vb',k',VV,K)
     auto tVDgVD = thr_copy_vd.partition_S(gVD_split);  // (atom_val,v',k',VV,K)
 
     /* Create register fragments for MMA and copies. tKrDeq/tVrDeq
@@ -625,7 +646,8 @@ struct MxDecodeFwdMainloop<
     is absorbed by the byte->element coordinate mapping in dequant). */
     auto tQrQ = thr_copy_q.partition_sg_fragment_D(gQ(_, _, 0));
     auto tSrQ = thr_mma_qk.partition_sg_fragment_A(gQ(_, _, 0));
-    auto tKrDeq = thr_copy_kd.partition_sg_fragment_D(gKD(_, _, 0, 0));
+    [[maybe_unused]] auto tKrDeq =
+        thr_copy_kd.partition_sg_fragment_D(gKD(_, _, 0, 0));
     auto tSrK = thr_mma_qk.partition_sg_fragment_B(gKD(_, _, 0, 0));
     auto tSrS = thr_mma_qk.partition_sg_fragment_C(cP);
     auto tArP = thr_mma_pv.partition_sg_fragment_A(cP);
@@ -634,8 +656,24 @@ struct MxDecodeFwdMainloop<
     // carries bf16(p - bf16(p)), tArP3 the second residual.
     auto tArP2 = thr_mma_pv.partition_sg_fragment_A(cP);
     auto tArP3 = thr_mma_pv.partition_sg_fragment_A(cP);
-    auto tVrDeq = thr_copy_vd.partition_sg_fragment_D(gVD_split(_, _, 0, 0));
+    [[maybe_unused]] auto tVrDeq =
+        thr_copy_vd.partition_sg_fragment_D(gVD_split(_, _, 0, 0));
     auto tArV = thr_mma_pv.partition_sg_fragment_B(gVD_split(_, _, 0, 0));
+
+    // r199b e4m3 load-path fragments: tKrB/tVrB receive the REAL byte
+    // copies; tKrBq/tVrBq are ElementQ mirrors on the SAME tv layout
+    // (make_subgroup_tensor preserves it — src and dst registers map
+    // 1:1), so mx::dequant_reg fills them register-to-register and the
+    // stock reorder() performs only the layout change. e2m1 lanes leave
+    // them unused (the staged dequant keeps the tKrDeq/tVrDeq walk).
+    [[maybe_unused]] auto tKrB =
+        thr_copy_kb.partition_sg_fragment_D(gK(_, _, 0, 0));
+    [[maybe_unused]] auto tKrBq = make_subgroup_tensor(
+        make_tensor<ElementQ>(tKrB.layout()), tKrB.tv_layout());
+    [[maybe_unused]] auto tVrB =
+        thr_copy_vb.partition_sg_fragment_D(gVb_split(_, _, 0, 0));
+    [[maybe_unused]] auto tVrBq = make_subgroup_tensor(
+        make_tensor<ElementQ>(tVrB.layout()), tVrB.tv_layout());
 
     /* Create TiledCopy objects for prefetches */
     auto prefetch_q = make_block_2d_prefetch(copy_q);
@@ -729,6 +767,13 @@ struct MxDecodeFwdMainloop<
         pKBgK = prefetch_kb.get_slice(thr_id).partition_S(gK_n);
         pVbgV = prefetch_vb.get_slice(thr_id).partition_S(gV_n);
 
+        // r199b: the byte-LOAD partitions follow the rebuilt copies
+        // (same state-refresh law as the prefetch partitions above).
+        tKBgK = copy_kb.get_slice(thr_id).partition_S(gK_n);
+        Tensor gVb_split_n = local_tile(
+            gV_n, TileShapePV{}, make_coord(_, _, 0), Step<X, _1, _1>{});
+        tVbgV = copy_vb.get_slice(thr_id).partition_S(gVb_split_n);
+
         kb_surf = K_2D_n;
         vb_surf = make_tensor(
             V_2D_n.data(),
@@ -767,10 +812,14 @@ struct MxDecodeFwdMainloop<
 
     /* Main loop, blocked in k. */
     for (int K = blk_k0; K < blk_k1; K++) {
-      auto tKDgKD_cache =
+      [[maybe_unused]] auto tKDgKD_cache =
           PagedKV ? tKDgKD(_, _, _, tile_idx, _) : tKDgKD(_, _, _, K, _);
-      auto tVDgVD_cache =
+      [[maybe_unused]] auto tVDgVD_cache =
           PagedKV ? tVDgVD(_, _, _, _, tile_idx) : tVDgVD(_, _, _, _, K);
+      [[maybe_unused]] auto tKBgK_cache =
+          PagedKV ? tKBgK(_, _, _, tile_idx, _) : tKBgK(_, _, _, K, _);
+      [[maybe_unused]] auto tVbgV_cache =
+          PagedKV ? tVbgV(_, _, _, _, tile_idx) : tVbgV(_, _, _, _, K);
 
       /* GEMM 1: S = K * Q */
       clear(tSrS);
@@ -778,19 +827,31 @@ struct MxDecodeFwdMainloop<
         copy(copy_q, tQgQ(_, _, _, D), tQrQ);
         reorder(tQrQ, tSrQ);
 
-        // MX dequant: u8 payload -> bf16 in the dequant copy's
-        // fragment layout, then the stock reorder performs only the
-        // layout change into the MMA operand. Positions come from the
-        // fragment's tv_layout (per-WI; partition_S identity views are
-        // WI-canonical in this tree) anchored to the identity slot-0
-        // tuple — see mx_dequant.hpp for the coordinate law. The QK
-        // B-tile frame is (k, d): tv codomain mode 0 IS the row.
-        mx::dequant_dtile<Mx::k_is_e4m3, true, true>(
-            kb_surf,
-            ks_surf,
-            tKrDeq,
-            tKDgKD_cache(_, _, _, D));
-        reorder(tKrDeq, tSrK);
+        if constexpr (Mx::k_is_e4m3) {
+          // r199b e4m3 load path: the REAL vectorized 2D-block byte
+          // copy fills tKrB, dequant runs register-to-register into
+          // its ElementQ mirror (group scales are the only gmem
+          // reads), and the stock reorder performs the layout change.
+          copy(copy_kb, tKBgK_cache(_, _, _, D), tKrB);
+          mx::dequant_reg<true, true>(
+              ks_surf, tKrB, tKrBq, tKBgK_cache(_, _, _, D));
+          reorder(tKrBq, tSrK);
+        } else {
+          // MX dequant (e2m1): staged u32 byte windows -> bf16 in the
+          // dequant copy's fragment layout, then the stock reorder
+          // performs only the layout change into the MMA operand.
+          // Positions come from the fragment's tv_layout (per-WI;
+          // partition_S identity views are WI-canonical in this tree)
+          // anchored to the identity slot-0 tuple — see mx_dequant.hpp
+          // for the coordinate + staging laws. The QK B-tile frame is
+          // (k, d): tv codomain mode 0 IS the row.
+          mx::dequant_dtile<true, true>(
+              kb_surf,
+              ks_surf,
+              tKrDeq,
+              tKDgKD_cache(_, _, _, D));
+          reorder(tKrDeq, tSrK);
+        }
 
         cute::gemm(mma_qk, tSrQ, tSrK, tSrS);
       }
@@ -865,17 +926,26 @@ struct MxDecodeFwdMainloop<
       /* GEMM 2: A += P * V, split in v dimension */
       CUTLASS_PRAGMA_UNROLL
       for (int VV = 0; VV < VTiles; VV++) {
-        // V dequant: the V surface family carries (v, k) tuples, so
-        // the row (the scale/k dimension) is tuple mode 1. The PV
-        // B-tile frame is (v, k): tv codomain mode 0 is the ELEMENT;
-        // positions from the fragment tv_layout per the coordinate
-        // law in mx_dequant.hpp.
-        mx::dequant_dtile<Mx::v_is_e4m3, false, false>(
-            vb_surf,
-            vs_surf,
-            tVrDeq,
-            tVDgVD_cache(_, _, _, VV));
-        reorder(tVrDeq, tArV);
+        if constexpr (Mx::v_is_e4m3) {
+          // r199b e4m3 load path (mirror of the K lane): real byte
+          // copy, register-to-register dequant, stock reorder.
+          copy(copy_vb, tVbgV_cache(_, _, _, VV), tVrB);
+          mx::dequant_reg<false, false>(
+              vs_surf, tVrB, tVrBq, tVbgV_cache(_, _, _, VV));
+          reorder(tVrBq, tArV);
+        } else {
+          // V dequant (e2m1, staged): the V surface family carries
+          // (v, k) tuples, so the row (the scale/k dimension) is tuple
+          // mode 1. The PV B-tile frame is (v, k): tv codomain mode 0
+          // is the ELEMENT; positions from the fragment tv_layout per
+          // the coordinate law in mx_dequant.hpp.
+          mx::dequant_dtile<false, false>(
+              vb_surf,
+              vs_surf,
+              tVrDeq,
+              tVDgVD_cache(_, _, _, VV));
+          reorder(tVrDeq, tArV);
+        }
         cute::gemm(mma_pv, tArP, tArV, tArA(_, _, _, VV));
         cute::gemm(mma_pv, tArP2, tArV, tArA(_, _, _, VV));
         cute::gemm(mma_pv, tArP3, tArV, tArA(_, _, _, VV));
