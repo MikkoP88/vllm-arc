@@ -1,0 +1,15 @@
+6ca9f43efe43f078a6b346b0d2a410f4  /root/build/wheels-arc-vxk/vllm_xpu_kernels-0.1.14.1+arc7mx-cp312-cp312-linux_x86_64.whl
+=== [r212r] W14 quiesce 17:49:43 ===
+=== [r212r:m0:c32768] 17:49:59 ===
+=== [r212r:m0:c32768] exit rc=0 17:51:55 ===
+=== [r212r] gate 17:51:55 ===
+r212r no-unroll one-cell (mxfp4/mxfp8 32K)
+  m4 m0 (this leg)            717.7   (r212q 717.7, r212o 741.8)
+  m8 m0 (stability oracle)   1313.7   (r212q 1320.5)
+  vs r212q (unrolled u32):     -0.0 us (-0.0%)
+  surviving assembly cost (m4 - tail 380.7):   337.0 us
+  m8 stability: +0.5% OK (e4m3 discipline)
+FORK: NULL -- code size innocent; next = SWAR pairing (r212s)
+R212R_GATE_PASS
+R212R_DONE rc=0 2026-11-21T17:51:55Z
+W14_RESTORE_FIRED_fullres 2026-11-21T17:51:55Z
