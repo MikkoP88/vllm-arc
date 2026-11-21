@@ -1,0 +1,25 @@
+=== [r212mv] W14 quiesce 13:13:32 ===
+=== [r212mv:m0:c1024] 13:13:49 ===
+=== [r212mv:m0:c1024] exit rc=0 13:15:11 ===
+=== [r212mv:m0:c8192] 13:15:11 ===
+=== [r212mv:m0:c8192] exit rc=0 13:16:39 ===
+=== [r212mv:m0:c32768] 13:16:39 ===
+=== [r212mv:m0:c32768] exit rc=0 13:18:36 ===
+=== [r212mv:dbf0:c32768] 13:18:36 ===
+=== [r212mv:dbf0:c32768] exit rc=0 13:20:35 ===
+=== [r212mv] gate 13:20:35 ===
+r212m2 direct-bf16 fulls (probe 0) -- us/call vs r212l float-path baseline
+    fmt    ctx |     fast |     base |   delta | canary
+  mxfp4   1024 |    406.5 |    594.5 |  -31.6% | 0.0
+  mxfp4   8192 |    311.3 |    420.6 |  -26.0% | 0.0
+  mxfp4  32768 |    759.1 |   1028.3 |  -26.2% | 0.0
+  mxfp8   1024 |    863.9 |    658.3 |  +31.2% | 0.0
+  mxfp8   8192 |    606.5 |    541.7 |  +12.0% | 0.0
+  mxfp8  32768 |   1514.4 |   1359.0 |  +11.4% | 0.0
+same-wheel float-path oracle (DIRECTBF16=0) at 32K
+    fmt |     dbf0 |     fast |    gain | canary(dbf0)
+  mxfp4 |    868.8 |    759.1 |   12.6% | 0.0
+  mxfp8 |   1750.3 |   1514.4 |   13.5% | 0.0
+R212MV_GATE_PASS
+R212MV_DONE rc=0 2026-11-21T13:20:35Z
+W14_RESTORE_FIRED_fullres 2026-11-21T13:20:35Z
