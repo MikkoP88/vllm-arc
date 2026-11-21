@@ -53,16 +53,35 @@ correctly); the engine froze 1. The "~100× offline-vs-engine" gap
 in the launch4 verdict was split starvation, not harness overhead
 alone.
 
-## Fix (r212c, in flight)
+## Fix (r212c) — FALSIFIED, and what that proves
 
-Price the frozen `max_seqlen_k` at the bucket's walk CAPACITY —
-`bt_width × block_size` (4100×64 = 262400): the per-row device
-limits bound the true walk regardless (correctness independent of
-this value), so the frozen split count simply covers the worst-case
-replay class and short rows early-exit their splits. One-line
-bridge change (`native_decode.py` md5 `19934f1c…`), validated by
-`r212c_min.sh` (single native boot, same three faces) against the
-banked A-side numbers.
+The one-line bridge change (`native_decode.py` md5 `19934f1c…`:
+`max_seqlen_k = bt_width × block_size` = 262400) ran as `r212c_min`
+(`r212c_falsified/`): telemetry confirms `max_seqlen_k=262400` at
+every capture, and the ITLs are **byte-identical** to the splits=1
+run (497.9/960.3/558.2 vs 497.8/960.3/549.7 ms). Two laws fall out:
+
+1. **The e2e native cost is insensitive to num_kv_splits (1 vs the
+   64 the heuristic now prices) — the serialized-walk theory is
+   dead.** The fork's kernel parallelism at this shape is not
+   split-driven.
+2. **The walk is not max_seqlen_k-bounded** — r212b ran
+   max_seqlen_k=9 without truncating long-ctx attention (accuracy
+   passed at 32K), so the true walk bound is the per-row
+   device-side limit (cu_seqlens_k), and max_seqlen_k only feeds
+   split pricing.
+
+Also: n8 (32 rows) costs only +12% over n1 (4 rows) — the cost is
+nearly batch-independent, ∝ real ctx (~29 µs/token/1K ctx),
+~40× the p204 per-call number at the same nominal shape (1 seq, 32K,
+4 rows: ~53 ms/layer e2e vs 1.27 ms/call offline). The remaining
+engine-vs-harness deltas are the pool/bt shapes — r212d-diag
+(`tools/ar/p147_mxkv/r212d_diag.sh` + p204 knobs
+`P204_POOLBLKS/P204_BTWIDTH/P204_BTPAD/P204_MAXSK`) reproduces each
+one offline: pool 11281 blocks vs 514, bt width 4100 vs 514, stale
+vs zero beyond-fill pad, capacity vs ctx max_seqlen_k. The stale-pad
+canary doubles as a walk-bound probe (dirty = the kernel reads
+beyond-fill entries).
 
 ## Artifacts
 

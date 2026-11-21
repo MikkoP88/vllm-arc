@@ -54,6 +54,22 @@ FMTS = tuple(
     if f.strip()
 )
 CTX = int(os.environ.get("P204_CTX", "1024"))
+# r212d-diag engine-shape knobs (2026-11-21): r212b/r212c falsified
+# the split/walk-extent theories e2e (max_seqlen_k 9 vs 262400 gave
+# byte-identical ITLs; the walk is device-limit-bounded). The remaining
+# engine-vs-harness deltas these knobs reproduce one at a time:
+#   P204_POOLBLKS  over-allocate the pool (engine: 11281 blocks =
+#                  721994 tokens; harness: ctx/64+2)
+#   P204_BTWIDTH   pad the block table to WIDTH columns (engine: 4100
+#                  = max_model_len 262144/block, constant per bucket)
+#   P204_BTPAD     zero (harness default) | stale (random valid block
+#                  ids — the engine's stale beyond-fill entries)
+#   P204_MAXSK     ctx (harness default: max real len) | cap
+#                  (bt_width x block — the r212c bridge posture)
+POOLBLKS = int(os.environ.get("P204_POOLBLKS", "0"))
+BTWIDTH = int(os.environ.get("P204_BTWIDTH", "0"))
+BTPAD = os.environ.get("P204_BTPAD", "zero")
+MAXSK = os.environ.get("P204_MAXSK", "ctx")
 NCAP = int(os.environ.get("P204_NCAP", "32"))
 NREPLAY = int(os.environ.get("P204_REPLAY", "50"))
 # E5b (r212a): ENGINE VERIFY SHAPE — B requests x r_tile=4 draft rows,
@@ -104,6 +120,10 @@ from vllm_xpu_kernels.mx_attn_interface import (  # noqa: E402
 
 def build_paged(total_tokens, seed=7):
     n_blocks = total_tokens // BLOCK + 2
+    if n_blocks < POOLBLKS:
+        # r212d-diag: engine-sized pool (surface-split arithmetic sees
+        # the real block count; tables stay at their own lengths)
+        n_blocks = POOLBLKS
     perm = torch.randperm(n_blocks, generator=torch.Generator().manual_seed(seed))
     order = perm.tolist()
     lens = (
@@ -192,6 +212,21 @@ def main():
         )
         mx_store(xk, xv, cache, tb, tp)
         bt = flat_tables(lens, tables)
+        if bt.shape[1] < BTWIDTH:
+            # r212d-diag: engine-width block table (4100 columns);
+            # beyond-fill entries zero (harness default) or stale
+            # random-valid ids (engine reality)
+            pad_w = BTWIDTH - bt.shape[1]
+            if BTPAD == "stale":
+                g2 = torch.Generator().manual_seed(99)
+                pad = torch.randint(
+                    0, cache.shape[0], (bt.shape[0], pad_w),
+                    generator=g2, dtype=torch.int32,
+                ).to(DEV)
+            else:
+                pad = torch.zeros(
+                    bt.shape[0], pad_w, dtype=torch.int32, device=DEV)
+            bt = torch.cat([bt, pad], dim=1)
         torch.xpu.synchronize()
 
         cu_q = torch.arange(len(lens) + 1, dtype=torch.int32, device=DEV)
@@ -219,6 +254,9 @@ def main():
             out_v2 = mx_decode(qf, cache, bt, sl_dev, SCALE, block_size=BLOCK)
 
         mseq = max(lens)
+        if MAXSK == "cap":
+            # r212d-diag: the r212c bridge posture — capacity-priced
+            mseq = bt.shape[1] * BLOCK
 
         # native cells: "auto" (heuristic, engine bridge shape) + forced
         # split postures with prebuilt plans (device-only re-calibration
