@@ -1,0 +1,26 @@
+=== [r212m4] W14 quiesce 14:47:25 ===
+wheel md5 e50f1c3aa38729931c0d6ccc9c57a370 (pinned e50f1c3aa38729931c0d6ccc9c57a370)
+=== [r212m4:m4qa] boot kv=mxfp4 14:47:42 ===
+HEALTH_OK_r212m4_m4qa 14:52:47
+CONC_OK_c8192_n1
+CONC_OK_c16384_n1
+CONC_OK_c32768_n1
+=== [r212m4:m4qa] done 14:54:17 ===
+=== [r212m4:m8qa] boot kv=mxfp8 14:54:17 ===
+HEALTH_OK_r212m4_m8qa 14:59:22
+CONC_OK_c8192_n1
+CONC_OK_c16384_n1
+CONC_OK_c32768_n1
+=== [r212m4:m8qa] done 15:00:54 ===
+=== [r212m4] report 15:00:54 ===
+r212m4 convergence checkpoint -- ITL p50 ms/token (n1 faces, r212m3 wheel)
+   fmt    ctx |  r212m4 |     pre |   delta |  fp8 bar |  vs fp8 | errs
+  m4qa   8192 |    48.9 | 57.4 |  -14.9% |     40.4 |   1.21x | 0
+  m4qa  16384 |    56.7 | 74.1 |  -23.5% |     41.1 |   1.38x | 0
+  m4qa  32768 |    73.1 |    n/a |   n/a   |     42.5 |   1.72x | 0
+  m8qa   8192 |    50.5 | 50.9 |   -0.8% |     40.4 |   1.25x | 0
+  m8qa  16384 |    60.3 | 61.4 |   -1.8% |     41.1 |   1.47x | 0
+  m8qa  32768 |    81.7 | 84.3 |   -3.1% |     42.5 |   1.92x | 0
+R212M4_GATE_PASS
+R212M4_DONE 2026-11-21T15:00:54Z
+W14_RESTORE_FIRED_fullres 2026-11-21T15:00:54Z
