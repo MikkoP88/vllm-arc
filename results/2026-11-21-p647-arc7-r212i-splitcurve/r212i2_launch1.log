@@ -1,0 +1,20 @@
+=== [r212i2] W14 quiesce 08:16:30 ===
+=== [r212i2:A_mkctx] maxsk=ctx planlen=real 08:16:46 ===
+=== [r212i2:A_mkctx] exit rc=0 08:18:00 ===
+=== [r212i2:B_mkcap] maxsk=cap planlen=cap 08:18:01 ===
+=== [r212i2:B_mkcap] exit rc=0 08:19:15 ===
+=== [r212i2:C_mk80k] maxsk=80000 planlen=cap 08:19:15 ===
+=== [r212i2:C_mk80k] exit rc=0 08:20:31 ===
+=== [r212i2:D_mk262k] maxsk=262400 planlen=cap 08:20:31 ===
+=== [r212i2:D_mk262k] exit rc=0 08:21:46 ===
+=== [r212i2] gate 08:21:46 ===
+r212i2 -- us/call, ctx=32768 real, graph 32x50, mxfp4, D=256/HREP=6/BLOCK=64
+ cells: auto | s5 | s16  ([!] = canary>2e-3, CAP = capture fail)
+     cell      mk |      auto |        s5 |       s16
+  A_mkctx   21846 |   1040.2 |  1854.1! |   706.5!
+  B_mkcap   21888 |   1039.2 |  1854.1! |   885.2!
+  C_mk80k   80000 |   1039.4 |  1854.2! |   885.2!
+ D_mk262k  262400 |   1039.7 |  1854.2! |   885.1!
+R212I2_GATE_PASS
+R212I2_DONE rc=0 2026-11-21T08:21:46Z
+W14_RESTORE_FIRED_fullres 2026-11-21T08:21:46Z

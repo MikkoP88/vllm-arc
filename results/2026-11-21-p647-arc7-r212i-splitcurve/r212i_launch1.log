@@ -1,0 +1,17 @@
+=== [r212i] W14 quiesce 08:08:22 ===
+=== [r212i:c1024] 08:08:39 ===
+=== [r212i:c1024] exit rc=0 08:09:35 ===
+=== [r212i:c8192] 08:09:36 ===
+=== [r212i:c8192] exit rc=0 08:10:38 ===
+=== [r212i:c32768] 08:10:38 ===
+=== [r212i:c32768] exit rc=0 08:12:09 ===
+=== [r212i] gate 08:12:09 ===
+r212i split-count cost curve -- us/call (graph 32x50, mxfp4, MAXSK=cap)
+ forced cells at plain shape; auto = heuristic plain; *_es = engine r_tile=4
+    ctx |     auto |       s1 |       s5 |      s16 |      s64 |   nat_es |    v2_es
+   1024 |    598.4 | CANARY!0.849609 | CANARY!0.849609 | CANARY!0.849609 | CANARY!0.849609 |    599.1 |    222.3
+   8192 |    423.0 | CANARY!0.181999 | CANARY!0.181999 | CANARY!0.181999 | CANARY!0.181999 |    456.3 |   1181.7
+  32768 |   1039.2 | CANARY!0.109192 | CANARY!0.109192 | CANARY!0.109192 | CANARY!0.109192 |   1268.2 |   4087.7
+R212I_GATE_FAIL
+R212I_DONE rc=1 2026-11-21T08:12:09Z
+W14_RESTORE_FIRED_fullres 2026-11-21T08:12:09Z

@@ -72,6 +72,18 @@ POOLBLKS = int(os.environ.get("P204_POOLBLKS", "0"))
 BTWIDTH = int(os.environ.get("P204_BTWIDTH", "0"))
 BTPAD = os.environ.get("P204_BTPAD", "zero")
 MAXSK = os.environ.get("P204_MAXSK", "ctx")
+# r212i2: forced-split plans must COVER max_seqlen_k. Plans built from
+# real lens under a larger mk (r212i: MAXSK=cap, cap = bt_width*64 >
+# max real len by up to BLOCK-1) left outputs unwritten — every forced
+# cell canaried at |0 - ref|max while auto stayed 0 (r210 passed only
+# because MAXSK=ctx made plan lens == mk exactly). "cap" builds plans
+# from the capacity lens so the plan covers the mk-priced partition.
+PLANLEN = os.environ.get("P204_PLANLEN", "real")
+# r212i3 diagnostics (default OFF — banked default behavior unchanged):
+#   P204_POISON    1 = NaN-fill native out buffers pre-capture
+#   P204_ROWPROBE  1 = per-row match matrix for canary-failing cells
+POISON = os.environ.get("P204_POISON", "0") == "1"
+ROWPROBE = os.environ.get("P204_ROWPROBE", "0") == "1"
 NCAP = int(os.environ.get("P204_NCAP", "32"))
 NREPLAY = int(os.environ.get("P204_REPLAY", "50"))
 # E5b (r212a): ENGINE VERIFY SHAPE — B requests x r_tile=4 draft rows,
@@ -235,6 +247,8 @@ def main():
         sl_dev = torch.tensor(lens, dtype=torch.int32, device=DEV)
         fmt_id = _FORMATS[fmt]
         host_lens = torch.tensor(lens)
+        if PLANLEN == "cap":
+            host_lens = torch.full_like(host_lens, bt.shape[1] * BLOCK)
         kt = _kv_tile_from_block_size(BLOCK)
         ncores = _infer_num_xe_cores(torch.device(DEV))
         op = torch.ops._vllm_fa2_C.mx_paged_decode
@@ -276,6 +290,13 @@ def main():
         calls = []
         for spec in SPLIT_CELLS:
             out_c = torch.empty_like(q)
+            # r212i3: NaN-poison native out buffers (the stale-buffer
+            # canary law) — a NaN that SURVIVES warmup+capture+replay
+            # marks elements the op never wrote; distinguishing
+            # never-written from written-wrong for the forced-plan
+            # canaries. ref_absmax prices the |0-ref| scale.
+            if POISON:
+                out_c.fill_(float("nan"))
             if spec == "auto":
                 def call_c(q=q, cache=cache, fmt_id=fmt_id, cu_q=cu_q,
                            sl_dev=sl_dev, bt=bt, op=op, mk=mseq, oc=out_c):
@@ -306,6 +327,25 @@ def main():
             tgt = ref_v2 if name == "v2" else ref
             d = got.sub(tgt).abs().max().item()
             cell[name] = {"dev_us": round(us, 2), "canary": round(d, 6)}
+            if POISON and name != "v2":
+                nan_left = int(torch.isnan(got).sum())
+                cell[name]["nan_left"] = nan_left
+                cell[name]["ref_absmax"] = round(
+                    float(tgt.abs().max()), 6)
+            if ROWPROBE and name != "v2" and d > 2e-3:
+                # r212i3: permutation signature — per (i, j) row-pair
+                # max |got_i - ref_j|. A layout/order bug shows 0 at
+                # the permuted partner; wrong math shows none clean.
+                n = got.shape[0]
+                m = [
+                    [
+                        round(float(got[i].sub(tgt[j]).abs().max()), 6)
+                        for j in range(n)
+                    ]
+                    for i in range(n)
+                ]
+                cell[name]["rowmatch"] = m
+                print(f"  {fmt} {name}: rowmatch {m}")
             print(
                 f"  {fmt} {name}: device {us:.1f}us/call "
                 f"(graph {NCAP}x{NREPLAY}) canary {d:.2e}"

@@ -1,0 +1,10 @@
+p204_graphtime -- device=xpu, ctx=32768, ncap=32, replays=50, torch=2.13.0+xpu
+  mxfp4 v2: device 1090.3us/call (graph 32x50) canary 0.00e+00
+  mxfp4 native_auto: device 1040.0us/call (graph 32x50) canary 0.00e+00
+  mxfp4 native_16: rowmatch [[0.061523, 0.101318], [0.095459, 0.069855]]
+  mxfp4 native_16: device 885.4us/call (graph 32x50) canary 6.99e-02
+  mxfp4 v5_es-vs-v2_es eager cross: 2.22e-04
+  mxfp4 v2_es: device 4087.9us/call (graph 32x50) canary 0.00e+00
+  mxfp4 v5_es: device 4398.6us/call (graph 32x50) canary 0.00e+00
+  mxfp4 native_es: device 1274.6us/call (graph 32x50) canary 0.00e+00
+P204_DONE

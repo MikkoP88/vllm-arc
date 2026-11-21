@@ -1,0 +1,24 @@
+=== [r212i3] W14 quiesce 08:32:25 ===
+=== [r212i3:P1_1k] P204_CTX=1024 P204_SPLITS=auto,16 P204_MAXSK=cap P204_PLANLEN=cap P204_POISON=1 P204_ROWPROBE=1 08:32:41 ===
+=== [r212i3:P1_1k] exit rc=0 08:33:36 ===
+=== [r212i3:P2_8k] P204_CTX=8192 P204_SPLITS=auto,16 P204_MAXSK=cap P204_PLANLEN=cap P204_POISON=1 P204_ROWPROBE=1 08:33:36 ===
+=== [r212i3:P2_8k] exit rc=0 08:34:34 ===
+=== [r212i3:P3_32k] P204_CTX=32768 P204_SPLITS=auto,16 P204_MAXSK=cap P204_PLANLEN=cap P204_POISON=1 P204_ROWPROBE=1 08:34:34 ===
+=== [r212i3:P3_32k] exit rc=0 08:35:46 ===
+=== [r212i3:E_orc] P204_CTX=8192 P204_SPLITS=auto,5,16 P204_MAXSK=cap 08:35:46 ===
+=== [r212i3:E_orc] exit rc=0 08:36:45 ===
+=== [r212i3] gate 08:36:45 ===
+r212i3 — poison/rowprobe on forced-16 (auto must stay clean)
+ P1_1k ctx=1024: auto 598.45 us canary 0.0 | s16 301.59 us canary 0.696289
+  AUTO_CANARY_FAIL
+  s16 nan_left=0 ref_absmax=0.675781 rowmatch=[[0.696289, 0.501953], [0.813477, 0.36084]] -> WRONG_VALUES
+ P2_8k ctx=8192: auto 422.93 us canary 0.0 | s16 246.92 us canary 0.156708
+  AUTO_CANARY_FAIL
+  s16 nan_left=0 ref_absmax=0.11377 rowmatch=[[0.112961, 0.165771], [0.214844, 0.156708]] -> WRONG_VALUES
+ P3_32k ctx=32768: auto 1039.97 us canary 0.0 | s16 885.42 us canary 0.069855
+  AUTO_CANARY_FAIL
+  s16 nan_left=0 ref_absmax=0.064453 rowmatch=[[0.061523, 0.101318], [0.095459, 0.069855]] -> WRONG_VALUES
+ E_orc oracle vs r212i_8192: REPRODUCED
+R212I3_GATE_FAIL
+R212I3_DONE rc=1 2026-11-21T08:36:45Z
+W14_RESTORE_FIRED_fullres 2026-11-21T08:36:45Z
