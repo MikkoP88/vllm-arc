@@ -53,28 +53,41 @@ correctly); the engine froze 1. The "~100× offline-vs-engine" gap
 in the launch4 verdict was split starvation, not harness overhead
 alone.
 
-## Fix (r212c) — FALSIFIED, and what that proves
+## Fix (r212c) — ~~FALSIFIED~~ NO-OP (correction, same day)
 
 The one-line bridge change (`native_decode.py` md5 `19934f1c…`:
 `max_seqlen_k = bt_width × block_size` = 262400) ran as `r212c_min`
 (`r212c_falsified/`): telemetry confirms `max_seqlen_k=262400` at
 every capture, and the ITLs are **byte-identical** to the splits=1
-run (497.9/960.3/558.2 vs 497.8/960.3/549.7 ms). Two laws fall out:
+run (497.9/960.3/558.2 vs 497.8/960.3/549.7 ms).
 
-1. **The e2e native cost is insensitive to num_kv_splits (1 vs the
-   64 the heuristic now prices) — the serialized-walk theory is
-   dead.** The fork's kernel parallelism at this shape is not
-   split-driven.
-2. **The walk is not max_seqlen_k-bounded** — r212b ran
-   max_seqlen_k=9 without truncating long-ctx attention (accuracy
-   passed at 32K), so the true walk bound is the per-row
-   device-side limit (cu_seqlens_k), and max_seqlen_k only feeds
-   split pricing.
+**2026-11-21 correction — the falsification was a NO-OP.** Code
+audit of md5 `19934f1c` (the exact bytes that ran): the change
+computed `_max_sk` and printed it in the telemetry line, but the
+CALL still passed `max_seqlen_k=int(max_seq_len)` — the diluted
+value (9/13/18/5). git -p confirms no commit ever changed the
+argument. The byte-identical ITLs were guaranteed by construction
+and prove nothing:
+
+1. ~~The e2e native cost is insensitive to num_kv_splits~~
+   **UNPROVEN — split starvation is REOPENED as the primary
+   suspect.** Tested properly by the r212f offline ladder
+   (`P204_MAXSK` int literal; cells ctx / m9 / cap at c32768
+   eshape).
+2. **The walk is not max_seqlen_k-bounded** — this law STANDS on
+   r212b's own accuracy evidence (32K attention correct at
+   max_seqlen_k=9): the true walk bound is the per-row device-side
+   limit (cu_seqlens_k), and max_seqlen_k only feeds split pricing.
 
 Also: n8 (32 rows) costs only +12% over n1 (4 rows) — the cost is
 nearly batch-independent, ∝ real ctx (~29 µs/token/1K ctx),
 ~40× the p204 per-call number at the same nominal shape (1 seq, 32K,
-4 rows: ~53 ms/layer e2e vs 1.27 ms/call offline). The remaining
+4 rows: ~53 ms/layer e2e vs 1.27 ms/call offline). [Correction
+addendum: under the reopened split-starvation hypothesis this
+batch-independence is exactly row-parallel saturation — wall ∝
+per-workgroup walk latency — not evidence against it. The r212d
+cells (ctx=32768 / cap=262400) both price sane splits and never
+tested the diluted 9.] The remaining
 engine-vs-harness deltas are the pool/bt shapes — r212d-diag
 (`tools/ar/p147_mxkv/r212d_diag.sh` + p204 knobs
 `P204_POOLBLKS/P204_BTWIDTH/P204_BTPAD/P204_MAXSK`) reproduces each

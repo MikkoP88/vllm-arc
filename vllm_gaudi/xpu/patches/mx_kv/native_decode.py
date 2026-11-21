@@ -80,26 +80,31 @@ def mx_decode_native(
         if q_rows.dtype == torch.bfloat16
         else q_rows.to(torch.bfloat16)
     )
-    # r212c-e2e walk-extent law (2026-11-21): max_seqlen_k FREEZES per
-    # captured graph, and the C++ auto-split heuristic prices the split
-    # count from it (kv_tiles = ceil(max_seqlen_k/16)). The metadata's
-    # max_seq_len is the capture DUMMY's diluted value (observed 9/13/
-    # 18/5 across buckets, r212b telemetry) -> splits froze at 1 and
-    # every replayed step walked its full real KV on ONE workgroup per
-    # (row, kv-head) — 6.5-8.6x the Triton lane at n1, 1.4x at n8
-    # (row-parallelism dependence was the tell). Price it at the
-    # bucket's walk CAPACITY (bt width x block_size): the kernel's
-    # per-row device-side limits bound the true walk (correctness is
-    # independent of this value), so the frozen split count simply
-    # covers the worst-case replay class; short rows early-exit their
-    # splits.
+    # r212f walk-extent fix (2026-11-21, no-op-falsification audit):
+    # max_seqlen_k FREEZES per captured graph, and the C++ auto-split
+    # heuristic prices the split count from it (kv_tiles =
+    # ceil(max_seqlen_k/16)). The metadata's max_seq_len is the capture
+    # DUMMY's diluted value (observed 9/13/18/5 across buckets, r212b
+    # telemetry) -> splits freeze at 1 and every replayed step walks
+    # its full real KV on ONE workgroup per (row, kv-head). The first
+    # r212c "fix" (45eac0fe) was a NO-OP: it computed the capacity and
+    # printed it in the telemetry line but still passed
+    # int(max_seq_len) to the kernel — the "falsified" byte-identical
+    # ITLs disproved nothing, and the r212d cells (ctx/cap) never
+    # tested the diluted value itself. Price it at the bucket's walk
+    # CAPACITY (bt width x block_size): the kernel's per-row
+    # device-side limits bound the true walk (r212b accuracy passed at
+    # max_seqlen_k=9 with 32K ctx — the arg never truncates), so the
+    # frozen split count simply covers the worst-case replay class;
+    # short rows early-exit their splits. Validated offline by the
+    # r212f mseq ladder before any e2e.
     _max_sk = int(bt_rows.shape[1]) * int(kv_cache.shape[1])
     _tkey = (fmt, n_rows, _max_sk, int(bt_rows.shape[1]))
     if _tkey not in _telemetry_logged:
         _telemetry_logged.add(_tkey)
         logging.getLogger("vllm.mx_native").info(
             "MXKV native call fmt=%s rows=%d max_seqlen_k=%d "
-            "bt_width=%d stride=%d (r212c-e2e capacity-priced walk)",
+            "bt_width=%d stride=%d (r212f capacity-priced walk)",
             fmt,
             n_rows,
             _max_sk,
@@ -113,6 +118,6 @@ def mx_decode_native(
         cu_q,
         sl_rows.to(torch.int32),
         bt_rows,
-        max_seqlen_k=int(max_seq_len),
+        max_seqlen_k=_max_sk,
         softmax_scale=sm_scale,
     )

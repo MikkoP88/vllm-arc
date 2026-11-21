@@ -65,7 +65,9 @@ CTX = int(os.environ.get("P204_CTX", "1024"))
 #   P204_BTPAD     zero (harness default) | stale (random valid block
 #                  ids — the engine's stale beyond-fill entries)
 #   P204_MAXSK     ctx (harness default: max real len) | cap
-#                  (bt_width x block — the r212c bridge posture)
+#                  (bt_width x block — the r212c bridge posture) | any
+#                  int literal (r212f: the engine's DUMMY-diluted
+#                  freeze — 9/13/18/5 observed across buckets)
 POOLBLKS = int(os.environ.get("P204_POOLBLKS", "0"))
 BTWIDTH = int(os.environ.get("P204_BTWIDTH", "0"))
 BTPAD = os.environ.get("P204_BTPAD", "zero")
@@ -257,6 +259,16 @@ def main():
         if MAXSK == "cap":
             # r212d-diag: the r212c bridge posture — capacity-priced
             mseq = bt.shape[1] * BLOCK
+        elif MAXSK != "ctx":
+            # r212f: literal — the engine's DUMMY-diluted freeze
+            # (r212b telemetry observed 9/13/18/5 across buckets).
+            # The no-op-falsification audit (2026-11-21): the r212c
+            # bridge "fix" only changed the TELEMETRY line — the call
+            # still passed int(max_seq_len) — so r212c_min never
+            # tested capacity pricing, and the r212d cells (ctx/cap)
+            # never tested the value the engine actually freezes.
+            # This cell closes that hole.
+            mseq = int(MAXSK)
 
         # native cells: "auto" (heuristic, engine bridge shape) + forced
         # split postures with prebuilt plans (device-only re-calibration
