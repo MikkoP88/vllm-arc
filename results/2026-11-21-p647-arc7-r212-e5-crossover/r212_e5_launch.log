@@ -1,0 +1,43 @@
+=== [r212e5] W14 quiesce 00:46:18 ===
+=== [r212e5] crossover ctx 1024 00:46:34 ===
+=== [r212e5] ctx 1024 exit rc=0 00:47:12 ===
+=== [r212e5] crossover ctx 2048 00:47:12 ===
+=== [r212e5] ctx 2048 exit rc=0 00:47:50 ===
+=== [r212e5] crossover ctx 4096 00:47:50 ===
+=== [r212e5] ctx 4096 exit rc=0 00:48:27 ===
+=== [r212e5] crossover ctx 8192 00:48:28 ===
+=== [r212e5] ctx 8192 exit rc=0 00:49:06 ===
+=== [r212e5] crossover ctx 32768 00:49:06 ===
+=== [r212e5] ctx 32768 exit rc=0 00:49:49 ===
+  mxfp4 native_auto: device 146.6us/call (graph 32x50) canary 0.00e+00
+  mxfp4 native_auto: device 155.5us/call (graph 32x50) canary 0.00e+00
+  mxfp4 native_auto: device 172.4us/call (graph 32x50) canary 0.00e+00
+  mxfp4 native_auto: device 233.6us/call (graph 32x50) canary 0.00e+00
+  mxfp4 native_auto: device 310.8us/call (graph 32x50) canary 0.00e+00
+  mxfp4 v2: device 184.5us/call (graph 32x50) canary 0.00e+00
+  mxfp4 v2: device 42.8us/call (graph 32x50) canary 0.00e+00
+  mxfp4 v2: device 62.6us/call (graph 32x50) canary 0.00e+00
+  mxfp4 v2: device 648.2us/call (graph 32x50) canary 0.00e+00
+  mxfp4 v2: device 98.2us/call (graph 32x50) canary 0.00e+00
+  mxfp8 native_auto: device 202.8us/call (graph 32x50) canary 0.00e+00
+  mxfp8 native_auto: device 211.6us/call (graph 32x50) canary 0.00e+00
+  mxfp8 native_auto: device 228.9us/call (graph 32x50) canary 0.00e+00
+  mxfp8 native_auto: device 327.9us/call (graph 32x50) canary 0.00e+00
+  mxfp8 native_auto: device 422.2us/call (graph 32x50) canary 0.00e+00
+  mxfp8 v2: device 107.8us/call (graph 32x50) canary 0.00e+00
+  mxfp8 v2: device 208.6us/call (graph 32x50) canary 0.00e+00
+  mxfp8 v2: device 49.7us/call (graph 32x50) canary 0.00e+00
+  mxfp8 v2: device 65.2us/call (graph 32x50) canary 0.00e+00
+  mxfp8 v2: device 759.6us/call (graph 32x50) canary 0.00e+00
+  mxk8v4 native_auto: device 138.4us/call (graph 32x50) canary 0.00e+00
+  mxk8v4 native_auto: device 147.2us/call (graph 32x50) canary 0.00e+00
+  mxk8v4 native_auto: device 164.1us/call (graph 32x50) canary 0.00e+00
+  mxk8v4 native_auto: device 219.4us/call (graph 32x50) canary 0.00e+00
+  mxk8v4 native_auto: device 307.5us/call (graph 32x50) canary 0.00e+00
+  mxk8v4 v2: device 126.1us/call (graph 32x50) canary 0.00e+00
+  mxk8v4 v2: device 1558.5us/call (graph 32x50) canary 0.00e+00
+  mxk8v4 v2: device 211.8us/call (graph 32x50) canary 0.00e+00
+  mxk8v4 v2: device 417.1us/call (graph 32x50) canary 0.00e+00
+  mxk8v4 v2: device 84.0us/call (graph 32x50) canary 0.00e+00
+R212_E5_DONE rc=0 2026-11-21T00:49:49Z
+W14_RESTORE_FIRED_fullres 2026-11-21T00:49:49Z
