@@ -37,11 +37,16 @@ _MXKV_DIR = (
     Path(__file__).resolve().parents[3] / "vllm_gaudi" / "xpu" / "patches" / "mx_kv"
 )
 
-D = 128
+# Geometry: env-parameterized since r212b (fail2 law) — the r208-r212
+# ladder ran D=128/HREP=4/BLOCK=16, calibrated off the config's GDN
+# linear head dim. The e2e target qwen3.8-27b-fp8 (TP2) is head_dim 256,
+# HQ 12 / HK 2 (G 6), engine pool page 64: P204_D=256 P204_HREP=6
+# P204_BLOCK=64 reproduces the engine's real kernel geometry.
+D = int(os.environ.get("P204_D", "128"))
 HK = 2
-HREP = 4
+HREP = int(os.environ.get("P204_HREP", "4"))
 HQ = HK * HREP
-BLOCK = 16
+BLOCK = int(os.environ.get("P204_BLOCK", "16"))
 DEV = "xpu"
 FMTS = tuple(
     f

@@ -194,16 +194,15 @@ void cutlass_mx_paged_decode_xe2(
       " at D=",
       head_size);
   TORCH_CHECK(
-      head_size == 128,
+      head_size == 128 || head_size == 256,
       "mx_paged_decode: head_size ",
       head_size,
-      " not yet compiled (first-cut arc7 instantiations cover D=128; "
-      "widen mx_paged_decode.hpp's dispatch set to add buckets)");
+      " not yet compiled (arc7 instantiations cover D=128/256)");
   TORCH_CHECK(
-      block_size == 16,
+      block_size == 16 || block_size == 64,
       "mx_paged_decode: block_size ",
       block_size,
-      " not yet compiled (first-cut arc7 covers page 16)");
+      " not yet compiled (arc7 covers page 16/64)");
   TORCH_CHECK(
       query.stride(-1) == 1 && mx_cache.stride(-1) == 1,
       "mx_paged_decode: query and cache must be contiguous in the last "
@@ -316,8 +315,21 @@ void cutlass_mx_paged_decode_xe2(
   // qgroup bucket: the decode kernel tiles the GQA head-group across
   // the grid's Q dimension (stock law, paged_decode_xe2.cpp).
   const int num_q_group_size = num_heads_q / num_heads_kv;
-  auto dispatch_fmt = [&](auto qgroup) {
-    using policy_t = decode_policy_qpacked_head<decltype(qgroup), _128, _16>;
+  // r212b geometry widening (fail2 law, 2026-11-21): the e2e target
+  // qwen3.8-27b-fp8 carries head_dim 256 at engine pool page 64 (TP2:
+  // HQ 12 / HK 2 / G 6 -> the _8 qgroup). The first-cut set (D=128
+  // page 16) was calibrated off the config's GDN linear head dim, not
+  // the full-attention head_dim. Policies and kernels are shape-generic
+  // (mx_paged_decode.hpp) — only the instantiation set widens:
+  //   128/16  certified offline-calibration cell (r208-r212 ladder)
+  //   256/16  head-width isolation at the harness pool's page
+  //   256/64  the e2e engine pool page (vendor _64 policy; services any
+  //           64-multiple block size via the page-table indirection)
+  auto dispatch_fmt = [&](auto qgroup, auto head, auto page) {
+    using policy_t = decode_policy_qpacked_head<
+        decltype(qgroup),
+        decltype(head),
+        decltype(page)>;
     switch (fmt_id) {
       case 0:
         mx_decode_policy_dispatch<policy_t, MxFormat::mxfp8>(queue, args);
@@ -330,9 +342,26 @@ void cutlass_mx_paged_decode_xe2(
         break;
     }
   };
+  auto dispatch_geom = [&](auto qgroup) {
+    if (head_size == 128 && block_size == 16) {
+      dispatch_fmt(qgroup, _128{}, _16{});
+    } else if (head_size == 256 && block_size == 16) {
+      dispatch_fmt(qgroup, _256{}, _16{});
+    } else if (head_size == 256 && block_size == 64) {
+      dispatch_fmt(qgroup, _256{}, _64{});
+    } else {
+      TORCH_CHECK(
+          false,
+          "mx_paged_decode: no instantiation for D=",
+          head_size,
+          " page=",
+          block_size,
+          " (compiled: 128/16, 256/16, 256/64)");
+    }
+  };
   if (num_q_group_size <= 8) {
-    dispatch_fmt(_8{});
+    dispatch_geom(_8{});
   } else {
-    dispatch_fmt(_16{});
+    dispatch_geom(_16{});
   }
 }
