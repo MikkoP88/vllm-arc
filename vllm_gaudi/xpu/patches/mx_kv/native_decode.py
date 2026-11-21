@@ -22,10 +22,19 @@ legs.
 
 from __future__ import annotations
 
+import logging
+
 import torch
 
 _checked = False
 _mx_paged_decode = None
+# r212b capture telemetry (2026-11-21): the launch4 A/B showed the
+# e2e native cost ~100x the offline per-call map at matched walked
+# rows — the frozen walk extent is the suspect. One line per
+# (fmt, rows, max_seqlen_k, bt width) class, logged at CAPTURE time
+# (decode replays never re-run this python), so the serve log carries
+# exactly the bucket classes the engine froze and their walk bounds.
+_telemetry_logged: set[tuple] = set()
 
 
 def _load():
@@ -51,7 +60,7 @@ def mx_decode_native(
     bt_rows: torch.Tensor,  # (R, max_blocks) int32 — per-row block tables
     sl_rows: torch.Tensor,  # (R,) int32 — per-row causal KV limits
     sm_scale: float,
-    max_seq_len: int,  # host-known metadata field (capture law)
+    max_seq_len: int,  # metadata field — SUPERSEDED (see r212c-e2e law below)
     fmt: str,  # "mxfp8" | "mxfp4" | "mxk8v4"
 ) -> torch.Tensor:
     """One native-kernel call for the whole verify-batch step."""
@@ -71,6 +80,32 @@ def mx_decode_native(
         if q_rows.dtype == torch.bfloat16
         else q_rows.to(torch.bfloat16)
     )
+    # r212c-e2e walk-extent law (2026-11-21): max_seqlen_k FREEZES per
+    # captured graph, and the C++ auto-split heuristic prices the split
+    # count from it (kv_tiles = ceil(max_seqlen_k/16)). The metadata's
+    # max_seq_len is the capture DUMMY's diluted value (observed 9/13/
+    # 18/5 across buckets, r212b telemetry) -> splits froze at 1 and
+    # every replayed step walked its full real KV on ONE workgroup per
+    # (row, kv-head) — 6.5-8.6x the Triton lane at n1, 1.4x at n8
+    # (row-parallelism dependence was the tell). Price it at the
+    # bucket's walk CAPACITY (bt width x block_size): the kernel's
+    # per-row device-side limits bound the true walk (correctness is
+    # independent of this value), so the frozen split count simply
+    # covers the worst-case replay class; short rows early-exit their
+    # splits.
+    _max_sk = int(bt_rows.shape[1]) * int(kv_cache.shape[1])
+    _tkey = (fmt, n_rows, _max_sk, int(bt_rows.shape[1]))
+    if _tkey not in _telemetry_logged:
+        _telemetry_logged.add(_tkey)
+        logging.getLogger("vllm.mx_native").info(
+            "MXKV native call fmt=%s rows=%d max_seqlen_k=%d "
+            "bt_width=%d stride=%d (r212c-e2e capacity-priced walk)",
+            fmt,
+            n_rows,
+            _max_sk,
+            int(bt_rows.shape[1]),
+            int(kv_cache.stride(1)) if kv_cache.dim() == 4 else -1,
+        )
     return mx_paged_decode(
         q_in,
         kv_cache,

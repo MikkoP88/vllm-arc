@@ -1,0 +1,37 @@
+=== [r212b] W14 quiesce 06:29:33 ===
+=== [r212b:A_triton] boot 06:29:51 minlen='mxfp4:999999999' ===
+HEALTH_OK_r212b_A_triton 06:36:47
+CONC_OK_c16384_n1
+CONC_OK_c32768_n1
+CONC_OK_c16384_n8
+=== [r212b:A_triton] done 06:39:13 ===
+=== [r212b:B_native] boot 06:39:13 minlen='default' ===
+HEALTH_OK_r212b_B_native 06:44:18
+CONC_OK_c16384_n1
+CONC_OK_c32768_n1
+CONC_OK_c16384_n8
+=== [r212b:B_native] done 06:47:55 ===
+=== [r212b] report 06:47:55 ===
+r212b A/B -- ITL p50 ms/token (itl_ms_p50 mean over slots)
+ A_triton  c16384_n1  itl     76.1 ms  n_ok 1
+ A_triton  c32768_n1  itl    111.9 ms  n_ok 1
+ A_triton  c16384_n8  itl    382.6 ms  n_ok 8
+ B_native  c16384_n1  itl    497.8 ms  n_ok 1
+ B_native  c32768_n1  itl    960.3 ms  n_ok 1
+ B_native  c16384_n8  itl    549.7 ms  n_ok 8
+=== [r212b] telemetry (B) ===
+(Worker_TP1 pid=1173) INFO 11-21 06:42:59 [native_decode.py:86] MXKV native call fmt=mxfp4 rows=148 max_seqlen_k=9 bt_width=4100 stride=544 (r212b capture telemetry)
+(Worker_TP0 pid=1061) INFO 11-21 06:42:59 [native_decode.py:86] MXKV native call fmt=mxfp4 rows=148 max_seqlen_k=9 bt_width=4100 stride=544 (r212b capture telemetry)
+(Worker_TP1 pid=1173) INFO 11-21 06:43:03 [native_decode.py:86] MXKV native call fmt=mxfp4 rows=4 max_seqlen_k=13 bt_width=4100 stride=544 (r212b capture telemetry)
+(Worker_TP0 pid=1061) INFO 11-21 06:43:03 [native_decode.py:86] MXKV native call fmt=mxfp4 rows=4 max_seqlen_k=13 bt_width=4100 stride=544 (r212b capture telemetry)
+(Worker_TP1 pid=1173) INFO 11-21 06:43:03 [native_decode.py:86] MXKV native call fmt=mxfp4 rows=4 max_seqlen_k=18 bt_width=4100 stride=544 (r212b capture telemetry)
+(Worker_TP0 pid=1061) INFO 11-21 06:43:03 [native_decode.py:86] MXKV native call fmt=mxfp4 rows=4 max_seqlen_k=18 bt_width=4100 stride=544 (r212b capture telemetry)
+(Worker_TP1 pid=1173) INFO 11-21 06:43:23 [native_decode.py:86] MXKV native call fmt=mxfp4 rows=256 max_seqlen_k=5 bt_width=4100 stride=544 (r212b capture telemetry)
+(Worker_TP0 pid=1061) INFO 11-21 06:43:23 [native_decode.py:86] MXKV native call fmt=mxfp4 rows=256 max_seqlen_k=5 bt_width=4100 stride=544 (r212b capture telemetry)
+=== [r212b] dispatch (A/B) ===
+(Worker_TP1 pid=1166) INFO 11-21 06:33:36 [engine.py:1169] MXKV native dispatch fmt=mxfp4 rows=148 walked_cap=38835200 minlen=999999999 -> triton (E5b crossover)
+(Worker_TP0 pid=1060) INFO 11-21 06:33:36 [engine.py:1169] MXKV native dispatch fmt=mxfp4 rows=148 walked_cap=38835200 minlen=999999999 -> triton (E5b crossover)
+(Worker_TP1 pid=1173) INFO 11-21 06:42:59 [engine.py:1169] MXKV native dispatch fmt=mxfp4 rows=148 walked_cap=38835200 minlen=8192 -> native (E5b crossover)
+(Worker_TP0 pid=1061) INFO 11-21 06:42:59 [engine.py:1169] MXKV native dispatch fmt=mxfp4 rows=148 walked_cap=38835200 minlen=8192 -> native (E5b crossover)
+R212B_DONE 2026-11-21T06:47:55Z
+W14_RESTORE_FIRED_fullres 2026-11-21T06:47:55Z
