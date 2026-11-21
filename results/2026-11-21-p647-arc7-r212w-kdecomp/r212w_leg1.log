@@ -1,0 +1,32 @@
+9060d4e75b9ca342d404250440fda213  /root/build/wheels-arc-vxk/vllm_xpu_kernels-0.1.14.1+arc7mx-cp312-cp312-linux_x86_64.whl
+=== [r212w] W14 quiesce 20:57:36 ===
+=== [r212w:vp0:c32768] 20:57:53 ===
+=== [r212w:vp0:c32768] exit rc=0 20:59:52 ===
+=== [r212w:vp11:c32768] 20:59:52 ===
+=== [r212w:vp11:c32768] exit rc=0 21:01:44 ===
+=== [r212w:vp17:c32768] 21:01:44 ===
+=== [r212w:vp17:c32768] exit rc=0 21:03:44 ===
+=== [r212w:vp18:c32768] 21:03:44 ===
+=== [r212w:vp18:c32768] exit rc=0 21:05:35 ===
+=== [r212w:vp20:c32768] 21:05:35 ===
+=== [r212w:vp20:c32768] exit rc=0 21:07:32 ===
+=== [r212w] gate 21:07:32 ===
+r212w k-decomposition (mxfp4 32K, same wheel)
+  m0  (K real + V real)            996.3
+  m11 (K const + V light)          430.1
+  m17 (K real + V light)          1025.7
+  m18 (K real, reorder severed)    430.6
+  m20 (K light tail + reorder)     769.5
+  pool (m0-m11):                   566.2 us
+  k_lane (m17-m11):                595.5 us
+  (c) reorder share (m17-m18):     595.1 us  (100% of k_lane)
+  (a)+(b) loads+decode (m18-m11):    0.5 us
+  (a)+(c) staging+reorder:         339.3 us
+  (a) staging/loads/extracts:     -255.7 us
+  (b) decode:                      256.2 us
+  m8 m0 oracle: 1770.5 (+34.1% vs r212q 1320.5) FAIL (wheel dice-regressed; absolutes directional only)
+M8_STABILITY_FAIL
+FORK: re-roll the dice (same tree, new build) before acting on absolutes; the layout sensitivity itself is suspect
+R212W_GATE_FAIL
+R212W_DONE rc=1 2026-11-21T21:07:32Z
+W14_RESTORE_FIRED_fullres 2026-11-21T21:07:32Z
