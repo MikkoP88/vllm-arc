@@ -72,12 +72,31 @@ At D=256 **v2 beats v5 for mxfp4 at every ctx** (221 vs 477 at 1K,
 D=128 calibration. Retuning the Triton lane chain is a separate
 certified-baseline change (affects the dispatch-off A/B too).
 
+## r212c2 run-2 (build21, the split-pricing fix) — GATE_PASS
+
+Run-1 (build20, `r212c2_run1/`) proved the SG-law numerics (all
+canaries 0.00) but native ran ~2× slow: the auto-split heuristic
+priced kv_tiles by the POOL's block_size — 4× fewer tiles/splits at
+page 64. Build21 prices the auto call at the WALKED tile (16;
+mx_paged_decode_xe2.cpp r212c2 law comment). Run-2
+(`r212c2_run2/`, `r212c2_launch2.log`, R212C2_GATE_PASS rc=0):
+
+- **eng256p64 native = the eng256p16 proxy class**: 643.7/599.4/604.8
+  µs @1K vs proxy 644.1/598.7/605.0; deltas ±0.2-4.4 µs at 1K-8K,
+  +20 µs (1%) at 32K mxfp8/mxk8v4. Run-1's 1147-1236 @1K fully
+  recovered — the 2× was the split heuristic, nothing else.
+- **reg128p16 spots exact**: 328.1/233.9/219.7 @1K, 572.5/349.3/448.6
+  @32K (banked: 328.3/234.1/219.7, 573.8/349.4/448.6) — page-16
+  behavior unchanged by the fix, as designed.
+- Crossings at the engine-true geometry confirm the thresholds:
+  mxfp4/mxk8v4 cross by walked Σ 8K, mxfp8 by Σ 16K.
+
 ## Next
 
-- r212c2: eng256p64 rerun on build20 (the SG-law fix) — canary gate +
-  the engine-pool-true times; reg128p16 spot re-check.
-- Then r212a launch4 (e2e) with the thresholds above.
-- r212d: multi-SG staging for the true p64 tile (short-ctx fixed term).
+- r212a launch4 (e2e) on build21 + the recalibrated overlay — in
+  flight (`r212a_launch4.log`).
+- r212d: multi-SG staging for the true p64 tile (short-ctx fixed
+  term; must revisit the SG law and the split pricing together).
 - Lane retune lever above (own leg).
 
 ## Artifacts
