@@ -1,0 +1,12 @@
+c8396abbc69b562e88d9996d16c2a637  /root/build/wheels-arc-vxk/vllm_xpu_kernels-0.1.14.1+arc7mx-cp312-cp312-linux_x86_64.whl
+=== [r212z] W14 quiesce 23:09:51 ===
+=== [r212z:vp0:c32768] 23:10:08 ===
+=== [r212z:vp0:c32768] exit rc=0 23:12:14 ===
+=== [r212z:vp11:c32768] 23:12:14 ===
+=== [r212z:vp11:c32768] exit rc=0 23:14:16 ===
+=== [r212z:vp17:c32768] 23:14:16 ===
+=== [r212z:vp17:c32768] exit rc=0 23:16:23 ===
+=== [r212z] gate 23:16:23 ===
+M0_MISSING
+R212Z_DONE rc=1 2026-11-21T23:16:23Z
+W14_RESTORE_FIRED_fullres 2026-11-21T23:16:23Z
