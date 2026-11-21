@@ -63,6 +63,13 @@ confirmed free, from the kernel side.
 
 ### 3. The "fixed floor" is the auto heuristic's own partitioning (r212i)
 
+> **SUPERSEDED (same day, r212j/r212j2)**: the headroom table below
+> is retracted — the forced-cell timings measured a 4× under-walk
+> (tile-unit ABI defect, see
+> `results/2026-11-21-p647-arc7-r212j-plan-abi/`). The honest curve
+> shows auto BEATS every uniform forced split (1.67×/2.55× at
+> 8K/32K); the floor is real work, not bad partitioning.
+
 The post-r212g decomposition question was whether the ~600 µs fixed
 per-call excess (native 1K ≈ 598 µs vs v2_es 222 µs) prices
 split-plan machinery or launch/indirection. Answer: neither — it is

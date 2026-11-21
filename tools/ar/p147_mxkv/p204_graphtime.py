@@ -124,7 +124,6 @@ slot_bytes = mxkv.slot_bytes
 
 from vllm_xpu_kernels.flash_attn_interface import (  # noqa: E402
     _infer_num_xe_cores,
-    _kv_tile_from_block_size,
 )
 from vllm_xpu_kernels.mx_attn_interface import (  # noqa: E402
     _FORMATS,
@@ -249,7 +248,17 @@ def main():
         host_lens = torch.tensor(lens)
         if PLANLEN == "cap":
             host_lens = torch.full_like(host_lens, bt.shape[1] * BLOCK)
-        kt = _kv_tile_from_block_size(BLOCK)
+        # r212j TILE-UNIT LAW (2026-11-21, source-proven): the MX decode
+        # kernel walks 16-row tiles at EVERY page (mx_paged_decode_xe2.cpp
+        # dispatch — page-64 pools ride the _16 policy per the r212c SG
+        # law; "every admitted geometry walks 16-row tiles"). The stock
+        # mirror _kv_tile_from_block_size returns the STOCK kernel's unit
+        # (16/32/64 by page) — at BLOCK=64 the builder partitioned in
+        # 64-token tiles while the kernel reads wl_tile_start/count as
+        # 16-row indices -> plans covered 1/4 of the KV -> the r212i/i2/i3
+        # wrong-values law. BLOCK=16 coincided (16==16), which is why the
+        # r210 ladder passed.
+        kt = int(os.environ.get("P204_KVT", "16"))
         ncores = _infer_num_xe_cores(torch.device(DEV))
         op = torch.ops._vllm_fa2_C.mx_paged_decode
 

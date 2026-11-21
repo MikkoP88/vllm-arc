@@ -1,0 +1,18 @@
+=== [r212j2] W14 quiesce 10:32:41 ===
+=== [r212j2:c1024] 10:32:57 ===
+=== [r212j2:c1024] exit rc=0 10:33:56 ===
+=== [r212j2:c8192] 10:33:56 ===
+=== [r212j2:c8192] exit rc=0 10:35:14 ===
+=== [r212j2:c32768] 10:35:14 ===
+=== [r212j2:c32768] exit rc=0 10:37:45 ===
+=== [r212j2] gate 10:37:45 ===
+r212j2 REAL-plan split curve (kt=16, PLANLEN=real) -- us/call, mxfp4, MAXSK=cap, graph 32x50
+    ctx |      auto |        s1 |        s5 |       s16 |       s64
+   1024 |     598.4 |    1147.6 |     603.8 |     618.8 |     618.6
+   8192 |     422.9 |    9097.4 |    1854.0 |     706.6 |     706.7
+  32768 |    1040.0 |   36323.0 |    7306.2 |    2649.3 |    2649.4
+s1 (plan walk, direct write, no reduce): CLEAN
+multi-split (partials + reduce):         CLEAN
+R212J2_GATE_PASS
+R212J2_DONE rc=0 2026-11-21T10:37:45Z
+W14_RESTORE_FIRED_fullres 2026-11-21T10:37:45Z
