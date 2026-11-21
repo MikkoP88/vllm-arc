@@ -1,0 +1,19 @@
+ee1724bbae0764461e7b2e8f29e24f22  /root/build/wheels-arc-vxk/vllm_xpu_kernels-0.1.14.1+arc7mx-cp312-cp312-linux_x86_64.whl
+=== [r212x] W14 quiesce 21:58:22 ===
+=== [r212x:vp0:c32768] 21:58:39 ===
+=== [r212x:vp0:c32768] exit rc=0 22:00:39 ===
+=== [r212x:vp11:c32768] 22:00:39 ===
+=== [r212x:vp11:c32768] exit rc=0 22:02:30 ===
+=== [r212x:vp17:c32768] 22:02:30 ===
+=== [r212x:vp17:c32768] exit rc=0 22:04:30 ===
+=== [r212x] gate 22:04:30 ===
+r212x k-reorder deletion (mxfp4 32K, same wheel)
+  m0  (K->tSrK + V real)     995.9   (r212u clean anchor 718.0)
+  m11 (K const + V light)    417.6
+  m17 (K->tSrK + V light)   1017.6   k_lane now  +600.1
+  m8 m0 oracle: 1775.8 (+34.5% vs r212q 1320.5) FAIL (region dice again; absolutes directional)
+FORK: NO GAIN — the cost moved (scalar walk) or dice; compare k_lane vs r212w's 595.1 before concluding
+M8_STABILITY_FAIL
+R212X_GATE_FAIL
+R212X_DONE rc=1 2026-11-21T22:04:30Z
+W14_RESTORE_FIRED_fullres 2026-11-21T22:04:30Z
