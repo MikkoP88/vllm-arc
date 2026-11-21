@@ -1,0 +1,70 @@
+[1/1] Building CXX object csrc/xpu/attn/xe_2/CMakeFiles/attn_kernels_xe_2.dir/mx/mx_paged_decode_xe2.cpp.o
+In file included from /src/vllm-xpu-kernels/csrc/xpu/attn/xe_2/mx/mx_paged_decode_xe2.cpp:14:
+In file included from /src/vllm-xpu-kernels/csrc/xpu/attn/xe_2/mx/mx_paged_decode.hpp:38:
+/src/vllm-xpu-kernels/csrc/xpu/attn/xe_2/mx/mx_types.hpp:90:1: warning: duplicate 'inline' declaration specifier [-Wduplicate-decl-specifier]
+   90 | inline float
+      | ^
+/src/vllm-xpu-kernels/csrc/xpu/attn/xe_2/mx/mx_types.hpp:106:1: warning: duplicate 'inline' declaration specifier [-Wduplicate-decl-specifier]
+  106 | inline float
+      | ^
+/src/vllm-xpu-kernels/csrc/xpu/attn/xe_2/mx/mx_types.hpp:122:1: warning: duplicate 'inline' declaration specifier [-Wduplicate-decl-specifier]
+  122 | inline void
+      | ^
+In file included from /src/vllm-xpu-kernels/csrc/xpu/attn/xe_2/mx/mx_paged_decode_xe2.cpp:14:
+In file included from /src/vllm-xpu-kernels/csrc/xpu/attn/xe_2/mx/mx_paged_decode.hpp:39:
+In file included from /src/vllm-xpu-kernels/csrc/xpu/attn/xe_2/mx/mx_paged_decode_kernel.hpp:25:
+In file included from /src/vllm-xpu-kernels/csrc/xpu/attn/xe_2/mx/mx_paged_decode_mainloop.hpp:79:
+/src/vllm-xpu-kernels/csrc/xpu/attn/xe_2/mx/mx_dequant.hpp:81:1: warning: duplicate 'inline' declaration specifier [-Wduplicate-decl-specifier]
+   81 | inline float
+      | ^
+/src/vllm-xpu-kernels/csrc/xpu/attn/xe_2/mx/mx_dequant.hpp:121:1: warning: duplicate 'inline' declaration specifier [-Wduplicate-decl-specifier]
+  121 | inline uint16_t
+      | ^
+/src/vllm-xpu-kernels/csrc/xpu/attn/xe_2/mx/mx_dequant.hpp:137:1: warning: duplicate 'inline' declaration specifier [-Wduplicate-decl-specifier]
+  137 | inline uint32_t
+      | ^
+/src/vllm-xpu-kernels/csrc/xpu/attn/xe_2/mx/mx_dequant.hpp:147:1: warning: duplicate 'inline' declaration specifier [-Wduplicate-decl-specifier]
+  147 | inline uint16_t
+      | ^
+/src/vllm-xpu-kernels/csrc/xpu/attn/xe_2/mx/mx_dequant.hpp:161:1: warning: duplicate 'inline' declaration specifier [-Wduplicate-decl-specifier]
+  161 | inline bool
+      | ^
+/src/vllm-xpu-kernels/csrc/xpu/attn/xe_2/mx/mx_dequant.hpp:168:1: warning: duplicate 'inline' declaration specifier [-Wduplicate-decl-specifier]
+  168 | inline bool
+      | ^
+9 warnings generated.
+In file included from /src/vllm-xpu-kernels/csrc/xpu/attn/xe_2/mx/mx_paged_decode_xe2.cpp:14:
+In file included from /src/vllm-xpu-kernels/csrc/xpu/attn/xe_2/mx/mx_paged_decode.hpp:38:
+/src/vllm-xpu-kernels/csrc/xpu/attn/xe_2/mx/mx_types.hpp:90:1: warning: duplicate 'inline' declaration specifier [-Wduplicate-decl-specifier]
+   90 | inline float
+      | ^
+/src/vllm-xpu-kernels/csrc/xpu/attn/xe_2/mx/mx_types.hpp:106:1: warning: duplicate 'inline' declaration specifier [-Wduplicate-decl-specifier]
+  106 | inline float
+      | ^
+/src/vllm-xpu-kernels/csrc/xpu/attn/xe_2/mx/mx_types.hpp:122:1: warning: duplicate 'inline' declaration specifier [-Wduplicate-decl-specifier]
+  122 | inline void
+      | ^
+In file included from /src/vllm-xpu-kernels/csrc/xpu/attn/xe_2/mx/mx_paged_decode_xe2.cpp:14:
+In file included from /src/vllm-xpu-kernels/csrc/xpu/attn/xe_2/mx/mx_paged_decode.hpp:39:
+In file included from /src/vllm-xpu-kernels/csrc/xpu/attn/xe_2/mx/mx_paged_decode_kernel.hpp:25:
+In file included from /src/vllm-xpu-kernels/csrc/xpu/attn/xe_2/mx/mx_paged_decode_mainloop.hpp:79:
+/src/vllm-xpu-kernels/csrc/xpu/attn/xe_2/mx/mx_dequant.hpp:81:1: warning: duplicate 'inline' declaration specifier [-Wduplicate-decl-specifier]
+   81 | inline float
+      | ^
+/src/vllm-xpu-kernels/csrc/xpu/attn/xe_2/mx/mx_dequant.hpp:121:1: warning: duplicate 'inline' declaration specifier [-Wduplicate-decl-specifier]
+  121 | inline uint16_t
+      | ^
+/src/vllm-xpu-kernels/csrc/xpu/attn/xe_2/mx/mx_dequant.hpp:137:1: warning: duplicate 'inline' declaration specifier [-Wduplicate-decl-specifier]
+  137 | inline uint32_t
+      | ^
+/src/vllm-xpu-kernels/csrc/xpu/attn/xe_2/mx/mx_dequant.hpp:147:1: warning: duplicate 'inline' declaration specifier [-Wduplicate-decl-specifier]
+  147 | inline uint16_t
+      | ^
+/src/vllm-xpu-kernels/csrc/xpu/attn/xe_2/mx/mx_dequant.hpp:161:1: warning: duplicate 'inline' declaration specifier [-Wduplicate-decl-specifier]
+  161 | inline bool
+      | ^
+/src/vllm-xpu-kernels/csrc/xpu/attn/xe_2/mx/mx_dequant.hpp:168:1: warning: duplicate 'inline' declaration specifier [-Wduplicate-decl-specifier]
+  168 | inline bool
+      | ^
+9 warnings generated.
+TU_RC=0

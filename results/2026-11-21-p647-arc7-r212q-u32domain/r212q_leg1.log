@@ -1,0 +1,15 @@
+b974b603a1c1cc58c47d11ee9149f84e  /root/build/wheels-arc-vxk/vllm_xpu_kernels-0.1.14.1+arc7mx-cp312-cp312-linux_x86_64.whl
+=== [r212q] W14 quiesce 17:18:58 ===
+=== [r212q:m0:c32768] 17:19:14 ===
+=== [r212q:m0:c32768] exit rc=0 17:21:10 ===
+=== [r212q] gate 17:21:10 ===
+r212q u32-domain one-cell (mxfp4/mxfp8 32K, r212o/r212p baselines)
+  m4 m0 (this leg)          717.7   (r212o 741.8)
+  m8 m0 (stability oracle) 1320.5   (r212o 1323.1)
+  surviving assembly cost (m4 - tail 380.7):   337.0 us   (was 361.1)
+  extract/store/walk/softmax (m11 - c8):       132.1 us
+  m8 stability: +0.2% OK (e4m3 discipline)
+FORK: PARTIAL -- u32 helps some; consider SWAR follow-on
+R212Q_GATE_PASS
+R212Q_DONE rc=0 2026-11-21T17:21:10Z
+W14_RESTORE_FIRED_fullres 2026-11-21T17:21:10Z
