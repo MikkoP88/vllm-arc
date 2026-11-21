@@ -1,0 +1,66 @@
+trace files: ['ainode01_48.async_llm.1795245934553237884.pt.trace.json.gz', 'rank0.1795245935710379537.pt.trace.json.gz', 'rank1.1795245935706672805.pt.trace.json.gz']
+
+== ainode01_48.async_llm.1795245934553237884.pt.trace.json.gz == kernel events 0 device total 0.0 ms span 43.62 s
+  [cpu_op top]
+
+== rank0.1795245935710379537.pt.trace.json.gz == kernel events 12230 device total 5614.9 ms span 43.74 s
+    3019.61 ms n=   984 max=  10597.3us          gemm_kernel
+     558.01 ms n=   396 max=   2232.4us          allreduce_large_fp8_ring<sycl::_V1::detail::half_impl::half>(void const*, void*, unsigned long,
+     556.73 ms n=   396 max=   2267.4us          allreduce_large_fp8_ring<sycl::_V1::detail::half_impl::half>(void const*, void*, unsigned long,
+     399.43 ms n=    51 max=  13153.6us          compat::experimental::detail::KernelFunctor<&(void cutlass::device_kernel<cutlass::fmha::kernel
+     155.58 ms n=   390 max=    660.5us          vllm::fused_add_rms_norm_kernel<sycl::_V1::detail::half_impl::half, 8, true>
+     126.99 ms n=   144 max=   1484.4us          gdn::ChunkFwdOKernel<cutlass::half_t, cutlass::half_t>
+     126.06 ms n=   396 max=    548.0us          allreduce_large_fp8_ring<sycl::_V1::detail::half_impl::half>(void const*, void*, unsigned long,
+     119.46 ms n=   144 max=   1302.1us          gdn::tiled_kernel_launcher<sycl::_V1::detail::half_impl::half, 4, 8, true>(sycl::_V1::queue&, s
+     102.87 ms n=   195 max=    805.6us          vllm::act_and_mul_vec_kernel<sycl::_V1::detail::half_impl::half, &(sycl::_V1::detail::half_impl
+      97.64 ms n=   396 max=    410.0us          allreduce_large_fp8_ring<sycl::_V1::detail::half_impl::half>(void const*, void*, unsigned long,
+      89.14 ms n=   399 max=   2440.1us          oneccl_invoke_barrier
+      57.74 ms n=   144 max=    601.1us          gdn::ChunkComputeWUKernel<cutlass::half_t, cutlass::half_t>
+      36.71 ms n=  1042 max=    102.5us          at::native::xpu::VectorizedElementwiseKernel<8, at::native::xpu::FillFunctor<c10::Half>, at::de
+      29.17 ms n=   144 max=    327.0us          layer_norm_fwd_kernel
+      27.53 ms n=   144 max=    237.0us          gdn::ChunkComputeAKernel<cutlass::half_t, cutlass::half_t>
+      17.13 ms n=   354 max=    309.4us          at::native::xpu::VectorizedElementwiseKernel<8, at::native::xpu::CopyScalarFunc<c10::Half>, at:
+      15.99 ms n=  1191 max=    128.9us          invoke_p2p_barrier(std::shared_ptr<ccl_comm>, sycl::_V1::queue, std::vector<sycl::_V1::event, s
+      10.20 ms n=   144 max=    110.7us          gdn::ChunkInverseOptKernel<cutlass::half_t, cutlass::half_t>
+       9.47 ms n=    51 max=    285.2us          at::native::xpu::VectorizedElementwiseKernel<8, at::native::xpu::BinaryFunctor<c10::Half, c10::
+       8.47 ms n=     3 max=   4235.4us          allgatherv_large_su_ring_chunking<sycl::_V1::detail::half_impl::half>(sycl::_V1::queue&, void c
+       6.97 ms n=    68 max=    214.8us          vllm::rms_norm_multi_row_kernel<sycl::_V1::detail::half_impl::half, 3, 8, 16, true>
+       6.45 ms n=    51 max=    202.7us          at::native::xpu::VectorizedElementwiseKernel<8, at::native::xpu::SigmoidFunctor<c10::Half>, at:
+  [cpu_op top]
+    4470.81 ms n=  5485 aten::copy_
+    4374.82 ms n=  4074 aten::to
+    4370.72 ms n=  2508 aten::_to_copy
+     401.03 ms n=   447 vllm::all_reduce
+     347.62 ms n=   447 c10d::allreduce_
+     150.55 ms n=   144 vllm::gdn_attention_core_xpu
+
+== rank1.1795245935706672805.pt.trace.json.gz == kernel events 12230 device total 5615.7 ms span 43.76 s
+    3080.16 ms n=   984 max=  11491.9us          gemm_kernel
+     557.86 ms n=   396 max=   2165.5us          allreduce_large_fp8_ring<sycl::_V1::detail::half_impl::half>(void const*, void*, unsigned long,
+     556.60 ms n=   396 max=   2150.3us          allreduce_large_fp8_ring<sycl::_V1::detail::half_impl::half>(void const*, void*, unsigned long,
+     402.57 ms n=    51 max=  13730.1us          compat::experimental::detail::KernelFunctor<&(void cutlass::device_kernel<cutlass::fmha::kernel
+     154.56 ms n=   390 max=    676.6us          vllm::fused_add_rms_norm_kernel<sycl::_V1::detail::half_impl::half, 8, true>
+     135.98 ms n=   396 max=    583.5us          allreduce_large_fp8_ring<sycl::_V1::detail::half_impl::half>(void const*, void*, unsigned long,
+     129.13 ms n=   144 max=   1547.4us          gdn::ChunkFwdOKernel<cutlass::half_t, cutlass::half_t>
+     120.13 ms n=   144 max=   1309.6us          gdn::tiled_kernel_launcher<sycl::_V1::detail::half_impl::half, 4, 8, true>(sycl::_V1::queue&, s
+     102.98 ms n=   195 max=    803.8us          vllm::act_and_mul_vec_kernel<sycl::_V1::detail::half_impl::half, &(sycl::_V1::detail::half_impl
+      99.01 ms n=   396 max=    423.8us          allreduce_large_fp8_ring<sycl::_V1::detail::half_impl::half>(void const*, void*, unsigned long,
+      58.41 ms n=   144 max=    591.5us          gdn::ChunkComputeWUKernel<cutlass::half_t, cutlass::half_t>
+      36.55 ms n=  1042 max=    100.8us          at::native::xpu::VectorizedElementwiseKernel<8, at::native::xpu::FillFunctor<c10::Half>, at::de
+      29.28 ms n=   144 max=    311.7us          layer_norm_fwd_kernel
+      27.95 ms n=   144 max=    245.8us          gdn::ChunkComputeAKernel<cutlass::half_t, cutlass::half_t>
+      21.95 ms n=   399 max=   1587.5us          oneccl_invoke_barrier
+      17.24 ms n=   354 max=    312.5us          at::native::xpu::VectorizedElementwiseKernel<8, at::native::xpu::CopyScalarFunc<c10::Half>, at:
+      10.43 ms n=   144 max=    129.7us          gdn::ChunkInverseOptKernel<cutlass::half_t, cutlass::half_t>
+       9.65 ms n=    51 max=    311.7us          at::native::xpu::VectorizedElementwiseKernel<8, at::native::xpu::BinaryFunctor<c10::Half, c10::
+       8.47 ms n=     3 max=   4234.3us          allgatherv_large_su_ring_chunking<sycl::_V1::detail::half_impl::half>(sycl::_V1::queue&, void c
+       7.08 ms n=    68 max=    200.5us          vllm::rms_norm_multi_row_kernel<sycl::_V1::detail::half_impl::half, 3, 8, 16, true>
+       6.67 ms n=    57 max=    141.8us          oneccl_allgatherv_pcie<sycl::_V1::detail::half_impl::half, Rt64_128_PCIE, false, 16>
+       6.53 ms n=    51 max=    205.6us          at::native::xpu::VectorizedElementwiseKernel<8, at::native::xpu::SigmoidFunctor<c10::Half>, at:
+  [cpu_op top]
+    4484.25 ms n=  5485 aten::copy_
+    4362.12 ms n=  4074 aten::to
+    4358.37 ms n=  2508 aten::_to_copy
+     406.80 ms n=   447 vllm::all_reduce
+     354.65 ms n=   447 c10d::allreduce_
+     150.32 ms n=   144 vllm::gdn_attention_core_xpu
