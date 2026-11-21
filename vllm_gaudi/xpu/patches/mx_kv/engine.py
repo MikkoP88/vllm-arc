@@ -156,6 +156,37 @@ _V5_DEFAULT = ("mxfp8", "mxk8v4")
 # warning rides shape builds only). Validation ladder: r198 offline
 # correctness -> r199 T1 perf -> r200 fastcycle -> r201 battery -> cert26.
 _NATIVE = os.environ.get("ARC_MXKV_NATIVE", "") == "1"
+# r212a CTX-ADAPTIVE DISPATCH (E5b engine-shape crossover, 2026-11-21):
+# the native kernel's FIXED barrier/walk term (87-163 us — r211 E4-lite
+# graph floors) loses to the certified Triton lanes at small WALKED
+# token budgets (rows x max KV len) while its slope is ~2-8x shallower.
+# E5b measured the ENGINE VERIFY SHAPE (B x r4 draft rows) against the
+# lane each format actually rides: v5 for mxfp8/mxk8v4, the G-adaptive
+# v2/v5 chain for mxfp4. Device-only crossings in walked tokens:
+# mxfp8 ~214K vs v5 (extrapolated; 1.22/1.19 at 32K/131K cells — n8
+# long ctx only), mxfp4 ~7.5K vs v2 (n1) / ~33.8K vs v5 (n8+),
+# mxk8v4 ~33K vs v5. The plan-build threshold compares
+# idx.shape[0]*max_seq_len (host-static — the choice freezes with the
+# plan cache, capture-lawful) against the per-LANE tuple (the G split
+# mirrors _V5_G_MIN, the same knee the g-adaptive chain uses):
+# short budgets ride the certified Triton lanes, long budgets the
+# native CUTLASS kernel. ARC_MXKV_NATIVE_MINLEN="fmt:N" (both lanes)
+# or "fmt:N1:N2" (n1-lane:n8-lane) retunes per boot.
+_NATIVE_MINLEN: dict[str, tuple[int, int]] = {
+    "mxfp8": (262144, 262144),
+    "mxfp4": (8192, 32768),
+    "mxk8v4": (32768, 32768),
+}
+for _spec in filter(
+    None, os.environ.get("ARC_MXKV_NATIVE_MINLEN", "").split(",")
+):
+    _name, _, _vals = _spec.partition(":")
+    _nums = [v for v in _vals.split(":") if v.strip().isdigit()]
+    if _name and _nums:
+        _NATIVE_MINLEN[_name.strip()] = (
+            int(_nums[0]),
+            int(_nums[-1]),
+        )
 # one-time dispatch markers (the posture-line pattern): fmt+decoder
 # pairs already logged by this process — keeps every serve log carrying
 # the verify-decoder engagement line without per-step spam.
@@ -1067,9 +1098,28 @@ class MxAttentionImpl(TurboQuantAttentionImpl):
                     "bucket — the Triton lanes serve this shape",
                     _g,
                 )
+            # r212a: walked-token budget (rows x max KV len) vs the
+            # per-FORMAT, per-LANE E5b crossing — below it the native
+            # kernel's fixed barrier/walk term dominates and the
+            # certified Triton lane is faster. The lane split rides the
+            # same G knee as the g-adaptive chain below. Host-static
+            # inputs, so the branch freezes with the plan (capture law).
+            _minpair = _NATIVE_MINLEN.get(self.mx_config.fmt)
+            _minlen = (
+                _minpair[1]
+                if (
+                    _minpair
+                    and len(split_rows) >= _V5_G_MIN
+                )
+                else (_minpair[0] if _minpair else None)
+            )
+            _native_ctx_ok = (
+                _minlen is not None
+                and idx.shape[0] * attn_metadata.max_seq_len >= _minlen
+            )
             decoder = (
                 "native"
-                if _NATIVE and _g <= 16
+                if _NATIVE and _g <= 16 and _native_ctx_ok
                 else _DECODER_OVERRIDE or (
                     "v5"
                     if _V5_DOT
@@ -1094,6 +1144,25 @@ class MxAttentionImpl(TurboQuantAttentionImpl):
                     )
                 )
             )
+            # r212a posture line (once per fmt per process — the
+            # engagement marker A/B banks cite): the E5 threshold's
+            # side for the FIRST plan build of this shape class.
+            if (
+                _NATIVE
+                and _g <= 16
+                and (self.mx_config.fmt, "native-dispatch")
+                not in _DECODER_LOGGED
+            ):
+                _DECODER_LOGGED.add((self.mx_config.fmt, "native-dispatch"))
+                logger.info(
+                    "MXKV native dispatch fmt=%s rows=%d max_seq_len=%d "
+                    "minlen=%d -> %s (E5 crossover)",
+                    self.mx_config.fmt,
+                    idx.shape[0],
+                    attn_metadata.max_seq_len,
+                    _minlen or -1,
+                    "native" if _native_ctx_ok else "triton",
+                )
             _dkey = (self.mx_config.fmt, decoder)
             if _dkey not in _DECODER_LOGGED:
                 _DECODER_LOGGED.add(_dkey)

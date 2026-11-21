@@ -1,0 +1,20 @@
+p204_graphtime -- device=xpu, ctx=4096, ncap=32, replays=50, torch=2.13.0+xpu
+  mxfp8 v2: device 107.9us/call (graph 32x50) canary 0.00e+00
+  mxfp8 native_auto: device 211.6us/call (graph 32x50) canary 0.00e+00
+  mxfp8 v5_es-vs-v2_es eager cross: 3.46e-04
+  mxfp8 v2_es: device 336.6us/call (graph 32x50) canary 0.00e+00
+  mxfp8 v5_es: device 108.5us/call (graph 32x50) canary 0.00e+00
+  mxfp8 native_es: device 219.4us/call (graph 32x50) canary 0.00e+00
+  mxfp4 v2: device 98.4us/call (graph 32x50) canary 0.00e+00
+  mxfp4 native_auto: device 155.5us/call (graph 32x50) canary 0.00e+00
+  mxfp4 v5_es-vs-v2_es eager cross: 3.35e-04
+  mxfp4 v2_es: device 331.2us/call (graph 32x50) canary 0.00e+00
+  mxfp4 v5_es: device 111.2us/call (graph 32x50) canary 0.00e+00
+  mxfp4 native_es: device 156.5us/call (graph 32x50) canary 0.00e+00
+  mxk8v4 v2: device 212.1us/call (graph 32x50) canary 0.00e+00
+  mxk8v4 native_auto: device 147.2us/call (graph 32x50) canary 0.00e+00
+  mxk8v4 v5_es-vs-v2_es eager cross: 2.53e-04
+  mxk8v4 v2_es: device 772.2us/call (graph 32x50) canary 0.00e+00
+  mxk8v4 v5_es: device 111.7us/call (graph 32x50) canary 0.00e+00
+  mxk8v4 native_es: device 152.4us/call (graph 32x50) canary 0.00e+00
+P204_DONE

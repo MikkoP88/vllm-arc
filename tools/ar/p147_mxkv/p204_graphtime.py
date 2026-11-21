@@ -51,6 +51,12 @@ FMTS = tuple(
 CTX = int(os.environ.get("P204_CTX", "1024"))
 NCAP = int(os.environ.get("P204_NCAP", "32"))
 NREPLAY = int(os.environ.get("P204_REPLAY", "50"))
+# E5b (r212a): ENGINE VERIFY SHAPE — B requests x r_tile=4 draft rows,
+# the spec-k3 batch the engine actually decodes with. The E5 map's
+# independent-row geometry under-prices the short-ctx side twice: both
+# kernels walk R=B*r rows (not 2), and mxfp8/mxk8v4's engine short lane
+# is v5 (mx_decode_rows_dot), not v2. Adds cells v2_es/v5_es/native_es.
+ESHAPE = os.environ.get("P204_ESHAPE", "0") == "1"
 # "auto" = num_splits=-1 (heuristic; engine bridge shape); ints = forced
 # split postures with prebuilt plans. The r210 1K optimum (s=5) was
 # calibrated on the HOST-BOUND harness; graph-replay re-prices the
@@ -78,6 +84,7 @@ def _load_mxkv():
 mxkv = _load_mxkv()
 mx_store = mxkv.mx_store
 mx_decode = mxkv.mx_decode
+mx_decode_rows_dot = mxkv.mx_decode_rows_dot
 slot_bytes = mxkv.slot_bytes
 
 from vllm_xpu_kernels.flash_attn_interface import (  # noqa: E402
@@ -248,6 +255,73 @@ def main():
                 f"  {fmt} {name}: device {us:.1f}us/call "
                 f"(graph {NCAP}x{NREPLAY}) canary {d:.2e}"
             )
+        if ESHAPE:
+            # engine verify shape: same pool/tables, r_tile=4 rows per
+            # request (v5's grouped tables + per-row limits; native's
+            # per-row one-query sequences). Per-lane eager canaries.
+            r_t = 4
+            q_e = q.repeat_interleave(r_t, dim=0)
+            qf_e = qf.repeat_interleave(r_t, dim=0)
+            bt_rows_e = bt.repeat_interleave(r_t, dim=0)
+            sl_e = sl_dev.repeat_interleave(r_t)
+            cu_e = torch.arange(
+                len(lens) * r_t + 1, dtype=torch.int32, device=DEV)
+            out_n = torch.empty_like(q_e)
+            out_es: dict[str, torch.Tensor] = {}
+
+            def c_v2e(qf_e=qf_e, cache=cache, btre=bt_rows_e, sle=sl_e,
+                      store=out_es):
+                store["v2_es"] = mx_decode(
+                    qf_e, cache, btre, sle, SCALE, block_size=BLOCK)
+
+            def c_v5e(qe=q_e, cache=cache, btg=bt, sle=sl_e, rt=r_t,
+                      store=out_es):
+                store["v5_es"] = mx_decode_rows_dot(
+                    qe, cache, btg, sle, SCALE, block_size=BLOCK,
+                    r_tile=rt)
+
+            def c_nae(qe=q_e, cache=cache, fmt_id=fmt_id, cu_e=cu_e,
+                      sle=sl_e, btre=bt_rows_e, op=op, mk=mseq, oc=out_n):
+                op(qe, cache, fmt_id, cu_e, sle, btre, 1, mk,
+                   SCALE, -1, None, None, oc)
+
+            torch.xpu.synchronize()
+            ref_es = {}
+            ref_es["v2_es"] = mx_decode(
+                qf_e, cache, bt_rows_e, sl_e, SCALE,
+                block_size=BLOCK).float().cpu()
+            ref_es["v5_es"] = mx_decode_rows_dot(
+                q_e, cache, bt, sl_e, SCALE, block_size=BLOCK,
+                r_tile=r_t).float().cpu()
+            oer = torch.empty_like(q_e)
+            op(q_e, cache, fmt_id, cu_e, sl_e, bt_rows_e, 1, mseq,
+               SCALE, -1, None, None, oer)
+            ref_es["native_es"] = oer.float().cpu()
+            torch.xpu.synchronize()
+            # cross-lane truth for the v5 block-16 walk (fp16-dot class
+            # vs v2: gate ~2e-3 per the kernel's own docstring)
+            cell["v5_vs_v2_ref"] = round(
+                float(ref_es["v5_es"].sub(ref_es["v2_es"]).abs().max()), 6)
+            print(f"  {fmt} v5_es-vs-v2_es eager cross: "
+                  f"{cell['v5_vs_v2_ref']:.2e}")
+            for name, call in (
+                ("v2_es", c_v2e), ("v5_es", c_v5e), ("native_es", c_nae),
+            ):
+                try:
+                    us = graph_time(call, NCAP, NREPLAY)
+                except Exception as e:
+                    cell[name] = {"capture_error": str(e)[:200]}
+                    print(f"  {fmt} {name}: CAPTURE_FAIL {str(e)[:120]}")
+                    continue
+                got = (
+                    out_n if name == "native_es" else out_es[name]
+                ).float().cpu()
+                d = got.sub(ref_es[name]).abs().max().item()
+                cell[name] = {"dev_us": round(us, 2), "canary": round(d, 6)}
+                print(
+                    f"  {fmt} {name}: device {us:.1f}us/call "
+                    f"(graph {NCAP}x{NREPLAY}) canary {d:.2e}"
+                )
         R[fmt] = cell
     vprobe = os.environ.get("ARC_MXKV_VPROBE", "")
     suffix = f"_m{vprobe}" if vprobe else ""
