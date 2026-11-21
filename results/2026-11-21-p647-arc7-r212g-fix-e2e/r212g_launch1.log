@@ -1,0 +1,30 @@
+=== [r212g] W14 quiesce 07:35:34 ===
+=== [r212g] boot native posture (fixed bridge) 07:35:51 ===
+HEALTH_OK_r212g 07:40:56
+CONC_OK_c16384_n1
+CONC_OK_c32768_n1
+CONC_OK_c16384_n8
+=== [r212g] report 07:43:16 ===
+r212g -- ITL p50 ms/token, fix validation (banked r212b A/B vs fixed bridge)
+ A_triton  (r212b)   c16384_n1  itl     76.1 ms
+ A_triton  (r212b)   c32768_n1  itl    111.9 ms
+ A_triton  (r212b)   c16384_n8  itl    382.6 ms
+ B_native  (r212b)   c16384_n1  itl    497.8 ms
+ B_native  (r212b)   c32768_n1  itl    960.3 ms
+ B_native  (r212b)   c16384_n8  itl    549.7 ms
+ B_FIXED   (r212g)   c16384_n1  itl     57.4 ms
+ B_FIXED   (r212g)   c32768_n1  itl     74.1 ms
+ B_FIXED   (r212g)   c16384_n8  itl    109.5 ms
+ c16384_n1: fixed/pre 8.67x faster   fixed vs triton 1.33x
+ c32768_n1: fixed/pre 12.96x faster   fixed vs triton 1.51x
+ c16384_n8: fixed/pre 5.02x faster   fixed vs triton 3.49x
+R212G_GATE_PASS
+=== [r212g] telemetry (fixed) ===
+(Worker_TP1 pid=1172) INFO 11-21 07:39:36 [native_decode.py:105] MXKV native call fmt=mxfp4 rows=148 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+(Worker_TP0 pid=1060) INFO 11-21 07:39:36 [native_decode.py:105] MXKV native call fmt=mxfp4 rows=148 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+(Worker_TP1 pid=1172) INFO 11-21 07:39:40 [native_decode.py:105] MXKV native call fmt=mxfp4 rows=4 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+(Worker_TP0 pid=1060) INFO 11-21 07:39:40 [native_decode.py:105] MXKV native call fmt=mxfp4 rows=4 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+(Worker_TP0 pid=1060) INFO 11-21 07:40:00 [native_decode.py:105] MXKV native call fmt=mxfp4 rows=256 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+(Worker_TP1 pid=1172) INFO 11-21 07:40:00 [native_decode.py:105] MXKV native call fmt=mxfp4 rows=256 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+R212G_DONE 2026-11-21T07:43:16Z
+W14_RESTORE_FIRED_fullres 2026-11-21T07:43:16Z
