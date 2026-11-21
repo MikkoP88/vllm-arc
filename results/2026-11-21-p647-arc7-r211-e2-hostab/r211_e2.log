@@ -1,0 +1,17 @@
+p203_hostab -- device=xpu, ctx=1024, splits=5, reps=60, torch=2.13.0+xpu
+  segments/mxfp8: arange_cuq=20.61us sl_dev_h2d=32.44us host_lens_build=7.86us as_int32_h2d=32.85us infer_xe_cores=8.45us plan_build_plus_h2d=68.24us empty_like_q=4.71us
+  mxfp8 V0_rebuild: host 594.5us dev 592.4us gap 1.7us bracketed 577.6us canary 9.77e-04
+  mxfp8 V1_prebuilt: host 514.1us dev 509.9us gap 1.9us bracketed 589.1us canary 9.77e-04
+  mxfp8 V2_prebuilt_s1: host 212.6us dev 627.4us gap 1.4us bracketed 628.2us canary 0.00e+00
+  mxfp8 V3_direct_op: host 196.6us dev 331.7us gap 1.3us bracketed 331.8us canary 9.77e-04
+  segments/mxfp4: arange_cuq=13.48us sl_dev_h2d=23.47us host_lens_build=4.35us as_int32_h2d=23.92us infer_xe_cores=6.34us plan_build_plus_h2d=51.95us empty_like_q=2.55us
+  mxfp4 V0_rebuild: host 512.8us dev 511.8us gap 1.7us bracketed 538.8us canary 9.77e-04
+  mxfp4 V1_prebuilt: host 433.2us dev 431.5us gap 1.5us bracketed 504.1us canary 9.77e-04
+  mxfp4 V2_prebuilt_s1: host 215.4us dev 443.8us gap 1.4us bracketed 444.6us canary 0.00e+00
+  mxfp4 V3_direct_op: host 212.2us dev 237.4us gap 1.5us bracketed 236.1us canary 9.77e-04
+  segments/mxk8v4: arange_cuq=13.52us sl_dev_h2d=23.8us host_lens_build=4.43us as_int32_h2d=24.28us infer_xe_cores=6.21us plan_build_plus_h2d=52.06us empty_like_q=2.52us
+  mxk8v4 V0_rebuild: host 516.8us dev 514.2us gap 1.9us bracketed 542.5us canary 9.77e-04
+  mxk8v4 V1_prebuilt: host 421.3us dev 421.2us gap 1.5us bracketed 493.9us canary 9.77e-04
+  mxk8v4 V2_prebuilt_s1: host 216.6us dev 415.7us gap 1.5us bracketed 414.8us canary 0.00e+00
+  mxk8v4 V3_direct_op: host 206.4us dev 223.3us gap 1.5us bracketed 223.3us canary 9.77e-04
+P203_DONE
