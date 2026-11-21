@@ -46,7 +46,7 @@ def _load():
 
 
 def mx_decode_native(
-    q_rows: torch.Tensor,  # (R, Hq, D) bf16 — one row per (req, draft token)
+    q_rows: torch.Tensor,  # (R, Hq, D) model dtype — one row per (req, draft token)
     kv_cache: torch.Tensor,  # (num_blocks, block_size, Hk, slot) uint8 pool
     bt_rows: torch.Tensor,  # (R, max_blocks) int32 — per-row block tables
     sl_rows: torch.Tensor,  # (R,) int32 — per-row causal KV limits
@@ -59,8 +59,20 @@ def mx_decode_native(
     n_rows = q_rows.shape[0]
     # each row is its own one-query "sequence" (device fill — capture-safe)
     cu_q = torch.arange(n_rows + 1, device=q_rows.device, dtype=torch.int32)
+    # the certified engine boots fp16 activations (qwen3.8-27b-fp8 posture,
+    # dtype=torch.float16); the kernel is bf16-specialized. Device cast —
+    # capture-safe, µs-class under replay, and the round-trip error
+    # (<=2^-9 relative, 3 mantissa bits) rides inside the fp16-dot class
+    # the MX lanes already accept (r212a fail1 2026-11-21: TORCH_CHECK
+    # "query must be [total_q, heads, D] bf16" killed all three cells at
+    # warmup capture; the caller casts the output back).
+    q_in = (
+        q_rows
+        if q_rows.dtype == torch.bfloat16
+        else q_rows.to(torch.bfloat16)
+    )
     return mx_paged_decode(
-        q_rows,
+        q_in,
         kv_cache,
         fmt,
         cu_q,

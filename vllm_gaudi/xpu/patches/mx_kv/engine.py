@@ -1098,12 +1098,23 @@ class MxAttentionImpl(TurboQuantAttentionImpl):
                     "bucket — the Triton lanes serve this shape",
                     _g,
                 )
-            # r212a: walked-token budget (rows x max KV len) vs the
-            # per-FORMAT, per-LANE E5b crossing — below it the native
-            # kernel's fixed barrier/walk term dominates and the
-            # certified Triton lane is faster. The lane split rides the
-            # same G knee as the g-adaptive chain below. Host-static
-            # inputs, so the branch freezes with the plan (capture law).
+            # r212a: walked-token budget vs the per-FORMAT, per-LANE E5b
+            # crossing — below it the native kernel's fixed barrier/walk
+            # term dominates and the certified Triton lane is faster.
+            # The lane split rides the same G knee as the g-adaptive
+            # chain below. Estimator: rows x per-request KV CAPACITY
+            # (bt width x block stride), NOT metadata.max_seq_len —
+            # decode replays never re-run this python (the branch
+            # freezes per captured graph), and the capture dummy
+            # dilutes max_seq_len across the bucket's requests, while
+            # bt.shape[1]*stride tracks the BUCKET's token class: the
+            # runtime step maps to the same bucket by sum(num_blocks),
+            # so the frozen side is the replayed side (r212a fastcycle
+            # law, 2026-11-21: the max_seq_len branch froze triton on
+            # every graph via the rows=148/max_seq_len=9 dummy). Eager
+            # steps get rows x max per-req blocks — an upper bound of
+            # the true walked sum (native engages at-or-before the
+            # crossing; E5b boundary margins absorb it).
             _minpair = _NATIVE_MINLEN.get(self.mx_config.fmt)
             _minlen = (
                 _minpair[1]
@@ -1113,9 +1124,9 @@ class MxAttentionImpl(TurboQuantAttentionImpl):
                 )
                 else (_minpair[0] if _minpair else None)
             )
+            _walked_cap = idx.shape[0] * bt.shape[1] * stride
             _native_ctx_ok = (
-                _minlen is not None
-                and idx.shape[0] * attn_metadata.max_seq_len >= _minlen
+                _minlen is not None and _walked_cap >= _minlen
             )
             decoder = (
                 "native"
@@ -1144,24 +1155,26 @@ class MxAttentionImpl(TurboQuantAttentionImpl):
                     )
                 )
             )
-            # r212a posture line (once per fmt per process — the
-            # engagement marker A/B banks cite): the E5 threshold's
-            # side for the FIRST plan build of this shape class.
+            # r212a posture line (once per fmt per SIDE per process —
+            # the engagement marker A/B banks cite; the cap value
+            # identifies the bucket class that froze each side).
+            _dside = "native" if _native_ctx_ok else "triton"
             if (
                 _NATIVE
                 and _g <= 16
-                and (self.mx_config.fmt, "native-dispatch")
+                and (self.mx_config.fmt, f"native-dispatch-{_dside}")
                 not in _DECODER_LOGGED
             ):
-                _DECODER_LOGGED.add((self.mx_config.fmt, "native-dispatch"))
+                _DECODER_LOGGED.add(
+                    (self.mx_config.fmt, f"native-dispatch-{_dside}"))
                 logger.info(
-                    "MXKV native dispatch fmt=%s rows=%d max_seq_len=%d "
-                    "minlen=%d -> %s (E5 crossover)",
+                    "MXKV native dispatch fmt=%s rows=%d walked_cap=%d "
+                    "minlen=%d -> %s (E5b crossover)",
                     self.mx_config.fmt,
                     idx.shape[0],
-                    attn_metadata.max_seq_len,
+                    _walked_cap,
                     _minlen or -1,
-                    "native" if _native_ctx_ok else "triton",
+                    _dside,
                 )
             _dkey = (self.mx_config.fmt, decoder)
             if _dkey not in _DECODER_LOGGED:
