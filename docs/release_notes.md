@@ -7,7 +7,7 @@ evidence lives. The detailed per-release entries (full change lists,
 fork SHAs, wheel pins, gate numbers) are in
 [`../CHANGELOG.md`](../CHANGELOG.md); superseded doc content is
 archived per-doc under [`history/`](history/). The current certified
-release is **`rel/v0.30.0-b70-cert25zb`** (`vllm-arc:v0.30.0-b70-cert25zb`).
+release is **`rel/v0.30.0-b70-cert25zc`** (`vllm-arc:v0.30.0-b70-cert25zc`).
 
 Every release below is based on upstream vllm-gaudi **v0.30.0** with
 the pinned wheel stack (`tools/wheel_guard.sh`; per-release wheel shas
@@ -19,9 +19,26 @@ in the upstream per-version detail files
 
 ---
 
+## rel/v0.30.0-b70-cert25zc — P6.47 Phase-7 MX decode closing rung (2026-11-19)
+
+Current certified release. cert25zb engine + the Phase-7 closing rung of
+the MX decode ladder: TILE_FLOOR launcher default 2 (`ARC_MXKV_V5_TFLOOR`),
+G-adaptive mxfp4 verify-decoder dispatch (`ARC_MXKV_V5_G_MIN=8`), v7
+research kernel dormant. MX lanes serve LMCache-free (Phase-6 auto-off
+posture; ctrl unchanged). Headline: **mxfp4 n8 32K agg decode p50
+1547→583 ms (−62%)**; m8q n1 32K ITL −10.4%. Existing deployments need
+no action — the knobs ship as new defaults with certified-equivalent or
+better decode, and the native `fp8_e4m3` path is untouched. The
+remaining ~0.74–0.78× MX agg8 decode gap vs ctrl is structural (Triton
+split-dot) and is the open Phase-8 arc7 MX-native kernel line. Full
+battery evidence: `results/2026-11-19-p647-cert25zc-battery/` (qwen
+absolute 4/4 + gemma comparative PASS; verdict re-derived under the
+amended gate from banked markers).
+Full detail: [`../CHANGELOG.md`](../CHANGELOG.md).
+
 ## rel/v0.30.0-b70-cert25zb — P6.47 MX KV-cache dtype lane (2026-11-13)
 
-Current certified release. cert23-lineage engine + the P6.47 lane:
+cert23-lineage engine + the P6.47 lane:
 `--kv-cache-dtype {mxfp4,mxfp8,mxk8v4}` (Triton MX store/decode in
 `vllm_gaudi/xpu/patches/mx_kv/` + engine dispatch), with the K2
 packed-fp16 dequant and K3 e2m1 fast-unpack lanes default-on
