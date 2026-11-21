@@ -1,0 +1,25 @@
+{
+ "mxfp4": {
+  "v2": {
+   "dev_us": 1090.07,
+   "canary": 0.0
+  },
+  "native_auto": {
+   "dev_us": 1039.62,
+   "canary": 0.0
+  },
+  "v5_vs_v2_ref": 0.000222,
+  "v2_es": {
+   "dev_us": 4086.93,
+   "canary": 0.0
+  },
+  "v5_es": {
+   "dev_us": 4397.55,
+   "canary": 0.0
+  },
+  "native_es": {
+   "dev_us": 1268.65,
+   "canary": 0.0
+  }
+ }
+}

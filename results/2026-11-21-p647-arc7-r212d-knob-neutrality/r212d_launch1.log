@@ -1,0 +1,23 @@
+=== [r212d] W14 quiesce 07:05:11 ===
+=== [r212d:base]  07:05:27 ===
+=== [r212d:base] exit rc=0 07:06:38 ===
+=== [r212d:pool] -e P204_POOLBLKS=11281 07:06:38 ===
+=== [r212d:pool] exit rc=0 07:07:49 ===
+=== [r212d:btw0] -e P204_BTWIDTH=4100 07:07:49 ===
+=== [r212d:btw0] exit rc=0 07:08:59 ===
+=== [r212d:btwS] -e P204_BTWIDTH=4100 -e P204_BTPAD=stale 07:08:59 ===
+=== [r212d:btwS] exit rc=0 07:10:10 ===
+=== [r212d:both] -e P204_BTWIDTH=4100 -e P204_BTPAD=stale -e P204_POOLBLKS=11281 07:10:10 ===
+=== [r212d:both] exit rc=0 07:11:20 ===
+=== [r212d:eng] -e P204_BTWIDTH=4100 -e P204_BTPAD=stale -e P204_POOLBLKS=11281 -e P204_MAXSK=cap 07:11:21 ===
+=== [r212d:eng] exit rc=0 07:12:31 ===
+=== [r212d] gate 07:12:31 ===
+DIAG base: native 1268.7 us  v2 4086.9 us  canary 0.00e+00
+DIAG pool: native 1272.2 us  v2 4087.2 us  canary 0.00e+00 (1.00x base)
+DIAG btw0: native 1276.6 us  v2 4085.2 us  canary 0.00e+00 (1.01x base)
+DIAG btwS: native 1278.4 us  v2 4085.1 us  canary 0.00e+00 (1.01x base)
+DIAG both: native 1264.9 us  v2 4087.4 us  canary 0.00e+00 (1.00x base)
+DIAG eng: native 1271.9 us  v2 4087.3 us  canary 0.00e+00 (1.00x base)
+R212D_GATE_PASS
+R212D_DONE rc=0 2026-11-21T07:12:31Z
+W14_RESTORE_FIRED_fullres 2026-11-21T07:12:31Z
