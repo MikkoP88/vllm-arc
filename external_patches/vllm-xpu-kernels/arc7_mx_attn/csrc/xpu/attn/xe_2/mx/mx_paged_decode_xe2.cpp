@@ -219,13 +219,21 @@ void cutlass_mx_paged_decode_xe2(
   }
 
   if (num_kv_splits <= 0) {
+    // r212c2 law: the auto-split heuristic prices WG parallelism by
+    // TILE count; every admitted geometry walks 16-row tiles (the _16
+    // policy — page-64 pools ride it via the SG law below), so pricing
+    // by the POOL's block size asked for 4x fewer tiles/splits at page
+    // 64 and halved the walk's parallelism (r212c2: native 1147-1236
+    // vs 598-644 us at 1K, 5040 vs 2891-adjacent at 32K). Widening the
+    // dispatch to a true 64-row tile policy must revisit this together
+    // with the SG-law route.
     num_kv_splits = mx_get_num_splits(
         queue,
         batch_size,
         num_heads_q,
         num_heads_kv,
         max_seqlen_k,
-        block_size);
+        16);
   }
 
   // Decode buffers (vendor shapes, flash_api.cpp decode branch).
@@ -323,8 +331,9 @@ void cutlass_mx_paged_decode_xe2(
   // (mx_paged_decode.hpp) — only the instantiation set widens:
   //   128/16  certified offline-calibration cell (r208-r212 ladder)
   //   256/16  head-width isolation at the harness pool's page
-  //   256/64  the e2e engine pool page (vendor _64 policy; services any
-  //           64-multiple block size via the page-table indirection)
+  //   256/64  the e2e engine pool page — served by the _16 policy's
+  //           16-row sub-tiles (r212c SG law: the MX staging is
+  //           single-SG; see the dispatch branch below)
   auto dispatch_fmt = [&](auto qgroup, auto head, auto page) {
     using policy_t = decode_policy_qpacked_head<
         decltype(qgroup),
@@ -348,7 +357,18 @@ void cutlass_mx_paged_decode_xe2(
     } else if (head_size == 256 && block_size == 16) {
       dispatch_fmt(qgroup, _256{}, _16{});
     } else if (head_size == 256 && block_size == 64) {
-      dispatch_fmt(qgroup, _256{}, _64{});
+      // r212c law (2026-11-21): page-64 pools ride the _16 policy — the
+      // vendor _64 policy's SubgroupLayoutQK (1,4,1) puts FOUR subgroups
+      // in the workgroup, but the MX staging scatter and its tv-decoder
+      // are single-SG laws ("One subgroup per workgroup: no per-SG
+      // offsets", mx_paged_decode_mainloop.hpp r200b/r203): multi-SG
+      // thr_ids decode out-of-frame coordinates and corrupt ~0.64
+      // relative (r212c eng256p64 c1024, all three formats, auto+es).
+      // 16-row sub-tiles (4 per 64-page via the stock page-table
+      // indirection) keep the certified frame; the true multi-SG p64
+      // tile (1.5-2x lower fixed term: 306-404 vs ~600 us at 1K) is the
+      // r212d deep-dive.
+      dispatch_fmt(qgroup, _256{}, _16{});
     } else {
       TORCH_CHECK(
           false,
@@ -356,7 +376,7 @@ void cutlass_mx_paged_decode_xe2(
           head_size,
           " page=",
           block_size,
-          " (compiled: 128/16, 256/16, 256/64)");
+          " (compiled: 128/16, 256/16, 256/64-via-_16)");
     }
   };
   if (num_q_group_size <= 8) {

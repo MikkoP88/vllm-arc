@@ -156,26 +156,25 @@ _V5_DEFAULT = ("mxfp8", "mxk8v4")
 # warning rides shape builds only). Validation ladder: r198 offline
 # correctness -> r199 T1 perf -> r200 fastcycle -> r201 battery -> cert26.
 _NATIVE = os.environ.get("ARC_MXKV_NATIVE", "") == "1"
-# r212a CTX-ADAPTIVE DISPATCH (E5b engine-shape crossover, 2026-11-21):
-# the native kernel's FIXED barrier/walk term (87-163 us — r211 E4-lite
-# graph floors) loses to the certified Triton lanes at small WALKED
-# token budgets (rows x max KV len) while its slope is ~2-8x shallower.
-# E5b measured the ENGINE VERIFY SHAPE (B x r4 draft rows) against the
-# lane each format actually rides: v5 for mxfp8/mxk8v4, the G-adaptive
-# v2/v5 chain for mxfp4. Device-only crossings in walked tokens:
-# mxfp8 ~214K vs v5 (extrapolated; 1.22/1.19 at 32K/131K cells — n8
-# long ctx only), mxfp4 ~7.5K vs v2 (n1) / ~33.8K vs v5 (n8+),
-# mxk8v4 ~33K vs v5. The plan-build threshold compares
-# idx.shape[0]*max_seq_len (host-static — the choice freezes with the
-# plan cache, capture-lawful) against the per-LANE tuple (the G split
-# mirrors _V5_G_MIN, the same knee the g-adaptive chain uses):
-# short budgets ride the certified Triton lanes, long budgets the
-# native CUTLASS kernel. ARC_MXKV_NATIVE_MINLEN="fmt:N" (both lanes)
-# or "fmt:N1:N2" (n1-lane:n8-lane) retunes per boot.
+# r212a/r212c CTX-ADAPTIVE DISPATCH (geometry law, 2026-11-21): the
+# native kernel's FIXED barrier/walk term loses to the certified Triton
+# lanes at small WALKED token budgets while its slope is far shallower.
+# r212c recalibrated at the REAL engine geometry (head_dim 256, page 64,
+# G 6 — the r208-r212 E5b numbers were D=128/BLOCK=16/G=4, priced off
+# the config's GDN linear head dim): D=256 doubles the Triton slopes
+# (bytes/token) while native's walk/barrier-dominated cost grows far
+# slower, so EVERY format crosses between Σ 4K-16K walked (mxfp8
+# ~11.6K vs v5 — moved from ~214K, mxfp4 ~11.6K vs v2 / earlier vs v5,
+# mxk8v4 ~6.6K vs v5); at 32K ctx native is 1.5-3.2x faster than the
+# best lane. Tuples below = crossing + fill margin, per LANE (the G
+# split mirrors _V5_G_MIN, the same knee the g-adaptive chain uses);
+# the estimator is the bucket-cap (see the plan-build site — r212a
+# capture-freeze law). ARC_MXKV_NATIVE_MINLEN="fmt:N" (both lanes) or
+# "fmt:N1:N2" (n1-lane:n8-lane) retunes per boot.
 _NATIVE_MINLEN: dict[str, tuple[int, int]] = {
-    "mxfp8": (262144, 262144),
-    "mxfp4": (8192, 32768),
-    "mxk8v4": (32768, 32768),
+    "mxfp8": (16384, 16384),
+    "mxfp4": (12288, 8192),
+    "mxk8v4": (8192, 8192),
 }
 for _spec in filter(
     None, os.environ.get("ARC_MXKV_NATIVE_MINLEN", "").split(",")
