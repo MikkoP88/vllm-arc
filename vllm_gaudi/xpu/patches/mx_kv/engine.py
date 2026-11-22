@@ -156,6 +156,27 @@ _V5_DEFAULT = ("mxfp8", "mxk8v4")
 # warning rides shape builds only). Validation ladder: r198 offline
 # correctness -> r199 T1 perf -> r200 fastcycle -> r201 battery -> cert26.
 _NATIVE = os.environ.get("ARC_MXKV_NATIVE", "") == "1"
+# r224a in-vivo A/B (diagnostic, default off): ARC_MXKV_AB=1 runs the
+# certified Triton v2 decoder ON THE SAME (q_rows, kv_cache, bt_rows,
+# sl_rows) the native call consumed and banks the divergence + the
+# call-site payload (pool window WITH its real shape/strides — the
+# r220c offline gate's contiguous synthetic pool is exactly what it
+# cannot see). EAGER boots only: the verify path runs inside captured
+# XPU graphs in steady state, and D2H/.cpu()/torch.save under capture
+# is illegal (pageable-H2D law) — the block self-guards on an active
+# capture and stays silent, so a graphs-on boot is unaffected. Payload
+# budget ARC_MXKV_AB_N (default 3) bounds disk and stall (~30 MB each,
+# saved from a daemon thread per the dump-probe law).
+_AB = os.environ.get("ARC_MXKV_AB", "") == "1"
+_AB_N = int(os.environ.get("ARC_MXKV_AB_N", "3") or 3)
+# r224a-2: minimum max-seqlen for a capture. The first leg's budget was
+# consumed entirely by the eager DUMMY executions (rows=152 then rows=4
+# rounds, sl<=101) before any real generation decode ran — MINSL skips
+# them so the budget lands on real traffic (essay-class steps, the
+# refusal's failing class). The sl read is a D2H sync, legal in this
+# eager-only diagnostic boot (item-d2h law).
+_AB_MINSL = int(os.environ.get("ARC_MXKV_AB_MINSL", "0") or 0)
+_ab_n = 0
 # r212a/r212c CTX-ADAPTIVE DISPATCH (geometry law, 2026-11-21): the
 # native kernel's FIXED barrier/walk term loses to the certified Triton
 # lanes at small WALKED token budgets while its slope is far shallower.
@@ -292,6 +313,95 @@ def _maybe_dump(kv_cache: torch.Tensor, attn_metadata: Any, impl) -> None:
         th.start()
     except Exception as exc:  # noqa: BLE001 — debug instrument, always log
         logger.error("MXKV dump failed: %s", exc)
+
+
+def _mx_ab(
+    impl: Any,
+    q_rows: torch.Tensor,
+    kv_cache: torch.Tensor,
+    bt_rows: torch.Tensor,
+    sl_rows: torch.Tensor,
+    out_native: torch.Tensor,
+) -> None:
+    """r224a: certified-Triton A/B against the native call, in vivo.
+
+    Runs ``mx_decode`` (the certified v2 lane the refused format falls
+    back to) on the IDENTICAL inputs the native kernel just consumed,
+    banks the divergence + the call-site payload (pool window WITH its
+    real shape/strides — the r220c contiguous synthetic pool is the
+    blind spot this closes), and logs one verdict line. Bounded by
+    ``_AB_N``; thread-save per the dump-probe law. Eager only — the
+    caller guards on an active capture.
+    """
+    global _ab_n
+    if _AB_MINSL and int(sl_rows.max().item()) < _AB_MINSL:
+        return
+    _ab_n += 1
+    n = _ab_n
+    ref = mx_decode(q_rows, kv_cache, bt_rows, sl_rows, impl.scale)
+    d = (out_native.float() - ref.float()).abs()
+    # r224a-2: bank the blocks row 0 actually walks (first leg's fixed
+    # [0:48] window held dummy rounds' blocks 0-47 while the captured
+    # rows lived in 221+/442+ — unaddressable bytes). Capped at 96
+    # blocks = 6144 tokens: covers essay-class ctx, bounds the payload.
+    _nb = min(int(bt_rows.shape[1]), 96)
+    _win_idx = bt_rows[0, :_nb].to(torch.long)
+    payload = {
+        "fmt": impl.mx_config.fmt,
+        "scale": float(impl.scale),
+        "rows": int(q_rows.shape[0]),
+        "q": q_rows[:8].detach().cpu(),
+        "bt": bt_rows[:8, :48].detach().cpu(),
+        "sl": sl_rows[:8].detach().cpu(),
+        "kv_shape": tuple(kv_cache.shape),
+        "kv_stride": tuple(kv_cache.stride()),
+        "kv_dtype": str(kv_cache.dtype),
+        "kv_dim": kv_cache.dim(),
+        "kv_off": int(kv_cache.storage_offset()),
+        "bt_head": _win_idx.detach().cpu(),
+        "kv_win": kv_cache.index_select(0, _win_idx).contiguous().cpu(),
+        "out_native": out_native[:8].detach().cpu(),
+        "out_triton": ref[:8].detach().cpu(),
+        "dmax": float(d.max().item()),
+        "dmean": float(d.mean().item()),
+        "nan_native": int(torch.isnan(out_native).sum().item()),
+        "nan_triton": int(torch.isnan(ref).sum().item()),
+    }
+    path = f"/tmp/mxkv_ab.{os.getpid()}.{n}.pt"
+    _dump_threads[n] = threading.Thread(
+        target=torch.save, args=(payload, path), daemon=True
+    )
+    _dump_threads[n].start()
+    logger.info(
+        "MXKV AB n=%d fmt=%s rows=%d dmax=%.3e dmean=%.3e nan=%d/%d "
+        "kv_shape=%s kv_stride=%s off=%d saved=%s",
+        n,
+        payload["fmt"],
+        payload["rows"],
+        payload["dmax"],
+        payload["dmean"],
+        payload["nan_native"],
+        payload["nan_triton"],
+        payload["kv_shape"],
+        payload["kv_stride"],
+        payload["kv_off"],
+        path,
+    )
+
+
+def _ab_ok() -> bool:
+    """Fire the A/B only when it cannot interact with graph capture."""
+    if not (_AB and _ab_n < _AB_N):
+        return False
+    cap = getattr(torch.xpu, "is_current_stream_capturing", None)
+    if cap is None:
+        # No capture API on this torch: only an explicitly graph-off
+        # boot may run the (D2H-touching) instrument.
+        return os.environ.get("VLLM_XPU_ENABLE_XPU_GRAPH", "1") != "1"
+    try:
+        return not bool(cap())
+    except Exception:  # noqa: BLE001 — instrument never kills serving
+        return False
 
 
 def _trace(tag: str, *args: object) -> None:
@@ -1225,6 +1335,11 @@ class MxAttentionImpl(TurboQuantAttentionImpl):
                 attn_metadata.max_seq_len,
                 self.mx_config.fmt,
             )
+            if _ab_ok():
+                try:
+                    _mx_ab(self, q_rows, kv_cache, bt_rows, sl_rows, out)
+                except Exception as exc:  # noqa: BLE001 — never kill serving
+                    logger.error("MXKV AB failed: %r", exc)
         elif bt_groups is not None:
             if decoder == "v5":
                 out = mx_decode_rows_dot(
