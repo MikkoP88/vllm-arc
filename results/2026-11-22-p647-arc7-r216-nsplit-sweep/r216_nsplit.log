@@ -1,0 +1,26 @@
+=== [r216] W14 quiesce 03:08:49 ===
+wheel md5 9a01790b5748cb4d7e1eac9c099a997e (pinned 9a01790b5748cb4d7e1eac9c099a997e)
+=== [r216:ns40] boot ARC_MXKV_NSPLIT=40 03:09:07 ===
+HEALTH_OK_r216_ns40 03:14:12
+CONC_OK_c32768_n1
+=== [r216:ns40] done 03:15:10 ===
+=== [r216:ns8] boot ARC_MXKV_NSPLIT=8 03:15:10 ===
+HEALTH_OK_r216_ns8 03:20:15
+CONC_OK_c32768_n1
+=== [r216:ns8] done 03:21:02 ===
+=== [r216:ns64] boot ARC_MXKV_NSPLIT=64 03:21:02 ===
+HEALTH_OK_r216_ns64 03:26:07
+CONC_OK_c32768_n1
+=== [r216:ns64] done 03:26:56 ===
+=== [r216] report 03:26:56 ===
+r216 engine split-depth sweep -- mxfp4 c32768 n1 (r212aa wheel)
+ reference (auto splits, r213 A/A mean) 70.2 ms/tok-step
+ ns40 |    70.8 |  +0.85 pct | chunks~   53 | rows=148 | errs=0  (anchor: pinned 40 = expected auto)
+  ns8 |   155.4 | +121.33 pct | chunks~   52 | rows=148 | errs=0  (compact grid (fewer empty WGs / less reduce))
+ ns64 |    62.2 | -11.45 pct | chunks~   53 | rows=148 | errs=0  (deeper splits (more empty WGs / reduce))
+ ANCHOR_OK: ns40 reproduces the reference within 0.85 pct -- auto=40 confirmed, knob live, ns8/ns64 deltas valid
+  LOSS_ns8: +119.46 pct vs anchor
+  WIN_ns64: -12.20 pct vs anchor -- new split posture candidate
+R216_GATE_PASS
+R216_DONE 2026-11-22T03:26:56Z
+W14_RESTORE_FIRED_fullres 2026-11-22T03:26:56Z

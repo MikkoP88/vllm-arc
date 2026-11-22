@@ -23,6 +23,7 @@ legs.
 from __future__ import annotations
 
 import logging
+import os
 
 import torch
 
@@ -111,6 +112,12 @@ def mx_decode_native(
             int(bt_rows.shape[1]),
             int(kv_cache.stride(1)) if kv_cache.dim() == 4 else -1,
         )
+    # r216: engine-side split-depth pin (env ARC_MXKV_NSPLIT; unset =
+    # 0 = the C++ auto heuristic). The r209/r210 "40 optimal" verdict
+    # was probe-priced pre-template-split; the sign-inversion law
+    # demands an e2e re-price at the engine bucket (capacity-frozen
+    # max_seqlen_k prices kv_tiles, the reduce cap binds).
+    _ns = int(os.environ.get("ARC_MXKV_NSPLIT", "0") or 0)
     return mx_paged_decode(
         q_in,
         kv_cache,
@@ -120,4 +127,5 @@ def mx_decode_native(
         bt_rows,
         max_seqlen_k=_max_sk,
         softmax_scale=sm_scale,
+        num_splits_kv=_ns,
     )
