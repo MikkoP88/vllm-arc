@@ -1,0 +1,30 @@
+p181_acceptknee — bank=/root/build/p647/r212a (acceptance% / mean-len / itl p50 / eff ms-per-token)
+[m4qa]
+| ctx | n1 acc% / len / itl / eff / ss | n8 acc% / len / itl / eff / ss |
+|---|---|---|
+| 4096 | 94.7% / 3.84 / 49 / 12.9 / 50 | — (no window) |
+| 8192 | 88.7% / 3.66 / 58 / 15.9 / 58 | — (no window) |
+| 16384 | — (no window) | — (no window) |
+| 32768 | 91.5% / 3.75 / 112 / 29.9 / 111 | — (no window) |
+[m4qa] KNEE (first acc < 15%): none
+[m8qa]
+| ctx | n1 acc% / len / itl / eff / ss | n8 acc% / len / itl / eff / ss |
+|---|---|---|
+| 4096 | 89.1% / 3.67 / 54 / 14.8 / 56 | — (no window) |
+| 8192 | 88.1% / 3.64 / 55 / 15.1 / 57 | — (no window) |
+| 16384 | — (no window) | — (no window) |
+| 32768 | 81.0% / 3.43 / 86 / 25.2 / 86 | — (no window) |
+[m8qa] KNEE (first acc < 15%): none
+[mkqa]
+| ctx | n1 acc% / len / itl / eff / ss | n8 acc% / len / itl / eff / ss |
+|---|---|---|
+| 4096 | 92.2% / 3.76 / 53 / 14.1 / 55 | — (no window) |
+| 8192 | 91.5% / 3.75 / 62 / 16.6 / 65 | — (no window) |
+| 16384 | — (no window) | — (no window) |
+| 32768 | 86.4% / 3.59 / 111 / 30.9 / 111 | — (no window) |
+[mkqa] KNEE (first acc < 15%): none
+--- knees ---
+[m4qa] none
+[m8qa] none
+[mkqa] none
+ACCEPT_KNEE_FAIL

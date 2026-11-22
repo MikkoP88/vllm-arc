@@ -1,0 +1,575 @@
+INFO 11-22 06:15:20 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+INFO 11-22 06:15:20 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+INFO 11-22 06:15:20 [__init__.py:54] - hpu -> vllm_gaudi:register
+INFO 11-22 06:15:20 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+INFO 11-22 06:15:21 [platform.py:417] ArcXpuPlatform: wheel hook torch_utils <- patches.mx_dtype_map OK (already imported)
+INFO 11-22 06:15:21 [platform.py:437] ArcXpuPlatform: source-transform targets already imported at install: ['vllm.v1.attention.backends.registry']
+INFO 11-22 06:15:21 [platform.py:221] ArcXpuPlatform: injected AttentionBackendEnum.MXKV -> vllm_gaudi.xpu.patches.mx_kv.engine.MxAttentionBackend
+INFO 11-22 06:15:21 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+INFO 11-22 06:15:21 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+INFO 11-22 06:15:21 [__init__.py:54] - hpu -> vllm_gaudi:register
+INFO 11-22 06:15:21 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+INFO 11-22 06:15:21 [__init__.py:272] Platform plugin arc is activated
+INFO 11-22 06:15:21 [__init__.py:272] Platform plugin arc is activated
+INFO 11-22 06:15:34 [platform.py:371] ArcXpuPlatform: wheel hook kv_cache_interface <- patches.mx_kv_mode OK
+WARNING 11-22 06:15:36 [argparse_utils.py:276] With `vllm serve`, you should provide the model as a positional argument or in a config file instead of via the `--model` option. The `--model` option will be removed in a future version.
+(APIServer pid=47) INFO 11-22 06:15:36 [api_utils.py:347] 
+(APIServer pid=47) INFO 11-22 06:15:36 [api_utils.py:347]        █     █     █▄   ▄█
+(APIServer pid=47) INFO 11-22 06:15:36 [api_utils.py:347]  ▄▄ ▄█ █     █     █ ▀▄▀ █  version 0.30.0
+(APIServer pid=47) INFO 11-22 06:15:36 [api_utils.py:347]   █▄█▀ █     █     █     █  model   /models/target
+(APIServer pid=47) INFO 11-22 06:15:36 [api_utils.py:347]    ▀▀  ▀▀▀▀▀ ▀▀▀▀▀ ▀     ▀
+(APIServer pid=47) INFO 11-22 06:15:36 [api_utils.py:347] 
+(APIServer pid=47) INFO 11-22 06:15:36 [api_utils.py:286] non-default args: {'model_tag': '/models/target', 'chat_template': '/root/chat_template_qwen38_high.jinja', 'enable_auto_tool_choice': True, 'tool_call_parser': 'qwen3_coder', 'model': '/models/target', 'trust_remote_code': True, 'dtype': 'float16', 'max_model_len': 262144, 'quantization': 'fp8', 'served_model_name': ['qwen3.8-27b-fp8'], 'reasoning_parser': 'qwen3', 'tensor_parallel_size': 2, 'block_size': 64, 'gpu_memory_utilization': 0.8, 'kv_cache_dtype': 'mxfp4', 'enable_prefix_caching': True, 'mamba_ssm_cache_dtype': 'float16', 'mamba_cache_mode': 'align', 'max_num_batched_tokens': 8192, 'max_num_seqs': 64, 'disable_hybrid_kv_cache_manager': False, 'speculative_config': {'method': 'mtp', 'num_speculative_tokens': 3, 'draft_sample_method': 'probabilistic'}, 'compilation_config': {'mode': <CompilationMode.NONE: 0>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': [], 'ir_enable_torch_wrap': None, 'splitting_ops': None, 'compile_mm_encoder': False, 'cudagraph_mm_encoder': False, 'encoder_cudagraph_token_budgets': [], 'encoder_cudagraph_max_vision_items_per_batch': 0, 'encoder_cudagraph_max_frames_per_batch': None, 'compile_sizes': None, 'compile_ranges_endpoints': None, 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.FULL_DECODE_ONLY: (2, 0)>, 'cudagraph_num_of_warmups': 0, 'cudagraph_capture_sizes': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 20, 25, 30, 35, 40, 45, 48, 50, 55, 60, 64, 65, 70, 75, 80, 85, 90, 95, 96, 100, 105, 110, 112, 115, 120, 125, 128, 130, 135, 140, 145, 150, 155, 160, 165, 170, 175, 180, 185, 190, 192, 195, 200, 205, 210, 215, 220, 224, 225, 230, 235, 240, 245, 250, 255, 256, 260, 265, 270, 275, 280, 285, 290, 295, 300, 305, 310, 315, 320], 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': None, 'pass_config': {}, 'max_cudagraph_capture_size': None, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': False}, 'local_cache_dir': None, 'fast_moe_cold_start': None, 'static_all_moe_layers': []}}
+(APIServer pid=47) WARNING 11-22 06:15:36 [envs.py:2248] Unknown vLLM environment variable detected: VLLM_QUANTIZE_Q40_LIB
+(APIServer pid=47) INFO 11-22 06:16:01 [model.py:692] Resolved architecture: Qwen3_5ForConditionalGeneration
+(APIServer pid=47) WARNING 11-22 06:16:01 [model.py:2364] Casting torch.bfloat16 to torch.float16.
+(APIServer pid=47) INFO 11-22 06:16:01 [model.py:2030] Using max model len 262144
+(APIServer pid=47) WARNING 11-22 06:16:03 [indexer_topk.py:29] Failed to import the DeepSelect extension (vllm._deepselect_C): No module named 'vllm._deepselect_C'
+(APIServer pid=47) INFO 11-22 06:16:19 [model.py:692] Resolved architecture: Qwen3_5MTP
+(APIServer pid=47) WARNING 11-22 06:16:19 [model.py:2364] Casting torch.bfloat16 to torch.float16.
+(APIServer pid=47) INFO 11-22 06:16:19 [model.py:2030] Using max model len 262144
+(APIServer pid=47) INFO 11-22 06:16:19 [model.py:900] Disabled mm_prefix attention mode because multimodal inputs are configuration-disabled. Attention backends without mm_prefix support may now be selected.
+(APIServer pid=47) WARNING 11-22 06:16:19 [speculative.py:1361] Enabling num_speculative_tokens > 1 will run multiple times of forward on same MTP layer,which may result in lower acceptance rate
+(APIServer pid=47) INFO 11-22 06:16:19 [scheduler.py:288] Chunked prefill is enabled with max_num_batched_tokens=8192.
+(APIServer pid=47) WARNING 11-22 06:16:19 [config.py:819] Qwen3.5 model specifies mamba_ssm_dtype='float32' in its config, but --mamba-ssm-cache-dtype='float16' was passed. Using the user-specified value.
+(APIServer pid=47) WARNING 11-22 06:16:19 [vllm.py:1570] Inductor compilation was disabled by user settings, optimizations settings that are only active during inductor compilation will be ignored.
+(APIServer pid=47) INFO 11-22 06:16:19 [kernel.py:416] Final IR op priority after setting platform defaults: IrOpPriorityConfig(rms_norm=['vllm_c', 'native'], fused_add_rms_norm=['vllm_c', 'native'], gelu_and_mul_sparse=['native'])
+(APIServer pid=47) WARNING 11-22 06:16:19 [xpu.py:308] XPU Graph support is experimental and currently only supports single-GPU execution.
+(APIServer pid=47) INFO 11-22 06:16:19 [xpu.py:382] XPU platform: set server shutdown_timeout=5.
+(APIServer pid=47) INFO 11-22 06:16:19 [graph_safe_output.py:665] ArcXpuPlatform: XPU graph boundary hygiene installed (pid 47, XPUGraph capture_begin/capture_end/replay + graph context __exit__ wrapped).
+(APIServer pid=47) INFO 11-22 06:16:19 [graph_safe_output.py:791] ArcXpuPlatform: zombie stream-reroute guards installed (pid 47, set_stream substitution + wait_stream skip + Event.record reroute + synchronize tripwire).
+(APIServer pid=47) INFO 11-22 06:16:19 [graph_safe_output.py:925] ArcXpuPlatform: runner-entry hygiene installed (pid 47, GPUModelRunner.execute_model + sample_tokens wrapped).
+(APIServer pid=47) INFO 11-22 06:16:19 [graph_safe_output.py:971] ArcXpuPlatform: capture-stream fix installed (pid 47, captures ride torch.xpu.graph.default_capture_stream, EAGERLY INITED before capture #1 — the serving default never enters capture; champion 0.26.1 discipline, r9).
+(APIServer pid=47) INFO 11-22 06:16:19 [graph_safe_output.py:520] ArcXpuPlatform: r12b kernel-launch tracer installed (triton:CachingAutotuner.run).
+(APIServer pid=47) INFO 11-22 06:16:19 [graph_safe_output.py:1112] ArcXpuPlatform: graph-safe output patch installed (pid 47, AsyncOutput/AsyncPoolingOutput __init__ + get_output wrapped).
+(APIServer pid=47) INFO 11-22 06:16:19 [speculator_full_capture.py:117] ArcXpuPlatform: speculator FULL-capture patch installed (pid 47, SpeculatorCudaGraphManager.__init__ wrapped).
+(APIServer pid=47) INFO 11-22 06:16:19 [first_request_warmup.py:123] ArcXpuPlatform: first-request warmup interlock installed (defect-b lane W, r16 evidence)
+(APIServer pid=47) INFO 11-22 06:16:19 [gdn_metadata_fastpath.py:286] [arc-p10] gdn metadata fastpath installed (steady spec-decode builds; stock build kept for prefill/mixed)
+(APIServer pid=47) INFO 11-22 06:16:19 [fp8_block_w8a16.py:97] ArcXpuPlatform: fp8 block linear reroute ACTIVE — XPUFp8BlockScaledMMKernel.apply_input_quant=False, apply_block_scaled_mm -> _xpu_C.fp8_gemm_w8a16 (stock fallback kept; r40: 3-8x/GEMM decode Ms, relerr 4-5e-4)
+(APIServer pid=47) WARNING 11-22 06:16:19 [platform.py:100] ArcXpuPlatform: ar_trace install failed at check_and_update_config: ModuleNotFoundError("No module named 'vllm_gaudi.xpu.patches.ar_trace'")
+(APIServer pid=47) INFO 11-22 06:16:19 [mxfp4_w4a16.py:194] ArcXpuPlatform: mxfp4 w4a16 reroute ACTIVE — XPUMxFp4LinearKernel.apply_weights -> _xpu_C.fp4_gemm_w4a16 (no per-call activation quant; stock w4a4 via ARC_MXFP4_MODE=w4a4)
+(APIServer pid=47) INFO 11-22 06:16:19 [mxfp8_w8a16.py:120] ArcXpuPlatform: mxfp8 w8a16 reroute ACTIVE — XPUMxFp8LinearKernel.apply_weights -> _xpu_C.fp8_gemm_w8a16_mxfp8 (no per-call activation quant; stock w8a8 via ARC_MXFP8_MODE=w8a8)
+(APIServer pid=47) INFO 11-22 06:16:19 [skinny_m.py:169] ArcXpuPlatform: skinny-M reroute OFF (ARC_SKINNY_M unset/off — stock routes at all Ms; the certified default after r127; set ARC_SKINNY_M=on to opt in)
+(APIServer pid=47) INFO 11-22 06:16:19 [graph_exec_doublebuffer.py:127] ArcXpuPlatform: graph-exec double-buffer patch installed (pid 47, CudaGraphManager capture/run_fullgraph wrapped).
+(APIServer pid=47) INFO 11-22 06:16:19 [platform.py:603] ArcXpuPlatform: Intel Arc Xe2 posture active (Intel(R) Graphics [0xe223]).
+(APIServer pid=47) INFO 11-22 06:16:19 [platform.py:612] ArcXpuPlatform: graph posture cudagraph_mode=FULL_DECODE_ONLY capture_sizes=(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 20, 25, 30, 35, 40, 45, 48, 50, 55, 60, 64, 65, 70, 75, 80, 85, 90, 95, 96, 100, 105, 110, 112, 115, 120, 125, 128, 130, 135, 140, 145, 150, 155, 160, 165, 170, 175, 180, 185, 190, 192, 195, 200, 205, 210, 215, 220, 224, 225, 230, 235, 240, 245, 250, 255, 256, 260, 265, 270, 275, 280, 285, 290, 295, 300, 305, 310, 315, 320) (VLLM_XPU_ENABLE_XPU_GRAPH=True).
+(APIServer pid=47) INFO 11-22 06:16:19 [compilation.py:336] Enabled custom fusions: norm_quant, act_quant
+(APIServer pid=47) [transformers] The `use_fast` parameter is deprecated and will be removed in a future version. Use `backend="torchvision"` instead of `use_fast=True`, or `backend="pil"` instead of `use_fast=False`.
+INFO 11-22 06:16:36 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+INFO 11-22 06:16:36 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+INFO 11-22 06:16:36 [__init__.py:54] - hpu -> vllm_gaudi:register
+INFO 11-22 06:16:36 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+INFO 11-22 06:16:37 [platform.py:417] ArcXpuPlatform: wheel hook torch_utils <- patches.mx_dtype_map OK (already imported)
+INFO 11-22 06:16:37 [platform.py:437] ArcXpuPlatform: source-transform targets already imported at install: ['vllm.v1.attention.backends.registry']
+INFO 11-22 06:16:37 [platform.py:221] ArcXpuPlatform: injected AttentionBackendEnum.MXKV -> vllm_gaudi.xpu.patches.mx_kv.engine.MxAttentionBackend
+INFO 11-22 06:16:37 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+INFO 11-22 06:16:37 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+INFO 11-22 06:16:37 [__init__.py:54] - hpu -> vllm_gaudi:register
+INFO 11-22 06:16:37 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+INFO 11-22 06:16:37 [__init__.py:272] Platform plugin arc is activated
+INFO 11-22 06:16:37 [__init__.py:272] Platform plugin arc is activated
+INFO 11-22 06:16:46 [platform.py:371] ArcXpuPlatform: wheel hook kv_cache_interface <- patches.mx_kv_mode OK
+(EngineCore pid=817) INFO 11-22 06:16:48 [core.py:123] Initializing a V1 LLM engine (v0.30.0) with config: model='/models/target', speculative_config=SpeculativeConfig(method='mtp', model='/models/target', num_spec_tokens=3), tokenizer='/models/target', skip_tokenizer_init=False, tokenizer_mode=auto, revision=None, tokenizer_revision=None, trust_remote_code=True, dtype=torch.float16, max_seq_len=262144, download_dir=None, load_format=auto, tensor_parallel_size=2, pipeline_parallel_size=1, data_parallel_size=1, decode_context_parallel_size=1, dcp_comm_backend=ag_rs, disable_custom_all_reduce=True, quantization=fp8, quantization_config=None, enforce_eager=False, enable_return_routed_experts=False, kv_cache_dtype=mxfp4, device_config=xpu, structured_outputs_config=StructuredOutputsConfig(backend='auto', disable_any_whitespace=False, disable_additional_properties=False, reasoning_parser='qwen3', reasoning_parser_plugin='', enable_in_reasoning=False), observability_config=ObservabilityConfig(show_hidden_metrics_for_version=None, otlp_traces_endpoint=None, collect_detailed_traces=None, per_request_spec_decode_metrics='none', kv_cache_metrics=False, kv_cache_metrics_sample=0.01, cudagraph_metrics=False, enable_layerwise_nvtx_tracing=False, enable_mfu_metrics=False, enable_mm_processor_stats=False, enable_logging_iteration_details=False, jit_monitor_mode='warn', jit_monitor_verbose=False), seed=0, served_model_name=qwen3.8-27b-fp8, enable_prefix_caching=True, enable_chunked_prefill=True, pooler_config=None, compilation_config={'mode': <CompilationMode.NONE: 0>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': ['+quant_fp8', 'all', '+quant_fp8'], 'ir_enable_torch_wrap': False, 'splitting_ops': [], 'compile_mm_encoder': False, 'cudagraph_mm_encoder': False, 'encoder_cudagraph_token_budgets': [], 'encoder_cudagraph_max_vision_items_per_batch': 0, 'encoder_cudagraph_max_frames_per_batch': None, 'compile_sizes': [], 'compile_ranges_endpoints': [8192], 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.FULL_DECODE_ONLY: (2, 0)>, 'cudagraph_num_of_warmups': 1, 'cudagraph_capture_sizes': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 20, 25, 30, 35, 40, 45, 48, 50, 55, 60, 64, 65, 70, 75, 80, 85, 90, 95, 96, 100, 105, 110, 112, 115, 120, 125, 128, 130, 135, 140, 145, 150, 155, 160, 165, 170, 175, 180, 185, 190, 192, 195, 200, 205, 210, 215, 220, 224, 225, 230, 235, 240, 245, 250, 255, 256, 260, 265, 270, 275, 280, 285, 290, 295, 300, 305, 310, 315, 320], 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': False, 'pass_config': {'fuse_norm_quant': True, 'fuse_act_quant': True, 'fuse_attn_quant': False, 'enable_sp': False, 'fuse_gemm_comms': False, 'fuse_allreduce_rms': False, 'enable_qk_norm_rope_fusion': False, 'fuse_rope_kvcache_cat_mla': False, 'fuse_act_padding': False, 'fuse_qk_norm_rope_kvcache': False}, 'max_cudagraph_capture_size': 320, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': False}, 'local_cache_dir': None, 'fast_moe_cold_start': False, 'static_all_moe_layers': []}, kernel_config=KernelConfig(ir_op_priority=IrOpPriorityConfig(rms_norm=['vllm_c', 'native'], fused_add_rms_norm=['vllm_c', 'native'], gelu_and_mul_sparse=['native']), enable_flashinfer_autotune=True, enable_cutedsl_warmup=True, enable_jit_warmup=True, moe_backend='auto', sparse_indexer_topk_backend='auto', linear_backend='auto', linear_backend_per_quant=None)
+(EngineCore pid=817) INFO 11-22 06:16:48 [multiproc_executor.py:153] DP group leader: node_rank=0, node_rank_within_dp=0, master_addr=127.0.0.1, mq_connect_ip=RIG_ADDR (local), world_size=2, local_world_size=2
+INFO 11-22 06:16:49 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+INFO 11-22 06:16:49 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+INFO 11-22 06:16:49 [__init__.py:54] - hpu -> vllm_gaudi:register
+INFO 11-22 06:16:49 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+INFO 11-22 06:16:50 [platform.py:417] ArcXpuPlatform: wheel hook torch_utils <- patches.mx_dtype_map OK (already imported)
+INFO 11-22 06:16:50 [platform.py:437] ArcXpuPlatform: source-transform targets already imported at install: ['vllm.v1.attention.backends.registry']
+INFO 11-22 06:16:50 [platform.py:221] ArcXpuPlatform: injected AttentionBackendEnum.MXKV -> vllm_gaudi.xpu.patches.mx_kv.engine.MxAttentionBackend
+INFO 11-22 06:16:50 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+INFO 11-22 06:16:50 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+INFO 11-22 06:16:50 [__init__.py:54] - hpu -> vllm_gaudi:register
+INFO 11-22 06:16:50 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+INFO 11-22 06:16:50 [__init__.py:272] Platform plugin arc is activated
+INFO 11-22 06:16:50 [__init__.py:272] Platform plugin arc is activated
+INFO 11-22 06:17:00 [platform.py:371] ArcXpuPlatform: wheel hook kv_cache_interface <- patches.mx_kv_mode OK
+WARNING 11-22 06:17:01 [indexer_topk.py:29] Failed to import the DeepSelect extension (vllm._deepselect_C): No module named 'vllm._deepselect_C'
+INFO 11-22 06:17:02 [platform.py:371] ArcXpuPlatform: wheel hook mamba_utils <- patches.mamba_lmcache_glue OK
+INFO 11-22 06:17:03 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+INFO 11-22 06:17:03 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+INFO 11-22 06:17:03 [__init__.py:54] - hpu -> vllm_gaudi:register
+INFO 11-22 06:17:03 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+(Worker pid=1073) INFO 11-22 06:17:03 [graph_safe_output.py:665] ArcXpuPlatform: XPU graph boundary hygiene installed (pid 1073, XPUGraph capture_begin/capture_end/replay + graph context __exit__ wrapped).
+(Worker pid=1073) INFO 11-22 06:17:03 [graph_safe_output.py:791] ArcXpuPlatform: zombie stream-reroute guards installed (pid 1073, set_stream substitution + wait_stream skip + Event.record reroute + synchronize tripwire).
+(Worker pid=1073) INFO 11-22 06:17:03 [graph_safe_output.py:925] ArcXpuPlatform: runner-entry hygiene installed (pid 1073, GPUModelRunner.execute_model + sample_tokens wrapped).
+(Worker pid=1073) INFO 11-22 06:17:03 [graph_safe_output.py:971] ArcXpuPlatform: capture-stream fix installed (pid 1073, captures ride torch.xpu.graph.default_capture_stream, EAGERLY INITED before capture #1 — the serving default never enters capture; champion 0.26.1 discipline, r9).
+(Worker pid=1073) INFO 11-22 06:17:03 [graph_safe_output.py:520] ArcXpuPlatform: r12b kernel-launch tracer installed (triton:CachingAutotuner.run).
+(Worker pid=1073) INFO 11-22 06:17:03 [graph_safe_output.py:1112] ArcXpuPlatform: graph-safe output patch installed (pid 1073, AsyncOutput/AsyncPoolingOutput __init__ + get_output wrapped).
+(Worker pid=1073) INFO 11-22 06:17:03 [speculator_full_capture.py:117] ArcXpuPlatform: speculator FULL-capture patch installed (pid 1073, SpeculatorCudaGraphManager.__init__ wrapped).
+(Worker pid=1073) INFO 11-22 06:17:03 [first_request_warmup.py:123] ArcXpuPlatform: first-request warmup interlock installed (defect-b lane W, r16 evidence)
+(Worker pid=1073) INFO 11-22 06:17:03 [gdn_metadata_fastpath.py:286] [arc-p10] gdn metadata fastpath installed (steady spec-decode builds; stock build kept for prefill/mixed)
+(Worker pid=1073) INFO 11-22 06:17:03 [fp8_block_w8a16.py:97] ArcXpuPlatform: fp8 block linear reroute ACTIVE — XPUFp8BlockScaledMMKernel.apply_input_quant=False, apply_block_scaled_mm -> _xpu_C.fp8_gemm_w8a16 (stock fallback kept; r40: 3-8x/GEMM decode Ms, relerr 4-5e-4)
+(Worker pid=1073) WARNING 11-22 06:17:03 [platform.py:100] ArcXpuPlatform: ar_trace install failed at check_if_supports_dtype: ModuleNotFoundError("No module named 'vllm_gaudi.xpu.patches.ar_trace'")
+(Worker pid=1073) INFO 11-22 06:17:03 [mxfp4_w4a16.py:194] ArcXpuPlatform: mxfp4 w4a16 reroute ACTIVE — XPUMxFp4LinearKernel.apply_weights -> _xpu_C.fp4_gemm_w4a16 (no per-call activation quant; stock w4a4 via ARC_MXFP4_MODE=w4a4)
+(Worker pid=1073) INFO 11-22 06:17:03 [mxfp8_w8a16.py:120] ArcXpuPlatform: mxfp8 w8a16 reroute ACTIVE — XPUMxFp8LinearKernel.apply_weights -> _xpu_C.fp8_gemm_w8a16_mxfp8 (no per-call activation quant; stock w8a8 via ARC_MXFP8_MODE=w8a8)
+(Worker pid=1073) INFO 11-22 06:17:03 [skinny_m.py:169] ArcXpuPlatform: skinny-M reroute OFF (ARC_SKINNY_M unset/off — stock routes at all Ms; the certified default after r127; set ARC_SKINNY_M=on to opt in)
+(Worker pid=1073) INFO 11-22 06:17:03 [graph_exec_doublebuffer.py:127] ArcXpuPlatform: graph-exec double-buffer patch installed (pid 1073, CudaGraphManager capture/run_fullgraph wrapped).
+INFO 11-22 06:17:04 [platform.py:417] ArcXpuPlatform: wheel hook torch_utils <- patches.mx_dtype_map OK (already imported)
+INFO 11-22 06:17:04 [platform.py:437] ArcXpuPlatform: source-transform targets already imported at install: ['vllm.v1.attention.backends.registry']
+INFO 11-22 06:17:04 [platform.py:221] ArcXpuPlatform: injected AttentionBackendEnum.MXKV -> vllm_gaudi.xpu.patches.mx_kv.engine.MxAttentionBackend
+INFO 11-22 06:17:04 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+INFO 11-22 06:17:04 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+INFO 11-22 06:17:04 [__init__.py:54] - hpu -> vllm_gaudi:register
+INFO 11-22 06:17:04 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+INFO 11-22 06:17:04 [__init__.py:272] Platform plugin arc is activated
+INFO 11-22 06:17:04 [__init__.py:272] Platform plugin arc is activated
+(Worker pid=1073) INFO 11-22 06:17:04 [parallel_state.py:1827] world_size=2 rank=0 local_rank=0 distributed_init_method=file:///tmp/vllm_dist_cce249d1f3764961b86f52be82953c76 backend=xccl
+INFO 11-22 06:17:13 [platform.py:371] ArcXpuPlatform: wheel hook kv_cache_interface <- patches.mx_kv_mode OK
+(APIServer pid=47) [transformers] Qwen3VL video processing does not apply the per-frame pixel cap the reference implementation (qwen-vl-utils) applies, so some videos cost far more tokens than they would there. In v5.22 the capped behavior will become the default and `cap_pixels_per_frame` will be removed. Pass `cap_pixels_per_frame=True` to adopt the reference behavior now, or `False` to keep the current behavior and silence this warning.
+WARNING 11-22 06:17:15 [indexer_topk.py:29] Failed to import the DeepSelect extension (vllm._deepselect_C): No module named 'vllm._deepselect_C'
+INFO 11-22 06:17:15 [platform.py:371] ArcXpuPlatform: wheel hook mamba_utils <- patches.mamba_lmcache_glue OK
+(APIServer pid=47) INFO 11-22 06:17:16 [base.py:261] Multi-modal warmup completed in 28.888s
+(Worker pid=1179) INFO 11-22 06:17:16 [graph_safe_output.py:665] ArcXpuPlatform: XPU graph boundary hygiene installed (pid 1179, XPUGraph capture_begin/capture_end/replay + graph context __exit__ wrapped).
+(Worker pid=1179) INFO 11-22 06:17:16 [graph_safe_output.py:791] ArcXpuPlatform: zombie stream-reroute guards installed (pid 1179, set_stream substitution + wait_stream skip + Event.record reroute + synchronize tripwire).
+(Worker pid=1179) INFO 11-22 06:17:16 [graph_safe_output.py:925] ArcXpuPlatform: runner-entry hygiene installed (pid 1179, GPUModelRunner.execute_model + sample_tokens wrapped).
+(Worker pid=1179) INFO 11-22 06:17:16 [graph_safe_output.py:971] ArcXpuPlatform: capture-stream fix installed (pid 1179, captures ride torch.xpu.graph.default_capture_stream, EAGERLY INITED before capture #1 — the serving default never enters capture; champion 0.26.1 discipline, r9).
+(Worker pid=1179) INFO 11-22 06:17:16 [graph_safe_output.py:520] ArcXpuPlatform: r12b kernel-launch tracer installed (triton:CachingAutotuner.run).
+(Worker pid=1179) INFO 11-22 06:17:16 [graph_safe_output.py:1112] ArcXpuPlatform: graph-safe output patch installed (pid 1179, AsyncOutput/AsyncPoolingOutput __init__ + get_output wrapped).
+(Worker pid=1179) INFO 11-22 06:17:16 [speculator_full_capture.py:117] ArcXpuPlatform: speculator FULL-capture patch installed (pid 1179, SpeculatorCudaGraphManager.__init__ wrapped).
+(Worker pid=1179) INFO 11-22 06:17:16 [first_request_warmup.py:123] ArcXpuPlatform: first-request warmup interlock installed (defect-b lane W, r16 evidence)
+(Worker pid=1179) INFO 11-22 06:17:16 [gdn_metadata_fastpath.py:286] [arc-p10] gdn metadata fastpath installed (steady spec-decode builds; stock build kept for prefill/mixed)
+(Worker pid=1179) INFO 11-22 06:17:16 [fp8_block_w8a16.py:97] ArcXpuPlatform: fp8 block linear reroute ACTIVE — XPUFp8BlockScaledMMKernel.apply_input_quant=False, apply_block_scaled_mm -> _xpu_C.fp8_gemm_w8a16 (stock fallback kept; r40: 3-8x/GEMM decode Ms, relerr 4-5e-4)
+(Worker pid=1179) WARNING 11-22 06:17:16 [platform.py:100] ArcXpuPlatform: ar_trace install failed at check_if_supports_dtype: ModuleNotFoundError("No module named 'vllm_gaudi.xpu.patches.ar_trace'")
+(Worker pid=1179) INFO 11-22 06:17:16 [mxfp4_w4a16.py:194] ArcXpuPlatform: mxfp4 w4a16 reroute ACTIVE — XPUMxFp4LinearKernel.apply_weights -> _xpu_C.fp4_gemm_w4a16 (no per-call activation quant; stock w4a4 via ARC_MXFP4_MODE=w4a4)
+(Worker pid=1179) INFO 11-22 06:17:16 [mxfp8_w8a16.py:120] ArcXpuPlatform: mxfp8 w8a16 reroute ACTIVE — XPUMxFp8LinearKernel.apply_weights -> _xpu_C.fp8_gemm_w8a16_mxfp8 (no per-call activation quant; stock w8a8 via ARC_MXFP8_MODE=w8a8)
+(Worker pid=1179) INFO 11-22 06:17:16 [skinny_m.py:169] ArcXpuPlatform: skinny-M reroute OFF (ARC_SKINNY_M unset/off — stock routes at all Ms; the certified default after r127; set ARC_SKINNY_M=on to opt in)
+(Worker pid=1179) INFO 11-22 06:17:16 [graph_exec_doublebuffer.py:127] ArcXpuPlatform: graph-exec double-buffer patch installed (pid 1179, CudaGraphManager capture/run_fullgraph wrapped).
+(Worker pid=1179) INFO 11-22 06:17:17 [parallel_state.py:1827] world_size=2 rank=1 local_rank=1 distributed_init_method=file:///tmp/vllm_dist_cce249d1f3764961b86f52be82953c76 backend=xccl
+(Worker pid=1073) INFO 11-22 06:17:17 [parallel_state.py:2267] rank 0 in world size 2 is assigned as DP rank 0, PP rank 0, PCP rank 0, TP rank 0, ETP rank 0, EP rank N/A, EPLB rank N/A
+2026:11:22-06:17:17: 1179 |CCL_WARN| value of CCL_ATL_TRANSPORT changed to be ofi (default:mpi)
+2026:11:22-06:17:17: 1179 |CCL_WARN| value of CCL_SYCL_ALLREDUCE_FP8 changed to be 1 (default:0)
+2026:11:22-06:17:17: 1179 |CCL_WARN| value of CCL_SYCL_ALLGATHERV_SCALEOUT_THRESHOLD changed to be 1048576 (default:1073741824)
+2026:11:22-06:17:17: 1179 |CCL_WARN| value of CCL_TOPO_P2P_ACCESS changed to be 1 (default:-1)
+2026:11:22-06:17:17: 1179 |CCL_WARN| value of CCL_TOPO_FABRIC_VERTEX_CONNECTION_CHECK changed to be 0 (default:1)
+2026:11:22-06:17:17: 1073 |CCL_WARN| value of CCL_ATL_TRANSPORT changed to be ofi (default:mpi)
+2026:11:22-06:17:17: 1073 |CCL_WARN| value of CCL_SYCL_ALLREDUCE_FP8 changed to be 1 (default:0)
+2026:11:22-06:17:17: 1073 |CCL_WARN| value of CCL_SYCL_ALLGATHERV_SCALEOUT_THRESHOLD changed to be 1048576 (default:1073741824)
+2026:11:22-06:17:17: 1073 |CCL_WARN| value of CCL_TOPO_P2P_ACCESS changed to be 1 (default:-1)
+2026:11:22-06:17:17: 1073 |CCL_WARN| value of CCL_TOPO_FABRIC_VERTEX_CONNECTION_CHECK changed to be 0 (default:1)
+2026:11:22-06:17:17: 1179 |CCL_WARN| could not get local_idx/count from environment variables, trying to get them from ATL
+2026:11:22-06:17:17: 1073 |CCL_WARN| could not get local_idx/count from environment variables, trying to get them from ATL
+(Worker pid=1073) INFO 11-22 06:17:18 [xpu_worker.py:169] Using V2 Model Runner
+(APIServer pid=47) INFO 11-22 06:17:19 [base.py:261] Readonly multi-modal warmup completed in 2.694s
+(Worker_TP0 pid=1073) INFO 11-22 06:17:19 [model_runner.py:396] Loading model from scratch...
+(Worker_TP0 pid=1073) INFO 11-22 06:17:20 [xpu.py:233] Using backend AttentionBackendEnum.FLASH_ATTN for vit attention
+(Worker_TP0 pid=1073) INFO 11-22 06:17:20 [mm_encoder_attention.py:372] Using AttentionBackendEnum.FLASH_ATTN for MMEncoderAttention.
+(Worker_TP0 pid=1073) INFO 11-22 06:17:20 [__init__.py:726] Selected XPUFp8BlockScaledMMKernel for Fp8LinearMethod
+(Worker_TP0 pid=1073) INFO 11-22 06:17:20 [qwen_gdn_linear_attn.py:176] Using Triton/FLA GDN prefill kernel (requested=auto, head_k_dim=128).
+(Worker_TP0 pid=1073) INFO 11-22 06:17:20 [qwen_gdn_linear_attn.py:528] GDN decode kernel: cuda
+(Worker_TP1 pid=1179) P619 tq_spec_fix v6 installed (active=True mode=split mq_kernel=True): v19b verify-capture forcing + split-row continuation dispatch
+(Worker_TP1 pid=1179) INFO 11-22 06:17:20 [platform.py:371] ArcXpuPlatform: wheel hook turboquant_attn <- patches.tq_spec_fix OK
+(Worker_TP1 pid=1179) WARNING 11-22 06:17:20 [rocm.py:42] Failed to import from amdsmi with ModuleNotFoundError("No module named 'amdsmi'")
+(Worker_TP1 pid=1179) WARNING 11-22 06:17:20 [rocm.py:47] Failed to import from vllm._C with ModuleNotFoundError("No module named 'vllm._C'")
+(Worker_TP1 pid=1179) WARNING 11-22 06:17:20 [rocm.py:53] Failed to import from vllm._C_stable_libtorch with ModuleNotFoundError("No module named 'vllm._C_stable_libtorch'")
+(Worker_TP1 pid=1179) WARNING 11-22 06:17:20 [rocm.py:58] Failed to import from vllm._rocm_C with ModuleNotFoundError("No module named 'vllm._rocm_C'")
+(Worker_TP1 pid=1179) INFO 11-22 06:17:20 [engine.py:480] MXKV impl: fmt=mxfp4 head=256 slot=272 B (capacity 3.76x fp16 KV) dump=False ord=0
+(Worker_TP1 pid=1179) INFO 11-22 06:17:20 [engine.py:480] MXKV impl: fmt=mxfp4 head=256 slot=272 B (capacity 3.76x fp16 KV) dump=False ord=1
+(Worker_TP1 pid=1179) INFO 11-22 06:17:20 [engine.py:480] MXKV impl: fmt=mxfp4 head=256 slot=272 B (capacity 3.76x fp16 KV) dump=False ord=2
+(Worker_TP1 pid=1179) INFO 11-22 06:17:20 [engine.py:480] MXKV impl: fmt=mxfp4 head=256 slot=272 B (capacity 3.76x fp16 KV) dump=False ord=3
+(Worker_TP0 pid=1073) P619 tq_spec_fix v6 installed (active=True mode=split mq_kernel=True): v19b verify-capture forcing + split-row continuation dispatch
+(Worker_TP0 pid=1073) INFO 11-22 06:17:20 [platform.py:371] ArcXpuPlatform: wheel hook turboquant_attn <- patches.tq_spec_fix OK
+(Worker_TP0 pid=1073) INFO 11-22 06:17:20 [platform.py:646] Using MX KV attention backend (mxfp4).
+(Worker_TP0 pid=1073) WARNING 11-22 06:17:20 [rocm.py:42] Failed to import from amdsmi with ModuleNotFoundError("No module named 'amdsmi'")
+(Worker_TP0 pid=1073) WARNING 11-22 06:17:20 [rocm.py:47] Failed to import from vllm._C with ModuleNotFoundError("No module named 'vllm._C'")
+(Worker_TP0 pid=1073) WARNING 11-22 06:17:20 [rocm.py:53] Failed to import from vllm._C_stable_libtorch with ModuleNotFoundError("No module named 'vllm._C_stable_libtorch'")
+(Worker_TP0 pid=1073) WARNING 11-22 06:17:20 [rocm.py:58] Failed to import from vllm._rocm_C with ModuleNotFoundError("No module named 'vllm._rocm_C'")
+(Worker_TP0 pid=1073) WARNING 11-22 06:17:20 [flydsl_turboquant_decode.py:95] FlyDSL TQ decode launcher: unavailable (Torch not compiled with CUDA enabled). Falling back to SoA Triton decode.
+(Worker_TP0 pid=1073) INFO 11-22 06:17:20 [engine.py:480] MXKV impl: fmt=mxfp4 head=256 slot=272 B (capacity 3.76x fp16 KV) dump=False ord=0
+(Worker_TP1 pid=1179) INFO 11-22 06:17:20 [engine.py:480] MXKV impl: fmt=mxfp4 head=256 slot=272 B (capacity 3.76x fp16 KV) dump=False ord=4
+(Worker_TP0 pid=1073) INFO 11-22 06:17:20 [engine.py:480] MXKV impl: fmt=mxfp4 head=256 slot=272 B (capacity 3.76x fp16 KV) dump=False ord=1
+(Worker_TP1 pid=1179) INFO 11-22 06:17:20 [engine.py:480] MXKV impl: fmt=mxfp4 head=256 slot=272 B (capacity 3.76x fp16 KV) dump=False ord=5
+(Worker_TP0 pid=1073) INFO 11-22 06:17:20 [engine.py:480] MXKV impl: fmt=mxfp4 head=256 slot=272 B (capacity 3.76x fp16 KV) dump=False ord=2
+(Worker_TP1 pid=1179) INFO 11-22 06:17:20 [engine.py:480] MXKV impl: fmt=mxfp4 head=256 slot=272 B (capacity 3.76x fp16 KV) dump=False ord=6
+(Worker_TP0 pid=1073) INFO 11-22 06:17:20 [engine.py:480] MXKV impl: fmt=mxfp4 head=256 slot=272 B (capacity 3.76x fp16 KV) dump=False ord=3
+(Worker_TP1 pid=1179) INFO 11-22 06:17:20 [engine.py:480] MXKV impl: fmt=mxfp4 head=256 slot=272 B (capacity 3.76x fp16 KV) dump=False ord=7
+(Worker_TP0 pid=1073) INFO 11-22 06:17:20 [engine.py:480] MXKV impl: fmt=mxfp4 head=256 slot=272 B (capacity 3.76x fp16 KV) dump=False ord=4
+(Worker_TP1 pid=1179) INFO 11-22 06:17:20 [engine.py:480] MXKV impl: fmt=mxfp4 head=256 slot=272 B (capacity 3.76x fp16 KV) dump=False ord=8
+(Worker_TP0 pid=1073) INFO 11-22 06:17:20 [engine.py:480] MXKV impl: fmt=mxfp4 head=256 slot=272 B (capacity 3.76x fp16 KV) dump=False ord=5
+(Worker_TP1 pid=1179) INFO 11-22 06:17:20 [engine.py:480] MXKV impl: fmt=mxfp4 head=256 slot=272 B (capacity 3.76x fp16 KV) dump=False ord=9
+(Worker_TP0 pid=1073) INFO 11-22 06:17:20 [engine.py:480] MXKV impl: fmt=mxfp4 head=256 slot=272 B (capacity 3.76x fp16 KV) dump=False ord=6
+(Worker_TP1 pid=1179) INFO 11-22 06:17:20 [engine.py:480] MXKV impl: fmt=mxfp4 head=256 slot=272 B (capacity 3.76x fp16 KV) dump=False ord=10
+(Worker_TP0 pid=1073) INFO 11-22 06:17:20 [engine.py:480] MXKV impl: fmt=mxfp4 head=256 slot=272 B (capacity 3.76x fp16 KV) dump=False ord=7
+(Worker_TP1 pid=1179) INFO 11-22 06:17:20 [engine.py:480] MXKV impl: fmt=mxfp4 head=256 slot=272 B (capacity 3.76x fp16 KV) dump=False ord=11
+(Worker_TP1 pid=1179) INFO 11-22 06:17:20 [engine.py:480] MXKV impl: fmt=mxfp4 head=256 slot=272 B (capacity 3.76x fp16 KV) dump=False ord=12
+(Worker_TP0 pid=1073) INFO 11-22 06:17:20 [engine.py:480] MXKV impl: fmt=mxfp4 head=256 slot=272 B (capacity 3.76x fp16 KV) dump=False ord=8
+(Worker_TP1 pid=1179) INFO 11-22 06:17:20 [engine.py:480] MXKV impl: fmt=mxfp4 head=256 slot=272 B (capacity 3.76x fp16 KV) dump=False ord=13
+(Worker_TP0 pid=1073) INFO 11-22 06:17:20 [engine.py:480] MXKV impl: fmt=mxfp4 head=256 slot=272 B (capacity 3.76x fp16 KV) dump=False ord=9
+(Worker_TP1 pid=1179) INFO 11-22 06:17:20 [engine.py:480] MXKV impl: fmt=mxfp4 head=256 slot=272 B (capacity 3.76x fp16 KV) dump=False ord=14
+(Worker_TP0 pid=1073) INFO 11-22 06:17:20 [engine.py:480] MXKV impl: fmt=mxfp4 head=256 slot=272 B (capacity 3.76x fp16 KV) dump=False ord=10
+(Worker_TP1 pid=1179) INFO 11-22 06:17:20 [engine.py:480] MXKV impl: fmt=mxfp4 head=256 slot=272 B (capacity 3.76x fp16 KV) dump=False ord=15
+(Worker_TP0 pid=1073) INFO 11-22 06:17:20 [engine.py:480] MXKV impl: fmt=mxfp4 head=256 slot=272 B (capacity 3.76x fp16 KV) dump=False ord=11
+(Worker_TP0 pid=1073) INFO 11-22 06:17:20 [engine.py:480] MXKV impl: fmt=mxfp4 head=256 slot=272 B (capacity 3.76x fp16 KV) dump=False ord=12
+(Worker_TP0 pid=1073) INFO 11-22 06:17:20 [engine.py:480] MXKV impl: fmt=mxfp4 head=256 slot=272 B (capacity 3.76x fp16 KV) dump=False ord=13
+(Worker_TP0 pid=1073) INFO 11-22 06:17:20 [engine.py:480] MXKV impl: fmt=mxfp4 head=256 slot=272 B (capacity 3.76x fp16 KV) dump=False ord=14
+(Worker_TP0 pid=1073) INFO 11-22 06:17:20 [engine.py:480] MXKV impl: fmt=mxfp4 head=256 slot=272 B (capacity 3.76x fp16 KV) dump=False ord=15
+(Worker_TP0 pid=1073) INFO 11-22 06:17:21 [weight_utils.py:895] Filesystem type for checkpoints: EXT4. Checkpoint size: 28.75 GiB. Available RAM: 361.60 GiB.
+(Worker_TP0 pid=1073) INFO 11-22 06:17:21 [weight_utils.py:918] Auto-prefetch is disabled because the filesystem (EXT4) is not a recognized network FS (NFS/Lustre). If you want to force prefetching, start vLLM with --safetensors-load-strategy=prefetch.
+(Worker_TP0 pid=1073) Loading safetensors checkpoint shards:   0% Completed | 0/66 [00:00<?, ?it/s]
+(Worker_TP0 pid=1073) Loading safetensors checkpoint shards:   3% Completed | 2/66 [00:00<00:04, 15.63it/s]
+(Worker_TP0 pid=1073) Loading safetensors checkpoint shards:   6% Completed | 4/66 [00:00<00:03, 16.42it/s]
+(Worker_TP0 pid=1073) Loading safetensors checkpoint shards:   9% Completed | 6/66 [00:00<00:03, 16.74it/s]
+(Worker_TP0 pid=1073) Loading safetensors checkpoint shards:  12% Completed | 8/66 [00:00<00:03, 16.98it/s]
+(Worker_TP0 pid=1073) Loading safetensors checkpoint shards:  15% Completed | 10/66 [00:00<00:03, 17.12it/s]
+(Worker_TP0 pid=1073) Loading safetensors checkpoint shards:  18% Completed | 12/66 [00:00<00:03, 17.27it/s]
+(Worker_TP0 pid=1073) Loading safetensors checkpoint shards:  21% Completed | 14/66 [00:00<00:02, 17.40it/s]
+(Worker_TP0 pid=1073) Loading safetensors checkpoint shards:  24% Completed | 16/66 [00:00<00:02, 17.53it/s]
+(Worker_TP0 pid=1073) Loading safetensors checkpoint shards:  27% Completed | 18/66 [00:01<00:02, 17.60it/s]
+(Worker_TP0 pid=1073) Loading safetensors checkpoint shards:  30% Completed | 20/66 [00:01<00:02, 17.53it/s]
+(Worker_TP0 pid=1073) Loading safetensors checkpoint shards:  33% Completed | 22/66 [00:01<00:02, 17.46it/s]
+(Worker_TP0 pid=1073) Loading safetensors checkpoint shards:  36% Completed | 24/66 [00:01<00:02, 17.71it/s]
+(Worker_TP0 pid=1073) Loading safetensors checkpoint shards:  39% Completed | 26/66 [00:01<00:02, 17.46it/s]
+(Worker_TP0 pid=1073) Loading safetensors checkpoint shards:  42% Completed | 28/66 [00:01<00:02, 17.49it/s]
+(Worker_TP0 pid=1073) Loading safetensors checkpoint shards:  45% Completed | 30/66 [00:01<00:02, 13.17it/s]
+(Worker_TP0 pid=1073) Loading safetensors checkpoint shards:  48% Completed | 32/66 [00:02<00:03,  8.80it/s]
+(Worker_TP0 pid=1073) Loading safetensors checkpoint shards:  52% Completed | 34/66 [00:02<00:04,  7.00it/s]
+(Worker_TP0 pid=1073) Loading safetensors checkpoint shards:  53% Completed | 35/66 [00:02<00:04,  6.59it/s]
+(Worker_TP0 pid=1073) Loading safetensors checkpoint shards:  55% Completed | 36/66 [00:03<00:04,  6.24it/s]
+(Worker_TP0 pid=1073) Loading safetensors checkpoint shards:  56% Completed | 37/66 [00:03<00:04,  5.99it/s]
+(Worker_TP0 pid=1073) Loading safetensors checkpoint shards:  58% Completed | 38/66 [00:03<00:04,  5.60it/s]
+(Worker_TP0 pid=1073) Loading safetensors checkpoint shards:  59% Completed | 39/66 [00:03<00:04,  5.43it/s]
+(Worker_TP0 pid=1073) Loading safetensors checkpoint shards:  61% Completed | 40/66 [00:03<00:04,  5.24it/s]
+(Worker_TP0 pid=1073) Loading safetensors checkpoint shards:  62% Completed | 41/66 [00:04<00:04,  5.03it/s]
+(Worker_TP0 pid=1073) Loading safetensors checkpoint shards:  64% Completed | 42/66 [00:04<00:04,  4.82it/s]
+(Worker_TP0 pid=1073) Loading safetensors checkpoint shards:  65% Completed | 43/66 [00:04<00:04,  5.14it/s]
+(Worker_TP0 pid=1073) Loading safetensors checkpoint shards:  68% Completed | 45/66 [00:04<00:02,  7.58it/s]
+(Worker_TP0 pid=1073) Loading safetensors checkpoint shards:  71% Completed | 47/66 [00:04<00:01,  9.80it/s]
+(Worker_TP0 pid=1073) Loading safetensors checkpoint shards:  74% Completed | 49/66 [00:04<00:01, 11.73it/s]
+(Worker_TP0 pid=1073) Loading safetensors checkpoint shards:  77% Completed | 51/66 [00:04<00:01, 13.28it/s]
+(Worker_TP0 pid=1073) Loading safetensors checkpoint shards:  80% Completed | 53/66 [00:05<00:00, 14.52it/s]
+(Worker_TP0 pid=1073) Loading safetensors checkpoint shards:  83% Completed | 55/66 [00:05<00:00, 15.02it/s]
+(Worker_TP0 pid=1073) Loading safetensors checkpoint shards:  86% Completed | 57/66 [00:05<00:00, 15.91it/s]
+(Worker_TP0 pid=1073) Loading safetensors checkpoint shards:  89% Completed | 59/66 [00:05<00:00, 16.50it/s]
+(Worker_TP0 pid=1073) Loading safetensors checkpoint shards:  92% Completed | 61/66 [00:05<00:00, 17.02it/s]
+(Worker_TP0 pid=1073) Loading safetensors checkpoint shards:  95% Completed | 63/66 [00:05<00:00, 16.96it/s]
+(Worker_TP0 pid=1073) Loading safetensors checkpoint shards: 100% Completed | 66/66 [00:06<00:00,  5.62it/s]
+(Worker_TP0 pid=1073) Loading safetensors checkpoint shards: 100% Completed | 66/66 [00:06<00:00,  9.85it/s]
+(Worker_TP0 pid=1073) 
+(Worker_TP0 pid=1073) INFO 11-22 06:17:27 [default_loader.py:430] Loading weights took 6.76 seconds
+(Worker_TP1 pid=1179) INFO 11-22 06:17:27 [engine.py:480] MXKV impl: fmt=mxfp4 head=256 slot=272 B (capacity 3.76x fp16 KV) dump=False ord=16
+(Worker_TP0 pid=1073) INFO 11-22 06:17:28 [engine.py:480] MXKV impl: fmt=mxfp4 head=256 slot=272 B (capacity 3.76x fp16 KV) dump=False ord=16
+(Worker_TP0 pid=1073) INFO 11-22 06:17:28 [weight_utils.py:895] Filesystem type for checkpoints: EXT4. Checkpoint size: 28.75 GiB. Available RAM: 360.79 GiB.
+(Worker_TP0 pid=1073) Loading safetensors checkpoint shards:   0% Completed | 0/66 [00:00<?, ?it/s]
+(Worker_TP0 pid=1073) Loading safetensors checkpoint shards:  98% Completed | 65/66 [00:00<00:00, 555.87it/s]
+(Worker_TP0 pid=1073) Loading safetensors checkpoint shards: 100% Completed | 66/66 [00:00<00:00, 74.52it/s]
+(Worker_TP0 pid=1073)  
+(Worker_TP0 pid=1073) INFO 11-22 06:17:29 [default_loader.py:430] Loading weights took 0.92 seconds
+(Worker_TP1 pid=1179) INFO 11-22 06:17:29 [model_runner.py:428] Model loading took 14.74 GiB memory and 10.891924 seconds
+(Worker_TP1 pid=1179) [p41c] mamba_hybrid snap glue installed (pid=1179)
+(Worker_TP1 pid=1179) INFO 11-22 06:17:29 [platform.py:371] ArcXpuPlatform: wheel hook mamba_hybrid <- patches.mamba_hybrid_snap_glue OK
+(Worker_TP1 pid=1179) INFO 11-22 06:17:30 [interface.py:933] Setting attention block size to 1600 tokens to ensure that attention page size is >= mamba page size.
+(Worker_TP1 pid=1179) INFO 11-22 06:17:30 [interface.py:957] Padding mamba page size by 2.66% to ensure that mamba page size and attention page size are exactly equal.
+(Worker_TP0 pid=1073) INFO 11-22 06:17:30 [model_runner.py:428] Model loading took 14.74 GiB memory and 11.039289 seconds
+(Worker_TP0 pid=1073) [p41c] mamba_hybrid snap glue installed (pid=1073)
+(Worker_TP0 pid=1073) INFO 11-22 06:17:30 [platform.py:371] ArcXpuPlatform: wheel hook mamba_hybrid <- patches.mamba_hybrid_snap_glue OK
+(Worker_TP0 pid=1073) INFO 11-22 06:17:30 [interface.py:933] Setting attention block size to 1600 tokens to ensure that attention page size is >= mamba page size.
+(Worker_TP0 pid=1073) INFO 11-22 06:17:30 [interface.py:957] Padding mamba page size by 2.66% to ensure that mamba page size and attention page size are exactly equal.
+(EngineCore pid=817) INFO 11-22 06:17:30 [torch_utils.py:287] Reducing Torch threads from 32 to 1 for serving. Set OMP_NUM_THREADS in the external environment to override.
+(EngineCore pid=817) INFO 11-22 06:17:30 [utils.py:320] Using LBNHC KV cache layout.
+(Worker_TP0 pid=1073) [transformers] The `use_fast` parameter is deprecated and will be removed in a future version. Use `backend="torchvision"` instead of `use_fast=True`, or `backend="pil"` instead of `use_fast=False`.
+(Worker_TP1 pid=1179) [transformers] The `use_fast` parameter is deprecated and will be removed in a future version. Use `backend="torchvision"` instead of `use_fast=True`, or `backend="pil"` instead of `use_fast=False`.
+(Worker_TP0 pid=1073) INFO 11-22 06:17:40 [encoder_runner.py:131] Encoder cache will be initialized with a budget of 16384 tokens, and profiled with 1 image items of the maximum feature size.
+(Worker_TP1 pid=1179) /opt/venv/lib/python3.12/site-packages/torch/distributed/c10d_logger.py:83: FutureWarning: `torch.distributed.all_gather_into_tensor` is deprecated. Please use `torch.distributed.all_gather_single` instead.
+(Worker_TP1 pid=1179)   return func(*args, **kwargs)
+(Worker_TP0 pid=1073) /opt/venv/lib/python3.12/site-packages/torch/distributed/c10d_logger.py:83: FutureWarning: `torch.distributed.all_gather_into_tensor` is deprecated. Please use `torch.distributed.all_gather_single` instead.
+(Worker_TP0 pid=1073)   return func(*args, **kwargs)
+(Worker_TP0 pid=1073) /opt/venv/lib/python3.12/site-packages/torch/distributed/c10d_logger.py:83: FutureWarning: `torch.distributed.all_gather_into_tensor` is deprecated. Please use `torch.distributed.all_gather_single` instead.
+(Worker_TP0 pid=1073)   return func(*args, **kwargs)
+(Worker_TP1 pid=1179) /opt/venv/lib/python3.12/site-packages/torch/distributed/c10d_logger.py:83: FutureWarning: `torch.distributed.all_gather_into_tensor` is deprecated. Please use `torch.distributed.all_gather_single` instead.
+(Worker_TP1 pid=1179)   return func(*args, **kwargs)
+(Worker_TP0 pid=1073) INFO 11-22 06:18:05 [gpu_worker.py:839] Available KV cache memory: 6.8 GiB
+(EngineCore pid=817) WARNING 11-22 06:18:05 [kv_cache_utils.py:1556] Add 3 padding layers, may waste at most 6.25% KV cache memory
+(EngineCore pid=817) WARNING 11-22 06:18:05 [kv_cache_utils.py:2206] Speculative decoding (method=mtp) is enabled but no KV cache group could be identified as the draft model's.
+(EngineCore pid=817) INFO 11-22 06:18:05 [kv_cache_utils.py:2395] XPU KV cache size: 721,994 tokens, Maximum concurrency for 262,144 tokens per request: 2.75x
+(Worker_TP0 pid=1073) INFO 11-22 06:18:05 [speculator.py:120] Fused multi-step draft decode is not supported by attention backend(s) MXKV; falling back to rebuilding attention metadata between draft steps.
+(Worker_TP0 pid=1073) WARNING 11-22 06:18:05 [gpu_worker.py:137] ARC XPU tune warmup: no engine KV cache for head=256 nkvh=2 — skipping geometry
+(Worker_TP0 pid=1073) /opt/venv/lib/python3.12/site-packages/torch/distributed/c10d_logger.py:83: UserWarning: barrier(): using the device under current context. You can specify `device_id` in `init_process_group` to mute this warning.
+(Worker_TP0 pid=1073)   return func(*args, **kwargs)
+(Worker_TP1 pid=1179) WARNING 11-22 06:18:05 [gpu_worker.py:137] ARC XPU tune warmup: no engine KV cache for head=256 nkvh=2 — skipping geometry
+(Worker_TP0 pid=1073) INFO 11-22 06:18:05 [gpu_worker.py:257] ARC XPU tune warmup complete on rank 0/2 in 0.0s (1 geometries)
+(Worker_TP1 pid=1179) INFO 11-22 06:18:05 [gpu_worker.py:257] ARC XPU tune warmup complete on rank 1/2 in 0.0s (1 geometries)
+(Worker_TP0 pid=1073) INFO 11-22 06:18:05 [kernel_warmup.py:172] JIT kernel warmup starting.
+(Worker_TP0 pid=1073) INFO 11-22 06:18:05 [kernel_warmup.py:185] JIT kernel warmup finished in 0.00s.
+(Worker_TP1 pid=1179) INFO 11-22 06:18:05 [kernel_warmup.py:172] JIT kernel warmup starting.
+(Worker_TP0 pid=1073) INFO 11-22 06:18:05 [qwen_triton_warmup.py:294] Warming up Qwen GDN Triton kernels for model_type=qwen3_5_text.
+(Worker_TP1 pid=1179) INFO 11-22 06:18:05 [kernel_warmup.py:185] JIT kernel warmup finished in 0.00s.
+(Worker_TP1 pid=1179) INFO 11-22 06:18:05 [qwen_triton_warmup.py:294] Warming up Qwen GDN Triton kernels for model_type=qwen3_5_text.
+(Worker_TP0 pid=1073) INFO 11-22 06:18:10 [qwen_vl_triton_warmup.py:57] Warmed position embedding and vision rotary kernels on grids=[(1, 16, 16), (1, 16, 2), (1, 2, 16), (1, 2, 2)].
+(Worker_TP1 pid=1179) INFO 11-22 06:18:10 [qwen_vl_triton_warmup.py:57] Warmed position embedding and vision rotary kernels on grids=[(1, 16, 16), (1, 16, 2), (1, 2, 16), (1, 2, 2)].
+(Worker_TP0 pid=1073) INFO 11-22 06:18:10 [qwen_vl_triton_warmup.py:98] Warmed M-RoPE Triton kernels.
+(Worker_TP1 pid=1179) INFO 11-22 06:18:11 [qwen_vl_triton_warmup.py:98] Warmed M-RoPE Triton kernels.
+(Worker_TP0 pid=1073) [p41c] wrap live (pid=1073 bs=1600 gids=3)
+(Worker_TP1 pid=1179) [p41c] wrap live (pid=1179 bs=1600 gids=3)
+(Worker_TP1 pid=1179) P619I forward: is_prefill=True n_tok=185 qlens=(5, 10, 15, 20, 25, 30, 35, 40) seqs=[5, 5, 5, 5, 5, 5, 5, 5] ndec=0 mql=5 msl=5
+(Worker_TP0 pid=1073) P619I forward: is_prefill=True n_tok=185 qlens=(5, 10, 15, 20, 25, 30, 35, 40) seqs=[5, 5, 5, 5, 5, 5, 5, 5] ndec=0 mql=5 msl=5
+(Worker_TP0 pid=1073) INFO 11-22 06:18:53 [graph_safe_output.py:1055] ArcXpuPlatform: graph-safe output applied — reroute guards active, upstream copy event retained.
+(Worker_TP1 pid=1179) INFO 11-22 06:18:53 [graph_safe_output.py:1055] ArcXpuPlatform: graph-safe output applied — reroute guards active, upstream copy event retained.
+(Worker_TP0 pid=1073) P619I forward: is_prefill=False n_tok=37 qlens=(1, 2, 3, 4, 5, 6, 7, 8) seqs=[6, 6, 6, 6, 6, 6, 6, 6] ndec=37 mql=1 msl=8
+(Worker_TP1 pid=1179) P619I forward: is_prefill=False n_tok=37 qlens=(1, 2, 3, 4, 5, 6, 7, 8) seqs=[6, 6, 6, 6, 6, 6, 6, 6] ndec=37 mql=1 msl=8
+(Worker_TP0 pid=1073) P619I forward: is_prefill=True n_tok=148 qlens=(4, 8, 12, 16, 20, 24, 28, 32) seqs=[9, 9, 9, 9, 9, 9, 9, 9] ndec=0 mql=4 msl=9
+(Worker_TP1 pid=1179) P619I forward: is_prefill=True n_tok=148 qlens=(4, 8, 12, 16, 20, 24, 28, 32) seqs=[9, 9, 9, 9, 9, 9, 9, 9] ndec=0 mql=4 msl=9
+(Worker_TP0 pid=1073) INFO 11-22 06:18:58 [engine.py:1169] MXKV native dispatch fmt=mxfp4 rows=148 walked_cap=38835200 minlen=8192 -> native (E5b crossover)
+(Worker_TP0 pid=1073) INFO 11-22 06:18:58 [engine.py:1181] MXKV verify decoder=native fmt=mxfp4 source=native-env
+(Worker_TP0 pid=1073) INFO 11-22 06:18:58 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=148 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+(Worker_TP1 pid=1179) INFO 11-22 06:18:58 [engine.py:1169] MXKV native dispatch fmt=mxfp4 rows=148 walked_cap=38835200 minlen=8192 -> native (E5b crossover)
+(Worker_TP1 pid=1179) INFO 11-22 06:18:58 [engine.py:1181] MXKV verify decoder=native fmt=mxfp4 source=native-env
+(Worker_TP1 pid=1179) INFO 11-22 06:18:58 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=148 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+(Worker_TP0 pid=1073) INFO 11-22 06:19:02 [graph_safe_output.py:1055] ArcXpuPlatform: graph-safe output applied — reroute guards active, upstream copy event retained.
+(Worker_TP1 pid=1179) INFO 11-22 06:19:02 [graph_safe_output.py:1055] ArcXpuPlatform: graph-safe output applied — reroute guards active, upstream copy event retained.
+(Worker_TP1 pid=1179) P619I forward: is_prefill=True n_tok=5 qlens=(4, 5) seqs=[13, 10] ndec=0 mql=4 msl=13
+(Worker_TP0 pid=1073) P619I forward: is_prefill=True n_tok=5 qlens=(4, 5) seqs=[13, 10] ndec=0 mql=4 msl=13
+(Worker_TP1 pid=1179) INFO 11-22 06:19:02 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=4 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+(Worker_TP0 pid=1073) INFO 11-22 06:19:02 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=4 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+(Worker_TP0 pid=1073) INFO 11-22 06:19:02 [graph_safe_output.py:1055] ArcXpuPlatform: graph-safe output applied — reroute guards active, upstream copy event retained.
+(Worker_TP1 pid=1179) INFO 11-22 06:19:02 [graph_safe_output.py:1055] ArcXpuPlatform: graph-safe output applied — reroute guards active, upstream copy event retained.
+(Worker_TP1 pid=1179) P619I forward: is_prefill=False n_tok=2 qlens=(1, 2) seqs=[14, 11] ndec=2 mql=1 msl=16
+(Worker_TP0 pid=1073) P619I forward: is_prefill=False n_tok=2 qlens=(1, 2) seqs=[14, 11] ndec=2 mql=1 msl=16
+(Worker_TP0 pid=1073) P619I forward: is_prefill=True n_tok=4 qlens=(4,) seqs=[18] ndec=0 mql=4 msl=18
+(Worker_TP1 pid=1179) P619I forward: is_prefill=True n_tok=4 qlens=(4,) seqs=[18] ndec=0 mql=4 msl=18
+(Worker_TP1 pid=1179) /opt/venv/lib/python3.12/site-packages/torch/distributed/c10d_logger.py:83: FutureWarning: `torch.distributed.all_gather_into_tensor` is deprecated. Please use `torch.distributed.all_gather_single` instead.
+(Worker_TP1 pid=1179)   return func(*args, **kwargs)
+(Worker_TP1 pid=1179) P619I forward: is_prefill=False n_tok=1 qlens=(1,) seqs=[19] ndec=1 mql=1 msl=21
+(Worker_TP0 pid=1073) /opt/venv/lib/python3.12/site-packages/torch/distributed/c10d_logger.py:83: FutureWarning: `torch.distributed.all_gather_into_tensor` is deprecated. Please use `torch.distributed.all_gather_single` instead.
+(Worker_TP0 pid=1073)   return func(*args, **kwargs)
+(Worker_TP0 pid=1073) P619I forward: is_prefill=False n_tok=1 qlens=(1,) seqs=[19] ndec=1 mql=1 msl=21
+(EngineCore pid=817) INFO 11-22 06:19:06 [shm_broadcast.py:801] No available shared memory broadcast block found in 60 seconds. This typically happens when some processes are hanging or doing some time-consuming work (e.g. compilation, weight/kv cache quantization).
+(Worker_TP0 pid=1073) Capturing CUDA graphs (FULL):   0%|          | 0/54 [00:00<?, ?it/s](Worker_TP1 pid=1179) P619I forward: is_prefill=True n_tok=256 qlens=(4, 8, 12, 16, 20, 24, 28, 32) seqs=[5, 5, 5, 5, 5, 5, 5, 5] ndec=0 mql=4 msl=5
+P619I forward: is_prefill=True n_tok=256 qlens=(4, 8, 12, 16, 20, 24, 28, 32) seqs=[5, 5, 5, 5, 5, 5, 5, 5] ndec=0 mql=4 msl=5
+(Worker_TP1 pid=1179) INFO 11-22 06:19:22 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=256 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+(Worker_TP0 pid=1073) INFO 11-22 06:19:22 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=256 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+(Worker_TP0 pid=1073) Capturing CUDA graphs (FULL):   2%|▏         | 1/54 [00:02<01:46,  2.01s/it]P619I forward: is_prefill=True n_tok=252 qlens=(4, 8, 12, 16, 20, 24, 28, 32) seqs=[5, 5, 5, 5, 5, 5, 5, 5] ndec=0 mql=4 msl=5
+(Worker_TP0 pid=1073) INFO 11-22 06:19:23 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=252 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+(Worker_TP1 pid=1179) P619I forward: is_prefill=True n_tok=252 qlens=(4, 8, 12, 16, 20, 24, 28, 32) seqs=[5, 5, 5, 5, 5, 5, 5, 5] ndec=0 mql=4 msl=5
+(Worker_TP1 pid=1179) INFO 11-22 06:19:23 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=252 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+(Worker_TP0 pid=1073) Capturing CUDA graphs (FULL):   4%|▎         | 2/54 [00:02<00:53,  1.02s/it]P619I forward: is_prefill=True n_tok=248 qlens=(4, 8, 12, 16, 20, 24, 28, 32) seqs=[5, 5, 5, 5, 5, 5, 5, 5] ndec=0 mql=4 msl=5
+(Worker_TP1 pid=1179) P619I forward: is_prefill=True n_tok=248 qlens=(4, 8, 12, 16, 20, 24, 28, 32) seqs=[5, 5, 5, 5, 5, 5, 5, 5] ndec=0 mql=4 msl=5
+(Worker_TP0 pid=1073) INFO 11-22 06:19:23 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=248 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+(Worker_TP1 pid=1179) INFO 11-22 06:19:23 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=248 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+(Worker_TP0 pid=1073) Capturing CUDA graphs (FULL):   6%|▌         | 3/54 [00:02<00:35,  1.43it/s](Worker_TP1 pid=1179) P619I forward: is_prefill=True n_tok=240 qlens=(4, 8, 12, 16, 20, 24, 28, 32) seqs=[5, 5, 5, 5, 5, 5, 5, 5] ndec=0 mql=4 msl=5
+P619I forward: is_prefill=True n_tok=240 qlens=(4, 8, 12, 16, 20, 24, 28, 32) seqs=[5, 5, 5, 5, 5, 5, 5, 5] ndec=0 mql=4 msl=5
+(Worker_TP1 pid=1179) INFO 11-22 06:19:24 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=240 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+(Worker_TP0 pid=1073) INFO 11-22 06:19:24 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=240 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+(Worker_TP0 pid=1073) Capturing CUDA graphs (FULL):   7%|▋         | 4/54 [00:02<00:27,  1.83it/s]P619I forward: is_prefill=True n_tok=236 qlens=(4, 8, 12, 16, 20, 24, 28, 32) seqs=[5, 5, 5, 5, 5, 5, 5, 5] ndec=0 mql=4 msl=5
+(Worker_TP0 pid=1073) INFO 11-22 06:19:24 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=236 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+(Worker_TP1 pid=1179) P619I forward: is_prefill=True n_tok=236 qlens=(4, 8, 12, 16, 20, 24, 28, 32) seqs=[5, 5, 5, 5, 5, 5, 5, 5] ndec=0 mql=4 msl=5
+(Worker_TP1 pid=1179) INFO 11-22 06:19:24 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=236 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+(Worker_TP0 pid=1073) Capturing CUDA graphs (FULL):   9%|▉         | 5/54 [00:03<00:22,  2.17it/s](Worker_TP0 pid=1073) INFO 11-22 06:19:24 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=232 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+(Worker_TP1 pid=1179) INFO 11-22 06:19:24 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=232 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+Capturing CUDA graphs (FULL):  11%|█         | 6/54 [00:03<00:19,  2.44it/s](Worker_TP0 pid=1073) INFO 11-22 06:19:25 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=228 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+(Worker_TP1 pid=1179) INFO 11-22 06:19:25 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=228 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+Capturing CUDA graphs (FULL):  13%|█▎        | 7/54 [00:03<00:17,  2.67it/s](Worker_TP0 pid=1073) INFO 11-22 06:19:25 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=224 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+(Worker_TP1 pid=1179) INFO 11-22 06:19:25 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=224 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+Capturing CUDA graphs (FULL):  15%|█▍        | 8/54 [00:04<00:16,  2.85it/s](Worker_TP0 pid=1073) INFO 11-22 06:19:25 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=220 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+(Worker_TP1 pid=1179) INFO 11-22 06:19:25 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=220 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+Capturing CUDA graphs (FULL):  17%|█▋        | 9/54 [00:04<00:15,  2.95it/s](Worker_TP0 pid=1073) INFO 11-22 06:19:26 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=216 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+(Worker_TP1 pid=1179) INFO 11-22 06:19:26 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=216 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+Capturing CUDA graphs (FULL):  19%|█▊        | 10/54 [00:04<00:14,  3.06it/s](Worker_TP0 pid=1073) INFO 11-22 06:19:26 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=212 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+(Worker_TP1 pid=1179) INFO 11-22 06:19:26 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=212 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+Capturing CUDA graphs (FULL):  20%|██        | 11/54 [00:05<00:13,  3.15it/s](Worker_TP0 pid=1073) INFO 11-22 06:19:26 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=208 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+(Worker_TP1 pid=1179) INFO 11-22 06:19:26 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=208 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+Capturing CUDA graphs (FULL):  22%|██▏       | 12/54 [00:05<00:13,  3.19it/s](Worker_TP0 pid=1073) INFO 11-22 06:19:26 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=200 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+(Worker_TP1 pid=1179) INFO 11-22 06:19:26 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=200 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+Capturing CUDA graphs (FULL):  24%|██▍       | 13/54 [00:05<00:12,  3.22it/s](Worker_TP0 pid=1073) INFO 11-22 06:19:27 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=196 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+(Worker_TP1 pid=1179) INFO 11-22 06:19:27 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=196 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+Capturing CUDA graphs (FULL):  26%|██▌       | 14/54 [00:06<00:12,  3.24it/s](Worker_TP0 pid=1073) INFO 11-22 06:19:27 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=192 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+(Worker_TP1 pid=1179) INFO 11-22 06:19:27 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=192 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+Capturing CUDA graphs (FULL):  28%|██▊       | 15/54 [00:06<00:12,  3.24it/s](Worker_TP0 pid=1073) INFO 11-22 06:19:27 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=188 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+(Worker_TP1 pid=1179) INFO 11-22 06:19:27 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=188 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+Capturing CUDA graphs (FULL):  30%|██▉       | 16/54 [00:06<00:11,  3.25it/s](Worker_TP0 pid=1073) INFO 11-22 06:19:28 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=180 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+(Worker_TP1 pid=1179) INFO 11-22 06:19:28 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=180 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+Capturing CUDA graphs (FULL):  31%|███▏      | 17/54 [00:06<00:11,  3.28it/s](Worker_TP0 pid=1073) INFO 11-22 06:19:28 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=176 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+(Worker_TP1 pid=1179) INFO 11-22 06:19:28 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=176 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+Capturing CUDA graphs (FULL):  33%|███▎      | 18/54 [00:07<00:10,  3.31it/s](Worker_TP0 pid=1073) INFO 11-22 06:19:28 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=172 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+(Worker_TP1 pid=1179) INFO 11-22 06:19:28 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=172 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+Capturing CUDA graphs (FULL):  35%|███▌      | 19/54 [00:07<00:10,  3.31it/s](Worker_TP1 pid=1179) INFO 11-22 06:19:29 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=168 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+(Worker_TP0 pid=1073) INFO 11-22 06:19:29 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=168 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+Capturing CUDA graphs (FULL):  37%|███▋      | 20/54 [00:07<00:10,  3.34it/s](Worker_TP0 pid=1073) INFO 11-22 06:19:29 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=160 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+(Worker_TP1 pid=1179) INFO 11-22 06:19:29 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=160 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+Capturing CUDA graphs (FULL):  39%|███▉      | 21/54 [00:08<00:09,  3.36it/s](Worker_TP0 pid=1073) INFO 11-22 06:19:29 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=156 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+(Worker_TP1 pid=1179) INFO 11-22 06:19:29 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=156 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+Capturing CUDA graphs (FULL):  41%|████      | 22/54 [00:08<00:09,  3.37it/s](Worker_TP0 pid=1073) INFO 11-22 06:19:29 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=152 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+(Worker_TP1 pid=1179) INFO 11-22 06:19:29 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=152 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+Capturing CUDA graphs (FULL):  43%|████▎     | 23/54 [00:08<00:09,  3.39it/s]Capturing CUDA graphs (FULL):  44%|████▍     | 24/54 [00:08<00:08,  3.42it/s](Worker_TP0 pid=1073) INFO 11-22 06:19:30 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=140 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+(Worker_TP1 pid=1179) INFO 11-22 06:19:30 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=140 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+Capturing CUDA graphs (FULL):  46%|████▋     | 25/54 [00:09<00:08,  3.43it/s](Worker_TP0 pid=1073) INFO 11-22 06:19:30 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=136 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+(Worker_TP1 pid=1179) INFO 11-22 06:19:30 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=136 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+Capturing CUDA graphs (FULL):  48%|████▊     | 26/54 [00:09<00:08,  3.43it/s](Worker_TP0 pid=1073) INFO 11-22 06:19:31 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=132 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+(Worker_TP1 pid=1179) INFO 11-22 06:19:31 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=132 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+Capturing CUDA graphs (FULL):  50%|█████     | 27/54 [00:09<00:07,  3.45it/s](Worker_TP0 pid=1073) INFO 11-22 06:19:31 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=128 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+(Worker_TP1 pid=1179) INFO 11-22 06:19:31 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=128 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+Capturing CUDA graphs (FULL):  52%|█████▏    | 28/54 [00:10<00:08,  3.00it/s](Worker_TP0 pid=1073) INFO 11-22 06:19:31 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=120 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+(Worker_TP1 pid=1179) INFO 11-22 06:19:31 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=120 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+Capturing CUDA graphs (FULL):  54%|█████▎    | 29/54 [00:10<00:07,  3.14it/s](Worker_TP0 pid=1073) INFO 11-22 06:19:32 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=116 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+(Worker_TP1 pid=1179) INFO 11-22 06:19:32 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=116 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+Capturing CUDA graphs (FULL):  56%|█████▌    | 30/54 [00:10<00:07,  3.30it/s](Worker_TP0 pid=1073) INFO 11-22 06:19:32 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=112 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+(Worker_TP1 pid=1179) INFO 11-22 06:19:32 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=112 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+Capturing CUDA graphs (FULL):  57%|█████▋    | 31/54 [00:11<00:06,  3.39it/s](Worker_TP0 pid=1073) INFO 11-22 06:19:32 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=108 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+(Worker_TP1 pid=1179) INFO 11-22 06:19:32 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=108 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+Capturing CUDA graphs (FULL):  59%|█████▉    | 32/54 [00:11<00:06,  3.44it/s](Worker_TP0 pid=1073) INFO 11-22 06:19:32 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=100 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+(Worker_TP1 pid=1179) INFO 11-22 06:19:32 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=100 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+Capturing CUDA graphs (FULL):  61%|██████    | 33/54 [00:11<00:06,  3.44it/s](Worker_TP0 pid=1073) INFO 11-22 06:19:33 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=96 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+(Worker_TP1 pid=1179) INFO 11-22 06:19:33 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=96 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+Capturing CUDA graphs (FULL):  63%|██████▎   | 34/54 [00:12<00:06,  2.98it/s](Worker_TP0 pid=1073) INFO 11-22 06:19:33 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=92 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+(Worker_TP1 pid=1179) INFO 11-22 06:19:33 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=92 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+Capturing CUDA graphs (FULL):  65%|██████▍   | 35/54 [00:12<00:05,  3.18it/s](Worker_TP1 pid=1179) INFO 11-22 06:19:33 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=88 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+(Worker_TP0 pid=1073) INFO 11-22 06:19:33 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=88 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+Capturing CUDA graphs (FULL):  67%|██████▋   | 36/54 [00:12<00:05,  3.35it/s](Worker_TP1 pid=1179) INFO 11-22 06:19:34 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=80 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+(Worker_TP0 pid=1073) INFO 11-22 06:19:34 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=80 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+Capturing CUDA graphs (FULL):  69%|██████▊   | 37/54 [00:12<00:04,  3.48it/s](Worker_TP0 pid=1073) INFO 11-22 06:19:34 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=76 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+(Worker_TP1 pid=1179) INFO 11-22 06:19:34 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=76 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+Capturing CUDA graphs (FULL):  70%|███████   | 38/54 [00:13<00:04,  3.55it/s](Worker_TP0 pid=1073) INFO 11-22 06:19:34 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=72 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+(Worker_TP1 pid=1179) INFO 11-22 06:19:34 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=72 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+Capturing CUDA graphs (FULL):  72%|███████▏  | 39/54 [00:13<00:04,  3.62it/s](Worker_TP0 pid=1073) INFO 11-22 06:19:35 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=68 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+(Worker_TP1 pid=1179) INFO 11-22 06:19:35 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=68 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+Capturing CUDA graphs (FULL):  74%|███████▍  | 40/54 [00:13<00:03,  3.68it/s](Worker_TP0 pid=1073) INFO 11-22 06:19:35 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=64 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+(Worker_TP1 pid=1179) INFO 11-22 06:19:35 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=64 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+Capturing CUDA graphs (FULL):  76%|███████▌  | 41/54 [00:13<00:03,  3.70it/s](Worker_TP1 pid=1179) INFO 11-22 06:19:35 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=60 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+(Worker_TP0 pid=1073) INFO 11-22 06:19:35 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=60 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+(Worker_TP1 pid=1179) INFO 11-22 06:19:35 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=256 p50=0.50ms p90=0.66ms max=1.13ms fallbacks=12 {'zero-spec': 9, 'mixed': 3}
+(Worker_TP0 pid=1073) INFO 11-22 06:19:35 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=256 p50=0.49ms p90=0.64ms max=0.97ms fallbacks=12 {'zero-spec': 9, 'mixed': 3}
+Capturing CUDA graphs (FULL):  78%|███████▊  | 42/54 [00:14<00:03,  3.73it/s](Worker_TP1 pid=1179) INFO 11-22 06:19:35 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=56 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+(Worker_TP0 pid=1073) INFO 11-22 06:19:35 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=56 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+Capturing CUDA graphs (FULL):  80%|███████▉  | 43/54 [00:14<00:03,  3.63it/s](Worker_TP1 pid=1179) INFO 11-22 06:19:36 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=52 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+(Worker_TP0 pid=1073) INFO 11-22 06:19:36 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=52 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+Capturing CUDA graphs (FULL):  81%|████████▏ | 44/54 [00:14<00:02,  3.70it/s](Worker_TP1 pid=1179) INFO 11-22 06:19:36 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=48 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+(Worker_TP0 pid=1073) INFO 11-22 06:19:36 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=48 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+Capturing CUDA graphs (FULL):  83%|████████▎ | 45/54 [00:15<00:02,  3.78it/s](Worker_TP0 pid=1073) INFO 11-22 06:19:36 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=40 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+(Worker_TP1 pid=1179) INFO 11-22 06:19:36 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=40 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+Capturing CUDA graphs (FULL):  85%|████████▌ | 46/54 [00:15<00:02,  3.52it/s](Worker_TP1 pid=1179) INFO 11-22 06:19:36 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=36 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+(Worker_TP0 pid=1073) INFO 11-22 06:19:36 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=36 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+Capturing CUDA graphs (FULL):  87%|████████▋ | 47/54 [00:15<00:01,  3.70it/s](Worker_TP1 pid=1179) INFO 11-22 06:19:37 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=32 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+(Worker_TP0 pid=1073) INFO 11-22 06:19:37 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=32 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+Capturing CUDA graphs (FULL):  89%|████████▉ | 48/54 [00:15<00:01,  3.63it/s](Worker_TP1 pid=1179) INFO 11-22 06:19:37 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=28 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+(Worker_TP0 pid=1073) INFO 11-22 06:19:37 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=28 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+Capturing CUDA graphs (FULL):  91%|█████████ | 49/54 [00:16<00:01,  3.78it/s](Worker_TP0 pid=1073) INFO 11-22 06:19:37 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=20 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+(Worker_TP1 pid=1179) INFO 11-22 06:19:37 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=20 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+Capturing CUDA graphs (FULL):  93%|█████████▎| 50/54 [00:16<00:01,  3.89it/s](Worker_TP1 pid=1179) INFO 11-22 06:19:37 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=16 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+(Worker_TP0 pid=1073) INFO 11-22 06:19:37 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=16 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+Capturing CUDA graphs (FULL):  94%|█████████▍| 51/54 [00:16<00:00,  3.79it/s](Worker_TP1 pid=1179) INFO 11-22 06:19:38 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=12 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+(Worker_TP0 pid=1073) INFO 11-22 06:19:38 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=12 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+Capturing CUDA graphs (FULL):  96%|█████████▋| 52/54 [00:16<00:00,  3.93it/s](Worker_TP1 pid=1179) INFO 11-22 06:19:38 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=8 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+(Worker_TP0 pid=1073) INFO 11-22 06:19:38 [native_decode.py:106] MXKV native call fmt=mxfp4 rows=8 max_seqlen_k=262400 bt_width=4100 stride=544 (r212f capacity-priced walk)
+Capturing CUDA graphs (FULL):  98%|█████████▊| 53/54 [00:17<00:00,  4.04it/s]Capturing CUDA graphs (FULL): 100%|██████████| 54/54 [00:17<00:00,  4.12it/s]Capturing CUDA graphs (FULL): 100%|██████████| 54/54 [00:17<00:00,  3.11it/s]
+(Worker_TP0 pid=1073) Capturing CUDA graphs [arc-db] (FULL):   0%|          | 0/54 [00:00<?, ?it/s]Capturing CUDA graphs [arc-db] (FULL):   2%|▏         | 1/54 [00:00<00:17,  3.07it/s]Capturing CUDA graphs [arc-db] (FULL):   4%|▎         | 2/54 [00:00<00:16,  3.08it/s]Capturing CUDA graphs [arc-db] (FULL):   6%|▌         | 3/54 [00:00<00:16,  3.09it/s]Capturing CUDA graphs [arc-db] (FULL):   7%|▋         | 4/54 [00:01<00:16,  3.11it/s]Capturing CUDA graphs [arc-db] (FULL):   9%|▉         | 5/54 [00:01<00:15,  3.12it/s]Capturing CUDA graphs [arc-db] (FULL):  11%|█         | 6/54 [00:01<00:15,  3.14it/s]Capturing CUDA graphs [arc-db] (FULL):  13%|█▎        | 7/54 [00:02<00:14,  3.16it/s]Capturing CUDA graphs [arc-db] (FULL):  15%|█▍        | 8/54 [00:02<00:14,  3.18it/s]Capturing CUDA graphs [arc-db] (FULL):  17%|█▋        | 9/54 [00:02<00:14,  3.19it/s]Capturing CUDA graphs [arc-db] (FULL):  19%|█▊        | 10/54 [00:03<00:13,  3.21it/s]Capturing CUDA graphs [arc-db] (FULL):  20%|██        | 11/54 [00:03<00:13,  3.22it/s]Capturing CUDA graphs [arc-db] (FULL):  22%|██▏       | 12/54 [00:03<00:13,  3.23it/s]Capturing CUDA graphs [arc-db] (FULL):  24%|██▍       | 13/54 [00:04<00:12,  3.25it/s]Capturing CUDA graphs [arc-db] (FULL):  26%|██▌       | 14/54 [00:04<00:12,  3.26it/s]Capturing CUDA graphs [arc-db] (FULL):  28%|██▊       | 15/54 [00:04<00:11,  3.27it/s]Capturing CUDA graphs [arc-db] (FULL):  30%|██▉       | 16/54 [00:05<00:11,  3.26it/s]Capturing CUDA graphs [arc-db] (FULL):  31%|███▏      | 17/54 [00:05<00:11,  3.29it/s]Capturing CUDA graphs [arc-db] (FULL):  33%|███▎      | 18/54 [00:05<00:10,  3.32it/s]Capturing CUDA graphs [arc-db] (FULL):  35%|███▌      | 19/54 [00:05<00:10,  3.33it/s]Capturing CUDA graphs [arc-db] (FULL):  37%|███▋      | 20/54 [00:06<00:10,  3.34it/s]Capturing CUDA graphs [arc-db] (FULL):  39%|███▉      | 21/54 [00:06<00:09,  3.33it/s]Capturing CUDA graphs [arc-db] (FULL):  41%|████      | 22/54 [00:06<00:09,  3.36it/s]Capturing CUDA graphs [arc-db] (FULL):  43%|████▎     | 23/54 [00:07<00:09,  3.39it/s]Capturing CUDA graphs [arc-db] (FULL):  44%|████▍     | 24/54 [00:07<00:08,  3.40it/s]Capturing CUDA graphs [arc-db] (FULL):  46%|████▋     | 25/54 [00:07<00:08,  3.41it/s]Capturing CUDA graphs [arc-db] (FULL):  48%|████▊     | 26/54 [00:07<00:08,  3.43it/s]Capturing CUDA graphs [arc-db] (FULL):  50%|█████     | 27/54 [00:08<00:07,  3.46it/s]Capturing CUDA graphs [arc-db] (FULL):  52%|█████▏    | 28/54 [00:08<00:07,  3.49it/s]Capturing CUDA graphs [arc-db] (FULL):  54%|█████▎    | 29/54 [00:08<00:07,  3.48it/s]Capturing CUDA graphs [arc-db] (FULL):  56%|█████▌    | 30/54 [00:09<00:06,  3.51it/s](Worker_TP1 pid=1179) INFO 11-22 06:19:47 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=512 p50=0.50ms p90=0.65ms max=1.13ms fallbacks=12 {'zero-spec': 9, 'mixed': 3}
+(Worker_TP0 pid=1073) INFO 11-22 06:19:47 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=512 p50=0.49ms p90=0.64ms max=1.20ms fallbacks=12 {'zero-spec': 9, 'mixed': 3}
+Capturing CUDA graphs [arc-db] (FULL):  57%|█████▋    | 31/54 [00:09<00:06,  3.53it/s]Capturing CUDA graphs [arc-db] (FULL):  59%|█████▉    | 32/54 [00:09<00:06,  3.55it/s]Capturing CUDA graphs [arc-db] (FULL):  61%|██████    | 33/54 [00:09<00:05,  3.59it/s]Capturing CUDA graphs [arc-db] (FULL):  63%|██████▎   | 34/54 [00:10<00:05,  3.63it/s]Capturing CUDA graphs [arc-db] (FULL):  65%|██████▍   | 35/54 [00:10<00:05,  3.53it/s]Capturing CUDA graphs [arc-db] (FULL):  67%|██████▋   | 36/54 [00:10<00:05,  3.59it/s]Capturing CUDA graphs [arc-db] (FULL):  69%|██████▊   | 37/54 [00:11<00:04,  3.61it/s]Capturing CUDA graphs [arc-db] (FULL):  70%|███████   | 38/54 [00:11<00:04,  3.64it/s]Capturing CUDA graphs [arc-db] (FULL):  72%|███████▏  | 39/54 [00:11<00:04,  3.69it/s]Capturing CUDA graphs [arc-db] (FULL):  74%|███████▍  | 40/54 [00:11<00:03,  3.71it/s]Capturing CUDA graphs [arc-db] (FULL):  76%|███████▌  | 41/54 [00:12<00:03,  3.73it/s]Capturing CUDA graphs [arc-db] (FULL):  78%|███████▊  | 42/54 [00:12<00:03,  3.75it/s]Capturing CUDA graphs [arc-db] (FULL):  80%|███████▉  | 43/54 [00:12<00:02,  3.78it/s]Capturing CUDA graphs [arc-db] (FULL):  81%|████████▏ | 44/54 [00:12<00:02,  3.82it/s]Capturing CUDA graphs [arc-db] (FULL):  83%|████████▎ | 45/54 [00:13<00:02,  3.87it/s]Capturing CUDA graphs [arc-db] (FULL):  85%|████████▌ | 46/54 [00:13<00:02,  3.93it/s]Capturing CUDA graphs [arc-db] (FULL):  87%|████████▋ | 47/54 [00:13<00:01,  3.96it/s]Capturing CUDA graphs [arc-db] (FULL):  89%|████████▉ | 48/54 [00:13<00:01,  4.00it/s]Capturing CUDA graphs [arc-db] (FULL):  91%|█████████ | 49/54 [00:14<00:01,  4.00it/s]Capturing CUDA graphs [arc-db] (FULL):  93%|█████████▎| 50/54 [00:14<00:00,  4.03it/s]Capturing CUDA graphs [arc-db] (FULL):  94%|█████████▍| 51/54 [00:14<00:00,  4.09it/s]Capturing CUDA graphs [arc-db] (FULL):  96%|█████████▋| 52/54 [00:14<00:00,  4.13it/s]Capturing CUDA graphs [arc-db] (FULL):  98%|█████████▊| 53/54 [00:15<00:00,  4.17it/s]Capturing CUDA graphs [arc-db] (FULL): 100%|██████████| 54/54 [00:15<00:00,  4.20it/s]Capturing CUDA graphs [arc-db] (FULL): 100%|██████████| 54/54 [00:15<00:00,  3.53it/s]
+(Worker_TP0 pid=1073) INFO 11-22 06:19:54 [graph_exec_doublebuffer.py:106] ArcXpuPlatform: graph-exec double-buffer captured 54 graphs x2 (shared pool; same-exec replay blocking avoided — P6.35 D1).
+(Worker_TP0 pid=1073) INFO 11-22 06:19:54 [speculator.py:151] Capturing model for speculator...
+(Worker_TP0 pid=1073) Capturing prefill CUDA graphs (FULL):   0%|          | 0/54 [00:00<?, ?it/s](Worker_TP1 pid=1179) INFO 11-22 06:19:54 [graph_exec_doublebuffer.py:106] ArcXpuPlatform: graph-exec double-buffer captured 54 graphs x2 (shared pool; same-exec replay blocking avoided — P6.35 D1).
+(Worker_TP1 pid=1179) INFO 11-22 06:19:54 [speculator.py:151] Capturing model for speculator...
+Capturing prefill CUDA graphs (FULL):   2%|▏         | 1/54 [00:00<00:07,  7.01it/s]Capturing prefill CUDA graphs (FULL):   9%|▉         | 5/54 [00:00<00:02, 22.28it/s]Capturing prefill CUDA graphs (FULL):  17%|█▋        | 9/54 [00:00<00:01, 28.41it/s]Capturing prefill CUDA graphs (FULL):  24%|██▍       | 13/54 [00:00<00:03, 12.99it/s]Capturing prefill CUDA graphs (FULL):  31%|███▏      | 17/54 [00:00<00:02, 17.27it/s](Worker_TP0 pid=1073) INFO 11-22 06:19:55 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=768 p50=0.49ms p90=0.63ms max=1.20ms fallbacks=12 {'zero-spec': 9, 'mixed': 3}
+(Worker_TP1 pid=1179) INFO 11-22 06:19:55 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=768 p50=0.49ms p90=0.64ms max=1.13ms fallbacks=12 {'zero-spec': 9, 'mixed': 3}
+Capturing prefill CUDA graphs (FULL):  39%|███▉      | 21/54 [00:01<00:01, 21.28it/s]Capturing prefill CUDA graphs (FULL):  48%|████▊     | 26/54 [00:01<00:01, 26.49it/s]Capturing prefill CUDA graphs (FULL):  57%|█████▋    | 31/54 [00:01<00:00, 30.56it/s]Capturing prefill CUDA graphs (FULL):  67%|██████▋   | 36/54 [00:01<00:00, 34.78it/s]Capturing prefill CUDA graphs (FULL):  78%|███████▊  | 42/54 [00:01<00:00, 39.91it/s]Capturing prefill CUDA graphs (FULL):  89%|████████▉ | 48/54 [00:01<00:00, 44.02it/s]Capturing prefill CUDA graphs (FULL): 100%|██████████| 54/54 [00:01<00:00, 48.02it/s]Capturing prefill CUDA graphs (FULL): 100%|██████████| 54/54 [00:01<00:00, 30.59it/s]
+(Worker_TP0 pid=1073) Capturing prefill CUDA graphs [arc-db] (FULL):   0%|          | 0/54 [00:00<?, ?it/s]Capturing prefill CUDA graphs [arc-db] (FULL):   6%|▌         | 3/54 [00:00<00:01, 29.03it/s]Capturing prefill CUDA graphs [arc-db] (FULL):  13%|█▎        | 7/54 [00:00<00:01, 35.19it/s](Worker_TP0 pid=1073) INFO 11-22 06:19:56 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=1024 p50=0.48ms p90=0.62ms max=1.05ms fallbacks=12 {'zero-spec': 9, 'mixed': 3}
+(Worker_TP1 pid=1179) INFO 11-22 06:19:56 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=1024 p50=0.48ms p90=0.63ms max=1.13ms fallbacks=12 {'zero-spec': 9, 'mixed': 3}
+Capturing prefill CUDA graphs [arc-db] (FULL):  20%|██        | 11/54 [00:00<00:01, 37.32it/s]Capturing prefill CUDA graphs [arc-db] (FULL):  28%|██▊       | 15/54 [00:00<00:01, 35.61it/s]Capturing prefill CUDA graphs [arc-db] (FULL):  35%|███▌      | 19/54 [00:00<00:01, 34.06it/s]Capturing prefill CUDA graphs [arc-db] (FULL):  43%|████▎     | 23/54 [00:00<00:01, 21.68it/s]Capturing prefill CUDA graphs [arc-db] (FULL):  48%|████▊     | 26/54 [00:01<00:01, 18.16it/s]Capturing prefill CUDA graphs [arc-db] (FULL):  54%|█████▎    | 29/54 [00:01<00:01, 15.89it/s]Capturing prefill CUDA graphs [arc-db] (FULL):  59%|█████▉    | 32/54 [00:01<00:01, 17.13it/s]Capturing prefill CUDA graphs [arc-db] (FULL):  63%|██████▎   | 34/54 [00:01<00:01, 16.24it/s]Capturing prefill CUDA graphs [arc-db] (FULL):  67%|██████▋   | 36/54 [00:01<00:01, 13.46it/s]Capturing prefill CUDA graphs [arc-db] (FULL):  76%|███████▌  | 41/54 [00:01<00:00, 20.10it/s]Capturing prefill CUDA graphs [arc-db] (FULL):  87%|████████▋ | 47/54 [00:02<00:00, 27.50it/s](Worker_TP0 pid=1073) INFO 11-22 06:19:58 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=1280 p50=0.48ms p90=0.71ms max=1.45ms fallbacks=12 {'zero-spec': 9, 'mixed': 3}
+(Worker_TP1 pid=1179) INFO 11-22 06:19:58 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=1280 p50=0.52ms p90=0.75ms max=1.76ms fallbacks=12 {'zero-spec': 9, 'mixed': 3}
+Capturing prefill CUDA graphs [arc-db] (FULL):  98%|█████████▊| 53/54 [00:02<00:00, 34.24it/s](Worker_TP1 pid=1179) INFO 11-22 06:19:58 [graph_exec_doublebuffer.py:106] ArcXpuPlatform: graph-exec double-buffer captured 54 graphs x2 (shared pool; same-exec replay blocking avoided — P6.35 D1).
+Capturing prefill CUDA graphs [arc-db] (FULL): 100%|██████████| 54/54 [00:02<00:00, 24.43it/s]
+(Worker_TP0 pid=1073) INFO 11-22 06:19:58 [graph_exec_doublebuffer.py:106] ArcXpuPlatform: graph-exec double-buffer captured 54 graphs x2 (shared pool; same-exec replay blocking avoided — P6.35 D1).
+(Worker_TP0 pid=1073) Capturing decode CUDA graphs (FULL):   0%|          | 0/27 [00:00<?, ?it/s]Capturing decode CUDA graphs (FULL):  15%|█▍        | 4/27 [00:00<00:00, 35.29it/s]Capturing decode CUDA graphs (FULL):  30%|██▉       | 8/27 [00:00<00:01, 17.06it/s]Capturing decode CUDA graphs (FULL):  41%|████      | 11/27 [00:00<00:00, 19.54it/s]Capturing decode CUDA graphs (FULL):  56%|█████▌    | 15/27 [00:00<00:00, 24.42it/s]Capturing decode CUDA graphs (FULL):  81%|████████▏ | 22/27 [00:00<00:00, 35.63it/s]Capturing decode CUDA graphs (FULL): 100%|██████████| 27/27 [00:00<00:00, 32.48it/s]
+(Worker_TP0 pid=1073) Capturing decode CUDA graphs [arc-db] (FULL):   0%|          | 0/27 [00:00<?, ?it/s]Capturing decode CUDA graphs [arc-db] (FULL):  11%|█         | 3/27 [00:00<00:01, 23.48it/s]Capturing decode CUDA graphs [arc-db] (FULL):  26%|██▌       | 7/27 [00:00<00:00, 30.71it/s]Capturing decode CUDA graphs [arc-db] (FULL):  44%|████▍     | 12/27 [00:00<00:00, 38.71it/s]Capturing decode CUDA graphs [arc-db] (FULL):  59%|█████▉    | 16/27 [00:01<00:01,  8.71it/s]Capturing decode CUDA graphs [arc-db] (FULL):  70%|███████   | 19/27 [00:01<00:00, 10.79it/s]Capturing decode CUDA graphs [arc-db] (FULL):  85%|████████▌ | 23/27 [00:01<00:00, 14.43it/s]Capturing decode CUDA graphs [arc-db] (FULL): 100%|██████████| 27/27 [00:01<00:00, 16.23it/s]
+(Worker_TP1 pid=1179) INFO 11-22 06:20:00 [graph_exec_doublebuffer.py:106] ArcXpuPlatform: graph-exec double-buffer captured 27 graphs x2 (shared pool; same-exec replay blocking avoided — P6.35 D1).
+(Worker_TP0 pid=1073) INFO 11-22 06:20:00 [graph_exec_doublebuffer.py:106] ArcXpuPlatform: graph-exec double-buffer captured 27 graphs x2 (shared pool; same-exec replay blocking avoided — P6.35 D1).
+(Worker_TP0 pid=1073) INFO 11-22 06:20:01 [model_runner.py:1066] Graph capturing finished in 40 secs, took 5.07 GiB
+(Worker_TP0 pid=1073) INFO 11-22 06:20:01 [gpu_worker.py:1094] Free memory on device (30.51/31.89 GiB) on startup. Desired GPU memory utilization is (0.8, 25.51 GiB). Actual usage is 17.26 GiB for consumed memory (weights + non-torch), 1.46 GiB for peak activation, and 5.07 GiB for CUDAGraph memory. Replace gpu_memory_utilization config with `--kv-cache-memory=1695836877` (1.58 GiB) to fit into requested memory, or `--kv-cache-memory=7065136640` (6.58 GiB) to fully utilize gpu memory. Current kv cache memory in use is 6.8 GiB.
+(Worker_TP1 pid=1179) INFO 11-22 06:20:01 [model_runner.py:1066] Graph capturing finished in 40 secs, took 5.43 GiB
+(Worker_TP1 pid=1179) INFO 11-22 06:20:01 [gpu_worker.py:1094] Free memory on device (30.89/31.89 GiB) on startup. Desired GPU memory utilization is (0.8, 25.51 GiB). Actual usage is 17.25 GiB for consumed memory (weights + non-torch), 1.46 GiB for peak activation, and 5.43 GiB for CUDAGraph memory. Replace gpu_memory_utilization config with `--kv-cache-memory=1308453581` (1.22 GiB) to fit into requested memory, or `--kv-cache-memory=7083560448` (6.6 GiB) to fully utilize gpu memory. Current kv cache memory in use is 6.8 GiB.
+(Worker_TP0 pid=1073) INFO 11-22 06:20:01 [jit_monitor.py:85] Kernel JIT monitor activated; monitored JIT compilations during inference will use mode=warn.
+(Worker_TP1 pid=1179) INFO 11-22 06:20:01 [jit_monitor.py:85] Kernel JIT monitor activated; monitored JIT compilations during inference will use mode=warn.
+(Worker_TP0 pid=1073) INFO 11-22 06:20:01 [torch_utils.py:287] Reducing Torch threads from 32 to 1 for serving. Set OMP_NUM_THREADS in the external environment to override.
+(EngineCore pid=817) INFO 11-22 06:20:01 [core.py:379] init engine (profile, create kv cache, warmup model) took 151.54 s
+(EngineCore pid=817) INFO 11-22 06:20:02 [platform.py:371] ArcXpuPlatform: wheel hook scheduler <- patches.sched_tail_split OK
+(EngineCore pid=817) INFO 11-22 06:20:02 [kv_cache_utils.py:748] kv cache group sizes [1600, 1600, 1600, 1600]
+(EngineCore pid=817) INFO 11-22 06:20:02 [kv_cache_utils.py:749] kv lcm block sizes 1600
+(EngineCore pid=817) [transformers] The `use_fast` parameter is deprecated and will be removed in a future version. Use `backend="torchvision"` instead of `use_fast=True`, or `backend="pil"` instead of `use_fast=False`.
+(EngineCore pid=817) WARNING 11-22 06:20:13 [vllm.py:1570] Inductor compilation was disabled by user settings, optimizations settings that are only active during inductor compilation will be ignored.
+(EngineCore pid=817) INFO 11-22 06:20:13 [kernel.py:416] Final IR op priority after setting platform defaults: IrOpPriorityConfig(rms_norm=['vllm_c', 'native'], fused_add_rms_norm=['vllm_c', 'native'], gelu_and_mul_sparse=['native'])
+(EngineCore pid=817) WARNING 11-22 06:20:13 [xpu.py:308] XPU Graph support is experimental and currently only supports single-GPU execution.
+(EngineCore pid=817) INFO 11-22 06:20:13 [graph_safe_output.py:665] ArcXpuPlatform: XPU graph boundary hygiene installed (pid 817, XPUGraph capture_begin/capture_end/replay + graph context __exit__ wrapped).
+(EngineCore pid=817) INFO 11-22 06:20:13 [graph_safe_output.py:791] ArcXpuPlatform: zombie stream-reroute guards installed (pid 817, set_stream substitution + wait_stream skip + Event.record reroute + synchronize tripwire).
+(EngineCore pid=817) INFO 11-22 06:20:13 [graph_safe_output.py:925] ArcXpuPlatform: runner-entry hygiene installed (pid 817, GPUModelRunner.execute_model + sample_tokens wrapped).
+(EngineCore pid=817) INFO 11-22 06:20:13 [graph_safe_output.py:971] ArcXpuPlatform: capture-stream fix installed (pid 817, captures ride torch.xpu.graph.default_capture_stream, EAGERLY INITED before capture #1 — the serving default never enters capture; champion 0.26.1 discipline, r9).
+(EngineCore pid=817) INFO 11-22 06:20:13 [graph_safe_output.py:520] ArcXpuPlatform: r12b kernel-launch tracer installed (triton:CachingAutotuner.run).
+(EngineCore pid=817) INFO 11-22 06:20:13 [graph_safe_output.py:1112] ArcXpuPlatform: graph-safe output patch installed (pid 817, AsyncOutput/AsyncPoolingOutput __init__ + get_output wrapped).
+(EngineCore pid=817) INFO 11-22 06:20:13 [speculator_full_capture.py:117] ArcXpuPlatform: speculator FULL-capture patch installed (pid 817, SpeculatorCudaGraphManager.__init__ wrapped).
+(EngineCore pid=817) INFO 11-22 06:20:13 [first_request_warmup.py:123] ArcXpuPlatform: first-request warmup interlock installed (defect-b lane W, r16 evidence)
+(EngineCore pid=817) INFO 11-22 06:20:13 [gdn_metadata_fastpath.py:286] [arc-p10] gdn metadata fastpath installed (steady spec-decode builds; stock build kept for prefill/mixed)
+(EngineCore pid=817) INFO 11-22 06:20:13 [fp8_block_w8a16.py:97] ArcXpuPlatform: fp8 block linear reroute ACTIVE — XPUFp8BlockScaledMMKernel.apply_input_quant=False, apply_block_scaled_mm -> _xpu_C.fp8_gemm_w8a16 (stock fallback kept; r40: 3-8x/GEMM decode Ms, relerr 4-5e-4)
+(EngineCore pid=817) WARNING 11-22 06:20:13 [platform.py:100] ArcXpuPlatform: ar_trace install failed at check_and_update_config: ModuleNotFoundError("No module named 'vllm_gaudi.xpu.patches.ar_trace'")
+(EngineCore pid=817) INFO 11-22 06:20:13 [mxfp4_w4a16.py:194] ArcXpuPlatform: mxfp4 w4a16 reroute ACTIVE — XPUMxFp4LinearKernel.apply_weights -> _xpu_C.fp4_gemm_w4a16 (no per-call activation quant; stock w4a4 via ARC_MXFP4_MODE=w4a4)
+(EngineCore pid=817) INFO 11-22 06:20:13 [mxfp8_w8a16.py:120] ArcXpuPlatform: mxfp8 w8a16 reroute ACTIVE — XPUMxFp8LinearKernel.apply_weights -> _xpu_C.fp8_gemm_w8a16_mxfp8 (no per-call activation quant; stock w8a8 via ARC_MXFP8_MODE=w8a8)
+(EngineCore pid=817) INFO 11-22 06:20:13 [skinny_m.py:169] ArcXpuPlatform: skinny-M reroute OFF (ARC_SKINNY_M unset/off — stock routes at all Ms; the certified default after r127; set ARC_SKINNY_M=on to opt in)
+(EngineCore pid=817) INFO 11-22 06:20:13 [graph_exec_doublebuffer.py:127] ArcXpuPlatform: graph-exec double-buffer patch installed (pid 817, CudaGraphManager capture/run_fullgraph wrapped).
+(EngineCore pid=817) INFO 11-22 06:20:13 [platform.py:603] ArcXpuPlatform: Intel Arc Xe2 posture active (Intel(R) Graphics [0xe223]).
+(EngineCore pid=817) INFO 11-22 06:20:13 [platform.py:612] ArcXpuPlatform: graph posture cudagraph_mode=FULL_DECODE_ONLY capture_sizes=(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 20, 25, 30, 35, 40, 45, 48, 50, 55, 60, 64, 65, 70, 75, 80, 85, 90, 95, 96, 100, 105, 110, 112, 115, 120, 125, 128, 130, 135, 140, 145, 150, 155, 160, 165, 170, 175, 180, 185, 190, 192, 195, 200, 205, 210, 215, 220, 224, 225, 230, 235, 240, 245, 250, 255, 256, 260, 265, 270, 275, 280, 285, 290, 295, 300, 305, 310, 315, 320) (VLLM_XPU_ENABLE_XPU_GRAPH=True).
+(EngineCore pid=817) INFO 11-22 06:20:13 [compilation.py:336] Enabled custom fusions: norm_quant, act_quant
+(APIServer pid=47) INFO 11-22 06:20:13 [entry.py:135] Supported tasks: ['generate']
+(APIServer pid=47) INFO 11-22 06:20:13 [factories.py:76] Scale-out endpoints are disabled. Set --enable-scale-out to enable them.
+(APIServer pid=47) INFO 11-22 06:20:13 [parser_manager.py:36] "auto" tool choice has been enabled.
+(APIServer pid=47) INFO 11-22 06:20:13 [hf.py:642] Detected the chat template content format to be 'openai'. You can set `--chat-template-content-format` to override this.
+(APIServer pid=47) WARNING 11-22 06:20:13 [model.py:1772] Default vLLM sampling parameters have been overridden by the model's `generation_config.json`: `{'repetition_penalty': 1.0, 'temperature': 0.6, 'top_k': 20, 'top_p': 0.95, 'min_p': 0.0}`. If this is not intended, please relaunch vLLM instance with `--generation-config vllm`.
+(APIServer pid=47) INFO 11-22 06:20:13 [entry.py:139] Starting vLLM server on http://0.0.0.0:8000
+(APIServer pid=47) INFO 11-22 06:20:13 [launcher.py:61] Available routes are:
+(APIServer pid=47) INFO 11-22 06:20:13 [launcher.py:70] Route: /openapi.json, Methods: GET, HEAD
+(APIServer pid=47) INFO 11-22 06:20:13 [launcher.py:70] Route: /docs, Methods: GET, HEAD
+(APIServer pid=47) INFO 11-22 06:20:13 [launcher.py:70] Route: /docs/oauth2-redirect, Methods: GET, HEAD
+(APIServer pid=47) INFO 11-22 06:20:13 [launcher.py:70] Route: /redoc, Methods: GET, HEAD
+(APIServer pid=47) INFO 11-22 06:20:13 [launcher.py:70] Route: /load, Methods: GET
+(APIServer pid=47) INFO 11-22 06:20:13 [launcher.py:70] Route: /version, Methods: GET
+(APIServer pid=47) INFO 11-22 06:20:13 [launcher.py:70] Route: /health, Methods: GET
+(APIServer pid=47) INFO 11-22 06:20:13 [launcher.py:70] Route: /metrics, Methods: GET
+(APIServer pid=47) INFO 11-22 06:20:13 [launcher.py:70] Route: /tokenize, Methods: POST
+(APIServer pid=47) INFO 11-22 06:20:13 [launcher.py:70] Route: /detokenize, Methods: POST
+(APIServer pid=47) INFO 11-22 06:20:13 [launcher.py:70] Route: /v1/models, Methods: GET
+(APIServer pid=47) INFO 11-22 06:20:13 [launcher.py:70] Route: /ping, Methods: GET
+(APIServer pid=47) INFO 11-22 06:20:13 [launcher.py:70] Route: /ping, Methods: POST
+(APIServer pid=47) INFO 11-22 06:20:13 [launcher.py:70] Route: /invocations, Methods: POST
+(APIServer pid=47) INFO 11-22 06:20:13 [launcher.py:70] Route: /v1/chat/completions, Methods: POST
+(APIServer pid=47) INFO 11-22 06:20:13 [launcher.py:70] Route: /v1/chat/completions/batch, Methods: POST
+(APIServer pid=47) INFO 11-22 06:20:13 [launcher.py:70] Route: /v1/responses, Methods: POST
+(APIServer pid=47) INFO 11-22 06:20:13 [launcher.py:70] Route: /v1/responses/{response_id}, Methods: GET
+(APIServer pid=47) INFO 11-22 06:20:13 [launcher.py:70] Route: /v1/responses/{response_id}/cancel, Methods: POST
+(APIServer pid=47) INFO 11-22 06:20:13 [launcher.py:70] Route: /v1/completions, Methods: POST
+(APIServer pid=47) INFO 11-22 06:20:13 [launcher.py:70] Route: /v1/messages, Methods: POST
+(APIServer pid=47) INFO 11-22 06:20:13 [launcher.py:70] Route: /v1/messages/count_tokens, Methods: POST
+(APIServer pid=47) INFO 11-22 06:20:13 [launcher.py:70] Route: /generative_scoring, Methods: POST
+(APIServer pid=47) INFO 11-22 06:20:13 [launcher.py:70] Route: /scale_elastic_ep, Methods: POST
+(APIServer pid=47) INFO 11-22 06:20:13 [launcher.py:70] Route: /is_scaling_elastic_ep, Methods: POST
+(APIServer pid=47) INFO:     Started server process [47]
+(APIServer pid=47) INFO:     Waiting for application startup.
+(APIServer pid=47) INFO:     Application startup complete.
+(APIServer pid=47) INFO:     127.0.0.1:47650 - "GET /health HTTP/1.1" 200 OK
+(APIServer pid=47) INFO 11-22 06:20:18 [first_request_warmup.py:101] ArcXpuPlatform: first generate (request cmpl-9695c7036a5b7797-0) — running defect-b warmup interlock first
+(APIServer pid=47) WARNING 11-22 06:20:18 [input_processor.py:315] Passing raw prompts to InputProcessor is deprecated and will be removed in the future. You should instead pass the outputs of Renderer.render_cmpl() or Renderer.render_chat().
+(Worker_TP0 pid=1073) WARNING 11-22 06:20:19 [jit_monitor.py:141] Triton kernel JIT compilation during inference: _compute_local_logits_stats_kernel. This causes a latency spike; consider extending warmup to cover this shape/config.
+(Worker_TP0 pid=1073) WARNING 11-22 06:20:20 [jit_monitor.py:141] Triton kernel JIT compilation during inference: _rejection_kernel. This causes a latency spike; consider extending warmup to cover this shape/config.
+(Worker_TP0 pid=1073) WARNING 11-22 06:20:21 [jit_monitor.py:141] Triton kernel JIT compilation during inference: _resample_kernel. This causes a latency spike; consider extending warmup to cover this shape/config.
+(APIServer pid=47) INFO 11-22 06:20:28 [first_request_warmup.py:59] ArcXpuPlatform: first-request warmup stage small done in 9.6s (2 outputs, 640 prompt chars)
+(Worker_TP0 pid=1073) LMCBOUND NONFINITE req=arc-warmup-max-batch-ba725741 B=6400 nf=10768 am=3.24e+01 (v138c sanitize-carry REVAL trigger)
+(Worker_TP1 pid=1179) LMCBOUND NONFINITE req=arc-warmup-max-batch-ba725741 B=6400 nf=10626 am=2.01e+01 (v138c sanitize-carry REVAL trigger)
+(Worker_TP0 pid=1073) WARNING 11-22 06:20:32 [jit_monitor.py:141] Triton kernel JIT compilation during inference: _mx_full_dequant. This causes a latency spike; consider extending warmup to cover this shape/config.
+(APIServer pid=47) INFO 11-22 06:20:34 [loggers.py:315] Engine 000: Avg prompt throughput: 9.7 tokens/s, Avg generation throughput: 0.2 tokens/s, Running: 1 reqs, Waiting: 0 reqs, XPU KV cache usage: 4.3%, Prefix cache hit rate: 0.0%
+(APIServer pid=47) INFO 11-22 06:20:34 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 1.00, Accepted throughput: 0.00 tokens/s, Drafted throughput: 0.14 tokens/s, Accepted: 0 tokens, Drafted: 3 tokens, Per-position acceptance rate: 0.000, 0.000, 0.000, Avg Draft acceptance rate: 0.0%
+(APIServer pid=47) INFO 11-22 06:20:36 [first_request_warmup.py:59] ArcXpuPlatform: first-request warmup stage max-batch done in 8.8s (2 outputs, 44253 prompt chars)
+(APIServer pid=47) INFO 11-22 06:20:36 [first_request_warmup.py:113] ArcXpuPlatform: warmup complete in 18.4s — engine hot, serving request cmpl-9695c7036a5b7797-0
+(APIServer pid=47) INFO:     127.0.0.1:47658 - "POST /v1/completions HTTP/1.1" 200 OK
+(APIServer pid=47) INFO:     127.0.0.1:43418 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=47) INFO 11-22 06:20:44 [loggers.py:315] Engine 000: Avg prompt throughput: 819.8 tokens/s, Avg generation throughput: 1.8 tokens/s, Running: 0 reqs, Waiting: 0 reqs, XPU KV cache usage: 0.0%, Prefix cache hit rate: 0.0%
+(APIServer pid=47) INFO 11-22 06:20:44 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 2.57, Accepted throughput: 1.10 tokens/s, Drafted throughput: 2.10 tokens/s, Accepted: 11 tokens, Drafted: 21 tokens, Per-position acceptance rate: 0.714, 0.571, 0.286, Avg Draft acceptance rate: 52.4%
+(APIServer pid=47) INFO:     127.0.0.1:60222 - "POST /v1/completions HTTP/1.1" 200 OK
+(APIServer pid=47) INFO 11-22 06:20:54 [loggers.py:315] Engine 000: Avg prompt throughput: 791.6 tokens/s, Avg generation throughput: 19.2 tokens/s, Running: 0 reqs, Waiting: 0 reqs, XPU KV cache usage: 0.0%, Prefix cache hit rate: 0.0%
+(APIServer pid=47) INFO 11-22 06:20:54 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 3.49, Accepted throughput: 13.70 tokens/s, Drafted throughput: 16.50 tokens/s, Accepted: 137 tokens, Drafted: 165 tokens, Per-position acceptance rate: 0.873, 0.818, 0.800, Avg Draft acceptance rate: 83.0%
+(APIServer pid=47) INFO:     127.0.0.1:37948 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=47) INFO:     127.0.0.1:37958 - "GET /metrics HTTP/1.1" 200 OK
+(APIServer pid=47) INFO 11-22 06:21:04 [loggers.py:315] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 0.0 tokens/s, Running: 0 reqs, Waiting: 0 reqs, XPU KV cache usage: 0.0%, Prefix cache hit rate: 0.0%
+(APIServer pid=47) INFO:     127.0.0.1:37966 - "POST /v1/completions HTTP/1.1" 200 OK
+(Worker_TP0 pid=1073) LMCBOUND NONFINITE req=cmpl-90a124718c182269-0-a71b59ee B=8000 nf=13196 am=3.34e+01 (v138c sanitize-carry REVAL trigger)
+(Worker_TP1 pid=1179) LMCBOUND NONFINITE req=cmpl-90a124718c182269-0-a71b59ee B=8000 nf=13161 am=3.31e+01 (v138c sanitize-carry REVAL trigger)
+(Worker_TP1 pid=1179) LMCBOUND NONFINITE req=cmpl-90a124718c182269-0-a71b59ee B=14400 nf=13161 am=3.87e+01 (v138c sanitize-carry REVAL trigger)
+(Worker_TP0 pid=1073) LMCBOUND NONFINITE req=cmpl-90a124718c182269-0-a71b59ee B=14400 nf=13196 am=3.57e+01 (v138c sanitize-carry REVAL trigger)
+(Worker_TP1 pid=1179) INFO 11-22 06:21:12 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=1536 p50=0.64ms p90=0.75ms max=1.76ms fallbacks=39 {'zero-spec': 36, 'mixed': 3}
+(Worker_TP0 pid=1073) INFO 11-22 06:21:12 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=1536 p50=0.48ms p90=0.68ms max=1.45ms fallbacks=39 {'zero-spec': 36, 'mixed': 3}
+(APIServer pid=47) INFO 11-22 06:21:14 [loggers.py:315] Engine 000: Avg prompt throughput: 1608.7 tokens/s, Avg generation throughput: 14.8 tokens/s, Running: 1 reqs, Waiting: 0 reqs, XPU KV cache usage: 4.7%, Prefix cache hit rate: 0.0%
+(APIServer pid=47) INFO 11-22 06:21:14 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 3.34, Accepted throughput: 5.15 tokens/s, Drafted throughput: 6.60 tokens/s, Accepted: 103 tokens, Drafted: 132 tokens, Per-position acceptance rate: 0.795, 0.773, 0.773, Avg Draft acceptance rate: 78.0%

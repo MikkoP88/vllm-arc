@@ -1,0 +1,38 @@
+92a66f1f4624fbb5358e7cf957719f24  /root/build/wheels-arc-vxk/vllm_xpu_kernels-0.1.14.1+arc7mx-cp312-cp312-linux_x86_64.whl
+=== [r212o] W14 quiesce 15:54:05 ===
+=== [r212o:m0:c32768] 15:54:21 ===
+=== [r212o:m0:c32768] exit rc=0 15:56:17 ===
+=== [r212o:m2:c32768] 15:56:17 ===
+=== [r212o:m2:c32768] exit rc=0 15:58:11 ===
+=== [r212o:m3:c32768] 15:58:11 ===
+=== [r212o:m3:c32768] exit rc=0 16:00:02 ===
+=== [r212o:m6:c32768] 16:00:02 ===
+=== [r212o:m6:c32768] exit rc=0 16:01:56 ===
+=== [r212o:m8:c32768] 16:01:56 ===
+=== [r212o:m8:c32768] exit rc=0 16:03:45 ===
+=== [r212o:m9:c32768] 16:03:45 ===
+=== [r212o:m9:c32768] exit rc=0 16:05:37 ===
+=== [r212o:m0:c1024] 16:05:37 ===
+=== [r212o:m0:c1024] exit rc=0 16:06:58 ===
+=== [r212o:m0:c8192] 16:06:58 ===
+=== [r212o:m0:c8192] exit rc=0 16:08:26 ===
+=== [r212o:dbf0:c32768] 16:08:26 ===
+=== [r212o:dbf0:c32768] exit rc=0 16:10:23 ===
+=== [r212o] gate 16:10:23 ===
+r212o fulls vs r212n (cross-wheel, dice band +-6%) + canaries
+  mxfp4   1024 |    397.1 | base    399.8 |   -0.7% | canary 0.0
+  mxfp4   8192 |    303.9 | base    306.8 |   -0.9% | canary 0.0
+  mxfp4  32768 |    741.8 | base    749.5 |   -1.0% | canary 0.0
+  mxfp8   1024 |    634.2 | base    633.9 |   +0.0% | canary 0.0
+  mxfp8   8192 |    525.1 | base    525.7 |   -0.1% | canary 0.0
+  mxfp8  32768 |   1323.1 | base   1320.7 |   +0.2% | canary 0.0
+r212o lane table at 32K (vs r212n cross-wheel) + probe-9 residual
+  mxfp4: K  170.5 (n  178.2)  Vg  193.0 (n  196.7)  Vs  18.7 (n  16.7)  floor  248.7 (n  246.6)  m9  380.6 (n  379.0)  dec_resid  361.2  pool  132.0
+  mxfp8: K  389.2 (n  390.6)  Vg  329.3 (n  334.2)  Vs 372.2 (n 364.9)  floor  171.7 (n  171.6)  m9  589.1 (n  588.6)  dec_resid  734.0  pool  417.5
+r212o same-wheel dtype oracle (dbf0) at 32K
+  mxfp4 | dbf0    911.6 | fast    741.8 | gain   18.6% | canary(dbf0) 0.0
+  mxfp8 | dbf0   1325.6 | fast   1323.1 | gain    0.2% | canary(dbf0) 0.0
+note: probe-cell canaries vacuous (not computed in probe mode)
+R212O_GATE_PASS
+R212O_DONE rc=0 2026-11-21T16:10:23Z
+W14_RESTORE_FIRED_fullres 2026-11-21T16:10:23Z

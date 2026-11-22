@@ -1,0 +1,37 @@
+=== [r217] W14 quiesce 06:14:46 ===
+wheel md5 9ded4fb67e15ba092aac607d58db1b72 (pinned 9ded4fb67e15ba092aac607d58db1b72)
+=== [r217:ns64r] boot ARC_MXKV_NSPLIT=64 06:15:03 ===
+HEALTH_OK_r217_ns64r 06:20:18
+CONC_OK_c8192_n1
+CONC_OK_c16384_n1
+CONC_OK_c32768_n1
+=== [r217:ns64r] done 06:21:45 ===
+=== [r217:ns96r] boot ARC_MXKV_NSPLIT=96 06:21:45 ===
+HEALTH_OK_r217_ns96r 06:26:50
+CONC_OK_c8192_n1
+CONC_OK_c16384_n1
+CONC_OK_c32768_n1
+=== [r217:ns96r] done 06:28:18 ===
+=== [r217:ns128] boot ARC_MXKV_NSPLIT=128 06:28:18 ===
+HEALTH_OK_r217_ns128 06:33:33
+CONC_OK_c8192_n1
+CONC_OK_c16384_n1
+CONC_OK_c32768_n1
+=== [r217:ns128] done 06:35:01 ===
+=== [r217] report 06:35:01 ===
+r217 ceiling-lift e2e -- mxfp4 n1 (r217 wheel: lift 64->128 + loud check)
+  cell |    ctx |     itl |  vs ns64 |    tps |  chunks | qual | errs
+ ns64r |   8192 |    47.3 |   +0.02% |   73.5 | ~   56 | OK | 0
+ ns64r |  16384 |    52.3 |   -0.05% |   65.7 | ~   56 | OK | 0
+ ns64r |  32768 |    62.2 |   -0.07% |   60.9 | ~   52 | OK | 0
+ ns96r |   8192 |    47.2 |   -0.12% |   72.3 | ~   57 | OK | 0
+ ns96r |  16384 |    50.9 |   -2.69% |   68.8 | ~   56 | OK | 0
+ ns96r |  32768 |    58.2 |   -6.45% |   63.9 | ~   53 | OK | 0
+ ns128 |   8192 |    48.5 |   +2.46% |   71.8 | ~   56 | OK | 0
+ ns128 |  16384 |    51.2 |   -2.07% |   68.4 | ~   56 | OK | 0
+ ns128 |  32768 |    56.7 |   -8.79% |   65.4 | ~   53 | OK | 0
+ REPRO_OK ns64r @32K: 62.156084983143955 vs banked 62.2 (-0.07%) -- the lift + check did not perturb the posture
+  best valid @ 8192: ns96r 47.24220803473145 (1.17x fp8 bar)
+R217_GATE_PASS
+R217_DONE 2026-11-22T06:35:01Z
+W14_RESTORE_FIRED_fullres 2026-11-22T06:35:01Z

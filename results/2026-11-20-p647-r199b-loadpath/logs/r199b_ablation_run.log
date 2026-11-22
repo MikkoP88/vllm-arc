@@ -1,0 +1,16 @@
+=== [r199] W14 quiesce 03:15:57 ===
+=== [r199] attribution telemetry in vllm-arc:v0.30.0-b70-cert25zc + arc7mx wheel 03:16:14 ===
+[r199] wheel: /root/build/wheels-arc-vxk/vllm_xpu_kernels-0.1.14.1+arc7mx-cp312-cp312-linux_x86_64.whl
+=== [r199] harness exit rc=0 03:16:45 ===
+  mxfp8 ctx=1024: wall 2.020 ms = device 1.956 + host 0.064 ms (1.1 GB/s device-effective)
+  mxfp8 ctx=8192: wall 1.455 ms = device 1.426 + host 0.029 ms (12.1 GB/s device-effective)
+  mxfp8 ctx=32768: wall 5.528 ms = device 5.496 + host 0.032 ms (12.6 GB/s device-effective)
+  mxfp4 ctx=1024: wall 1.787 ms = device 1.762 + host 0.024 ms (0.6 GB/s device-effective)
+  mxfp4 ctx=8192: wall 1.433 ms = device 1.403 + host 0.030 ms (6.4 GB/s device-effective)
+  mxfp4 ctx=32768: wall 5.438 ms = device 5.407 + host 0.032 ms (6.6 GB/s device-effective)
+  mxk8v4 ctx=1024: wall 1.969 ms = device 1.925 + host 0.044 ms (0.9 GB/s device-effective)
+  mxk8v4 ctx=8192: wall 1.636 ms = device 1.603 + host 0.033 ms (8.2 GB/s device-effective)
+  mxk8v4 ctx=32768: wall 6.239 ms = device 6.194 + host 0.044 ms (8.5 GB/s device-effective)
+P199_DONE
+R199_DONE rc=0 2026-11-20T03:16:45Z
+W14_LEFT_DOWN (debug batch mode -- restore manually when done)

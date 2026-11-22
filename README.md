@@ -4,7 +4,7 @@
 
 A fork of [vllm-project/vllm-gaudi](https://github.com/vllm-project/vllm-gaudi) at **v0.30.0** (package name `vllm_gaudi` preserved; the Arc/XPU work lives in `vllm_gaudi/xpu/`).
 
-- Certified release: **`rel/v0.30.0-b70-cert25zc`** — every gate GREEN with banked evidence. cert25zc = cert25zb content + **the Phase-7 closing rung of the MX decode ladder**: TILE_FLOOR launcher default 4→2 (`ARC_MXKV_V5_TFLOOR`; kernel constexpr stays 4 — certified-signature freeze), the G-adaptive mxfp4 verify-decoder dispatch (`ARC_MXKV_V5_G_MIN=8`: v2 below the knee, v5 at/above), and the v7 research kernel shipped DORMANT (`ARC_MXKV_V7=1` to enable; r192 perf-refuted, bitwise-clean). Posture: **all MX lanes run LMCache-free** (Phase-6 auto-off; ctrl keeps LMC-on). Headline (r197 full battery + r196b fastcycle): **mxfp4 n8 32K agg decode p50 1547→583 ms (−62%)** held e2e; qwen MX lanes absolute-clean 3/3 (LONGRETURN + T1_SEED + garbage + erraudit); gemma comparative PASS (no new modes). Evidence: `results/2026-11-19-p647-cert25zc-battery/` + `results/2026-11-19-p647-zc-fastcycle/`. **Per-cert history: [`CHANGELOG.md`](CHANGELOG.md); release summaries: [`docs/release_notes.md`](docs/release_notes.md).**
+- Certified release: **`rel/v0.30.0-b70-cert26`** — every gate GREEN with banked evidence. cert26 = cert25zc content + **the Phase-8 arc7 MX-native decode line**: the `arc7mx` wheel (vllm_xpu_kernels 0.1.14.1+arc7mx, md5-pinned) BAKED — MX-native paged-decode Xe2 kernel (`mx_attn_interface.mx_paged_decode`), C++ auto-split heuristic at the validated optimum (chain 341 bw → 130 reduce → 128 policy; `ARC_MXKV_NSPLIT` retired as posture, kept as instrument) — plus the fork overlay `native_verify` bridge (`ARC_MXKV_NATIVE` gate, per-lane `_NATIVE_MINLEN` thresholds, capacity-priced walk, capture telemetry). **Certified native posture: `ARC_KVDTYPE=mxfp8|mxfp4` + `ARC_MXKV_NATIVE=1`** (m8q/m4q absolute-clean 3/3 in the r223 battery, agg8 0.84× ctrl at the smoke face vs 0.74–0.78× on cert25zc; long-ctx r219b: mxfp4 ITL 48.5/51.2/56.8 ms at 8/16/32K, −19.2% vs the pre-split posture, tps 65.4 @32K). **Native mxk8v4 REFUSED** at the battery's long-return gate (mixed-fmt e4m3-K+e2m1-V lane, deterministic REP-LOOP — refusal evidence banked; `mkq` serves the cert25zc Triton lanes; r224 = the engine-stride diagnosis reopen path). The 16→64 KV-tile lever closed e2e-negative by the r220 arbiter (`P64NATIVE` stays an env-gated instrument). Posture: **all MX lanes run LMCache-free** (Phase-6 auto-off; ctrl keeps LMC-on). Evidence: `results/2026-11-22-p647-cert26-battery/` + the r216–r221 leg banks. **Per-cert history: [`CHANGELOG.md`](CHANGELOG.md); release summaries: [`docs/release_notes.md`](docs/release_notes.md).**
 - **Project status: P6.47 (MX KV-cache dtype lane) certified; the improvement ladder continues** — remaining rungs per the plan (S1 e2m1-V acceptance knee, A1 aux-pipeline fold, F2 continuation dequant tax). The earlier full close-out (per-config performance reports, 64 GB-RAM host defaults, the `ARC_KVDTYPE` knob) stands; history: [`CHANGELOG.md`](CHANGELOG.md) + [`docs/history/`](docs/history/) archives; current state: [`docs/STATUS-arc.md`](docs/STATUS-arc.md).
 - **Per-config performance reports** — [`docs/reports/`](docs/reports/README.md): every model × quantization × MTP posture (qwen3.8-27b fp8/MXFP8/MXFP4-W4A16 with k3 + no-MTP, gemma-4-31b fp8/MXFP8/MXFP4), decode speed / TTFT / prefill rate / ITL at 1K–128K context, the MTP-k3 sampling-temperature sweep (0.0–1.0), the `--kv-cache-dtype` comparison (stock set + the TurboQuant presets), line charts of all data, and the complete copyable configuration for each cell. Every patch module documented with provenance + evidence: [`docs/PATCHES-arc.md`](docs/PATCHES-arc.md).
 - **Improvement-lane status: the in-scope ledger is CLOSED** — every prefill device slice is dispositioned by measurement (GEMM / allreduce / FA / GDN / norms-act; host path clean; the last unmeasured door — cross-stream AR∥GEMM co-tenancy — closed by measurement), the stack sits at the practical in-scope floor, and the transport was proven clean. Per-slice table + closed-route disposition: [`docs/STATUS-arc.md`](docs/STATUS-arc.md).
@@ -26,7 +26,7 @@ A fork of [vllm-project/vllm-gaudi](https://github.com/vllm-project/vllm-gaudi) 
 
 ## Certified performance (dual Arc Pro B70, TP2)
 
-**Current record — measured on the shipping cert25zc image** (the full
+**Current record — measured on the shipping cert26 image** (the full
 validation matrix + the per-config reports, concurrency 1 unless noted;
 full reports with charts and copyable configs:
 [`docs/reports/`](docs/reports/README.md)):
@@ -36,6 +36,7 @@ full reports with charts and copyable configs:
 | qwen fp8 · MTP k3 | 93.8 tok/s @ 1K | the certified default lane |
 | qwen mxfp4-W4A16 · MTP k3 | 103.3 tok/s @ 8K | best online-quant lane |
 | qwen mxfp4-W4A16 · MTP **k5** | **128.3 tok/s** | **project best** (+36 % vs fp8-k3); TTFT 3.98 s < the k3-baseline 4.55 s |
+| qwen `--kv-cache-dtype mxfp4` · native · k3 | 65.4 tok/s @ 32K (n1) · 256.1 agg8 | cert26 native MX-decode lane: −19.2% ITL vs the pre-split posture, 1.34× fp8 walk-parallelism @32K; agg8 0.84× ctrl (was 0.75×) |
 | gemma mxfp4-W4A16 | 38.0 tok/s @ 1K | +43 % vs gemma mxfp8 |
 | TTFT best (qwen fp8 · k5) | 3.48 s @ 8K | fresh-context, no caching |
 
@@ -117,21 +118,26 @@ RIG=<build-host>                                # <- set: your rig/build host
                                                  #    hygiene law, and run
                                                  #    tools/leak_sweep.sh
                                                  #    before pushing)
-SHA=$(git rev-parse rel/v0.30.0-b70-cert25zc)      # the certified commit
-git archive --format=tar -o /tmp/fork.tar rel/v0.30.0-b70-cert25zc
+SHA=$(git rev-parse rel/v0.30.0-b70-cert26)      # the certified commit
+git archive --format=tar -o /tmp/fork.tar rel/v0.30.0-b70-cert26
 scp /tmp/fork.tar root@$RIG:/root/build/
 ssh root@$RIG 'tar -xOf /root/build/fork.tar tools/build_image.sh > /root/build/build_image.sh'
-ssh root@$RIG bash /root/build/build_image.sh /root/build/fork.tar $SHA vllm-arc:v0.30.0-b70-cert25zc
+ssh root@$RIG bash /root/build/build_image.sh /root/build/fork.tar $SHA vllm-arc:v0.30.0-b70-cert26
 #    -> wheel_guard PASSes, IMAGE_MANIFEST records fork_sha == $SHA
 #       (verify: docker run --rm --entrypoint cat
-#        vllm-arc:v0.30.0-b70-cert25zc /etc/vllm-arc/IMAGE_MANIFEST)
+#        vllm-arc:v0.30.0-b70-cert26 /etc/vllm-arc/IMAGE_MANIFEST)
 #       ~15 min cold; ~1 min when only the source changed (stack layers
 #       cached — layer-order law in the Dockerfile).
 #
-#    cert25zc = cert25zb content + the Phase-7 closing rung
-#    (tf2 launcher default + G-adaptive mxfp4 dispatch + v7 dormant).
-#    The full tag lineage — every cert's content, validation legs,
-#    and the oneCCL overlay reproduction recipe — lives in CHANGELOG.md.
+#    cert26 = cert25zc content + the Phase-8 arc7 MX-native decode line
+#    (arc7mx wheel: MX-native paged-decode Xe2 kernel + auto-split at
+#    the validated optimum; overlay native_verify bridge, ARC_MXKV_NATIVE
+#    gate). The certified bytes were cut by the staged bake
+#    tools/ar/r222_build_cert26.sh (byte-pinned arc7mx wheel on the
+#    cert25zc base); the from-source path above reproduces the same
+#    engine from the tagged tree. The full tag lineage — every cert's
+#    content, validation legs, and the oneCCL overlay reproduction
+#    recipe — lives in CHANGELOG.md.
 
 # 2. Boot — the validated posture (annotated semantics in
 #    docs/CONFIGURATION-arc.md Step 1; key points: --privileged REQUIRED
@@ -147,7 +153,7 @@ docker run -d --name arc-test --privileged --network host --ipc host \
   -v ~/.cache/arc/inductor:/root/.inductor_cache \
   -e VLLM_ALLOW_LONG_MAX_MODEL_LEN=1 \
   -e VLLM_WORKER_MULTIPROC_METHOD=spawn \
-  --entrypoint bash vllm-arc:v0.30.0-b70-cert25zc -c "sleep infinity"
+  --entrypoint bash vllm-arc:v0.30.0-b70-cert26 -c "sleep infinity"
 
 # 3. Serve — the certified line (probabilistic drafting = the serve
 #    script's default posture), byte-identical to

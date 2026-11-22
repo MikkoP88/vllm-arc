@@ -1,0 +1,32 @@
+p200h_splitbench -- device=xpu, torch=2.13.0+xpu
+  mxfp8 ctx=8192 splits= 1: device 5.023 ms (wall 5.086, host 0.063), canary 0.00e+00
+  mxfp8 ctx=8192 splits= 2: device 2.685 ms (wall 2.713, host 0.028), canary 4.88e-04
+  mxfp8 ctx=8192 splits= 4: device 1.488 ms (wall 1.509, host 0.021), canary 4.88e-04
+  mxfp8 ctx=8192 splits= 8: device 0.840 ms (wall 0.867, host 0.028), canary 4.88e-04
+  mxfp8 ctx=8192 splits=16: device 0.606 ms (wall 0.645, host 0.039), canary 4.88e-04
+  mxfp8 ctx=32768 splits= 1: device 19.884 ms (wall 19.910, host 0.026), canary 0.00e+00
+  mxfp8 ctx=32768 splits= 2: device 10.123 ms (wall 10.145, host 0.022), canary 2.44e-04
+  mxfp8 ctx=32768 splits= 4: device 5.168 ms (wall 5.196, host 0.027), canary 2.44e-04
+  mxfp8 ctx=32768 splits= 8: device 2.712 ms (wall 2.733, host 0.021), canary 2.44e-04
+  mxfp8 ctx=32768 splits=16: device 1.651 ms (wall 1.678, host 0.027), canary 2.44e-04
+  mxfp4 ctx=8192 splits= 1: device 3.585 ms (wall 3.611, host 0.026), canary 0.00e+00
+  mxfp4 ctx=8192 splits= 2: device 1.956 ms (wall 1.983, host 0.027), canary 4.88e-04
+  mxfp4 ctx=8192 splits= 4: device 1.087 ms (wall 1.114, host 0.027), canary 4.88e-04
+  mxfp4 ctx=8192 splits= 8: device 0.695 ms (wall 0.718, host 0.023), canary 4.88e-04
+  mxfp4 ctx=8192 splits=16: device 0.582 ms (wall 0.612, host 0.030), canary 4.88e-04
+  mxfp4 ctx=32768 splits= 1: device 14.062 ms (wall 14.088, host 0.026), canary 0.00e+00
+  mxfp4 ctx=32768 splits= 2: device 7.231 ms (wall 7.252, host 0.022), canary 2.44e-04
+  mxfp4 ctx=32768 splits= 4: device 3.710 ms (wall 3.737, host 0.027), canary 2.44e-04
+  mxfp4 ctx=32768 splits= 8: device 1.971 ms (wall 2.011, host 0.040), canary 2.44e-04
+  mxfp4 ctx=32768 splits=16: device 1.270 ms (wall 1.299, host 0.030), canary 2.44e-04
+  mxk8v4 ctx=8192 splits= 1: device 3.345 ms (wall 3.379, host 0.034), canary 0.00e+00
+  mxk8v4 ctx=8192 splits= 2: device 1.860 ms (wall 1.881, host 0.021), canary 4.88e-04
+  mxk8v4 ctx=8192 splits= 4: device 1.050 ms (wall 1.077, host 0.027), canary 4.88e-04
+  mxk8v4 ctx=8192 splits= 8: device 0.628 ms (wall 0.666, host 0.038), canary 4.88e-04
+  mxk8v4 ctx=8192 splits=16: device 0.480 ms (wall 0.503, host 0.023), canary 4.88e-04
+  mxk8v4 ctx=32768 splits= 1: device 13.214 ms (wall 13.243, host 0.029), canary 0.00e+00
+  mxk8v4 ctx=32768 splits= 2: device 6.836 ms (wall 6.859, host 0.023), canary 2.44e-04
+  mxk8v4 ctx=32768 splits= 4: device 3.533 ms (wall 3.574, host 0.040), canary 2.44e-04
+  mxk8v4 ctx=32768 splits= 8: device 1.904 ms (wall 1.932, host 0.028), canary 2.44e-04
+  mxk8v4 ctx=32768 splits=16: device 1.230 ms (wall 1.251, host 0.021), canary 2.44e-04
+P200H_DONE

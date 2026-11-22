@@ -1,0 +1,20 @@
+wheel md5 62f234c8d0aa89c4aec3e8d2c6fa22ad
+=== [r220d] W14 quiesce 13:49:16 ===
+wheel md5 62f234c8d0aa89c4aec3e8d2c6fa22ad
+=== [r220d:n64s64] boot p64=1 ns=64 13:49:34 ===
+HEALTH_OK_r220d_n64s64 13:54:39
+CONC_OK_c32768_n1
+=== [r220d:n64s64] done 13:55:32 ===
+=== [r220d:n64s256] boot p64=1 ns=256 13:55:32 ===
+HEALTH_OK_r220d_n64s256 14:00:47
+CONC_OK_c32768_n1
+=== [r220d:n64s256] done 14:01:39 ===
+=== [r220d] report 14:01:39 ===
+r220d p64 split bracket @c32768 n1 -- mxfp4 (anchors: ctl 56.4, p64@128 64.0, posture 56.8)
+     cell |    itl | vs ctl | vs p64@128 |    tps |  chunks | qual | errs
+   n64s64 |   63.6 | +12.9% |      -0.5% |   57.3 | ~   53 | OK | 0
+  n64s256 |   67.7 | +20.0% |      +5.8% |   54.8 | ~   53 | OK | 0
+BEST n64s64 itl=63.6 -> NOT_RESCUED (tile lever e2e-negative at every split depth)
+R220D_DONE
+R220D_DONE 2026-11-22T14:01:39Z
+W14_RESTORE_FIRED_fullres 2026-11-22T14:01:39Z

@@ -1,0 +1,8 @@
+p204_graphtime -- device=xpu, ctx=1024, ncap=32, replays=50, torch=2.13.0+xpu
+  mxfp8 v2: device 49.6us/call (graph 32x50) canary 0.00e+00
+  mxfp8 native_auto: device 327.9us/call (graph 32x50) canary 0.00e+00
+  mxfp4 v2: device 42.8us/call (graph 32x50) canary 0.00e+00
+  mxfp4 native_auto: device 233.6us/call (graph 32x50) canary 0.00e+00
+  mxk8v4 v2: device 84.0us/call (graph 32x50) canary 0.00e+00
+  mxk8v4 native_auto: device 219.4us/call (graph 32x50) canary 0.00e+00
+P204_DONE

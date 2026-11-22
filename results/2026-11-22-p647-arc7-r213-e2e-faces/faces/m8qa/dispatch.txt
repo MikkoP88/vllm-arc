@@ -1,0 +1,2 @@
+(Worker_TP0 pid=1062) INFO 11-22 01:42:14 [engine.py:1169] MXKV native dispatch fmt=mxfp8 rows=148 walked_cap=38910976 minlen=16384 -> native (E5b crossover)
+(Worker_TP1 pid=1174) INFO 11-22 01:42:14 [engine.py:1169] MXKV native dispatch fmt=mxfp8 rows=148 walked_cap=38910976 minlen=16384 -> native (E5b crossover)

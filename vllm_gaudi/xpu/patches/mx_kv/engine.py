@@ -70,6 +70,7 @@ from .mx_dequant import mx_dequant_cache
 from .mx_layout import offsets as _mx_offsets
 from .mx_layout import slot_bytes
 from .mx_quant import decode_kv as _ref_decode_kv
+from .native_decode import mx_decode_native
 from .triton_mx_decode import mx_decode, mx_decode_rows, mx_decode_rows_dot
 from .triton_mx_store import mx_store
 
@@ -145,6 +146,46 @@ _V5_G_MIN = int(os.environ.get("ARC_MXKV_V5_G_MIN", "8") or 8)
 _V5_DOT = os.environ.get("ARC_MXKV_V5_DOT", "") == "1"
 _DECODER_OVERRIDE = os.environ.get("ARC_MXKV_VERIFY_DECODER", "")
 _V5_DEFAULT = ("mxfp8", "mxk8v4")
+# arc7 (Phase 8): the MX-NATIVE vendor-class decode kernel (CUTLASS/Xe2,
+# wheel-side external_patches/vllm-xpu-kernels/arc7_mx_attn/ — the vendor
+# structure ported to MX formats, dequant fused into the load path).
+# DORMANT until certified: Triton v2/v5 stay the certified default; the
+# env routes the verify-batch path through native_decode.mx_decode_native
+# (the arc7mx wheel's torch op). The engine refuses with a warning when
+# the GQA group exceeds the q16 policy bucket (plan-build-time, so the
+# warning rides shape builds only). Validation ladder: r198 offline
+# correctness -> r199 T1 perf -> r200 fastcycle -> r201 battery -> cert26.
+_NATIVE = os.environ.get("ARC_MXKV_NATIVE", "") == "1"
+# r212a/r212c CTX-ADAPTIVE DISPATCH (geometry law, 2026-11-21): the
+# native kernel's FIXED barrier/walk term loses to the certified Triton
+# lanes at small WALKED token budgets while its slope is far shallower.
+# r212c recalibrated at the REAL engine geometry (head_dim 256, page 64,
+# G 6 — the r208-r212 E5b numbers were D=128/BLOCK=16/G=4, priced off
+# the config's GDN linear head dim): D=256 doubles the Triton slopes
+# (bytes/token) while native's walk/barrier-dominated cost grows far
+# slower, so EVERY format crosses between Σ 4K-16K walked (mxfp8
+# ~11.6K vs v5 — moved from ~214K, mxfp4 ~11.6K vs v2 / earlier vs v5,
+# mxk8v4 ~6.6K vs v5); at 32K ctx native is 1.5-3.2x faster than the
+# best lane. Tuples below = crossing + fill margin, per LANE (the G
+# split mirrors _V5_G_MIN, the same knee the g-adaptive chain uses);
+# the estimator is the bucket-cap (see the plan-build site — r212a
+# capture-freeze law). ARC_MXKV_NATIVE_MINLEN="fmt:N" (both lanes) or
+# "fmt:N1:N2" (n1-lane:n8-lane) retunes per boot.
+_NATIVE_MINLEN: dict[str, tuple[int, int]] = {
+    "mxfp8": (16384, 16384),
+    "mxfp4": (12288, 8192),
+    "mxk8v4": (8192, 8192),
+}
+for _spec in filter(
+    None, os.environ.get("ARC_MXKV_NATIVE_MINLEN", "").split(",")
+):
+    _name, _, _vals = _spec.partition(":")
+    _nums = [v for v in _vals.split(":") if v.strip().isdigit()]
+    if _name and _nums:
+        _NATIVE_MINLEN[_name.strip()] = (
+            int(_nums[0]),
+            int(_nums[-1]),
+        )
 # one-time dispatch markers (the posture-line pattern): fmt+decoder
 # pairs already logged by this process — keeps every serve log carrying
 # the verify-decoder engagement line without per-step spam.
@@ -1049,29 +1090,91 @@ class MxAttentionImpl(TurboQuantAttentionImpl):
             # top; env overrides win). Logged once per process per format
             # — every leg's serve log carries the engagement marker the
             # A/B banks cite (the posture-line pattern).
-            decoder = _DECODER_OVERRIDE or (
-                "v5"
-                if _V5_DOT
-                else (
-                    "v4"
-                    if _V4_VERIFY
+            _g = query.shape[1] // kv_cache.shape[2]
+            if _NATIVE and _g > 16:
+                logger.warning(
+                    "MXKV native refused: G=%d exceeds the q16 policy "
+                    "bucket — the Triton lanes serve this shape",
+                    _g,
+                )
+            # r212a: walked-token budget vs the per-FORMAT, per-LANE E5b
+            # crossing — below it the native kernel's fixed barrier/walk
+            # term dominates and the certified Triton lane is faster.
+            # The lane split rides the same G knee as the g-adaptive
+            # chain below. Estimator: rows x per-request KV CAPACITY
+            # (bt width x block stride), NOT metadata.max_seq_len —
+            # decode replays never re-run this python (the branch
+            # freezes per captured graph), and the capture dummy
+            # dilutes max_seq_len across the bucket's requests, while
+            # bt.shape[1]*stride tracks the BUCKET's token class: the
+            # runtime step maps to the same bucket by sum(num_blocks),
+            # so the frozen side is the replayed side (r212a fastcycle
+            # law, 2026-11-21: the max_seq_len branch froze triton on
+            # every graph via the rows=148/max_seq_len=9 dummy). Eager
+            # steps get rows x max per-req blocks — an upper bound of
+            # the true walked sum (native engages at-or-before the
+            # crossing; E5b boundary margins absorb it).
+            _minpair = _NATIVE_MINLEN.get(self.mx_config.fmt)
+            _minlen = (
+                _minpair[1]
+                if (
+                    _minpair
+                    and len(split_rows) >= _V5_G_MIN
+                )
+                else (_minpair[0] if _minpair else None)
+            )
+            _walked_cap = idx.shape[0] * bt.shape[1] * stride
+            _native_ctx_ok = (
+                _minlen is not None and _walked_cap >= _minlen
+            )
+            decoder = (
+                "native"
+                if _NATIVE and _g <= 16 and _native_ctx_ok
+                else _DECODER_OVERRIDE or (
+                    "v5"
+                    if _V5_DOT
                     else (
-                        "v5"
-                        if self.mx_config.fmt in _V5_DEFAULT
+                        "v4"
+                        if _V4_VERIFY
                         else (
-                            # G-adaptive mxfp4 (B1 verdict): v2 below the
-                            # knee (n1 — the v2 batch grid wins at G=1),
-                            # v5 at/above it (n8 long-ctx — 32K ss -14%).
                             "v5"
-                            if (
-                                self.mx_config.fmt == "mxfp4"
-                                and len(split_rows) >= _V5_G_MIN
+                            if self.mx_config.fmt in _V5_DEFAULT
+                            else (
+                                # G-adaptive mxfp4 (B1 verdict): v2 below the
+                                # knee (n1 — the v2 batch grid wins at G=1),
+                                # v5 at/above it (n8 long-ctx — 32K ss -14%).
+                                "v5"
+                                if (
+                                    self.mx_config.fmt == "mxfp4"
+                                    and len(split_rows) >= _V5_G_MIN
+                                )
+                                else "v2"
                             )
-                            else "v2"
                         )
                     )
                 )
             )
+            # r212a posture line (once per fmt per SIDE per process —
+            # the engagement marker A/B banks cite; the cap value
+            # identifies the bucket class that froze each side).
+            _dside = "native" if _native_ctx_ok else "triton"
+            if (
+                _NATIVE
+                and _g <= 16
+                and (self.mx_config.fmt, f"native-dispatch-{_dside}")
+                not in _DECODER_LOGGED
+            ):
+                _DECODER_LOGGED.add(
+                    (self.mx_config.fmt, f"native-dispatch-{_dside}"))
+                logger.info(
+                    "MXKV native dispatch fmt=%s rows=%d walked_cap=%d "
+                    "minlen=%d -> %s (E5b crossover)",
+                    self.mx_config.fmt,
+                    idx.shape[0],
+                    _walked_cap,
+                    _minlen or -1,
+                    _dside,
+                )
             _dkey = (self.mx_config.fmt, decoder)
             if _dkey not in _DECODER_LOGGED:
                 _DECODER_LOGGED.add(_dkey)
@@ -1083,18 +1186,22 @@ class MxAttentionImpl(TurboQuantAttentionImpl):
                         "env-override"
                         if _DECODER_OVERRIDE
                         else (
-                            "env-flag"
-                            if (_V5_DOT or _V4_VERIFY)
+                            "native-env"
+                            if decoder == "native"
                             else (
-                                "g-adaptive"
-                                if self.mx_config.fmt == "mxfp4"
-                                else "format-default"
+                                "env-flag"
+                                if (_V5_DOT or _V4_VERIFY)
+                                else (
+                                    "g-adaptive"
+                                    if self.mx_config.fmt == "mxfp4"
+                                    else "format-default"
+                                )
                             )
                         )
                     ),
                 )
             bt_groups = None
-            if decoder != "v2" and all(
+            if decoder not in ("v2", "native") and all(
                 ql == _V4_R_TILE for _, _, ql in split_rows
             ):
                 bt_groups = bt.index_select(
@@ -1108,7 +1215,17 @@ class MxAttentionImpl(TurboQuantAttentionImpl):
         idx, bt_rows, sl_rows, bt_groups, decoder = plan
         _trace("path", "batch", "splitbatch", f"R={idx.shape[0]}")
         q_rows = query.index_select(0, idx)
-        if bt_groups is not None:
+        if decoder == "native":
+            out = mx_decode_native(
+                q_rows,
+                kv_cache,
+                bt_rows,
+                sl_rows,
+                self.scale,
+                attn_metadata.max_seq_len,
+                self.mx_config.fmt,
+            )
+        elif bt_groups is not None:
             if decoder == "v5":
                 out = mx_decode_rows_dot(
                     q_rows,

@@ -1,0 +1,18 @@
+6286dae5c7115700077c55f5a2f28944  /root/build/wheels-arc-vxk/vllm_xpu_kernels-0.1.14.1+arc7mx-cp312-cp312-linux_x86_64.whl
+=== [r212p] W14 quiesce 16:43:13 ===
+=== [r212p:m11:c32768] 16:43:29 ===
+=== [r212p:m11:c32768] exit rc=0 16:45:21 ===
+=== [r212p] gate 16:45:21 ===
+r212p three-way split (mxfp4 32K, r212o-wheel baselines)
+  m0  (fast full)        741.8
+  m9  (heavy probe)      380.6
+  m11 (light probe)      380.8   <- this leg
+  c8  (const floor)      248.7
+  decode machinery (m0-m11):   361.0 us
+  heavy-tail extra  (m9-m11):    -0.2 us
+  extract/store/walk/softmax (m11-c8):   132.1 us
+  FORK: CODEGEN LEVER (decode machinery dominates the residual)
+  (m8 m11 partial = 592.1 — reg lane rides full decode under probe 11; not an m8 instrument)
+R212P_GATE_PASS
+R212P_DONE rc=0 2026-11-21T16:45:21Z
+W14_RESTORE_FIRED_fullres 2026-11-21T16:45:21Z

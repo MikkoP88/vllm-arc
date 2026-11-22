@@ -1,0 +1,25 @@
+=== [r212h] W14 quiesce 07:46:09 ===
+=== [r212h:m8qa] boot kv=mxfp8 07:46:27 ===
+HEALTH_OK_r212h_m8qa 07:51:32
+CONC_OK_c8192_n1
+CONC_OK_c16384_n1
+CONC_OK_c32768_n1
+=== [r212h:m8qa] done 07:53:03 ===
+=== [r212h:mkqa] boot kv=mxk8v4 07:53:03 ===
+HEALTH_OK_r212h_mkqa 07:58:07
+CONC_OK_c8192_n1
+CONC_OK_c16384_n1
+CONC_OK_c32768_n1
+=== [r212h:mkqa] done 07:59:39 ===
+=== [r212h] report 07:59:39 ===
+r212h m8qa -- ITL p50 ms/token (launch4 pre-fix vs r212h fixed)
+ m8qa c8192_n1   pre    285.5  fixed     50.9   5.61x faster
+ m8qa c16384_n1  pre    536.5  fixed     61.4   8.73x faster
+ m8qa c32768_n1  pre   1038.1  fixed     84.3  12.31x faster
+r212h mkqa -- ITL p50 ms/token (launch4 pre-fix vs r212h fixed)
+ mkqa c8192_n1   pre    269.0  fixed     48.9   5.51x faster
+ mkqa c16384_n1  pre    503.2  fixed     57.3   8.78x faster
+ mkqa c32768_n1  pre    971.0  fixed     78.3  12.41x faster
+R212H_GATE_PASS
+R212H_DONE 2026-11-21T07:59:39Z
+W14_RESTORE_FIRED_fullres 2026-11-21T07:59:39Z

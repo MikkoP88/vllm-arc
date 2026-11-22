@@ -1,0 +1,14 @@
+p202_timeline -- device=xpu, vprobe=8, ctx=1024, reps=60, torch=2.13.0+xpu
+  !! mxfp8 splits=5: CANARY_NAN (no launch?)
+  mxfp8 splits= 5: dev 427.5us [417.0-468.8] gap 83.5us host 506.1us bracketed 460.8us canary -1.00e+00
+  !! mxfp8 splits=1: CANARY_NAN (no launch?)
+  mxfp8 splits= 1: dev 232.2us [226.4-244.3] gap 80.2us host 311.7us bracketed 231.4us canary -1.00e+00
+  !! mxfp4 splits=5: CANARY_NAN (no launch?)
+  mxfp4 splits= 5: dev 453.8us [405.8-918.5] gap 89.4us host 546.7us bracketed 435.1us canary -1.00e+00
+  !! mxfp4 splits=1: CANARY_NAN (no launch?)
+  mxfp4 splits= 1: dev 245.5us [227.0-501.6] gap 88.8us host 335.9us bracketed 169.6us canary -1.00e+00
+  !! mxk8v4 splits=5: CANARY_NAN (no launch?)
+  mxk8v4 splits= 5: dev 421.9us [403.4-464.7] gap 81.8us host 502.5us bracketed 417.3us canary -1.00e+00
+  !! mxk8v4 splits=1: CANARY_NAN (no launch?)
+  mxk8v4 splits= 1: dev 237.2us [229.3-246.4] gap 80.9us host 318.8us bracketed 226.0us canary -1.00e+00
+P202_DONE

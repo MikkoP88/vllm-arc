@@ -1,0 +1,29 @@
+=== [r212b] W14 quiesce 06:51:08 ===
+=== [r212c:B_native] boot 06:51:25 minlen='default' ===
+HEALTH_OK_r212b_B_native 06:56:30
+CONC_OK_c16384_n1
+CONC_OK_c32768_n1
+CONC_OK_c16384_n8
+=== [r212c:B_native] done 07:00:03 ===
+=== [r212b] report 07:00:03 ===
+r212b A/B -- ITL p50 ms/token (itl_ms_p50 mean over slots)
+ A_triton  c16384_n1  MISSING
+ A_triton  c32768_n1  MISSING
+ A_triton  c16384_n8  MISSING
+ B_native  c16384_n1  itl    497.9 ms  n_ok 1
+ B_native  c32768_n1  itl    960.3 ms  n_ok 1
+ B_native  c16384_n8  itl    558.2 ms  n_ok 8
+=== [r212b] telemetry (B) ===
+(Worker_TP1 pid=1172) INFO 11-21 06:55:11 [native_decode.py:100] MXKV native call fmt=mxfp4 rows=148 max_seqlen_k=262400 bt_width=4100 stride=544 (r212c-e2e capacity-priced walk)
+(Worker_TP0 pid=1060) INFO 11-21 06:55:11 [native_decode.py:100] MXKV native call fmt=mxfp4 rows=148 max_seqlen_k=262400 bt_width=4100 stride=544 (r212c-e2e capacity-priced walk)
+(Worker_TP1 pid=1172) INFO 11-21 06:55:15 [native_decode.py:100] MXKV native call fmt=mxfp4 rows=4 max_seqlen_k=262400 bt_width=4100 stride=544 (r212c-e2e capacity-priced walk)
+(Worker_TP0 pid=1060) INFO 11-21 06:55:15 [native_decode.py:100] MXKV native call fmt=mxfp4 rows=4 max_seqlen_k=262400 bt_width=4100 stride=544 (r212c-e2e capacity-priced walk)
+(Worker_TP0 pid=1060) INFO 11-21 06:55:35 [native_decode.py:100] MXKV native call fmt=mxfp4 rows=256 max_seqlen_k=262400 bt_width=4100 stride=544 (r212c-e2e capacity-priced walk)
+(Worker_TP1 pid=1172) INFO 11-21 06:55:35 [native_decode.py:100] MXKV native call fmt=mxfp4 rows=256 max_seqlen_k=262400 bt_width=4100 stride=544 (r212c-e2e capacity-priced walk)
+(Worker_TP1 pid=1172) INFO 11-21 06:55:36 [native_decode.py:100] MXKV native call fmt=mxfp4 rows=252 max_seqlen_k=262400 bt_width=4100 stride=544 (r212c-e2e capacity-priced walk)
+(Worker_TP0 pid=1060) INFO 11-21 06:55:36 [native_decode.py:100] MXKV native call fmt=mxfp4 rows=252 max_seqlen_k=262400 bt_width=4100 stride=544 (r212c-e2e capacity-priced walk)
+=== [r212b] dispatch (A/B) ===
+(Worker_TP1 pid=1172) INFO 11-21 06:55:11 [engine.py:1169] MXKV native dispatch fmt=mxfp4 rows=148 walked_cap=38835200 minlen=8192 -> native (E5b crossover)
+(Worker_TP0 pid=1060) INFO 11-21 06:55:11 [engine.py:1169] MXKV native dispatch fmt=mxfp4 rows=148 walked_cap=38835200 minlen=8192 -> native (E5b crossover)
+R212C_DONE 2026-11-21T07:00:03Z
+W14_RESTORE_FIRED_fullres 2026-11-21T07:00:03Z

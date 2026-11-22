@@ -1,0 +1,19 @@
+b64bd6602a92ca866a22944533fabdab  /root/build/wheels-arc-vxk/vllm_xpu_kernels-0.1.14.1+arc7mx-cp312-cp312-linux_x86_64.whl
+=== [r212y] W14 quiesce 22:34:54 ===
+=== [r212y:vp0:c32768] 22:35:11 ===
+=== [r212y:vp0:c32768] exit rc=0 22:37:10 ===
+=== [r212y:vp11:c32768] 22:37:10 ===
+=== [r212y:vp11:c32768] exit rc=0 22:39:02 ===
+=== [r212y:vp17:c32768] 22:39:02 ===
+=== [r212y:vp17:c32768] exit rc=0 22:41:01 ===
+=== [r212y] gate 22:41:01 ===
+r212y attractor re-roll (mxfp4 32K, same wheel)
+  m0  (K->tSrK + V real)    1006.6   (r212u clean 718.0; r212x attractor 995.9)
+  m11 (K const + V light)    414.0
+  m17 (K->tSrK + V light)   1020.3   k_lane  +606.3   (attractor 600.1; clean pool 338)
+  m8 m0 oracle: 1769.2 (+34.0% vs r212q 1320.5)
+HEADLINE: ATTRACTOR HELD (4th wheel) -- k_lane directional only; next escalation: structural perturbation (noinline const-fill helper or else-if reorder) or accept and pipeline on same-wheel deltas
+M8_STABILITY_FAIL
+R212Y_GATE_FAIL
+R212Y_DONE rc=1 2026-11-21T22:41:01Z
+W14_RESTORE_FIRED_fullres 2026-11-21T22:41:01Z

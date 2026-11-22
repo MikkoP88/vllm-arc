@@ -1,0 +1,15 @@
+=== [r212m] W14 quiesce 12:35:54 ===
+=== [r212m:m0:c32768] 12:36:11 ===
+=== [r212m:m0:c32768] exit rc=0 12:38:08 ===
+=== [r212m:m9:c32768] 12:38:08 ===
+=== [r212m:m9:c32768] exit rc=0 12:39:58 ===
+=== [r212m] gate 12:39:58 ===
+r212m decode-math probe at 32K -- us/call (probe 9 = decode tail severed)
+    fmt |  full m0 |       m9 | decode slice |    pct
+  mxfp4 |   1027.8 |    291.0 |        736.8 |  71.7%
+  NOTE m9 canary clean (0.0) -- probe 9 did not sever; wheel tree mismatch?
+  mxfp8 |   1361.8 |    589.0 |        772.7 |  56.7%
+  NOTE m9 canary clean (0.0) -- probe 9 did not sever; wheel tree mismatch?
+R212M_GATE_FAIL
+R212M_DONE rc=1 2026-11-21T12:39:58Z
+W14_RESTORE_FIRED_fullres 2026-11-21T12:39:58Z

@@ -7,7 +7,7 @@ evidence lives. The detailed per-release entries (full change lists,
 fork SHAs, wheel pins, gate numbers) are in
 [`../CHANGELOG.md`](../CHANGELOG.md); superseded doc content is
 archived per-doc under [`history/`](history/). The current certified
-release is **`rel/v0.30.0-b70-cert25zc`** (`vllm-arc:v0.30.0-b70-cert25zc`).
+release is **`rel/v0.30.0-b70-cert26`** (`vllm-arc:v0.30.0-b70-cert26`).
 
 Every release below is based on upstream vllm-gaudi **v0.30.0** with
 the pinned wheel stack (`tools/wheel_guard.sh`; per-release wheel shas
@@ -19,9 +19,28 @@ in the upstream per-version detail files
 
 ---
 
+## rel/v0.30.0-b70-cert26 — P6.47 Phase-8: arc7 MX-native decode line (2026-11-22)
+
+Current certified release. cert25zc content + the Phase-8 arc7
+MX-native decode line: the `arc7mx` wheel (vllm_xpu_kernels
+0.1.14.1+arc7mx, md5-pinned, BAKED) with the MX-native paged-decode
+Xe2 kernel and the r219 C++ auto-split heuristic at the validated
+optimum (`ARC_MXKV_NSPLIT` retired as posture — auto lands 128 by
+itself), plus the fork overlay `native_verify` bridge. **For the
+user**: `--kv-cache-dtype mxfp8|mxfp4` now decodes through the native
+Xe2 kernel — pass `ARC_MXKV_NATIVE=1` (mxfp4 ITL 48.5/51.2/56.8 ms at
+8/16/32K, −19.2% vs the prior posture; tps 65.4 @32K; battery agg8
+0.84× ctrl, up from 0.74–0.78×). `mxk8v4` keeps the certified Triton
+lanes (native mixed-fmt lane refused at the long-return gate —
+deterministic REP-LOOP; diagnosis reopen path r224; refusal evidence
+banked). Quality: qwen lanes absolute-clean 4/4; gemma comparative
+PASS. Evidence: `results/2026-11-22-p647-cert26-battery/` + the
+r216–r221 leg banks; details in the
+[`../CHANGELOG.md`](../CHANGELOG.md) cert26 entry.
+
 ## rel/v0.30.0-b70-cert25zc — P6.47 Phase-7 MX decode closing rung (2026-11-19)
 
-Current certified release. cert25zb engine + the Phase-7 closing rung of
+cert25zb engine + the Phase-7 closing rung of
 the MX decode ladder: TILE_FLOOR launcher default 2 (`ARC_MXKV_V5_TFLOOR`),
 G-adaptive mxfp4 verify-decoder dispatch (`ARC_MXKV_V5_G_MIN=8`), v7
 research kernel dormant. MX lanes serve LMCache-free (Phase-6 auto-off

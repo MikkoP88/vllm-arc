@@ -1,0 +1,35 @@
+=== [r212m3] W14 quiesce 14:25:45 ===
+=== [r212m3:m0:c32768] 14:26:01 ===
+=== [r212m3:m0:c32768] exit rc=0 14:27:57 ===
+=== [r212m3:m2:c32768] 14:27:57 ===
+=== [r212m3:m2:c32768] exit rc=0 14:29:51 ===
+=== [r212m3:m3:c32768] 14:29:51 ===
+=== [r212m3:m3:c32768] exit rc=0 14:31:43 ===
+=== [r212m3:m6:c32768] 14:31:43 ===
+=== [r212m3:m6:c32768] exit rc=0 14:33:37 ===
+=== [r212m3:m8:c32768] 14:33:37 ===
+=== [r212m3:m8:c32768] exit rc=0 14:35:25 ===
+=== [r212m3:m0:c1024] 14:35:26 ===
+=== [r212m3:m0:c1024] exit rc=0 14:36:46 ===
+=== [r212m3:m0:c8192] 14:36:46 ===
+=== [r212m3:m0:c8192] exit rc=0 14:38:14 ===
+=== [r212m3:dbf0:c32768] 14:38:14 ===
+=== [r212m3:dbf0:c32768] exit rc=0 14:40:09 ===
+=== [r212m3] gate 14:40:09 ===
+r212m3 fulls -- us/call vs r212l float-path baseline
+    fmt    ctx |      new |     base |   delta | canary
+  mxfp4   1024 |    399.8 |    594.5 |  -32.7% | 0.0
+  mxfp4   8192 |    306.8 |    420.6 |  -27.0% | 0.0
+  mxfp4  32768 |    749.3 |   1028.3 |  -27.1% | 0.0
+  mxfp8   1024 |    633.9 |    658.3 |   -3.7% | 0.0
+  mxfp8   8192 |    525.7 |    541.7 |   -2.9% | 0.0
+  mxfp8  32768 |   1319.7 |   1359.0 |   -2.9% | 0.0
+r212m3 per-lane telemetry at 32K vs r212l slices (ROOT-ISSUE TABLE)
+ mxfp4: K  178.2 (base  365.9, -51.3%)  Vg  196.9 (base  375.9, -47.6%)  Vs   17.1 (base   83.9)  floor  246.9 (base  139.5)
+ mxfp8: K  397.1 (base  470.0, -15.5%)  Vg  338.8 (base  292.3, +15.9%)  Vs  359.4 (base  364.3)  floor  171.5 (base  171.0)
+r212m3 dtype-split oracle (dbf0) at 32K -- e4m3 revert proof + e2m1 gain
+  mxfp4 | dbf0    829.5 | fast    749.3 | gain    9.7% | canary(dbf0) 0.0
+  mxfp8 | dbf0   1334.6 | fast   1319.7 | gain    1.1% | canary(dbf0) 0.0
+R212M3_GATE_PASS
+R212M3_DONE rc=0 2026-11-21T14:40:09Z
+W14_RESTORE_FIRED_fullres 2026-11-21T14:40:09Z

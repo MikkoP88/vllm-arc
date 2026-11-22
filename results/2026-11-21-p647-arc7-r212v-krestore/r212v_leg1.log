@@ -1,0 +1,23 @@
+0969aff271937793c158a491c6b17344  /root/build/wheels-arc-vxk/vllm_xpu_kernels-0.1.14.1+arc7mx-cp312-cp312-linux_x86_64.whl
+=== [r212v] W14 quiesce 20:20:49 ===
+=== [r212v:vp0:c32768] 20:21:06 ===
+=== [r212v:vp0:c32768] exit rc=0 20:23:06 ===
+=== [r212v:vp11:c32768] 20:23:06 ===
+=== [r212v:vp11:c32768] exit rc=0 20:24:57 ===
+=== [r212v:vp17:c32768] 20:24:57 ===
+=== [r212v:vp17:c32768] exit rc=0 20:26:56 ===
+=== [r212v] gate 20:26:56 ===
+r212v k-restore rung (mxfp4 32K, same wheel)
+  m0  (K real + V real)       1024.4
+  m11 (K const + V light)      423.8
+  m17 (K real + V light)      1048.8
+  pool (m0-m11):               600.7 us
+  k_lane (m17-m11):            625.0 us  (104% of pool)
+  v_pool (m0-m17):             -24.4 us  (-4% of pool)
+  telescoping check:            0.00 us drift OK
+FORK: K DOMINANT -- the pool is mostly the K walk; next = dtile surgery (u32/SWAR/window) with V at floor
+  m8 m0 oracle: 1766.5 (+33.8% vs r212q 1320.5) FAIL
+M8_STABILITY_FAIL
+R212V_GATE_FAIL
+R212V_DONE rc=1 2026-11-21T20:26:56Z
+W14_RESTORE_FIRED_fullres 2026-11-21T20:26:56Z

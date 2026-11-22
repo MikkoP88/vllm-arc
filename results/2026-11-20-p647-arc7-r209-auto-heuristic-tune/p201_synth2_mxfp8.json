@@ -1,0 +1,22 @@
+{
+  "format": "mxfp8",
+  "stages": {
+    "A_staged_image": {
+      "mismatches": 0,
+      "first": []
+    },
+    "B_anchors": {
+      "v_krow_base": 0,
+      "expected": 0,
+      "v_byte_base": 0,
+      "expected_byte": 0,
+      "ok": true
+    },
+    "C_gather": {
+      "mismatches": 0,
+      "first": []
+    }
+  },
+  "synth": true,
+  "verdict": "ALL_STAGES_OK: corruption is downstream (softmax/PV)"
+}

@@ -1,0 +1,23 @@
+=== [r211e4] W14 quiesce 00:37:52 ===
+=== [r211e4] graph floor mode 0 00:38:08 ===
+=== [r211e4] mode 0 exit rc=0 00:38:46 ===
+=== [r211e4] graph floor mode 3 00:38:46 ===
+=== [r211e4] mode 3 exit rc=0 00:39:23 ===
+=== [r211e4] graph floor mode 7 00:39:23 ===
+=== [r211e4] mode 7 exit rc=0 00:40:01 ===
+=== [r211e4] graph floor mode 8 00:40:01 ===
+=== [r211e4] mode 8 exit rc=0 00:40:38 ===
+  mxfp4 native_auto: device 135.4us/call (graph 32x50) canary 0.00e+00
+  mxfp4 native_auto: device 233.6us/call (graph 32x50) canary 0.00e+00
+  mxfp4 native_auto: device 36.3us/call (graph 32x50) canary nan
+  mxfp4 native_auto: device 41.9us/call (graph 32x50) canary 0.00e+00
+  mxfp8 native_auto: device 208.7us/call (graph 32x50) canary 0.00e+00
+  mxfp8 native_auto: device 327.9us/call (graph 32x50) canary 0.00e+00
+  mxfp8 native_auto: device 38.7us/call (graph 32x50) canary nan
+  mxfp8 native_auto: device 46.2us/call (graph 32x50) canary 0.00e+00
+  mxk8v4 native_auto: device 130.8us/call (graph 32x50) canary 0.00e+00
+  mxk8v4 native_auto: device 219.4us/call (graph 32x50) canary 0.00e+00
+  mxk8v4 native_auto: device 38.6us/call (graph 32x50) canary nan
+  mxk8v4 native_auto: device 44.2us/call (graph 32x50) canary 0.00e+00
+R211_E4_DONE rc=0 2026-11-21T00:40:38Z
+W14_RESTORE_FIRED_fullres 2026-11-21T00:40:38Z

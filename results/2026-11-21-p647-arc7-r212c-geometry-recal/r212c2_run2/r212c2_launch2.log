@@ -1,0 +1,43 @@
+=== [r212c2] W14 quiesce 05:24:20 ===
+=== [r212c2:eng256p64] D=256 HREP=6 BLOCK=64 ctx 1024 05:24:36 ===
+=== [r212c2:eng256p64] ctx 1024 exit rc=0 05:26:20 ===
+=== [r212c2:eng256p64] D=256 HREP=6 BLOCK=64 ctx 2048 05:26:20 ===
+=== [r212c2:eng256p64] ctx 2048 exit rc=0 05:28:03 ===
+=== [r212c2:eng256p64] D=256 HREP=6 BLOCK=64 ctx 4096 05:28:03 ===
+=== [r212c2:eng256p64] ctx 4096 exit rc=0 05:29:49 ===
+=== [r212c2:eng256p64] D=256 HREP=6 BLOCK=64 ctx 8192 05:29:49 ===
+=== [r212c2:eng256p64] ctx 8192 exit rc=0 05:31:44 ===
+=== [r212c2:eng256p64] D=256 HREP=6 BLOCK=64 ctx 32768 05:31:44 ===
+=== [r212c2:eng256p64] ctx 32768 exit rc=0 05:34:23 ===
+=== [r212c2:reg128p16] D=128 HREP=4 BLOCK=16 ctx 1024 05:34:23 ===
+=== [r212c2:reg128p16] ctx 1024 exit rc=0 05:35:29 ===
+=== [r212c2:reg128p16] D=128 HREP=4 BLOCK=16 ctx 32768 05:35:29 ===
+=== [r212c2:reg128p16] ctx 32768 exit rc=0 05:37:00 ===
+=== [r212c2] numeric gate 05:37:00 ===
+XOVER _eng256p64 c1024 mxfp8: lane 441.4 native 643.7 n/lane 1.46x
+XOVER _eng256p64 c1024 mxfp4: lane 221.2 native 599.4 n/lane 2.71x
+XOVER _eng256p64 c1024 mxk8v4: lane 241.1 native 604.8 n/lane 2.51x
+XOVER _eng256p64 c2048 mxfp8: lane 531.7 native 482.1 n/lane 0.91x
+XOVER _eng256p64 c2048 mxfp4: lane 341.5 native 371.6 n/lane 1.09x
+XOVER _eng256p64 c2048 mxk8v4: lane 414.4 native 377.0 n/lane 0.91x
+XOVER _eng256p64 c32768 mxfp8: lane 2892.9 native 1973.2 n/lane 0.68x
+XOVER _eng256p64 c32768 mxfp4: lane 4082.9 native 1266.6 n/lane 0.31x
+XOVER _eng256p64 c32768 mxk8v4: lane 5722.8 native 1475.9 n/lane 0.26x
+XOVER _eng256p64 c4096 mxfp8: lane 667.6 native 548.1 n/lane 0.82x
+XOVER _eng256p64 c4096 mxfp4: lane 625.3 native 409.4 n/lane 0.65x
+XOVER _eng256p64 c4096 mxk8v4: lane 824.1 native 415.0 n/lane 0.50x
+XOVER _eng256p64 c8192 mxfp8: lane 1171.8 native 693.2 n/lane 0.59x
+XOVER _eng256p64 c8192 mxfp4: lane 1182.0 native 454.8 n/lane 0.38x
+XOVER _eng256p64 c8192 mxk8v4: lane 1610.7 native 460.1 n/lane 0.29x
+XOVER _reg128p16 c1024 mxfp8: lane 101.8 native 328.1 n/lane 3.22x
+XOVER _reg128p16 c1024 mxfp4: lane 99.5 native 233.9 n/lane 2.35x
+XOVER _reg128p16 c1024 mxk8v4: lane 221.2 native 219.7 n/lane 0.99x
+XOVER _reg128p16 c32768 mxfp8: lane 482.5 native 572.5 n/lane 1.19x
+XOVER _reg128p16 c32768 mxfp4: lane 2529.6 native 349.3 n/lane 0.14x
+XOVER _reg128p16 c32768 mxk8v4: lane 5941.9 native 448.6 n/lane 0.08x
+XOVER _reg128p16 c8192 mxfp8: lane 199.3 native 243.7 n/lane 1.22x
+XOVER _reg128p16 c8192 mxfp4: lane 675.0 native 176.5 n/lane 0.26x
+XOVER _reg128p16 c8192 mxk8v4: lane 1569.6 native 174.1 n/lane 0.11x
+R212C2_GATE_PASS
+R212C2_DONE rc=0 2026-11-21T05:37:00Z
+W14_RESTORE_FIRED_fullres 2026-11-21T05:37:01Z

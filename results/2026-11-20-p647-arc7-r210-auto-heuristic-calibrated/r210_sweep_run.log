@@ -1,0 +1,7 @@
+=== [r210sb] W14 quiesce 22:09:50 ===
+=== [r210sb] splitbench on r210 wheel 22:10:06 ===
+=== [r210sb] splitbench rc=0 22:10:40 ===
+invalid_launch_count=0 (must be 0)
+7247e83bfa68fd522706769494c1a9c8  /root/build/wheels-arc-vxk/vllm_xpu_kernels-0.1.14.1+arc7mx-cp312-cp312-linux_x86_64.whl
+R207SB_DONE rc=0 2026-11-20T22:10:40Z
+W14_RESTORE_FIRED_fullres 2026-11-20T22:10:40Z

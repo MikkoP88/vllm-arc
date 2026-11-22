@@ -1,0 +1,22 @@
+9a672744e9449d06251eb1f98f1fed71  /root/build/wheels-arc-vxk/vllm_xpu_kernels-0.1.14.1+arc7mx-cp312-cp312-linux_x86_64.whl
+=== [r212t] W14 quiesce 18:59:59 ===
+=== [r212t:vp0:c32768] 19:00:15 ===
+=== [r212t:vp0:c32768] exit rc=0 19:02:11 ===
+=== [r212t:vp11:c32768] 19:02:11 ===
+=== [r212t:vp11:c32768] exit rc=0 19:04:03 ===
+=== [r212t:vp14:c32768] 19:04:03 ===
+=== [r212t:vp14:c32768] exit rc=0 19:05:54 ===
+=== [r212t:vp15:c32768] 19:05:54 ===
+=== [r212t:vp15:c32768] exit rc=0 19:07:45 ===
+=== [r212t] gate 19:07:45 ===
+r212t store-shape split (mxfp4 32K, same wheel)
+  m0  (fast full)                  717.3
+  m11 (light)                      379.9
+  m14 (light + assembly+select)    379.6   delta    -0.3
+  m15 (light + memcpy store)       379.5   delta    -0.4
+  assembly pool (m0-m11):          337.4 us
+FORK: BOTH CHEAP?! -- the pool needs the fast-loop interaction itself (prep+assembly+store together); the disassembly route decides
+  m8 m0 oracle: 1332.2 (+0.9% vs r212q 1320.5) OK
+R212T_GATE_PASS
+R212T_DONE rc=0 2026-11-21T19:07:45Z
+W14_RESTORE_FIRED_fullres 2026-11-21T19:07:45Z

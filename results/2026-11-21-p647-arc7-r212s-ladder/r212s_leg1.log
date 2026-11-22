@@ -1,0 +1,25 @@
+7ba93472270b6537b4e23d6970844da8  /root/build/wheels-arc-vxk/vllm_xpu_kernels-0.1.14.1+arc7mx-cp312-cp312-linux_x86_64.whl
+=== [r212s] W14 quiesce 18:23:03 ===
+=== [r212s:vp0:c32768] 18:23:19 ===
+=== [r212s:vp0:c32768] exit rc=0 18:25:15 ===
+=== [r212s:vp11:c32768] 18:25:15 ===
+=== [r212s:vp11:c32768] exit rc=0 18:27:06 ===
+=== [r212s:vp12:c32768] 18:27:06 ===
+=== [r212s:vp12:c32768] exit rc=0 18:28:58 ===
+=== [r212s:vp13:c32768] 18:28:58 ===
+=== [r212s:vp13:c32768] exit rc=0 18:30:49 ===
+=== [r212s] gate 18:30:49 ===
+r212s int-op ladder (mxfp4 32K, same wheel)
+  m0  (fast full)        717.9
+  m11 (light, 0 ops)     379.6
+  m12 (light + 4 ops)    379.2
+  m13 (light + 8 ops)    380.2
+  slope rung1:   -0.09 us/op   rung2:    0.25 us/op   overall:    0.08 us/op
+  assembly pool (m0-m11):          338.3 us
+  8-op share at slope:               0.6 us
+  residual (memcpy/store/other):   337.7 us
+FORK: RESIDUAL-BOUND — memcpy/store pool dominates; fragment store-packing lane next
+  m8 m0 oracle: 1340.7 (+1.5% vs r212q 1320.5) OK
+R212S_GATE_PASS
+R212S_DONE rc=0 2026-11-21T18:30:50Z
+W14_RESTORE_FIRED_fullres 2026-11-21T18:30:50Z

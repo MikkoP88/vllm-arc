@@ -1,0 +1,32 @@
+{
+ "mxfp8": {
+  "v2": {
+   "dev_us": 49.68,
+   "canary": 0.0
+  },
+  "native_auto": {
+   "dev_us": 208.75,
+   "canary": 0.0
+  }
+ },
+ "mxfp4": {
+  "v2": {
+   "dev_us": 45.7,
+   "canary": 0.0
+  },
+  "native_auto": {
+   "dev_us": 135.43,
+   "canary": 0.0
+  }
+ },
+ "mxk8v4": {
+  "v2": {
+   "dev_us": 86.69,
+   "canary": 0.0
+  },
+  "native_auto": {
+   "dev_us": 130.75,
+   "canary": 0.0
+  }
+ }
+}

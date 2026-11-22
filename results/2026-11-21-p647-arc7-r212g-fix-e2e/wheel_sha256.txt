@@ -1,0 +1,1 @@
+ae8961bf04c180e5fcbcc1138b7c5c3d9d1b953ba3568a4b62ce7566a7403c34  /root/build/wheels-arc-vxk/vllm_xpu_kernels-0.1.14.1+arc7mx-cp312-cp312-linux_x86_64.whl

@@ -1,0 +1,48 @@
+{
+ "mxfp4": {
+  "v2": {
+   "dev_us": 1088.14,
+   "canary": 0.0
+  },
+  "native_auto": {
+   "dev_us": 430.59,
+   "canary": 0.0
+  },
+  "v5_vs_v2_ref": 0.000222,
+  "v2_es": {
+   "dev_us": 4081.56,
+   "canary": 0.0
+  },
+  "v5_es": {
+   "dev_us": 4405.5,
+   "canary": 0.0
+  },
+  "native_es": {
+   "dev_us": 573.19,
+   "canary": 0.0
+  }
+ },
+ "mxfp8": {
+  "v2": {
+   "dev_us": 1677.95,
+   "canary": 0.0
+  },
+  "native_auto": {
+   "dev_us": 603.11,
+   "canary": 0.0
+  },
+  "v5_vs_v2_ref": 0.000122,
+  "v2_es": {
+   "dev_us": 5561.54,
+   "canary": 0.0
+  },
+  "v5_es": {
+   "dev_us": 2876.23,
+   "canary": 0.0
+  },
+  "native_es": {
+   "dev_us": 919.73,
+   "canary": 0.0
+  }
+ }
+}

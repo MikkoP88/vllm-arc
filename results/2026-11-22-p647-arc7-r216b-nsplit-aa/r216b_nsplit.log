@@ -1,0 +1,31 @@
+=== [r216b] W14 quiesce 03:31:33 ===
+wheel md5 9a01790b5748cb4d7e1eac9c099a997e (pinned 9a01790b5748cb4d7e1eac9c099a997e)
+=== [r216b:ns64b] boot ARC_MXKV_NSPLIT=64 03:31:50 ===
+HEALTH_OK_r216b_ns64b 03:36:55
+CONC_OK_c8192_n1
+CONC_OK_c16384_n1
+CONC_OK_c32768_n1
+=== [r216b:ns64b] done 03:38:21 ===
+=== [r216b:ns96] boot ARC_MXKV_NSPLIT=96 03:38:21 ===
+HEALTH_OK_r216b_ns96 03:43:26
+CONC_OK_c8192_n1
+CONC_OK_c16384_n1
+CONC_OK_c32768_n1
+=== [r216b:ns96] done 03:45:02 ===
+=== [r216b] report 03:45:02 ===
+r216b ns64 A/A + ns96 deeper probe -- mxfp4 n1 (r212aa wheel)
+  cell |    ctx |     itl |  vs auto |  chunks | errs
+ ns64b |   8192 |    47.3 |   -2.42% | ~   56 | 0
+ ns64b |  16384 |    52.3 |   -6.45% | ~   56 | 0
+ ns64b |  32768 |    62.2 |  -11.42% | ~   52 | 0
+  ns96 |   8192 |    39.9 |  -17.73% | ~  152 | 0
+  ns96 |  16384 |    40.4 |  -27.77% | ~   96 | 0
+  ns96 |  32768 |    41.4 |  -41.04% | ~  129 | 0
+ AA_OK ns64 @32K: 62.2 -> 62.18254700070247 (spread 0.03%) -- the -11 pct sign is CONFIRMED
+  ns64 posture @ 8192: 47.32588998740539 vs auto 48.5 (-2.42%) [ok]
+  ns64 posture @ 16384: 52.29326500557363 vs auto 55.9 (-6.45%) [ok]
+  ns64 posture @ 32768: 62.18254700070247 vs auto 70.2 (-11.42%) [ok]
+  ns96 vs ns64 @32K: -33.44% -- DEEPER WINS, keep pushing
+R216B_GATE_PASS
+R216B_DONE 2026-11-22T03:45:02Z
+W14_RESTORE_FIRED_fullres 2026-11-22T03:45:03Z
