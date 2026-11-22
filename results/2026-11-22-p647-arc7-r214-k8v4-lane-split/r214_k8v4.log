@@ -1,0 +1,21 @@
+=== [r214] W14 quiesce 02:23:30 ===
+wheel md5 9a01790b5748cb4d7e1eac9c099a997e (pinned 9a01790b5748cb4d7e1eac9c099a997e)
+=== [r214:mkqa] boot kv=mxk8v4 02:23:47 ===
+HEALTH_OK_r214_mkqa 02:28:52
+CONC_OK_c8192_n1
+CONC_OK_c16384_n1
+CONC_OK_c32768_n1
+=== [r214:mkqa] done 02:30:22 ===
+=== [r214] report 02:30:22 ===
+r214 K-vs-V e2e lane split -- mxk8v4 (e4m3 K + e2m1 V) on r212aa
+    ctx |    k8v4 |      m4 |      m8 | K-excess | V-excess |   chk | tps k8v4 | tps m4 | errs
+   8192 |    50.8 |    48.5 |    51.6 |     +2.3 |     +0.8 |    ok |     71.4 |   75.8 | 0
+  16384 |    61.6 |    55.9 |    63.2 |     +5.7 |     +1.6 |    ok |     61.3 |   62.6 | 0
+  32768 |    82.5 |    70.2 |    84.8 |    +12.3 |     +2.3 |    ok |     43.3 |   51.8 | 0
+  32K readout: k8v4-vs-fp8 gap +40.0 ms/tok; K-side e4m3 excess +12.3 / V-side +2.3
+  SPLIT: the e4m3 K side carries the asymmetry -- the K
+  walk/decode lane is the attack target
+ telemetry[mkqa]: native_call_lines=156 dispatch_lines=2
+R214_GATE_PASS
+R214_DONE 2026-11-22T02:30:22Z
+W14_RESTORE_FIRED_fullres 2026-11-22T02:30:22Z
