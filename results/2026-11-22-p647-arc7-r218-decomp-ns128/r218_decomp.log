@@ -1,0 +1,37 @@
+=== [r218] W14 quiesce 07:00:57 ===
+wheel md5 9ded4fb67e15ba092aac607d58db1b72 (pinned 9ded4fb67e15ba092aac607d58db1b72)
+=== [r218:full] boot NSPLIT=128 no-probe 07:01:14 ===
+HEALTH_OK_r218_full 07:06:30
+CONC_OK_c32768_n1
+=== [r218:full] done 07:07:20 ===
+=== [r218:v6] boot NSPLIT=128 ARC_MXKV_VPROBE=6 07:07:20 ===
+HEALTH_OK_r218_v6 07:12:35
+CONC_OK_c32768_n1
+=== [r218:v6] done 07:13:29 ===
+=== [r218:v2] boot NSPLIT=128 ARC_MXKV_VPROBE=2 07:13:29 ===
+HEALTH_OK_r218_v2 07:18:44
+CONC_OK_c32768_n1
+=== [r218:v2] done 07:19:43 ===
+=== [r218:v8] boot NSPLIT=128 ARC_MXKV_VPROBE=8 07:19:43 ===
+HEALTH_OK_r218_v8 07:24:58
+CONC_OK_c32768_n1
+=== [r218:v8] done 07:25:57 ===
+=== [r218] report 07:25:57 ===
+r218 ns128-conditioned lane decomposition -- mxfp4 c32768 n1
+ posture ref: r217/r217b ns128 = 56.7/56.8; fp8 bar 42.5; r215 auto-table {'full': 70.2, 'dbf0': 75.6, 'v6': 68.6, 'v2': 65.2, 'v8': 50.8}
+ full |    56.8 | chunks ~  52 | rows=148 | errs=0  (no probe (in-batch anchor))
+   v6 |    56.1 | chunks ~ 102 | rows=148 | errs=0  (K severed (V+P+base))
+   v2 |    55.3 | chunks ~ 174 | rows=148 | errs=0  (V severed (K+P+base))
+   v8 |    48.1 | chunks ~ 192 | rows=148 | errs=0  (floor (K+V+P severed))
+ ANCHOR_OK full @ns128: 56.8 vs posture 56.8 (-0.02%)
+ ENGINE LANE TABLE @ns128 (ms/tok-step at c32768; r215-auto in parens):
+   K lane  (v2-v8)             +7.2  (+14.4)
+   V lane  (v6-v8)             +8.0  (+17.8)
+   P+resid (full-v2-v6+v8)     -6.5  (-12.8)
+   MX total (full-fp8)        +14.3  (+27.7)
+   FLOOR (v8-fp8)              +5.6  (+8.3)  <-- ctx-flat skeleton cost
+   K/V union (full-v8)         +8.7  (+19.4)  <-- ctx-scaling pool (kv_tile-64 attacks this)
+   TARGET: the union dominates -- kv_tile 16->64 walk policy first
+R218_GATE_PASS
+R218_DONE 2026-11-22T07:25:57Z
+W14_RESTORE_FIRED_fullres 2026-11-22T07:25:57Z

@@ -100,24 +100,26 @@ def mx_decode_native(
     # short rows early-exit their splits. Validated offline by the
     # r212f mseq ladder before any e2e.
     _max_sk = int(bt_rows.shape[1]) * int(kv_cache.shape[1])
+    # r216/r219: engine-side split-depth pin (env ARC_MXKV_NSPLIT;
+    # unset = 0 = the C++ auto heuristic). The r209/r210 "40 optimal"
+    # verdict was probe-priced pre-template-split; the sign-inversion
+    # law demanded the e2e re-price (r216/216b/217/217b: 128 banked).
+    # Defined BEFORE the telemetry block so splits= can log it.
+    _ns = int(os.environ.get("ARC_MXKV_NSPLIT", "0") or 0)
     _tkey = (fmt, n_rows, _max_sk, int(bt_rows.shape[1]))
     if _tkey not in _telemetry_logged:
         _telemetry_logged.add(_tkey)
         logging.getLogger("vllm.mx_native").info(
             "MXKV native call fmt=%s rows=%d max_seqlen_k=%d "
-            "bt_width=%d stride=%d (r212f capacity-priced walk)",
+            "bt_width=%d stride=%d splits=%s (r212f walk; r219 splits"
+            " logged: int pin or auto)",
             fmt,
             n_rows,
             _max_sk,
             int(bt_rows.shape[1]),
             int(kv_cache.stride(1)) if kv_cache.dim() == 4 else -1,
+            _ns if _ns else "auto",
         )
-    # r216: engine-side split-depth pin (env ARC_MXKV_NSPLIT; unset =
-    # 0 = the C++ auto heuristic). The r209/r210 "40 optimal" verdict
-    # was probe-priced pre-template-split; the sign-inversion law
-    # demands an e2e re-price at the engine bucket (capacity-frozen
-    # max_seqlen_k prices kv_tiles, the reduce cap binds).
-    _ns = int(os.environ.get("ARC_MXKV_NSPLIT", "0") or 0)
     return mx_paged_decode(
         q_in,
         kv_cache,
