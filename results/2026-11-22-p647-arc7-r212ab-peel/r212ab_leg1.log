@@ -1,0 +1,18 @@
+6c80b54f24f6529ae1f950e09d2174d0  /root/build/wheels-arc-vxk/vllm_xpu_kernels-0.1.14.1+arc7mx-cp312-cp312-linux_x86_64.whl
+=== [r212ab] W14 quiesce 01:14:39 ===
+=== [r212ab:vp0:c32768] 01:14:55 ===
+=== [r212ab:vp0:c32768] exit rc=0 01:16:51 ===
+=== [r212ab:vp11:c32768] 01:16:51 ===
+=== [r212ab:vp11:c32768] exit rc=0 01:18:42 ===
+=== [r212ab:vp17:c32768] 01:18:42 ===
+=== [r212ab:vp17:c32768] exit rc=0 01:20:41 ===
+=== [r212ab] gate 01:20:41 ===
+r212ab peeled K pipeline (mxfp4 32K, same wheel)
+  m0  (SHIPPING, pipelined e2m1)   999.7   (r212aa 971.6; r212u-era 718.0)
+  m11 (K const + V light, instr)   416.0   (r212aa 414.2)
+  m17 (K real + V light, instr)   1022.8   k_lane  +606.8   (band 595-609)
+  m8 m0 oracle: 1196.7 (+0.3% vs r212aa 1193.7 -- 1-sample baseline)
+HEADLINE: WASH-TO-MILD -- overlap roughly offset by pressure/dice; disasm for spills before iterating
+R212AB_GATE_PASS
+R212AB_DONE rc=0 2026-11-22T01:20:41Z
+W14_RESTORE_FIRED_fullres 2026-11-22T01:20:42Z
