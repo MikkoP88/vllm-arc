@@ -1,0 +1,35 @@
+=== [r215] W14 quiesce 02:35:42 ===
+wheel md5 9a01790b5748cb4d7e1eac9c099a997e (pinned 9a01790b5748cb4d7e1eac9c099a997e)
+=== [r215:dbf0] boot kv=mxfp4 ARC_MXKV_DIRECTBF16=0 02:35:59 ===
+HEALTH_OK_r215_dbf0 02:41:04
+CONC_OK_c32768_n1
+=== [r215:dbf0] done 02:41:57 ===
+=== [r215:v6] boot kv=mxfp4 ARC_MXKV_VPROBE=6 02:41:57 ===
+HEALTH_OK_r215_v6 02:47:02
+CONC_OK_c32768_n1
+=== [r215:v6] done 02:47:56 ===
+=== [r215:v2] boot kv=mxfp4 ARC_MXKV_VPROBE=2 02:47:56 ===
+HEALTH_OK_r215_v2 02:53:01
+CONC_OK_c32768_n1
+=== [r215:v2] done 02:53:58 ===
+=== [r215:v8] boot kv=mxfp4 ARC_MXKV_VPROBE=8 02:53:58 ===
+HEALTH_OK_r215_v8 02:59:03
+CONC_OK_c32768_n1
+=== [r215:v8] done 03:00:00 ===
+=== [r215] report 03:00:00 ===
+r215 engine-shape lane decomposition -- mxfp4 c32768 n1 (r212aa wheel)
+ full (r213 mean) 70.2 ms/tok-step; fp8 bar 42.5
+ dbf0 |    75.6 | chunks~   52 | rows=148 | errs=0  (float decode tail (correct output))
+   v6 |    68.6 | chunks~  101 | rows=148 | errs=0  (K severed (V+P+base))
+   v2 |    65.2 | chunks~  169 | rows=148 | errs=0  (V severed (K+P+base))
+   v8 |    50.8 | chunks~  192 | rows=148 | errs=0  (floor (K+V+P severed))
+ ENGINE LANE TABLE (ms/tok-step at c32768):
+   K lane  (v2-v8)        +14.4
+   V lane  (v6-v8)        +17.7
+   P+resid (full-v2-v6+v8)   -12.8
+   MX total (full-fp8)    +27.7
+   decode-tail pool (dbf0-full)    +5.4
+   TARGET: balanced K/V -- shared/floor levers
+R215_GATE_PASS
+R215_DONE 2026-11-22T03:00:00Z
+W14_RESTORE_FIRED_fullres 2026-11-22T03:00:00Z
