@@ -1,0 +1,18 @@
+=== [r217b] W14 quiesce 06:44:51 ===
+wheel md5 9ded4fb67e15ba092aac607d58db1b72 (pinned 9ded4fb67e15ba092aac607d58db1b72)
+=== [r217b:ns128b] boot ARC_MXKV_NSPLIT=128 06:45:07 ===
+HEALTH_OK_r217b_ns128b 06:50:22
+CONC_OK_c8192_n1
+CONC_OK_c16384_n1
+CONC_OK_c32768_n1
+=== [r217b:ns128b] done 06:51:51 ===
+=== [r217b] report 06:51:51 ===
+r217b ns128 A/A -- mxfp4 n1 (r217 wheel 9ded4fb6)
+   cell |    ctx |     itl |  vs r217 |  vs ns64 |    tps | r217 tps |  chunks | qual | errs
+ ns128b |   8192 |    48.5 |   -0.02% |   +2.52% |   71.7 |     71.8 | ~   56 | OK | 0
+ ns128b |  16384 |    51.2 |   +0.08% |   -2.03% |   67.1 |     68.4 | ~   57 | OK | 0
+ ns128b |  32768 |    56.8 |   +0.13% |   -8.73% |   66.7 |     65.4 | ~   52 | OK | 0
+  @32K: 56.8 vs fp8 42.5 = 1.34x (was 1.65x at auto); vs auto 70.2 = -19.1%
+R217B_GATE_PASS
+R217B_DONE 2026-11-22T06:51:51Z
+W14_RESTORE_FIRED_fullres 2026-11-22T06:51:51Z
