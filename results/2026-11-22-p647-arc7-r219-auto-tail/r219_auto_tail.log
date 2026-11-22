@@ -1,0 +1,40 @@
+=== [r219] W14 quiesce 08:10:09 ===
+wheel md5 fafc6d4dedda71ea1a6957f88d849856 (pinned fafc6d4dedda71ea1a6957f88d849856)
+=== [r219:auto] boot pin=AUTO 08:10:26 ===
+HEALTH_OK_r219_auto 08:15:41
+CONC_OK_c8192_n1
+CONC_OK_c16384_n1
+CONC_OK_c32768_n1
+=== [r219:auto] done 08:17:09 ===
+=== [r219:ns192] boot pin=ARC_MXKV_NSPLIT=192 08:17:09 ===
+HEALTH_OK_r219_ns192 08:22:25
+CONC_OK_c8192_n1
+CONC_OK_c16384_n1
+CONC_OK_c32768_n1
+=== [r219:ns192] done 08:23:54 ===
+=== [r219:ns256] boot pin=ARC_MXKV_NSPLIT=256 08:23:54 ===
+HEALTH_OK_r219_ns256 08:29:19
+CONC_OK_c8192_n1
+CONC_OK_c16384_n1
+CONC_OK_c32768_n1
+=== [r219:ns256] done 08:30:45 ===
+=== [r219] report 08:30:45 ===
+r219 auto re-price + tail -- mxfp4 n1 (r219 wheel fafc6d4d)
+  cell |    ctx |     itl | vs ns128 |    tps |  chunks | qual | errs
+  auto |   8192 |    48.4 |   -0.25% |   69.4 | ~   58 | OK | 0
+  auto |  16384 |    51.1 |   -0.17% |   68.5 | ~   56 | OK | 0
+  auto |  32768 |    62.9 |  +10.66% |   60.1 | ~   52 | OK | 0
+   telemetry splits=['auto']
+ ns192 |   8192 |    51.9 |   +7.08% |   67.0 | ~   56 | OK | 0
+ ns192 |  16384 |    55.7 |   +8.76% |   62.8 | ~   56 | OK | 0
+ ns192 |  32768 |    63.2 |  +11.19% |   59.9 | ~   52 | OK | 0
+   telemetry splits=['192']
+ ns256 |   8192 |    55.9 |  +15.26% |   62.3 | ~   56 | OK | 0
+ ns256 |  16384 |    58.8 |  +14.80% |   59.5 | ~   56 | OK | 0
+ ns256 |  32768 |    64.4 |  +13.34% |   58.8 | ~   52 | OK | 0
+   telemetry splits=['256']
+ AUTO_FLAG: auto @32K 62.9 (+10.66% vs ns128) -- auto looks like it picked 64 (reduce multiplier arithmetic wrong)
+  @32K vs fp8: 1.48x
+R219_GATE_FAIL
+R219_DONE 2026-11-22T08:30:45Z
+W14_RESTORE_FIRED_fullres 2026-11-22T08:30:45Z
