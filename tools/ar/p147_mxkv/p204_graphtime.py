@@ -86,6 +86,16 @@ POISON = os.environ.get("P204_POISON", "0") == "1"
 ROWPROBE = os.environ.get("P204_ROWPROBE", "0") == "1"
 NCAP = int(os.environ.get("P204_NCAP", "32"))
 NREPLAY = int(os.environ.get("P204_REPLAY", "50"))
+# r221b COLD-GRAPH knob (2026-11-22): >0 = MB of device buffer swept
+# in-place between EVERY captured call, evicting L2 so each replayed
+# call reads its KV pages cold from HBM — reproducing the engine's
+# layer-interleaved reality (weights stream between attention layers;
+# the r221a finding: the hot-replay probe cannot see latency-hiding
+# structure, which is exactly where _16's 4x-higher WG count wins and
+# the _64 tile lost e2e). The sweep is common-mode across cells; the
+# harness also times a sweep-only graph and reports the top-level
+# "_cold_sweep_us" so reports can subtract for per-call cold numbers.
+COLDMB = int(os.environ.get("P204_COLDMB", "0"))
 # E5b (r212a): ENGINE VERIFY SHAPE — B requests x r_tile=4 draft rows,
 # the spec-k3 batch the engine actually decodes with. The E5 map's
 # independent-row geometry under-prices the short-ctx side twice: both
@@ -174,16 +184,57 @@ def flat_tables(lens, tables):
 def graph_time(call, ncap, nreplay):
     """Capture ncap calls in one graph; replay-bracketed device time."""
     for _ in range(3):
+        if COLDMB:
+            _cold_sweep()
         call()
     torch.xpu.synchronize()
     g = _GRAPH_CLS()
     with torch.xpu.graph(g):
         for _ in range(ncap):
+            if COLDMB:
+                _cold_sweep()
             call()
     ev0 = torch.xpu.Event(enable_timing=True)
     ev1 = torch.xpu.Event(enable_timing=True)
     g.replay()
     torch.xpu.synchronize()
+    ev0.record()
+    for _ in range(nreplay):
+        g.replay()
+    ev1.record()
+    torch.xpu.synchronize()
+    return ev0.elapsed_time(ev1) * 1e3 / (nreplay * ncap)
+
+
+# r221b cold-graph support: one lazily-allocated device buffer swept
+# in-place (alloc+fill happen at first warmup call, BEFORE any capture
+# — the pageable-H2D law; mul_ is a capture-safe elementwise kernel).
+_cold_buf = None
+
+
+def _cold_sweep():
+    global _cold_buf
+    if _cold_buf is None:
+        _cold_buf = torch.empty(
+            COLDMB * 1024 * 1024 // 2, dtype=torch.bfloat16, device=DEV
+        )
+        _cold_buf.fill_(1.0)
+    _cold_buf.mul_(1.0000001)
+
+
+def _cold_sweep_us(ncap, nreplay):
+    """Sweep-only graph time — the common-mode term reports subtract."""
+    for _ in range(3):
+        _cold_sweep()
+    torch.xpu.synchronize()
+    g = _GRAPH_CLS()
+    with torch.xpu.graph(g):
+        for _ in range(ncap):
+            _cold_sweep()
+    g.replay()
+    torch.xpu.synchronize()
+    ev0 = torch.xpu.Event(enable_timing=True)
+    ev1 = torch.xpu.Event(enable_timing=True)
     ev0.record()
     for _ in range(nreplay):
         g.replay()
@@ -427,6 +478,12 @@ def main():
                     f"(graph {NCAP}x{NREPLAY}) canary {d:.2e}"
                 )
         R[fmt] = cell
+    if COLDMB:
+        # sweep-only common-mode term (µs per captured-call slot);
+        # top-level key is ignored by fmt-keyed report readers.
+        su = _cold_sweep_us(NCAP, NREPLAY)
+        R["_cold_sweep_us"] = round(su, 2)
+        print(f"  cold sweep-only: {su:.1f}us/slot (COLDMB={COLDMB})")
     vprobe = os.environ.get("ARC_MXKV_VPROBE", "")
     suffix = f"_m{vprobe}" if vprobe else ""
     with open(out / f"p204_graphtime{suffix}.json", "w", newline="\n") as f:
