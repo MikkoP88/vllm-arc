@@ -1,0 +1,33 @@
+wheel md5 62f234c8d0aa89c4aec3e8d2c6fa22ad
+=== [r220b] W14 quiesce 13:30:24 ===
+wheel md5 62f234c8d0aa89c4aec3e8d2c6fa22ad
+=== [r220b:p64] boot p64=1 13:30:41 ===
+HEALTH_OK_r220b_p64 13:35:56
+CONC_OK_c8192_n1
+CONC_OK_c16384_n1
+CONC_OK_c32768_n1
+=== [r220b:p64] done 13:37:24 ===
+=== [r220b:ctl] boot p64=0 13:37:24 ===
+HEALTH_OK_r220b_ctl 13:42:40
+CONC_OK_c8192_n1
+CONC_OK_c16384_n1
+CONC_OK_c32768_n1
+=== [r220b:ctl] done 13:44:07 ===
+=== [r220b] report 13:44:07 ===
+r220b native p64 tile vs _16 control -- mxfp4 n1
+ cell |    ctx |     itl |  vs ctl | vs posture |    tps |  chunks | qual | errs
+  p64 |   8192 |    48.7 |         |     +0.50% |   71.3 | ~   56 | OK | 0
+  p64 |  16384 |    53.8 |         |     +5.12% |   63.9 | ~   57 | OK | 0
+  p64 |  32768 |    64.0 |         |    +12.67% |   55.8 | ~   55 | OK | 0
+   telemetry splits=['auto']
+  ctl |   8192 |    48.3 |         |     -0.35% |   68.0 | ~   54 | OK | 0
+  ctl |  16384 |    51.0 |         |     -0.48% |   68.7 | ~   56 | OK | 0
+  ctl |  32768 |    56.4 |         |     -0.64% |   67.0 | ~   52 | OK | 0
+   telemetry splits=['auto']
+ p64 vs ctl @c8192: +0.86%
+ p64 vs ctl @c16384: +5.63%
+ p64 vs ctl @c32768: +13.40%
+  p64 @32K vs fp8: 1.51x (posture 1.34x)
+R220B_GATE_PASS
+R220B_DONE 2026-11-22T13:44:07Z
+W14_RESTORE_FIRED_fullres 2026-11-22T13:44:07Z
