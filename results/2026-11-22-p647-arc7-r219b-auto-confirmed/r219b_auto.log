@@ -1,0 +1,31 @@
+=== [r219b] W14 quiesce 09:12:07 ===
+wheel md5 e9f51f3b9f6d5c86824b89d357133f70 (pinned e9f51f3b9f6d5c86824b89d357133f70)
+=== [r219b:auto] boot pin=AUTO 09:12:24 ===
+HEALTH_OK_r219b_auto 09:17:39
+CONC_OK_c8192_n1
+CONC_OK_c16384_n1
+CONC_OK_c32768_n1
+=== [r219b:auto] done 09:19:07 ===
+=== [r219b:ns128r] boot pin=ARC_MXKV_NSPLIT=128 09:19:07 ===
+HEALTH_OK_r219b_ns128r 09:24:12
+CONC_OK_c8192_n1
+CONC_OK_c16384_n1
+CONC_OK_c32768_n1
+=== [r219b:ns128r] done 09:25:40 ===
+=== [r219b] report 09:25:40 ===
+r219b auto-at-128 confirmation -- mxfp4 n1
+   cell |    ctx |     itl | vs ns128 |    tps |  chunks | qual | errs
+   auto |   8192 |    48.5 |   +0.03% |   74.4 | ~   54 | OK | 0
+   auto |  16384 |    51.2 |   +0.08% |   68.3 | ~   56 | OK | 0
+   auto |  32768 |    56.8 |   -0.02% |   65.4 | ~   53 | OK | 0
+   telemetry splits=['auto']
+ ns128r |   8192 |    48.5 |   -0.07% |   69.1 | ~   53 | OK | 0
+ ns128r |  16384 |    51.2 |   +0.07% |   69.6 | ~   55 | OK | 0
+ ns128r |  32768 |    56.8 |   -0.05% |   65.3 | ~   53 | OK | 0
+   telemetry splits=['128']
+ AUTO_OK @32K: 56.8 vs posture 56.8 (-0.02%)
+ NS128R_OK @32K: 56.8 vs posture 56.8 (-0.05%)
+  auto @32K vs fp8: 1.34x
+R219B_GATE_PASS
+R219B_DONE 2026-11-22T09:25:40Z
+W14_RESTORE_FIRED_fullres 2026-11-22T09:25:40Z
