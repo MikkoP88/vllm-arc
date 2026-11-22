@@ -108,7 +108,7 @@ COPY mx_dequant.py /tmp/mx_dequant.py
 COPY mx_layout.py /tmp/mx_layout.py
 COPY mx_quant.py /tmp/mx_quant.py
 COPY triton_mx_store.py /tmp/mx_triton_mx_store.py
-COPY vllm_xpu_kernels-0.1.14.1+arc7mx-cp312-cp312-linux_x86_64.whl /tmp/mx_wheel.whl
+COPY vllm_xpu_kernels-0.1.14.1+arc7mx-cp312-cp312-linux_x86_64.whl /tmp/
 
 RUN set -euxo pipefail; \
     SP=/opt/venv/lib/python3.12/site-packages/vllm_gaudi; \
@@ -121,8 +121,8 @@ RUN set -euxo pipefail; \
     cp /tmp/mx_quant.py             $SP/xpu/patches/mx_kv/mx_quant.py; \
     cp /tmp/mx_triton_mx_store.py   $SP/xpu/patches/mx_kv/triton_mx_store.py; \
     rm -rf $SP/xpu/patches/__pycache__/mx_kv; \
-    /opt/venv/bin/pip install --quiet --force-reinstall --no-deps /tmp/mx_wheel.whl; \
-    rm -f /tmp/mx_*.py /tmp/mx_wheel.whl; \
+    /opt/venv/bin/pip install --quiet --force-reinstall --no-deps /tmp/vllm_xpu_kernels-0.1.14.1+arc7mx-cp312-cp312-linux_x86_64.whl; \
+    rm -f /tmp/mx_*.py /tmp/vllm_xpu_kernels-*.whl; \
     export LD_LIBRARY_PATH=/opt/venv/lib:/opt/venv/lib/python3.12/site-packages/torch/lib; \
     /opt/venv/bin/python -c \
       "import inspect, os;\

@@ -2,7 +2,7 @@
 
 Generated from `vllm_gaudi/envs.py` arc-lane markers + the certified
 serve line (spec depth 3 — a serve-time CLI choice). The qwen fp8 chain
-is identical on the current certified image `vllm-arc:v0.30.0-b70-cert25zc`
+is identical on the current certified image `vllm-arc:v0.30.0-b70-cert26`
 (25 vars incl. `LMCACHE_TRACK_USAGE=false`): every release since the
 chain's certification added ZERO certified serve-line vars — each new
 lane rides an engine env or script arg (`ARC_*`) proven env-free and
@@ -113,6 +113,27 @@ belongs to the next one.)
 | `VLLM_ARC_GMU_RELAX` | `0.0` | GMU conditional-relax fraction (0.8 = sanctioned B70 posture, set via serve env) | `platform.py` (p05) |
 | `VLLM_ARC_LMC_ASYNC_STORE` | `1` = ON (**certified default**, p620) | L3 off-thread store: the per-step lagged-flush dispatcher hands (pending, engine stream) to the `arc-lmc-store` daemon — device ops stay on the engine stream (in-order law), only the HOST wait (sync + D2H gathers + store insert) moves off the engine thread. A/B/A/B: U32k TTFT −0.74 s mean, U64k −1.64 s, U8k −0.08 s (both interleave pairs), zero error delta; full gate batteries green incl. LONG-RETURN (zero-KV proof under async store). `=0` = the inline posture (kill switch) | lmcint `vllm_v1_adapter.py` `_lmc_flush_pending`/`_lmc_store_machinery` (p620 L3; L6 dispatch-late = same flush handed at wfs end) |
 | `VLLM_ARC_LMC_EVSYNC` | `1` | L1 flush-scoped event sync inside the store body (vs `torch.xpu.synchronize()`); neutral ALONE — on the in-order XPU stream the event sits behind the just-submitted chunk forward; kept as the cheap default inside the L3 worker body | lmcint `vllm_v1_adapter.py` `_lmc_flush_body` (p620 L1) |
+
+**P6.47 MX KV-cache lane** (`patches/mx_kv/` overlay; activates only when
+`--kv-cache-dtype` / host `ARC_KVDTYPE` selects `{mxfp4,mxfp8,mxk8v4}` —
+the native `fp8_e4m3` path is untouched):
+
+| knob | default | semantics | consumer |
+|---|---|---|---|
+| `ARC_MXKV_NATIVE` | unset = Triton MX lanes (certified for `mxk8v4`) | `=1` + `ARC_KVDTYPE={mxfp8,mxfp4}` = the **cert26 native-decode posture**: the overlay `native_verify` bridge routes decode through the arc7mx wheel's MX-native paged Xe2 kernel (mxfp4 ITL 48.5/51.2/56.8 ms at 8/16/32K, −19.2% vs prior; battery agg8 0.84× ctrl; evidence `results/2026-11-22-p647-cert26-battery/`). `mxk8v4` native REFUSED at the long-return gate (deterministic REP-LOOP, mixed-fmt stride suspicion; reopen path r224) — `mxk8v4` serves Triton only | `patches/mx_kv/engine.py:158` |
+| `ARC_MXKV_NSPLIT` | `0` = C++ auto-split | RETIRED as posture (r219b: auto lands the validated optimum 128 by itself — chain 341→130→128, caps AT the optimum so it cannot overshoot); stays as a probe instrument for forced-depth sweeps (`ns64`/`ns256` brackets, r220d) | `patches/mx_kv/native_decode.py:108` |
+| `ARC_MXKV_K2` / `ARC_MXKV_K3` | `1` / `1` = packed-fp16 dequant + e2m1 fast-unpack lanes ON (bit-identical outputs) | `=0` reverts to the stock dequant path (cert25zb-era kill switches) | `patches/mx_kv/triton_mx_decode.py` |
+| `ARC_MXKV_V5_TFLOOR` | `2` (cert25zc closing rung) | v5 verify-decoder TILE_FLOOR launcher default | `patches/mx_kv/triton_mx_decode.py` |
+| `ARC_MXKV_V5_G_MIN` | `8` (cert25zc closing rung) | G-adaptive mxfp4 verify-decoder dispatch threshold | `patches/mx_kv/triton_mx_decode.py` |
+| `ARC_MXKV_DECODER` / `ARC_MXKV_UNPACK` | `v2` / `""` | decoder-generation select (`v1`, `v2`, `v3`) and unpack override (`join` or `shift`) — research reachability, not posture | `patches/mx_kv/triton_mx_decode.py:197/202` |
+
+Instrument class (silent-off diagnostics, never in the certified line,
+same registry-exempt class as `ARC_SNAP_PROBE`): `ARC_MXKV_TRACE`,
+`ARC_MXKV_DUMP`/`_FILTER`/`_ORD` (KV value-dump probes),
+`ARC_MXKV_NATIVE_MINLEN` (per-lane native threshold override — the
+shipped defaults live in the wheel), `ARC_MXKV_V5_{SPLITS,WARPS,BN,DOT}`,
+`ARC_MXKV_V7` (dormant research kernel), `ARC_MXKV_V4_VERIFY`,
+`ARC_MXKV_VERIFY_DECODER`.
 
 **oneCCL overlay envs (consumed by the patched `libccl`, NOT by
 engine code — registered by `arc-fp8-allreduce.patch`, deliberately

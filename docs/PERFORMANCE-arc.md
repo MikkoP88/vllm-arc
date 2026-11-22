@@ -96,17 +96,26 @@ accepted/drafts + 1** (the +1 bonus token). Windows are counter deltas
 snapshotted before/after each battery, so each face's acceptance covers
 that face's traffic only.
 
-## Current certified image — cert25zc (`rel/v0.30.0-b70-cert25zc`): the current record
+## Current certified image — cert26 (`rel/v0.30.0-b70-cert26`): the current record
 
-**Current release = rel/v0.30.0-b70-cert25zc** (cert25zb content + the
-Phase-7 closing rung of the MX decode ladder — TILE_FLOOR 2,
-G-adaptive mxfp4 verify-decoder dispatch; K2/K3 packed dequant
-default-on; the
-native `fp8_e4m3` bank is byte-identical across the bake, so the
-carried record numbers are the probabilistic-lane measurements,
-re-verified and discriminated in-band at every later cert's gate —
-per-gate proofs: [`../CHANGELOG.md`](../CHANGELOG.md)). Current
-certified posture = probabilistic drafting (the serve-script default).
+**Current release = rel/v0.30.0-b70-cert26** (cert25zc content + the
+Phase-8 arc7 MX-native decode line: the `arc7mx` wheel's MX-native
+paged-decode Xe2 kernel behind the `ARC_MXKV_NATIVE` gate, C++ auto-split
+at the validated optimum 128; the native `fp8_e4m3` bank is
+byte-identical across the bake, so the carried record numbers are the
+probabilistic-lane measurements, re-verified and discriminated in-band
+at every later cert's gate — per-gate proofs:
+[`../CHANGELOG.md`](../CHANGELOG.md)). Current certified posture =
+probabilistic drafting (the serve-script default).
+
+**KV-cache MX-dtype decode line (Phase-8, cert26)**: with
+`ARC_KVDTYPE=mxfp4|mxfp8` + `ARC_MXKV_NATIVE=1`, decode runs the native
+Xe2 kernel — mxfp4 ITL 48.5/51.2/56.8 ms at 8/16/32K (−19.2% vs the
+Triton posture, r219b), tps 65.4 @32K solo; battery agg8 254.0–256.1
+tok/s = 0.84× ctrl (up from 0.74–0.78× on cert25zc); 1.34× fp8 ITL
+@32K (was 1.65×). `mxk8v4` keeps the certified Triton lanes (native
+mixed-fmt lane refused at the long-return gate; reopen path r224).
+Evidence: `results/2026-11-22-p647-cert26-battery/`.
 
 **MXFP4 checkpoint-lane faces (full certified posture)**: rhmxfp4
 (mixed CT — fp8-block attn + native mxfp4 MLP) TTFT U32k 29.01 / C32k

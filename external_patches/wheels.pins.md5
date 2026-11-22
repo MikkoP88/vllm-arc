@@ -23,6 +23,25 @@ a51df187aae8efa3871b0cb9b7d3f3c7  vllm_xpu_kernels-0.1.14.1+arc3-cp312-cp312-lin
 # 219268cf7d24ebc7a99e5afec5097edd63d88ef26255511c589da71f3615399a
 # (the sha256 is the cert21 IMAGE_MANIFEST / Dockerfile pin).
 eadc44a106a2de1dce8699de699d9774  vllm_xpu_kernels-0.1.14.1+arc5-cp312-cp312-linux_x86_64.whl
+# P6.33 (cert22 ship): arc5 tree + the three GEMV-regime M<=8 weight-only
+# GEMM ops (skinny_fp8_w8a16 / skinny_fp8_w8a16_mxfp8 / skinny_fp4_w4a16,
+# deterministic fixed-order split-K; v0.1.17 Option-B backports #611/#645/
+# #650/#600) — route ships default OFF (e2e-falsified under graph replay;
+# evidence results/2026-11-09-p633-skinny-m/). Wheel rig-only (~352 MB,
+# 100 MB artifact law; sha256 484e06c1... in the cert22 IMAGE_MANIFEST).
+32f10dc0b798eb67d230287872d7de90  vllm_xpu_kernels-0.1.14.1+arc6-cp312-cp312-linux_x86_64.whl
+# P6.47 Phase-8 (cert26 ship): arc6 tree + csrc/xpu/attn/xe_2/mx/ — the
+# MX-native paged-decode Xe2 kernel (mx_attn_interface.mx_paged_decode),
+# r219 auto-split heuristic at the validated optimum (chain 341 bw ->
+# 130 reduce -> 128 policy), ELSE-branch policy cap 64->128 + block16
+# alignment, the r220a3 WG-canonical coordinate frames, value-correct
+# P64NATIVE instrument default OFF (kit: external_patches/vllm-xpu-kernels/
+# arc7_mx_attn/; evidence results/2026-11-22-p647-cert26-battery/ + the
+# r216-r221 leg banks). This is the CURRENT wheel (byte-pinned md5 in
+# tools/ar/r222_build_cert26.sh); wheel rig-only (100 MB artifact law);
+# the _r210keeper suffix copy on the rig is a pre-final keeper, NOT the
+# certified bytes.
+62f234c8d0aa89c4aec3e8d2c6fa22ad  vllm_xpu_kernels-0.1.14.1+arc7mx-cp312-cp312-linux_x86_64.whl
 # P6.2: internal lmcache wheel — upstream 0.5.6 sdist (PyPI, official-wheel
 # reference md5 1f96765db1d7b02ecdd3852794e400a1; all 5 patched files
 # byte-verified sdist-vs-wheel) + the 4-patch arc kit (e-adapter-vllm-056-

@@ -12,6 +12,65 @@ the fork SHA it was built from.
 Phase labels P0–P6.38 refer to the plan's execution phases; every phase's
 raw evidence is banked under `results/YYYY-MM-DD-<phase>-*/`.
 
+## rel/v0.30.0-b70-cert26 — P6.47 Phase-8: arc7 MX-native decode line certified (2026-11-22)
+
+- cert26 = cert25zc content + **the Phase-8 arc7 MX-native decode
+  line**: the `arc7mx` wheel (`vllm_xpu_kernels-0.1.14.1+arc7mx`, md5
+  `62f234c8d0aa89c4aec3e8d2c6fa22ad`, byte-pinned) BAKED into the image
+  — MX-native paged-decode Xe2 kernel
+  (`vllm_xpu_kernels.mx_attn_interface.mx_paged_decode`), the r219 C++
+  auto-split heuristic at the validated optimum (chain 341 bw → 130
+  reduce → 128 policy; `ARC_MXKV_NSPLIT` RETIRED as a posture
+  requirement, kept as probe instrument), ELSE-branch policy cap
+  64→128 + block16 alignment, the r220a3 corrected WG-canonical
+  coordinate frames, and the value-correct env-gated `P64NATIVE`
+  instrument (default OFF) — plus the fork `mx_kv` overlay
+  `native_verify` bridge (`ARC_MXKV_NATIVE` gate default-off;
+  `_NATIVE_MINLEN` per-lane thresholds mxfp8 16384 / mxfp4
+  12288:8192 / mxk8v4 8192; r212f capacity-priced walk; capture-time
+  bucket telemetry).
+- Built by r222 (`tools/ar/r222_build_cert26.sh` — staged-tree
+  content refuses + wheel md5 refuse + evidence refuses; inline
+  Dockerfile on the cert25zc base) with build-time asserts;
+  `IMAGE_MANIFEST` `cert26_fork_sha=cac6393159bdf1f6356e744159163fd679726221`.
+- **Certified native posture: `ARC_KVDTYPE=mxfp8|mxfp4` +
+  `ARC_MXKV_NATIVE=1`** (NSPLIT + P64NATIVE unset). Split-depth surface
+  8..256 fully measured (r216–r219), optimum 128 A/A-confirmed 4×,
+  then r219b proved C++ auto lands it by itself (within 0.08%).
+  Long-ctx faces (r219b): mxfp4 ITL 48.5/51.2/56.8 ms at 8/16/32K
+  (−19.2% vs auto-40, flattening the long-ctx droop; tps 65.4 @32K;
+  1.34× fp8 walk-parallelism). r223 battery smoke face: agg8 medians
+  m8q 254.0 (0.84× ctrl, was 0.78×), m4q 256.1 (0.84×, was 0.75×).
+- **Native mxk8v4 REFUSED at the battery's absolute long-return gate**
+  (first mkq cell: REP-LOOP garble all classes, deterministic; T1_SEED
+  PASS) while the uniform-dtype native lanes are clean — attributed to
+  the mixed-fmt lane (e4m3 K + e2m1 V; per-tensor K/V layout
+  divergence the r220c offline gate's contiguous synthetic pool
+  structurally could not see). **mkq serves the cert25zc Triton
+  lanes**; the failed cell banked verbatim as
+  `results/2026-11-22-p647-cert26-battery/mkq_native_refused/`;
+  **r224** = the reopen path (engine-stride-faithful value gate +
+  native-vs-triton mkq A/B).
+- **The 16→64 KV-tile lever CLOSED by the e2e arbiter** (r220):
+  offline −46..−50% @1K inverted e2e +0.86/+5.63/+13.40% ITL monotone
+  in ctx, not rescued at any split depth (r220d); r221a/r221b/r221d
+  eliminated shape/row-count/cache-state/knob families as
+  offline-transferable mechanisms (residual: TP2 dual-GPU lockstep /
+  engine step-graph structure). Posture stays `_16` + auto-128.
+  r221d decomposed the +14–20% @1K engine-shape cost: BTWIDTH is the
+  sole carrier (flat +99 µs = auto-split over-pricing reduce overhead
+  at short ctx; pool/pad no-ops) — priced as the r222
+  skip-empty-splits candidate (~1.6 ms/step at 1K-class ctx).
+- **r223 full §10 battery: CERTIFIED**
+  (`results/2026-11-22-p647-cert26-battery/` — 218 files +
+  SHA256SUMS-verified + law-8 redaction pass [366 serve-log hits,
+  perl byte-exact, `REDACTION-2026-11-22-p647-cert26-battery.md`]).
+  Qwen absolute gates 4/4 clean (ctrl/m8q/m4q/mkq — LONGRETURN +
+  T1_SEED + garbage + erraudit); gemma comparative PASS (GEMMA_COMPARE:
+  no new modes / no amplification). Verdict of record under the
+  amended gate (mkq triton cell rerun post-refusal;
+  `P647_CERT26_GATE_COMPLETE -- PASS`).
+
 ## rel/v0.30.0-b70-cert25zc — P6.47: Phase-7 MX decode closing rung (2026-11-19)
 
 - cert25zc = cert25zb content + **the Phase-7 closing rung of the MX

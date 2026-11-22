@@ -6,12 +6,17 @@
 # + the fork mx_kv overlay native_verify bridge (ARC_MXKV_NATIVE gate,
 # default-off; _NATIVE_MINLEN per-lane thresholds; r212f capacity-
 # priced walk; capture telemetry). Certified MX posture on the QWEN
-# legs: ARC_KVDTYPE + ARC_MXKV_NATIVE=1, NSPLIT unset (C++ auto at the
-# validated optimum -- r219b A/A within 0.08 pct of the pinned path,
-# chain 341 bw -> 130 reduce -> 128 policy), P64NATIVE unset (_16
-# sub-tile frame -- the r220 e2e arbiter closed the 16->64 tile lever;
-# offline wins inverted e2e +13.4 pct @32K, not rescued at any split
-# depth). Gemma MX legs keep the cert25zc triton lanes (native-off):
+# legs: ARC_KVDTYPE + ARC_MXKV_NATIVE=1 on m8q/m4q, NSPLIT unset (C++
+# auto at the validated optimum -- r219b A/A within 0.08 pct of the
+# pinned path, chain 341 bw -> 130 reduce -> 128 policy), P64NATIVE
+# unset (_16 sub-tile frame -- the r220 e2e arbiter closed the 16->64
+# tile lever; offline wins inverted e2e +13.4 pct @32K, not rescued at
+# any split depth). mkq runs the cert25zc TRITON lanes: the battery's
+# first mkq cell (native) FAILED its absolute LONGRETURN gate (REP-LOOP
+# all classes, deterministic) while the uniform-dtype native lanes are
+# clean -- the mixed-fmt (e4m3 K + e2m1 V) lane is refused pending the
+# r224 engine-stride diagnosis (the failed cell is banked as refusal
+# evidence). Gemma MX legs keep the cert25zc triton lanes (native-off):
 # the r216-r221 native evidence chain is qwen-only; gemma gates
 # corruption comparatively as before. Evidence: r219b (auto 48.5/51.2/
 # 56.8; tps 65.4 @32K; chunks 53-54; 0 errors), r220b ctl (posture
@@ -533,10 +538,23 @@ leg_m4g() {
   grep -Eq "mx_backend_lines=[1-9]" "$P/m4g/markers.txt" || { echo "MX_MARKER: FAIL m4g (expect >=1 worker)"; GATE_FAIL=1; }
 }
 leg_mkq() {
-  run_leg mkq qwen3.8-27b-fp8 1 $QWEN_FP8 ARC_KVDTYPE=mxk8v4 ARC_MXKV_NATIVE=1 || true
+  # cert26 posture amendment (2026-11-22, this battery's own evidence):
+  # the FIRST mkq cell ran ARC_MXKV_NATIVE=1 and FAILED its absolute
+  # LONGRETURN gate (REP-LOOP garble all 4 classes + rehits; T1_SEED
+  # PASS = deterministic numeric drift, not a race) while m8q/m4q
+  # native are absolute-clean and cert25zc's triton mkq was clean --
+  # the failure attributes to the native MIXED-fmt lane (e4m3 K +
+  # e2m1 V): uniform-dtype lanes pass, the mixed lane is exactly where
+  # per-tensor K/V layout divergence bites (kv-store separate-strides
+  # law, P6.47), and the r220c offline value gate built a CONTIGUOUS
+  # synthetic pool (same K/V layout) so it structurally could not see
+  # an engine-stride defect. Native mxk8v4 REFUSED at this gate; mkq
+  # serves the cert25zc triton lanes. The failed native cell is banked
+  # as the refusal evidence; r224 = the engine-stride-faithful value
+  # gate + native-vs-triton mkq A/B (reopen path).
+  run_leg mkq qwen3.8-27b-fp8 1 $QWEN_FP8 ARC_KVDTYPE=mxk8v4 || true
   grep -Eq "mx_backend_lines=[1-9]" "$P/mkq/markers.txt" || { echo "MX_MARKER: FAIL mkq (expect >=1 worker)"; GATE_FAIL=1; }
   lmc_autooff_check "$P/mkq"
-  native_posture_check "$P/mkq"
 }
 leg_mkg() {
   run_leg mkg gemma4-31b 1 $GEMMA_M8 ARC_KVDTYPE=mxk8v4 || true
