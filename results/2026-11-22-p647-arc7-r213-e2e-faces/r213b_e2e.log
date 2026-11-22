@@ -1,0 +1,28 @@
+=== [r213b] W14 quiesce 01:48:26 ===
+wheel md5 9a01790b5748cb4d7e1eac9c099a997e (pinned 9a01790b5748cb4d7e1eac9c099a997e)
+=== [r213b:m4qa] boot kv=mxfp4 01:48:43 ===
+HEALTH_OK_r213b_m4qa 01:53:48
+CONC_OK_c8192_n1
+CONC_OK_c16384_n1
+CONC_OK_c32768_n1
+=== [r213b:m4qa] done 01:55:19 ===
+=== [r213b:m8qa] boot kv=mxfp8 01:55:19 ===
+HEALTH_OK_r213b_m8qa 02:00:24
+CONC_OK_c8192_n1
+CONC_OK_c16384_n1
+CONC_OK_c32768_n1
+=== [r213b:m8qa] done 02:01:54 ===
+=== [r213b] report 02:01:54 ===
+r213b A/A confirmation -- ITL p50 ms/token (same wheel, fresh boots)
+   fmt    ctx |    r213 |   r213b |  spread |    mean |  r212m4 | mean dev | errs
+  m4qa   8192 |    48.5 |    48.5 |    0.0% |    48.5 |    48.9 |    -0.9% | 0
+  m4qa  16384 |    55.9 |    55.9 |    0.0% |    55.9 |    56.7 |    -1.5% | 0
+  m4qa  32768 |    70.2 |    70.3 |    0.1% |    70.2 |    73.1 |    -3.9% | 0
+  m8qa   8192 |    51.6 |    51.6 |    0.0% |    51.6 |    50.5 |    +2.2% | 0
+  m8qa  16384 |    63.2 |    63.2 |    0.0% |    63.2 |    60.3 |    +4.8% | 0
+  m8qa  32768 |    84.8 |    84.8 |    0.0% |    84.8 |    81.7 |    +3.8% | 0
+ telemetry[m4qa]: native_call_lines=156 dispatch_lines=2
+ telemetry[m8qa]: native_call_lines=157 dispatch_lines=2
+R213B_GATE_PASS
+R213B_DONE 2026-11-22T02:01:54Z
+W14_RESTORE_FIRED_fullres 2026-11-22T02:01:54Z
