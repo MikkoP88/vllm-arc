@@ -1,0 +1,14 @@
+253a254,255
+>     ${ARC_MXKV_OVERLAY:+-v "$ARC_MXKV_OVERLAY":/opt/venv/lib/python3.12/site-packages/vllm_gaudi/xpu/patches/mx_kv:ro} \
+>     ${ARC_MXKV_WHEEL_DIR:+-v "$ARC_MXKV_WHEEL_DIR":/wheels:ro} \
+376a379,385
+> # arc7 native fastcycle (r212a): optional wheel pre-install -- inert
+> # unless ARC_MXKV_WHEEL is set (path INSIDE the container).
+> if [ -n "${ARC_MXKV_WHEEL:-}" ]; then
+>   docker exec "$ARC_NAME" /opt/venv/bin/pip install --quiet --force-reinstall --no-deps "$ARC_MXKV_WHEEL" \
+>     || { echo "ARC_MXKV_WHEEL_INSTALL_FAIL"; exit 1; }
+> fi
+> 
+398a408,409
+> ${ARC_MXKV_NATIVE:+export ARC_MXKV_NATIVE=${ARC_MXKV_NATIVE};}
+> ${ARC_MXKV_NATIVE_MINLEN:+export ARC_MXKV_NATIVE_MINLEN=${ARC_MXKV_NATIVE_MINLEN};}

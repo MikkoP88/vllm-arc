@@ -1,0 +1,2 @@
+(Worker_TP1 pid=1166) INFO 11-21 01:42:28 [engine.py:1157] MXKV native dispatch fmt=mxk8v4 rows=148 max_seq_len=9 minlen=32768 -> triton (E5 crossover)
+(Worker_TP0 pid=1060) INFO 11-21 01:42:28 [engine.py:1157] MXKV native dispatch fmt=mxk8v4 rows=148 max_seq_len=9 minlen=32768 -> triton (E5 crossover)
