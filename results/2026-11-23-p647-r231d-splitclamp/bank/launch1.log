@@ -1,0 +1,36 @@
+R231D_LAUNCH_START 20:50:02
+R231D_APPLIED mx_paged_decode_kernel.hpp: legacy split clamp
+R231D_PATCHED mx_paged_decode_kernel.hpp md5=fb599cf75883f96b081a1063d6c85c24
+R231D_APPLIED mx_reduce_split.hpp: reduce mirror clamp
+R231D_PATCHED mx_reduce_split.hpp md5=26e88582edb3a19e80a763f178c2c3c1
+R231D_DONE
+R231D_BUILD_START 20:50:02
+VXK_ARC7MX_BUILD_EXIT rc=0 Mon Nov 23 21:32:56 UTC 2026
+R231B_EXTRACTED vllm_xpu_kernels/_vllm_fa2_C.abi3.so
+R231B_EXTRACTED vllm_xpu_kernels/libattn_kernels_xe_2.so
+61d2f5a365f05084b3dd72c4ae1da3e0  /root/build/p647/r231d/libattn_kernels_xe_2.so
+6e6c48508d40cb4c5007f27f79df97cf  /root/build/p647/r231d/_vllm_fa2_C.abi3.so
+R231D_BUILD_DONE 21:33:09 so=/root/build/p647/r231d/libattn_kernels_xe_2.so
+R231D refuses passed (fork_sha=d39ab5a26bf737d006d47a3f3125a404dca6e928 so25=2d73ff7a3c2aa2caab86179288ca3711 so28=61d2f5a365f05084b3dd72c4ae1da3e0 picks=15)
+7c8260f240790e248c23dd64a8959d8dbcfdbd8b10c5da90838290b893b6c509
+2d73ff7a3c2aa2caab86179288ca3711  /opt/venv/lib/python3.12/site-packages/vllm_xpu_kernels/libattn_kernels_xe_2.so
+6e6c48508d40cb4c5007f27f79df97cf  /opt/venv/lib/python3.12/site-packages/vllm_xpu_kernels/_vllm_fa2_C.abi3.so
+R231D_INFO r231d_pick0.pt r=4 sl=5462 (NON-UNIFORM) blocks=-1 C=1
+R231D_INFO r231d_pick1.pt r=4 sl=5462 (NON-UNIFORM) blocks=-1 C=1
+R231D_INFO r231d_pick2.pt r=4 sl=5466 (NON-UNIFORM) blocks=-1 C=1
+R231D_INFO r231d_pick3.pt r=4 sl=5466 (NON-UNIFORM) blocks=-1 C=1
+R231D_INFO r231d_pick4.pt r=4 sl=5462 (NON-UNIFORM) blocks=-1 C=1
+R231D_INFO r231d_pick5.pt r=4 sl=5462 (NON-UNIFORM) blocks=-1 C=1
+R231D_INFO r231d_pick6.pt r=4 sl=5466 (NON-UNIFORM) blocks=-1 C=1
+R231D_INFO r231d_pick7.pt r=4 sl=5466 (NON-UNIFORM) blocks=-1 C=1
+R231D_INFO r231d_pick8.pt r=4 sl=5462 (NON-UNIFORM) blocks=-1 C=1
+R231D_INFO r231d_pick9.pt r=4 sl=5462 (NON-UNIFORM) blocks=-1 C=1
+R231D_INFO r231d_pick10.pt r=4 sl=5466 (NON-UNIFORM) blocks=-1 C=1
+R231D_INFO r231d_pick11.pt r=4 sl=5466 (NON-UNIFORM) blocks=-1 C=1
+R231D_INFO r231d_pick12.pt r=4 sl=8198 (NON-UNIFORM) blocks=-1 C=1
+R231D_INFO r231d_pick13.pt r=4 sl=8198 (NON-UNIFORM) blocks=-1 C=1
+R231D_INFO r231d_pick14.pt r=4 sl=8198 (NON-UNIFORM) blocks=-1 C=1
+R231D_ABORT: capacity picks are not on the capacity path (sl<8192?)
+R231D: restoring W14 (21:33:49)
+R231D: W14 HEALTH 200 (21:38:19)
+R231D_LAUNCH_ABORT offline rc=1

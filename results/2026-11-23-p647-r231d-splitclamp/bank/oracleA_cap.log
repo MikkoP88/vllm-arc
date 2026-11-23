@@ -1,0 +1,6 @@
+R231D_CLAMP r231d_pick12.pt sl=8198-8201 blocks=513 C=128 capacity=yes ns=auto
+R231D_SAVED r231d_pick12.pt shape=(4, 12, 256)
+R231D_CLAMP r231d_pick13.pt sl=8198-8201 blocks=513 C=128 capacity=yes ns=auto
+R231D_SAVED r231d_pick13.pt shape=(4, 12, 256)
+R231D_CLAMP r231d_pick14.pt sl=8198-8201 blocks=513 C=128 capacity=yes ns=auto
+R231D_SAVED r231d_pick14.pt shape=(4, 12, 256)

@@ -1,0 +1,66 @@
+outA_cap:
+total 92
+drwxr-xr-x 2 root root  4096 Nov 23 21:39 .
+drwxr-xr-x 7 root root  4096 Nov 23 23:01 ..
+-rw-r--r-- 1 root root 26188 Nov 23 21:39 r231d_pick12.pt
+-rw-r--r-- 1 root root 26188 Nov 23 21:39 r231d_pick13.pt
+-rw-r--r-- 1 root root 26188 Nov 23 21:39 r231d_pick14.pt
+
+outA_pin:
+total 344
+drwxr-xr-x 2 root root  4096 Nov 23 21:39 .
+drwxr-xr-x 7 root root  4096 Nov 23 23:01 ..
+-rw-r--r-- 1 root root 26181 Nov 23 21:39 r231d_pick0.pt
+-rw-r--r-- 1 root root 26188 Nov 23 21:39 r231d_pick10.pt
+-rw-r--r-- 1 root root 26188 Nov 23 21:39 r231d_pick11.pt
+-rw-r--r-- 1 root root 26181 Nov 23 21:39 r231d_pick1.pt
+-rw-r--r-- 1 root root 26181 Nov 23 21:39 r231d_pick2.pt
+-rw-r--r-- 1 root root 26181 Nov 23 21:39 r231d_pick3.pt
+-rw-r--r-- 1 root root 26181 Nov 23 21:39 r231d_pick4.pt
+-rw-r--r-- 1 root root 26181 Nov 23 21:39 r231d_pick5.pt
+-rw-r--r-- 1 root root 26181 Nov 23 21:39 r231d_pick6.pt
+-rw-r--r-- 1 root root 26181 Nov 23 21:39 r231d_pick7.pt
+-rw-r--r-- 1 root root 26181 Nov 23 21:39 r231d_pick8.pt
+-rw-r--r-- 1 root root 26181 Nov 23 21:39 r231d_pick9.pt
+
+outB_auto:
+total 344
+drwxr-xr-x 2 root root  4096 Nov 23 21:39 .
+drwxr-xr-x 7 root root  4096 Nov 23 23:01 ..
+-rw-r--r-- 1 root root 26181 Nov 23 21:39 r231d_pick0.pt
+-rw-r--r-- 1 root root 26188 Nov 23 21:39 r231d_pick10.pt
+-rw-r--r-- 1 root root 26188 Nov 23 21:39 r231d_pick11.pt
+-rw-r--r-- 1 root root 26181 Nov 23 21:39 r231d_pick1.pt
+-rw-r--r-- 1 root root 26181 Nov 23 21:39 r231d_pick2.pt
+-rw-r--r-- 1 root root 26181 Nov 23 21:39 r231d_pick3.pt
+-rw-r--r-- 1 root root 26181 Nov 23 21:39 r231d_pick4.pt
+-rw-r--r-- 1 root root 26181 Nov 23 21:39 r231d_pick5.pt
+-rw-r--r-- 1 root root 26181 Nov 23 21:39 r231d_pick6.pt
+-rw-r--r-- 1 root root 26181 Nov 23 21:39 r231d_pick7.pt
+-rw-r--r-- 1 root root 26181 Nov 23 21:39 r231d_pick8.pt
+-rw-r--r-- 1 root root 26181 Nov 23 21:39 r231d_pick9.pt
+
+outB_cap:
+total 92
+drwxr-xr-x 2 root root  4096 Nov 23 21:39 .
+drwxr-xr-x 7 root root  4096 Nov 23 23:01 ..
+-rw-r--r-- 1 root root 26188 Nov 23 21:39 r231d_pick12.pt
+-rw-r--r-- 1 root root 26188 Nov 23 21:39 r231d_pick13.pt
+-rw-r--r-- 1 root root 26188 Nov 23 21:39 r231d_pick14.pt
+
+outB_pin:
+total 344
+drwxr-xr-x 2 root root  4096 Nov 23 21:40 .
+drwxr-xr-x 7 root root  4096 Nov 23 23:01 ..
+-rw-r--r-- 1 root root 26181 Nov 23 21:39 r231d_pick0.pt
+-rw-r--r-- 1 root root 26188 Nov 23 21:40 r231d_pick10.pt
+-rw-r--r-- 1 root root 26188 Nov 23 21:40 r231d_pick11.pt
+-rw-r--r-- 1 root root 26181 Nov 23 21:39 r231d_pick1.pt
+-rw-r--r-- 1 root root 26181 Nov 23 21:39 r231d_pick2.pt
+-rw-r--r-- 1 root root 26181 Nov 23 21:39 r231d_pick3.pt
+-rw-r--r-- 1 root root 26181 Nov 23 21:39 r231d_pick4.pt
+-rw-r--r-- 1 root root 26181 Nov 23 21:39 r231d_pick5.pt
+-rw-r--r-- 1 root root 26181 Nov 23 21:39 r231d_pick6.pt
+-rw-r--r-- 1 root root 26181 Nov 23 21:40 r231d_pick7.pt
+-rw-r--r-- 1 root root 26181 Nov 23 21:40 r231d_pick8.pt
+-rw-r--r-- 1 root root 26181 Nov 23 21:40 r231d_pick9.pt
