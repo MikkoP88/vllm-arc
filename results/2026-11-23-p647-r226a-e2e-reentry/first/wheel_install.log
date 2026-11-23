@@ -1,0 +1,8 @@
+Looking in indexes: https://pypi.org/simple, https://download.pytorch.org/whl/xpu
+Processing /tmp/vllm_xpu_kernels-0.1.14.1+arc7mx-cp312-cp312-linux_x86_64.whl
+Installing collected packages: vllm-xpu-kernels
+  Attempting uninstall: vllm-xpu-kernels
+    Found existing installation: vllm-xpu-kernels 0.1.14.1+arc7mx
+    Uninstalling vllm-xpu-kernels-0.1.14.1+arc7mx:
+      Successfully uninstalled vllm-xpu-kernels-0.1.14.1+arc7mx
+Successfully installed vllm-xpu-kernels-0.1.14.1+arc7mx
