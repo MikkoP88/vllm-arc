@@ -1,0 +1,16 @@
+R231A refuses passed (fork_sha=d39ab5a26bf737d006d47a3f3125a404dca6e928 so_md5=190e261edc79b3b497d8d8e801e65757 picks=/root/build/p647/r224a/mxkv_ab.2447.10.pt /root/build/p647/r229a/mxkv_ab.1030.10.pt /root/build/p647/r229b/mxkv_ab.1030.10.pt)
+1974b44a88e1a3488667248ab0821b3a9165ea88e86f8a533fbfb5d252be1c9e
+Traceback (most recent call last):
+  File "/tmp/r231_splittime.py", line 173, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/tmp/r231_splittime.py", line 129, in main
+    pool = build_pool(p, win, dev, n_pool)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/r231_splittime.py", line 82, in build_pool
+    storage[int(template["kv_off"]) + b * BLOCK_STRIDE:
+RuntimeError: The expanded size of the tensor (51200) must match the existing size (4915200) at non-singleton dimension 0.  Target sizes: [51200].  Tensor sizes: [4915200]
+R231A_PROBE_RC=1
+R231A_DONE 17:46:52
+R231A: restoring W14 (17:46:52)
+R231A: W14 HEALTH 200 (17:51:23)

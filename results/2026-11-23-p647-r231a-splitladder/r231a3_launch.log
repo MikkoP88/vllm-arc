@@ -1,0 +1,24 @@
+R231A refuses passed (fork_sha=d39ab5a26bf737d006d47a3f3125a404dca6e928 so_md5=190e261edc79b3b497d8d8e801e65757 picks=/root/build/p647/r224a/mxkv_ab.2447.10.pt /root/build/p647/r229a/mxkv_ab.1030.10.pt /root/build/p647/r229b/mxkv_ab.1030.10.pt)
+3a651bbec4784c03ecb7a03eef16d588734856088f9874e2da5e7743baaf23df
+== mxkv_ab.2447.10.pt fmt=mxk8v4 rows=4 pool_blocks=8500
+      sl |     auto |      ns1 |      ns2 |      ns4 |      ns8 |     ns16 |     ns32 |     ns64 |    ns128 | best_ns recover_ms
+    2048 |    0.668 |    3.842 |    1.962 |    1.025 |    0.569 |    0.361 |    0.373 |    0.394 |    0.570 | ns16      0.307
+    8192 |    0.660 |   15.130 |    7.610 |    3.851 |    1.986 |    1.082 |    0.661 |    0.527 |    0.702 | ns64      0.132
+   32768 |    1.259 |   60.309 |   30.192 |   15.136 |    7.657 |    3.975 |    2.157 |    1.367 |    1.197 | ns128     0.062
+  131072 |    3.489 |  241.011 |  120.557 |   60.324 |   30.311 |   15.514 |    8.130 |    5.201 |    3.489 | ns128    -0.000
+  262144 |    6.621 |  481.958 |  241.019 |  120.562 |   60.522 |   30.949 |   16.082 |   10.436 |    6.616 | ns128     0.004
+Traceback (most recent call last):
+  File "/tmp/r231_splittime.py", line 176, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/tmp/r231_splittime.py", line 132, in main
+    pool = build_pool(p, win, dev, n_pool)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/r231_splittime.py", line 82, in build_pool
+    storage[b * BLOCK_STRIDE:(b + 1) * BLOCK_STRIDE] = \
+    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: The expanded size of the tensor (51200) must match the existing size (14336) at non-singleton dimension 0.  Target sizes: [51200].  Tensor sizes: [14336]
+R231A_PROBE_RC=1
+R231A_DONE 18:03:04
+R231A: restoring W14 (18:03:04)
+R231A: W14 HEALTH 200 (18:07:34)
