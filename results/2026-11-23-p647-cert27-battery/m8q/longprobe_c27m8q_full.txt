@@ -1,0 +1,152 @@
+===== essay =====
+{
+ "t0_identical": true,
+ "hashes": [
+  "f7799881e019",
+  "f7799881e019",
+  "f7799881e019"
+ ],
+ "content_hashes": [
+  "1f8c83e9a2e6",
+  "1f8c83e9a2e6",
+  "1f8c83e9a2e6"
+ ],
+ "garble": {
+  "cold": [],
+  "rehit": [],
+  "rehit2": []
+ },
+ "finish": [
+  "stop",
+  "stop",
+  "stop"
+ ],
+ "prompt_tok": 2145,
+ "chars": [
+  5922,
+  5922,
+  5922
+ ],
+ "t1_seed_identical": true,
+ "t1_hashes": [
+  "8f1bba35ea5c",
+  "8f1bba35ea5c"
+ ],
+ "t1_garble": [],
+ "dt_cold": 20.9
+}
+
+===== code =====
+{
+ "t0_identical": true,
+ "hashes": [
+  "5fcbc25c7f4b",
+  "5fcbc25c7f4b",
+  "5fcbc25c7f4b"
+ ],
+ "content_hashes": [
+  "e76054045a92",
+  "e76054045a92",
+  "e76054045a92"
+ ],
+ "garble": {
+  "cold": [],
+  "rehit": [],
+  "rehit2": []
+ },
+ "finish": [
+  "stop",
+  "stop",
+  "stop"
+ ],
+ "prompt_tok": 5051,
+ "chars": [
+  2536,
+  2536,
+  2536
+ ],
+ "t1_seed_identical": true,
+ "t1_hashes": [
+  "fe27823430fa",
+  "fe27823430fa"
+ ],
+ "t1_garble": [],
+ "dt_cold": 13.7
+}
+
+===== multi =====
+{
+ "t0_identical": true,
+ "hashes": [
+  "cd80734e201a",
+  "cd80734e201a",
+  "cd80734e201a"
+ ],
+ "content_hashes": [
+  "0f383fe4cd29",
+  "0f383fe4cd29",
+  "0f383fe4cd29"
+ ],
+ "garble": {
+  "cold": [],
+  "rehit": [],
+  "rehit2": []
+ },
+ "finish": [
+  "stop",
+  "stop",
+  "stop"
+ ],
+ "prompt_tok": 3400,
+ "chars": [
+  535,
+  535,
+  535
+ ],
+ "t1_seed_identical": true,
+ "t1_hashes": [
+  "035fa7dcd890",
+  "035fa7dcd890"
+ ],
+ "t1_garble": [],
+ "dt_cold": 3.4
+}
+
+===== simple =====
+{
+ "t0_identical": true,
+ "hashes": [
+  "84efc84cc142",
+  "84efc84cc142",
+  "84efc84cc142"
+ ],
+ "content_hashes": [
+  "bcbf6958e0f1",
+  "bcbf6958e0f1",
+  "bcbf6958e0f1"
+ ],
+ "garble": {
+  "cold": [],
+  "rehit": [],
+  "rehit2": []
+ },
+ "finish": [
+  "stop",
+  "stop",
+  "stop"
+ ],
+ "prompt_tok": 38,
+ "chars": [
+  1510,
+  1510,
+  1510
+ ],
+ "t1_seed_identical": true,
+ "t1_hashes": [
+  "b74924c4a80b",
+  "b74924c4a80b"
+ ],
+ "t1_garble": [],
+ "dt_cold": 4.8
+}
+

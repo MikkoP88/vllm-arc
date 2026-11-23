@@ -1,0 +1,5 @@
+[essay] t0_identical=True hashes=['f7799881e019', 'f7799881e019', 'f7799881e019'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=2145 chars=[5922, 5922, 5922]
+[code] t0_identical=True hashes=['5fcbc25c7f4b', '5fcbc25c7f4b', '5fcbc25c7f4b'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=5051 chars=[2536, 2536, 2536]
+[multi] t0_identical=True hashes=['cd80734e201a', 'cd80734e201a', 'cd80734e201a'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=3400 chars=[535, 535, 535]
+[simple] t0_identical=True hashes=['84efc84cc142', '84efc84cc142', '84efc84cc142'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=38 chars=[1510, 1510, 1510]
+LONGPROBE c27m8q full: CLEAN

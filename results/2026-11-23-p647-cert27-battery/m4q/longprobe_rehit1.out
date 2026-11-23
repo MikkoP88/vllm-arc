@@ -1,0 +1,5 @@
+[essay] post_churn_rehit_identical=True hashes=['2b62707a2320', '2b62707a2320'] garble={'r1': [], 'r2': []}
+[code] post_churn_rehit_identical=True hashes=['8084a8f1b661', '8084a8f1b661'] garble={'r1': [], 'r2': []}
+[multi] post_churn_rehit_identical=True hashes=['17d67b534410', '17d67b534410'] garble={'r1': [], 'r2': []}
+[simple] post_churn_rehit_identical=True hashes=['c4d55b2a3532', 'c4d55b2a3532'] garble={'r1': [], 'r2': []}
+LONGPROBE c27m4qr1 rehit: CLEAN
