@@ -1,0 +1,22 @@
+R231B refuses passed (fork_sha=d39ab5a26bf737d006d47a3f3125a404dca6e928 so25=2d73ff7a3c2aa2caab86179288ca3711 so27=cff66d624b85ed4bc49bba57ff79873d picks=12)
+e86097a663b9a941d217aa723d35905bb90efe337fc9b2d6f14dd567a5ac6a21
+2d73ff7a3c2aa2caab86179288ca3711  /opt/venv/lib/python3.12/site-packages/vllm_xpu_kernels/libattn_kernels_xe_2.so
+6e6c48508d40cb4c5007f27f79df97cf  /opt/venv/lib/python3.12/site-packages/vllm_xpu_kernels/_vllm_fa2_C.abi3.so
+12
+R231B swap verified (build27 md5=cff66d624b85ed4bc49bba57ff79873d fa2=6e6c48508d40cb4c5007f27f79df97cf)
+R231B_PAIR r231b_pick0.pt BITWISE_EQUAL
+R231B_PAIR r231b_pick1.pt BITWISE_EQUAL
+R231B_PAIR r231b_pick10.pt BITWISE_EQUAL
+R231B_PAIR r231b_pick11.pt BITWISE_EQUAL
+R231B_PAIR r231b_pick2.pt BITWISE_EQUAL
+R231B_PAIR r231b_pick3.pt BITWISE_EQUAL
+R231B_PAIR r231b_pick4.pt BITWISE_EQUAL
+R231B_PAIR r231b_pick5.pt BITWISE_EQUAL
+R231B_PAIR r231b_pick6.pt BITWISE_EQUAL
+R231B_PAIR r231b_pick7.pt BITWISE_EQUAL
+R231B_PAIR r231b_pick8.pt BITWISE_EQUAL
+R231B_PAIR r231b_pick9.pt BITWISE_EQUAL
+R231B_ORACLE PASS pairs=12 bad=0
+R231B_R229CELLS pass=6 fail=0
+R231B_ABORT: r229 band cells failed (6/6)
+R231B: W14_RESTORE_SKIPPED (arc leg in flight)

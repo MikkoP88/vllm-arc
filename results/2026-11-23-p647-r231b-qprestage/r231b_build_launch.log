@@ -1,0 +1,7 @@
+R231B_BUILD_START 18:49:27
+VXK_ARC7MX_BUILD_EXIT rc=0 Mon Nov 23 19:32:10 UTC 2026
+Traceback (most recent call last):
+  File "<stdin>", line 5, in <module>
+AssertionError: ['/wheels/vllm_xpu_kernels-0.1.14.1+arc7mx-cp312-cp312-linux_x86_64.whl', '/wheels/vllm_xpu_kernels-0.1.14.1+arc7mx-cp312-cp312-linux_x86_64_r210keeper.whl']
+md5sum: 'vllm_xpu_kernels/libmqa_logits*.so': No such file or directory
+R231B_ABORT: so extraction failed
