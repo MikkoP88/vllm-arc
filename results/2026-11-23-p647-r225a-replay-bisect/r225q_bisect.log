@@ -1,0 +1,46 @@
+=== R225Q cell solo_verbatim (05:03:08) ===
+== mxkv_ab.2447.30.pt fmt='mxk8v4' q=torch.float16 sl=torch.int64 bt=torch.int32 sl4=[5462, 5463, 5464, 5465] scale=0.0625
+   REPLAY triton-vs-banked dmax=0.000e+00
+   REPLAY native-vs-banked dmax=5.547e-01
+   REPLAY native-vs-oracle dmax=5.078e-02
+R225Q cell=solo_verbatim dmax=1.556e-02 mism=1/3072 max_ulp=0.54 md5=51736f834358
+R225Q_ORDERBISECT_DONE
+=== R225Q cell pre18_verbatim (05:03:29) ===
+== mxkv_ab.2447.18.pt fmt='mxk8v4' q=torch.float16 sl=torch.int64 bt=torch.int32 sl4=[5462, 5463, 5464, 5465] scale=0.0625
+   REPLAY triton-vs-banked dmax=0.000e+00
+   REPLAY native-vs-banked dmax=7.711e-02
+   REPLAY native-vs-oracle dmax=7.812e-03
+R225Q cell=pre18:pre18_verbatim dmax=6.611e-03 mism=1/3072 max_ulp=1.51 md5=ceb5efd8a3c0
+== mxkv_ab.2447.30.pt fmt='mxk8v4' q=torch.float16 sl=torch.int64 bt=torch.int32 sl4=[5462, 5463, 5464, 5465] scale=0.0625
+   REPLAY triton-vs-banked dmax=0.000e+00
+   REPLAY native-vs-banked dmax=5.547e-01
+   REPLAY native-vs-oracle dmax=5.078e-02
+R225Q cell=pre18_verbatim dmax=1.556e-02 mism=1/3072 max_ulp=0.54 md5=51736f834358
+R225Q_ORDERBISECT_DONE
+=== R225Q cell solo_notriton (05:03:38) ===
+== mxkv_ab.2447.30.pt fmt='mxk8v4' q=torch.float16 sl=torch.int64 bt=torch.int32 sl4=[5462, 5463, 5464, 5465] scale=0.0625
+R225Q cell=solo_notriton dmax=1.556e-02 mism=1/3072 max_ulp=0.54 md5=51736f834358
+R225Q_ORDERBISECT_DONE
+=== R225Q cell solo_bare (05:03:43) ===
+== mxkv_ab.2447.30.pt fmt='mxk8v4' q=torch.float16 sl=torch.int64 bt=torch.int32 sl4=[5462, 5463, 5464, 5465] scale=0.0625
+R225Q cell=solo_bare dmax=1.556e-02 mism=1/3072 max_ulp=0.54 md5=51736f834358
+R225Q_ORDERBISECT_DONE
+=== R225Q cell solo_fmtfix (05:03:48) ===
+== mxkv_ab.2447.30.pt fmt='mxk8v4' q=torch.float16 sl=torch.int64 bt=torch.int32 sl4=[5462, 5463, 5464, 5465] scale=0.0625
+   REPLAY triton-vs-banked dmax=0.000e+00
+   REPLAY native-vs-banked dmax=5.547e-01
+   REPLAY native-vs-oracle dmax=5.078e-02
+R225Q cell=solo_fmtfix dmax=1.556e-02 mism=1/3072 max_ulp=0.54 md5=51736f834358
+R225Q_ORDERBISECT_DONE
+=== R225Q cell solo_notriton_poison (05:03:56) ===
+== mxkv_ab.2447.30.pt fmt='mxk8v4' q=torch.float16 sl=torch.int64 bt=torch.int32 sl4=[5462, 5463, 5464, 5465] scale=0.0625
+R225Q cell=solo_notriton_poison dmax=1.556e-02 mism=1/3072 max_ulp=0.54 md5=51736f834358
+R225Q_ORDERBISECT_DONE
+=== R225Q cell solo_notriton_poisonLSE (05:04:02) ===
+== mxkv_ab.2447.30.pt fmt='mxk8v4' q=torch.float16 sl=torch.int64 bt=torch.int32 sl4=[5462, 5463, 5464, 5465] scale=0.0625
+R225Q cell=solo_notriton_poisonLSE dmax=1.556e-02 mism=1/3072 max_ulp=0.54 md5=51736f834358
+R225Q_ORDERBISECT_DONE
+=== R225Q cell solo_notriton_poisonTMP (05:04:07) ===
+== mxkv_ab.2447.30.pt fmt='mxk8v4' q=torch.float16 sl=torch.int64 bt=torch.int32 sl4=[5462, 5463, 5464, 5465] scale=0.0625
+R225Q cell=solo_notriton_poisonTMP dmax=1.556e-02 mism=1/3072 max_ulp=0.54 md5=51736f834358
+R225Q_ORDERBISECT_DONE

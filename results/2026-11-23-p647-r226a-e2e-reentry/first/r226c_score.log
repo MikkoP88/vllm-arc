@@ -1,0 +1,104 @@
+=== R226C score /tmp/mxkv_ab.2538.1.pt (08:23:55) ===
+== mxkv_ab.2538.1.pt [base] fmt='mxk8v4' q=torch.float16 sl=[8198, 8199, 8200, 8201]
+Traceback (most recent call last):
+  File "/tmp/r225t_replay.py", line 177, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/tmp/r225t_replay.py", line 144, in main
+    walk = torch.stack([model_row(qB[i].double().cpu(), K, V, int(p["sl"][i]), scale) for i in range(r)])
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/r225j_iso.py", line 61, in model_row
+    k_seq = torch.cat([K[:nb_i - 1].reshape(-1, 2, D), K[nb_i - 1][:last]],
+                                                       ~^^^^^^^^^^
+IndexError: index 128 is out of bounds for dimension 0 with size 96
+=== R226C score /tmp/mxkv_ab.2538.10.pt (08:24:04) ===
+== mxkv_ab.2538.10.pt [base] fmt='mxk8v4' q=torch.float16 sl=[8198, 8199, 8200, 8201]
+Traceback (most recent call last):
+  File "/tmp/r225t_replay.py", line 177, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/tmp/r225t_replay.py", line 144, in main
+    walk = torch.stack([model_row(qB[i].double().cpu(), K, V, int(p["sl"][i]), scale) for i in range(r)])
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/r225j_iso.py", line 61, in model_row
+    k_seq = torch.cat([K[:nb_i - 1].reshape(-1, 2, D), K[nb_i - 1][:last]],
+                                                       ~^^^^^^^^^^
+IndexError: index 128 is out of bounds for dimension 0 with size 96
+=== R226C score /tmp/mxkv_ab.2538.11.pt (08:24:13) ===
+== mxkv_ab.2538.11.pt [base] fmt='mxk8v4' q=torch.float16 sl=[8198, 8199, 8200, 8201]
+Traceback (most recent call last):
+  File "/tmp/r225t_replay.py", line 177, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/tmp/r225t_replay.py", line 144, in main
+    walk = torch.stack([model_row(qB[i].double().cpu(), K, V, int(p["sl"][i]), scale) for i in range(r)])
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/r225j_iso.py", line 61, in model_row
+    k_seq = torch.cat([K[:nb_i - 1].reshape(-1, 2, D), K[nb_i - 1][:last]],
+                                                       ~^^^^^^^^^^
+IndexError: index 128 is out of bounds for dimension 0 with size 96
+=== R226C score /tmp/mxkv_ab.2538.12.pt (08:24:21) ===
+== mxkv_ab.2538.12.pt [base] fmt='mxk8v4' q=torch.float16 sl=[8198, 8199, 8200, 8201]
+Traceback (most recent call last):
+  File "/tmp/r225t_replay.py", line 177, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/tmp/r225t_replay.py", line 144, in main
+    walk = torch.stack([model_row(qB[i].double().cpu(), K, V, int(p["sl"][i]), scale) for i in range(r)])
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/r225j_iso.py", line 61, in model_row
+    k_seq = torch.cat([K[:nb_i - 1].reshape(-1, 2, D), K[nb_i - 1][:last]],
+                                                       ~^^^^^^^^^^
+IndexError: index 128 is out of bounds for dimension 0 with size 96
+=== R226C score /tmp/mxkv_ab.2538.13.pt (08:24:29) ===
+== mxkv_ab.2538.13.pt [base] fmt='mxk8v4' q=torch.float16 sl=[8198, 8199, 8200, 8201]
+Traceback (most recent call last):
+  File "/tmp/r225t_replay.py", line 177, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/tmp/r225t_replay.py", line 144, in main
+    walk = torch.stack([model_row(qB[i].double().cpu(), K, V, int(p["sl"][i]), scale) for i in range(r)])
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/r225j_iso.py", line 61, in model_row
+    k_seq = torch.cat([K[:nb_i - 1].reshape(-1, 2, D), K[nb_i - 1][:last]],
+                                                       ~^^^^^^^^^^
+IndexError: index 128 is out of bounds for dimension 0 with size 96
+=== R226C score /tmp/mxkv_ab.2538.14.pt (08:24:38) ===
+== mxkv_ab.2538.14.pt [base] fmt='mxk8v4' q=torch.float16 sl=[8198, 8199, 8200, 8201]
+Traceback (most recent call last):
+  File "/tmp/r225t_replay.py", line 177, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/tmp/r225t_replay.py", line 144, in main
+    walk = torch.stack([model_row(qB[i].double().cpu(), K, V, int(p["sl"][i]), scale) for i in range(r)])
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/r225j_iso.py", line 61, in model_row
+    k_seq = torch.cat([K[:nb_i - 1].reshape(-1, 2, D), K[nb_i - 1][:last]],
+                                                       ~^^^^^^^^^^
+IndexError: index 128 is out of bounds for dimension 0 with size 96
+=== R226C score /tmp/mxkv_ab.2538.15.pt (08:24:46) ===
+== mxkv_ab.2538.15.pt [base] fmt='mxk8v4' q=torch.float16 sl=[8198, 8199, 8200, 8201]
+Traceback (most recent call last):
+  File "/tmp/r225t_replay.py", line 177, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/tmp/r225t_replay.py", line 144, in main
+    walk = torch.stack([model_row(qB[i].double().cpu(), K, V, int(p["sl"][i]), scale) for i in range(r)])
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/r225j_iso.py", line 61, in model_row
+    k_seq = torch.cat([K[:nb_i - 1].reshape(-1, 2, D), K[nb_i - 1][:last]],
+                                                       ~^^^^^^^^^^
+IndexError: index 128 is out of bounds for dimension 0 with size 96
+=== R226C score /tmp/mxkv_ab.2538.16.pt (08:24:55) ===
+== mxkv_ab.2538.16.pt [base] fmt='mxk8v4' q=torch.float16 sl=[8198, 8199, 8200, 8201]
+Traceback (most recent call last):
+  File "/tmp/r225t_replay.py", line 177, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/tmp/r225t_replay.py", line 144, in main
+    walk = torch.stack([model_row(qB[i].double().cpu(), K, V, int(p["sl"][i]), scale) for i in range(r)])
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/r225j_iso.py", line 61, in model_row
+    k_seq = torch.cat([K[:nb_i - 1].reshape(-1, 2, D), K[nb_i - 1][:last]],
+                                                       ~^^^^^^^^^^
+IndexError: index 128 is out of bounds for dimension 0 with size 96

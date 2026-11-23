@@ -1,0 +1,268 @@
+R224A refuses passed (fork_sha=cac6393159bdf1f6356e744159163fd679726221 eng_md5=4c0986752a6d366190e3d74b0070e46d ana_md5=8c90991ade5f9bf008df4f062a8b3934)
+=== boot vllm-arc:v0.30.0-b70-cert26 mkq native 21:39:24 ===
+HEALTH_OK first serve 21:46:25
+CAPTURED pid=13 argc=42 env=30 cands=4 -> /tmp/r224_serve.sh
+INSTRUMENT_INJECTED md5=4c0986752a6d366190e3d74b0070e46d
+HEALTH_OK re-serve (eager, AB armed) 21:49:08
+-rw-r--r-- 1 root root 2609961 Nov 22 21:48 /tmp/mxkv_ab.2447.1.pt
+-rw-r--r-- 1 root root 2609973 Nov 22 21:48 /tmp/mxkv_ab.2447.10.pt
+-rw-r--r-- 1 root root 2609973 Nov 22 21:48 /tmp/mxkv_ab.2447.11.pt
+-rw-r--r-- 1 root root 2609973 Nov 22 21:48 /tmp/mxkv_ab.2447.12.pt
+-rw-r--r-- 1 root root 2609973 Nov 22 21:48 /tmp/mxkv_ab.2447.13.pt
+-rw-r--r-- 1 root root 2609973 Nov 22 21:48 /tmp/mxkv_ab.2447.14.pt
+-rw-r--r-- 1 root root 2609973 Nov 22 21:48 /tmp/mxkv_ab.2447.15.pt
+-rw-r--r-- 1 root root 2609973 Nov 22 21:48 /tmp/mxkv_ab.2447.16.pt
+-rw-r--r-- 1 root root 2609973 Nov 22 21:48 /tmp/mxkv_ab.2447.17.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:48 /tmp/mxkv_ab.2447.18.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:48 /tmp/mxkv_ab.2447.19.pt
+-rw-r--r-- 1 root root 2609961 Nov 22 21:48 /tmp/mxkv_ab.2447.2.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:48 /tmp/mxkv_ab.2447.20.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:48 /tmp/mxkv_ab.2447.21.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:48 /tmp/mxkv_ab.2447.22.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:48 /tmp/mxkv_ab.2447.23.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:48 /tmp/mxkv_ab.2447.24.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:48 /tmp/mxkv_ab.2447.25.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:48 /tmp/mxkv_ab.2447.26.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:48 /tmp/mxkv_ab.2447.27.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:48 /tmp/mxkv_ab.2447.28.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:48 /tmp/mxkv_ab.2447.29.pt
+-rw-r--r-- 1 root root 2609961 Nov 22 21:48 /tmp/mxkv_ab.2447.3.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:48 /tmp/mxkv_ab.2447.30.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:48 /tmp/mxkv_ab.2447.31.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:48 /tmp/mxkv_ab.2447.32.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:48 /tmp/mxkv_ab.2447.33.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:48 /tmp/mxkv_ab.2447.34.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:48 /tmp/mxkv_ab.2447.35.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:48 /tmp/mxkv_ab.2447.36.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:48 /tmp/mxkv_ab.2447.37.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:48 /tmp/mxkv_ab.2447.38.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:48 /tmp/mxkv_ab.2447.39.pt
+-rw-r--r-- 1 root root 2609961 Nov 22 21:48 /tmp/mxkv_ab.2447.4.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:48 /tmp/mxkv_ab.2447.40.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:48 /tmp/mxkv_ab.2447.41.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:48 /tmp/mxkv_ab.2447.42.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:48 /tmp/mxkv_ab.2447.43.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:48 /tmp/mxkv_ab.2447.44.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:48 /tmp/mxkv_ab.2447.45.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:48 /tmp/mxkv_ab.2447.46.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:48 /tmp/mxkv_ab.2447.47.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:48 /tmp/mxkv_ab.2447.48.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:48 /tmp/mxkv_ab.2447.49.pt
+-rw-r--r-- 1 root root 2609961 Nov 22 21:48 /tmp/mxkv_ab.2447.5.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:48 /tmp/mxkv_ab.2447.50.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:48 /tmp/mxkv_ab.2447.51.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:49 /tmp/mxkv_ab.2447.52.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:49 /tmp/mxkv_ab.2447.53.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:49 /tmp/mxkv_ab.2447.54.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:49 /tmp/mxkv_ab.2447.55.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:49 /tmp/mxkv_ab.2447.56.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:49 /tmp/mxkv_ab.2447.57.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:49 /tmp/mxkv_ab.2447.58.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:49 /tmp/mxkv_ab.2447.59.pt
+-rw-r--r-- 1 root root 2609961 Nov 22 21:48 /tmp/mxkv_ab.2447.6.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:49 /tmp/mxkv_ab.2447.60.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:49 /tmp/mxkv_ab.2447.61.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:49 /tmp/mxkv_ab.2447.62.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:49 /tmp/mxkv_ab.2447.63.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:49 /tmp/mxkv_ab.2447.64.pt
+-rw-r--r-- 1 root root 2609961 Nov 22 21:48 /tmp/mxkv_ab.2447.7.pt
+-rw-r--r-- 1 root root 2609961 Nov 22 21:48 /tmp/mxkv_ab.2447.8.pt
+-rw-r--r-- 1 root root 2609961 Nov 22 21:48 /tmp/mxkv_ab.2447.9.pt
+-rw-r--r-- 1 root root 2609961 Nov 22 21:48 /tmp/mxkv_ab.2547.1.pt
+-rw-r--r-- 1 root root 2609973 Nov 22 21:48 /tmp/mxkv_ab.2547.10.pt
+-rw-r--r-- 1 root root 2609973 Nov 22 21:48 /tmp/mxkv_ab.2547.11.pt
+-rw-r--r-- 1 root root 2609973 Nov 22 21:48 /tmp/mxkv_ab.2547.12.pt
+-rw-r--r-- 1 root root 2609973 Nov 22 21:48 /tmp/mxkv_ab.2547.13.pt
+-rw-r--r-- 1 root root 2609973 Nov 22 21:48 /tmp/mxkv_ab.2547.14.pt
+-rw-r--r-- 1 root root 2609973 Nov 22 21:48 /tmp/mxkv_ab.2547.15.pt
+-rw-r--r-- 1 root root 2609973 Nov 22 21:48 /tmp/mxkv_ab.2547.16.pt
+-rw-r--r-- 1 root root 2609973 Nov 22 21:48 /tmp/mxkv_ab.2547.17.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:48 /tmp/mxkv_ab.2547.18.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:48 /tmp/mxkv_ab.2547.19.pt
+-rw-r--r-- 1 root root 2609961 Nov 22 21:48 /tmp/mxkv_ab.2547.2.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:48 /tmp/mxkv_ab.2547.20.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:48 /tmp/mxkv_ab.2547.21.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:48 /tmp/mxkv_ab.2547.22.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:48 /tmp/mxkv_ab.2547.23.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:48 /tmp/mxkv_ab.2547.24.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:48 /tmp/mxkv_ab.2547.25.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:48 /tmp/mxkv_ab.2547.26.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:48 /tmp/mxkv_ab.2547.27.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:48 /tmp/mxkv_ab.2547.28.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:48 /tmp/mxkv_ab.2547.29.pt
+-rw-r--r-- 1 root root 2609961 Nov 22 21:48 /tmp/mxkv_ab.2547.3.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:48 /tmp/mxkv_ab.2547.30.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:48 /tmp/mxkv_ab.2547.31.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:48 /tmp/mxkv_ab.2547.32.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:48 /tmp/mxkv_ab.2547.33.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:48 /tmp/mxkv_ab.2547.34.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:48 /tmp/mxkv_ab.2547.35.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:48 /tmp/mxkv_ab.2547.36.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:48 /tmp/mxkv_ab.2547.37.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:48 /tmp/mxkv_ab.2547.38.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:48 /tmp/mxkv_ab.2547.39.pt
+-rw-r--r-- 1 root root 2609961 Nov 22 21:48 /tmp/mxkv_ab.2547.4.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:48 /tmp/mxkv_ab.2547.40.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:48 /tmp/mxkv_ab.2547.41.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:48 /tmp/mxkv_ab.2547.42.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:48 /tmp/mxkv_ab.2547.43.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:48 /tmp/mxkv_ab.2547.44.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:48 /tmp/mxkv_ab.2547.45.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:48 /tmp/mxkv_ab.2547.46.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:48 /tmp/mxkv_ab.2547.47.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:48 /tmp/mxkv_ab.2547.48.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:48 /tmp/mxkv_ab.2547.49.pt
+-rw-r--r-- 1 root root 2609961 Nov 22 21:48 /tmp/mxkv_ab.2547.5.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:48 /tmp/mxkv_ab.2547.50.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:48 /tmp/mxkv_ab.2547.51.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:49 /tmp/mxkv_ab.2547.52.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:49 /tmp/mxkv_ab.2547.53.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:49 /tmp/mxkv_ab.2547.54.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:49 /tmp/mxkv_ab.2547.55.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:49 /tmp/mxkv_ab.2547.56.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:49 /tmp/mxkv_ab.2547.57.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:49 /tmp/mxkv_ab.2547.58.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:49 /tmp/mxkv_ab.2547.59.pt
+-rw-r--r-- 1 root root 2609961 Nov 22 21:48 /tmp/mxkv_ab.2547.6.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:49 /tmp/mxkv_ab.2547.60.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:49 /tmp/mxkv_ab.2547.61.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:49 /tmp/mxkv_ab.2547.62.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:49 /tmp/mxkv_ab.2547.63.pt
+-rw-r--r-- 1 root root 2535413 Nov 22 21:49 /tmp/mxkv_ab.2547.64.pt
+-rw-r--r-- 1 root root 2609961 Nov 22 21:48 /tmp/mxkv_ab.2547.7.pt
+-rw-r--r-- 1 root root 2609961 Nov 22 21:48 /tmp/mxkv_ab.2547.8.pt
+-rw-r--r-- 1 root root 2609961 Nov 22 21:48 /tmp/mxkv_ab.2547.9.pt
+=== AB verdict lines ===
+(Worker_TP0 pid=2447) INFO 11-22 21:48:39 [engine.py:359] MXKV AB n=1 fmt=mxk8v4 rows=152 dmax=7.812e-03 dmean=6.112e-04 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=0 saved=/tmp/mxkv_ab.2447.1.pt
+(Worker_TP1 pid=2547) INFO 11-22 21:48:39 [engine.py:359] MXKV AB n=1 fmt=mxk8v4 rows=152 dmax=1.562e-02 dmean=8.514e-04 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=0 saved=/tmp/mxkv_ab.2547.1.pt
+(Worker_TP0 pid=2447) INFO 11-22 21:48:39 [engine.py:359] MXKV AB n=2 fmt=mxk8v4 rows=152 dmax=2.344e-02 dmean=7.398e-04 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=435200000 saved=/tmp/mxkv_ab.2447.2.pt
+(Worker_TP1 pid=2547) INFO 11-22 21:48:39 [engine.py:359] MXKV AB n=2 fmt=mxk8v4 rows=152 dmax=1.562e-02 dmean=6.457e-04 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=435200000 saved=/tmp/mxkv_ab.2547.2.pt
+(Worker_TP1 pid=2547) INFO 11-22 21:48:39 [engine.py:359] MXKV AB n=3 fmt=mxk8v4 rows=152 dmax=1.953e-02 dmean=8.646e-04 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=870400000 saved=/tmp/mxkv_ab.2547.3.pt
+(Worker_TP0 pid=2447) INFO 11-22 21:48:39 [engine.py:359] MXKV AB n=3 fmt=mxk8v4 rows=152 dmax=2.734e-02 dmean=6.955e-04 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=870400000 saved=/tmp/mxkv_ab.2447.3.pt
+(Worker_TP0 pid=2447) INFO 11-22 21:48:39 [engine.py:359] MXKV AB n=4 fmt=mxk8v4 rows=152 dmax=1.855e-02 dmean=8.756e-04 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=1305600000 saved=/tmp/mxkv_ab.2447.4.pt
+(Worker_TP1 pid=2547) INFO 11-22 21:48:39 [engine.py:359] MXKV AB n=4 fmt=mxk8v4 rows=152 dmax=1.660e-02 dmean=5.363e-04 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=1305600000 saved=/tmp/mxkv_ab.2547.4.pt
+(Worker_TP0 pid=2447) INFO 11-22 21:48:39 [engine.py:359] MXKV AB n=5 fmt=mxk8v4 rows=152 dmax=2.734e-02 dmean=8.430e-04 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=1740800000 saved=/tmp/mxkv_ab.2447.5.pt
+(Worker_TP1 pid=2547) INFO 11-22 21:48:39 [engine.py:359] MXKV AB n=5 fmt=mxk8v4 rows=152 dmax=3.516e-02 dmean=8.585e-04 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=1740800000 saved=/tmp/mxkv_ab.2547.5.pt
+(Worker_TP0 pid=2447) INFO 11-22 21:48:39 [engine.py:359] MXKV AB n=6 fmt=mxk8v4 rows=152 dmax=8.594e-02 dmean=1.075e-03 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=2176000000 saved=/tmp/mxkv_ab.2447.6.pt
+(Worker_TP1 pid=2547) INFO 11-22 21:48:39 [engine.py:359] MXKV AB n=6 fmt=mxk8v4 rows=152 dmax=5.469e-02 dmean=1.106e-03 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=2176000000 saved=/tmp/mxkv_ab.2547.6.pt
+(Worker_TP1 pid=2547) INFO 11-22 21:48:39 [engine.py:359] MXKV AB n=7 fmt=mxk8v4 rows=152 dmax=1.797e-01 dmean=1.634e-03 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=2611200000 saved=/tmp/mxkv_ab.2547.7.pt
+(Worker_TP0 pid=2447) INFO 11-22 21:48:39 [engine.py:359] MXKV AB n=7 fmt=mxk8v4 rows=152 dmax=2.031e-01 dmean=1.212e-03 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=2611200000 saved=/tmp/mxkv_ab.2447.7.pt
+(Worker_TP0 pid=2447) INFO 11-22 21:48:39 [engine.py:359] MXKV AB n=8 fmt=mxk8v4 rows=152 dmax=3.125e-01 dmean=1.445e-03 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=3046400000 saved=/tmp/mxkv_ab.2447.8.pt
+(Worker_TP1 pid=2547) INFO 11-22 21:48:39 [engine.py:359] MXKV AB n=8 fmt=mxk8v4 rows=152 dmax=2.344e-01 dmean=1.742e-03 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=3046400000 saved=/tmp/mxkv_ab.2547.8.pt
+(Worker_TP1 pid=2547) INFO 11-22 21:48:39 [engine.py:359] MXKV AB n=9 fmt=mxk8v4 rows=152 dmax=2.188e-01 dmean=1.414e-03 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=3481600000 saved=/tmp/mxkv_ab.2547.9.pt
+(Worker_TP0 pid=2447) INFO 11-22 21:48:39 [engine.py:359] MXKV AB n=9 fmt=mxk8v4 rows=152 dmax=1.328e-01 dmean=1.246e-03 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=3481600000 saved=/tmp/mxkv_ab.2447.9.pt
+(Worker_TP0 pid=2447) INFO 11-22 21:48:39 [engine.py:359] MXKV AB n=10 fmt=mxk8v4 rows=152 dmax=1.172e-01 dmean=1.256e-03 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=3916800000 saved=/tmp/mxkv_ab.2447.10.pt
+(Worker_TP1 pid=2547) INFO 11-22 21:48:39 [engine.py:359] MXKV AB n=10 fmt=mxk8v4 rows=152 dmax=1.094e-01 dmean=1.319e-03 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=3916800000 saved=/tmp/mxkv_ab.2547.10.pt
+(Worker_TP0 pid=2447) INFO 11-22 21:48:39 [engine.py:359] MXKV AB n=11 fmt=mxk8v4 rows=152 dmax=2.969e-01 dmean=1.309e-03 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=4352000000 saved=/tmp/mxkv_ab.2447.11.pt
+(Worker_TP1 pid=2547) INFO 11-22 21:48:39 [engine.py:359] MXKV AB n=11 fmt=mxk8v4 rows=152 dmax=1.719e-01 dmean=1.579e-03 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=4352000000 saved=/tmp/mxkv_ab.2547.11.pt
+(Worker_TP0 pid=2447) INFO 11-22 21:48:39 [engine.py:359] MXKV AB n=12 fmt=mxk8v4 rows=152 dmax=2.656e-01 dmean=1.483e-03 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=4787200000 saved=/tmp/mxkv_ab.2447.12.pt
+(Worker_TP1 pid=2547) INFO 11-22 21:48:39 [engine.py:359] MXKV AB n=12 fmt=mxk8v4 rows=152 dmax=2.812e-01 dmean=1.703e-03 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=4787200000 saved=/tmp/mxkv_ab.2547.12.pt
+(Worker_TP0 pid=2447) INFO 11-22 21:48:39 [engine.py:359] MXKV AB n=13 fmt=mxk8v4 rows=152 dmax=1.875e-01 dmean=1.496e-03 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=5222400000 saved=/tmp/mxkv_ab.2447.13.pt
+(Worker_TP1 pid=2547) INFO 11-22 21:48:39 [engine.py:359] MXKV AB n=13 fmt=mxk8v4 rows=152 dmax=1.719e-01 dmean=1.834e-03 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=5222400000 saved=/tmp/mxkv_ab.2547.13.pt
+(Worker_TP1 pid=2547) INFO 11-22 21:48:39 [engine.py:359] MXKV AB n=14 fmt=mxk8v4 rows=152 dmax=7.812e-02 dmean=1.919e-03 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=5657600000 saved=/tmp/mxkv_ab.2547.14.pt
+(Worker_TP0 pid=2447) INFO 11-22 21:48:39 [engine.py:359] MXKV AB n=14 fmt=mxk8v4 rows=152 dmax=4.688e-02 dmean=1.967e-03 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=5657600000 saved=/tmp/mxkv_ab.2447.14.pt
+(Worker_TP1 pid=2547) INFO 11-22 21:48:39 [engine.py:359] MXKV AB n=15 fmt=mxk8v4 rows=152 dmax=7.812e-02 dmean=2.959e-03 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=6092800000 saved=/tmp/mxkv_ab.2547.15.pt
+(Worker_TP0 pid=2447) INFO 11-22 21:48:39 [engine.py:359] MXKV AB n=15 fmt=mxk8v4 rows=152 dmax=3.125e-01 dmean=2.997e-03 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=6092800000 saved=/tmp/mxkv_ab.2447.15.pt
+(Worker_TP1 pid=2547) INFO 11-22 21:48:39 [engine.py:359] MXKV AB n=16 fmt=mxk8v4 rows=152 dmax=6.250e-02 dmean=4.435e-03 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=6528000000 saved=/tmp/mxkv_ab.2547.16.pt
+(Worker_TP0 pid=2447) INFO 11-22 21:48:39 [engine.py:359] MXKV AB n=16 fmt=mxk8v4 rows=152 dmax=1.250e-01 dmean=5.135e-03 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=6528000000 saved=/tmp/mxkv_ab.2447.16.pt
+(Worker_TP0 pid=2447) INFO 11-22 21:48:39 [engine.py:359] MXKV AB n=17 fmt=mxk8v4 rows=152 dmax=1.875e-01 dmean=7.544e-03 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=6963200000 saved=/tmp/mxkv_ab.2447.17.pt
+(Worker_TP1 pid=2547) INFO 11-22 21:48:39 [engine.py:359] MXKV AB n=17 fmt=mxk8v4 rows=152 dmax=1.094e-01 dmean=2.142e-03 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=6963200000 saved=/tmp/mxkv_ab.2547.17.pt
+(Worker_TP1 pid=2547) INFO 11-22 21:48:40 [engine.py:359] MXKV AB n=18 fmt=mxk8v4 rows=4 dmax=1.367e-02 dmean=8.240e-04 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=0 saved=/tmp/mxkv_ab.2547.18.pt
+(Worker_TP0 pid=2447) INFO 11-22 21:48:40 [engine.py:359] MXKV AB n=18 fmt=mxk8v4 rows=4 dmax=7.812e-03 dmean=5.634e-04 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=0 saved=/tmp/mxkv_ab.2447.18.pt
+(Worker_TP1 pid=2547) INFO 11-22 21:48:40 [engine.py:359] MXKV AB n=19 fmt=mxk8v4 rows=4 dmax=7.812e-03 dmean=5.934e-04 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=435200000 saved=/tmp/mxkv_ab.2547.19.pt
+(Worker_TP0 pid=2447) INFO 11-22 21:48:40 [engine.py:359] MXKV AB n=19 fmt=mxk8v4 rows=4 dmax=1.172e-02 dmean=7.312e-04 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=435200000 saved=/tmp/mxkv_ab.2447.19.pt
+(Worker_TP1 pid=2547) INFO 11-22 21:48:40 [engine.py:359] MXKV AB n=20 fmt=mxk8v4 rows=4 dmax=2.734e-02 dmean=8.365e-04 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=870400000 saved=/tmp/mxkv_ab.2547.20.pt
+(Worker_TP0 pid=2447) INFO 11-22 21:48:40 [engine.py:359] MXKV AB n=20 fmt=mxk8v4 rows=4 dmax=1.953e-02 dmean=5.992e-04 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=870400000 saved=/tmp/mxkv_ab.2447.20.pt
+(Worker_TP1 pid=2547) INFO 11-22 21:48:40 [engine.py:359] MXKV AB n=21 fmt=mxk8v4 rows=4 dmax=1.025e-02 dmean=6.222e-04 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=1305600000 saved=/tmp/mxkv_ab.2547.21.pt
+(Worker_TP0 pid=2447) INFO 11-22 21:48:40 [engine.py:359] MXKV AB n=21 fmt=mxk8v4 rows=4 dmax=1.465e-02 dmean=9.984e-04 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=1305600000 saved=/tmp/mxkv_ab.2447.21.pt
+(Worker_TP1 pid=2547) INFO 11-22 21:48:40 [engine.py:359] MXKV AB n=22 fmt=mxk8v4 rows=4 dmax=2.344e-02 dmean=8.683e-04 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=1740800000 saved=/tmp/mxkv_ab.2547.22.pt
+(Worker_TP0 pid=2447) INFO 11-22 21:48:40 [engine.py:359] MXKV AB n=22 fmt=mxk8v4 rows=4 dmax=3.125e-02 dmean=9.010e-04 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=1740800000 saved=/tmp/mxkv_ab.2447.22.pt
+(Worker_TP1 pid=2547) INFO 11-22 21:48:40 [engine.py:359] MXKV AB n=23 fmt=mxk8v4 rows=4 dmax=3.125e-02 dmean=9.896e-04 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=2176000000 saved=/tmp/mxkv_ab.2547.23.pt
+(Worker_TP0 pid=2447) INFO 11-22 21:48:40 [engine.py:359] MXKV AB n=23 fmt=mxk8v4 rows=4 dmax=7.422e-02 dmean=1.181e-03 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=2176000000 saved=/tmp/mxkv_ab.2447.23.pt
+(Worker_TP1 pid=2547) INFO 11-22 21:48:40 [engine.py:359] MXKV AB n=24 fmt=mxk8v4 rows=4 dmax=1.250e-01 dmean=1.942e-03 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=2611200000 saved=/tmp/mxkv_ab.2547.24.pt
+(Worker_TP0 pid=2447) INFO 11-22 21:48:40 [engine.py:359] MXKV AB n=24 fmt=mxk8v4 rows=4 dmax=1.406e-01 dmean=1.100e-03 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=2611200000 saved=/tmp/mxkv_ab.2447.24.pt
+(Worker_TP1 pid=2547) INFO 11-22 21:48:40 [engine.py:359] MXKV AB n=25 fmt=mxk8v4 rows=4 dmax=1.719e-01 dmean=1.940e-03 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=3046400000 saved=/tmp/mxkv_ab.2547.25.pt
+(Worker_TP0 pid=2447) INFO 11-22 21:48:40 [engine.py:359] MXKV AB n=25 fmt=mxk8v4 rows=4 dmax=1.406e-01 dmean=1.154e-03 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=3046400000 saved=/tmp/mxkv_ab.2447.25.pt
+(Worker_TP1 pid=2547) INFO 11-22 21:48:40 [engine.py:359] MXKV AB n=26 fmt=mxk8v4 rows=4 dmax=2.031e-01 dmean=1.414e-03 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=3481600000 saved=/tmp/mxkv_ab.2547.26.pt
+(Worker_TP0 pid=2447) INFO 11-22 21:48:40 [engine.py:359] MXKV AB n=26 fmt=mxk8v4 rows=4 dmax=1.484e-01 dmean=1.233e-03 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=3481600000 saved=/tmp/mxkv_ab.2447.26.pt
+(Worker_TP1 pid=2547) INFO 11-22 21:48:40 [engine.py:359] MXKV AB n=27 fmt=mxk8v4 rows=4 dmax=1.016e-01 dmean=1.095e-03 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=3916800000 saved=/tmp/mxkv_ab.2547.27.pt
+(Worker_TP0 pid=2447) INFO 11-22 21:48:40 [engine.py:359] MXKV AB n=27 fmt=mxk8v4 rows=4 dmax=8.594e-02 dmean=1.131e-03 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=3916800000 saved=/tmp/mxkv_ab.2447.27.pt
+(Worker_TP1 pid=2547) INFO 11-22 21:48:40 [engine.py:359] MXKV AB n=28 fmt=mxk8v4 rows=4 dmax=1.250e-01 dmean=1.541e-03 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=4352000000 saved=/tmp/mxkv_ab.2547.28.pt
+(Worker_TP0 pid=2447) INFO 11-22 21:48:40 [engine.py:359] MXKV AB n=28 fmt=mxk8v4 rows=4 dmax=1.875e-01 dmean=1.233e-03 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=4352000000 saved=/tmp/mxkv_ab.2447.28.pt
+(Worker_TP1 pid=2547) INFO 11-22 21:48:40 [engine.py:359] MXKV AB n=29 fmt=mxk8v4 rows=4 dmax=2.188e-01 dmean=1.809e-03 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=4787200000 saved=/tmp/mxkv_ab.2547.29.pt
+(Worker_TP0 pid=2447) INFO 11-22 21:48:40 [engine.py:359] MXKV AB n=29 fmt=mxk8v4 rows=4 dmax=1.172e-01 dmean=1.380e-03 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=4787200000 saved=/tmp/mxkv_ab.2447.29.pt
+(Worker_TP1 pid=2547) INFO 11-22 21:48:40 [engine.py:359] MXKV AB n=30 fmt=mxk8v4 rows=4 dmax=9.375e-02 dmean=1.842e-03 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=5222400000 saved=/tmp/mxkv_ab.2547.30.pt
+(Worker_TP0 pid=2447) INFO 11-22 21:48:40 [engine.py:359] MXKV AB n=30 fmt=mxk8v4 rows=4 dmax=1.094e-01 dmean=1.469e-03 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=5222400000 saved=/tmp/mxkv_ab.2447.30.pt
+(Worker_TP1 pid=2547) INFO 11-22 21:48:40 [engine.py:359] MXKV AB n=31 fmt=mxk8v4 rows=4 dmax=3.125e-02 dmean=1.902e-03 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=5657600000 saved=/tmp/mxkv_ab.2547.31.pt
+(Worker_TP0 pid=2447) INFO 11-22 21:48:40 [engine.py:359] MXKV AB n=31 fmt=mxk8v4 rows=4 dmax=3.125e-02 dmean=1.924e-03 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=5657600000 saved=/tmp/mxkv_ab.2447.31.pt
+(Worker_TP1 pid=2547) INFO 11-22 21:48:40 [engine.py:359] MXKV AB n=32 fmt=mxk8v4 rows=4 dmax=6.250e-02 dmean=2.866e-03 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=6092800000 saved=/tmp/mxkv_ab.2547.32.pt
+(Worker_TP0 pid=2447) INFO 11-22 21:48:40 [engine.py:359] MXKV AB n=32 fmt=mxk8v4 rows=4 dmax=2.500e-01 dmean=2.814e-03 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=6092800000 saved=/tmp/mxkv_ab.2447.32.pt
+(Worker_TP1 pid=2547) INFO 11-22 21:48:40 [engine.py:359] MXKV AB n=33 fmt=mxk8v4 rows=4 dmax=6.250e-02 dmean=4.503e-03 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=6528000000 saved=/tmp/mxkv_ab.2547.33.pt
+(Worker_TP0 pid=2447) INFO 11-22 21:48:40 [engine.py:359] MXKV AB n=33 fmt=mxk8v4 rows=4 dmax=6.250e-02 dmean=5.101e-03 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=6528000000 saved=/tmp/mxkv_ab.2447.33.pt
+(Worker_TP0 pid=2447) INFO 11-22 21:48:40 [engine.py:359] MXKV AB n=34 fmt=mxk8v4 rows=4 dmax=1.172e-01 dmean=6.614e-03 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=6963200000 saved=/tmp/mxkv_ab.2447.34.pt
+(Worker_TP1 pid=2547) INFO 11-22 21:48:40 [engine.py:359] MXKV AB n=34 fmt=mxk8v4 rows=4 dmax=8.203e-02 dmean=2.234e-03 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=6963200000 saved=/tmp/mxkv_ab.2547.34.pt
+(Worker_TP0 pid=2447) INFO 11-22 21:48:40 [engine.py:359] MXKV AB n=35 fmt=mxk8v4 rows=4 dmax=7.812e-03 dmean=5.726e-04 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=0 saved=/tmp/mxkv_ab.2447.35.pt
+(Worker_TP1 pid=2547) INFO 11-22 21:48:40 [engine.py:359] MXKV AB n=35 fmt=mxk8v4 rows=4 dmax=1.562e-02 dmean=8.223e-04 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=0 saved=/tmp/mxkv_ab.2547.35.pt
+(Worker_TP0 pid=2447) INFO 11-22 21:48:40 [engine.py:359] MXKV AB n=36 fmt=mxk8v4 rows=4 dmax=2.344e-02 dmean=7.786e-04 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=435200000 saved=/tmp/mxkv_ab.2447.36.pt
+(Worker_TP1 pid=2547) INFO 11-22 21:48:40 [engine.py:359] MXKV AB n=36 fmt=mxk8v4 rows=4 dmax=7.812e-03 dmean=6.060e-04 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=435200000 saved=/tmp/mxkv_ab.2547.36.pt
+(Worker_TP0 pid=2447) INFO 11-22 21:48:40 [engine.py:359] MXKV AB n=37 fmt=mxk8v4 rows=4 dmax=1.953e-02 dmean=6.784e-04 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=870400000 saved=/tmp/mxkv_ab.2447.37.pt
+(Worker_TP1 pid=2547) INFO 11-22 21:48:40 [engine.py:359] MXKV AB n=37 fmt=mxk8v4 rows=4 dmax=1.562e-02 dmean=7.979e-04 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=870400000 saved=/tmp/mxkv_ab.2547.37.pt
+(Worker_TP0 pid=2447) INFO 11-22 21:48:40 [engine.py:359] MXKV AB n=38 fmt=mxk8v4 rows=4 dmax=1.562e-02 dmean=7.208e-04 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=1305600000 saved=/tmp/mxkv_ab.2447.38.pt
+(Worker_TP1 pid=2547) INFO 11-22 21:48:40 [engine.py:359] MXKV AB n=38 fmt=mxk8v4 rows=4 dmax=1.562e-02 dmean=6.535e-04 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=1305600000 saved=/tmp/mxkv_ab.2547.38.pt
+(Worker_TP0 pid=2447) INFO 11-22 21:48:40 [engine.py:359] MXKV AB n=39 fmt=mxk8v4 rows=4 dmax=2.344e-02 dmean=8.469e-04 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=1740800000 saved=/tmp/mxkv_ab.2447.39.pt
+(Worker_TP1 pid=2547) INFO 11-22 21:48:40 [engine.py:359] MXKV AB n=39 fmt=mxk8v4 rows=4 dmax=3.125e-02 dmean=8.811e-04 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=1740800000 saved=/tmp/mxkv_ab.2547.39.pt
+(Worker_TP0 pid=2447) INFO 11-22 21:48:40 [engine.py:359] MXKV AB n=40 fmt=mxk8v4 rows=4 dmax=6.641e-02 dmean=8.450e-04 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=2176000000 saved=/tmp/mxkv_ab.2447.40.pt
+(Worker_TP1 pid=2547) INFO 11-22 21:48:40 [engine.py:359] MXKV AB n=40 fmt=mxk8v4 rows=4 dmax=4.297e-02 dmean=1.145e-03 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=2176000000 saved=/tmp/mxkv_ab.2547.40.pt
+(Worker_TP0 pid=2447) INFO 11-22 21:48:40 [engine.py:359] MXKV AB n=41 fmt=mxk8v4 rows=4 dmax=1.250e-01 dmean=1.094e-03 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=2611200000 saved=/tmp/mxkv_ab.2447.41.pt
+(Worker_TP1 pid=2547) INFO 11-22 21:48:40 [engine.py:359] MXKV AB n=41 fmt=mxk8v4 rows=4 dmax=1.016e-01 dmean=1.723e-03 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=2611200000 saved=/tmp/mxkv_ab.2547.41.pt
+(Worker_TP0 pid=2447) INFO 11-22 21:48:40 [engine.py:359] MXKV AB n=42 fmt=mxk8v4 rows=4 dmax=2.031e-01 dmean=1.386e-03 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=3046400000 saved=/tmp/mxkv_ab.2447.42.pt
+(Worker_TP1 pid=2547) INFO 11-22 21:48:40 [engine.py:359] MXKV AB n=42 fmt=mxk8v4 rows=4 dmax=2.500e-01 dmean=1.784e-03 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=3046400000 saved=/tmp/mxkv_ab.2547.42.pt
+(Worker_TP0 pid=2447) INFO 11-22 21:48:40 [engine.py:359] MXKV AB n=43 fmt=mxk8v4 rows=4 dmax=1.562e-01 dmean=1.162e-03 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=3481600000 saved=/tmp/mxkv_ab.2447.43.pt
+(Worker_TP1 pid=2547) INFO 11-22 21:48:40 [engine.py:359] MXKV AB n=43 fmt=mxk8v4 rows=4 dmax=1.562e-01 dmean=1.192e-03 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=3481600000 saved=/tmp/mxkv_ab.2547.43.pt
+(Worker_TP0 pid=2447) INFO 11-22 21:48:40 [engine.py:359] MXKV AB n=44 fmt=mxk8v4 rows=4 dmax=1.562e-01 dmean=1.394e-03 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=3916800000 saved=/tmp/mxkv_ab.2447.44.pt
+(Worker_TP1 pid=2547) INFO 11-22 21:48:40 [engine.py:359] MXKV AB n=44 fmt=mxk8v4 rows=4 dmax=7.031e-02 dmean=1.173e-03 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=3916800000 saved=/tmp/mxkv_ab.2547.44.pt
+(Worker_TP0 pid=2447) INFO 11-22 21:48:40 [engine.py:359] MXKV AB n=45 fmt=mxk8v4 rows=4 dmax=1.250e-01 dmean=1.156e-03 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=4352000000 saved=/tmp/mxkv_ab.2447.45.pt
+(Worker_TP1 pid=2547) INFO 11-22 21:48:40 [engine.py:359] MXKV AB n=45 fmt=mxk8v4 rows=4 dmax=1.172e-01 dmean=1.535e-03 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=4352000000 saved=/tmp/mxkv_ab.2547.45.pt
+(Worker_TP0 pid=2447) INFO 11-22 21:48:40 [engine.py:359] MXKV AB n=46 fmt=mxk8v4 rows=4 dmax=1.562e-01 dmean=1.272e-03 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=4787200000 saved=/tmp/mxkv_ab.2447.46.pt
+(Worker_TP1 pid=2547) INFO 11-22 21:48:40 [engine.py:359] MXKV AB n=46 fmt=mxk8v4 rows=4 dmax=2.344e-01 dmean=1.634e-03 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=4787200000 saved=/tmp/mxkv_ab.2547.46.pt
+(Worker_TP0 pid=2447) INFO 11-22 21:48:40 [engine.py:359] MXKV AB n=47 fmt=mxk8v4 rows=4 dmax=9.375e-02 dmean=1.368e-03 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=5222400000 saved=/tmp/mxkv_ab.2447.47.pt
+(Worker_TP1 pid=2547) INFO 11-22 21:48:40 [engine.py:359] MXKV AB n=47 fmt=mxk8v4 rows=4 dmax=1.250e-01 dmean=1.753e-03 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=5222400000 saved=/tmp/mxkv_ab.2547.47.pt
+(Worker_TP0 pid=2447) INFO 11-22 21:48:40 [engine.py:359] MXKV AB n=48 fmt=mxk8v4 rows=4 dmax=1.953e-02 dmean=1.734e-03 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=5657600000 saved=/tmp/mxkv_ab.2447.48.pt
+(Worker_TP1 pid=2547) INFO 11-22 21:48:40 [engine.py:359] MXKV AB n=48 fmt=mxk8v4 rows=4 dmax=4.688e-02 dmean=1.717e-03 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=5657600000 saved=/tmp/mxkv_ab.2547.48.pt
+(Worker_TP0 pid=2447) INFO 11-22 21:48:40 [engine.py:359] MXKV AB n=49 fmt=mxk8v4 rows=4 dmax=2.500e-01 dmean=2.554e-03 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=6092800000 saved=/tmp/mxkv_ab.2447.49.pt
+(Worker_TP1 pid=2547) INFO 11-22 21:48:40 [engine.py:359] MXKV AB n=49 fmt=mxk8v4 rows=4 dmax=6.250e-02 dmean=2.759e-03 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=6092800000 saved=/tmp/mxkv_ab.2547.49.pt
+(Worker_TP0 pid=2447) INFO 11-22 21:48:40 [engine.py:359] MXKV AB n=50 fmt=mxk8v4 rows=4 dmax=6.250e-02 dmean=5.124e-03 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=6528000000 saved=/tmp/mxkv_ab.2447.50.pt
+(Worker_TP1 pid=2547) INFO 11-22 21:48:40 [engine.py:359] MXKV AB n=50 fmt=mxk8v4 rows=4 dmax=6.250e-02 dmean=4.505e-03 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=6528000000 saved=/tmp/mxkv_ab.2547.50.pt
+(Worker_TP0 pid=2447) INFO 11-22 21:48:40 [engine.py:359] MXKV AB n=51 fmt=mxk8v4 rows=4 dmax=9.375e-02 dmean=6.903e-03 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=6963200000 saved=/tmp/mxkv_ab.2447.51.pt
+(Worker_TP1 pid=2547) INFO 11-22 21:48:40 [engine.py:359] MXKV AB n=51 fmt=mxk8v4 rows=4 dmax=7.812e-02 dmean=2.252e-03 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=6963200000 saved=/tmp/mxkv_ab.2547.51.pt
+(Worker_TP1 pid=2547) INFO 11-22 21:49:14 [engine.py:359] MXKV AB n=52 fmt=mxk8v4 rows=4 dmax=2.422e-01 dmean=1.252e-02 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=0 saved=/tmp/mxkv_ab.2547.52.pt
+(Worker_TP0 pid=2447) INFO 11-22 21:49:14 [engine.py:359] MXKV AB n=52 fmt=mxk8v4 rows=4 dmax=6.653e-02 dmean=4.359e-03 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=0 saved=/tmp/mxkv_ab.2447.52.pt
+(Worker_TP1 pid=2547) INFO 11-22 21:49:14 [engine.py:359] MXKV AB n=53 fmt=mxk8v4 rows=4 dmax=1.086e-01 dmean=1.334e-02 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=435200000 saved=/tmp/mxkv_ab.2547.53.pt
+(Worker_TP0 pid=2447) INFO 11-22 21:49:14 [engine.py:359] MXKV AB n=53 fmt=mxk8v4 rows=4 dmax=1.953e-01 dmean=1.297e-02 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=435200000 saved=/tmp/mxkv_ab.2447.53.pt
+(Worker_TP1 pid=2547) INFO 11-22 21:49:14 [engine.py:359] MXKV AB n=54 fmt=mxk8v4 rows=4 dmax=2.500e-01 dmean=2.858e-02 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=870400000 saved=/tmp/mxkv_ab.2547.54.pt
+(Worker_TP0 pid=2447) INFO 11-22 21:49:14 [engine.py:359] MXKV AB n=54 fmt=mxk8v4 rows=4 dmax=4.771e-01 dmean=2.119e-02 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=870400000 saved=/tmp/mxkv_ab.2447.54.pt
+(Worker_TP1 pid=2547) INFO 11-22 21:49:14 [engine.py:359] MXKV AB n=55 fmt=mxk8v4 rows=4 dmax=1.257e-01 dmean=1.742e-02 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=1305600000 saved=/tmp/mxkv_ab.2547.55.pt
+(Worker_TP0 pid=2447) INFO 11-22 21:49:14 [engine.py:359] MXKV AB n=55 fmt=mxk8v4 rows=4 dmax=2.397e-01 dmean=2.042e-02 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=1305600000 saved=/tmp/mxkv_ab.2447.55.pt
+(Worker_TP1 pid=2547) INFO 11-22 21:49:14 [engine.py:359] MXKV AB n=56 fmt=mxk8v4 rows=4 dmax=2.358e-01 dmean=1.334e-02 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=1740800000 saved=/tmp/mxkv_ab.2547.56.pt
+(Worker_TP0 pid=2447) INFO 11-22 21:49:14 [engine.py:359] MXKV AB n=56 fmt=mxk8v4 rows=4 dmax=2.493e-01 dmean=1.595e-02 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=1740800000 saved=/tmp/mxkv_ab.2447.56.pt
+(Worker_TP1 pid=2547) INFO 11-22 21:49:14 [engine.py:359] MXKV AB n=57 fmt=mxk8v4 rows=4 dmax=7.168e-01 dmean=1.955e-02 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=2176000000 saved=/tmp/mxkv_ab.2547.57.pt
+(Worker_TP0 pid=2447) INFO 11-22 21:49:14 [engine.py:359] MXKV AB n=57 fmt=mxk8v4 rows=4 dmax=4.731e-01 dmean=1.180e-02 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=2176000000 saved=/tmp/mxkv_ab.2447.57.pt
+(Worker_TP1 pid=2547) INFO 11-22 21:49:14 [engine.py:359] MXKV AB n=58 fmt=mxk8v4 rows=4 dmax=4.624e-01 dmean=2.805e-02 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=2611200000 saved=/tmp/mxkv_ab.2547.58.pt
+(Worker_TP0 pid=2447) INFO 11-22 21:49:14 [engine.py:359] MXKV AB n=58 fmt=mxk8v4 rows=4 dmax=8.320e-01 dmean=1.455e-02 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=2611200000 saved=/tmp/mxkv_ab.2447.58.pt
+(Worker_TP1 pid=2547) INFO 11-22 21:49:14 [engine.py:359] MXKV AB n=59 fmt=mxk8v4 rows=4 dmax=2.432e-01 dmean=2.324e-02 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=3046400000 saved=/tmp/mxkv_ab.2547.59.pt
+(Worker_TP0 pid=2447) INFO 11-22 21:49:14 [engine.py:359] MXKV AB n=59 fmt=mxk8v4 rows=4 dmax=1.199e+00 dmean=1.637e-02 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=3046400000 saved=/tmp/mxkv_ab.2447.59.pt
+(Worker_TP1 pid=2547) INFO 11-22 21:49:14 [engine.py:359] MXKV AB n=60 fmt=mxk8v4 rows=4 dmax=1.629e+00 dmean=2.050e-02 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=3481600000 saved=/tmp/mxkv_ab.2547.60.pt
+(Worker_TP0 pid=2447) INFO 11-22 21:49:14 [engine.py:359] MXKV AB n=60 fmt=mxk8v4 rows=4 dmax=1.453e-01 dmean=1.284e-02 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=3481600000 saved=/tmp/mxkv_ab.2447.60.pt
+(Worker_TP1 pid=2547) INFO 11-22 21:49:14 [engine.py:359] MXKV AB n=61 fmt=mxk8v4 rows=4 dmax=1.143e+00 dmean=2.985e-02 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=3916800000 saved=/tmp/mxkv_ab.2547.61.pt
+(Worker_TP0 pid=2447) INFO 11-22 21:49:14 [engine.py:359] MXKV AB n=61 fmt=mxk8v4 rows=4 dmax=3.755e-01 dmean=1.474e-02 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=3916800000 saved=/tmp/mxkv_ab.2447.61.pt
+(Worker_TP1 pid=2547) INFO 11-22 21:49:14 [engine.py:359] MXKV AB n=62 fmt=mxk8v4 rows=4 dmax=3.096e-01 dmean=2.787e-02 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=4352000000 saved=/tmp/mxkv_ab.2547.62.pt
+(Worker_TP0 pid=2447) INFO 11-22 21:49:14 [engine.py:359] MXKV AB n=62 fmt=mxk8v4 rows=4 dmax=1.320e+00 dmean=2.301e-02 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=4352000000 saved=/tmp/mxkv_ab.2447.62.pt
+(Worker_TP1 pid=2547) INFO 11-22 21:49:14 [engine.py:359] MXKV AB n=63 fmt=mxk8v4 rows=4 dmax=1.818e+00 dmean=2.958e-02 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=4787200000 saved=/tmp/mxkv_ab.2547.63.pt
+(Worker_TP0 pid=2447) INFO 11-22 21:49:14 [engine.py:359] MXKV AB n=63 fmt=mxk8v4 rows=4 dmax=2.141e-01 dmean=2.253e-02 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=4787200000 saved=/tmp/mxkv_ab.2447.63.pt
+(Worker_TP1 pid=2547) INFO 11-22 21:49:14 [engine.py:359] MXKV AB n=64 fmt=mxk8v4 rows=4 dmax=1.213e+00 dmean=4.224e-02 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=5222400000 saved=/tmp/mxkv_ab.2547.64.pt
+(Worker_TP0 pid=2447) INFO 11-22 21:49:14 [engine.py:359] MXKV AB n=64 fmt=mxk8v4 rows=4 dmax=8.711e-01 dmean=2.955e-02 nan=0/0 kv_shape=(8500, 64, 2, 400) kv_stride=(51200, 800, 400, 1) off=5222400000 saved=/tmp/mxkv_ab.2447.64.pt
+=== r224b analysis ===
+/opt/venv/bin/python: can't open file '/root/build/r224b_ab_analyze.py': [Errno 2] No such file or directory
+R224A_LEG_DONE 21:49:48 payloads=128
+R224A: restoring W14 (21:49:50)
+R224A: W14 HEALTH 200 (21:55:20)

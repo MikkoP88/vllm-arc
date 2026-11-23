@@ -1,0 +1,743 @@
+== pool views seen (17 distinct):
+   shape=(12975, 64, 2, 272) stride=(34816, 544, 272, 1) off=0 -> dense-contiguous
+   shape=(12975, 64, 2, 272) stride=(34816, 544, 272, 1) off=451737600 -> dense-contiguous
+   shape=(12975, 64, 2, 272) stride=(34816, 544, 272, 1) off=903475200 -> dense-contiguous
+   shape=(12975, 64, 2, 272) stride=(34816, 544, 272, 1) off=1355212800 -> dense-contiguous
+   shape=(12975, 64, 2, 272) stride=(34816, 544, 272, 1) off=1806950400 -> dense-contiguous
+   shape=(12975, 64, 2, 272) stride=(34816, 544, 272, 1) off=2258688000 -> dense-contiguous
+   shape=(12975, 64, 2, 272) stride=(34816, 544, 272, 1) off=2710425600 -> dense-contiguous
+   shape=(12975, 64, 2, 272) stride=(34816, 544, 272, 1) off=3162163200 -> dense-contiguous
+   shape=(12975, 64, 2, 272) stride=(34816, 544, 272, 1) off=3613900800 -> dense-contiguous
+   shape=(12975, 64, 2, 272) stride=(34816, 544, 272, 1) off=4065638400 -> dense-contiguous
+   shape=(12975, 64, 2, 272) stride=(34816, 544, 272, 1) off=4517376000 -> dense-contiguous
+   shape=(12975, 64, 2, 272) stride=(34816, 544, 272, 1) off=4969113600 -> dense-contiguous
+   shape=(12975, 64, 2, 272) stride=(34816, 544, 272, 1) off=5420851200 -> dense-contiguous
+   shape=(12975, 64, 2, 272) stride=(34816, 544, 272, 1) off=5872588800 -> dense-contiguous
+   shape=(12975, 64, 2, 272) stride=(34816, 544, 272, 1) off=6324326400 -> dense-contiguous
+   shape=(12975, 64, 2, 272) stride=(34816, 544, 272, 1) off=6776064000 -> dense-contiguous
+   shape=(12975, 64, 2, 272) stride=(34816, 544, 272, 1) off=7227801600 -> dense-contiguous
+== mxkv_ab.1030.1.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=8199
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=0
+   dmax=7.812e-03 dmax8=7.812e-03 dmean=6.102e-04 exact=0.1028 >1e-3=0.1460 >1e-2=0.0000 nan=0/0
+   rows: r0(sl=8198,dmax=7.81e-03) r1(sl=8199,dmax=7.81e-03) r2(sl=8200,dmax=7.81e-03) r3(sl=8201,dmax=3.91e-03)
+   heads: h0=7.81e-03 h1=2.93e-03 h2=3.91e-03 h3=3.91e-03 h4=7.81e-03 h5=7.81e-03 h6=5.86e-03 h7=5.86e-03 h8=3.91e-03 h9=4.88e-03 h10=3.91e-03 h11=3.91e-03
+   bt0: [[25, 26, 27, 28], [25, 26, 27, 28], [25, 26, 27, 28], [25, 26, 27, 28]]
+== mxkv_ab.1030.10.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=8199
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=4065638400
+   dmax=1.562e-01 dmax8=1.562e-01 dmean=1.259e-03 exact=0.0918 >1e-3=0.3422 >1e-2=0.0037 nan=0/0
+   rows: r0(sl=8198,dmax=8.20e-02) r1(sl=8199,dmax=1.56e-01) r2(sl=8200,dmax=3.91e-02) r3(sl=8201,dmax=8.59e-02)
+   heads: h0=9.77e-03 h1=4.69e-02 h2=2.54e-02 h3=1.95e-02 h4=3.12e-02 h5=2.73e-02 h6=7.03e-02 h7=1.56e-01 h8=6.25e-02 h9=8.59e-02 h10=3.91e-02 h11=2.34e-02
+   bt0: [[25, 26, 27, 28], [25, 26, 27, 28], [25, 26, 27, 28], [25, 26, 27, 28]]
+== mxkv_ab.1030.11.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=8199
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=4517376000
+   dmax=8.594e-02 dmax8=8.594e-02 dmean=1.452e-03 exact=0.0890 >1e-3=0.3796 >1e-2=0.0080 nan=0/0
+   rows: r0(sl=8198,dmax=8.59e-02) r1(sl=8199,dmax=7.81e-02) r2(sl=8200,dmax=3.91e-02) r3(sl=8201,dmax=7.03e-02)
+   heads: h0=6.25e-02 h1=7.03e-02 h2=7.81e-02 h3=8.59e-02 h4=7.81e-03 h5=6.25e-02 h6=5.27e-02 h7=3.12e-02 h8=7.03e-02 h9=3.91e-02 h10=1.76e-02 h11=2.15e-02
+   bt0: [[25, 26, 27, 28], [25, 26, 27, 28], [25, 26, 27, 28], [25, 26, 27, 28]]
+== mxkv_ab.1030.12.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=8199
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=4969113600
+   dmax=1.562e-01 dmax8=1.562e-01 dmean=1.466e-03 exact=0.0722 >1e-3=0.3959 >1e-2=0.0066 nan=0/0
+   rows: r0(sl=8198,dmax=1.09e-01) r1(sl=8199,dmax=1.09e-01) r2(sl=8200,dmax=1.02e-01) r3(sl=8201,dmax=1.56e-01)
+   heads: h0=9.38e-02 h1=1.09e-01 h2=7.81e-02 h3=1.56e-01 h4=1.02e-01 h5=3.52e-02 h6=3.52e-02 h7=4.69e-02 h8=6.25e-02 h9=5.47e-02 h10=4.69e-02 h11=5.47e-02
+   bt0: [[25, 26, 27, 28], [25, 26, 27, 28], [25, 26, 27, 28], [25, 26, 27, 28]]
+== mxkv_ab.1030.13.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=8199
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=5420851200
+   dmax=7.812e-02 dmax8=7.812e-02 dmean=1.418e-03 exact=0.0758 >1e-3=0.3790 >1e-2=0.0090 nan=0/0
+   rows: r0(sl=8198,dmax=6.25e-02) r1(sl=8199,dmax=4.69e-02) r2(sl=8200,dmax=7.81e-02) r3(sl=8201,dmax=6.25e-02)
+   heads: h0=4.69e-02 h1=3.91e-02 h2=7.81e-02 h3=6.25e-02 h4=4.30e-02 h5=4.69e-02 h6=1.95e-02 h7=2.34e-02 h8=3.91e-02 h9=2.73e-02 h10=2.34e-02 h11=2.34e-02
+   bt0: [[25, 26, 27, 28], [25, 26, 27, 28], [25, 26, 27, 28], [25, 26, 27, 28]]
+== mxkv_ab.1030.14.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=8199
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=5872588800
+   dmax=6.250e-02 dmax8=6.250e-02 dmean=1.296e-03 exact=0.0859 >1e-3=0.3276 >1e-2=0.0111 nan=0/0
+   rows: r0(sl=8198,dmax=5.47e-02) r1(sl=8199,dmax=6.25e-02) r2(sl=8200,dmax=4.69e-02) r3(sl=8201,dmax=4.69e-02)
+   heads: h0=1.56e-02 h1=1.56e-02 h2=1.56e-02 h3=1.56e-02 h4=1.56e-02 h5=1.56e-02 h6=4.69e-02 h7=3.12e-02 h8=6.25e-02 h9=5.47e-02 h10=3.12e-02 h11=4.69e-02
+   bt0: [[25, 26, 27, 28], [25, 26, 27, 28], [25, 26, 27, 28], [25, 26, 27, 28]]
+== mxkv_ab.1030.15.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=8199
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=6324326400
+   dmax=4.688e-02 dmax8=4.688e-02 dmean=1.543e-03 exact=0.0868 >1e-3=0.3515 >1e-2=0.0183 nan=0/0
+   rows: r0(sl=8198,dmax=3.91e-02) r1(sl=8199,dmax=3.52e-02) r2(sl=8200,dmax=2.73e-02) r3(sl=8201,dmax=4.69e-02)
+   heads: h0=3.91e-02 h1=3.12e-02 h2=4.69e-02 h3=2.34e-02 h4=3.91e-02 h5=3.12e-02 h6=3.52e-02 h7=2.73e-02 h8=1.56e-02 h9=1.56e-02 h10=1.56e-02 h11=2.34e-02
+   bt0: [[25, 26, 27, 28], [25, 26, 27, 28], [25, 26, 27, 28], [25, 26, 27, 28]]
+== mxkv_ab.1030.16.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=8199
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=6776064000
+   dmax=6.250e-02 dmax8=6.250e-02 dmean=4.437e-03 exact=0.1152 >1e-3=0.6017 >1e-2=0.1285 nan=0/0
+   rows: r0(sl=8198,dmax=6.25e-02) r1(sl=8199,dmax=6.25e-02) r2(sl=8200,dmax=6.25e-02) r3(sl=8201,dmax=6.25e-02)
+   heads: h0=6.25e-02 h1=6.25e-02 h2=6.25e-02 h3=3.12e-02 h4=4.69e-02 h5=6.25e-02 h6=6.25e-02 h7=3.12e-02 h8=6.25e-02 h9=4.69e-02 h10=6.25e-02 h11=4.69e-02
+   bt0: [[25, 26, 27, 28], [25, 26, 27, 28], [25, 26, 27, 28], [25, 26, 27, 28]]
+== mxkv_ab.1030.17.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=8199
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=7227801600
+   dmax=4.688e-02 dmax8=4.688e-02 dmean=2.466e-03 exact=0.1024 >1e-3=0.5578 >1e-2=0.0308 nan=0/0
+   rows: r0(sl=8198,dmax=3.12e-02) r1(sl=8199,dmax=3.12e-02) r2(sl=8200,dmax=3.91e-02) r3(sl=8201,dmax=4.69e-02)
+   heads: h0=3.12e-02 h1=3.12e-02 h2=3.12e-02 h3=3.12e-02 h4=4.69e-02 h5=3.12e-02 h6=2.34e-02 h7=2.34e-02 h8=3.12e-02 h9=3.12e-02 h10=2.34e-02 h11=3.12e-02
+   bt0: [[25, 26, 27, 28], [25, 26, 27, 28], [25, 26, 27, 28], [25, 26, 27, 28]]
+== mxkv_ab.1030.18.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5463
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=0
+   dmax=7.812e-03 dmax8=7.812e-03 dmean=4.628e-04 exact=0.1079 >1e-3=0.0920 >1e-2=0.0000 nan=0/0
+   rows: r0(sl=5462,dmax=3.91e-03) r1(sl=5463,dmax=6.84e-03) r2(sl=5464,dmax=5.86e-03) r3(sl=5465,dmax=7.81e-03)
+   heads: h0=4.88e-03 h1=3.91e-03 h2=3.91e-03 h3=3.91e-03 h4=3.91e-03 h5=4.88e-03 h6=6.84e-03 h7=5.86e-03 h8=4.88e-03 h9=5.86e-03 h10=3.91e-03 h11=7.81e-03
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.1030.19.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5463
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=451737600
+   dmax=7.812e-03 dmax8=7.812e-03 dmean=4.733e-04 exact=0.1073 >1e-3=0.0942 >1e-2=0.0000 nan=0/0
+   rows: r0(sl=5462,dmax=7.81e-03) r1(sl=5463,dmax=7.81e-03) r2(sl=5464,dmax=5.86e-03) r3(sl=5465,dmax=3.91e-03)
+   heads: h0=3.91e-03 h1=3.91e-03 h2=3.91e-03 h3=3.91e-03 h4=7.81e-03 h5=4.88e-03 h6=2.44e-03 h7=3.91e-03 h8=5.86e-03 h9=5.86e-03 h10=4.88e-03 h11=5.86e-03
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.1030.2.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=8199
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=451737600
+   dmax=9.766e-03 dmax8=9.766e-03 dmean=5.741e-04 exact=0.1069 >1e-3=0.1319 >1e-2=0.0000 nan=0/0
+   rows: r0(sl=8198,dmax=7.81e-03) r1(sl=8199,dmax=9.77e-03) r2(sl=8200,dmax=5.86e-03) r3(sl=8201,dmax=7.81e-03)
+   heads: h0=3.91e-03 h1=4.88e-03 h2=7.81e-03 h3=5.86e-03 h4=9.77e-03 h5=7.81e-03 h6=2.44e-03 h7=2.93e-03 h8=5.37e-03 h9=5.86e-03 h10=5.86e-03 h11=3.91e-03
+   bt0: [[25, 26, 27, 28], [25, 26, 27, 28], [25, 26, 27, 28], [25, 26, 27, 28]]
+== mxkv_ab.1030.20.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5463
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=903475200
+   dmax=8.789e-03 dmax8=8.789e-03 dmean=5.432e-04 exact=0.1077 >1e-3=0.1195 >1e-2=0.0000 nan=0/0
+   rows: r0(sl=5462,dmax=8.79e-03) r1(sl=5463,dmax=7.81e-03) r2(sl=5464,dmax=7.81e-03) r3(sl=5465,dmax=5.86e-03)
+   heads: h0=8.79e-03 h1=4.39e-03 h2=5.86e-03 h3=7.81e-03 h4=5.86e-03 h5=3.91e-03 h6=3.91e-03 h7=2.93e-03 h8=3.91e-03 h9=3.91e-03 h10=3.91e-03 h11=3.91e-03
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.1030.21.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5463
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=1355212800
+   dmax=1.562e-02 dmax8=1.562e-02 dmean=5.321e-04 exact=0.0993 >1e-3=0.1134 >1e-2=0.0002 nan=0/0
+   rows: r0(sl=5462,dmax=1.56e-02) r1(sl=5463,dmax=7.81e-03) r2(sl=5464,dmax=1.17e-02) r3(sl=5465,dmax=7.81e-03)
+   heads: h0=3.91e-03 h1=7.81e-03 h2=1.56e-02 h3=5.86e-03 h4=1.17e-02 h5=5.86e-03 h6=6.84e-03 h7=3.91e-03 h8=3.91e-03 h9=7.81e-03 h10=7.81e-03 h11=5.86e-03
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.1030.22.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5463
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=1806950400
+   dmax=2.344e-02 dmax8=2.344e-02 dmean=6.656e-04 exact=0.1022 >1e-3=0.1655 >1e-2=0.0001 nan=0/0
+   rows: r0(sl=5462,dmax=7.81e-03) r1(sl=5463,dmax=7.81e-03) r2(sl=5464,dmax=7.81e-03) r3(sl=5465,dmax=2.34e-02)
+   heads: h0=2.34e-02 h1=6.84e-03 h2=3.91e-03 h3=3.91e-03 h4=4.88e-03 h5=3.91e-03 h6=7.81e-03 h7=7.81e-03 h8=5.86e-03 h9=7.81e-03 h10=7.81e-03 h11=7.81e-03
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.1030.23.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5463
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=2258688000
+   dmax=2.734e-02 dmax8=2.734e-02 dmean=7.138e-04 exact=0.1003 >1e-3=0.1781 >1e-2=0.0005 nan=0/0
+   rows: r0(sl=5462,dmax=2.15e-02) r1(sl=5463,dmax=2.73e-02) r2(sl=5464,dmax=1.66e-02) r3(sl=5465,dmax=7.81e-03)
+   heads: h0=7.81e-03 h1=5.86e-03 h2=7.81e-03 h3=7.81e-03 h4=1.07e-02 h5=7.81e-03 h6=4.88e-03 h7=1.03e-02 h8=2.73e-02 h9=7.81e-03 h10=2.15e-02 h11=9.77e-03
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.1030.24.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5463
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=2710425600
+   dmax=1.094e-01 dmax8=1.094e-01 dmean=1.326e-03 exact=0.0807 >1e-3=0.3449 >1e-2=0.0050 nan=0/0
+   rows: r0(sl=5462,dmax=8.98e-02) r1(sl=5463,dmax=8.59e-02) r2(sl=5464,dmax=1.09e-01) r3(sl=5465,dmax=9.38e-02)
+   heads: h0=1.17e-02 h1=1.17e-02 h2=1.17e-02 h3=1.17e-02 h4=1.56e-02 h5=9.77e-03 h6=8.59e-02 h7=5.47e-02 h8=7.42e-02 h9=8.98e-02 h10=5.66e-02 h11=1.09e-01
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.1030.25.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5463
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=3162163200
+   dmax=1.406e-01 dmax8=1.406e-01 dmean=1.350e-03 exact=0.0816 >1e-3=0.3433 >1e-2=0.0069 nan=0/0
+   rows: r0(sl=5462,dmax=1.41e-01) r1(sl=5463,dmax=6.25e-02) r2(sl=5464,dmax=1.02e-01) r3(sl=5465,dmax=1.17e-01)
+   heads: h0=8.20e-02 h1=6.64e-02 h2=9.77e-02 h3=1.41e-01 h4=1.17e-01 h5=2.34e-02 h6=8.59e-02 h7=9.38e-02 h8=8.59e-02 h9=2.34e-02 h10=1.09e-01 h11=5.47e-02
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.1030.26.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5463
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=3613900800
+   dmax=3.223e-02 dmax8=3.223e-02 dmean=8.683e-04 exact=0.0991 >1e-3=0.2334 >1e-2=0.0003 nan=0/0
+   rows: r0(sl=5462,dmax=7.81e-03) r1(sl=5463,dmax=1.17e-02) r2(sl=5464,dmax=1.86e-02) r3(sl=5465,dmax=3.22e-02)
+   heads: h0=5.86e-03 h1=1.17e-02 h2=3.22e-02 h3=7.81e-03 h4=7.81e-03 h5=1.17e-02 h6=7.81e-03 h7=7.81e-03 h8=7.81e-03 h9=9.77e-03 h10=7.81e-03 h11=9.77e-03
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.1030.27.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5463
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=4065638400
+   dmax=4.492e-02 dmax8=4.492e-02 dmean=8.395e-04 exact=0.1014 >1e-3=0.2192 >1e-2=0.0015 nan=0/0
+   rows: r0(sl=5462,dmax=1.07e-02) r1(sl=5463,dmax=1.41e-02) r2(sl=5464,dmax=3.71e-02) r3(sl=5465,dmax=4.49e-02)
+   heads: h0=9.52e-03 h1=1.07e-02 h2=2.15e-02 h3=7.81e-03 h4=7.81e-03 h5=3.37e-02 h6=2.93e-02 h7=3.71e-02 h8=1.27e-02 h9=2.34e-02 h10=1.56e-02 h11=4.49e-02
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.1030.28.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5463
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=4517376000
+   dmax=6.641e-02 dmax8=6.641e-02 dmean=1.173e-03 exact=0.1040 >1e-3=0.3187 >1e-2=0.0030 nan=0/0
+   rows: r0(sl=5462,dmax=6.64e-02) r1(sl=5463,dmax=1.95e-02) r2(sl=5464,dmax=2.73e-02) r3(sl=5465,dmax=1.76e-02)
+   heads: h0=6.64e-02 h1=1.56e-02 h2=1.95e-02 h3=2.73e-02 h4=1.56e-02 h5=1.56e-02 h6=9.77e-03 h7=7.81e-03 h8=9.03e-03 h9=1.32e-02 h10=8.06e-03 h11=7.81e-03
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.1030.29.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5463
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=4969113600
+   dmax=1.406e-01 dmax8=1.406e-01 dmean=1.117e-03 exact=0.0949 >1e-3=0.2987 >1e-2=0.0037 nan=0/0
+   rows: r0(sl=5462,dmax=1.41e-01) r1(sl=5463,dmax=4.30e-02) r2(sl=5464,dmax=1.09e-01) r3(sl=5465,dmax=3.52e-02)
+   heads: h0=3.52e-02 h1=4.49e-02 h2=1.95e-02 h3=1.51e-02 h4=1.09e-01 h5=1.86e-02 h6=7.81e-03 h7=1.95e-02 h8=7.81e-03 h9=2.34e-02 h10=1.41e-01 h11=1.56e-02
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.1030.3.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=8199
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=903475200
+   dmax=2.148e-02 dmax8=2.148e-02 dmean=6.329e-04 exact=0.0985 >1e-3=0.1496 >1e-2=0.0004 nan=0/0
+   rows: r0(sl=8198,dmax=2.15e-02) r1(sl=8199,dmax=1.17e-02) r2(sl=8200,dmax=1.17e-02) r3(sl=8201,dmax=5.86e-03)
+   heads: h0=1.17e-02 h1=7.81e-03 h2=2.15e-02 h3=5.86e-03 h4=1.17e-02 h5=9.77e-03 h6=4.88e-03 h7=3.91e-03 h8=4.88e-03 h9=7.81e-03 h10=4.15e-03 h11=4.88e-03
+   bt0: [[25, 26, 27, 28], [25, 26, 27, 28], [25, 26, 27, 28], [25, 26, 27, 28]]
+== mxkv_ab.1030.30.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5463
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=5420851200
+   dmax=1.250e-01 dmax8=1.250e-01 dmean=1.580e-03 exact=0.0954 >1e-3=0.4118 >1e-2=0.0103 nan=0/0
+   rows: r0(sl=5462,dmax=7.03e-02) r1(sl=5463,dmax=7.03e-02) r2(sl=5464,dmax=3.91e-02) r3(sl=5465,dmax=1.25e-01)
+   heads: h0=8.18e-03 h1=1.56e-02 h2=1.17e-02 h3=1.25e-01 h4=1.56e-02 h5=9.77e-03 h6=1.95e-02 h7=2.34e-02 h8=3.12e-02 h9=1.95e-02 h10=2.34e-02 h11=1.95e-02
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.1030.31.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5463
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=5872588800
+   dmax=8.203e-02 dmax8=8.203e-02 dmean=1.526e-03 exact=0.0891 >1e-3=0.3819 >1e-2=0.0118 nan=0/0
+   rows: r0(sl=5462,dmax=3.91e-02) r1(sl=5463,dmax=3.52e-02) r2(sl=5464,dmax=7.81e-02) r3(sl=5465,dmax=8.20e-02)
+   heads: h0=1.56e-02 h1=1.56e-02 h2=1.17e-02 h3=2.10e-02 h4=2.00e-02 h5=2.73e-02 h6=4.69e-02 h7=7.81e-02 h8=3.91e-02 h9=8.20e-02 h10=2.34e-02 h11=3.12e-02
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.1030.32.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5463
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=6324326400
+   dmax=7.031e-02 dmax8=7.031e-02 dmean=1.985e-03 exact=0.0722 >1e-3=0.4240 >1e-2=0.0279 nan=0/0
+   rows: r0(sl=5462,dmax=5.18e-02) r1(sl=5463,dmax=3.91e-02) r2(sl=5464,dmax=7.03e-02) r3(sl=5465,dmax=6.25e-02)
+   heads: h0=3.12e-02 h1=5.47e-02 h2=7.03e-02 h3=3.12e-02 h4=5.86e-02 h5=4.69e-02 h6=5.18e-02 h7=6.25e-02 h8=4.69e-02 h9=4.69e-02 h10=4.69e-02 h11=4.69e-02
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.1030.33.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5463
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=6776064000
+   dmax=6.250e-02 dmax8=6.250e-02 dmean=4.554e-03 exact=0.1119 >1e-3=0.5975 >1e-2=0.1350 nan=0/0
+   rows: r0(sl=5462,dmax=6.25e-02) r1(sl=5463,dmax=6.25e-02) r2(sl=5464,dmax=6.25e-02) r3(sl=5465,dmax=6.25e-02)
+   heads: h0=6.25e-02 h1=6.25e-02 h2=4.69e-02 h3=6.25e-02 h4=6.25e-02 h5=6.25e-02 h6=6.25e-02 h7=6.25e-02 h8=6.25e-02 h9=6.25e-02 h10=6.25e-02 h11=6.25e-02
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.1030.34.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5463
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=7227801600
+   dmax=6.250e-02 dmax8=6.250e-02 dmean=2.449e-03 exact=0.0979 >1e-3=0.5376 >1e-2=0.0340 nan=0/0
+   rows: r0(sl=5462,dmax=6.25e-02) r1(sl=5463,dmax=3.12e-02) r2(sl=5464,dmax=4.69e-02) r3(sl=5465,dmax=4.69e-02)
+   heads: h0=4.69e-02 h1=3.52e-02 h2=3.12e-02 h3=6.25e-02 h4=2.34e-02 h5=3.12e-02 h6=4.69e-02 h7=2.34e-02 h8=3.12e-02 h9=2.34e-02 h10=2.34e-02 h11=3.12e-02
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.1030.35.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5467
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=0
+   dmax=7.812e-03 dmax8=7.812e-03 dmean=4.373e-04 exact=0.1127 >1e-3=0.0835 >1e-2=0.0000 nan=0/0
+   rows: r0(sl=5466,dmax=5.86e-03) r1(sl=5467,dmax=5.86e-03) r2(sl=5468,dmax=7.81e-03) r3(sl=5469,dmax=5.86e-03)
+   heads: h0=3.91e-03 h1=1.95e-03 h2=2.93e-03 h3=1.95e-03 h4=2.93e-03 h5=5.86e-03 h6=3.91e-03 h7=5.86e-03 h8=3.91e-03 h9=7.81e-03 h10=3.91e-03 h11=5.86e-03
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.1030.36.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5467
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=451737600
+   dmax=5.859e-03 dmax8=5.859e-03 dmean=4.032e-04 exact=0.1073 >1e-3=0.0696 >1e-2=0.0000 nan=0/0
+   rows: r0(sl=5466,dmax=3.91e-03) r1(sl=5467,dmax=5.86e-03) r2(sl=5468,dmax=3.91e-03) r3(sl=5469,dmax=3.91e-03)
+   heads: h0=3.91e-03 h1=3.91e-03 h2=3.91e-03 h3=3.91e-03 h4=3.91e-03 h5=3.91e-03 h6=1.95e-03 h7=2.93e-03 h8=3.42e-03 h9=5.86e-03 h10=4.39e-03 h11=2.44e-03
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.1030.37.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5467
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=903475200
+   dmax=7.812e-03 dmax8=7.812e-03 dmean=4.639e-04 exact=0.1094 >1e-3=0.0872 >1e-2=0.0000 nan=0/0
+   rows: r0(sl=5466,dmax=7.81e-03) r1(sl=5467,dmax=3.91e-03) r2(sl=5468,dmax=7.81e-03) r3(sl=5469,dmax=7.81e-03)
+   heads: h0=7.81e-03 h1=3.91e-03 h2=3.91e-03 h3=3.91e-03 h4=3.91e-03 h5=7.81e-03 h6=3.91e-03 h7=2.93e-03 h8=3.91e-03 h9=3.91e-03 h10=3.91e-03 h11=7.81e-03
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.1030.38.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5467
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=1355212800
+   dmax=1.367e-02 dmax8=1.367e-02 dmean=5.100e-04 exact=0.0928 >1e-3=0.1095 >1e-2=0.0002 nan=0/0
+   rows: r0(sl=5466,dmax=9.77e-03) r1(sl=5467,dmax=1.37e-02) r2(sl=5468,dmax=1.37e-02) r3(sl=5469,dmax=7.81e-03)
+   heads: h0=1.37e-02 h1=7.81e-03 h2=4.88e-03 h3=3.91e-03 h4=5.86e-03 h5=1.37e-02 h6=3.91e-03 h7=3.91e-03 h8=3.91e-03 h9=5.86e-03 h10=3.91e-03 h11=3.91e-03
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.1030.39.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5467
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=1806950400
+   dmax=1.562e-02 dmax8=1.562e-02 dmean=6.060e-04 exact=0.1009 >1e-3=0.1333 >1e-2=0.0002 nan=0/0
+   rows: r0(sl=5466,dmax=1.56e-02) r1(sl=5467,dmax=7.81e-03) r2(sl=5468,dmax=9.77e-03) r3(sl=5469,dmax=9.77e-03)
+   heads: h0=1.56e-02 h1=8.79e-03 h2=4.88e-03 h3=3.91e-03 h4=5.86e-03 h5=3.91e-03 h6=7.81e-03 h7=7.81e-03 h8=9.77e-03 h9=9.77e-03 h10=1.17e-02 h11=7.81e-03
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.1030.4.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=8199
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=1355212800
+   dmax=9.766e-03 dmax8=9.766e-03 dmean=5.141e-04 exact=0.1140 >1e-3=0.1058 >1e-2=0.0000 nan=0/0
+   rows: r0(sl=8198,dmax=5.86e-03) r1(sl=8199,dmax=7.81e-03) r2(sl=8200,dmax=9.77e-03) r3(sl=8201,dmax=7.81e-03)
+   heads: h0=5.86e-03 h1=9.77e-03 h2=7.81e-03 h3=9.77e-03 h4=8.79e-03 h5=5.86e-03 h6=5.86e-03 h7=7.81e-03 h8=5.86e-03 h9=7.81e-03 h10=4.88e-03 h11=3.91e-03
+   bt0: [[25, 26, 27, 28], [25, 26, 27, 28], [25, 26, 27, 28], [25, 26, 27, 28]]
+== mxkv_ab.1030.40.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5467
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=2258688000
+   dmax=5.469e-02 dmax8=5.469e-02 dmean=8.225e-04 exact=0.0972 >1e-3=0.2199 >1e-2=0.0011 nan=0/0
+   rows: r0(sl=5466,dmax=1.95e-02) r1(sl=5467,dmax=5.47e-02) r2(sl=5468,dmax=7.81e-03) r3(sl=5469,dmax=2.54e-02)
+   heads: h0=3.91e-03 h1=1.00e-02 h2=7.81e-03 h3=7.81e-03 h4=1.17e-02 h5=1.56e-02 h6=2.44e-02 h7=5.86e-03 h8=5.47e-02 h9=7.81e-03 h10=2.05e-02 h11=7.81e-03
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.1030.41.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5467
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=2710425600
+   dmax=1.055e-01 dmax8=1.055e-01 dmean=1.439e-03 exact=0.0709 >1e-3=0.3914 >1e-2=0.0068 nan=0/0
+   rows: r0(sl=5466,dmax=9.77e-02) r1(sl=5467,dmax=7.23e-02) r2(sl=5468,dmax=1.05e-01) r3(sl=5469,dmax=6.64e-02)
+   heads: h0=1.17e-02 h1=7.81e-03 h2=1.17e-02 h3=4.69e-02 h4=1.66e-02 h5=1.17e-02 h6=9.77e-02 h7=8.59e-02 h8=8.59e-02 h9=1.05e-01 h10=6.25e-02 h11=5.27e-02
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.1030.42.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5467
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=3162163200
+   dmax=4.219e-01 dmax8=4.219e-01 dmean=1.489e-03 exact=0.0789 >1e-3=0.3234 >1e-2=0.0147 nan=0/0
+   rows: r0(sl=5466,dmax=9.38e-02) r1(sl=5467,dmax=4.22e-01) r2(sl=5468,dmax=3.91e-02) r3(sl=5469,dmax=4.69e-02)
+   heads: h0=1.37e-01 h1=8.20e-02 h2=2.19e-01 h3=2.19e-01 h4=4.22e-01 h5=1.25e-01 h6=2.25e-02 h7=4.69e-02 h8=2.73e-02 h9=7.81e-03 h10=1.09e-01 h11=2.34e-02
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.1030.43.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5467
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=3613900800
+   dmax=5.078e-02 dmax8=5.078e-02 dmean=9.609e-04 exact=0.1008 >1e-3=0.2751 >1e-2=0.0006 nan=0/0
+   rows: r0(sl=5466,dmax=2.25e-02) r1(sl=5467,dmax=1.17e-02) r2(sl=5468,dmax=1.56e-02) r3(sl=5469,dmax=5.08e-02)
+   heads: h0=7.81e-03 h1=5.08e-02 h2=2.25e-02 h3=9.28e-03 h4=5.86e-03 h5=9.77e-03 h6=1.17e-02 h7=7.81e-03 h8=1.37e-02 h9=9.77e-03 h10=1.56e-02 h11=9.77e-03
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.1030.44.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5467
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=4065638400
+   dmax=8.594e-02 dmax8=8.594e-02 dmean=1.014e-03 exact=0.0969 >1e-3=0.2732 >1e-2=0.0023 nan=0/0
+   rows: r0(sl=5466,dmax=6.25e-02) r1(sl=5467,dmax=8.59e-02) r2(sl=5468,dmax=2.34e-02) r3(sl=5469,dmax=5.27e-02)
+   heads: h0=7.81e-03 h1=7.81e-03 h2=1.86e-02 h3=9.77e-03 h4=8.12e-03 h5=5.27e-02 h6=3.91e-02 h7=8.59e-02 h8=3.12e-02 h9=2.25e-02 h10=3.12e-02 h11=6.25e-02
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.1030.45.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5467
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=4517376000
+   dmax=4.053e-02 dmax8=4.053e-02 dmean=1.191e-03 exact=0.1032 >1e-3=0.3162 >1e-2=0.0037 nan=0/0
+   rows: r0(sl=5466,dmax=3.71e-02) r1(sl=5467,dmax=2.88e-02) r2(sl=5468,dmax=2.59e-02) r3(sl=5469,dmax=4.05e-02)
+   heads: h0=2.59e-02 h1=1.56e-02 h2=1.56e-02 h3=4.05e-02 h4=1.56e-02 h5=2.73e-02 h6=1.25e-02 h7=8.42e-03 h8=7.81e-03 h9=2.88e-02 h10=1.42e-02 h11=2.54e-02
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.1030.46.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5467
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=4969113600
+   dmax=1.406e-01 dmax8=1.406e-01 dmean=1.164e-03 exact=0.0943 >1e-3=0.3209 >1e-2=0.0037 nan=0/0
+   rows: r0(sl=5466,dmax=5.08e-02) r1(sl=5467,dmax=8.59e-02) r2(sl=5468,dmax=1.41e-01) r3(sl=5469,dmax=1.56e-02)
+   heads: h0=5.08e-02 h1=3.12e-02 h2=1.76e-02 h3=1.56e-02 h4=3.71e-02 h5=1.41e-01 h6=1.56e-02 h7=1.17e-02 h8=1.56e-02 h9=1.17e-02 h10=5.08e-02 h11=8.59e-02
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.1030.47.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5467
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=5420851200
+   dmax=7.031e-02 dmax8=7.031e-02 dmean=1.541e-03 exact=0.0981 >1e-3=0.3984 >1e-2=0.0123 nan=0/0
+   rows: r0(sl=5466,dmax=7.03e-02) r1(sl=5467,dmax=3.12e-02) r2(sl=5468,dmax=3.91e-02) r3(sl=5469,dmax=6.25e-02)
+   heads: h0=1.61e-02 h1=1.76e-02 h2=1.17e-02 h3=6.25e-02 h4=1.51e-02 h5=7.03e-02 h6=1.56e-02 h7=3.12e-02 h8=3.12e-02 h9=1.56e-02 h10=3.12e-02 h11=3.12e-02
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.1030.48.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5467
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=5872588800
+   dmax=1.094e-01 dmax8=1.094e-01 dmean=1.655e-03 exact=0.0839 >1e-3=0.4273 >1e-2=0.0126 nan=0/0
+   rows: r0(sl=5466,dmax=9.38e-02) r1(sl=5467,dmax=1.09e-01) r2(sl=5468,dmax=4.69e-02) r3(sl=5469,dmax=4.69e-02)
+   heads: h0=1.56e-02 h1=2.34e-02 h2=2.54e-02 h3=1.95e-02 h4=1.56e-02 h5=3.12e-02 h6=9.38e-02 h7=1.09e-01 h8=4.69e-02 h9=4.69e-02 h10=2.34e-02 h11=1.95e-02
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.1030.49.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5467
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=6324326400
+   dmax=6.250e-02 dmax8=6.250e-02 dmean=1.881e-03 exact=0.0867 >1e-3=0.4112 >1e-2=0.0282 nan=0/0
+   rows: r0(sl=5466,dmax=4.69e-02) r1(sl=5467,dmax=6.25e-02) r2(sl=5468,dmax=6.25e-02) r3(sl=5469,dmax=3.12e-02)
+   heads: h0=3.12e-02 h1=3.12e-02 h2=6.25e-02 h3=3.12e-02 h4=3.12e-02 h5=3.12e-02 h6=4.69e-02 h7=6.25e-02 h8=6.25e-02 h9=3.12e-02 h10=4.69e-02 h11=4.69e-02
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.1030.5.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=8199
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=1806950400
+   dmax=1.953e-02 dmax8=1.953e-02 dmean=7.017e-04 exact=0.0975 >1e-3=0.1859 >1e-2=0.0007 nan=0/0
+   rows: r0(sl=8198,dmax=1.95e-02) r1(sl=8199,dmax=1.76e-02) r2(sl=8200,dmax=1.56e-02) r3(sl=8201,dmax=7.81e-03)
+   heads: h0=1.76e-02 h1=1.95e-02 h2=3.91e-03 h3=4.88e-03 h4=1.27e-02 h5=8.79e-03 h6=7.81e-03 h7=7.81e-03 h8=7.81e-03 h9=5.86e-03 h10=7.81e-03 h11=9.77e-03
+   bt0: [[25, 26, 27, 28], [25, 26, 27, 28], [25, 26, 27, 28], [25, 26, 27, 28]]
+== mxkv_ab.1030.50.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5467
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=6776064000
+   dmax=6.250e-02 dmax8=6.250e-02 dmean=4.597e-03 exact=0.1158 >1e-3=0.6121 >1e-2=0.1335 nan=0/0
+   rows: r0(sl=5466,dmax=6.25e-02) r1(sl=5467,dmax=6.25e-02) r2(sl=5468,dmax=6.25e-02) r3(sl=5469,dmax=6.25e-02)
+   heads: h0=6.25e-02 h1=6.25e-02 h2=4.69e-02 h3=4.69e-02 h4=6.25e-02 h5=6.25e-02 h6=6.25e-02 h7=6.25e-02 h8=6.25e-02 h9=6.25e-02 h10=4.69e-02 h11=4.69e-02
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.1030.51.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5467
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=7227801600
+   dmax=4.688e-02 dmax8=4.688e-02 dmean=2.379e-03 exact=0.1029 >1e-3=0.5288 >1e-2=0.0310 nan=0/0
+   rows: r0(sl=5466,dmax=3.12e-02) r1(sl=5467,dmax=3.91e-02) r2(sl=5468,dmax=3.12e-02) r3(sl=5469,dmax=4.69e-02)
+   heads: h0=3.12e-02 h1=3.91e-02 h2=3.12e-02 h3=3.12e-02 h4=2.34e-02 h5=3.12e-02 h6=4.69e-02 h7=2.73e-02 h8=3.12e-02 h9=3.12e-02 h10=2.34e-02 h11=3.12e-02
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.1030.52.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5471
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=0
+   dmax=4.883e-03 dmax8=4.883e-03 dmean=4.271e-04 exact=0.1119 >1e-3=0.0816 >1e-2=0.0000 nan=0/0
+   rows: r0(sl=5470,dmax=3.91e-03) r1(sl=5471,dmax=3.91e-03) r2(sl=5472,dmax=4.88e-03) r3(sl=5473,dmax=3.91e-03)
+   heads: h0=3.91e-03 h1=2.93e-03 h2=3.91e-03 h3=2.93e-03 h4=3.91e-03 h5=3.91e-03 h6=3.91e-03 h7=4.88e-03 h8=3.91e-03 h9=3.91e-03 h10=3.91e-03 h11=3.91e-03
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.1030.53.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5471
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=451737600
+   dmax=7.812e-03 dmax8=7.812e-03 dmean=4.008e-04 exact=0.1026 >1e-3=0.0662 >1e-2=0.0000 nan=0/0
+   rows: r0(sl=5470,dmax=7.81e-03) r1(sl=5471,dmax=3.91e-03) r2(sl=5472,dmax=4.88e-03) r3(sl=5473,dmax=5.86e-03)
+   heads: h0=3.91e-03 h1=3.91e-03 h2=7.81e-03 h3=3.91e-03 h4=4.88e-03 h5=3.91e-03 h6=1.46e-03 h7=3.91e-03 h8=4.88e-03 h9=3.91e-03 h10=5.86e-03 h11=4.88e-03
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.1030.54.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5471
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=903475200
+   dmax=8.789e-03 dmax8=8.789e-03 dmean=5.125e-04 exact=0.1082 >1e-3=0.1071 >1e-2=0.0000 nan=0/0
+   rows: r0(sl=5470,dmax=5.86e-03) r1(sl=5471,dmax=7.81e-03) r2(sl=5472,dmax=8.79e-03) r3(sl=5473,dmax=4.88e-03)
+   heads: h0=7.81e-03 h1=3.91e-03 h2=3.91e-03 h3=7.81e-03 h4=8.79e-03 h5=5.86e-03 h6=3.91e-03 h7=7.81e-03 h8=3.91e-03 h9=4.88e-03 h10=3.91e-03 h11=3.91e-03
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.1030.55.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5471
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=1355212800
+   dmax=1.465e-02 dmax8=1.465e-02 dmean=4.635e-04 exact=0.1021 >1e-3=0.0922 >1e-2=0.0002 nan=0/0
+   rows: r0(sl=5470,dmax=9.77e-03) r1(sl=5471,dmax=3.91e-03) r2(sl=5472,dmax=9.77e-03) r3(sl=5473,dmax=1.46e-02)
+   heads: h0=1.46e-02 h1=9.77e-03 h2=4.88e-03 h3=2.44e-03 h4=8.79e-03 h5=1.07e-02 h6=3.91e-03 h7=3.91e-03 h8=3.91e-03 h9=7.81e-03 h10=2.93e-03 h11=3.91e-03
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.1030.56.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5471
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=1806950400
+   dmax=1.855e-02 dmax8=1.855e-02 dmean=6.208e-04 exact=0.0968 >1e-3=0.1502 >1e-2=0.0002 nan=0/0
+   rows: r0(sl=5470,dmax=7.81e-03) r1(sl=5471,dmax=7.81e-03) r2(sl=5472,dmax=1.27e-02) r3(sl=5473,dmax=1.86e-02)
+   heads: h0=1.86e-02 h1=3.91e-03 h2=7.81e-03 h3=6.84e-03 h4=3.91e-03 h5=2.93e-03 h6=9.77e-03 h7=7.81e-03 h8=6.84e-03 h9=5.86e-03 h10=7.81e-03 h11=7.81e-03
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.1030.57.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5471
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=2258688000
+   dmax=1.172e-02 dmax8=1.172e-02 dmean=7.325e-04 exact=0.0911 >1e-3=0.1938 >1e-2=0.0001 nan=0/0
+   rows: r0(sl=5470,dmax=1.17e-02) r1(sl=5471,dmax=9.77e-03) r2(sl=5472,dmax=9.77e-03) r3(sl=5473,dmax=5.62e-03)
+   heads: h0=6.84e-03 h1=7.81e-03 h2=6.84e-03 h3=5.86e-03 h4=9.77e-03 h5=7.81e-03 h6=7.81e-03 h7=9.77e-03 h8=9.77e-03 h9=7.81e-03 h10=1.17e-02 h11=9.77e-03
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.1030.58.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5471
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=2710425600
+   dmax=8.594e-02 dmax8=8.594e-02 dmean=1.217e-03 exact=0.0762 >1e-3=0.3428 >1e-2=0.0042 nan=0/0
+   rows: r0(sl=5470,dmax=3.96e-02) r1(sl=5471,dmax=5.76e-02) r2(sl=5472,dmax=8.59e-02) r3(sl=5473,dmax=5.96e-02)
+   heads: h0=1.17e-02 h1=1.17e-02 h2=7.81e-03 h3=3.32e-02 h4=4.30e-02 h5=9.77e-03 h6=8.59e-02 h7=5.47e-02 h8=3.12e-02 h9=3.91e-02 h10=5.66e-02 h11=7.03e-02
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.1030.59.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5471
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=3162163200
+   dmax=1.094e-01 dmax8=1.094e-01 dmean=1.077e-03 exact=0.0796 >1e-3=0.2824 >1e-2=0.0036 nan=0/0
+   rows: r0(sl=5470,dmax=8.40e-02) r1(sl=5471,dmax=4.49e-02) r2(sl=5472,dmax=1.09e-01) r3(sl=5473,dmax=7.81e-02)
+   heads: h0=5.47e-02 h1=8.40e-02 h2=7.03e-02 h3=1.09e-01 h4=4.69e-02 h5=5.86e-02 h6=9.38e-02 h7=7.81e-03 h8=2.25e-02 h9=1.17e-02 h10=7.81e-02 h11=7.42e-02
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.1030.6.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=8199
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=2258688000
+   dmax=4.688e-02 dmax8=4.688e-02 dmean=1.110e-03 exact=0.0814 >1e-3=0.3117 >1e-2=0.0032 nan=0/0
+   rows: r0(sl=8198,dmax=4.69e-02) r1(sl=8199,dmax=2.15e-02) r2(sl=8200,dmax=4.30e-02) r3(sl=8201,dmax=2.73e-02)
+   heads: h0=7.81e-03 h1=7.81e-03 h2=1.56e-02 h3=7.81e-03 h4=8.79e-03 h5=2.54e-02 h6=1.56e-02 h7=4.30e-02 h8=4.69e-02 h9=7.81e-03 h10=5.86e-03 h11=3.12e-02
+   bt0: [[25, 26, 27, 28], [25, 26, 27, 28], [25, 26, 27, 28], [25, 26, 27, 28]]
+== mxkv_ab.1030.60.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5471
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=3613900800
+   dmax=5.469e-02 dmax8=5.469e-02 dmean=9.366e-04 exact=0.1060 >1e-3=0.2585 >1e-2=0.0005 nan=0/0
+   rows: r0(sl=5470,dmax=7.81e-03) r1(sl=5471,dmax=1.37e-02) r2(sl=5472,dmax=1.32e-02) r3(sl=5473,dmax=5.47e-02)
+   heads: h0=5.86e-03 h1=5.47e-02 h2=1.32e-02 h3=7.81e-03 h4=7.81e-03 h5=9.77e-03 h6=7.81e-03 h7=1.17e-02 h8=7.81e-03 h9=7.81e-03 h10=1.17e-02 h11=7.81e-03
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.1030.7.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=8199
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=2710425600
+   dmax=1.406e-01 dmax8=1.406e-01 dmean=1.824e-03 exact=0.0574 >1e-3=0.4501 >1e-2=0.0135 nan=0/0
+   rows: r0(sl=8198,dmax=1.09e-01) r1(sl=8199,dmax=9.38e-02) r2(sl=8200,dmax=9.38e-02) r3(sl=8201,dmax=1.41e-01)
+   heads: h0=8.59e-02 h1=8.59e-02 h2=1.41e-01 h3=7.03e-02 h4=2.73e-02 h5=7.81e-03 h6=7.03e-02 h7=4.69e-02 h8=6.25e-02 h9=9.77e-02 h10=7.03e-02 h11=5.47e-02
+   bt0: [[25, 26, 27, 28], [25, 26, 27, 28], [25, 26, 27, 28], [25, 26, 27, 28]]
+== mxkv_ab.1030.8.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=8199
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=3162163200
+   dmax=2.344e-01 dmax8=2.344e-01 dmean=1.940e-03 exact=0.0462 >1e-3=0.4361 >1e-2=0.0170 nan=0/0
+   rows: r0(sl=8198,dmax=1.56e-01) r1(sl=8199,dmax=1.88e-01) r2(sl=8200,dmax=2.34e-01) r3(sl=8201,dmax=1.72e-01)
+   heads: h0=1.72e-01 h1=1.56e-01 h2=9.38e-02 h3=6.25e-02 h4=2.34e-01 h5=1.25e-01 h6=1.48e-01 h7=1.88e-01 h8=1.48e-01 h9=8.59e-02 h10=7.81e-02 h11=7.03e-02
+   bt0: [[25, 26, 27, 28], [25, 26, 27, 28], [25, 26, 27, 28], [25, 26, 27, 28]]
+== mxkv_ab.1030.9.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=8199
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=3613900800
+   dmax=9.766e-02 dmax8=9.766e-02 dmean=1.117e-03 exact=0.0939 >1e-3=0.3097 >1e-2=0.0014 nan=0/0
+   rows: r0(sl=8198,dmax=9.77e-02) r1(sl=8199,dmax=3.91e-02) r2(sl=8200,dmax=1.95e-02) r3(sl=8201,dmax=5.86e-02)
+   heads: h0=1.17e-02 h1=3.91e-02 h2=2.54e-02 h3=9.77e-03 h4=1.37e-02 h5=1.17e-02 h6=9.77e-02 h7=3.91e-02 h8=9.77e-03 h9=1.17e-02 h10=2.54e-02 h11=5.86e-02
+   bt0: [[25, 26, 27, 28], [25, 26, 27, 28], [25, 26, 27, 28], [25, 26, 27, 28]]
+== mxkv_ab.930.1.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=8199
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=0
+   dmax=4.883e-03 dmax8=4.883e-03 dmean=4.357e-04 exact=0.1015 >1e-3=0.0758 >1e-2=0.0000 nan=0/0
+   rows: r0(sl=8198,dmax=4.88e-03) r1(sl=8199,dmax=3.91e-03) r2(sl=8200,dmax=3.91e-03) r3(sl=8201,dmax=4.39e-03)
+   heads: h0=2.93e-03 h1=3.91e-03 h2=3.91e-03 h3=2.69e-03 h4=2.93e-03 h5=2.93e-03 h6=3.91e-03 h7=3.91e-03 h8=4.88e-03 h9=4.39e-03 h10=3.91e-03 h11=3.91e-03
+   bt0: [[25, 26, 27, 28], [25, 26, 27, 28], [25, 26, 27, 28], [25, 26, 27, 28]]
+== mxkv_ab.930.10.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=8199
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=4065638400
+   dmax=6.250e-02 dmax8=6.250e-02 dmean=1.069e-03 exact=0.0844 >1e-3=0.3159 >1e-2=0.0022 nan=0/0
+   rows: r0(sl=8198,dmax=2.34e-02) r1(sl=8199,dmax=3.91e-02) r2(sl=8200,dmax=1.66e-02) r3(sl=8201,dmax=6.25e-02)
+   heads: h0=7.81e-03 h1=1.56e-02 h2=1.17e-02 h3=9.77e-03 h4=2.93e-02 h5=9.77e-03 h6=3.91e-02 h7=6.25e-02 h8=2.54e-02 h9=3.91e-02 h10=1.95e-02 h11=1.07e-02
+   bt0: [[25, 26, 27, 28], [25, 26, 27, 28], [25, 26, 27, 28], [25, 26, 27, 28]]
+== mxkv_ab.930.11.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=8199
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=4517376000
+   dmax=1.250e-01 dmax8=1.250e-01 dmean=1.420e-03 exact=0.0897 >1e-3=0.3929 >1e-2=0.0056 nan=0/0
+   rows: r0(sl=8198,dmax=1.25e-01) r1(sl=8199,dmax=1.25e-01) r2(sl=8200,dmax=4.69e-02) r3(sl=8201,dmax=1.02e-01)
+   heads: h0=1.25e-01 h1=4.69e-02 h2=1.09e-01 h3=1.17e-02 h4=4.69e-02 h5=1.25e-01 h6=6.25e-02 h7=1.17e-02 h8=6.25e-02 h9=4.30e-02 h10=4.69e-02 h11=1.59e-02
+   bt0: [[25, 26, 27, 28], [25, 26, 27, 28], [25, 26, 27, 28], [25, 26, 27, 28]]
+== mxkv_ab.930.12.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=8199
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=4969113600
+   dmax=1.055e-01 dmax8=1.055e-01 dmean=1.244e-03 exact=0.0879 >1e-3=0.3523 >1e-2=0.0033 nan=0/0
+   rows: r0(sl=8198,dmax=1.05e-01) r1(sl=8199,dmax=3.52e-02) r2(sl=8200,dmax=4.69e-02) r3(sl=8201,dmax=8.59e-02)
+   heads: h0=7.81e-02 h1=4.69e-02 h2=2.73e-02 h3=8.59e-02 h4=1.05e-01 h5=9.77e-03 h6=7.03e-02 h7=5.47e-02 h8=5.27e-02 h9=1.95e-02 h10=3.12e-02 h11=1.95e-02
+   bt0: [[25, 26, 27, 28], [25, 26, 27, 28], [25, 26, 27, 28], [25, 26, 27, 28]]
+== mxkv_ab.930.13.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=8199
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=5420851200
+   dmax=7.031e-02 dmax8=7.031e-02 dmean=1.171e-03 exact=0.0780 >1e-3=0.3245 >1e-2=0.0057 nan=0/0
+   rows: r0(sl=8198,dmax=6.25e-02) r1(sl=8199,dmax=7.03e-02) r2(sl=8200,dmax=7.03e-02) r3(sl=8201,dmax=6.25e-02)
+   heads: h0=5.47e-02 h1=2.34e-02 h2=3.52e-02 h3=6.25e-02 h4=1.95e-02 h5=7.03e-02 h6=1.95e-02 h7=4.69e-02 h8=4.69e-02 h9=4.69e-02 h10=6.25e-02 h11=5.47e-02
+   bt0: [[25, 26, 27, 28], [25, 26, 27, 28], [25, 26, 27, 28], [25, 26, 27, 28]]
+== mxkv_ab.930.14.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=8199
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=5872588800
+   dmax=3.125e-02 dmax8=3.125e-02 dmean=7.316e-04 exact=0.0844 >1e-3=0.1939 >1e-2=0.0007 nan=0/0
+   rows: r0(sl=8198,dmax=3.12e-02) r1(sl=8199,dmax=2.34e-02) r2(sl=8200,dmax=1.56e-02) r3(sl=8201,dmax=3.12e-02)
+   heads: h0=1.56e-02 h1=9.77e-03 h2=1.56e-02 h3=1.37e-02 h4=3.12e-02 h5=7.81e-03 h6=7.81e-03 h7=5.86e-03 h8=7.81e-03 h9=5.86e-03 h10=7.81e-03 h11=7.81e-03
+   bt0: [[25, 26, 27, 28], [25, 26, 27, 28], [25, 26, 27, 28], [25, 26, 27, 28]]
+== mxkv_ab.930.15.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=8199
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=6324326400
+   dmax=1.250e-01 dmax8=1.250e-01 dmean=1.245e-03 exact=0.0850 >1e-3=0.2511 >1e-2=0.0138 nan=0/0
+   rows: r0(sl=8198,dmax=1.25e-01) r1(sl=8199,dmax=9.38e-02) r2(sl=8200,dmax=9.38e-02) r3(sl=8201,dmax=9.38e-02)
+   heads: h0=2.34e-02 h1=2.34e-02 h2=3.12e-02 h3=1.95e-02 h4=3.12e-02 h5=2.34e-02 h6=9.38e-02 h7=9.38e-02 h8=1.25e-01 h9=9.38e-02 h10=1.25e-01 h11=9.38e-02
+   bt0: [[25, 26, 27, 28], [25, 26, 27, 28], [25, 26, 27, 28], [25, 26, 27, 28]]
+== mxkv_ab.930.16.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=8199
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=6776064000
+   dmax=9.375e-02 dmax8=9.375e-02 dmean=4.780e-03 exact=0.1104 >1e-3=0.5719 >1e-2=0.1354 nan=0/0
+   rows: r0(sl=8198,dmax=9.38e-02) r1(sl=8199,dmax=6.25e-02) r2(sl=8200,dmax=7.03e-02) r3(sl=8201,dmax=6.64e-02)
+   heads: h0=6.25e-02 h1=6.25e-02 h2=4.69e-02 h3=6.25e-02 h4=6.25e-02 h5=6.25e-02 h6=6.25e-02 h7=6.25e-02 h8=6.25e-02 h9=9.38e-02 h10=7.81e-02 h11=7.81e-02
+   bt0: [[25, 26, 27, 28], [25, 26, 27, 28], [25, 26, 27, 28], [25, 26, 27, 28]]
+== mxkv_ab.930.17.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=8199
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=7227801600
+   dmax=1.172e-01 dmax8=1.172e-01 dmean=4.592e-03 exact=0.0977 >1e-3=0.6926 >1e-2=0.1082 nan=0/0
+   rows: r0(sl=8198,dmax=6.25e-02) r1(sl=8199,dmax=3.12e-02) r2(sl=8200,dmax=1.17e-01) r3(sl=8201,dmax=3.12e-02)
+   heads: h0=1.95e-02 h1=3.12e-02 h2=3.12e-02 h3=2.34e-02 h4=3.12e-02 h5=3.91e-02 h6=8.59e-02 h7=3.12e-02 h8=1.02e-01 h9=3.91e-02 h10=3.12e-02 h11=1.17e-01
+   bt0: [[25, 26, 27, 28], [25, 26, 27, 28], [25, 26, 27, 28], [25, 26, 27, 28]]
+== mxkv_ab.930.18.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5463
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=0
+   dmax=7.812e-03 dmax8=7.812e-03 dmean=3.239e-04 exact=0.1018 >1e-3=0.0343 >1e-2=0.0000 nan=0/0
+   rows: r0(sl=5462,dmax=7.81e-03) r1(sl=5463,dmax=3.91e-03) r2(sl=5464,dmax=4.88e-03) r3(sl=5465,dmax=3.91e-03)
+   heads: h0=4.88e-03 h1=2.93e-03 h2=3.91e-03 h3=3.91e-03 h4=1.95e-03 h5=1.95e-03 h6=3.91e-03 h7=3.91e-03 h8=7.81e-03 h9=3.91e-03 h10=3.91e-03 h11=3.91e-03
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.930.19.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5463
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=451737600
+   dmax=7.812e-03 dmax8=7.812e-03 dmean=5.534e-04 exact=0.1038 >1e-3=0.1244 >1e-2=0.0000 nan=0/0
+   rows: r0(sl=5462,dmax=7.81e-03) r1(sl=5463,dmax=7.81e-03) r2(sl=5464,dmax=7.81e-03) r3(sl=5465,dmax=7.81e-03)
+   heads: h0=3.91e-03 h1=5.86e-03 h2=3.91e-03 h3=7.81e-03 h4=7.81e-03 h5=7.81e-03 h6=7.81e-03 h7=5.86e-03 h8=7.81e-03 h9=4.88e-03 h10=3.91e-03 h11=5.86e-03
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.930.2.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=8199
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=451737600
+   dmax=1.367e-02 dmax8=1.367e-02 dmean=6.465e-04 exact=0.0899 >1e-3=0.1632 >1e-2=0.0003 nan=0/0
+   rows: r0(sl=8198,dmax=1.37e-02) r1(sl=8199,dmax=1.37e-02) r2(sl=8200,dmax=1.07e-02) r3(sl=8201,dmax=5.86e-03)
+   heads: h0=5.37e-03 h1=4.88e-03 h2=4.88e-03 h3=9.77e-03 h4=8.79e-03 h5=4.88e-03 h6=1.07e-02 h7=1.37e-02 h8=1.37e-02 h9=5.86e-03 h10=9.77e-03 h11=5.86e-03
+   bt0: [[25, 26, 27, 28], [25, 26, 27, 28], [25, 26, 27, 28], [25, 26, 27, 28]]
+== mxkv_ab.930.20.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5463
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=903475200
+   dmax=9.766e-03 dmax8=9.766e-03 dmean=5.892e-04 exact=0.0976 >1e-3=0.1361 >1e-2=0.0000 nan=0/0
+   rows: r0(sl=5462,dmax=9.77e-03) r1(sl=5463,dmax=9.77e-03) r2(sl=5464,dmax=7.81e-03) r3(sl=5465,dmax=4.88e-03)
+   heads: h0=9.77e-03 h1=8.79e-03 h2=4.88e-03 h3=7.81e-03 h4=8.79e-03 h5=4.88e-03 h6=4.88e-03 h7=8.79e-03 h8=4.88e-03 h9=7.81e-03 h10=3.91e-03 h11=9.77e-03
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.930.21.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5463
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=1355212800
+   dmax=2.734e-02 dmax8=2.734e-02 dmean=7.057e-04 exact=0.0797 >1e-3=0.1856 >1e-2=0.0009 nan=0/0
+   rows: r0(sl=5462,dmax=2.73e-02) r1(sl=5463,dmax=1.76e-02) r2(sl=5464,dmax=2.15e-02) r3(sl=5465,dmax=7.81e-03)
+   heads: h0=9.28e-03 h1=1.17e-02 h2=1.66e-02 h3=3.91e-03 h4=5.86e-03 h5=2.93e-03 h6=2.34e-02 h7=2.73e-02 h8=2.15e-02 h9=7.81e-03 h10=9.77e-03 h11=1.07e-02
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.930.22.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5463
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=1806950400
+   dmax=1.562e-02 dmax8=1.562e-02 dmean=6.620e-04 exact=0.0994 >1e-3=0.1631 >1e-2=0.0007 nan=0/0
+   rows: r0(sl=5462,dmax=9.77e-03) r1(sl=5463,dmax=1.56e-02) r2(sl=5464,dmax=1.56e-02) r3(sl=5465,dmax=1.46e-02)
+   heads: h0=3.91e-03 h1=1.56e-02 h2=4.88e-03 h3=5.86e-03 h4=3.91e-03 h5=2.93e-03 h6=7.81e-03 h7=1.56e-02 h8=1.17e-02 h9=9.77e-03 h10=1.37e-02 h11=1.17e-02
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.930.23.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5463
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=2258688000
+   dmax=1.172e-02 dmax8=1.172e-02 dmean=6.283e-04 exact=0.0976 >1e-3=0.1492 >1e-2=0.0002 nan=0/0
+   rows: r0(sl=5462,dmax=6.84e-03) r1(sl=5463,dmax=1.07e-02) r2(sl=5464,dmax=1.17e-02) r3(sl=5465,dmax=7.81e-03)
+   heads: h0=5.86e-03 h1=7.81e-03 h2=1.17e-02 h3=9.77e-03 h4=7.81e-03 h5=3.91e-03 h6=1.07e-02 h7=3.91e-03 h8=5.37e-03 h9=5.98e-03 h10=3.91e-03 h11=3.91e-03
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.930.24.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5463
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=2710425600
+   dmax=1.602e-01 dmax8=1.602e-01 dmean=1.100e-03 exact=0.0845 >1e-3=0.2769 >1e-2=0.0041 nan=0/0
+   rows: r0(sl=5462,dmax=6.25e-02) r1(sl=5463,dmax=1.56e-01) r2(sl=5464,dmax=1.25e-01) r3(sl=5465,dmax=1.60e-01)
+   heads: h0=7.81e-02 h1=6.25e-02 h2=6.45e-02 h3=2.54e-02 h4=3.12e-02 h5=1.60e-01 h6=6.84e-03 h7=3.12e-02 h8=7.42e-02 h9=9.38e-02 h10=1.86e-02 h11=1.25e-01
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.930.25.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5463
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=3162163200
+   dmax=8.594e-02 dmax8=8.594e-02 dmean=9.050e-04 exact=0.0986 >1e-3=0.2430 >1e-2=0.0017 nan=0/0
+   rows: r0(sl=5462,dmax=8.59e-02) r1(sl=5463,dmax=7.42e-02) r2(sl=5464,dmax=3.91e-02) r3(sl=5465,dmax=3.71e-02)
+   heads: h0=3.71e-02 h1=2.64e-02 h2=7.81e-03 h3=7.81e-03 h4=8.59e-02 h5=7.42e-02 h6=7.81e-03 h7=2.25e-02 h8=1.56e-02 h9=2.93e-02 h10=9.77e-03 h11=7.81e-03
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.930.26.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5463
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=3613900800
+   dmax=2.148e-02 dmax8=2.148e-02 dmean=8.646e-04 exact=0.1033 >1e-3=0.2418 >1e-2=0.0008 nan=0/0
+   rows: r0(sl=5462,dmax=1.76e-02) r1(sl=5463,dmax=1.17e-02) r2(sl=5464,dmax=1.39e-02) r3(sl=5465,dmax=2.15e-02)
+   heads: h0=1.76e-02 h1=5.86e-03 h2=5.86e-03 h3=5.86e-03 h4=7.81e-03 h5=7.81e-03 h6=1.17e-02 h7=2.05e-02 h8=8.30e-03 h9=1.17e-02 h10=2.15e-02 h11=1.39e-02
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.930.27.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5463
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=4065638400
+   dmax=2.246e-02 dmax8=2.246e-02 dmean=7.451e-04 exact=0.1002 >1e-3=0.2021 >1e-2=0.0006 nan=0/0
+   rows: r0(sl=5462,dmax=9.77e-03) r1(sl=5463,dmax=7.81e-03) r2(sl=5464,dmax=1.17e-02) r3(sl=5465,dmax=2.25e-02)
+   heads: h0=6.84e-03 h1=6.84e-03 h2=5.86e-03 h3=1.17e-02 h4=1.17e-02 h5=1.76e-02 h6=2.25e-02 h7=5.86e-03 h8=9.28e-03 h9=2.17e-02 h10=1.66e-02 h11=8.30e-03
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.930.28.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5463
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=4517376000
+   dmax=5.859e-02 dmax8=5.859e-02 dmean=9.147e-04 exact=0.1052 >1e-3=0.2565 >1e-2=0.0011 nan=0/0
+   rows: r0(sl=5462,dmax=3.52e-02) r1(sl=5463,dmax=1.37e-02) r2(sl=5464,dmax=2.34e-02) r3(sl=5465,dmax=5.86e-02)
+   heads: h0=1.07e-02 h1=2.05e-02 h2=1.56e-02 h3=7.81e-03 h4=2.15e-02 h5=5.86e-02 h6=5.86e-03 h7=2.15e-02 h8=7.81e-03 h9=9.77e-03 h10=7.81e-03 h11=1.17e-02
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.930.29.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5463
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=4969113600
+   dmax=1.641e-01 dmax8=1.641e-01 dmean=1.044e-03 exact=0.0952 >1e-3=0.2799 >1e-2=0.0024 nan=0/0
+   rows: r0(sl=5462,dmax=5.47e-02) r1(sl=5463,dmax=1.64e-01) r2(sl=5464,dmax=5.86e-02) r3(sl=5465,dmax=7.42e-02)
+   heads: h0=2.93e-02 h1=7.81e-03 h2=9.77e-03 h3=7.81e-03 h4=1.07e-02 h5=6.84e-03 h6=1.64e-01 h7=4.69e-02 h8=5.86e-02 h9=1.37e-02 h10=3.12e-02 h11=9.77e-03
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.930.3.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=8199
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=903475200
+   dmax=1.953e-02 dmax8=1.953e-02 dmean=7.440e-04 exact=0.0959 >1e-3=0.2010 >1e-2=0.0009 nan=0/0
+   rows: r0(sl=8198,dmax=9.77e-03) r1(sl=8199,dmax=1.37e-02) r2(sl=8200,dmax=1.76e-02) r3(sl=8201,dmax=1.95e-02)
+   heads: h0=1.37e-02 h1=1.37e-02 h2=4.88e-03 h3=7.81e-03 h4=1.95e-02 h5=1.95e-02 h6=3.91e-03 h7=1.17e-02 h8=3.91e-03 h9=1.17e-02 h10=1.76e-02 h11=7.81e-03
+   bt0: [[25, 26, 27, 28], [25, 26, 27, 28], [25, 26, 27, 28], [25, 26, 27, 28]]
+== mxkv_ab.930.30.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5463
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=5420851200
+   dmax=3.320e-02 dmax8=3.320e-02 dmean=1.187e-03 exact=0.0983 >1e-3=0.3302 >1e-2=0.0040 nan=0/0
+   rows: r0(sl=5462,dmax=2.34e-02) r1(sl=5463,dmax=2.93e-02) r2(sl=5464,dmax=3.32e-02) r3(sl=5465,dmax=3.32e-02)
+   heads: h0=3.32e-02 h1=7.81e-03 h2=9.77e-03 h3=2.15e-02 h4=1.17e-02 h5=1.17e-02 h6=1.17e-02 h7=2.34e-02 h8=2.34e-02 h9=3.32e-02 h10=2.15e-02 h11=1.17e-02
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.930.31.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5463
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=5872588800
+   dmax=3.516e-02 dmax8=3.516e-02 dmean=1.088e-03 exact=0.0792 >1e-3=0.3051 >1e-2=0.0036 nan=0/0
+   rows: r0(sl=5462,dmax=1.95e-02) r1(sl=5463,dmax=3.22e-02) r2(sl=5464,dmax=3.52e-02) r3(sl=5465,dmax=2.73e-02)
+   heads: h0=9.77e-03 h1=2.15e-02 h2=2.73e-02 h3=3.22e-02 h4=3.52e-02 h5=1.37e-02 h6=1.56e-02 h7=6.84e-03 h8=1.95e-02 h9=1.17e-02 h10=7.81e-03 h11=2.34e-02
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.930.32.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5463
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=6324326400
+   dmax=1.250e-01 dmax8=1.250e-01 dmean=1.954e-03 exact=0.0837 >1e-3=0.4275 >1e-2=0.0256 nan=0/0
+   rows: r0(sl=5462,dmax=1.25e-01) r1(sl=5463,dmax=9.38e-02) r2(sl=5464,dmax=9.38e-02) r3(sl=5465,dmax=1.25e-01)
+   heads: h0=6.25e-02 h1=4.69e-02 h2=3.12e-02 h3=6.25e-02 h4=1.56e-02 h5=3.12e-02 h6=9.38e-02 h7=1.25e-01 h8=1.25e-01 h9=1.25e-01 h10=1.25e-01 h11=9.38e-02
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.930.33.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5463
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=6776064000
+   dmax=6.250e-02 dmax8=6.250e-02 dmean=4.446e-03 exact=0.1108 >1e-3=0.5245 >1e-2=0.1326 nan=0/0
+   rows: r0(sl=5462,dmax=6.25e-02) r1(sl=5463,dmax=6.25e-02) r2(sl=5464,dmax=6.25e-02) r3(sl=5465,dmax=6.25e-02)
+   heads: h0=4.69e-02 h1=4.69e-02 h2=4.69e-02 h3=6.25e-02 h4=4.69e-02 h5=6.25e-02 h6=6.25e-02 h7=6.25e-02 h8=4.69e-02 h9=6.25e-02 h10=6.25e-02 h11=6.25e-02
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.930.34.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5463
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=7227801600
+   dmax=9.375e-02 dmax8=9.375e-02 dmean=5.146e-03 exact=0.1007 >1e-3=0.6897 >1e-2=0.1362 nan=0/0
+   rows: r0(sl=5462,dmax=7.03e-02) r1(sl=5463,dmax=9.38e-02) r2(sl=5464,dmax=8.40e-02) r3(sl=5465,dmax=6.25e-02)
+   heads: h0=3.12e-02 h1=9.38e-02 h2=3.91e-02 h3=8.40e-02 h4=3.12e-02 h5=7.03e-02 h6=3.12e-02 h7=6.25e-02 h8=3.12e-02 h9=3.12e-02 h10=6.25e-02 h11=6.25e-02
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.930.35.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5467
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=0
+   dmax=3.906e-03 dmax8=3.906e-03 dmean=2.840e-04 exact=0.1007 >1e-3=0.0251 >1e-2=0.0000 nan=0/0
+   rows: r0(sl=5466,dmax=3.91e-03) r1(sl=5467,dmax=3.91e-03) r2(sl=5468,dmax=3.91e-03) r3(sl=5469,dmax=3.91e-03)
+   heads: h0=2.44e-03 h1=3.91e-03 h2=2.44e-03 h3=2.44e-03 h4=1.95e-03 h5=3.91e-03 h6=3.91e-03 h7=3.91e-03 h8=3.91e-03 h9=3.91e-03 h10=2.93e-03 h11=3.91e-03
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.930.36.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5467
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=451737600
+   dmax=7.812e-03 dmax8=7.812e-03 dmean=5.300e-04 exact=0.1040 >1e-3=0.1139 >1e-2=0.0000 nan=0/0
+   rows: r0(sl=5466,dmax=7.81e-03) r1(sl=5467,dmax=7.81e-03) r2(sl=5468,dmax=7.81e-03) r3(sl=5469,dmax=7.81e-03)
+   heads: h0=4.39e-03 h1=3.91e-03 h2=3.91e-03 h3=3.91e-03 h4=3.91e-03 h5=5.86e-03 h6=5.86e-03 h7=7.81e-03 h8=7.81e-03 h9=4.88e-03 h10=7.81e-03 h11=7.81e-03
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.930.37.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5467
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=903475200
+   dmax=5.859e-03 dmax8=5.859e-03 dmean=4.767e-04 exact=0.1061 >1e-3=0.0925 >1e-2=0.0000 nan=0/0
+   rows: r0(sl=5466,dmax=5.37e-03) r1(sl=5467,dmax=5.86e-03) r2(sl=5468,dmax=4.88e-03) r3(sl=5469,dmax=5.86e-03)
+   heads: h0=5.86e-03 h1=5.37e-03 h2=3.91e-03 h3=3.91e-03 h4=4.88e-03 h5=2.93e-03 h6=1.46e-03 h7=3.91e-03 h8=2.44e-03 h9=5.86e-03 h10=3.91e-03 h11=4.88e-03
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.930.38.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5467
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=1355212800
+   dmax=2.734e-02 dmax8=2.734e-02 dmean=5.410e-04 exact=0.0934 >1e-3=0.1177 >1e-2=0.0007 nan=0/0
+   rows: r0(sl=5466,dmax=2.34e-02) r1(sl=5467,dmax=1.95e-02) r2(sl=5468,dmax=2.73e-02) r3(sl=5469,dmax=1.17e-02)
+   heads: h0=3.91e-03 h1=5.86e-03 h2=9.77e-03 h3=3.91e-03 h4=8.79e-03 h5=2.93e-03 h6=1.37e-02 h7=5.37e-03 h8=2.73e-02 h9=1.95e-03 h10=1.17e-02 h11=2.34e-02
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.930.39.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5467
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=1806950400
+   dmax=1.660e-02 dmax8=1.660e-02 dmean=5.938e-04 exact=0.0978 >1e-3=0.1421 >1e-2=0.0003 nan=0/0
+   rows: r0(sl=5466,dmax=9.77e-03) r1(sl=5467,dmax=1.66e-02) r2(sl=5468,dmax=1.56e-02) r3(sl=5469,dmax=9.77e-03)
+   heads: h0=3.91e-03 h1=4.88e-03 h2=8.79e-03 h3=5.86e-03 h4=4.88e-03 h5=3.91e-03 h6=1.56e-02 h7=5.86e-03 h8=1.56e-02 h9=1.66e-02 h10=9.77e-03 h11=5.86e-03
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.930.4.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=8199
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=1355212800
+   dmax=1.953e-02 dmax8=1.953e-02 dmean=6.713e-04 exact=0.0884 >1e-3=0.1737 >1e-2=0.0009 nan=0/0
+   rows: r0(sl=8198,dmax=1.37e-02) r1(sl=8199,dmax=1.95e-02) r2(sl=8200,dmax=1.95e-02) r3(sl=8201,dmax=1.76e-02)
+   heads: h0=7.81e-03 h1=7.81e-03 h2=5.86e-03 h3=1.17e-02 h4=1.95e-02 h5=7.81e-03 h6=1.95e-02 h7=5.86e-03 h8=1.17e-02 h9=3.91e-03 h10=1.76e-02 h11=1.17e-02
+   bt0: [[25, 26, 27, 28], [25, 26, 27, 28], [25, 26, 27, 28], [25, 26, 27, 28]]
+== mxkv_ab.930.40.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5467
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=2258688000
+   dmax=1.562e-02 dmax8=1.562e-02 dmean=7.032e-04 exact=0.0921 >1e-3=0.1874 >1e-2=0.0005 nan=0/0
+   rows: r0(sl=5466,dmax=1.05e-02) r1(sl=5467,dmax=4.88e-03) r2(sl=5468,dmax=1.03e-02) r3(sl=5469,dmax=1.56e-02)
+   heads: h0=7.81e-03 h1=5.86e-03 h2=7.81e-03 h3=3.91e-03 h4=1.56e-02 h5=5.86e-03 h6=1.05e-02 h7=8.06e-03 h8=1.25e-02 h9=4.88e-03 h10=1.37e-02 h11=1.03e-02
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.930.41.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5467
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=2710425600
+   dmax=1.250e-01 dmax8=1.250e-01 dmean=1.059e-03 exact=0.0917 >1e-3=0.2671 >1e-2=0.0033 nan=0/0
+   rows: r0(sl=5466,dmax=1.25e-01) r1(sl=5467,dmax=7.23e-02) r2(sl=5468,dmax=1.02e-01) r3(sl=5469,dmax=1.17e-01)
+   heads: h0=2.34e-02 h1=1.04e-01 h2=6.64e-02 h3=7.81e-03 h4=1.25e-01 h5=7.23e-02 h6=1.18e-02 h7=7.81e-02 h8=2.34e-02 h9=2.73e-02 h10=7.81e-03 h11=1.17e-01
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.930.42.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5467
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=3162163200
+   dmax=1.172e-01 dmax8=1.172e-01 dmean=8.948e-04 exact=0.1006 >1e-3=0.2351 >1e-2=0.0020 nan=0/0
+   rows: r0(sl=5466,dmax=7.03e-02) r1(sl=5467,dmax=1.17e-01) r2(sl=5468,dmax=1.95e-02) r3(sl=5469,dmax=2.44e-02)
+   heads: h0=2.03e-02 h1=1.56e-02 h2=7.81e-03 h3=2.20e-02 h4=1.17e-01 h5=2.73e-02 h6=1.66e-02 h7=3.32e-02 h8=1.95e-02 h9=3.71e-02 h10=2.73e-02 h11=1.12e-02
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.930.43.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5467
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=3613900800
+   dmax=3.906e-02 dmax8=3.906e-02 dmean=8.660e-04 exact=0.1014 >1e-3=0.2362 >1e-2=0.0011 nan=0/0
+   rows: r0(sl=5466,dmax=1.56e-02) r1(sl=5467,dmax=1.42e-02) r2(sl=5468,dmax=1.17e-02) r3(sl=5469,dmax=3.91e-02)
+   heads: h0=1.17e-02 h1=1.37e-02 h2=7.81e-03 h3=8.97e-03 h4=1.56e-02 h5=7.81e-03 h6=3.91e-02 h7=1.42e-02 h8=3.12e-02 h9=1.07e-02 h10=1.17e-02 h11=2.78e-02
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.930.44.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5467
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=4065638400
+   dmax=1.562e-02 dmax8=1.562e-02 dmean=8.223e-04 exact=0.1066 >1e-3=0.2268 >1e-2=0.0002 nan=0/0
+   rows: r0(sl=5466,dmax=7.81e-03) r1(sl=5467,dmax=1.56e-02) r2(sl=5468,dmax=7.81e-03) r3(sl=5469,dmax=1.56e-02)
+   heads: h0=1.56e-02 h1=5.86e-03 h2=7.81e-03 h3=7.81e-03 h4=7.81e-03 h5=5.86e-03 h6=6.84e-03 h7=7.81e-03 h8=7.81e-03 h9=5.86e-03 h10=5.86e-03 h11=1.56e-02
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.930.45.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5467
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=4517376000
+   dmax=3.516e-02 dmax8=3.516e-02 dmean=9.166e-04 exact=0.1025 >1e-3=0.2529 >1e-2=0.0007 nan=0/0
+   rows: r0(sl=5466,dmax=2.54e-02) r1(sl=5467,dmax=3.52e-02) r2(sl=5468,dmax=9.77e-03) r3(sl=5469,dmax=1.66e-02)
+   heads: h0=2.54e-02 h1=1.07e-02 h2=1.66e-02 h3=1.17e-02 h4=1.76e-02 h5=3.52e-02 h6=9.77e-03 h7=9.28e-03 h8=7.81e-03 h9=1.46e-02 h10=7.81e-03 h11=7.81e-03
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.930.46.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5467
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=4969113600
+   dmax=5.469e-02 dmax8=5.469e-02 dmean=1.002e-03 exact=0.0975 >1e-3=0.2831 >1e-2=0.0011 nan=0/0
+   rows: r0(sl=5466,dmax=4.30e-02) r1(sl=5467,dmax=1.95e-02) r2(sl=5468,dmax=5.47e-02) r3(sl=5469,dmax=2.93e-02)
+   heads: h0=2.93e-02 h1=9.77e-03 h2=9.77e-03 h3=3.52e-02 h4=1.86e-02 h5=9.77e-03 h6=5.47e-02 h7=1.27e-02 h8=4.30e-02 h9=1.56e-02 h10=1.95e-02 h11=1.27e-02
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.930.47.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5467
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=5420851200
+   dmax=3.906e-02 dmax8=3.906e-02 dmean=1.227e-03 exact=0.1025 >1e-3=0.3395 >1e-2=0.0050 nan=0/0
+   rows: r0(sl=5466,dmax=2.34e-02) r1(sl=5467,dmax=2.25e-02) r2(sl=5468,dmax=3.91e-02) r3(sl=5469,dmax=2.34e-02)
+   heads: h0=3.91e-02 h1=7.81e-03 h2=1.37e-02 h3=1.95e-02 h4=1.95e-02 h5=1.56e-02 h6=1.56e-02 h7=2.34e-02 h8=1.56e-02 h9=2.25e-02 h10=2.34e-02 h11=1.56e-02
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.930.48.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5467
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=5872588800
+   dmax=7.031e-02 dmax8=7.031e-02 dmean=1.237e-03 exact=0.0806 >1e-3=0.3197 >1e-2=0.0069 nan=0/0
+   rows: r0(sl=5466,dmax=1.37e-02) r1(sl=5467,dmax=1.95e-02) r2(sl=5468,dmax=7.03e-02) r3(sl=5469,dmax=2.93e-02)
+   heads: h0=2.34e-02 h1=1.21e-02 h2=2.34e-02 h3=2.93e-02 h4=7.03e-02 h5=1.76e-02 h6=7.81e-03 h7=1.56e-02 h8=7.81e-03 h9=1.95e-02 h10=1.95e-02 h11=1.37e-02
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.930.49.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5467
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=6324326400
+   dmax=9.375e-02 dmax8=9.375e-02 dmean=1.946e-03 exact=0.0845 >1e-3=0.4326 >1e-2=0.0237 nan=0/0
+   rows: r0(sl=5466,dmax=9.38e-02) r1(sl=5467,dmax=9.38e-02) r2(sl=5468,dmax=9.38e-02) r3(sl=5469,dmax=9.38e-02)
+   heads: h0=6.25e-02 h1=2.34e-02 h2=2.34e-02 h3=3.12e-02 h4=2.34e-02 h5=2.34e-02 h6=6.25e-02 h7=9.38e-02 h8=9.38e-02 h9=9.38e-02 h10=9.38e-02 h11=6.25e-02
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.930.5.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=8199
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=1806950400
+   dmax=3.906e-02 dmax8=3.906e-02 dmean=7.875e-04 exact=0.0859 >1e-3=0.2161 >1e-2=0.0015 nan=0/0
+   rows: r0(sl=8198,dmax=3.91e-02) r1(sl=8199,dmax=3.52e-02) r2(sl=8200,dmax=1.56e-02) r3(sl=8201,dmax=3.12e-02)
+   heads: h0=4.39e-03 h1=2.34e-02 h2=3.91e-03 h3=1.95e-02 h4=3.91e-03 h5=4.88e-03 h6=3.12e-02 h7=1.56e-02 h8=7.81e-03 h9=3.91e-02 h10=1.95e-02 h11=2.73e-02
+   bt0: [[25, 26, 27, 28], [25, 26, 27, 28], [25, 26, 27, 28], [25, 26, 27, 28]]
+== mxkv_ab.930.50.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5467
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=6776064000
+   dmax=6.250e-02 dmax8=6.250e-02 dmean=4.452e-03 exact=0.1069 >1e-3=0.5009 >1e-2=0.1317 nan=0/0
+   rows: r0(sl=5466,dmax=6.25e-02) r1(sl=5467,dmax=6.25e-02) r2(sl=5468,dmax=6.25e-02) r3(sl=5469,dmax=6.25e-02)
+   heads: h0=6.25e-02 h1=6.25e-02 h2=6.25e-02 h3=6.25e-02 h4=6.25e-02 h5=6.25e-02 h6=6.25e-02 h7=6.25e-02 h8=6.25e-02 h9=6.25e-02 h10=6.25e-02 h11=6.25e-02
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.930.51.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5467
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=7227801600
+   dmax=1.035e-01 dmax8=1.035e-01 dmean=5.199e-03 exact=0.0972 >1e-3=0.6890 >1e-2=0.1388 nan=0/0
+   rows: r0(sl=5466,dmax=6.25e-02) r1(sl=5467,dmax=6.25e-02) r2(sl=5468,dmax=7.03e-02) r3(sl=5469,dmax=1.04e-01)
+   heads: h0=3.12e-02 h1=1.04e-01 h2=7.81e-02 h3=7.03e-02 h4=3.91e-02 h5=9.38e-02 h6=4.30e-02 h7=6.25e-02 h8=3.91e-02 h9=3.91e-02 h10=4.69e-02 h11=4.69e-02
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.930.52.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5471
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=0
+   dmax=4.883e-03 dmax8=4.883e-03 dmean=3.008e-04 exact=0.0985 >1e-3=0.0318 >1e-2=0.0000 nan=0/0
+   rows: r0(sl=5470,dmax=3.91e-03) r1(sl=5471,dmax=3.91e-03) r2(sl=5472,dmax=4.88e-03) r3(sl=5473,dmax=3.91e-03)
+   heads: h0=1.95e-03 h1=1.95e-03 h2=1.95e-03 h3=1.95e-03 h4=1.95e-03 h5=1.95e-03 h6=3.91e-03 h7=3.91e-03 h8=4.88e-03 h9=3.91e-03 h10=3.91e-03 h11=3.91e-03
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.930.53.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5471
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=451737600
+   dmax=8.667e-03 dmax8=8.667e-03 dmean=5.286e-04 exact=0.1023 >1e-3=0.1143 >1e-2=0.0000 nan=0/0
+   rows: r0(sl=5470,dmax=7.81e-03) r1(sl=5471,dmax=8.67e-03) r2(sl=5472,dmax=7.81e-03) r3(sl=5473,dmax=7.81e-03)
+   heads: h0=2.93e-03 h1=3.91e-03 h2=3.17e-03 h3=3.91e-03 h4=2.93e-03 h5=3.91e-03 h6=3.91e-03 h7=8.67e-03 h8=3.91e-03 h9=5.86e-03 h10=5.86e-03 h11=7.81e-03
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.930.54.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5471
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=903475200
+   dmax=5.859e-03 dmax8=5.859e-03 dmean=4.681e-04 exact=0.1043 >1e-3=0.0921 >1e-2=0.0000 nan=0/0
+   rows: r0(sl=5470,dmax=4.88e-03) r1(sl=5471,dmax=3.91e-03) r2(sl=5472,dmax=5.86e-03) r3(sl=5473,dmax=4.88e-03)
+   heads: h0=4.88e-03 h1=3.91e-03 h2=3.91e-03 h3=3.91e-03 h4=3.91e-03 h5=3.91e-03 h6=1.95e-03 h7=5.86e-03 h8=2.44e-03 h9=5.86e-03 h10=3.91e-03 h11=4.39e-03
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.930.55.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5471
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=1355212800
+   dmax=2.734e-02 dmax8=2.734e-02 dmean=5.671e-04 exact=0.0821 >1e-3=0.1329 >1e-2=0.0006 nan=0/0
+   rows: r0(sl=5470,dmax=1.95e-02) r1(sl=5471,dmax=2.73e-02) r2(sl=5472,dmax=2.34e-02) r3(sl=5473,dmax=8.79e-03)
+   heads: h0=5.62e-03 h1=5.86e-03 h2=2.73e-02 h3=3.91e-03 h4=1.17e-02 h5=3.91e-03 h6=2.34e-02 h7=1.07e-02 h8=1.95e-02 h9=2.93e-03 h10=4.88e-03 h11=2.34e-02
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.930.56.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5471
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=1806950400
+   dmax=1.074e-02 dmax8=1.074e-02 dmean=5.408e-04 exact=0.1003 >1e-3=0.1205 >1e-2=0.0001 nan=0/0
+   rows: r0(sl=5470,dmax=9.77e-03) r1(sl=5471,dmax=7.81e-03) r2(sl=5472,dmax=1.07e-02) r3(sl=5473,dmax=4.88e-03)
+   heads: h0=4.88e-03 h1=5.86e-03 h2=1.07e-02 h3=3.91e-03 h4=2.93e-03 h5=3.91e-03 h6=5.86e-03 h7=9.77e-03 h8=5.86e-03 h9=7.81e-03 h10=7.81e-03 h11=7.81e-03
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.930.57.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5471
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=2258688000
+   dmax=1.465e-02 dmax8=1.465e-02 dmean=6.537e-04 exact=0.1040 >1e-3=0.1650 >1e-2=0.0002 nan=0/0
+   rows: r0(sl=5470,dmax=5.86e-03) r1(sl=5471,dmax=9.77e-03) r2(sl=5472,dmax=1.46e-02) r3(sl=5473,dmax=8.30e-03)
+   heads: h0=4.39e-03 h1=7.81e-03 h2=5.86e-03 h3=9.77e-03 h4=7.81e-03 h5=8.30e-03 h6=7.81e-03 h7=5.37e-03 h8=1.46e-02 h9=4.88e-03 h10=4.88e-03 h11=3.91e-03
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.930.58.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5471
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=2710425600
+   dmax=1.484e-01 dmax8=1.484e-01 dmean=1.197e-03 exact=0.0867 >1e-3=0.2947 >1e-2=0.0059 nan=0/0
+   rows: r0(sl=5470,dmax=1.41e-01) r1(sl=5471,dmax=1.86e-02) r2(sl=5472,dmax=1.48e-01) r3(sl=5473,dmax=1.09e-01)
+   heads: h0=7.62e-02 h1=1.25e-01 h2=5.47e-02 h3=2.05e-02 h4=1.09e-01 h5=1.41e-01 h6=5.86e-03 h7=1.25e-01 h8=1.48e-01 h9=1.95e-02 h10=7.81e-03 h11=3.52e-02
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.930.59.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5471
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=3162163200
+   dmax=1.562e-01 dmax8=1.562e-01 dmean=9.915e-04 exact=0.0949 >1e-3=0.2524 >1e-2=0.0031 nan=0/0
+   rows: r0(sl=5470,dmax=1.56e-01) r1(sl=5471,dmax=5.86e-02) r2(sl=5472,dmax=7.42e-02) r3(sl=5473,dmax=2.83e-02)
+   heads: h0=1.56e-01 h1=1.63e-02 h2=6.59e-03 h3=1.22e-02 h4=1.45e-01 h5=7.03e-02 h6=3.91e-02 h7=2.83e-02 h8=1.09e-01 h9=1.17e-02 h10=7.42e-02 h11=1.11e-02
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.930.6.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=8199
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=2258688000
+   dmax=4.688e-02 dmax8=4.688e-02 dmean=1.083e-03 exact=0.0787 >1e-3=0.3274 >1e-2=0.0022 nan=0/0
+   rows: r0(sl=8198,dmax=4.69e-02) r1(sl=8199,dmax=1.76e-02) r2(sl=8200,dmax=3.91e-02) r3(sl=8201,dmax=3.52e-02)
+   heads: h0=3.52e-02 h1=4.69e-02 h2=2.73e-02 h3=2.34e-02 h4=5.86e-03 h5=2.54e-02 h6=1.76e-02 h7=3.12e-02 h8=3.12e-02 h9=3.12e-02 h10=1.56e-02 h11=1.56e-02
+   bt0: [[25, 26, 27, 28], [25, 26, 27, 28], [25, 26, 27, 28], [25, 26, 27, 28]]
+== mxkv_ab.930.60.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=5471
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=3613900800
+   dmax=5.469e-02 dmax8=5.469e-02 dmean=9.396e-04 exact=0.1031 >1e-3=0.2688 >1e-2=0.0009 nan=0/0
+   rows: r0(sl=5470,dmax=1.17e-02) r1(sl=5471,dmax=1.56e-02) r2(sl=5472,dmax=5.47e-02) r3(sl=5473,dmax=9.77e-03)
+   heads: h0=1.56e-02 h1=5.86e-03 h2=9.77e-03 h3=7.81e-03 h4=7.81e-03 h5=7.81e-03 h6=1.66e-02 h7=2.54e-02 h8=7.81e-03 h9=1.17e-02 h10=5.47e-02 h11=1.17e-02
+   bt0: [[525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528], [525, 526, 527, 528]]
+== mxkv_ab.930.7.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=8199
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=2710425600
+   dmax=1.172e-01 dmax8=1.172e-01 dmean=1.380e-03 exact=0.0718 >1e-3=0.3629 >1e-2=0.0053 nan=0/0
+   rows: r0(sl=8198,dmax=7.81e-02) r1(sl=8199,dmax=1.17e-01) r2(sl=8200,dmax=1.09e-01) r3(sl=8201,dmax=1.05e-01)
+   heads: h0=1.05e-01 h1=6.25e-02 h2=4.69e-02 h3=4.10e-02 h4=7.81e-02 h5=1.09e-01 h6=1.22e-02 h7=3.32e-02 h8=4.69e-02 h9=1.17e-01 h10=1.17e-02 h11=9.38e-02
+   bt0: [[25, 26, 27, 28], [25, 26, 27, 28], [25, 26, 27, 28], [25, 26, 27, 28]]
+== mxkv_ab.930.8.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=8199
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=3162163200
+   dmax=2.188e-01 dmax8=2.188e-01 dmean=1.501e-03 exact=0.0801 >1e-3=0.3666 >1e-2=0.0098 nan=0/0
+   rows: r0(sl=8198,dmax=9.38e-02) r1(sl=8199,dmax=8.59e-02) r2(sl=8200,dmax=1.33e-01) r3(sl=8201,dmax=2.19e-01)
+   heads: h0=2.05e-02 h1=3.03e-02 h2=2.19e-01 h3=2.83e-02 h4=2.19e-01 h5=5.08e-02 h6=4.69e-02 h7=8.59e-02 h8=1.25e-01 h9=6.25e-02 h10=9.38e-02 h11=1.95e-02
+   bt0: [[25, 26, 27, 28], [25, 26, 27, 28], [25, 26, 27, 28], [25, 26, 27, 28]]
+== mxkv_ab.930.9.pt fmt=mxfp4 rows=4 bucket=LONG sl_mean=8199
+   kv dim=4 dtype=torch.uint8 layout=dense-contiguous off=3613900800
+   dmax=6.250e-02 dmax8=6.250e-02 dmean=1.133e-03 exact=0.0880 >1e-3=0.3298 >1e-2=0.0024 nan=0/0
+   rows: r0(sl=8198,dmax=4.69e-02) r1(sl=8199,dmax=4.69e-02) r2(sl=8200,dmax=6.25e-02) r3(sl=8201,dmax=5.27e-02)
+   heads: h0=3.52e-02 h1=3.52e-02 h2=2.05e-02 h3=1.86e-02 h4=7.81e-03 h5=5.27e-02 h6=3.12e-02 h7=3.52e-02 h8=9.77e-03 h9=6.25e-02 h10=4.69e-02 h11=4.69e-02
+   bt0: [[25, 26, 27, 28], [25, 26, 27, 28], [25, 26, 27, 28], [25, 26, 27, 28]]
+== bucket rollup:
+   SHORT: 0 captures
+   MID: 0 captures
+   LONG: 120 captures, divergent=81, max_dmax=4.219e-01 (mxkv_ab.1030.42.pt), sl_mean range 5463-8199
+R224B_VERDICT: DIVERGENT captures=120 divergent=81 max_dmax=4.219e-01 nan=0 pools_dense=True divergent_by_bucket: SHORT=0 MID=0 LONG=81

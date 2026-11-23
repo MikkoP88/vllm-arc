@@ -1,0 +1,13 @@
+== mxkv_ab.2447.18.pt [dbf0] sl=[5462, 5463, 5464, 5465]
+   REPLAY triton-vs-banked       dmax=0.000e+00
+   REPLAY native[dbf0]-vs-banked dmax=7.719e-02
+   REPLAY native[dbf0]-vs-oracle dmax=7.812e-03  (banked native-vs-triton 7.748e-02)
+== mxkv_ab.2447.30.pt [dbf0] sl=[5462, 5463, 5464, 5465]
+   REPLAY triton-vs-banked       dmax=0.000e+00
+   REPLAY native[dbf0]-vs-banked dmax=5.547e-01
+   REPLAY native[dbf0]-vs-oracle dmax=7.031e-02  (banked native-vs-triton 5.527e-01)
+== mxkv_ab.2547.18.pt [dbf0] sl=[5462, 5463, 5464, 5465]
+   REPLAY triton-vs-banked       dmax=0.000e+00
+   REPLAY native[dbf0]-vs-banked dmax=1.484e-01
+   REPLAY native[dbf0]-vs-oracle dmax=5.859e-03  (banked native-vs-triton 1.478e-01)
+R225A_DONE factor=dbf0 saved=3 -> /out/r225a_dbf0.pt

@@ -12,6 +12,59 @@ the fork SHA it was built from.
 Phase labels P0–P6.38 refer to the plan's execution phases; every phase's
 raw evidence is banked under `results/YYYY-MM-DD-<phase>-*/`.
 
+## rel/v0.30.0-b70-cert27 — P6.47: r225 wheel fixes certified; all three MX lanes native, mxk8v4 un-refused (2026-11-23)
+
+- cert27 = cert26 + **the r225-fixed `arc7mx` wheel** (build25,
+  `vllm_xpu_kernels-0.1.14.1+arc7mx`, md5
+  `aeca45daa740e9973a1c51bfc5ea2bc4`, byte-pinned; installed
+  `libmqa_logits_kernels_xe_2.so` md5 `190e261edc79b3b497d8d8e801e65757`,
+  asserted in-image) BAKED over the cert26 wheel, plus the fork overlay
+  with the `ARC_MXKV_AB` diagnostic instrument (default-off,
+  self-guarding under capture). Build: `tools/ar/r227_build_cert27.sh`
+  (inline Dockerfile on the cert26 base; manifest
+  `cert27_fork_sha=d39ab5a26bf737d006d47a3f3125a404dca6e928`).
+- **Kernel fixes over the cert26 wheel** (fork-owned tree, provenance
+  `tools/ar/r225_fix*_apply.py`): fix1 e2m1 subnormal mantissa (implicit
+  bit + OCP `m*0.5` decode), fix2 `sycl::exp2` in the split-KV combine
+  rescale (evicting `native::exp2`'s ~1e-3 relative error), fix3 fp32
+  split partials (`ElementOAccum` float — the reduce combine is the
+  single bf16 quantization point), fix5 the S==1 sentinel-LSE predicate
+  aligned to the O-normalize arm.
+- **Certified posture change: `mxk8v4` native UN-REFUSED.** The cert26
+  mkq refusal (REP-LOOP all classes) root-caused to the four defects
+  above (r224 in-vivo A/B + offline factor bisection; r225 offline
+  12/12; r226a e2e re-entry 8/8 fresh COVERED payloads, engine raw lane
+  gap p50 3.05e-1 → 5.5e-2, nan 0/120). r228 battery on cert27:
+  m8q/m4q/mkq LONGRETURN + T1_SEED PASS, longprobes CLEAN on full +
+  3 rehits, native_lines=108 each, tracebacks 0; gemma legs = the
+  documented native-KV baseline verbatim (GEMMA_COMPARE PASS, no new
+  modes / no amplification); g0 deterministic on rehits.
+  `P647_CERT27_GATE_COMPLETE -- PASS`.
+- **r229 format-replay value legs**: mxfp8 8/8 + mxfp4 8/8 at the
+  full-population-calibrated q-cast-matched criterion; the r229s/r229s2
+  sweeps (86 COVERED cells per format) measured **format-invariant
+  residual distributions** (native-vs-walk max 1.216e-1 vs 1.208e-1) —
+  the r225 coverage-note claim (one ReduceSplitK path serves all three
+  formats) is measured, not argued. Band law banked: bands calibrated
+  on a lexical-prefix sample of a heavy-tailed distribution are not
+  calibrated (the old 2.5e-2/5e-2/16 bands failed ~2/3 of the full
+  population on BOTH formats; recalibrated 2.0e-1 / 4.0e-1 / 64.0,
+  corruption signatures still gated tight).
+- **Cross-image law**: native-lane outputs drift cert26 → cert27 (the
+  fixes change native numerics by design); the certified gate is
+  per-boot self-consistency (3-cycle single-hash + T1_SEED + CLEAN
+  rehits), not cross-image hash stability. The perf record carries the
+  banked cert26-measured numbers (numerics-only wheel delta; the
+  `fp8_e4m3` bank is untouched).
+- Wrapper/infra deltas: `serve_arc_b70.sh` gains the `ARC_MXKV_AB*`
+  passthrough trio (r229a run1 abort fingerprint: native armed,
+  instrument not) and the tracked copy resynced to the live rig script
+  (it had drifted pre-r212f).
+- Evidence: `results/2026-11-23-p647-cert27-battery/` (196 files,
+  serve.logs redacted rig-side 176 → 0),
+  `results/2026-11-23-p647-r229-format-replay/`, and the r224–r226
+  leg banks cited therein.
+
 ## rel/v0.30.0-b70-cert26 — P6.47 Phase-8: arc7 MX-native decode line certified (2026-11-22)
 
 - cert26 = cert25zc content + **the Phase-8 arc7 MX-native decode

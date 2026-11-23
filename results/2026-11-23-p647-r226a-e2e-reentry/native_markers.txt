@@ -1,0 +1,6 @@
+(Worker_TP1 pid=1030) INFO 11-23 08:38:17 [engine.py:1169] MXKV native dispatch fmt=mxk8v4 rows=156 walked_cap=41074176 minlen=8192 -> native (E5b crossover)
+(Worker_TP1 pid=1030) INFO 11-23 08:38:17 [native_decode.py:112] MXKV native call fmt=mxk8v4 rows=156 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto (r212f walk; r219 splits logged: int pin or auto)
+(Worker_TP0 pid=930) INFO 11-23 08:38:17 [engine.py:1169] MXKV native dispatch fmt=mxk8v4 rows=156 walked_cap=41074176 minlen=8192 -> native (E5b crossover)
+(Worker_TP0 pid=930) INFO 11-23 08:38:17 [native_decode.py:112] MXKV native call fmt=mxk8v4 rows=156 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto (r212f walk; r219 splits logged: int pin or auto)
+(Worker_TP1 pid=1030) INFO 11-23 08:38:22 [native_decode.py:112] MXKV native call fmt=mxk8v4 rows=4 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto (r212f walk; r219 splits logged: int pin or auto)
+(Worker_TP0 pid=930) INFO 11-23 08:38:22 [native_decode.py:112] MXKV native call fmt=mxk8v4 rows=4 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto (r212f walk; r219 splits logged: int pin or auto)

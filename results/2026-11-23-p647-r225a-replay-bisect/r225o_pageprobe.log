@@ -1,0 +1,32 @@
+== mxkv_ab.2447.30.pt sl=[5462, 5463, 5464, 5465] banked_pages=[391..537] n=96
+   banked@5222400000         : dmax=1.556e-02  mism=1/3072  max_ulp=0.54
+   banked@0                  : dmax=1.556e-02  mism=1/3072  max_ulp=0.54
+   identity@5222400000       : dmax=1.556e-02  mism=1/3072  max_ulp=0.54
+   identity@0                : dmax=1.556e-02  mism=1/3072  max_ulp=0.54
+   compact391@0              : dmax=1.556e-02  mism=1/3072  max_ulp=0.54
+   -- page-base sweep at fixed off 5222400000 (compact placement)
+   compact64@5222400000      : dmax=1.556e-02  mism=1/3072  max_ulp=0.54
+   compact128@5222400000     : dmax=1.556e-02  mism=1/3072  max_ulp=0.54
+   compact192@5222400000     : dmax=1.556e-02  mism=1/3072  max_ulp=0.54
+   compact256@5222400000     : dmax=1.556e-02  mism=1/3072  max_ulp=0.54
+   compact320@5222400000     : dmax=1.556e-02  mism=1/3072  max_ulp=0.54
+   compact352@5222400000     : dmax=1.556e-02  mism=1/3072  max_ulp=0.54
+   compact368@5222400000     : dmax=1.556e-02  mism=1/3072  max_ulp=0.54
+   compact384@5222400000     : dmax=1.556e-02  mism=1/3072  max_ulp=0.54
+   compact391@5222400000     : dmax=1.556e-02  mism=1/3072  max_ulp=0.54
+   compact400@5222400000     : dmax=1.556e-02  mism=1/3072  max_ulp=0.54
+   compact416@5222400000     : dmax=1.556e-02  mism=1/3072  max_ulp=0.54
+   compact448@5222400000     : dmax=1.556e-02  mism=1/3072  max_ulp=0.54
+   compact512@5222400000     : dmax=1.556e-02  mism=1/3072  max_ulp=0.54
+   -- offset sweep at fixed compact page base 391
+   compact391@1073741824     : dmax=1.556e-02  mism=1/3072  max_ulp=0.54
+   compact391@2147483648     : dmax=1.556e-02  mism=1/3072  max_ulp=0.54
+   compact391@2500000000     : dmax=1.556e-02  mism=1/3072  max_ulp=0.54
+   compact391@3000000000     : dmax=1.556e-02  mism=1/3072  max_ulp=0.54
+   compact391@3500000000     : dmax=1.556e-02  mism=1/3072  max_ulp=0.54
+   compact391@4000000000     : dmax=1.556e-02  mism=1/3072  max_ulp=0.54
+   compact391@4294967296     : dmax=1.556e-02  mism=1/3072  max_ulp=0.54
+   compact391@4500000000     : dmax=1.556e-02  mism=1/3072  max_ulp=0.54
+   compact391@5000000000     : dmax=1.556e-02  mism=1/3072  max_ulp=0.54
+   compact391@5222400000     : dmax=1.556e-02  mism=1/3072  max_ulp=0.54
+R225O_PAGEPROBE_DONE

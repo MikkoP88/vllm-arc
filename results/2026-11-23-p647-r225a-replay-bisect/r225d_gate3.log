@@ -1,0 +1,86 @@
+R225D refuses passed (fork_sha=cac6393159bdf1f6356e744159163fd679726221 wheel=/root/build/wheels-arc-vxk/vllm_xpu_kernels-0.1.14.1+arc7mx-cp312-cp312-linux_x86_64.whl md5=42d5920127a0c0244810a3f787e5f157)
+4bcb9443f4b31316abf4795257dc755c5eeb95242d4e52d39d311107c7ca0775
+=== R225D wheel install (03:55:30) ===
+    Uninstalling vllm-xpu-kernels-0.1.14.1+arc7mx:
+      Successfully uninstalled vllm-xpu-kernels-0.1.14.1+arc7mx
+Successfully installed vllm-xpu-kernels-0.1.14.1+arc7mx
+VKPKG /opt/venv/lib/python3.12/site-packages/vllm_xpu_kernels/__init__.py
+VKMTIME 2026-11-23T03:55
+=== R225D cell base (03:55:43) ===
+== mxkv_ab.2447.18.pt [base] sl=[5462, 5463, 5464, 5465]
+   REPLAY triton-vs-banked       dmax=0.000e+00
+   REPLAY native[base]-vs-banked dmax=7.711e-02
+   REPLAY native[base]-vs-oracle dmax=7.812e-03  (banked native-vs-triton 7.748e-02)
+== mxkv_ab.2447.30.pt [base] sl=[5462, 5463, 5464, 5465]
+   REPLAY triton-vs-banked       dmax=0.000e+00
+   REPLAY native[base]-vs-banked dmax=5.547e-01
+   REPLAY native[base]-vs-oracle dmax=5.078e-02  (banked native-vs-triton 5.527e-01)
+== mxkv_ab.2547.18.pt [base] sl=[5462, 5463, 5464, 5465]
+   REPLAY triton-vs-banked       dmax=0.000e+00
+   REPLAY native[base]-vs-banked dmax=1.484e-01
+   REPLAY native[base]-vs-oracle dmax=5.859e-03  (banked native-vs-triton 1.478e-01)
+R225A_DONE factor=base saved=3 -> /out/r225d_base.pt
+=== R225D cell dbf0 (03:56:04) ===
+== mxkv_ab.2447.18.pt [dbf0] sl=[5462, 5463, 5464, 5465]
+   REPLAY triton-vs-banked       dmax=0.000e+00
+   REPLAY native[dbf0]-vs-banked dmax=7.711e-02
+   REPLAY native[dbf0]-vs-oracle dmax=7.812e-03  (banked native-vs-triton 7.748e-02)
+== mxkv_ab.2447.30.pt [dbf0] sl=[5462, 5463, 5464, 5465]
+   REPLAY triton-vs-banked       dmax=0.000e+00
+   REPLAY native[dbf0]-vs-banked dmax=5.547e-01
+   REPLAY native[dbf0]-vs-oracle dmax=5.078e-02  (banked native-vs-triton 5.527e-01)
+== mxkv_ab.2547.18.pt [dbf0] sl=[5462, 5463, 5464, 5465]
+   REPLAY triton-vs-banked       dmax=0.000e+00
+   REPLAY native[dbf0]-vs-banked dmax=1.484e-01
+   REPLAY native[dbf0]-vs-oracle dmax=5.859e-03  (banked native-vs-triton 1.478e-01)
+R225A_DONE factor=dbf0 saved=3 -> /out/r225d_dbf0.pt
+=== R225D arbitration (float64, CPU) (03:56:13) ===
+   (no output bank for factor nsplit1)
+   (no output bank for factor p64)
+== mxkv_ab.2447.18  banked: triton-vs-ref=4.823e-04 native-vs-ref=7.748e-02
+   base     dmax=7.685e-03  STILL_WRONG
+   dbf0     dmax=7.685e-03  STILL_WRONG
+== mxkv_ab.2447.30  banked: triton-vs-ref=3.550e-03 native-vs-ref=5.525e-01
+   base     dmax=5.158e-02  STILL_WRONG
+   dbf0     dmax=5.158e-02  STILL_WRONG
+== mxkv_ab.2547.18  banked: triton-vs-ref=6.034e-04 native-vs-ref=1.479e-01
+   base     dmax=5.999e-03  STILL_WRONG
+   dbf0     dmax=5.999e-03  STILL_WRONG
+R225B_VERDICT: NONE at triton level
+=== R225D compare (fix canaries) (03:56:16) ===
+== mxkv_ab.2447.18
+   dmax(base_new, banked_broken) = 7.711e-02  [MOVED]
+   dmax(base_new, dbf0_new)      = 0.000e+00  [IDENTICAL]
+   ref |O| p50/max               = 1.345e-01/2.211e+00
+   triton lane : max_ulp=0.25  frac>2ulp=0.00e+00
+   native lane : max_ulp=1556.14  frac>2ulp=4.92e-02  tiny_elems=0 tiny_max=0.00e+00  [STRUCTURAL]
+== mxkv_ab.2447.30
+   dmax(base_new, banked_broken) = 5.547e-01  [MOVED]
+   dmax(base_new, dbf0_new)      = 0.000e+00  [IDENTICAL]
+   ref |O| p50/max               = 4.594e-01/8.254e+00
+   triton lane : max_ulp=0.38  frac>2ulp=0.00e+00
+   native lane : max_ulp=2604.26  frac>2ulp=5.09e-02  tiny_elems=0 tiny_max=0.00e+00  [STRUCTURAL]
+== mxkv_ab.2547.18
+   dmax(base_new, banked_broken) = 1.484e-01  [MOVED]
+   dmax(base_new, dbf0_new)      = 0.000e+00  [IDENTICAL]
+   ref |O| p50/max               = 1.991e-01/2.608e+00
+   triton lane : max_ulp=0.06  frac>2ulp=0.00e+00
+   native lane : max_ulp=376.26  frac>2ulp=3.20e-02  tiny_elems=0 tiny_max=0.00e+00  [STRUCTURAL]
+R225D_COMPARE_VERDICT: PASS_DEFECT_GONE
+=== R225D nibble sim (byte-true evidence) (03:56:19) ===
+== /bank/mxkv_ab.2447.30.pt
+   affected V nibbles (ee=0,m=1): 24.5%
+   banked native-vs-ref dmax     = 5.525e-01
+   SIM    o_sim-vs-ref   dmax    = 5.495e-01
+   SIM    o_sim-vs-native dmax   = 1.081e-01  <- noise class if THE bug
+   sanity o_ref reproducibility  = 0.000e+00
+== /bank/mxkv_ab.2547.18.pt
+   affected V nibbles (ee=0,m=1): 22.8%
+   banked native-vs-ref dmax     = 1.479e-01
+   SIM    o_sim-vs-ref   dmax    = 1.475e-01
+   SIM    o_sim-vs-native dmax   = 1.043e-02  <- noise class if THE bug
+   sanity o_ref reproducibility  = 0.000e+00
+gate: base NOT at triton level
+R225D_GATE: FAIL
+R225D: restoring W14 (03:56:23)
+R225D: W14 HEALTH 200 (04:01:53)

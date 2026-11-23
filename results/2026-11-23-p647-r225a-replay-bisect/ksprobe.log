@@ -1,0 +1,20 @@
+== mxkv_ab.2447.30.pt Ks: codes [0..123] median=121 (<120: 10915  >134: 0  total 98304)
+   top codes: 121x61515 120x21426 0x10864 122x4443 119x51 123x5
+== mxkv_ab.2447.30.pt Vs: codes [0..131] median=127 (<120: 10864  >134: 0  total 98304)
+   top codes: 127x49618 126x25992 0x10864 128x8324 125x2857 129x588 130x38 131x12
+== mxkv_ab.2447.18.pt Ks: codes [0..122] median=120 (<120: 30860  >134: 0  total 98304)
+   top codes: 120x39045 121x28124 119x19996 0x10864 122x275
+== mxkv_ab.2447.18.pt Vs: codes [0..127] median=125 (<120: 10864  >134: 0  total 98304)
+   top codes: 125x55260 124x21922 0x10864 126x9837 123x333 127x88
+== mxkv_ab.2547.18.pt Ks: codes [0..122] median=120 (<120: 15969  >134: 0  total 98304)
+   top codes: 120x57369 121x24923 0x10864 119x5105 122x43
+== mxkv_ab.2547.18.pt Vs: codes [0..127] median=125 (<120: 10864  >134: 0  total 98304)
+   top codes: 125x58212 126x22361 0x10864 124x6701 127x166
+== decode law unit check (vs decode_kv ground truth)
+   codes[127..127]: K-law dmax=0.000e+00 V-law dmax=0.000e+00 (scale=1.000e+00)
+   codes[120..134]: K-law dmax=0.000e+00 V-law dmax=0.000e+00 (scale=1.562e-02)
+   codes[60..90]: K-law dmax=0.000e+00 V-law dmax=0.000e+00 (scale=4.337e-19)
+   codes[100..119]: K-law dmax=0.000e+00 V-law dmax=0.000e+00 (scale=4.768e-07)
+   codes[135..160]: K-law dmax=0.000e+00 V-law dmax=0.000e+00 (scale=1.024e+03)
+   codes[0..30]: K-law dmax=0.000e+00 V-law dmax=0.000e+00 (scale=3.762e-37)
+R225K_KSPROBE_DONE

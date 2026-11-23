@@ -251,6 +251,8 @@ if [ "$HAVE_IMG_ID" != "$WANT_IMG_ID" ] || [ "$HAVE_MODEL_SRC" != "$ARC_MODEL" ]
     --privileged --network host --ipc host \
     --shm-size 16g \
     -v "$ARC_MODEL":/models/target:ro \
+    ${ARC_MXKV_OVERLAY:+-v "$ARC_MXKV_OVERLAY":/opt/venv/lib/python3.12/site-packages/vllm_gaudi/xpu/patches/mx_kv:ro} \
+    ${ARC_MXKV_WHEEL_DIR:+-v "$ARC_MXKV_WHEEL_DIR":/wheels:ro} \
     $CT_MOUNT \
     -v /root/build/neo_cache:/root/.neo_cache \
     -v /root/build/triton_cache:/root/.triton_cache \
@@ -374,6 +376,13 @@ if [ "$ARC_LMC" = 1 ]; then
   LMC_FLAG="--kv-transfer-config '{\"kv_connector\":\"LMCacheConnectorV1\",\"kv_role\":\"kv_both\",\"kv_connector_extra_config\":{\"use_native\":true,\"lmcache.extra_config\":{\"mamba_pool_ratio\":2}},\"engine_id\":\"arc-p40\"}'"
 fi
 
+# arc7 native fastcycle (r212a): optional wheel pre-install -- inert
+# unless ARC_MXKV_WHEEL is set (path INSIDE the container).
+if [ -n "${ARC_MXKV_WHEEL:-}" ]; then
+  docker exec "$ARC_NAME" /opt/venv/bin/pip install --quiet --force-reinstall --no-deps "$ARC_MXKV_WHEEL" \
+    || { echo "ARC_MXKV_WHEEL_INSTALL_FAIL"; exit 1; }
+fi
+
 docker exec -d "$ARC_NAME" bash -c "
 export PYTHONHASHSEED=0
 export VLLM_EXECUTE_MODEL_TIMEOUT_SECONDS=${ARC_RPC_TIMEOUT:-300}  # p628: ARC_RPC_TIMEOUT knob (300 stock; envs.py:242 execute-model RPC watchdog; r108y face120k died at 300.5s)
@@ -396,8 +405,21 @@ ${ARC_MXFP8_MODE:+export ARC_MXFP8_MODE=${ARC_MXFP8_MODE};}
 ${ARC_SKINNY_M:+export ARC_SKINNY_M=${ARC_SKINNY_M};}
 ${VLLM_ARC_GRAPH_EXEC_DB:+export VLLM_ARC_GRAPH_EXEC_DB=${VLLM_ARC_GRAPH_EXEC_DB};}
 ${ARC_MXKV_VERIFY_DECODER:+export ARC_MXKV_VERIFY_DECODER=${ARC_MXKV_VERIFY_DECODER};}
+${ARC_MXKV_NATIVE:+export ARC_MXKV_NATIVE=${ARC_MXKV_NATIVE};}
+${ARC_MXKV_NATIVE_MINLEN:+export ARC_MXKV_NATIVE_MINLEN=${ARC_MXKV_NATIVE_MINLEN};}
+${ARC_MXKV_VPROBE:+export ARC_MXKV_VPROBE=${ARC_MXKV_VPROBE};}
+${ARC_MXKV_DIRECTBF16:+export ARC_MXKV_DIRECTBF16=${ARC_MXKV_DIRECTBF16};}
+${ARC_MXKV_NSPLIT:+export ARC_MXKV_NSPLIT=${ARC_MXKV_NSPLIT};}
+${ARC_MXKV_P64NATIVE:+export ARC_MXKV_P64NATIVE=${ARC_MXKV_P64NATIVE};}
 ${ARC_MXKV_K2:+export ARC_MXKV_K2=${ARC_MXKV_K2};}
 ${ARC_MXKV_K3:+export ARC_MXKV_K3=${ARC_MXKV_K3};}
+# r229: the r224a ARC_MXKV_AB diagnostic instrument passthrough
+# (engine env-gated default-off; AB_N caps banked payloads, AB_MINSL is
+# the seqlen floor — cert27 bakes the instrument, the serve script
+# forwards its knobs; r229a first run aborted ab_armed=0 without these)
+${ARC_MXKV_AB:+export ARC_MXKV_AB=${ARC_MXKV_AB};}
+${ARC_MXKV_AB_N:+export ARC_MXKV_AB_N=${ARC_MXKV_AB_N};}
+${ARC_MXKV_AB_MINSL:+export ARC_MXKV_AB_MINSL=${ARC_MXKV_AB_MINSL};}
 # P6.47 Phase 7 closing rung (r193 verdict): the v5 split-depth/tile
 # tune surface — TFLOOR 2 banked the universal winner at the T1 cells
 # (-9..-13% at <=8K G1, neutral 32K/G8); SPLITS/BN ride along for

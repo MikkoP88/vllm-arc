@@ -7,7 +7,7 @@ evidence lives. The detailed per-release entries (full change lists,
 fork SHAs, wheel pins, gate numbers) are in
 [`../CHANGELOG.md`](../CHANGELOG.md); superseded doc content is
 archived per-doc under [`history/`](history/). The current certified
-release is **`rel/v0.30.0-b70-cert26`** (`vllm-arc:v0.30.0-b70-cert26`).
+release is **`rel/v0.30.0-b70-cert27`** (`vllm-arc:v0.30.0-b70-cert27`).
 
 Every release below is based on upstream vllm-gaudi **v0.30.0** with
 the pinned wheel stack (`tools/wheel_guard.sh`; per-release wheel shas
@@ -19,9 +19,29 @@ in the upstream per-version detail files
 
 ---
 
+## rel/v0.30.0-b70-cert27 — P6.47: r225 wheel fixes; all three MX lanes native (2026-11-23)
+
+Current certified release. cert26 + the r225-fixed `arc7mx` build25
+wheel (md5-pinned + installed-`.so` md5 asserted in-image): four
+kernel fixes — e2m1 subnormal mantissa decode, `sycl::exp2` split-KV
+combine rescale, fp32 split partials, S==1 sentinel-LSE predicate —
+plus the `ARC_MXKV_AB` diagnostic instrument in the overlay
+(default-off). **For the user**: the certified native KV-decode lane
+extends to **all three MX dtypes** —
+`ARC_KVDTYPE=mxfp8|mxfp4|mxk8v4` + `ARC_MXKV_NATIVE=1`; the cert26
+`mxk8v4` REP-LOOP refusal is eliminated (r228 battery LONGRETURN/
+T1_SEED/longprobe CLEAN; offline replay 12/12 + 8/8 + 8/8 + 8/8 with
+format-invariant full-population residual distributions). Native-lane
+outputs drift vs cert26 by design (numerics fixes); generation gates
+are per-boot self-consistency and all pass. The perf record carries
+the banked cert26-measured numbers (numerics-only delta; `fp8_e4m3`
+bank untouched). Evidence:
+`results/2026-11-23-p647-cert27-battery/`,
+`results/2026-11-23-p647-r229-format-replay/`.
+
 ## rel/v0.30.0-b70-cert26 — P6.47 Phase-8: arc7 MX-native decode line (2026-11-22)
 
-Current certified release. cert25zc content + the Phase-8 arc7
+Superseded by cert27 (2026-11-23). cert25zc content + the Phase-8 arc7
 MX-native decode line: the `arc7mx` wheel (vllm_xpu_kernels
 0.1.14.1+arc7mx, md5-pinned, BAKED) with the MX-native paged-decode
 Xe2 kernel and the r219 C++ auto-split heuristic at the validated
