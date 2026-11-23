@@ -1,0 +1,58 @@
+R231DE refuses passed (fork_sha=d39ab5a26bf737d006d47a3f3125a404dca6e928 so25=2d73ff7a3c2aa2caab86179288ca3711 wheel=e6d8d337e43b907504537061414128f8)
+=== [r231de:m4q25] wheel=no 23:06:15 ===
+HEALTH_OK_r231de_m4q25 23:11:30
+R231DE_SO_OK_m4q25 2d73ff7a3c2aa2caab86179288ca3711
+CONC_OK_c2048_n1
+CONC_OK_c4096_n1
+CONC_OK_c8192_n1
+CONC_OK_c32768_n1
+=== [r231de:m4q25] done 23:13:04 ===
+=== [r231de:m4q28a] wheel=yes 23:13:04 ===
+HEALTH_OK_r231de_m4q28a 23:18:29
+R231DE_SO_OK_m4q28a 61d2f5a365f05084b3dd72c4ae1da3e0
+CONC_OK_c2048_n1
+CONC_OK_c4096_n1
+CONC_OK_c8192_n1
+CONC_OK_c32768_n1
+=== [r231de:m4q28a] done 23:20:02 ===
+=== [r231de:m4q28b] wheel=yes 23:20:02 ===
+HEALTH_OK_r231de_m4q28b 23:25:18
+R231DE_SO_OK_m4q28b 61d2f5a365f05084b3dd72c4ae1da3e0
+CONC_OK_c2048_n1
+CONC_OK_c4096_n1
+CONC_OK_c8192_n1
+CONC_OK_c32768_n1
+=== [r231de:m4q28b] done 23:26:51 ===
+=== [r231de] report 23:26:51 ===
+r231d e2e face leg -- qwen3.8-27b-fp8 mxfp4 native n1 MT=192
+    cell |    ctx |  itl_ms |   vs25 |    tps |  chunks | qual | errs
+   m4q25 |   2048 |    47.0 |      - |   81.9 |    51.0 | OK | 0
+   m4q25 |   4096 |    47.9 |      - |   78.3 |    52.0 | OK | 0
+   m4q25 |   8192 |    49.4 |      - |   63.5 |    57.0 | OK | 0
+   m4q25 |  32768 |    58.1 |      - |   65.2 |    52.0 | OK | 0
+  m4q28a |   2048 |    43.4 |      - |   88.7 |    51.0 | OK | 0
+  m4q28a |   4096 |    45.2 |      - |   81.2 |    53.0 | OK | 0
+  m4q28a |   8192 |    48.5 |      - |   71.2 |    56.0 | OK | 0
+  m4q28a |  32768 |    58.0 |      - |   62.7 |    54.0 | OK | 0
+  m4q28b |   2048 |    43.4 |      - |   88.7 |    51.0 | OK | 0
+  m4q28b |   4096 |    45.3 |      - |   84.5 |    51.0 | OK | 0
+  m4q28b |   8192 |    48.6 |      - |   73.8 |    54.0 | OK | 0
+  m4q28b |  32768 |    58.1 |      - |   65.2 |    52.0 | OK | 0
+-- ratios vs m4q25 (same day, same image env) --
+ c2048: b28a 0.923x  b28b 0.924x  A/A spread 0.1%  (banked r230: - ms)
+ c4096: b28a 0.944x  b28b 0.945x  A/A spread 0.0%  (banked r230: - ms)
+ c8192: b28a 0.983x  b28b 0.984x  A/A spread 0.1%  (banked r230: 49.4 ms)
+ c32768: b28a 0.999x  b28b 1.000x  A/A spread 0.0%  (banked r230: 58.1 ms)
+GATE_PARITY_OK m4q28a c8192: 48.5 <= 49.4 x1.05
+GATE_PARITY_OK m4q28b c8192: 48.6 <= 49.4 x1.05
+GATE_PARITY_OK m4q28a c32768: 58.0 <= 58.1 x1.05
+GATE_PARITY_OK m4q28b c32768: 58.1 <= 58.1 x1.05
+GATE_WIN_OK c2048: b28 mean 43.4 < base 47.0 x0.97 (-7.6 pct)
+GATE_WIN_OK c4096: b28 mean 45.2 < base 47.9 x0.97 (-5.6 pct)
+native m4q25: lines=156
+native m4q28a: lines=156
+native m4q28b: lines=156
+R231DE_GATE: PASS
+R231DE_DONE 23:26:51
+R231DE: restoring W14 (23:26:51)
+R231DE: W14 HEALTH 200 (23:31:22)
