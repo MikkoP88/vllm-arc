@@ -1,0 +1,4 @@
+R225R mxkv_ab.2447.18.pt: dmax(walkF16,walkBF16)=2.316e-03 mism=870/3072 max_ulp=119648.51 | walkF16-vs-banked-triton=4.823e-04
+R225R mxkv_ab.2447.30.pt: dmax(walkF16,walkBF16)=4.939e-02 mism=987/3072 max_ulp=1347.94 | walkF16-vs-banked-triton=3.550e-03
+R225R mxkv_ab.2547.18.pt: dmax(walkF16,walkBF16)=3.327e-03 mism=688/3072 max_ulp=8869.80 | walkF16-vs-banked-triton=6.034e-04
+R225R_QCAST_DONE

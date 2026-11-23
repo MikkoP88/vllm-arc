@@ -1,0 +1,37 @@
+== mxkv_ab.2447.30.pt  rows=4 sl=[5462, 5463, 5464, 5465]  flatness(max-p p50=0.0743 p90=0.1873)
+   auto          : dmax=1.556e-02  mism=1/3072  max_ulp=0.54
+   nsplit1       : dmax=nan  mism=3072/3072  max_ulp=0.00
+   nsplit2       : dmax=1.556e-02  mism=1/3072  max_ulp=0.54
+   nsplit8       : dmax=1.556e-02  mism=2/3072  max_ulp=0.54
+   -- auto-S sweep (wkb blocks=[86, 86, 86, 86])
+   S=  2: bitwise=True dmax=0.0e+00 nbps=43 empty=0
+   S=  4: bitwise=False dmax=2.0e-03 nbps=22 empty=0
+   S=  8: bitwise=False dmax=2.0e-03 nbps=11 empty=0
+   S= 12: bitwise=False dmax=2.0e-03 nbps=8 empty=1
+   S= 16: bitwise=False dmax=2.0e-03 nbps=6 empty=1
+   S= 24: bitwise=False dmax=2.0e-03 nbps=4 empty=2
+   S= 32: bitwise=False dmax=2.0e-03 nbps=3 empty=3
+   S= 43: bitwise=False dmax=2.0e-03 nbps=2 empty=0
+   S= 48: bitwise=False dmax=2.0e-03 nbps=2 empty=5
+   S= 64: bitwise=False dmax=2.0e-03 nbps=2 empty=21
+   S= 69: bitwise=False dmax=2.0e-03 nbps=2 empty=26
+   S= 86: bitwise=False dmax=2.0e-03 nbps=1 empty=0
+   S= 96: bitwise=False dmax=2.0e-03 nbps=1 empty=10
+   S=128: bitwise=True dmax=0.0e+00 nbps=1 empty=42
+   -- synth Ks=119 (max-p p50=0.0012 p90=0.0016)
+   synth119-auto : dmax=1.520e-02  mism=0/3072  max_ulp=0.50
+   synth119-nsplit1: dmax=nan  mism=3072/3072  max_ulp=nan
+   -- synth Ks=134 (max-p p50=1.0000 p90=1.0000)
+   synth134-auto : dmax=5.522e-140  mism=14/3072  max_ulp=0.00
+   synth134-nsplit1: dmax=nan  mism=2893/3072  max_ulp=nan
+== mxkv_ab.2447.18.pt  rows=4 sl=[5462, 5463, 5464, 5465]  flatness(max-p p50=0.0620 p90=0.2159)
+   auto          : dmax=6.611e-03  mism=1/3072  max_ulp=1.51
+   nsplit1       : dmax=nan  mism=3072/3072  max_ulp=0.00
+   nsplit2       : dmax=6.611e-03  mism=1/3072  max_ulp=10.51
+   nsplit8       : dmax=6.611e-03  mism=1/3072  max_ulp=1.51
+== mxkv_ab.2547.18.pt  rows=4 sl=[5462, 5463, 5464, 5465]  flatness(max-p p50=0.0461 p90=0.1207)
+   auto          : dmax=6.005e-03  mism=1/3072  max_ulp=0.80
+   nsplit1       : dmax=nan  mism=3072/3072  max_ulp=0.00
+   nsplit2       : dmax=6.005e-03  mism=1/3072  max_ulp=0.50
+   nsplit8       : dmax=6.005e-03  mism=1/3072  max_ulp=0.80
+R225L_SPLITPROBE_DONE

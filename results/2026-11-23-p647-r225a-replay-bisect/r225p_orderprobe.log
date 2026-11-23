@@ -1,0 +1,19 @@
+== mxkv_ab.2447.30.pt sl=[5462, 5463, 5464, 5465] pages=[391..537] off=5222400000
+   native-only:
+   dmax=1.556e-02  mism=1/3072  max_ulp=0.54
+   native-only (repeat, stability):
+   dmax=1.556e-02  mism=1/3072  max_ulp=0.54
+   bitwise-stable=True
+   triton-first (r225a replica):
+   dmax=1.556e-02  mism=1/3072  max_ulp=0.54
+   triton-first vs native-only bitwise=True
+   poison+1-first:
+   dmax=1.556e-02  mism=1/3072  max_ulp=0.54
+   poison+1 vs native-only bitwise=True
+   poison-1-first:
+   dmax=1.556e-02  mism=1/3072  max_ulp=0.54
+   poison-1 vs native-only bitwise=True
+   poison0-first:
+   dmax=1.556e-02  mism=1/3072  max_ulp=0.54
+   poison0 vs native-only bitwise=True
+R225P_ORDERPROBE_DONE

@@ -1,0 +1,22 @@
+== mxkv_ab.2447.30.pt  rows=4 sl=[5462, 5463, 5464, 5465]  flatness(max-p p50=0.0743 p90=0.1873)
+   auto          : dmax=2.658e-02  mism=690/3072  max_ulp=265.11
+   nsplit1       : dmax=1.556e-02  mism=1/3072  max_ulp=0.54
+   nsplit2       : dmax=2.765e-02  mism=812/3072  max_ulp=446.06
+   nsplit8       : dmax=2.658e-02  mism=772/3072  max_ulp=92.42
+   -- synth Ks=119 (max-p p50=0.0012 p90=0.0016)
+   synth119-auto : dmax=1.730e-02  mism=1316/3072  max_ulp=603.25
+   synth119-nsplit1: dmax=1.520e-02  mism=0/3072  max_ulp=0.50
+   -- synth Ks=134 (max-p p50=1.0000 p90=1.0000)
+   synth134-auto : dmax=2.000e+00  mism=273/3072  max_ulp=0.50
+   synth134-nsplit1: dmax=5.522e-140  mism=14/3072  max_ulp=0.00
+== mxkv_ab.2447.18.pt  rows=4 sl=[5462, 5463, 5464, 5465]  flatness(max-p p50=0.0620 p90=0.2159)
+   auto          : dmax=6.611e-03  mism=563/3072  max_ulp=10464.51
+   nsplit1       : dmax=6.611e-03  mism=1/3072  max_ulp=7.51
+   nsplit2       : dmax=6.611e-03  mism=814/3072  max_ulp=919.49
+   nsplit8       : dmax=6.611e-03  mism=696/3072  max_ulp=5727.49
+== mxkv_ab.2547.18.pt  rows=4 sl=[5462, 5463, 5464, 5465]  flatness(max-p p50=0.0461 p90=0.1207)
+   auto          : dmax=6.005e-03  mism=471/3072  max_ulp=561.48
+   nsplit1       : dmax=6.005e-03  mism=1/3072  max_ulp=0.50
+   nsplit2       : dmax=1.390e-02  mism=759/3072  max_ulp=212.80
+   nsplit8       : dmax=1.037e-02  mism=598/3072  max_ulp=1461.80
+R225L_SPLITPROBE_DONE
