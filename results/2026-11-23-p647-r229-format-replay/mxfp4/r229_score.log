@@ -1,0 +1,64 @@
+=== R229 score /tmp/mxkv_ab.1030.18.pt (15:33:27) ===
+== mxkv_ab.1030.18.pt fmt='mxfp4' q=torch.float16 sl=[5462, 5463, 5464, 5465] stride0=34816 nbt=96
+   TRITON_BITEXACT dmax=0.000e+00
+   NATIVE_STABLE bitwise=True nan=0
+   NATIVE_VS_WALK dmax=7.764e-03 mism=0/3072 max_ulp=0.50
+   QBORACLE_VS_WALK dmax=8.869e-04
+   NATIVE_VS_QMATCHED_ORACLE dmax=7.812e-03
+R229F_CELL mxkv_ab.1030.18.pt PASS
+=== R229 score /tmp/mxkv_ab.1030.19.pt (15:33:36) ===
+== mxkv_ab.1030.19.pt fmt='mxfp4' q=torch.float16 sl=[5462, 5463, 5464, 5465] stride0=34816 nbt=96
+   TRITON_BITEXACT dmax=0.000e+00
+   NATIVE_STABLE bitwise=True nan=0
+   NATIVE_VS_WALK dmax=7.266e-03 mism=1/3072 max_ulp=0.50
+   QBORACLE_VS_WALK dmax=6.990e-04
+   NATIVE_VS_QMATCHED_ORACLE dmax=1.562e-02
+R229F_CELL mxkv_ab.1030.19.pt PASS
+=== R229 score /tmp/mxkv_ab.1030.20.pt (15:33:44) ===
+== mxkv_ab.1030.20.pt fmt='mxfp4' q=torch.float16 sl=[5462, 5463, 5464, 5465] stride0=34816 nbt=96
+   TRITON_BITEXACT dmax=0.000e+00
+   NATIVE_STABLE bitwise=True nan=0
+   NATIVE_VS_WALK dmax=7.590e-03 mism=1/3072 max_ulp=0.51
+   QBORACLE_VS_WALK dmax=9.563e-04
+   NATIVE_VS_QMATCHED_ORACLE dmax=1.562e-02
+R229F_CELL mxkv_ab.1030.20.pt PASS
+=== R229 score /tmp/mxkv_ab.1030.21.pt (15:33:52) ===
+== mxkv_ab.1030.21.pt fmt='mxfp4' q=torch.float16 sl=[5462, 5463, 5464, 5465] stride0=34816 nbt=96
+   TRITON_BITEXACT dmax=0.000e+00
+   NATIVE_STABLE bitwise=True nan=0
+   NATIVE_VS_WALK dmax=7.723e-03 mism=0/3072 max_ulp=0.50
+   QBORACLE_VS_WALK dmax=9.583e-04
+   NATIVE_VS_QMATCHED_ORACLE dmax=1.562e-02
+R229F_CELL mxkv_ab.1030.21.pt PASS
+=== R229 score /tmp/mxkv_ab.1030.22.pt (15:34:01) ===
+== mxkv_ab.1030.22.pt fmt='mxfp4' q=torch.float16 sl=[5462, 5463, 5464, 5465] stride0=34816 nbt=96
+   TRITON_BITEXACT dmax=0.000e+00
+   NATIVE_STABLE bitwise=True nan=0
+   NATIVE_VS_WALK dmax=7.694e-03 mism=0/3072 max_ulp=0.50
+   QBORACLE_VS_WALK dmax=9.667e-04
+   NATIVE_VS_QMATCHED_ORACLE dmax=1.562e-02
+R229F_CELL mxkv_ab.1030.22.pt PASS
+=== R229 score /tmp/mxkv_ab.1030.23.pt (15:34:09) ===
+== mxkv_ab.1030.23.pt fmt='mxfp4' q=torch.float16 sl=[5462, 5463, 5464, 5465] stride0=34816 nbt=96
+   TRITON_BITEXACT dmax=0.000e+00
+   NATIVE_STABLE bitwise=True nan=0
+   NATIVE_VS_WALK dmax=7.755e-03 mism=2/3072 max_ulp=0.50
+   QBORACLE_VS_WALK dmax=9.159e-04
+   NATIVE_VS_QMATCHED_ORACLE dmax=1.562e-02
+R229F_CELL mxkv_ab.1030.23.pt PASS
+=== R229 score /tmp/mxkv_ab.1030.24.pt (15:34:17) ===
+== mxkv_ab.1030.24.pt fmt='mxfp4' q=torch.float16 sl=[5462, 5463, 5464, 5465] stride0=34816 nbt=96
+   TRITON_BITEXACT dmax=0.000e+00
+   NATIVE_STABLE bitwise=True nan=0
+   NATIVE_VS_WALK dmax=2.738e-02 mism=2/3072 max_ulp=3.30
+   QBORACLE_VS_WALK dmax=3.871e-03
+   NATIVE_VS_QMATCHED_ORACLE dmax=6.250e-02
+R229F_CELL mxkv_ab.1030.24.pt PASS
+=== R229 score /tmp/mxkv_ab.1030.25.pt (15:34:25) ===
+== mxkv_ab.1030.25.pt fmt='mxfp4' q=torch.float16 sl=[5462, 5463, 5464, 5465] stride0=34816 nbt=96
+   TRITON_BITEXACT dmax=0.000e+00
+   NATIVE_STABLE bitwise=True nan=0
+   NATIVE_VS_WALK dmax=5.006e-02 mism=1/3072 max_ulp=0.51
+   QBORACLE_VS_WALK dmax=6.505e-03
+   NATIVE_VS_QMATCHED_ORACLE dmax=3.125e-02
+R229F_CELL mxkv_ab.1030.25.pt PASS
