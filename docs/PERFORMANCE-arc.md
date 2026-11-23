@@ -101,26 +101,34 @@ that face's traffic only.
 **Current release = rel/v0.30.0-b70-cert27** (cert26 + the r225-fixed
 `arc7mx` build25 wheel — a numerics/correctness delta: e2m1 subnormal
 decode, `sycl::exp2` combine rescale, fp32 split partials, S==1
-sentinel fix; the `fp8_e4m3` bank is untouched by the fixes, so the
-carried record numbers below are the banked cert26-content
-measurements, re-verified and discriminated in-band at every later
-cert's gate — the cert27 gates (r228 battery, r229 format-replay)
-certify correctness on the fixed wheel; per-gate proofs:
+sentinel fix; the `fp8_e4m3` bank is untouched by the fixes). The
+record numbers below are **re-measured on the cert27 image itself**
+(r230 long-ctx faces + the r228 battery agg8): fp8 reproduces its
+banked anchors at 0.999–1.001×; native mxfp4 lands +1.8–2.2% (the
+fix3 fp32 split-partials cost); native mxfp8/mxk8v4 get their first
+banked long-ctx rows. Correctness gates on the fixed wheel: r228
+battery + r229 format-replay; per-gate proofs:
 [`../CHANGELOG.md`](../CHANGELOG.md)). Current certified posture =
 probabilistic drafting (the serve-script default).
 
 **KV-cache MX-dtype decode line (Phase-8; all three lanes native at
-cert27)**: with `ARC_KVDTYPE=mxfp4|mxfp8|mxk8v4` +
-`ARC_MXKV_NATIVE=1`, decode runs the native Xe2 kernel — mxfp4 ITL
-48.5/51.2/56.8 ms at 8/16/32K (−19.2% vs the Triton posture, r219b),
-tps 65.4 @32K solo; battery agg8 254.0–256.1 tok/s = 0.84× ctrl (up
-from 0.74–0.78× on cert25zc); 1.34× fp8 ITL @32K (was 1.65×).
-`mxk8v4` is native-certified at cert27 (the cert26 REP-LOOP refusal
-root-caused to four kernel defects, fixed + gated: r224–r226, r228
-mkq LONGRETURN/T1_SEED PASS, CLEAN longprobes; offline replay
-r225t/r226a/r229 all-formats PASS with format-invariant residual
-distributions). Evidence: `results/2026-11-23-p647-cert27-battery/` +
-`results/2026-11-23-p647-r229-format-replay/`.
+cert27, numbers cert27-measured)**: with
+`ARC_KVDTYPE=mxfp4|mxfp8|mxk8v4` + `ARC_MXKV_NATIVE=1`, decode runs
+the native Xe2 kernel — mxfp4 ITL 49.4/52.1/58.1 ms at 8/16/32K
+(n1 MT=192; +1.8–2.2% vs the cert26 measurement = the fix3 fp32
+split-partials cost), tps 65.2 @32K solo, 1.36× fp8 ITL @32K; native
+mxfp8 ITL 50.9/55.3/64.4; native mxk8v4 ITL 50.0/53.9/61.9. Battery
+agg8 (r228): m4q 261.9 = 0.86× ctrl (up from 0.84× on cert26),
+m8q 249.7 = 0.82×, mkq 250.6 = 0.83× — native mkq is +7.9% over its
+cert26 Triton lane (232.2), the fastest way to run mxk8v4 on both
+short and long context. `mxk8v4` is native-certified at cert27 (the
+cert26 REP-LOOP refusal root-caused to four kernel defects, fixed +
+gated: r224–r226, r228 mkq LONGRETURN/T1_SEED PASS, CLEAN longprobes;
+offline replay r225t/r226a/r229 all-formats PASS with format-invariant
+residual distributions). Evidence:
+`results/2026-11-23-p647-cert27-battery/` +
+`results/2026-11-23-p647-r229-format-replay/` +
+`results/2026-11-23-p647-r230-itl-redisc/`.
 
 **MXFP4 checkpoint-lane faces (full certified posture)**: rhmxfp4
 (mixed CT — fp8-block attn + native mxfp4 MLP) TTFT U32k 29.01 / C32k

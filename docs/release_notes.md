@@ -33,11 +33,14 @@ extends to **all three MX dtypes** —
 T1_SEED/longprobe CLEAN; offline replay 12/12 + 8/8 + 8/8 + 8/8 with
 format-invariant full-population residual distributions). Native-lane
 outputs drift vs cert26 by design (numerics fixes); generation gates
-are per-boot self-consistency and all pass. The perf record carries
-the banked cert26-measured numbers (numerics-only delta; `fp8_e4m3`
-bank untouched). Evidence:
+are per-boot self-consistency and all pass. The perf record is
+**re-measured on cert27 itself** (r230: fp8 ctrl at 0.999–1.001× its
+banked anchors; native mxfp4 +1.8–2.2% = the fix3 fp32 split-partials
+cost; first native long-ctx rows for mxfp8/mxk8v4; agg8 m4q 0.86×
+ctrl, native mkq +7.9% over its cert26 Triton lane). Evidence:
 `results/2026-11-23-p647-cert27-battery/`,
-`results/2026-11-23-p647-r229-format-replay/`.
+`results/2026-11-23-p647-r229-format-replay/`,
+`results/2026-11-23-p647-r230-itl-redisc/`.
 
 ## rel/v0.30.0-b70-cert26 — P6.47 Phase-8: arc7 MX-native decode line (2026-11-22)
 

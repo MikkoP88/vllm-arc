@@ -1,0 +1,31 @@
+{
+ "tag": "c32768_n1",
+ "ctx": 32768,
+ "conc": 1,
+ "max_tokens": 192,
+ "model": "qwen3.8-27b-fp8",
+ "temperature": 0.0,
+ "n_ok": 1,
+ "n_fail": 0,
+ "requests": [
+  {
+   "slot": 0,
+   "error": null,
+   "ttft_s": 13.809765076031908,
+   "total_s": 17.404805282014422,
+   "n_stream_chunks": 57,
+   "itl_ms_p50": 64.4183229887858,
+   "itl_ms_p90": 64.5646020420827,
+   "itl_ms_p99": 65.65980496816337
+  }
+ ],
+ "ttft_mean_s": 13.809765076031908,
+ "ttft_max_s": 13.809765076031908,
+ "per_user_tps": [
+  53.41
+ ],
+ "per_user_mean_tps": 53.40691313562847,
+ "per_user_min_tps": 53.40691313562847,
+ "agg_tps_wall": 11.031436255044275,
+ "wall_s": 17.404805282014422
+}
