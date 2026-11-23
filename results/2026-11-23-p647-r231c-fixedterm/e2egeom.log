@@ -1,0 +1,66 @@
+R231C_E2E payload=/tmp/r231c_p0.pt reps=30
+Traceback (most recent call last):
+  File "/tmp/r231c_e2egeom.py", line 124, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/tmp/r231c_e2egeom.py", line 96, in main
+    build_inputs(path, dev, sl, arm))
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/r231c_e2egeom.py", line 49, in build_inputs
+    tile = win.repeat((pool_blocks + nbt - 1) // nbt, 1)[:pool_blocks]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: Number of dimensions of repeat dims can not be smaller than number of dimensions of tensor
+R231C_E2E payload=/tmp/r231c_p1.pt reps=30
+Traceback (most recent call last):
+  File "/tmp/r231c_e2egeom.py", line 124, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/tmp/r231c_e2egeom.py", line 96, in main
+    build_inputs(path, dev, sl, arm))
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/r231c_e2egeom.py", line 49, in build_inputs
+    tile = win.repeat((pool_blocks + nbt - 1) // nbt, 1)[:pool_blocks]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: Number of dimensions of repeat dims can not be smaller than number of dimensions of tensor
+R231C_E2E payload=/tmp/r231c_p2.pt reps=30
+Traceback (most recent call last):
+  File "/tmp/r231c_e2egeom.py", line 124, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/tmp/r231c_e2egeom.py", line 96, in main
+    build_inputs(path, dev, sl, arm))
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/r231c_e2egeom.py", line 49, in build_inputs
+    tile = win.repeat((pool_blocks + nbt - 1) // nbt, 1)[:pool_blocks]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: Number of dimensions of repeat dims can not be smaller than number of dimensions of tensor
+R231C_E2E payload=/tmp/r231c_p0.pt reps=30
+R231C_E2E arm=win    sl=   512 max_sk=   6144 auto=    142.6us ns32=    141.4us ns128=    142.1us
+R231C_E2E arm=win    sl=  2048 max_sk=   6144 auto=    229.6us ns32=    229.1us ns128=    437.5us
+R231C_E2E arm=win    sl=  8192 SKIP (window 6144 cap)
+R231C_E2E arm=win    sl= 32768 SKIP (window 6144 cap)
+R231C_E2E arm=engine sl=   512 max_sk= 263296 auto=    138.1us ns32=    136.6us ns128=    137.3us
+R231C_E2E arm=engine sl=  2048 max_sk= 263296 auto=    438.9us ns32=    229.1us ns128=    437.3us
+R231C_E2E arm=engine sl=  8192 max_sk= 263296 auto=    566.0us ns32=    599.0us ns128=    564.2us
+R231C_E2E arm=engine sl= 32768 max_sk= 263296 auto=   1130.6us ns32=   2093.8us ns128=   1130.9us
+R231C_E2E_DONE
+R231C_E2E payload=/tmp/r231c_p1.pt reps=30
+R231C_E2E arm=win    sl=   512 max_sk=   6144 auto=    188.3us ns32=    186.6us ns128=    175.5us
+R231C_E2E arm=win    sl=  2048 max_sk=   6144 auto=    248.8us ns32=    243.7us ns128=    447.9us
+R231C_E2E arm=win    sl=  8192 SKIP (window 6144 cap)
+R231C_E2E arm=win    sl= 32768 SKIP (window 6144 cap)
+R231C_E2E arm=engine sl=   512 max_sk= 263296 auto=    147.3us ns32=    140.5us ns128=    141.0us
+R231C_E2E arm=engine sl=  2048 max_sk= 263296 auto=    447.8us ns32=    243.9us ns128=    446.6us
+R231C_E2E arm=engine sl=  8192 max_sk= 263296 auto=    599.1us ns32=    654.3us ns128=    595.0us
+R231C_E2E arm=engine sl= 32768 max_sk= 263296 auto=   1228.6us ns32=   2298.0us ns128=   1227.6us
+R231C_E2E_DONE
+R231C_E2E payload=/tmp/r231c_p2.pt reps=30
+R231C_E2E arm=win    sl=   512 max_sk=   6144 auto=    173.9us ns32=    171.8us ns128=    167.7us
+R231C_E2E arm=win    sl=  2048 max_sk=   6144 auto=    202.6us ns32=    201.7us ns128=    427.4us
+R231C_E2E arm=win    sl=  8192 SKIP (window 6144 cap)
+R231C_E2E arm=win    sl= 32768 SKIP (window 6144 cap)
+R231C_E2E arm=engine sl=   512 max_sk= 263296 auto=    130.6us ns32=    129.2us ns128=    129.8us
+R231C_E2E arm=engine sl=  2048 max_sk= 263296 auto=    427.9us ns32=    202.1us ns128=    427.0us
+R231C_E2E arm=engine sl=  8192 max_sk= 263296 auto=    529.5us ns32=    490.5us ns128=    529.0us
+R231C_E2E arm=engine sl= 32768 max_sk= 263296 auto=    949.5us ns32=   1643.6us ns128=    948.1us
+R231C_E2E_DONE
