@@ -1,0 +1,27 @@
+R231C_FT payload=/tmp/r231c_p0.pt reps=50
+R231C_FT sl=    1 auto=    73.8us ns32=    65.4us ns1=     54.6us
+R231C_FT sl=    1 GRAPH_UNAVAILABLE RuntimeError
+R231C_FT sl=   64 auto=   129.2us ns32=   128.3us ns1=    128.2us
+R231C_FT sl=  256 auto=   481.4us ns32=   481.4us ns1=    481.3us
+R231C_FT sl= 1024 auto=   168.0us ns32=   167.2us ns1=   1893.0us
+R231C_FT sl= 2048 auto=   227.6us ns32=   226.8us ns1=   3775.6us
+R231C_FT sl= 2048 GRAPH_UNAVAILABLE RuntimeError
+R231C_FT_DONE
+R231C_FT payload=/tmp/r231c_p1.pt reps=50
+R231C_FT sl=    1 auto=    77.9us ns32=    64.6us ns1=     51.2us
+R231C_FT sl=    1 GRAPH_UNAVAILABLE RuntimeError
+R231C_FT sl=   64 auto=   136.7us ns32=   135.8us ns1=    135.4us
+R231C_FT sl=  256 auto=   509.5us ns32=   509.4us ns1=    509.4us
+R231C_FT sl= 1024 auto=   175.7us ns32=   175.0us ns1=   2004.8us
+R231C_FT sl= 2048 auto=   244.1us ns32=   243.3us ns1=   3998.3us
+R231C_FT sl= 2048 GRAPH_UNAVAILABLE RuntimeError
+R231C_FT_DONE
+R231C_FT payload=/tmp/r231c_p2.pt reps=50
+R231C_FT sl=    1 auto=   108.0us ns32=   103.5us ns1=     73.2us
+R231C_FT sl=    1 GRAPH_UNAVAILABLE RuntimeError
+R231C_FT sl=   64 auto=   103.6us ns32=   102.6us ns1=    102.3us
+R231C_FT sl=  256 auto=   376.5us ns32=   376.4us ns1=    376.4us
+R231C_FT sl= 1024 auto=   153.3us ns32=   152.7us ns1=   1473.5us
+R231C_FT sl= 2048 auto=   200.6us ns32=   200.0us ns1=   2934.8us
+R231C_FT sl= 2048 GRAPH_UNAVAILABLE RuntimeError
+R231C_FT_DONE
