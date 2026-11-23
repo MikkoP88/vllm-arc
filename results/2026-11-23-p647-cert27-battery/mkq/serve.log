@@ -621,13 +621,13 @@ P619I forward: is_prefill=True n_tok=236 qlens=(4, 8, 12, 16, 20, 24, 28, 32) se
 (APIServer pid=13) INFO:     127.0.0.1:56102 - "GET /health HTTP/1.1" 200 OK
 (APIServer pid=13) INFO 11-23 11:46:41 [loggers.py:315] Engine 000: Avg prompt throughput: 1464.6 tokens/s, Avg generation throughput: 6.4 tokens/s, Running: 0 reqs, Waiting: 0 reqs, XPU KV cache usage: 0.0%, Prefix cache hit rate: 0.0%
 (APIServer pid=13) INFO 11-23 11:46:41 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 2.78, Accepted throughput: 4.10 tokens/s, Drafted throughput: 6.90 tokens/s, Accepted: 41 tokens, Drafted: 69 tokens, Per-position acceptance rate: 0.870, 0.565, 0.348, Avg Draft acceptance rate: 59.4%
-(APIServer pid=13) INFO:     10.100.8.6:49230 - "GET /v1/models HTTP/1.1" 200 OK
-(APIServer pid=13) INFO:     10.100.8.6:49220 - "GET /v1/models HTTP/1.1" 200 OK
-(APIServer pid=13) INFO:     10.100.8.6:49216 - "GET /v1/models HTTP/1.1" 200 OK
-(APIServer pid=13) INFO:     10.100.8.6:49258 - "GET /v1/models HTTP/1.1" 200 OK
-(APIServer pid=13) INFO:     10.100.8.6:49262 - "GET /v1/models HTTP/1.1" 200 OK
-(APIServer pid=13) INFO:     10.100.8.6:49248 - "GET /v1/models HTTP/1.1" 200 OK
-(APIServer pid=13) INFO:     10.100.8.6:49234 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     REDACTED-CLIENT-ADDR:49230 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     REDACTED-CLIENT-ADDR:49220 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     REDACTED-CLIENT-ADDR:49216 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     REDACTED-CLIENT-ADDR:49258 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     REDACTED-CLIENT-ADDR:49262 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     REDACTED-CLIENT-ADDR:49248 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     REDACTED-CLIENT-ADDR:49234 - "GET /v1/models HTTP/1.1" 200 OK
 (Worker_TP0 pid=1027) LMCBOUND NONFINITE req=chatcmpl-8ed0e600cd51e1bd-9195620f B=7616 nf=6592 am=3.21e+01 (v138c sanitize-carry REVAL trigger)
 (Worker_TP1 pid=1139) LMCBOUND NONFINITE req=chatcmpl-8ed0e600cd51e1bd-9195620f B=7616 nf=6444 am=2.48e+01 (v138c sanitize-carry REVAL trigger)
 (Worker_TP0 pid=1027) LMCBOUND NONFINITE req=chatcmpl-8ed0e600cd51e1bd-9195620f B=10880 nf=6592 am=3.23e+01 (v138c sanitize-carry REVAL trigger)

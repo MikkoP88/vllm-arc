@@ -779,13 +779,13 @@ P619I forward: is_prefill=True n_tok=236 qlens=(4, 8, 12, 16, 20, 24, 28, 32) se
 (Worker_TP0 pid=1027) LMCBOUND NONFINITE req=chatcmpl-8928752955245cfd-b9dce734 B=3200 nf=13232 am=3.58e+01 (v138c sanitize-carry REVAL trigger)
 (Worker_TP0 pid=1027) INFO 11-23 09:36:40 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=11264 p50=0.48ms p90=0.51ms max=0.60ms fallbacks=144 {'zero-spec': 132, 'mixed': 12}
 (Worker_TP1 pid=1139) INFO 11-23 09:36:40 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=11264 p50=0.48ms p90=0.60ms max=0.66ms fallbacks=144 {'zero-spec': 132, 'mixed': 12}
-(APIServer pid=13) INFO:     10.100.8.6:59122 - "GET /v1/models HTTP/1.1" 200 OK
-(APIServer pid=13) INFO:     10.100.8.6:59106 - "GET /v1/models HTTP/1.1" 200 OK
-(APIServer pid=13) INFO:     10.100.8.6:59146 - "GET /v1/models HTTP/1.1" 200 OK
-(APIServer pid=13) INFO:     10.100.8.6:59134 - "GET /v1/models HTTP/1.1" 200 OK
-(APIServer pid=13) INFO:     10.100.8.6:59158 - "GET /v1/models HTTP/1.1" 200 OK
-(APIServer pid=13) INFO:     10.100.8.6:59154 - "GET /v1/models HTTP/1.1" 200 OK
-(APIServer pid=13) INFO:     10.100.8.6:59172 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     REDACTED-CLIENT-ADDR:59122 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     REDACTED-CLIENT-ADDR:59106 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     REDACTED-CLIENT-ADDR:59146 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     REDACTED-CLIENT-ADDR:59134 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     REDACTED-CLIENT-ADDR:59158 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     REDACTED-CLIENT-ADDR:59154 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     REDACTED-CLIENT-ADDR:59172 - "GET /v1/models HTTP/1.1" 200 OK
 (APIServer pid=13) INFO 11-23 09:36:42 [loggers.py:315] Engine 000: Avg prompt throughput: 185.1 tokens/s, Avg generation throughput: 57.9 tokens/s, Running: 1 reqs, Waiting: 0 reqs, XPU KV cache usage: 3.3%, Prefix cache hit rate: 16.3%
 (APIServer pid=13) INFO 11-23 09:36:42 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 3.12, Accepted throughput: 39.40 tokens/s, Drafted throughput: 55.79 tokens/s, Accepted: 394 tokens, Drafted: 558 tokens, Per-position acceptance rate: 0.871, 0.699, 0.548, Avg Draft acceptance rate: 70.6%
 (Worker_TP0 pid=1027) INFO 11-23 09:36:44 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=11520 p50=0.48ms p90=0.51ms max=0.63ms fallbacks=144 {'zero-spec': 132, 'mixed': 12}
