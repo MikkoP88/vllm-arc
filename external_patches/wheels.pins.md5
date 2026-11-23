@@ -37,11 +37,25 @@ eadc44a106a2de1dce8699de699d9774  vllm_xpu_kernels-0.1.14.1+arc5-cp312-cp312-lin
 # alignment, the r220a3 WG-canonical coordinate frames, value-correct
 # P64NATIVE instrument default OFF (kit: external_patches/vllm-xpu-kernels/
 # arc7_mx_attn/; evidence results/2026-11-22-p647-cert26-battery/ + the
-# r216-r221 leg banks). This is the CURRENT wheel (byte-pinned md5 in
-# tools/ar/r222_build_cert26.sh); wheel rig-only (100 MB artifact law);
-# the _r210keeper suffix copy on the rig is a pre-final keeper, NOT the
-# certified bytes.
+# r216-r221 leg banks). SUPERSEDED 2026-11-23 by the cert27 build25
+# wheel below (same tree + the r225 kernel fixes); retained as the
+# cert26-content pin for tag-rebuild provenance.
 62f234c8d0aa89c4aec3e8d2c6fa22ad  vllm_xpu_kernels-0.1.14.1+arc7mx-cp312-cp312-linux_x86_64.whl
+# P6.47 cert27: the r225-fixed arc7mx wheel (build25) — the cert26 tree
+# + four kernel fixes (provenance tools/ar/r225_fix*_apply.py): fix1
+# e2m1 subnormal mantissa (implicit bit + OCP m*0.5 decode), fix2
+# sycl::exp2 in the split-KV combine rescale, fix3 fp32 split partials
+# (ElementOAccum float; single bf16 quantization point at the final
+# combine), fix5 S==1 sentinel-LSE predicate aligned to O-normalize.
+# Validated: r225t offline q-cast-matched gate 12/12, r226a e2e
+# re-entry 8/8 fresh COVERED payloads + engine A/B nan=0/120, r228
+# cert27 battery (all three MX lanes native PASS; mkq un-refused), r229
+# format-replay mxfp8 8/8 + mxfp4 8/8 with format-invariant full-
+# population residual distributions. Installed libmqa_logits_kernels_xe_2
+# .so md5 190e261edc79b3b497d8d8e801e65757 (asserted in-image). This is
+# the CURRENT wheel (byte-pinned md5 + SO pin in
+# tools/ar/r227_build_cert27.sh); wheel rig-only (100 MB artifact law).
+aeca45daa740e9973a1c51bfc5ea2bc4  vllm_xpu_kernels-0.1.14.1+arc7mx-cp312-cp312-linux_x86_64.whl
 # P6.2: internal lmcache wheel — upstream 0.5.6 sdist (PyPI, official-wheel
 # reference md5 1f96765db1d7b02ecdd3852794e400a1; all 5 patched files
 # byte-verified sdist-vs-wheel) + the 4-patch arc kit (e-adapter-vllm-056-
