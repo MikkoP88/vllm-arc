@@ -1,0 +1,23 @@
+81c8297cde31e07967debab6d4dbaa37  -
+=== [r230] report 17:06:48 ===
+r230 cert27 long-ctx ITL re-discrimination -- qwen3.8-27b-fp8 n1
+  cell |    ctx |  itl_ms |  anchor |  ratio |    tps |  chunks | qual | errs
+  ctrl |   8192 |    40.4 |    40.4 |  0.999 |   85.2 |    55.0 | OK | 0
+  ctrl |  16384 |    41.1 |    41.1 |  1.000 |   82.2 |    56.0 | OK | 0
+  ctrl |  32768 |    42.6 |    42.5 |  1.001 |   80.2 |    57.0 | OK | 0
+   m4q |   8192 |    49.4 |    48.5 |  1.018 |   70.5 |    56.0 | OK | 0
+   m4q |  16384 |    52.1 |    51.2 |  1.018 |   72.4 |    52.0 | OK | 0
+   m4q |  32768 |    58.1 |    56.8 |  1.022 |   65.2 |    52.0 | OK | 0
+   m8q |   8192 |    50.9 |       - |      - |   72.7 |    53.0 | OK | 0
+   m8q |  16384 |    55.3 |       - |      - |   62.3 |    57.0 | OK | 0
+   m8q |  32768 |    64.4 |       - |      - |   53.4 |    57.0 | OK | 0
+   mkq |   8192 |    50.0 |       - |      - |   75.4 |    52.0 | OK | 0
+   mkq |  16384 |    53.9 |       - |      - |   68.8 |    53.0 | OK | 0
+   mkq |  32768 |    61.9 |       - |      - |   58.9 |    54.0 | OK | 0
+native m4q: lines=156 splits=['auto']
+native m8q: lines=156 splits=['auto']
+native mkq: lines=156 splits=['auto']
+R230_GATE: PASS (cert27 ITL re-discrimination clean; record updated)
+R230_DONE 17:06:48
+R230: restoring W14 (17:06:48)
+R230: W14 HEALTH 200 (17:11:49)

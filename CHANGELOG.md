@@ -12,6 +12,40 @@ the fork SHA it was built from.
 Phase labels P0–P6.38 refer to the plan's execution phases; every phase's
 raw evidence is banked under `results/YYYY-MM-DD-<phase>-*/`.
 
+## r230 — P6.47: cert27 perf re-discrimination; the record re-measured on the shipping image (2026-11-23)
+
+- No cert cut (engine bytes unchanged — a measurement + docs campaign;
+  the closing phase L1–L2 of the plan's closing-phases directive).
+- The long-ctx ITL faces re-run on `vllm-arc:v0.30.0-b70-cert27`
+  (r219b harness posture: ARC_GRAPH=1 spec k3 fp8 weights, one boot
+  per cell, n1 MT=192; `tools/ar/r230_cert27_itl.sh`, refuses =
+  image + manifest `cert27_fork_sha` + installed-`.so` md5):
+  **ctrl 40.4/41.1/42.6 ms @8/16/32K = 0.999–1.001× its banked
+  anchors** (fp8 bank untouched by the r225 fixes — the strongest
+  control); **native mxfp4 49.4/52.1/58.1 (+1.8–2.2% vs the cert26
+  measurement = the fix3 fp32 split-partials cost**, within the +5%
+  one-sided band); **first native long-ctx rows for mxfp8
+  (50.9/55.3/64.4) and mxk8v4 (50.0/53.9/61.9)**. Quality: chunks
+  ≤ 57 (80 law floor), 0 errors/tracebacks, native telemetry 108
+  lines/cell, splits=auto. R230_GATE: PASS.
+- agg8 half (banked prior in the r228 battery, re-verified from the
+  banks): ctrl 303.5 (cert26 303.2 — parity), m8q 249.7 (249.9 —
+  parity), m4q 261.9 (254.6, +2.9%), mkq native 250.6 vs its cert26
+  Triton lane 232.2 (+7.9%) — native is the fastest mxk8v4 posture at
+  both short and long context.
+- Telemetry-count note: the in-log report's `lines=156` is a python
+  universal-newlines artifact (tqdm `\r` fragments split into extra
+  "lines"); `grep -c` on the same bytes = 108.
+- Docs brought to cert27-measured values (closing phase L3):
+  `PERFORMANCE-arc.md` record block, `envs.md` `ARC_MXKV_NATIVE` row
+  (was still cert26 posture: mkq "REFUSED / Triton only"),
+  `CONFIGURATION-arc.md` image row, `release_notes.md` cert27 section,
+  README headline + evidence-dir counts (drifted 130/104 → verified
+  220/189).
+- Bank: `results/2026-11-23-p647-r230-itl-redisc/` (43 artifacts;
+  rig-side dual-class perl redaction BEFORE pull, post-pull
+  rfc1918 scan zero).
+
 ## rel/v0.30.0-b70-cert27 — P6.47: r225 wheel fixes certified; all three MX lanes native, mxk8v4 un-refused (2026-11-23)
 
 - cert27 = cert26 + **the r225-fixed `arc7mx` wheel** (build25,
