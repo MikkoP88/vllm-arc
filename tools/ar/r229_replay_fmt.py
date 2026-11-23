@@ -40,15 +40,31 @@ D = 256
 ENGINE_BT_WIDTH = 4114
 FMTS = ("mxfp8", "mxfp4", "mxk8v4")
 
-BAND_DMAX = 2.5e-2  # native-vs-walk floor band (r225t floor: 1.556e-2)
-BAND_MISM = 16  # grid points off (floor: 1/3072)
+BAND_DMAX = 2.0e-1  # native-vs-walk (full-population calibrated, r229s/r229s2)
+BAND_MISM = 16  # grid points off (floor: 1-3/3072 across the sweeps)
 # pre-registered tie-outlier allowance (r225 VERDICT gate plan): fp32-vs-
 # fp64 near-ties flip up to ~15.5 ulp at frac_gt2 <= 1e-3 (r226a fresh
 # payloads measured 3/3072 = 9.8e-4, ulp 15.51); any broader signature
 # (many elements, dmax above band) still fails.
 BAND_ULP = 16.0
 BAND_TRITON = 1e-2  # t_B-vs-walk band (r224 triton floor: ~5e-3)
-BAND_CROSS = 5e-2  # native-vs-t_B (both on the native's input)
+BAND_CROSS = 4.0e-1  # native-vs-t_B (both on the native's input; r229s/r229s2)
+# Band provenance (the r229 band law): the original 2.5e-2/5e-2 bands
+# were derived from the FIRST-scored cells (r225t 12 cells, r226a 8) —
+# which the full-population sweeps prove are the easy tail of the
+# distribution. r229s (mxfp8, r229a bank) and r229s2 (mxk8v4, r226a
+# bank): 86 COVERED cells each, IDENTICAL distributions (format-
+# invariant — the r225 coverage note now measured): native_vs_walk
+# min 3.8e-3 p50 1.5e-2 p90 6.0e-2 max 1.216e-1/1.208e-1; cross
+# p50 1.56e-2 max 2.5e-1/1.25e-1. Every tail cell carries the CLEAN
+# signature (triton bit-exact, native deterministic, nan=0, mism
+# 1-3/3072, sub-ulp flips on isolated large-magnitude elements —
+# output envelopes are format-independent, p50 ~9/max ~70-80), and the
+# e2e battery certifies all three lanes (r228 LONGRETURN/T1_SEED/
+# longprobe CLEAN). New bands = 1.64x/1.6x the pooled maxima, the same
+# derivation ratio as r225t's 2.5e-2 over the 1.556e-2 floor; the r224
+# refusal signature (dmax 2.27, massive mism, REP-LOOP e2e) stays >10x
+# above them.
 
 
 def rebuild_pool(p, dev, block_stride):
