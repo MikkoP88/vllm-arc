@@ -1,0 +1,84 @@
+== r231d_pick0.pt fmt='mxk8v4' q=torch.float16 sl=[5462, 5463, 5464, 5465] stride0=51200 nbt=96
+   TRITON_BITEXACT dmax=0.000e+00
+   NATIVE_STABLE bitwise=True nan=0
+   NATIVE_VS_WALK dmax=6.611e-03 mism=1/3072 max_ulp=2.49
+   QBORACLE_VS_WALK dmax=7.513e-04
+   NATIVE_VS_QMATCHED_ORACLE dmax=7.812e-03
+R229F_CELL r231d_pick0.pt PASS
+== r231d_pick1.pt fmt='mxk8v4' q=torch.float16 sl=[5462, 5463, 5464, 5465] stride0=51200 nbt=96
+   TRITON_BITEXACT dmax=0.000e+00
+   NATIVE_STABLE bitwise=True nan=0
+   NATIVE_VS_WALK dmax=1.470e-02 mism=1/3072 max_ulp=0.69
+   QBORACLE_VS_WALK dmax=1.168e-03
+   NATIVE_VS_QMATCHED_ORACLE dmax=3.125e-02
+R229F_CELL r231d_pick1.pt PASS
+== r231d_pick2.pt fmt='mxk8v4' q=torch.float16 sl=[5466, 5467, 5468, 5469] stride0=51200 nbt=96
+   TRITON_BITEXACT dmax=0.000e+00
+   NATIVE_STABLE bitwise=True nan=0
+   NATIVE_VS_WALK dmax=7.651e-03 mism=0/3072 max_ulp=0.50
+   QBORACLE_VS_WALK dmax=9.476e-04
+   NATIVE_VS_QMATCHED_ORACLE dmax=1.562e-02
+R229F_CELL r231d_pick2.pt PASS
+== r231d_pick3.pt fmt='mxk8v4' q=torch.float16 sl=[5466, 5467, 5468, 5469] stride0=51200 nbt=96
+   TRITON_BITEXACT dmax=0.000e+00
+   NATIVE_STABLE bitwise=True nan=0
+   NATIVE_VS_WALK dmax=3.098e-02 mism=1/3072 max_ulp=3.05
+   QBORACLE_VS_WALK dmax=3.816e-03
+   NATIVE_VS_QMATCHED_ORACLE dmax=6.250e-02
+R229F_CELL r231d_pick3.pt PASS
+== r231d_pick4.pt fmt='mxfp8' q=torch.float16 sl=[5462, 5463, 5464, 5465] stride0=67584 nbt=96
+   TRITON_BITEXACT dmax=0.000e+00
+   NATIVE_STABLE bitwise=True nan=0
+   NATIVE_VS_WALK dmax=7.418e-03 mism=3/3072 max_ulp=0.53
+   QBORACLE_VS_WALK dmax=8.691e-04
+   NATIVE_VS_QMATCHED_ORACLE dmax=1.562e-02
+R229F_CELL r231d_pick4.pt PASS
+== r231d_pick5.pt fmt='mxfp8' q=torch.float16 sl=[5462, 5463, 5464, 5465] stride0=67584 nbt=96
+   TRITON_BITEXACT dmax=0.000e+00
+   NATIVE_STABLE bitwise=True nan=0
+   NATIVE_VS_WALK dmax=1.495e-02 mism=1/3072 max_ulp=0.50
+   QBORACLE_VS_WALK dmax=2.211e-03
+   NATIVE_VS_QMATCHED_ORACLE dmax=3.125e-02
+R229F_CELL r231d_pick5.pt PASS
+== r231d_pick6.pt fmt='mxfp8' q=torch.float16 sl=[5466, 5467, 5468, 5469] stride0=67584 nbt=96
+   TRITON_BITEXACT dmax=0.000e+00
+   NATIVE_STABLE bitwise=True nan=0
+   NATIVE_VS_WALK dmax=3.902e-03 mism=1/3072 max_ulp=0.51
+   QBORACLE_VS_WALK dmax=4.876e-04
+   NATIVE_VS_QMATCHED_ORACLE dmax=7.812e-03
+R229F_CELL r231d_pick6.pt PASS
+== r231d_pick7.pt fmt='mxfp8' q=torch.float16 sl=[5466, 5467, 5468, 5469] stride0=67584 nbt=96
+   TRITON_BITEXACT dmax=0.000e+00
+   NATIVE_STABLE bitwise=True nan=0
+   NATIVE_VS_WALK dmax=4.011e-02 mism=1/3072 max_ulp=0.50
+   QBORACLE_VS_WALK dmax=7.674e-03
+   NATIVE_VS_QMATCHED_ORACLE dmax=6.250e-02
+R229F_CELL r231d_pick7.pt PASS
+== r231d_pick8.pt fmt='mxfp4' q=torch.float16 sl=[5462, 5463, 5464, 5465] stride0=34816 nbt=96
+   TRITON_BITEXACT dmax=0.000e+00
+   NATIVE_STABLE bitwise=True nan=0
+   NATIVE_VS_WALK dmax=7.764e-03 mism=0/3072 max_ulp=0.50
+   QBORACLE_VS_WALK dmax=8.869e-04
+   NATIVE_VS_QMATCHED_ORACLE dmax=7.812e-03
+R229F_CELL r231d_pick8.pt PASS
+== r231d_pick9.pt fmt='mxfp4' q=torch.float16 sl=[5462, 5463, 5464, 5465] stride0=34816 nbt=96
+   TRITON_BITEXACT dmax=0.000e+00
+   NATIVE_STABLE bitwise=True nan=0
+   NATIVE_VS_WALK dmax=2.738e-02 mism=2/3072 max_ulp=2.30
+   QBORACLE_VS_WALK dmax=3.871e-03
+   NATIVE_VS_QMATCHED_ORACLE dmax=6.250e-02
+R229F_CELL r231d_pick9.pt PASS
+== r231d_pick10.pt fmt='mxfp4' q=torch.float16 sl=[5466, 5467, 5468, 5469] stride0=34816 nbt=96
+   TRITON_BITEXACT dmax=0.000e+00
+   NATIVE_STABLE bitwise=True nan=0
+   NATIVE_VS_WALK dmax=5.762e-03 mism=0/3072 max_ulp=0.50
+   QBORACLE_VS_WALK dmax=4.853e-04
+   NATIVE_VS_QMATCHED_ORACLE dmax=7.812e-03
+R229F_CELL r231d_pick10.pt PASS
+== r231d_pick11.pt fmt='mxfp4' q=torch.float16 sl=[5466, 5467, 5468, 5469] stride0=34816 nbt=96
+   TRITON_BITEXACT dmax=0.000e+00
+   NATIVE_STABLE bitwise=True nan=0
+   NATIVE_VS_WALK dmax=5.655e-02 mism=2/3072 max_ulp=0.50
+   QBORACLE_VS_WALK dmax=5.953e-03
+   NATIVE_VS_QMATCHED_ORACLE dmax=1.250e-01
+R229F_CELL r231d_pick11.pt PASS

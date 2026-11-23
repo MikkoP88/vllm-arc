@@ -1,0 +1,24 @@
+R231D_CLAMP r231d_pick0.pt sl=5462-5465 blocks=342 C=85 capacity=no ns=auto
+R231D_SAVED r231d_pick0.pt shape=(4, 12, 256)
+R231D_CLAMP r231d_pick1.pt sl=5462-5465 blocks=342 C=85 capacity=no ns=auto
+R231D_SAVED r231d_pick1.pt shape=(4, 12, 256)
+R231D_CLAMP r231d_pick2.pt sl=5466-5469 blocks=342 C=85 capacity=no ns=auto
+R231D_SAVED r231d_pick2.pt shape=(4, 12, 256)
+R231D_CLAMP r231d_pick3.pt sl=5466-5469 blocks=342 C=85 capacity=no ns=auto
+R231D_SAVED r231d_pick3.pt shape=(4, 12, 256)
+R231D_CLAMP r231d_pick4.pt sl=5462-5465 blocks=342 C=85 capacity=no ns=auto
+R231D_SAVED r231d_pick4.pt shape=(4, 12, 256)
+R231D_CLAMP r231d_pick5.pt sl=5462-5465 blocks=342 C=85 capacity=no ns=auto
+R231D_SAVED r231d_pick5.pt shape=(4, 12, 256)
+R231D_CLAMP r231d_pick6.pt sl=5466-5469 blocks=342 C=85 capacity=no ns=auto
+R231D_SAVED r231d_pick6.pt shape=(4, 12, 256)
+R231D_CLAMP r231d_pick7.pt sl=5466-5469 blocks=342 C=85 capacity=no ns=auto
+R231D_SAVED r231d_pick7.pt shape=(4, 12, 256)
+R231D_CLAMP r231d_pick8.pt sl=5462-5465 blocks=342 C=85 capacity=no ns=auto
+R231D_SAVED r231d_pick8.pt shape=(4, 12, 256)
+R231D_CLAMP r231d_pick9.pt sl=5462-5465 blocks=342 C=85 capacity=no ns=auto
+R231D_SAVED r231d_pick9.pt shape=(4, 12, 256)
+R231D_CLAMP r231d_pick10.pt sl=5466-5469 blocks=342 C=85 capacity=no ns=auto
+R231D_SAVED r231d_pick10.pt shape=(4, 12, 256)
+R231D_CLAMP r231d_pick11.pt sl=5466-5469 blocks=342 C=85 capacity=no ns=auto
+R231D_SAVED r231d_pick11.pt shape=(4, 12, 256)
