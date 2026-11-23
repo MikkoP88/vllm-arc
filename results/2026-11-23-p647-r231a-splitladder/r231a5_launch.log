@@ -1,0 +1,30 @@
+R231A refuses passed (fork_sha=d39ab5a26bf737d006d47a3f3125a404dca6e928 so_md5=190e261edc79b3b497d8d8e801e65757 picks=/root/build/p647/r224a/mxkv_ab.2447.10.pt /root/build/p647/r229a/mxkv_ab.1030.10.pt /root/build/p647/r229b/mxkv_ab.1030.10.pt)
+ffa2e406b199fe6acd4f9385cacf292b40d4e2ca7c624220248417cb0f3b81b3
+== mxkv_ab.2447.10.pt fmt=mxk8v4 rows=4 pool_blocks=8500
+      sl |     auto |      ns1 |      ns2 |      ns4 |      ns8 |     ns16 |     ns32 |     ns64 |    ns128 | best_ns recover_ms
+    2048 |    0.509 |    3.929 |    1.969 |    1.026 |    0.570 |    0.361 |    0.294 |    0.414 |    0.587 | ns32      0.215
+    8192 |    0.673 |   15.134 |    7.609 |    3.850 |    1.986 |    1.083 |    0.663 |    0.530 |    0.693 | ns64      0.143
+   32768 |    1.257 |   60.311 |   30.186 |   15.128 |    7.656 |    3.974 |    2.157 |    1.379 |    1.210 | ns128     0.047
+  131072 |    3.483 |  241.022 |  120.558 |   60.324 |   30.317 |   15.512 |    8.136 |    5.253 |    3.493 | ns128    -0.010
+  262144 |    6.605 |  481.942 |  241.017 |  120.559 |   60.524 |   30.921 |   24.819 |   10.416 |    6.607 | ns128    -0.002
+== mxkv_ab.1030.10.pt fmt=mxfp8 rows=4 pool_blocks=12975
+      sl |     auto |      ns1 |      ns2 |      ns4 |      ns8 |     ns16 |     ns32 |     ns64 |    ns128 | best_ns recover_ms
+Traceback (most recent call last):
+  File "/tmp/r231_splittime.py", line 185, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/tmp/r231_splittime.py", line 167, in main
+    best, p50 = tm.time(call)
+                ^^^^^^^^^^^^^
+  File "/tmp/r231_splittime.py", line 55, in time
+    fn()
+  File "/tmp/r231_splittime.py", line 163, in call
+    return mx_paged_decode(
+           ^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/vllm_xpu_kernels/mx_attn_interface.py", line 175, in mx_paged_decode
+    raise ValueError(
+ValueError: slot width 272 < 528 required for mxfp8 at D=256
+R231A_PROBE_RC=1
+R231A_DONE 18:18:58
+R231A: restoring W14 (18:18:58)
+R231A: W14 HEALTH 200 (18:23:29)

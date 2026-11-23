@@ -1,0 +1,17 @@
+R231A refuses passed (fork_sha=d39ab5a26bf737d006d47a3f3125a404dca6e928 so_md5=190e261edc79b3b497d8d8e801e65757 picks=/root/build/p647/r224a/mxkv_ab.2447.10.pt /root/build/p647/r229a/mxkv_ab.1030.10.pt /root/build/p647/r229b/mxkv_ab.1030.10.pt)
+ca4d7c5c31e78e88406f20946180d424aa1d938e6c0764cc3f18e87a843f3a22
+Traceback (most recent call last):
+  File "/tmp/r231_splittime.py", line 173, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/tmp/r231_splittime.py", line 129, in main
+    pool = build_pool(p, win, dev, n_pool)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/r231_splittime.py", line 85, in build_pool
+    return torch.as_strided(storage, tuple(template["kv_shape"]),
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: setStorage: sizes [8500, 64, 2, 400], strides [51200, 800, 400, 1], storage offset 3916800000, and itemsize 1 requiring a storage size of 4352000000 are out of bounds for storage of size 4336230400
+R231A_PROBE_RC=1
+R231A_DONE 17:53:42
+R231A: restoring W14 (17:53:42)
+R231A: W14 HEALTH 200 (17:58:12)
