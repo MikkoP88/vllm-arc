@@ -33,7 +33,11 @@ PASS) and gets the **first full shallow-through-long record**: native
 mxfp4 ITL 43.4/45.2/48.5/52.2/58.1 ms at 2/4/8/16/32K (2K −7.6% vs
 cert27), first shallow rows for mxfp8 (44.4/46.5) and mxk8v4
 (44.1/46.0), long-ctx parity exact (worst anchored ratio 1.001, r234).
-The MX KV-dtype walk line is closed at cert28. Manifest
+The MX KV-dtype walk line is closed at cert28 — the ladder's
+capture-point ledger is fully dispositioned by measurement (S1 knee
+cured r185/r186 and re-confirmed on cert28 at 1.78–1.81
+accepted/draft; aux/plan-build at noise; continuation-dequant
+refuted); the always-loop directive continues on new evidence. Manifest
 `cert28_fork_sha=43f84cf9` (the r231d evidence merge; close-out
 commits are docs/banks only). Evidence:
 `results/2026-11-24-p647-cert28-battery/`,
