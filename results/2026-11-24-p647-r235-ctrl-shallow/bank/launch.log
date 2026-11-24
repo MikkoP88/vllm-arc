@@ -1,0 +1,17 @@
+R235 refuses passed (fork_sha=43f84cf977f9444900ff21387715ca5865db4c1a libattn=61d2f5a365f05084b3dd72c4ae1da3e0 libmqa=190e261edc79b3b497d8d8e801e65757)
+=== [r235:ctrl] boot kvd=fp8_e4m3(default) faces=2048 4096 8192 05:27:57 ===
+HEALTH_OK_r235_ctrl 05:38:26
+CONC_OK_c2048_n1
+CONC_OK_c4096_n1
+CONC_OK_c8192_n1
+=== [r235:ctrl] done 05:39:24 ===
+=== [r235] report 05:39:24 ===
+r235 ctrl shallow rows -- qwen3.8-27b-fp8 n1 MT=192 (fp8 ctrl, cert28)
+  cell |    ctx |  itl_ms |  anchor |  ratio |    tps |  chunks | qual | errs
+  ctrl |   2048 |    40.1 |       - |      - |   92.4 |    52.0 | OK | 0
+  ctrl |   4096 |    40.0 |       - |      - |   91.0 |    53.0 | OK | 0
+  ctrl |   8192 |    40.4 |    40.4 |  1.000 |   87.9 |    53.0 | OK | 0
+R235_GATE: PASS (ctrl shallow rows banked; c8192 sanity within band)
+R235_DONE 05:39:24
+R235: restoring W14 (05:39:24)
+R235: W14 HEALTH 200 (05:43:54)
