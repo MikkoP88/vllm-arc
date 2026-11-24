@@ -11,7 +11,10 @@
 # checklist): README certified-release headline + releases bullet,
 # CONFIGURATION-arc image-table head, MIGRATION-arc identities table,
 # PERFORMANCE-arc "Current certified image" section, envs.md chain
-# currency note.
+# currency note, STATUS-arc currency line, PATCHES-arc image-in-currency
+# pin (the 2026-11-24 deep-sweep audit found STATUS/PATCHES five certs
+# stale — the drift class closes here: every current-pointer doc gets
+# an anchor).
 set -uo pipefail
 cd "$(git rev-parse --show-toplevel)" || exit 2
 
@@ -35,6 +38,8 @@ ck docs/MIGRATION-arc.md     "ARC_IMAGE=$img"                    "S2 boot block 
 ck docs/PERFORMANCE-arc.md   "## Current certified image"      "current-record heading"
 ck docs/PERFORMANCE-arc.md   "**Current release = $latest**"  "current-release statement"
 ck docs/envs.md              "current certified image \`$img\`" "env chain currency note"
+ck docs/STATUS-arc.md        "**Currency: \`$latest\`**"          "status currency line"
+ck docs/PATCHES-arc.md       "**\`$img\`**"                       "patches image-in-currency pin"
 
 # No doc may present an older tag AS THE certified release:
 while IFS= read -r line; do

@@ -1,0 +1,71 @@
+R239B refuses passed (fork_sha=43f84cf977f9444900ff21387715ca5865db4c1a libattn=61d2f5a365f05084b3dd72c4ae1da3e0 libmqa=190e261edc79b3b497d8d8e801e65757)
+=== [r239b:gemma] boot L1 record posture (graph=1 spec=0 lmc=0 maxlen=118784) 14:08:49 ===
+HEALTH_OK_r239b_gemma 14:21:40
+probe98 wall=3.5s ptok=2 finish=length CLEAN=True
+[G1:factual] finish=length tok=24 '\n\n\n\n\n\n|'
+[G1:reason] finish=length tok=96 'The first train travels 60 km/h for 1 hour, so it travels 60 km.\nThe second train travels 90 km/h for 1 hour, so it travels 90 km.\nThe second train needs to catch up to the first train, so it needs to'
+[G1:code] finish=length tok=64 '\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n|'
+face8k wall=4.2s finish=length ptok=8028 ctok=16
+face32k wall=16.8s finish=length ptok=32028 ctok=16
+face120k wall=108.4s finish=length ptok=110028 ctok=16
+face32k_2 wall=0.9s finish=length ptok=32028 ctok=16 (prefix re-hit)
+G2_DONE
+solo conc1 rep1 tps=29.0
+solo conc1 rep2 tps=29.0
+solo conc1 rep3 tps=29.0
+agg8 conc8 rep1 tps_mean=48.5 span=78.4s
+agg8 conc8 rep2 tps_mean=59.2 span=77.4s
+agg8 conc8 rep3 tps_mean=45.1 span=78.4s
+DECODE_BATTERY_DONE
+=== [r239b:gemma] done 14:28:32 ===
+=== [r239b:rhmxfp4] boot (qwen3.8-27b-mxfp4xfp8, graph=1 spec=3 lmc=1) 14:28:32 ===
+HEALTH_OK_r239b_rhmxfp4 14:39:01
+[factual] finish=length tok=24
+  'We need answer user: "Say the number seven in words, then stop." Need final only "seven" likely.|'
+[reason] finish=length tok=96
+  'We need answer user: "If a train leaves at 3pm traveling 60 km/h and another at 4pm traveling 90 km/h the same direction, when does the second catch the first? Answer with just the time."\n\nNeed solve. First train leaves 3pm at 60 km/h. Second leaves 4pm at 90 km/h same direction. At 4pm first has 60 km head start. Relative speed|'
+[code] finish=length tok=64
+  'We need answer user: "Write a Python one-liner that reverses a string s. Output only the code." Need final only code. Need likely `print(s[::-1])`? They ask reverses a string s. One-liner. Could be `s = s[::-1]`? If output|'
+--- [rhmxfp4] spec gate 14:39:15 ---
+SPEC_GATE {"wall_s": 2.3, "streams_ok": "4/4", "drafts": 200, "draft_tokens": 600, "accepted": 600, "pos": {"0": 1.0, "1": 1.0, "2": 1.0, "3": 0.0}, "pos1": 1.0, "acceptance": 1.0, "mean_acceptance_length": 4.0, "hard": 0.5, "target": 0.85}
+SPEC_GATE log_window: (log probe unavailable: Command '['docker', 'exec', 'arc-test', 'sh', '-c', "grep -a 'Per-position acceptance rate' /root/serve_full.log | tail -1"]' returned non-zero exit status 1.)
+SPEC_GATE PASS: pos1=1.0000 >= 0.5 hard, acceptance=1.0000 vs 0.85 target
+--- [rhmxfp4] p65 timeline G2 faces 14:39:17 ---
+=== long-stream faces (perf_counter, wave-relative)
+  U32k: TTFT=  17.51s total=  18.34s (start @ wave+  25.0s)
+  C32k: TTFT=   1.09s total=   1.61s (start @ wave+  55.0s)
+  U8k: TTFT=   4.04s total=   4.81s (start @ wave+  70.0s)
+  U64k: TTFT=  39.01s total=  39.63s (start @ wave+  85.0s)
+
+=== bystander inter-chunk gaps (12 streams, greedy, k3)
+  baseline: n=2814 p50=   47.6ms p95=   49.4ms
+  window                 n    p50 ms    p95 ms    max ms #>2xb95  stall_s
+  W_base              2814      47.6      49.4     111.1      12     0.75
+  W_U32k_start         172      54.8    3894.2    4205.7      36   102.22
+=== [r239b:rhmxfp4] done 14:41:29 ===
+=== [r239b] report 14:41:29 ===
+gemma L1 record cell (cert19-era anchors, maxlen=118784):
+  face8k     wall=   4.2s ptok=  8028 (target 8028) norm=   4.2s anchor=   4.9 ratio=0.857
+  face32k    wall=  16.8s ptok= 32028 (target 32028) norm=  16.8s anchor=  17.2 ratio=0.977
+  face120k   wall= 108.4s ptok=110028 (target 110028) norm= 108.4s anchor= 110.9 ratio=0.977
+  face32k_2  wall=   0.9s ptok= 32028 (banked, cache face ungated)
+  solo tps=29.0 anchor=28.45 ratio=0.981
+  solo tps=29.0 anchor=28.45 ratio=0.981
+  solo tps=29.0 anchor=28.45 ratio=0.981
+  agg8 tps=48.5 anchor=195.0 ratio=4.021 REGRESSION
+  agg8 tps=59.2 anchor=195.0 ratio=3.294 REGRESSION
+  agg8 tps=45.1 anchor=195.0 ratio=4.324 REGRESSION
+  gemma: erraudit 0/0
+rhmxfp4 checkpoint-lane cell (cert11c-era anchors):
+  U32k  TTFT=  17.51s anchor= 29.01 ratio=0.604
+  C32k  TTFT=   1.09s anchor=  1.68 ratio=0.649
+  U8k   TTFT=   4.04s anchor=  7.37 ratio=0.548
+  U64k  TTFT=  39.01s anchor= 62.46 ratio=0.625
+  bystander p50=47.6ms (reference)
+  spec-gate acceptance line not found (inspect spec_gate.txt)
+  G1 3/3 present
+  rhmxfp4: erraudit 0/0
+R239B_GATE: FAIL (gemma+rhmxfp4 re-discriminated; cross-era band x1.2)
+R239B_DONE 14:41:29
+R239B: restoring W14 (14:41:29)
+R239B: W14 HEALTH 200 (14:46:00)

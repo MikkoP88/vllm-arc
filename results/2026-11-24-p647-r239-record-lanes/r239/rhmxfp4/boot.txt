@@ -1,0 +1,4 @@
+ARC_CONTAINER_FRESH image=vllm-arc:v0.30.0-b70-cert28 id=9852a2ce091a model=/models/qwen3.8-27b-mxfp4xfp8 (recreated from 9852a2ce091a)
+docker: Error response from daemon: Conflict. The container name "/arc-r239" is already in use by container "815816e6d86f1148a6f213df3daaae1693cdeb08241bb3b596e9dc816b50113c". You have to remove (or rename) that container to be able to reuse that name.
+
+Run 'docker run --help' for more information
