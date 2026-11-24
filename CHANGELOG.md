@@ -12,6 +12,31 @@ the fork SHA it was built from.
 Phase labels P0–P6.38 refer to the plan's execution phases; every phase's
 raw evidence is banked under `results/YYYY-MM-DD-<phase>-*/`.
 
+## r237 — P6.47: cert28 n8 steady-state long-ctx faces; every face class re-discriminated (2026-11-24)
+
+- The last un-re-measured face class on cert28: n8 steady-state
+  long-context (16K/32K, MT=128, the r185-ladder cell shape), one
+  boot per lane, 4 boots ~41 min, zero errors. VERDICT:
+  `results/2026-11-24-p647-r237-n8ss-cert28/`.
+- **Anchor comparison (shape-valid: era anchors recompute exactly
+  from the r185 banked JSONs with the identical formula)**: every
+  lane below its cert25zb-era anchor — ctrl 1671→1273.9 (−23.8%),
+  m4q 1703→1440.4 (−15.4%), m8q 1743→1506.1 (−13.6%), mkq
+  1823.7→1399.7 (−23.3%). Cross-era deltas recorded, not claimed as
+  lever effects: cert26–28 changes are MX-kernel-scoped and the ctrl
+  move has no release-notes attribution (ramp-weighted metric family,
+  stack drift unbounded within-boot).
+- **Within-leg ratios (the clean statements)**: ss @32K m4q 1.131×,
+  m8q 1.182×, mkq 1.099× ctrl; @16K (first cert28 rows) MX lanes
+  0.755–0.938× ctrl. Metric honesty banked: at MT=128 `itl_ms_p50`
+  degenerates to the spec-burst cadence (identical across slots) and
+  `ss` is ramp-weighted (TTFTs stagger 10→115 s, totals collapse) —
+  recorded faces, not decode claims.
+- **Disposition**: with this leg every face class is
+  re-discriminated on cert28 (n1 shallow r234/r235, agg8 r236, n8-ss
+  r237); no lever priced above noise — the MX hunt idles pending NEW
+  evidence (plan §12).
+
 ## r236 — P6.47: cert28 agg8 re-discrimination by bank mining; clamp-neutral as designed (2026-11-24)
 
 - No cert cut, no rig time (analysis-only leg, r231c precedent):

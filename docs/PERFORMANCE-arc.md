@@ -129,7 +129,13 @@ and +13.0% (m4q) at 4K. Battery agg8 (r233 battery bank, mined
 r236 — clamp-neutral: conc8 rides the G-adaptive/v5 decoder lane,
 not the clamped legacy scalar path): ctrl 307.8, m4q 258.4 =
 0.84×, m8q 252.0 = 0.82×, mkq 249.2 = 0.81× (every lane within
-±1.4% of its cert27 value). All three lanes native-certified
+±1.4% of its cert27 value). n8 steady-state long-ctx faces (r237,
+one boot per lane, the last un-re-measured class): 32K ss m4q 1.131×
+/ m8q 1.182× / mkq 1.099× ctrl, first 16K rows MX 0.755–0.938×
+ctrl; every lane below its cert25zb-era anchor (ctrl 1671→1273.9,
+mkq 1824→1399.7, m4q 1703→1440.4, m8q 1743→1506.1 — cross-era deltas
+recorded, not lever claims: ramp-weighted family, era drift
+unbounded within-boot). All three lanes native-certified
 since cert27 (the cert26 REP-LOOP refusal root-caused to four kernel
 defects, fixed + gated: r224–r226, r228/r233 LONGRETURN/T1_SEED
 PASS; offline replay r225t/r226a/r229 all-formats PASS with

@@ -1,0 +1,4 @@
+NOTE: ARC_LMC auto-off for ARC_KVDTYPE=mxk8v4 (MX lane posture: e2m1-V double-quant garble r168 + decode-parity LMC-free run, r176 A/B; P6.47 Phase 6)
+ARC_CONTAINER_FRESH image=vllm-arc:v0.30.0-b70-cert28 id=9852a2ce091a model=/models/qwen3.8-27b-fp8 (recreated from none)
+0d16efe9926859524f8a54325a69b21e0f7a22f2ea36febeb6c80fae722094ee
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert28 name=arc-r237 model=/models/qwen3.8-27b-fp8 served=qwen3.8-27b-fp8 quant=fp8 qcfg= graph=1 spec=3 gmu=0.8 maxlen=262144 mnbt=8192 seqs=64 fp8=1 xgc=0 tmpl=__qwen_default__ rp=<qwen3> tp=<qwen3_coder> port=8000 06:27:12
