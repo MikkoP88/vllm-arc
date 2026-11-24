@@ -12,6 +12,27 @@ the fork SHA it was built from.
 Phase labels P0–P6.38 refer to the plan's execution phases; every phase's
 raw evidence is banked under `results/YYYY-MM-DD-<phase>-*/`.
 
+## r236 — P6.47: cert28 agg8 re-discrimination by bank mining; clamp-neutral as designed (2026-11-24)
+
+- No cert cut, no rig time (analysis-only leg, r231c precedent):
+  the agg8 rows already existed in the r233 battery bank
+  (`r113_battery.py decode` ran in every leg) — mined and compared
+  to the cert27 values re-verified in r230. VERDICT:
+  `results/2026-11-24-p647-r236-agg8-mining/`.
+- **agg8 (conc8 ctok 2048, 3-rep mean)**: ctrl 307.8 (+1.4% vs
+  cert27), m4q 258.4 (−1.3%), m8q 252.0 (+0.9%), mkq 249.2 (−0.6%)
+  — every lane inside the cross-boot noise band; ratios m4q/m8q/
+  mkq = 0.84/0.82/0.81 × ctrl. solo (ctok 256): ctrl 60.6, m4q
+  51.2, m8q 47.7, mkq 46.7.
+- **Mechanism**: the r231d clamp lives on the legacy scalar split
+  path; conc8 decode rides the G-adaptive/v5 decoder lane — the
+  −7.6% n1 @2K win is lane-scoped by construction and does not
+  transfer to aggregate faces (and none was claimed). The
+  aggregate record stands; no aggregate-face lever remains priced
+  above noise on the clamp wheel.
+- Docs: README record row + PERFORMANCE-arc agg8 line now cite the
+  cert28-mined values.
+
 ## r235 — P6.47: the fp8-ctrl shallow record rows; exact same-context MX gaps (2026-11-24)
 
 - No cert cut (measurement only — the record's control side

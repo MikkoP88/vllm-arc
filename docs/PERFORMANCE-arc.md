@@ -125,9 +125,11 @@ then 49.4/53.9/61.9 — the clamp's shallow benefit is lane-uniform;
 the fp8 ctrl rows are flat 40.1/40.0/40.4/41.1/42.5 at
 2/4/8/16/32K (r235 shallow + r234 long), so the same-context
 shallow gaps are +8.2% (m4q) / +10.7% (m8q) / +10.0% (mkq) at 2K
-and +13.0% (m4q) at 4K. Battery agg8 (r228,
-cert27 — unchanged by the clamp): m4q 261.9 = 0.86× ctrl, m8q
-249.7 = 0.82×, mkq 250.6 = 0.83×. All three lanes native-certified
+and +13.0% (m4q) at 4K. Battery agg8 (r233 battery bank, mined
+r236 — clamp-neutral: conc8 rides the G-adaptive/v5 decoder lane,
+not the clamped legacy scalar path): ctrl 307.8, m4q 258.4 =
+0.84×, m8q 252.0 = 0.82×, mkq 249.2 = 0.81× (every lane within
+±1.4% of its cert27 value). All three lanes native-certified
 since cert27 (the cert26 REP-LOOP refusal root-caused to four kernel
 defects, fixed + gated: r224–r226, r228/r233 LONGRETURN/T1_SEED
 PASS; offline replay r225t/r226a/r229 all-formats PASS with
