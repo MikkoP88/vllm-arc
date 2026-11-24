@@ -96,39 +96,41 @@ accepted/drafts + 1** (the +1 bonus token). Windows are counter deltas
 snapshotted before/after each battery, so each face's acceptance covers
 that face's traffic only.
 
-## Current certified image — cert27 (`rel/v0.30.0-b70-cert27`): the current record
+## Current certified image — cert28 (`rel/v0.30.0-b70-cert28`): the current record
 
-**Current release = rel/v0.30.0-b70-cert27** (cert26 + the r225-fixed
-`arc7mx` build25 wheel — a numerics/correctness delta: e2m1 subnormal
-decode, `sycl::exp2` combine rescale, fp32 split partials, S==1
-sentinel fix; the `fp8_e4m3` bank is untouched by the fixes). The
-record numbers below are **re-measured on the cert27 image itself**
-(r230 long-ctx faces + the r228 battery agg8): fp8 reproduces its
-banked anchors at 0.999–1.001×; native mxfp4 lands +1.8–2.2% (the
-fix3 fp32 split-partials cost); native mxfp8/mxk8v4 get their first
-banked long-ctx rows. Correctness gates on the fixed wheel: r228
-battery + r229 format-replay; per-gate proofs:
-[`../CHANGELOG.md`](../CHANGELOG.md)). Current certified posture =
-probabilistic drafting (the serve-script default).
+**Current release = rel/v0.30.0-b70-cert28** (cert27 + the r231d
+seqused-tightened split clamp wheel — a decode-scheduling delta:
+`seq_num_kv_splits = min(num_kv_splits, max(1, windowed_k_blocks/4))`,
+deep splits at short contexts no longer serialize tiles the attention
+window cannot fill; the cert27 numerics fixes carry through
+unchanged). The record numbers below are **re-discriminated on the
+cert28 image itself** (r234 long+shallow faces): fp8 reproduces its
+banked anchors at 0.999–1.000×; every anchored MX face within +0.1%
+(worst ratio 1.001); the clamp's shallow-ctx win is now the certified
+record and mxfp8/mxk8v4 get their first shallow rows. Correctness
+gates on the clamp wheel: the r233 §10 battery (8 legs, LONGRETURN/
+T1_SEED absolute PASS at native_lines=108, GEMMA_COMPARE PASS);
+per-gate proofs: [`../CHANGELOG.md`](../CHANGELOG.md). Current
+certified posture = probabilistic drafting (the serve-script default).
 
 **KV-cache MX-dtype decode line (Phase-8; all three lanes native at
-cert27, numbers cert27-measured)**: with
+cert28, numbers cert28-measured)**: with
 `ARC_KVDTYPE=mxfp4|mxfp8|mxk8v4` + `ARC_MXKV_NATIVE=1`, decode runs
-the native Xe2 kernel — mxfp4 ITL 49.4/52.1/58.1 ms at 8/16/32K
-(n1 MT=192; +1.8–2.2% vs the cert26 measurement = the fix3 fp32
-split-partials cost), tps 65.2 @32K solo, 1.36× fp8 ITL @32K; native
-mxfp8 ITL 50.9/55.3/64.4; native mxk8v4 ITL 50.0/53.9/61.9. Battery
-agg8 (r228): m4q 261.9 = 0.86× ctrl (up from 0.84× on cert26),
-m8q 249.7 = 0.82×, mkq 250.6 = 0.83× — native mkq is +7.9% over its
-cert26 Triton lane (232.2), the fastest way to run mxk8v4 on both
-short and long context. `mxk8v4` is native-certified at cert27 (the
-cert26 REP-LOOP refusal root-caused to four kernel defects, fixed +
-gated: r224–r226, r228 mkq LONGRETURN/T1_SEED PASS, CLEAN longprobes;
-offline replay r225t/r226a/r229 all-formats PASS with format-invariant
-residual distributions). Evidence:
-`results/2026-11-23-p647-cert27-battery/` +
-`results/2026-11-23-p647-r229-format-replay/` +
-`results/2026-11-23-p647-r230-itl-redisc/`.
+the native Xe2 kernel — mxfp4 ITL 43.4/45.2/48.5/52.2/58.1 ms at
+2/4/8/16/32K (n1 MT=192; the full five-face record on one image: 2K
+−7.6% vs cert27 from the clamp, long-ctx parity exact), tps 65.2
+@32K solo, 1.37× fp8 ITL @32K; native mxfp8 ITL 44.4/46.5 at 2/4K
+(first shallow rows) then 50.0/55.3/64.3; native mxk8v4 44.1/46.0
+then 49.4/53.9/61.9 — the clamp's shallow benefit is lane-uniform,
+MX 2K ITL within 8% of the fp8 ctrl's 8K ITL. Battery agg8 (r228,
+cert27 — unchanged by the clamp): m4q 261.9 = 0.86× ctrl, m8q
+249.7 = 0.82×, mkq 250.6 = 0.83×. All three lanes native-certified
+since cert27 (the cert26 REP-LOOP refusal root-caused to four kernel
+defects, fixed + gated: r224–r226, r228/r233 LONGRETURN/T1_SEED
+PASS; offline replay r225t/r226a/r229 all-formats PASS with
+format-invariant residual distributions). Evidence:
+`results/2026-11-24-p647-cert28-battery/` +
+`results/2026-11-24-p647-r234-cert28-itl/`.
 
 **MXFP4 checkpoint-lane faces (full certified posture)**: rhmxfp4
 (mixed CT — fp8-block attn + native mxfp4 MLP) TTFT U32k 29.01 / C32k

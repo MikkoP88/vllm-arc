@@ -7,7 +7,7 @@ evidence lives. The detailed per-release entries (full change lists,
 fork SHAs, wheel pins, gate numbers) are in
 [`../CHANGELOG.md`](../CHANGELOG.md); superseded doc content is
 archived per-doc under [`history/`](history/). The current certified
-release is **`rel/v0.30.0-b70-cert27`** (`vllm-arc:v0.30.0-b70-cert27`).
+release is **`rel/v0.30.0-b70-cert28`** (`vllm-arc:v0.30.0-b70-cert28`).
 
 Every release below is based on upstream vllm-gaudi **v0.30.0** with
 the pinned wheel stack (`tools/wheel_guard.sh`; per-release wheel shas
@@ -19,9 +19,31 @@ in the upstream per-version detail files
 
 ---
 
+## rel/v0.30.0-b70-cert28 — P6.47: seqused-tightened split clamp; the MX walk line closed (2026-11-24)
+
+Current certified release. cert27 + the r231d clamp wheel (arc7mx
+build28, md5-pinned with three installed-`.so` md5s asserted in-image):
+`seq_num_kv_splits = min(num_kv_splits, max(1, windowed_k_blocks/4))` —
+deep splits at short contexts no longer serialize tiles the attention
+window cannot fill. **For the user**: the certified native KV-decode
+lane (`ARC_KVDTYPE=mxfp8|mxfp4|mxk8v4` + `ARC_MXKV_NATIVE=1`) keeps
+every correctness gate green (r233 §10 battery, 8 legs — qwen MX lanes
+LONGRETURN/T1_SEED absolute PASS at native_lines=108, GEMMA_COMPARE
+PASS) and gets the **first full shallow-through-long record**: native
+mxfp4 ITL 43.4/45.2/48.5/52.2/58.1 ms at 2/4/8/16/32K (2K −7.6% vs
+cert27), first shallow rows for mxfp8 (44.4/46.5) and mxk8v4
+(44.1/46.0), long-ctx parity exact (worst anchored ratio 1.001, r234).
+The MX KV-dtype walk line is closed at cert28. Manifest
+`cert28_fork_sha=43f84cf9` (the r231d evidence merge; close-out
+commits are docs/banks only). Evidence:
+`results/2026-11-24-p647-cert28-battery/`,
+`results/2026-11-24-p647-r234-cert28-itl/`.
+
 ## rel/v0.30.0-b70-cert27 — P6.47: r225 wheel fixes; all three MX lanes native (2026-11-23)
 
-Current certified release. cert26 + the r225-fixed `arc7mx` build25
+Superseded by cert28 (2026-11-24).
+
+cert26 + the r225-fixed `arc7mx` build25
 wheel (md5-pinned + installed-`.so` md5 asserted in-image): four
 kernel fixes — e2m1 subnormal mantissa decode, `sycl::exp2` split-KV
 combine rescale, fp32 split partials, S==1 sentinel-LSE predicate —

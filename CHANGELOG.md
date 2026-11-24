@@ -12,6 +12,65 @@ the fork SHA it was built from.
 Phase labels P0–P6.38 refer to the plan's execution phases; every phase's
 raw evidence is banked under `results/YYYY-MM-DD-<phase>-*/`.
 
+## rel/v0.30.0-b70-cert28 — P6.47: seqused-tightened split clamp certified; the MX walk line closed (2026-11-24)
+
+- cert28 = cert27 + **the r231d clamp wheel** (arc7mx build28,
+  `vllm_xpu_kernels-0.1.14.1+arc7mx` md5 `e6d8d337e43b907504537061414128f8`
+  BAKED; three installed-`.so` md5 pins asserted in-image —
+  `libattn_kernels_xe_2` `61d2f5a365f05084b3dd72c4ae1da3e0`,
+  `_vllm_fa2_C.abi3.so` `6e6c48508d40cb4c5007f27f79df97cf`,
+  `libmqa_logits` `190e261edc79b3b497d8d8e801e65757`; the latter two
+  identical to cert27's — the patch is header-only in the split-lane
+  TUs). Manifest `cert28_fork_sha=43f84cf977f9444900ff21387715ca5865db4c1a`
+  = PR #123 (the r231d evidence merge the image was built and gated
+  from; the cert28 close-out commits add zero engine bytes — docs +
+  banks only). Build: `tools/ar/r232_build_cert28.sh` (refuses on
+  base-identity drift; single-RUN install + in-image python asserts +
+  manifest append; overlay inherited byte-identical from cert27).
+- **The change** (provenance `tools/ar/r231d_apply.py`):
+  `seq_num_kv_splits = min(num_kv_splits, max(1, windowed_k_blocks/4))`
+  on the legacy scalar path, mirrored in `mx_paged_decode_kernel.hpp` +
+  `mx_reduce_split.hpp` — deep splits at short contexts serialize
+  chain tiles the attention window cannot fill. Line history: r231a
+  decomposed the MX ITL gap (flat-cost signature — a format-independent
+  constant = heuristic/reduce overhead, not walk cost); r231b q-prestage
+  refuted (correct, no perf); r231c fixed-term decomposition closed the
+  e2e per-call model and priced the split term; r231d offline gates
+  green with 2K decode −43/−39/−51% record-neutral; r231de e2e face
+  leg **−7.6% ITL at 2K with record parity exact** (long faces).
+- **r233 §10 battery PASS** (`tools/ar/r233_cert28_gate.sh`, derived
+  from r228 by the refusing transform `tools/ar/r233_transform.py`;
+  stage 2 of the gated chain `tools/ar/r232_cert28_launch.sh`,
+  `R232C_LAUNCH_START 23:39:39 → R232C_LAUNCH_DONE 05:10:16`): 8 legs,
+  one boot each — m8q/m4q/mkq LONGRETURN + T1_SEED **absolute PASS at
+  native_lines=108**, SUITE13 15/15, ctrl default-off (mx_backend=0)
+  + LMC-on 4 lines intact, gemma legs bank-only (REP-LOOP = the
+  confirmed native-KV baseline), **GEMMA_COMPARE PASS** (no new modes
+  vs g0, topwin 0). `P647_CERT28_GATE_COMPLETE -- PASS 04:32:12`.
+- **r234 record re-discrimination PASS**
+  (`tools/ar/r234_cert28_itl.sh`, one boot per cell, the certified
+  posture): every anchored face within **+0.1%** (worst ratio 1.001;
+  ctrl 40.4/41.1/42.5 = 0.999–1.000×). **Native mxfp4 five-face record
+  43.4/45.2/48.5/52.2/58.1 ms at 2/4/8/16/32K** (2K was 47.0 on
+  cert27 — the clamp win now certified; tps 88.6→65.2). **First
+  shallow rows for mxfp8 (44.4/46.5) and mxk8v4 (44.1/46.0)** — the
+  clamp's shallow benefit is lane-uniform; MX 2K ITL within 8% of the
+  fp8 ctrl's 8K ITL. Long-ctx parity exact (the no-op tail at
+  capacity-priced walks, as designed). Native telemetry splits=auto,
+  true count 108/cell (`grep -c`; the in-log `lines=156` is the
+  tqdm universal-newlines artifact — r230 note). All 18 faces
+  CONC_OK, chunks 51–57, 0 errors. `R234_GATE: PASS`.
+- **Disposition: the MX walk line closes at cert28** — all three MX
+  KV dtypes native, correctness-gated and at their measured record
+  shallow-through-long context. The improvement ladder continues per
+  the plan (S1 e2m1-V acceptance knee, A1 aux-pipeline fold, F2
+  continuation dequant tax).
+- Evidence: `results/2026-11-24-p647-cert28-battery/` (193-file bank
+  + chain launch.log) + `results/2026-11-24-p647-r234-cert28-itl/`
+  (53-file bank) + the r231a–r231de line banks. Law-8: 376 address
+  occurrences redacted rig-side before pull (perl, byte-exact);
+  `SHA256SUMS` regenerated post-pass.
+
 ## r230 — P6.47: cert27 perf re-discrimination; the record re-measured on the shipping image (2026-11-23)
 
 - No cert cut (engine bytes unchanged — a measurement + docs campaign;

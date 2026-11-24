@@ -10,12 +10,12 @@ complete control surface + naming map); test definitions in
 
 | Item | Value |
 |---|---|
-| Image | `vllm-arc:v0.30.0-b70-cert27` — **the certified release**, tag `rel/v0.30.0-b70-cert27` (cert26 + the r225-fixed `arc7mx` wheel: build25 `vllm_xpu_kernels-0.1.14.1+arc7mx` md5 `aeca45daa740e9973a1c51bfc5ea2bc4` BAKEN over the cert26 wheel, installed `libmqa_logits` `.so` md5 `190e261edc79b3b497d8d8e801e65757`, both asserted in-image — kernel fixes: e2m1 subnormal mantissa, `sycl::exp2` split-KV combine rescale, fp32 split partials, S==1 sentinel-LSE predicate; overlay adds the `ARC_MXKV_AB` diagnostic instrument, default-off; **certified KV-dtype decode posture**: `ARC_KVDTYPE={mxfp8,mxfp4,mxk8v4}` + `ARC_MXKV_NATIVE=1` — all three MX lanes native, mxk8v4 un-refused (cert27-measured record, r230: mxfp4 long-ctx ITL 49.4/52.1/58.1 ms at 8/16/32K, fp8 ctrl 40.4/41.1/42.6 at 0.999–1.001× its banked anchors; r228/r229 certify correctness on the fixed wheel); all MX lanes LMCache-free by serve-script auto-off, ctrl keeps LMC-on; evidence `results/2026-11-23-p647-cert27-battery/` + `results/2026-11-23-p647-r229-format-replay/` + `results/2026-11-23-p647-r230-itl-redisc/`; **recommended weights-quant decode posture (serve-line choice)**: `ARC_QUANT=mxfp4 ARC_MXFP4_MODE=w4a16 ARC_QUANTCFG='{"ignore":["*visual*","*linear_attn*","mtp.fc"]}' ARC_GMU=0.85 ARC_SPEC=5 ARC_FP8=0` = 123.9 tok/s (+52% vs k3) with TTFT 3.98 s < baseline). Prior certified images (wheel shas, Dockerfile asserts, gate evidence): [`../CHANGELOG.md`](../CHANGELOG.md) |
-| Manifest | `/etc/vllm-arc/IMAGE_MANIFEST` inside the image — fork SHA of record, wheel pins, dependency closure (`lmcache_closure=`), build host, and one description + `cert<N>_fork_sha` (+ wheel-sha/built) row set per release layered on it (base `fork_sha=aa2ee17d…` from cert9 + the cert10 oneCCL overlay rows; per-cert stamps through `cert26_fork_sha`). The per-cert row inventory: [`../CHANGELOG.md`](../CHANGELOG.md) |
-| Base | upstream vllm-gaudi v0.30.0 + pinned wheels (vllm 0.30.0+xpu, triton 3.7.2+xpu, lmcache 0.5.6+arc1; `vllm_xpu_kernels` 0.1.14.1 base, overlaid by the certified arc wheels — current `+arc7mx` for cert26, lineage + md5s in `external_patches/wheels.pins.md5`) |
+| Image | `vllm-arc:v0.30.0-b70-cert28` — **the certified release**, tag `rel/v0.30.0-b70-cert28` (cert27 + the r231d seqused-tightened split clamp wheel: arc7mx build28 `vllm_xpu_kernels-0.1.14.1+arc7mx` md5 `e6d8d337e43b907504537061414128f8` BAKED over the cert27 wheel, installed `.so` md5s `61d2f5a365f05084b3dd72c4ae1da3e0`/`6e6c48508d40cb4c5007f27f79df97cf`/`190e261edc79b3b497d8d8e801e65757` asserted in-image; kernel delta: `seq_num_kv_splits = min(num_kv_splits, max(1, windowed_k_blocks/4))` legacy scalar path, mirrored `mx_paged_decode_kernel.hpp` + `mx_reduce_split.hpp` — the cert27 numerics fixes carry through unchanged; **certified KV-dtype decode posture**: `ARC_KVDTYPE={mxfp8,mxfp4,mxk8v4}` + `ARC_MXKV_NATIVE=1` — all three MX lanes native (cert28-measured record, r234: mxfp4 five-face ITL 43.4/45.2/48.5/52.2/58.1 ms at 2/4/8/16/32K, fp8 ctrl 40.4/41.1/42.5 at 0.999–1.000× its banked anchors, every anchored MX face within +0.1%; r233 battery certifies correctness on the clamp wheel); all MX lanes LMCache-free by serve-script auto-off, ctrl keeps LMC-on; evidence `results/2026-11-24-p647-cert28-battery/` + `results/2026-11-24-p647-r234-cert28-itl/`; **recommended weights-quant decode posture (serve-line choice)**: `ARC_QUANT=mxfp4 ARC_MXFP4_MODE=w4a16 ARC_QUANTCFG='{"ignore":["*visual*","*linear_attn*","mtp.fc"]}' ARC_GMU=0.85 ARC_SPEC=5 ARC_FP8=0` = 123.9 tok/s (+52% vs k3) with TTFT 3.98 s < baseline). Prior certified images (wheel shas, Dockerfile asserts, gate evidence): [`../CHANGELOG.md`](../CHANGELOG.md) |
+| Manifest | `/etc/vllm-arc/IMAGE_MANIFEST` inside the image — fork SHA of record, wheel pins, dependency closure (`lmcache_closure=`), build host, and one description + `cert<N>_fork_sha` (+ wheel-sha/built) row set per release layered on it (base `fork_sha=aa2ee17d…` from cert9 + the cert10 oneCCL overlay rows; per-cert stamps through `cert28_fork_sha`). The per-cert row inventory: [`../CHANGELOG.md`](../CHANGELOG.md) |
+| Base | upstream vllm-gaudi v0.30.0 + pinned wheels (vllm 0.30.0+xpu, triton 3.7.2+xpu, lmcache 0.5.6+arc1; `vllm_xpu_kernels` 0.1.14.1 base, overlaid by the certified arc wheels — current `+arc7mx` build28 for cert28, lineage + md5s in `external_patches/wheels.pins.md5`) |
 
 Superseded images: every prior certified image is superseded by
-cert26 and must never be presented as current; two early images carry
+cert28 and must never be presented as current; two early images carry
 do-not-serve warnings (no `turboquant_*` dtypes on cert6/cert7). The full lineage
 table with per-image carried-content and evidence:
 [`../CHANGELOG.md`](../CHANGELOG.md).
@@ -46,7 +46,7 @@ docker run -d --name arc-test \
   -v /root/build/inductor_cache:/root/.inductor_cache \
   -e VLLM_ALLOW_LONG_MAX_MODEL_LEN=1 \
   -e VLLM_WORKER_MULTIPROC_METHOD=spawn \
-  --entrypoint /bin/bash vllm-arc:v0.30.0-b70-cert26 -c 'sleep infinity'
+  --entrypoint /bin/bash vllm-arc:v0.30.0-b70-cert28 -c 'sleep infinity'
 ```
 
 These are the validated boot bytes (rig `r46t_campaign.sh:54-63`,
@@ -509,7 +509,7 @@ Boot = the same uniform interface; three knobs route a non-default
 model (host dir, served name, quant flag):
 
 ```bash
-ARC_IMAGE=vllm-arc:v0.30.0-b70-cert26 \
+ARC_IMAGE=vllm-arc:v0.30.0-b70-cert28 \
   ARC_MODEL=/models/qwen3.8-27b-quark-awq-mxfp4 \
   ARC_SERVED=qwen3.8-27b-quark-awq-mxfp4 \
   ARC_QUANT= \
@@ -701,7 +701,7 @@ The certified line on the uniform boot interface (no image change, no
 CLI edit — the env states the default explicitly):
 
 ```bash
-ARC_SPEC_METHOD=probabilistic ARC_IMAGE=vllm-arc:v0.30.0-b70-cert26 \
+ARC_SPEC_METHOD=probabilistic ARC_IMAGE=vllm-arc:v0.30.0-b70-cert28 \
   ARC_GRAPH=1 ARC_SPEC=3 bash /root/build/serve_arc_b70.sh
 # appends "draft_sample_method":"probabilistic" to --speculative-config
 # (this is also the DEFAULT when ARC_SPEC_METHOD is unset;
