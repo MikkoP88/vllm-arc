@@ -12,6 +12,28 @@ the fork SHA it was built from.
 Phase labels P0–P6.38 refer to the plan's execution phases; every phase's
 raw evidence is banked under `results/YYYY-MM-DD-<phase>-*/`.
 
+## r235 — P6.47: the fp8-ctrl shallow record rows; exact same-context MX gaps (2026-11-24)
+
+- No cert cut (measurement only — the record's control side
+  completed; r230 precedent, zero engine bytes).
+- The r230/r234 ctrl cells ran long faces only, so every MX-vs-fp8
+  shallow comparison was cross-context. r235
+  (`tools/ar/r235_ctrl_shallow.sh`, r234-verbatim harness, refuses =
+  image + manifest + `.so` md5s; ONE ctrl boot on cert28): **ctrl
+  40.1/40.0/40.4 ms at 2/4/8K** — the fp8 ctrl is FLAT through the
+  shallow range (tps 92.4 @2K; c8192 same-boot sanity 1.000×;
+  chunks 52–53, 0 errors). `R235_GATE: PASS`.
+- **Exact same-context shallow gaps** (r234 MX rows vs r235 ctrl):
+  mxfp4 **+8.2% @2K** (43.4 vs 40.1) and +13.0% @4K; mxfp8 +10.7%
+  @2K; mxk8v4 +10.0% @2K — the residual shallow tax after the
+  seqused-tightened clamp (the cross-context "within 8% of fp8 8K"
+  phrasing retired). Docs updated to the same-context ratios
+  (README cert paragraph + record row, PERFORMANCE-arc record
+  block, envs.md `ARC_MXKV_NATIVE` row).
+- Bank: `results/2026-11-24-p647-r235-ctrl-shallow/` (10-file bank;
+  law-8 rig-side redaction before pull, strict post-pass 0; W14
+  restored by the leg trap, HEALTH 200 05:43:54).
+
 ## rel/v0.30.0-b70-cert28 — P6.47: seqused-tightened split clamp certified; the MX walk line closed (2026-11-24)
 
 - cert28 = cert27 + **the r231d clamp wheel** (arc7mx build28,
