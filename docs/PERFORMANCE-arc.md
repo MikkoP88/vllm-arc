@@ -143,24 +143,35 @@ format-invariant residual distributions). Evidence:
 `results/2026-11-24-p647-cert28-battery/` +
 `results/2026-11-24-p647-r234-cert28-itl/`.
 
-**MXFP4 checkpoint-lane faces (full certified posture)**: rhmxfp4
-(mixed CT — fp8-block attn + native mxfp4 MLP) TTFT U32k 29.01 / C32k
-1.68 / U8k 7.37 / U64k 62.46 s, bystander decode p50 64.7 ms, spec pos1
-0.9853; qurk (all-layer W4A4) 32.28 / 3.84 / 7.73 / 70.61 s, p50
-68.8 ms, spec pos1 0.9951; both decode penalties 1.21×/1.29× vs the
-fp8 incumbent — under the 2× collapse trigger. Disposition: mxfp4 =
-certified weight-constrained lane (weights 9.03 GiB/rank on qurk vs
-~13.6 fp8); **fp8 stays the performance default** —
-`results/2026-11-06-p626-mxfp4/`.
+**MXFP4 checkpoint-lane faces (full certified posture)**: cert28
+re-discriminated (r239/r239b): rhmxfp4 (mixed CT — fp8-block attn +
+native mxfp4 MLP) TTFT U32k 17.51 / C32k 1.09 / U8k 4.04 / U64k
+39.01 s, bystander decode p50 47.6 ms, acceptance 1.0; qurk
+(all-layer W4A4) 17.06 / 1.10 / 4.05 / 38.31 s, p50 45.6 ms,
+acceptance 1.0; erraudit 0/0, G1 3/3 on both. Every face 1.5–3.5×
+faster than the cert11c-era anchors (rhmxfp4 29.01 / 1.68 / 7.37 /
+62.46, qurk 32.28 / 3.84 / 7.73 / 70.61, p50s 64.7 / 68.8 ms — the
+r104/r106b phase-B record, pre-dating the prefill-lane closure); the
+p50s now sit at the fp8 ctrl's cert28 ITL rows 40.1–42.5 ms
+(r234/r235), so the era 1.21×/1.29× decode penalty only shrinks —
+under the 2× collapse trigger on every cert28 face. Disposition:
+mxfp4 = certified weight-constrained lane (weights 9.03 GiB/rank on
+qurk vs ~13.6 fp8); **fp8 stays the performance default** —
+`results/2026-11-06-p626-mxfp4/` (era) +
+`results/2026-11-24-p647-r239-record-lanes/` (cert28).
 
 **MXFP8 AutoRound checkpoint-lane faces (zero engine change)**: intel-ai AutoRound checkpoint (W8A8-dynamic,
 group-32 E8M0, quantized MTP drafter) on the native
-`XPUMxFp8LinearKernel`: TTFT U32k 26.67 / C32k 1.52 / U8k 6.36 / U64k
-59.52 s — below both mxfp4 lanes on every TTFT face; bystander decode
-p50 81.8 ms (1.53× vs fp8; decode is weight-byte-bound — W8 reads 2×
-the W4 bytes; prefill amortizes the quant pass); spec pos1 0.9626 /
-acceptance 0.9174 on the QUANTIZED drafter; 0/0 erraudit. Under the 2×
-trigger everywhere → REPORT lane — `results/2026-11-06-p627-mxfp8/`.
+`XPUMxFp8LinearKernel` — cert28 re-discriminated (r239): TTFT U32k
+16.95 / C32k 1.19 / U8k 3.73 / U64k 38.49 s (era 26.67 / 1.52 /
+6.36 / 59.52) — now beating both mxfp4 lanes on the U-face TTFTs but
+trailing on C32k (1.19 vs 1.09/1.10; the era's every-face TTFT
+ordering inverted by the prefill-lane closure); bystander decode p50
+59.8 ms = 1.31× qurk's 45.6 (the weight-byte law holds: W8 reads 2×
+the W4 bytes; prefill amortizes the quant pass); acceptance 0.9804 on
+the QUANTIZED drafter (era 0.9174); 0/0 erraudit. Under the 2×
+trigger everywhere → REPORT lane — `results/2026-11-06-p627-mxfp8/`
+(era) + `results/2026-11-24-p647-r239-record-lanes/` (cert28).
 
 Nothing validated beats the certified default (the two
 faster-on-paper postures are rejected: k5-depth for the certified
@@ -218,29 +229,47 @@ Second-model lane: gemma-4-31B (60-layer two-head-size hybrid — 50
 sliding-window hd256 layers + 10 full-attention hd512 layers per rank
 16Q/8KV hd256 win1024 and 16Q/2KV hd512) on the certified posture
 `graph=1 spec=0 ARC_LMC=0 ARC_RPC_TIMEOUT=1200`, TP2, chat template
-gemma4. Client walls, temperature 0, solo, finish=length.
+gemma4. Client walls, temperature 0, solo, finish=length. cert28
+re-discriminated (r239b, `ARC_MAXLEN=118784` — the 131072 boot now
+refuses on cert28: 5.83 GiB KV needed > 5.64 GiB available, engine
+estimate 120704; the face class is preserved exactly, face120k needs
+110044 ≤ 118784):
 
-| face | L1 fp8 (slide route) |
-|---|---|
-| probe98 (98-token gen probe) | **5 s** OK coherent |
-| G1 factual / code / reason | 3/3 |
-| face8k (8,028 ptok / 16 ctok) | **4.9 s** |
-| face32k (32,028 ptok) | **17.2 s** — **qwen-parity** (1.016× of the U32k 16.93 record) |
-| face120k (maxlen-bound) | **110.9 s** |
-| face32k_2 (identical prompt, prefix re-hit) | **0.9 s** |
-| decode solo 1×256 (×3 reps) | **28.4–28.5 tok/s** |
-| decode agg8×256 (steady rep) | **194.5–195.5 tok/s** |
-| erraudit (whole battery boot) | 0 ERROR / 0 Traceback, JIT 0 |
+| face | L1 fp8 (slide route), cert28 | cert19-era record (r111) |
+|---|---|---|
+| probe98 (98-token gen probe) | **3.5 s** OK coherent | 5 s OK coherent |
+| G1 factual / code / reason | 3/3 | 3/3 |
+| face8k (8,028 ptok / 16 ctok) | **4.2 s** | 4.9 s |
+| face32k (32,028 ptok) | **16.8 s** — qwen-parity held | 17.2 s (1.016× of the U32k 16.93 record) |
+| face120k (maxlen 118784) | **108.4 s** | 110.9 s |
+| face32k_2 (identical prompt, prefix re-hit) | **0.9 s** | 0.9 s |
+| decode solo 1×256 (×3 reps) | **29.0 tok/s** ×3 | 28.4–28.5 tok/s |
+| decode agg8×2048 (per-user tps ×3) | 48.5 / 59.2 / 45.1 → **361–474 tok/s aggregate** | agg8×256: 194.5–195.5 tok/s aggregate |
+| erraudit (whole battery boot) | 0 ERROR / 0 Traceback, JIT 0 | 0 ERROR / 0 Traceback, JIT 0 |
 
-Lane parity analysis vs the qwen3.8-27b fp8 incumbent records:
-face32k is AT parity (17.2 vs 16.93 s = 1.016×); face8k is 1.30× of U8k
-(4.9 vs 3.76 s — the remaining delta is the 10 full-attention hd512
-layers' k-dependence + GEMM floor); face120k runs 1.008 ms/prompt-token
-vs qwen U64k's 0.594 (110,028 vs 65,536 ptok faces — the hd512 quadratic
-share grows with k); face32k_2 re-hit 0.9 s beats the qwen C32k 1.09 s
-record. Decode: the gemma agg8 195 tok/s is 1.57× qwen's own NO-SPEC agg
-(124–127); vs qwen's MTP-k3 spec lane (solo 83.7–84.9 / agg8 326–328)
-the gap is 2.9×/1.7× and is **structurally closed to parity work**:
+The agg8 units: the battery reports per-user `tps_mean`; the era
+record's 194.5–195.5 is aggregate. Same-units cert28 aggregate = 8 ×
+(48.5/59.2/45.1) = 388 / 474 / 361 tok/s — 1.85–2.4× the era record
+under a harder protocol (2048 vs 256 ctok/stream: longer steady-state
+decode); the per-rep spread is the native gemma think-spam variance
+(the REP-LOOP law), with solo 29.0 ×3 the stable reference. Bank:
+`results/2026-11-24-p647-r239-record-lanes/r239b/gemma/`.
+
+Lane parity analysis vs the qwen3.8-27b fp8 incumbent records
+(cert28 face values; era-era comparison in parens): face32k is AT
+parity (16.8 vs the 16.93-era U32k record; era 17.2 = 1.016×);
+face8k is 1.12× of the era U8k record (4.2 vs 3.76 s; era 4.9 =
+1.30× — the remaining delta is the 10 full-attention hd512 layers'
+k-dependence + GEMM floor); face120k runs 0.985 ms/prompt-token
+(108.4 s / 110,028 ptok; era 1.008) vs qwen U64k's 0.594 (110,028 vs
+65,536 ptok faces — the hd512 quadratic share grows with k);
+face32k_2 re-hit 0.9 s beats the qwen C32k 1.09 s record. Decode:
+the cert28 gemma agg8 361–474 tok/s aggregate is 2.8–3.7× qwen's own
+NO-SPEC agg (era: the 195 tok/s aggregate was 1.57× the 124–127);
+vs qwen's MTP-k3 spec lane the solo gap holds at 2.9× (29.0 vs
+83.7–84.9; the era agg8 1.7× gap inverts on the harder-protocol
+cert28 battery — 361–474 vs 326–328 aggregate, protocol-unequal
+steady-state) and is **structurally closed to parity work**:
 gemma-4's checkpoint ships no MTP/draft head (nothing to draft from),
 and the draft-free ngram lane is refused by the upstream v1 spec path —
 `_get_mamba_bufs()` asserts "no mamba layers in the model" on

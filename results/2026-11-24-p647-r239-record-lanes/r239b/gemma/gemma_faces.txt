@@ -1,0 +1,16 @@
+probe98 wall=3.5s ptok=2 finish=length CLEAN=True
+[G1:factual] finish=length tok=24 '\n\n\n\n\n\n|'
+[G1:reason] finish=length tok=96 'The first train travels 60 km/h for 1 hour, so it travels 60 km.\nThe second train travels 90 km/h for 1 hour, so it travels 90 km.\nThe second train needs to catch up to the first train, so it needs to'
+[G1:code] finish=length tok=64 '\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n|'
+face8k wall=4.2s finish=length ptok=8028 ctok=16
+face32k wall=16.8s finish=length ptok=32028 ctok=16
+face120k wall=108.4s finish=length ptok=110028 ctok=16
+face32k_2 wall=0.9s finish=length ptok=32028 ctok=16 (prefix re-hit)
+G2_DONE
+solo conc1 rep1 tps=29.0
+solo conc1 rep2 tps=29.0
+solo conc1 rep3 tps=29.0
+agg8 conc8 rep1 tps_mean=48.5 span=78.4s
+agg8 conc8 rep2 tps_mean=59.2 span=77.4s
+agg8 conc8 rep3 tps_mean=45.1 span=78.4s
+DECODE_BATTERY_DONE
