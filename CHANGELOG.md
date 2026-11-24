@@ -12,6 +12,29 @@ the fork SHA it was built from.
 Phase labels P0–P6.38 refer to the plan's execution phases; every phase's
 raw evidence is banked under `results/YYYY-MM-DD-<phase>-*/`.
 
+## r238 — P6.47: cert28 per-lane n8 acceptance mined; K-precision law, channels all closed (2026-11-24)
+
+- No cert cut, no rig time (analysis-only, r236 precedent): the
+  acceptance channel from the r237 idle disposition closed by
+  mining the banked `metrics_before.txt` snapshots (16K-cell deltas,
+  ~300 drafts per lane). VERDICT:
+  `results/2026-11-24-p647-r238-n8-accept-mining/`.
+- **First per-lane n8/16K acceptance rows on cert28** — all lanes
+  healthy (pos0 ≥ 0.81, no knee; S1 stays cured under this traffic
+  shape too): ctrl 2.306 acc/step, m4q 2.170, mkq 2.399, m8q 2.430.
+- **Acceptance K-precision law (the factorial)**: e2m1 **K** costs
+  ~0.23 acc/step (−10%, ~5 SE, concentrated at pos2); e2m1 **V** is
+  acceptance-free (~0.03, sub-noise). Mechanism: the MTP draft is
+  lane-invariant — only the target verify rides the KV lane, and
+  deepest-position verification is where e2m1-K numerics diverge.
+  Throughput consistency: acceptance does not dominate tps (m8q best
+  acceptance, worst n1 ITL); the m4q aggregate position carries a
+  ~6% acceptance tax on top of its ITL gap at n8 — the mkq split
+  (e4m3 K + e2m1 V) avoids it while keeping half the KV savings.
+- All three idle-disposition evidence channels now closed
+  (engine-shape / workload-shape / counters); the MX hunt's idle
+  stands.
+
 ## r237 — P6.47: cert28 n8 steady-state long-ctx faces; every face class re-discriminated (2026-11-24)
 
 - The last un-re-measured face class on cert28: n8 steady-state
