@@ -1,0 +1,39 @@
+R237 refuses passed (fork_sha=43f84cf977f9444900ff21387715ca5865db4c1a libattn=61d2f5a365f05084b3dd72c4ae1da3e0 libmqa=190e261edc79b3b497d8d8e801e65757)
+=== [r237:ctrl] boot kvd=fp8_e4m3(default) faces=16384 32768 05:55:19 ===
+HEALTH_OK_r237_ctrl 06:05:38
+CONC_OK_c16384_n8
+CONC_OK_c32768_n8
+=== [r237:ctrl] done 06:09:29 ===
+=== [r237:m4q] boot kvd=mxfp4 faces=16384 32768 06:09:29 ===
+HEALTH_OK_r237_m4q 06:14:34
+CONC_OK_c16384_n8
+CONC_OK_c32768_n8
+=== [r237:m4q] done 06:18:10 ===
+=== [r237:m8q] boot kvd=mxfp8 faces=16384 32768 06:18:10 ===
+HEALTH_OK_r237_m8q 06:23:25
+CONC_OK_c16384_n8
+CONC_OK_c32768_n8
+=== [r237:m8q] done 06:27:09 ===
+=== [r237:mkq] boot kvd=mxk8v4 faces=16384 32768 06:27:09 ===
+HEALTH_OK_r237_mkq 06:32:24
+CONC_OK_c16384_n8
+CONC_OK_c32768_n8
+=== [r237:mkq] done 06:36:04 ===
+=== [r237] report 06:36:04 ===
+r237 n8 steady-state long faces -- qwen3.8-27b-fp8 n8 MT=128 (cert28)
+ ss = per-slot (total-ttft)*1000/(chunks-1), median across slots (ramp-interleaved law)
+  cell |    ctx |   ss_ms |  anchor |  ratio |  agg_p50 |  chunks | qual | errs
+  ctrl |  16384 |   778.7 |       - |      - |     66.5 |    39.8 | OK | 0
+  ctrl |  32768 |  1273.9 |    1671 |  0.762 |   1350.7 |    40.2 | OK | 0
+   m4q |  16384 |   588.3 |       - |      - |    111.7 |    41.5 | OK | 0
+   m4q |  32768 |  1440.4 |    1703 |  0.846 |   1046.8 |    42.8 | OK | 0
+   m8q |  16384 |   616.8 |       - |      - |    133.4 |    38.2 | OK | 0
+   m8q |  32768 |  1506.1 |    1743 |  0.864 |   1267.5 |    42.1 | OK | 0
+   mkq |  16384 |   730.8 |       - |      - |    126.2 |    38.6 | OK | 0
+   mkq |  32768 |  1399.7 |    1824 |  0.767 |   1058.3 |    39.9 | OK | 0
+ss_ratio m4q/ctrl @32K = 1.131
+ss_ratio m8q/ctrl @32K = 1.182
+ss_ratio mkq/ctrl @32K = 1.099
+R237_GATE: PASS (n8 ss faces banked; 32K anchors within band)
+R237_DONE 06:36:04
+R237: restoring W14 (06:36:04)
