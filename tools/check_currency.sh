@@ -37,6 +37,10 @@ ck docs/MIGRATION-arc.md     "| image | \`$img\`"               "identities imag
 ck docs/MIGRATION-arc.md     "ARC_IMAGE=$img"                    "S2 boot block image"
 ck docs/PERFORMANCE-arc.md   "## Current certified image"      "current-record heading"
 ck docs/PERFORMANCE-arc.md   "**Current release = $latest**"  "current-release statement"
+# 2026-11-24 doc sweep: the identity-table engine row itself drifted to
+# cert25zc for three certs while both anchors above stayed green — the
+# same row-value class as MIGRATION S1 (P6.38). Anchor the row.
+ck docs/PERFORMANCE-arc.md   "| Engine image | **current**: \`$img\`" "identity-table engine row"
 ck docs/envs.md              "current certified image \`$img\`" "env chain currency note"
 ck docs/STATUS-arc.md        "**Currency: \`$latest\`**"          "status currency line"
 ck docs/PATCHES-arc.md       "**\`$img\`**"                       "patches image-in-currency pin"

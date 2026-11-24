@@ -12,6 +12,31 @@ the fork SHA it was built from.
 Phase labels P0–P6.38 refer to the plan's execution phases; every phase's
 raw evidence is banked under `results/YYYY-MM-DD-<phase>-*/`.
 
+## r240-prep — docs: professional sweep — identity-row currency fix + gate anchor (2026-11-24)
+
+- Editorial sweep of the fork-owned docs ahead of the r240 report
+  battery close-out (the r240 campaign's local half). **One hard
+  currency defect found and fixed**: the PERFORMANCE-arc
+  "Rig, image, and posture identity" table's **Engine image** row
+  still presented cert25zc — it had drifted across three certs
+  (cert25zc→cert28) while both of the file's check_currency anchors
+  stayed green (the same anywhere-in-file class the P6.38 row-anchor
+  fix described for MIGRATION S1). The row now carries the cert28
+  identity + re-discrimination provenance, and
+  `tools/check_currency.sh` anchors the row itself
+  (`| Engine image | **current**: …cert28`) — the drift class is
+  closed at the gate.
+- README professional restructure: the certified-release bullet
+  (1,000+ chars, single run-on) became four scannable sub-bullets
+  (engine content / certified native posture / the re-discriminated
+  record / evidence); every fact and citation retained, the full
+  `.so` md5 pin inventory consolidated to the CHANGELOG cert28 entry
+  (byte-exact in CHANGELOG + MIGRATION + CONFIGURATION — no
+  information loss). Evidence counts refreshed to **232 dirs / 202
+  VERDICTs** (r239 bank).
+- Gates at file-write time: validate_docs 0 errors / 0 advisories
+  (27 fork docs), leak_sweep clean, check_currency clean at cert28.
+
 ## r239 — P6.47: record-lane re-discrimination on cert28 — every face beats its era anchor; docs hard-currency sweep (2026-11-24)
 
 - The deep-sweep campaign's first leg (owner directive 2026-11-24:
