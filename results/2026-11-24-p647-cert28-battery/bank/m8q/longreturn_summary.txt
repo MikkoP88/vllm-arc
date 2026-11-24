@@ -1,0 +1,6 @@
+[essay] hashes=['e65e3c1ef12b'] finish=['stop', 'stop', 'stop'] chars=[5554, 5554, 5554] t1_seed_identical=True garble_empty=True
+[code] hashes=['9dd6153997bc'] finish=['stop', 'stop', 'stop'] chars=[2663, 2663, 2663] t1_seed_identical=True garble_empty=True
+[multi] hashes=['5d9efdca8c49'] finish=['stop', 'stop', 'stop'] chars=[469, 469, 469] t1_seed_identical=True garble_empty=True
+[simple] hashes=['84efc84cc142'] finish=['stop', 'stop', 'stop'] chars=[1510, 1510, 1510] t1_seed_identical=True garble_empty=True
+LONGRETURN: PASS
+T1_SEED: PASS

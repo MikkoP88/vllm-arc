@@ -1,0 +1,5 @@
+mx_backend_lines=1
+native_lines=108
+lmcache_lines=0
+tracebacks=0
+(EngineCore pid=782) INFO 11-24 00:11:22 [kv_cache_utils.py:2395] XPU KV cache size: 721,994 tokens, Maximum concurrency for 262,144 tokens per request: 2.75x

@@ -1,0 +1,31 @@
+{
+ "tag": "c2048_n1",
+ "ctx": 2048,
+ "conc": 1,
+ "max_tokens": 192,
+ "model": "qwen3.8-27b-fp8",
+ "temperature": 0.0,
+ "n_ok": 1,
+ "n_fail": 0,
+ "requests": [
+  {
+   "slot": 0,
+   "error": null,
+   "ttft_s": 1.1491798920324072,
+   "total_s": 3.316626198007725,
+   "n_stream_chunks": 51,
+   "itl_ms_p50": 43.38480904698372,
+   "itl_ms_p90": 43.62876497907564,
+   "itl_ms_p99": 43.909295985940844
+  }
+ ],
+ "ttft_mean_s": 1.1491798920324072,
+ "ttft_max_s": 1.1491798920324072,
+ "per_user_tps": [
+  88.58
+ ],
+ "per_user_mean_tps": 88.5835092987934,
+ "per_user_min_tps": 88.5835092987934,
+ "agg_tps_wall": 57.89015358900955,
+ "wall_s": 3.316626198007725
+}
