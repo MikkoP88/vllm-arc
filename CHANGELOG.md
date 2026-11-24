@@ -62,9 +62,12 @@ raw evidence is banked under `results/YYYY-MM-DD-<phase>-*/`.
   CONC_OK, chunks 51–57, 0 errors. `R234_GATE: PASS`.
 - **Disposition: the MX walk line closes at cert28** — all three MX
   KV dtypes native, correctness-gated and at their measured record
-  shallow-through-long context. The improvement ladder continues per
-  the plan (S1 e2m1-V acceptance knee, A1 aux-pipeline fold, F2
-  continuation dequant tax).
+  shallow-through-long context. The ladder's capture-point ledger is
+  fully dispositioned: the S1 acceptance knee cured (r185/r186,
+  KNEE=none; cert28 battery metrics re-confirm — 1.78–1.81
+  accepted/draft on the MX lanes, pos0 ≈ 0.80), aux/plan-build at
+  noise (T1), continuation-dequant refuted (p182). The always-loop
+  directive continues on new evidence.
 - Evidence: `results/2026-11-24-p647-cert28-battery/` (193-file bank
   + chain launch.log) + `results/2026-11-24-p647-r234-cert28-itl/`
   (53-file bank) + the r231a–r231de line banks. Law-8: 376 address
