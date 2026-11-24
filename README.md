@@ -36,7 +36,7 @@ full reports with charts and copyable configs:
 | qwen fp8 · MTP k3 | 93.8 tok/s @ 1K | the certified default lane |
 | qwen mxfp4-W4A16 · MTP k3 | 103.3 tok/s @ 8K | best online-quant lane |
 | qwen mxfp4-W4A16 · MTP **k5** | **128.3 tok/s** | **project best** (+36 % vs fp8-k3); TTFT 3.98 s < the k3-baseline 4.55 s |
-| qwen `--kv-cache-dtype mxfp4` · native · k3 | 65.2 tok/s @ 32K (n1) · 261.9 agg8 (r228) | cert28 native MX-decode record, full five-face ITL 43.4→58.1 ms (2K→32K): the r231d clamp −7.6% at 2K with long-ctx parity exact; same-ctx gap +8.2% vs fp8 @2K (ctrl rows 40.1/40.0/40.4, r235); agg8 0.86× ctrl |
+| qwen `--kv-cache-dtype mxfp4` · native · k3 | 65.2 tok/s @ 32K (n1) · 258.4 agg8 (r233) | cert28 native MX-decode record, full five-face ITL 43.4→58.1 ms (2K→32K): the r231d clamp −7.6% at 2K with long-ctx parity exact; same-ctx gap +8.2% vs fp8 @2K (ctrl rows 40.1/40.0/40.4, r235); agg8 0.84× ctrl, clamp-neutral (r236) |
 | gemma mxfp4-W4A16 | 38.0 tok/s @ 1K | +43 % vs gemma mxfp8 |
 | TTFT best (qwen fp8 · k5) | 3.48 s @ 8K | fresh-context, no caching |
 
@@ -271,7 +271,7 @@ The uniform boot interface with posture knobs (rig paths) is
 
 - **`main` is linear and protected**: changes land as squash commits from per-item lanes (`feat/arc-pNN-*`); direct pushes, force pushes, and deletions are blocked; PRs are required.
 - **Certified releases are annotated tags** pointing at the certified `main` commit — current: `rel/v0.30.0-b70-cert28` (cert27 + the r231d seqused-tightened split clamp wheel — arc7mx build28 BAKED with in-image md5 asserts; native posture `ARC_KVDTYPE=mxfp8|mxfp4|mxk8v4` + `ARC_MXKV_NATIVE=1`, all three MX lanes native at their record — mxfp4 five-face ITL 43.4→58.1 ms; evidence `results/2026-11-24-p647-cert28-battery/` + `results/2026-11-24-p647-r234-cert28-itl/`). The full tag lineage — every cert's content, wheel deltas, validation legs, and supersession notes — lives in [`CHANGELOG.md`](CHANGELOG.md); release summaries: [`docs/release_notes.md`](docs/release_notes.md). The Docker image embeds the fork SHA in `/etc/vllm-arc/IMAGE_MANIFEST` for A/B verification.
-- **Evidence is in-tree**: every validation leg banks to `results/YYYY-MM-DD-<phase>-r<leg>-<slug>/` (VERDICT + raw outputs) — **228 evidence dirs, 197 VERDICTs of record**, P0 through P6.47.
+- **Evidence is in-tree**: every validation leg banks to `results/YYYY-MM-DD-<phase>-r<leg>-<slug>/` (VERDICT + raw outputs) — **229 evidence dirs, 198 VERDICTs of record**, P0 through P6.47.
 - **No secrets or real host addresses in-tree (publishing-hygiene law)**: tracked == pushable, so credentials, rig/host addresses, and private identities never enter tracked files; banked logs carry redacted host addresses (each banking-time scrub documented in its `results/REDACTION-*.md` note). `tools/leak_sweep.sh` must exit 0 before every push.
 - The `feat/arc-*` branches are kept deliberately: squash-merging leaves the per-item development history nowhere else.
 
