@@ -2,7 +2,7 @@
 
 Generated from `vllm_gaudi/envs.py` arc-lane markers + the certified
 serve line (spec depth 3 — a serve-time CLI choice). The qwen fp8 chain
-is identical on the current certified image `vllm-arc:v0.30.0-b70-cert27`
+is identical on the current certified image `vllm-arc:v0.30.0-b70-cert28`
 (25 vars incl. `LMCACHE_TRACK_USAGE=false`): every release since the
 chain's certification added ZERO certified serve-line vars — each new
 lane rides an engine env or script arg (`ARC_*`) proven env-free and
@@ -120,7 +120,7 @@ the native `fp8_e4m3` path is untouched):
 
 | knob | default | semantics | consumer |
 |---|---|---|---|
-| `ARC_MXKV_NATIVE` | unset = Triton MX lanes (fallback, all three formats) | `=1` + `ARC_KVDTYPE={mxfp8,mxfp4,mxk8v4}` = the **cert27 native-decode posture**: the overlay `native_verify` bridge routes decode through the arc7mx wheel's MX-native paged Xe2 kernel — all three MX lanes native at cert27 (the cert26 `mxk8v4` REP-LOOP refusal root-caused to four kernel defects and fixed, r224–r226). Cert27-measured record (r230): mxfp4 ITL 49.4/52.1/58.1 ms at 8/16/32K (+1.8–2.2% vs the cert26 measurement = the fix3 fp32 split-partials cost), tps 65.2 @32K, 1.36× fp8 ITL @32K; native mxfp8 50.9/55.3/64.4; native mxk8v4 50.0/53.9/61.9 (agg8 +7.9% over its cert26 Triton lane — native is the fastest mxk8v4 on both short and long context). Evidence: `results/2026-11-23-p647-cert27-battery/` + `results/2026-11-23-p647-r229-format-replay/` + `results/2026-11-23-p647-r230-itl-redisc/` | `patches/mx_kv/engine.py:158` |
+| `ARC_MXKV_NATIVE` | unset = Triton MX lanes (fallback, all three formats) | `=1` + `ARC_KVDTYPE={mxfp8,mxfp4,mxk8v4}` = the **cert28 native-decode posture**: the overlay `native_verify` bridge routes decode through the arc7mx wheel's MX-native paged Xe2 kernel — all three MX lanes native (since cert27; the cert26 `mxk8v4` REP-LOOP refusal root-caused to four kernel defects and fixed, r224–r226; cert28 adds the r231d seqused-tightened split clamp). Cert28-measured record (r234): mxfp4 ITL 43.4/45.2/48.5/52.2/58.1 ms at 2/4/8/16/32K (the full five-face record — 2K −7.6% vs cert27 from the clamp, long-ctx parity exact), tps 65.2 @32K, 1.37× fp8 ITL @32K; native mxfp8 44.4/46.5 then 50.0/55.3/64.3; native mxk8v4 44.1/46.0 then 49.4/53.9/61.9 (first shallow rows; MX 2K ITL within 8% of the fp8 ctrl's 8K). Evidence: `results/2026-11-24-p647-cert28-battery/` + `results/2026-11-24-p647-r234-cert28-itl/` | `patches/mx_kv/engine.py:158` |
 | `ARC_MXKV_NSPLIT` | `0` = C++ auto-split | RETIRED as posture (r219b: auto lands the validated optimum 128 by itself — chain 341→130→128, caps AT the optimum so it cannot overshoot); stays as a probe instrument for forced-depth sweeps (`ns64`/`ns256` brackets, r220d) | `patches/mx_kv/native_decode.py:108` |
 | `ARC_MXKV_K2` / `ARC_MXKV_K3` | `1` / `1` = packed-fp16 dequant + e2m1 fast-unpack lanes ON (bit-identical outputs) | `=0` reverts to the stock dequant path (cert25zb-era kill switches) | `patches/mx_kv/triton_mx_decode.py` |
 | `ARC_MXKV_V5_TFLOOR` | `2` (cert25zc closing rung) | v5 verify-decoder TILE_FLOOR launcher default | `patches/mx_kv/triton_mx_decode.py` |
