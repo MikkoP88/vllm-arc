@@ -12,6 +12,40 @@ the fork SHA it was built from.
 Phase labels P0–P6.38 refer to the plan's execution phases; every phase's
 raw evidence is banked under `results/YYYY-MM-DD-<phase>-*/`.
 
+## r239 — P6.47: record-lane re-discrimination on cert28 — every face beats its era anchor; docs hard-currency sweep (2026-11-24)
+
+- The deep-sweep campaign's first leg (owner directive 2026-11-24:
+  re-run all analyses, validations and performance tests on the
+  latest certified image): the era-stale record faces re-measured on
+  cert28. VERDICT:
+  `results/2026-11-24-p647-r239-record-lanes/` (r239 + r239b merged
+  bank, 38 files).
+- **Checkpoint-lane TTFTs 1.5–3.5× faster than their cert11c-era
+  anchors** (the era banks pre-date the prefill-lane closure): qurk
+  17.06 / 1.10 / 4.05 / 38.31 s vs 32.28 / 3.84 / 7.73 / 70.61;
+  aur 16.95 / 1.19 / 3.73 / 38.49 vs 26.67 / 1.52 / 6.36 / 59.52
+  (the era every-face TTFT ordering vs the mxfp4 lanes inverted);
+  rhmxfp4 17.51 / 1.09 / 4.04 / 39.01 vs 29.01 / 1.68 / 7.37 /
+  62.46. Acceptance 1.0 / 0.9804 / 1.0; erraudit 0/0; G1 3/3.
+- **Gemma L1 record parity-or-better** at `ARC_MAXLEN=118784`:
+  face8k 4.2, face32k 16.8, face120k 108.4, face32k_2 0.9 s, solo
+  29.0 tok/s ×3 (era 4.9 / 17.2 / 110.9 / 0.9 / 28.4–28.5). The
+  r239b agg8 gate FAIL re-derived as a **units artifact** (era anchor
+  195.0 aggregate vs battery per-user `tps_mean`): same-units cert28
+  aggregate 361–474 tok/s = 1.85–2.4× the era record under the
+  harder 2048-ctok protocol.
+- Two boot-fail law-lessons banked: gemma maxlen 131072 no longer
+  boots on cert28 (KV 5.83 > 5.64 GiB, est. max 120704 → 118784,
+  face class preserved); a boot-fail branch that returns without
+  `docker rm -f` cascades the container-name conflict into the next
+  cell (r239b adds the rm to every branch).
+- **Docs hard-currency sweep in the same PR**: STATUS-arc +
+  PATCHES-arc rewritten to cert28 (the MX KV lane family, image
+  manifest + .so pins — the deep-sweep audit found both docs five
+  certs stale); two new `tools/check_currency.sh` anchors close the
+  drift class. In flight: the r240 report-battery re-run
+  (r240a → r240b → r240c → `docs/reports/` regeneration).
+
 ## r238 — P6.47: cert28 per-lane n8 acceptance mined; K-precision law, channels all closed (2026-11-24)
 
 - No cert cut, no rig time (analysis-only, r236 precedent): the
