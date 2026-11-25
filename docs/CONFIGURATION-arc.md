@@ -85,8 +85,8 @@ non-privileged TP2 init — validated posture, env-inspected 2026-10-27).
 
 ### Step 2 — Serve (environment chain + CLI as ONE unit)
 
-The CLI below is the **certified line** — the rig-certified line
-(`/root/build/r42/r43_serve_k5.sh` lineage, depth 3) plus the
+The CLI below is the **certified line** — the canonical serve script
+(`tools/serve_arc_b70.sh`, MTP depth 3) plus the
 `draft_sample_method` key (probabilistic drafting — the certified
 default posture and the serve script's default); drop that one key
 (or set `ARC_SPEC_METHOD=greedy` on the script interface) for the

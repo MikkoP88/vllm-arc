@@ -12,6 +12,45 @@ the fork SHA it was built from.
 Phase labels P0–P6.38 refer to the plan's execution phases; every phase's
 raw evidence is banked under `results/YYYY-MM-DD-<phase>-*/`.
 
+## r240-docs — MTP k3 unification + README feature-table completion (2026-11-25)
+
+- **MTP depth presentation unified on k3** — the certified, overall-best
+  depth — across every current-facing doc (owner directive). The README
+  performance table's two k5 rows are gone (the TTFT row now carries the
+  banked k3 value: **3.76 s @ 8K** fresh-context, best-TTFT opt-in
+  `CCL_SYCL_ALLREDUCE_FP8=1` 3.27 s); the spec-decoding row reads
+  "k3: the certified, overall-best depth … deeper drafts measured and
+  dropped". The STATUS-arc recommended decode posture block — the main
+  violation, it still **recommended `ARC_SPEC=5`** with cert23-era k5
+  numbers (115.2/123.9/128.3 tok/s) — is rewritten to the certified
+  lanes (fp8+k3 93.8 tok/s @ 1K default; **mxfp4-W4A16+k3 103.3 tok/s
+  @ 8K** best online-quant, `ARC_SPEC=3`). PERFORMANCE-arc identity row
+  + close-out paragraph, PATCHES-arc champion-lane parenthetical (now
+  the certified k3 read), CONFIGURATION serve-line lineage (stale
+  `r43_serve_k5.sh` mention), MIGRATION golden-ref parenthetical, and
+  the envs double-buffer E2E-note pair all follow. Deeper-draft values
+  survive only in decision records (this CHANGELOG's history,
+  `docs/release_notes.md`).
+- **README "What this fork adds" completed to the full implemented
+  feature set** (10 → 14 rows, grouped by subsystem): the MX-native KV
+  cache lane (`mx_kv/` + `ARC_KVDTYPE`/`ARC_MXKV_NATIVE`), the
+  graph-exec double-buffer, graph-safe output, speculator full-capture
+  and first-request warmup graph patches, online MXFP4-W4A16 +
+  MXFP8-W8A16 quantization routes, the attention image-overlay routing
+  (launcher table / warmup gate / FA2 full + sliding-window dispatch)
+  + GDN metadata fastpath, the TurboQuant MQ verify kernel (own row),
+  the lmcint kit, and the wheel-pins/wheel-guard distribution row —
+  every row cites its module paths. A dedicated **change-log bullet**
+  links CHANGELOG.md from the README top block.
+- **Currency sweep**: grep-verified every current-facing doc cites
+  cert28 as the image to run (zero older-tag run recommendations);
+  quick start / build / configuration sections read against the cert28
+  serve line and image identity. No history rewritten — `docs/history/`
+  and per-cert entries untouched.
+- Gates at file-write time: validate_docs 0 errors / 0 advisories
+  (27 fork docs; one table column-count fix — escaped pipes in the
+  MX-native row), leak_sweep clean, check_currency clean at cert28.
+
 ## r240-prep — docs: professional sweep — identity-row currency fix + gate anchor (2026-11-24)
 
 - Editorial sweep of the fork-owned docs ahead of the r240 report
