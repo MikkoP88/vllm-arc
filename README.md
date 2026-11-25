@@ -17,9 +17,9 @@ A fork of [vllm-project/vllm-gaudi](https://github.com/vllm-project/vllm-gaudi) 
 ## Contents
 
 - [What this fork adds](#what-this-fork-adds)
+- [Dependencies](#dependencies)
 - [Certified performance](#certified-performance-dual-arc-pro-b70-tp2)
 - [TurboQuant KV-cache dtypes](#turboquant-kv-cache-dtypes)
-- [Dependencies](#dependencies)
 - [Quick start](#quick-start)
 - [Documentation](#documentation)
 - [Repository model](#repository-model)
@@ -49,6 +49,29 @@ load-layer mechanics: [`docs/PATCHES-arc.md`](docs/PATCHES-arc.md)):
 | Distribution | Certified Docker image with `IMAGE_MANIFEST` (fork SHA, pinned wheels, vendored lmcache closure); the uniform boot interface `serve_arc_b70.sh` (25-variable chain); push gates: leak sweep, currency check, docs validation | `Dockerfile`, `tools/build_image.sh`, `tools/serve_arc_b70.sh` |
 
 - **Change log** — every change to this fork is recorded in [`CHANGELOG.md`](CHANGELOG.md): per-cert and per-phase entries with what shipped, the release tag, fork SHA, key numbers and the evidence path. Release summaries: [`docs/release_notes.md`](docs/release_notes.md).
+
+## Dependencies
+
+The certified image pins its full stack — nothing floats. Wheels are
+md5-pinned at build time (`tools/wheel_guard.sh`) and the installed
+kernel `.so`s are asserted in-image (`IMAGE_MANIFEST`).
+
+| Component | Certified version | Notes |
+|---|---|---|
+| Hardware | 2 × Intel Arc Pro B70 (BMG-G31, Xe2), TP2 | 32 GB each; both cards on one CPU socket |
+| Host runtime | Intel XPU stack (compute runtime + Level-Zero), Docker | validated base lineage; `--privileged` + `CCL_ZE_IPC_EXCHANGE=pidfd` for TP2 init |
+| Python | 3.12 (`/opt/venv`) | base-image venv |
+| vLLM core | `0.30.0+xpu` (upstream vllm-gaudi v0.30.0) | pinned wheel, md5-guarded |
+| PyTorch | `2.13.0+xpu` | the validated stack freeze |
+| Triton | `3.7.2+xpu` | pinned wheel |
+| `vllm_xpu_kernels` | `0.1.14.1+arc7mx` (build28) | our custom wheel — MX-native decode kernels + the seqused-tightened split clamp; installed `.so` md5s asserted in-image |
+| LMCache | `0.5.6+arc1` | internal wheel: upstream 0.5.6 sdist + the 4-patch arc kit, SYCL XPU build |
+| oneCCL | `2022.0.0` | torch-pinned exact; the e4m3-wire AR overlay is a same-version rebuild (opt-in) |
+
+Full pin inventory — every wheel md5, the in-image asserts, and the
+rebuild recipe: [`docs/MIGRATION-arc.md`](docs/MIGRATION-arc.md),
+[`docs/CONFIGURATION-arc.md`](docs/CONFIGURATION-arc.md), and the
+CHANGELOG cert28 entry.
 
 ## Certified performance (dual Arc Pro B70, TP2)
 
@@ -124,29 +147,6 @@ true-default fp8 TTFT is 17.25/39.77 s — the honest TQ TTFT edge is
 For stall relief on the certified fp8 line the measured levers remain first
 choice: `ARC_MNBT=4096` or the p65 long-context profile — see "Optional
 postures" below.
-
-## Dependencies
-
-The certified image pins its full stack — nothing floats. Wheels are
-md5-pinned at build time (`tools/wheel_guard.sh`) and the installed
-kernel `.so`s are asserted in-image (`IMAGE_MANIFEST`).
-
-| Component | Certified version | Notes |
-|---|---|---|
-| Hardware | 2 × Intel Arc Pro B70 (BMG-G31, Xe2), TP2 | 32 GB each; both cards on one CPU socket |
-| Host runtime | Intel XPU stack (compute runtime + Level-Zero), Docker | validated base lineage; `--privileged` + `CCL_ZE_IPC_EXCHANGE=pidfd` for TP2 init |
-| Python | 3.12 (`/opt/venv`) | base-image venv |
-| vLLM core | `0.30.0+xpu` (upstream vllm-gaudi v0.30.0) | pinned wheel, md5-guarded |
-| PyTorch | `2.13.0+xpu` | the validated stack freeze |
-| Triton | `3.7.2+xpu` | pinned wheel |
-| `vllm_xpu_kernels` | `0.1.14.1+arc7mx` (build28) | our custom wheel — MX-native decode kernels + the seqused-tightened split clamp; installed `.so` md5s asserted in-image |
-| LMCache | `0.5.6+arc1` | internal wheel: upstream 0.5.6 sdist + the 4-patch arc kit, SYCL XPU build |
-| oneCCL | `2022.0.0` | torch-pinned exact; the e4m3-wire AR overlay is a same-version rebuild (opt-in) |
-
-Full pin inventory — every wheel md5, the in-image asserts, and the
-rebuild recipe: [`docs/MIGRATION-arc.md`](docs/MIGRATION-arc.md),
-[`docs/CONFIGURATION-arc.md`](docs/CONFIGURATION-arc.md), and the
-CHANGELOG cert28 entry.
 
 ## Quick start
 
