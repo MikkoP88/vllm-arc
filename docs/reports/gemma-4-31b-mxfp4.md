@@ -12,7 +12,7 @@
 | Speculative decoding | disabled |
 | Max model len | 40960 |
 | KV pool (this boot) | 128,033 tokens (r240b posture) |
-| Date | 2026-11-24 |
+| Date | 2026-11-25 |
 | Cell outcome | FACES_OK |
 
 ## Executive summary
@@ -397,7 +397,7 @@ Two boots, one lane: the shared contexts agree within 0% on solo speed (worst re
 ### Validated invocation (what the gate ran, byte-exact)
 
 ```bash
-# image vllm-arc:v0.30.0-b70-cert28 ; 2026-11-24 ; TP2 on 2x Arc Pro B70
+# image vllm-arc:v0.30.0-b70-cert28 ; 2026-11-25 ; TP2 on 2x Arc Pro B70
 ARC_IMAGE=vllm-arc:v0.30.0-b70-cert28 ARC_NAME=arc-b70 \
   ARC_MODEL=/models/gemma4-31b ARC_SERVED=gemma4-31b ARC_GMU=0.8 ARC_GRAPH=1 ARC_SPEC=0 ARC_LMC=0 ARC_RPC=1200 ARC_MAXLEN=131072 ARC_FP8=0 ARC_QUANT=mxfp4 ARC_MXFP4_MODE=w4a16 \
   bash serve_arc_b70.sh     # tools/serve_arc_b70.sh in this repo
@@ -443,7 +443,7 @@ exec vllm serve --model /models/target \
 ### Validated invocation (what the gate ran, byte-exact)
 
 ```bash
-# image vllm-arc:v0.30.0-b70-cert28 ; 2026-11-24 ; TP2 on 2x Arc Pro B70
+# image vllm-arc:v0.30.0-b70-cert28 ; 2026-11-25 ; TP2 on 2x Arc Pro B70
 ARC_IMAGE=vllm-arc:v0.30.0-b70-cert28 ARC_NAME=arc-b70 \
   ARC_MODEL=/models/gemma4-31b ARC_SERVED=gemma4-31b ARC_GMU=0.8 ARC_GRAPH=1 ARC_SPEC=0 ARC_LMC=0 ARC_RPC=1200 ARC_MAXLEN=40960 ARC_FP8=0 ARC_QUANT=mxfp4 ARC_MXFP4_MODE=w4a16 \
   bash serve_arc_b70.sh     # tools/serve_arc_b70.sh in this repo

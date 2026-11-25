@@ -34,9 +34,9 @@
 <polygon points="84.0,356.5 78.5,366.5 89.5,366.5" fill="#059669"/>
 <polygon points="267.0,362.3 261.5,372.3 272.5,372.3" fill="#059669"/>
 <polygon points="450.0,369.7 444.5,379.7 455.5,379.7" fill="#059669"/>
-<text x="84.0" y="236.4" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">1,482</text>
-<text x="84.0" y="250.1" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">1,376</text>
-<text x="84.0" y="353.0" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">575</text>
+<text x="102.2" y="236.4" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">1,482</text>
+<text x="102.2" y="275.1" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">1,376</text>
+<text x="96.2" y="353.0" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">575</text>
 <text x="267.0" y="90.2" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">2,619</text>
 <text x="267.0" y="309.2" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">916</text>
 <text x="267.0" y="358.8" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">530</text>
@@ -45,7 +45,7 @@
 <text x="450.0" y="366.2" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">473</text>
 <text x="633.0" y="188.5" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">1,854</text>
 <text x="633.0" y="334.8" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">717</text>
-<text x="816.0" y="247.9" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">1,393</text>
+<text x="797.8" y="247.9" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">1,393</text>
 <line x1="84" y1="494" x2="100" y2="494" stroke="#2563eb" stroke-width="3"/>
 <text x="104" y="498" font-size="11.5" fill="#1d2939">1 request</text>
 <line x1="184" y1="494" x2="200" y2="494" stroke="#dc2626" stroke-width="3"/>

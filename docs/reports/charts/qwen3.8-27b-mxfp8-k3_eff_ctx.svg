@@ -41,10 +41,10 @@
 <polygon points="84.0,270.0 89.5,275.5 84.0,281.0 78.5,275.5" fill="#9333ea"/>
 <polygon points="267.0,367.3 272.5,372.8 267.0,378.3 261.5,372.8" fill="#9333ea"/>
 <polygon points="450.0,423.9 455.5,429.4 450.0,434.9 444.5,429.4" fill="#9333ea"/>
-<text x="84.0" y="99.5" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">74</text>
-<text x="84.0" y="142.7" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">66</text>
-<text x="84.0" y="168.4" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">61</text>
-<text x="84.0" y="266.5" font-size="10" fill="#9333ea" text-anchor="middle" font-weight="600">43</text>
+<text x="93.1" y="99.5" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">74</text>
+<text x="93.1" y="142.7" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">66</text>
+<text x="93.1" y="168.4" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">61</text>
+<text x="93.1" y="266.5" font-size="10" fill="#9333ea" text-anchor="middle" font-weight="600">43</text>
 <text x="267.0" y="142.2" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">66</text>
 <text x="267.0" y="208.8" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">54</text>
 <text x="267.0" y="257.5" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">45</text>
@@ -56,7 +56,7 @@
 <text x="633.0" y="196.0" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">56</text>
 <text x="633.0" y="295.3" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">38</text>
 <text x="633.0" y="346.0" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">29</text>
-<text x="816.0" y="223.0" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">51</text>
+<text x="806.9" y="223.0" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">51</text>
 <line x1="84" y1="494" x2="100" y2="494" stroke="#2563eb" stroke-width="3"/>
 <text x="104" y="498" font-size="11.5" fill="#1d2939">2 requests</text>
 <line x1="192" y1="494" x2="208" y2="494" stroke="#dc2626" stroke-width="3"/>

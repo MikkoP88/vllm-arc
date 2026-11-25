@@ -12,7 +12,7 @@ the fork SHA it was built from.
 Phase labels P0–P6.38 refer to the plan's execution phases; every phase's
 raw evidence is banked under `results/YYYY-MM-DD-<phase>-*/`.
 
-## r241 — r240b packed-KV stability finding re-classified: posture-confounded deaths, LMC-free re-run in flight (2026-11-25)
+## r241 — r240b packed-KV finding re-classified posture-confounded and re-measured LMC-free: Finding 2 fully retracted (2026-11-25)
 
 - **Root cause (banked evidence)**: the r240b qwen MX-KV cells ran
   `ARC_LMC=1` — inherited from the `$QF8` base env
@@ -30,11 +30,20 @@ raw evidence is banked under `results/YYYY-MM-DD-<phase>-*/`.
   restriction is provisional pending the re-run. The certified law is
   unchanged (and was always the posture the deaths violated): LMC off
   on every MX-KV lane.
-- **r241 in flight**: the three MX grids (kvm4/kvm8/kvmk — exact
-  r240b face lists, MT=600, cert28) re-run under `ARC_LMC=0` with a
-  semantic gate (per-face n_ok/n_fail, CONC_ENGINE_DEAD
-  discrimination — the existence-only-gate law applied) and a posture
-  refuse (zero LMCache lines or the leg aborts).
+- **r241 re-measured clean — Finding 2 retracted in full**: the three
+  MX grids (kvm4/kvm8/kvmk — exact r240b face lists, MT=600, cert28)
+  re-ran under `ARC_LMC=0` with a semantic gate (per-face n_ok/n_fail,
+  CONC_ENGINE_DEAD discrimination — the existence-only-gate law
+  applied) and a posture refuse (zero LMCache lines or the leg
+  aborts). Result: 68 real faces, zero dead or partial, zero
+  tracebacks, zero LMCache lines in every serve log. Every r240b
+  death face survived LMC-free — mxfp4-KV 32K × n4/n8 and 64K × n8,
+  mxk8v4 32K × n4/n8 — with full n_ok at every face. The
+  ≥16K/low-concurrency packed-KV restriction is RETRACTED: the
+  lanes are capacity-limited only (mxfp4-KV serves 128K at n1–n4,
+  pool 721,994 tokens; e4m3-V 386,484; mxk8v4 504,832). Evidence:
+  `results/2026-11-25-p647-r241-mxkv-lmcfree/` (VERDICT +
+  SHA256SUMS).
 - **Corrections landed**: PERFORMANCE/STATUS/CONFIGURATION passages
   reworded to the re-classification; r240b VERDICT correction
   addendum; generator notes + regenerated reports.

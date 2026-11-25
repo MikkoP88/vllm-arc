@@ -1,0 +1,102 @@
+R241 refuses passed (fork_sha=43f84cf977f9444900ff21387715ca5865db4c1a libattn=61d2f5a365f05084b3dd72c4ae1da3e0 libmqa=190e261edc79b3b497d8d8e801e65757)
+=== [r241:kvm4] boot 15:35:19 fam=kvface env=[ARC_MODEL=/models/qwen3.8-27b-fp8 ARC_SERVED=qwen3.8-27b-fp8 ARC_GRAPH=1 ARC_LMC=0 ARC_FP8=1 ARC_SPEC=3 ARC_KVDTYPE=mxfp4 ARC_MXKV_NATIVE=1] ===
+HEALTH_OK_r241_kvm4 15:40:34
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert28 name=arc-r241 model=/models/qwen3.8-27b-fp8 served=qwen3.8-27b-fp8 quant=fp8 qcfg= graph=1 spec=3 gmu=0.8 maxlen=262144 mnbt=8192 seqs=64 fp8=1 xgc=0 tmpl=__qwen_default__ rp=<qwen3> tp=<qwen3_coder> port=8000 15:35:22
+tracebacks=0
+lmc_lines=0
+kv_pool_tokens=721994
+CONC_OK_kvm4_c1024_n1 n_ok=1
+CONC_OK_kvm4_c1024_n2 n_ok=2
+CONC_OK_kvm4_c1024_n4 n_ok=4
+CONC_OK_kvm4_c1024_n8 n_ok=8
+CONC_OK_kvm4_c8192_n1 n_ok=1
+CONC_OK_kvm4_c8192_n2 n_ok=2
+CONC_OK_kvm4_c8192_n4 n_ok=4
+CONC_OK_kvm4_c8192_n8 n_ok=8
+CONC_OK_kvm4_c32768_n1 n_ok=1
+CONC_OK_kvm4_c32768_n2 n_ok=2
+CONC_OK_kvm4_c32768_n4 n_ok=4
+CONC_OK_kvm4_c32768_n8 n_ok=8
+CONC_OK_kvm4_c65536_n1 n_ok=1
+CONC_OK_kvm4_c65536_n2 n_ok=2
+CONC_OK_kvm4_c65536_n4 n_ok=4
+CONC_OK_kvm4_c65536_n8 n_ok=8
+CONC_OK_kvm4_c131072_n1 n_ok=1
+CONC_OK_kvm4_c131072_n2 n_ok=2
+CONC_OK_kvm4_c131072_n4 n_ok=4
+KV_CAP kvm4 c131072 n8 POOL=721994 NEED=1053888
+CONC_OK_kvm4_c1024_n1_t1.0 n_ok=1
+CONC_OK_kvm4_c8192_n1_t1.0 n_ok=1
+CONC_OK_kvm4_c32768_n1_t1.0 n_ok=1
+CONC_OK_kvm4_c65536_n1_t1.0 n_ok=1
+CONC_OK_kvm4_c131072_n1_t1.0 n_ok=1
+=== [r241:kvm4] done 16:14:29 ===
+=== [r241:kvm8] boot 16:14:29 fam=kvface env=[ARC_MODEL=/models/qwen3.8-27b-fp8 ARC_SERVED=qwen3.8-27b-fp8 ARC_GRAPH=1 ARC_LMC=0 ARC_FP8=1 ARC_SPEC=3 ARC_KVDTYPE=mxfp8 ARC_MXKV_NATIVE=1] ===
+HEALTH_OK_r241_kvm8 16:19:44
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert28 name=arc-r241 model=/models/qwen3.8-27b-fp8 served=qwen3.8-27b-fp8 quant=fp8 qcfg= graph=1 spec=3 gmu=0.8 maxlen=262144 mnbt=8192 seqs=64 fp8=1 xgc=0 tmpl=__qwen_default__ rp=<qwen3> tp=<qwen3_coder> port=8000 16:14:32
+tracebacks=0
+lmc_lines=0
+kv_pool_tokens=386484
+CONC_OK_kvm8_c1024_n1 n_ok=1
+CONC_OK_kvm8_c1024_n2 n_ok=2
+CONC_OK_kvm8_c1024_n4 n_ok=4
+CONC_OK_kvm8_c1024_n8 n_ok=8
+CONC_OK_kvm8_c8192_n1 n_ok=1
+CONC_OK_kvm8_c8192_n2 n_ok=2
+CONC_OK_kvm8_c8192_n4 n_ok=4
+CONC_OK_kvm8_c8192_n8 n_ok=8
+CONC_OK_kvm8_c32768_n1 n_ok=1
+CONC_OK_kvm8_c32768_n2 n_ok=2
+CONC_OK_kvm8_c32768_n4 n_ok=4
+CONC_OK_kvm8_c32768_n8 n_ok=8
+CONC_OK_kvm8_c65536_n1 n_ok=1
+CONC_OK_kvm8_c65536_n2 n_ok=2
+CONC_OK_kvm8_c65536_n4 n_ok=4
+KV_CAP kvm8 c65536 n8 POOL=386484 NEED=529600
+CONC_OK_kvm8_c131072_n1 n_ok=1
+CONC_OK_kvm8_c131072_n2 n_ok=2
+KV_CAP kvm8 c131072 n4 POOL=386484 NEED=526944
+KV_CAP kvm8 c131072 n8 POOL=386484 NEED=1053888
+CONC_OK_kvm8_c1024_n1_t1.0 n_ok=1
+CONC_OK_kvm8_c8192_n1_t1.0 n_ok=1
+CONC_OK_kvm8_c32768_n1_t1.0 n_ok=1
+CONC_OK_kvm8_c65536_n1_t1.0 n_ok=1
+CONC_OK_kvm8_c131072_n1_t1.0 n_ok=1
+=== [r241:kvm8] done 16:43:47 ===
+=== [r241:kvmk] boot 16:43:47 fam=kvface env=[ARC_MODEL=/models/qwen3.8-27b-fp8 ARC_SERVED=qwen3.8-27b-fp8 ARC_GRAPH=1 ARC_LMC=0 ARC_FP8=1 ARC_SPEC=3 ARC_KVDTYPE=mxk8v4 ARC_MXKV_NATIVE=1] ===
+HEALTH_OK_r241_kvmk 16:49:02
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert28 name=arc-r241 model=/models/qwen3.8-27b-fp8 served=qwen3.8-27b-fp8 quant=fp8 qcfg= graph=1 spec=3 gmu=0.8 maxlen=262144 mnbt=8192 seqs=64 fp8=1 xgc=0 tmpl=__qwen_default__ rp=<qwen3> tp=<qwen3_coder> port=8000 16:43:50
+tracebacks=0
+lmc_lines=0
+kv_pool_tokens=504832
+CONC_OK_kvmk_c1024_n1 n_ok=1
+CONC_OK_kvmk_c1024_n2 n_ok=2
+CONC_OK_kvmk_c1024_n4 n_ok=4
+CONC_OK_kvmk_c1024_n8 n_ok=8
+CONC_OK_kvmk_c8192_n1 n_ok=1
+CONC_OK_kvmk_c8192_n2 n_ok=2
+CONC_OK_kvmk_c8192_n4 n_ok=4
+CONC_OK_kvmk_c8192_n8 n_ok=8
+CONC_OK_kvmk_c32768_n1 n_ok=1
+CONC_OK_kvmk_c32768_n2 n_ok=2
+CONC_OK_kvmk_c32768_n4 n_ok=4
+CONC_OK_kvmk_c32768_n8 n_ok=8
+CONC_OK_kvmk_c65536_n1 n_ok=1
+CONC_OK_kvmk_c65536_n2 n_ok=2
+CONC_OK_kvmk_c65536_n4 n_ok=4
+KV_CAP kvmk c65536 n8 POOL=504832 NEED=529600
+CONC_OK_kvmk_c131072_n1 n_ok=1
+CONC_OK_kvmk_c131072_n2 n_ok=2
+KV_CAP kvmk c131072 n4 POOL=504832 NEED=526944
+KV_CAP kvmk c131072 n8 POOL=504832 NEED=1053888
+CONC_OK_kvmk_c1024_n1_t1.0 n_ok=1
+CONC_OK_kvmk_c8192_n1_t1.0 n_ok=1
+CONC_OK_kvmk_c32768_n1_t1.0 n_ok=1
+CONC_OK_kvmk_c65536_n1_t1.0 n_ok=1
+CONC_OK_kvmk_c131072_n1_t1.0 n_ok=1
+=== [r241:kvmk] done 17:12:12 ===
+BOOT_FAILS:none
+R241_CENSUS real_faces=68 dead_or_partial_faces=0
+R241_COMPLETE 2026-11-25T17:12:14Z -- pull + verdict + doc corrections next
+W14_RESTORED 2026-11-25T17:12:14Z
+R241: W14 HEALTH 200 (17:16:45)

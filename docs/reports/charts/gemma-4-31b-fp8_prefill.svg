@@ -30,13 +30,13 @@
 <rect x="79.5" y="234.3" width="9" height="9" fill="#dc2626"/>
 <rect x="323.5" y="294.9" width="9" height="9" fill="#dc2626"/>
 <polygon points="84.0,321.3 78.5,331.3 89.5,331.3" fill="#059669"/>
-<text x="84.0" y="209.4" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">1,410</text>
-<text x="84.0" y="229.8" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">1,278</text>
-<text x="84.0" y="317.8" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">708</text>
+<text x="102.2" y="209.4" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">1,410</text>
+<text x="102.2" y="229.8" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">1,278</text>
+<text x="96.2" y="317.8" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">708</text>
 <text x="328.0" y="90.2" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">2,183</text>
 <text x="328.0" y="290.4" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">885</text>
 <text x="572.0" y="181.1" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">1,594</text>
-<text x="816.0" y="246.4" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">1,170</text>
+<text x="797.8" y="246.4" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">1,170</text>
 <line x1="84" y1="494" x2="100" y2="494" stroke="#2563eb" stroke-width="3"/>
 <text x="104" y="498" font-size="11.5" fill="#1d2939">1 request</text>
 <line x1="184" y1="494" x2="200" y2="494" stroke="#dc2626" stroke-width="3"/>

@@ -52,30 +52,30 @@
 <circle cx="267.0" cy="323.2" r="4.4" fill="#ea580c"/>
 <circle cx="450.0" cy="407.1" r="4.4" fill="#ea580c"/>
 <circle cx="633.0" cy="423.6" r="4.4" fill="#ea580c"/>
-<text x="84.0" y="90.2" font-size="10" fill="#ea580c" text-anchor="middle" font-weight="600">379</text>
-<text x="84.0" y="178.0" font-size="10" fill="#9333ea" text-anchor="middle" font-weight="600">281</text>
-<text x="84.0" y="224.7" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">228</text>
-<text x="84.0" y="263.1" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">185</text>
-<text x="84.0" y="345.3" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">92</text>
+<text x="96.2" y="90.2" font-size="10" fill="#ea580c" text-anchor="middle" font-weight="600">379</text>
+<text x="96.2" y="178.0" font-size="10" fill="#9333ea" text-anchor="middle" font-weight="600">281</text>
+<text x="96.2" y="224.7" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">228</text>
+<text x="96.2" y="263.1" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">185</text>
+<text x="93.1" y="345.3" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">92</text>
 <text x="267.0" y="314.2" font-size="10" fill="#ea580c" text-anchor="middle" font-weight="600">127</text>
 <text x="267.0" y="328.7" font-size="10" fill="#9333ea" text-anchor="middle" font-weight="600">111</text>
-<text x="267.0" y="340.1" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">98</text>
-<text x="267.0" y="375.0" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">87</text>
+<text x="267.0" y="365.1" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">98</text>
+<text x="267.0" y="350.0" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">87</text>
 <text x="267.0" y="394.6" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">65</text>
 <text x="450.0" y="398.1" font-size="10" fill="#ea580c" text-anchor="middle" font-weight="600">33</text>
 <text x="450.0" y="423.5" font-size="10" fill="#9333ea" text-anchor="middle" font-weight="600">32</text>
-<text x="450.0" y="387.3" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">31</text>
-<text x="450.0" y="436.6" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">30</text>
-<text x="450.0" y="367.7" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">26</text>
+<text x="450.0" y="375.3" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">31</text>
+<text x="450.0" y="352.6" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">30</text>
+<text x="450.0" y="439.7" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">26</text>
 <text x="633.0" y="414.4" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">14</text>
 <text x="633.0" y="439.4" font-size="10" fill="#9333ea" text-anchor="middle" font-weight="600">14</text>
-<text x="633.0" y="402.6" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">14</text>
-<text x="633.0" y="390.6" font-size="10" fill="#ea580c" text-anchor="middle" font-weight="600">14</text>
-<text x="633.0" y="379.4" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">13</text>
-<text x="816.0" y="422.1" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">6</text>
-<text x="816.0" y="410.1" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">6</text>
-<text x="816.0" y="398.2" font-size="10" fill="#9333ea" text-anchor="middle" font-weight="600">5</text>
-<text x="816.0" y="386.2" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">5</text>
+<text x="633.0" y="390.6" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">14</text>
+<text x="633.0" y="366.6" font-size="10" fill="#ea580c" text-anchor="middle" font-weight="600">14</text>
+<text x="633.0" y="343.4" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">13</text>
+<text x="810.0" y="422.1" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">6</text>
+<text x="810.0" y="398.1" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">6</text>
+<text x="810.0" y="374.2" font-size="10" fill="#9333ea" text-anchor="middle" font-weight="600">5</text>
+<text x="810.0" y="350.2" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">5</text>
 <line x1="84" y1="494" x2="100" y2="494" stroke="#2563eb" stroke-width="3"/>
 <text x="104" y="498" font-size="11.5" fill="#1d2939">1 request</text>
 <line x1="184" y1="494" x2="200" y2="494" stroke="#dc2626" stroke-width="3"/>

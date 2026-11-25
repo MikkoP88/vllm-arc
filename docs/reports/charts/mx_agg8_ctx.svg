@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="500" viewBox="0 0 880 500" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+<rect width="880" height="500" fill="#ffffff"/>
+<text x="84" y="26" font-size="17" font-weight="600" fill="#101828">FP8 versus MX KV — aggregate throughput @ c8 vs context length</text>
+<line x1="84" y1="436.0" x2="816" y2="436.0" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="440.0" font-size="11" fill="#667085" text-anchor="end">0</text>
+<line x1="84" y1="347.5" x2="816" y2="347.5" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="351.5" font-size="11" fill="#667085" text-anchor="end">100</text>
+<line x1="84" y1="259.1" x2="816" y2="259.1" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="263.1" font-size="11" fill="#667085" text-anchor="end">200</text>
+<line x1="84" y1="170.6" x2="816" y2="170.6" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="174.6" font-size="11" fill="#667085" text-anchor="end">300</text>
+<line x1="84" y1="82.2" x2="816" y2="82.2" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="86.2" font-size="11" fill="#667085" text-anchor="end">400</text>
+<line x1="84.0" y1="52" x2="84.0" y2="436" stroke="#f0f0f0" stroke-width="1"/>
+<text x="84.0" y="454" font-size="11" fill="#667085" text-anchor="middle">1K</text>
+<line x1="328.0" y1="52" x2="328.0" y2="436" stroke="#f0f0f0" stroke-width="1"/>
+<text x="328.0" y="454" font-size="11" fill="#667085" text-anchor="middle">8K</text>
+<line x1="572.0" y1="52" x2="572.0" y2="436" stroke="#f0f0f0" stroke-width="1"/>
+<text x="572.0" y="454" font-size="11" fill="#667085" text-anchor="middle">32K</text>
+<line x1="816.0" y1="52" x2="816.0" y2="436" stroke="#f0f0f0" stroke-width="1"/>
+<text x="816.0" y="454" font-size="11" fill="#667085" text-anchor="middle">64K</text>
+<line x1="84" y1="436" x2="816" y2="436" stroke="#d0d5dd" stroke-width="1"/>
+<line x1="84" y1="52" x2="84" y2="436" stroke="#d0d5dd" stroke-width="1"/>
+<polyline points="84.0,132.8 328.0,323.4 572.0,405.6" fill="none" stroke="#2563eb" stroke-width="2.4"/>
+<circle cx="84.0" cy="132.8" r="4.4" fill="#2563eb"/>
+<circle cx="328.0" cy="323.4" r="4.4" fill="#2563eb"/>
+<circle cx="572.0" cy="405.6" r="4.4" fill="#2563eb"/>
+<polyline points="84.0,99.2 328.0,325.3 572.0,404.3 816.0,420.9" fill="none" stroke="#dc2626" stroke-width="2.4"/>
+<rect x="79.5" y="94.7" width="9" height="9" fill="#dc2626"/>
+<rect x="323.5" y="320.8" width="9" height="9" fill="#dc2626"/>
+<rect x="567.5" y="399.8" width="9" height="9" fill="#dc2626"/>
+<rect x="811.5" y="416.4" width="9" height="9" fill="#dc2626"/>
+<polyline points="84.0,166.2 328.0,331.0 572.0,405.5" fill="none" stroke="#059669" stroke-width="2.4"/>
+<polygon points="84.0,160.7 78.5,170.7 89.5,170.7" fill="#059669"/>
+<polygon points="328.0,325.5 322.5,335.5 333.5,335.5" fill="#059669"/>
+<polygon points="572.0,400.0 566.5,410.0 577.5,410.0" fill="#059669"/>
+<polyline points="84.0,148.6 328.0,329.6 572.0,404.6" fill="none" stroke="#9333ea" stroke-width="2.4"/>
+<polygon points="84.0,143.1 89.5,148.6 84.0,154.1 78.5,148.6" fill="#9333ea"/>
+<polygon points="328.0,324.1 333.5,329.6 328.0,335.1 322.5,329.6" fill="#9333ea"/>
+<polygon points="572.0,399.1 577.5,404.6 572.0,410.1 566.5,404.6" fill="#9333ea"/>
+<text x="96.2" y="90.2" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">381</text>
+<text x="96.2" y="123.8" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">343</text>
+<text x="96.2" y="139.6" font-size="10" fill="#9333ea" text-anchor="middle" font-weight="600">325</text>
+<text x="96.2" y="157.2" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">305</text>
+<text x="328.0" y="314.4" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">127</text>
+<text x="328.0" y="341.3" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">125</text>
+<text x="328.0" y="356.6" font-size="10" fill="#9333ea" text-anchor="middle" font-weight="600">120</text>
+<text x="328.0" y="298.0" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">119</text>
+<text x="572.0" y="395.3" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">36</text>
+<text x="572.0" y="420.6" font-size="10" fill="#9333ea" text-anchor="middle" font-weight="600">36</text>
+<text x="572.0" y="372.5" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">35</text>
+<text x="572.0" y="348.6" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">34</text>
+<text x="806.9" y="411.9" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">17</text>
+<line x1="84" y1="494" x2="100" y2="494" stroke="#2563eb" stroke-width="3"/>
+<text x="104" y="498" font-size="11.5" fill="#1d2939">fp8_e4m3 (qf3)</text>
+<line x1="220" y1="494" x2="236" y2="494" stroke="#dc2626" stroke-width="3"/>
+<text x="240" y="498" font-size="11.5" fill="#1d2939">mxfp4</text>
+<line x1="292" y1="494" x2="308" y2="494" stroke="#059669" stroke-width="3"/>
+<text x="312" y="498" font-size="11.5" fill="#1d2939">mxfp8</text>
+<line x1="364" y1="494" x2="380" y2="494" stroke="#9333ea" stroke-width="3"/>
+<text x="384" y="498" font-size="11.5" fill="#1d2939">mxk8v4</text>
+<text x="450" y="470" font-size="12.5" fill="#475467" text-anchor="middle">Context length (tokens)</text>
+<text x="16" y="244" font-size="12.5" fill="#475467" text-anchor="middle" transform="rotate(-90 16 244)">Aggregate @ c8 (tok/s)</text>
+</svg>

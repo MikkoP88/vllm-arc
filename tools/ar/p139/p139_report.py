@@ -279,10 +279,37 @@ def temp_face(b138, cell, t):
     return load_face(b138, cell, "{}_s8192_t{}".format(cell, t))
 
 
+def cell_owner(banks, cell):
+    """The bank that owns the cell — exclusive per-cell ownership
+    (override-bank semantics: a re-run bank like the r241 LMC-free
+    re-measurement owns its cells outright, so its grid never unions
+    with the older bank's dead artifacts and the face censuses never
+    double-count). Preference: the first bank holding the cell's CONC
+    faces (a solo-face-only bank — the r240 leg — never outranks a
+    conc bank even though it holds the cell dir); fallback: the first
+    bank holding the dir at all (posture/outcome-only cells). None
+    when the cell is absent everywhere."""
+    fallback = None
+    for b in banks:
+        if not (b.ok and os.path.isdir(os.path.join(b.path or "", cell))):
+            continue
+        if glob.glob(os.path.join(b.path, cell, "p139_conc_*.json")):
+            return b
+        if fallback is None:
+            fallback = b
+    return fallback
+
+
+def owner_banks(banks, cell):
+    """[owner] when a bank owns the cell, else the legacy bank list."""
+    b0 = cell_owner(banks, cell)
+    return [b0] if b0 else list(banks)
+
+
 def load_conc(banks, cell, ctx, conc, temp="0.0"):
     """Load one concurrency face JSON from whichever bank has it."""
     suf = "" if temp in ("0.0", 0.0) else "_t{}".format(temp)
-    for b in banks:
+    for b in owner_banks(banks, cell):
         p = b.file(cell, f"p139_conc_{cell}_c{ctx}_n{conc}{suf}.json")
         if p:
             return json.load(open(p, encoding="utf-8"))
@@ -352,8 +379,11 @@ def solo_face(banks, cell, c):
     """Normalized solo face at context c: r138 face if banked, else the
     r139/r140 conc-1 face (same cold-prefill measurement). Returns None
     when neither exists. Fields: ttft_s, decode_tps, prefill_tps,
-    tok_per_step, itl_ms_{p50,p90,p99}, src ('r138'|'r139')."""
-    f = ctx_face(banks[0], cell, c)
+    tok_per_step, itl_ms_{p50,p90,p99}, src ('r138'|'r139').
+    MX_KV_QWEN cells are r138-face-BLOCKED (owner-bank law): their
+    r240 solo faces ran the LMC-forced posture (the r241 correction
+    bank supersedes) — only conc-bank faces may source those lanes."""
+    f = None if cell in MX_KV_QWEN else ctx_face(banks[0], cell, c)
     if f:
         f["src"] = "r138"
         return f
@@ -378,8 +408,10 @@ def solo_face(banks, cell, c):
 
 
 def pool_of(banks, cell):
-    """KV pool tokens from the cell's banked posture echo, else POOL_FACTS."""
-    for b in banks:
+    """KV pool tokens from the cell's banked posture echo, else POOL_FACTS.
+    Owner-aware: the owning bank's posture labels the value (the r241
+    override bank outranks the confounded r240b/r240 solo banks)."""
+    for b in owner_banks(banks, cell):
         p = b.file(cell, "posture.txt")
         if not p:
             continue
@@ -392,7 +424,8 @@ def pool_of(banks, cell):
                         # (2026-11-24-p647-r240b-conc -> r240b; the
                         # legacy p637* banks keep their r138/r139 labels)
                         src = os.path.basename(b.path or "")
-                        for pat in ("-reports", "-conc", "-gemma128k"):
+                        for pat in ("-reports", "-conc", "-gemma128k",
+                                    "-mxkv-lmcfree"):
                             src = src.replace(pat, "")
                         seg = src.split("-")
                         seg = seg[3:] if len(seg) > 3 else seg
@@ -510,16 +543,20 @@ def _niceTicks(lo, hi, n=5):
     return ts
 
 
-def _place_labels(out, cand, MT, PH):
+def _place_labels(out, cand, MT, PH, PL, PR):
     """Value labels on every point, staggered so close neighbours never
     overlap (greedy left-to-right over an alternating above/below offset
     ladder; zero-overlap offset preferred, least-overlap fallback for
-    pathological clusters). cand = (xx, yy, text, colour)."""
+    pathological clusters). cand = (xx, yy, text, colour). PL/PR = the
+    plot box's left/right edge: an edge point's label shifts inward so
+    its ink stays inside the plot (the right margin belongs to the
+    hline tags, the left to the y ticks)."""
     DYES = (-9, 16, -21, 27, -33, 38, -45, 49, -57, 60, -69, 71,
             -81, 82, -93, 94, -105, 105, -117, 117)
     boxes = []
     for xx, yy, text, col in sorted(cand, key=lambda c: (c[0], c[1])):
         w = 6.1 * len(text) + 2
+        xx = min(max(xx, PL + w / 2.0 + 2), PR - w / 2.0 - 2)
         scored = []
         for rank, dy in enumerate(DYES):
             x1, y1 = xx - w / 2.0, yy + dy - 10
@@ -532,6 +569,11 @@ def _place_labels(out, cand, MT, PH):
                 oy = min(y2, b[3]) - max(y1, b[1])
                 if ox > 0 and oy > 0:
                     ov += ox * oy
+                elif ox > 0 and oy > -4:
+                    # near-touch (x-aligned, <4px vertical air): small
+                    # penalty so the ladder prefers a slot with real
+                    # air when one exists (dense clusters still pack)
+                    ov += ox * (4 + oy) * 0.05
             scored.append((ov, rank, dy))
         if not scored:            # extreme edge point: clamp above
             scored = [(0.0, 0, -9)]
@@ -681,7 +723,7 @@ def band_chart(path, title, top_pts, bot_pts, top_lab, bot_lab,
                        'fill="{}"/>'.format(X(x), Y(y), col))
     cand = [(X(x), Y(y), yfmt.format(y), col)
             for pts_, col in ((tg, edge_t), (bg, edge_b)) for x, y in pts_]
-    _place_labels(out, cand, MT, PH)
+    _place_labels(out, cand, MT, PH, ML, ML + PW)
     lx, ly = ML, MT + PH + 58
     for lab, col, kind in ((top_lab, edge_t, "line"),
                            (bot_lab, edge_b, "line")):
@@ -870,7 +912,7 @@ def chart(path, title, series, xlabel, ylabel, xcat=None, yfmt="{:.1f}",
                                xx - 5.5, yy, col))
             if label_all or pi == len(good) - 1:
                 cand.append((xx, yy, yfmt.format(yv), col))
-    _place_labels(out, cand, MT, PH)
+    _place_labels(out, cand, MT, PH, ML, ML + PW)
     # legend (bottom, greedy wrap - same packing as the height calc)
     lx, ly = ML, MT + PH + 58
     for si, (lab, _ps) in enumerate(series):
@@ -900,9 +942,21 @@ def chart(path, title, series, xlabel, ylabel, xcat=None, yfmt="{:.1f}",
 def bars(path, title, groups, slabels, values, ylabel, yfmt="{:.0f}",
          hlines=()):
     """Grouped-bar SVG chart. groups = [group label]; slabels = series
-    labels; values[g][s] = value or None."""
-    W, H, ML, MR, MT, MB = 880, 470, 84, 64, 52, 76
-    PW, PH = W - ML - MR, H - MT - MB
+    labels; values[g][s] = value or None. X labels auto-stagger into
+    rows when wider than their slot (the pool-chart overlap fix:
+    adjacent labels never share a row), the canvas grows to fit, and
+    a single-series chart drops the legend (the y-axis caption already
+    names the series)."""
+    ML, MR, MT, PH = 84, 64, 52, 342
+    W = 880
+    PW = W - ML - MR
+    # x-label ink-width estimate (Segoe UI ~0.55em avg advance at 11.5)
+    lab_w = [6.3 * len(g) for g in groups]
+    slot = PW / max(len(groups), 1)
+    xrows = min(3, max([1] + [int(w // (slot * 0.92)) + 1 for w in lab_w]))
+    has_legend = len(slabels) > 1
+    MB = 18 + 14 * xrows + (30 if has_legend else 0) + 14
+    H = MT + PH + MB
     vals = [v for row in values for v in row if v is not None]
     if not vals:
         return
@@ -949,18 +1003,21 @@ def bars(path, title, groups, slabels, values, ylabel, yfmt="{:.0f}",
                        'text-anchor="middle" font-weight="600">'
                        '{}</text>'.format(bx + bw / 2, by - 6, col,
                                           yfmt.format(v)))
+        # x labels stagger: adjacent labels never share a row
+        row = gi % xrows
         out.append('<text x="{:.1f}" y="{}" font-size="11.5" fill="#475467" '
-                   'text-anchor="middle">{}</text>'.format(gx + gw / 2,
-                                                           MT + PH + 18,
-                                                           esc(glab)))
-    lx = ML
-    for si, slab in enumerate(slabels):
-        col = PALETTE[si % len(PALETTE)]
-        out.append('<rect x="{}" y="{}" width="12" height="12" fill="{}" '
-                   'rx="2"/>'.format(int(lx), H - MB + 22, col))
-        out.append('<text x="{}" y="{}" font-size="11.5" fill="#1d2939">'
-                   '{}</text>'.format(int(lx + 17), H - MB + 32, esc(slab)))
-        lx += 30 + 7.2 * len(slab) + 14
+                   'text-anchor="middle">{}</text>'.format(
+                       gx + gw / 2, MT + PH + 18 + 14 * row, esc(glab)))
+    if has_legend:
+        lx = ML
+        leg_y = MT + PH + 14 * xrows + 12
+        for si, slab in enumerate(slabels):
+            col = PALETTE[si % len(PALETTE)]
+            out.append('<rect x="{}" y="{}" width="12" height="12" fill="{}" '
+                       'rx="2"/>'.format(int(lx), leg_y, col))
+            out.append('<text x="{}" y="{}" font-size="11.5" fill="#1d2939">'
+                       '{}</text>'.format(int(lx + 17), leg_y + 10, esc(slab)))
+            lx += 30 + 7.2 * len(slab) + 14
     out.append('<text x="{}" y="{}" font-size="12.5" fill="#475467" '
                'text-anchor="middle">{}</text>'.format(ML + PW // 2, H - 12,
                                                        esc(ylabel)))
@@ -2650,6 +2707,10 @@ def _kv_solo_rows(banks, entries, ctxs, src139):
 # coverage on BOTH models, concurrency {1,2,4,8}).
 MX_Q_CELLS = [("mxfp4", "kvm4"), ("mxfp8", "kvm8"), ("mxk8v4", "kvmk")]
 MX_G_CELLS = [("mxfp4", "gkv_m4"), ("mxfp8", "gkv_m8"), ("mxk8v4", "gkv_mk")]
+# qwen MX-KV cells whose r138 solo faces ran the r240b LMC-forced
+# posture (same $QF8 defect; WARN in all three banked boots) — solo
+# backfill is forbidden for these lanes; conc faces only.
+MX_KV_QWEN = {"kvm4", "kvm8", "kvmk"}
 
 
 def _mx_conc_lines(b139, lanes, ctxs, model, refusal_note=""):
@@ -2738,31 +2799,64 @@ def _mx_conc_charts(b139, lanes, ctxs, ch, model, fname, L):
 def kv_report(banks, out, date):
     b138, b139 = banks[0], banks[1:]
     ch = os.path.join(out, "charts")
-    annex_pool, annex_src = pool_of(banks, "gm4x")
-    annex_ok = any(load_conc(b139, "gm4x", cv, 1) is not None
-                   for cv in (8192, 32768, 131072))
-    L = ["# KV-cache dtype comparison — both models, TurboQuant, capacity cliffs",
+    L = ["# Qwen3.8-27B FP8 — KV-cache dtype comparison "
+         "(FP8 versus MX KV and TurboQuant)",
          "",
          md_table(["Field", "Value"], [
-             ["Models", "Qwen3.8-27B FP8 + MTP k3 (certified posture); "
-                        "Gemma-4-31B (certified posture, no MTP)"],
-             ["Knob", "`ARC_KVDTYPE` in `tools/serve_arc_b70.sh` (default `fp8_e4m3`) "
-                      "→ `--kv-cache-dtype`"],
+             ["Model", "Qwen3.8-27B FP8 + MTP k3 (the certified posture)"],
+             ["Knob", "`ARC_KVDTYPE` in `tools/serve_arc_b70.sh` (default "
+                      "`fp8_e4m3`) → `--kv-cache-dtype`"],
              ["Menu", "fp8_e4m3 · fp8 · auto (fp16 KV) · mxfp4 · mxfp8 · "
                       "mxk8v4 (MX KV, native) · turboquant_k8v4 · "
-                      "turboquant_4bit_nc · turboquant_k3v4_nc · turboquant_3bit_nc "
-                      "(qwen); fp8_e4m3 · auto · mxfp4 · mxfp8 · mxk8v4 · "
-                      "fp8_e5m2-probe (gemma)"],
+                      "turboquant_4bit_nc · turboquant_k3v4_nc · "
+                      "turboquant_3bit_nc"],
              ["Faces", "r240b: conc {1,2,3,4,8} at 1K/8K/32K per dtype "
-                       "(MX lanes, BOTH models: the {1,2,4,8} grid at "
-                       "every rung 1K/8K/32K/64K/128K + t1.0 solos); "
-                       "r240: solo faces for fp8/auto/fp8/"
-                       "e5m2 + the MX lanes (qwen)"],
+                       "(MX lanes: the {1,2,4,8} grid at every rung "
+                       "1K/8K/32K/64K/128K + t1.0 solos; the r241 leg "
+                       "re-measures the MX lanes LMC-free and supersedes "
+                       "r240b on those cells); r240: solo faces for "
+                       "fp8/auto/fp8/e5m2 + the MX lanes (qwen)"],
              ["Engine", "vLLM v0.30.0 — vllm-arc v0.30.0-b70-cert28, TP2"],
+             ["Companion report",
+              "Gemma-4-31B: [gemma-4-31b-kv-cache-dtype]"
+              "(gemma-4-31b-kv-cache-dtype.md) — the native MX-KV menu "
+              "does not serve gemma on this image (the hd512 decode gap); "
+              "gemma capacity rides the W4A16 weights lane"],
              ["Date", date]]),
          "",
+         "## The dtype menu by category",
+         "",
+         md_table(["Category", "dtypes", "What it is", "Serves on qwen (this image)"], [
+             ["Byte-exact FP8 family",
+              "fp8_e4m3 (incumbent), fp8, auto (fp16 KV)",
+              "1- or 2-byte/elem KV with no lossy step; `auto` is fp16 KV "
+              "and pays the 2-byte law — exactly half the pool",
+              "fp8_e4m3, fp8; `auto` refuses at maxlen 262144 "
+              "(8.73 > 6.78 GiB), serves at 131072"],
+             ["MX microscaling KV",
+              "mxfp4, mxfp8, mxk8v4",
+              "OCP-MX format KV — e2m1/e4m3 data + E8M0 group scales, "
+              "decoded by the native `mx_paged_decode` path "
+              "(`ARC_MXKV_NATIVE=1`); trades a slice of decode speed for "
+              "KV-token capacity per byte",
+              "all three, native-certified since cert27 (LMC-off posture)"],
+             ["TurboQuant presets",
+              "turboquant_k8v4, turboquant_4bit_nc, turboquant_k3v4_nc, "
+              "turboquant_3bit_nc",
+              "Wheel-side lossy KV presets on the same knob "
+              "(`VLLM_ARC_TQ_SPEC_FIX=1` posture)",
+              "all four"],
+             ["Hard refusal",
+              "fp8_e5m2",
+              "No e5m2 KV dequant path in esimd FA2 on Xe2 — an "
+              "engine-level kernel boundary, not a capacity one",
+              "refuses at boot"]]),
+         "",
          "A dtype that refuses to boot is a valid outcome and is banked as "
-         "such — two of the boundaries below are refusals.",
+         "such — two of the boundaries below are refusals. Every "
+         "FP8-versus comparison in this report holds the weights lane "
+         "constant (checkpoint-fp8 + MTP k3) and varies only the KV "
+         "dtype.",
          ""]
 
     # ------------------------------------------------------------ qwen
@@ -2800,11 +2894,13 @@ def kv_report(banks, out, date):
     L.append("")
 
     # ------------------------------------------------------------ turboquant
-    L += ["## TurboQuant presets (Qwen3.8-27B FP8 + MTP k3, r240b concurrency sweeps)",
+    L += ["## FP8 versus TurboQuant — the wheel's capacity presets (r240b sweeps)",
           "",
           "The wheel's four TurboQuant KV dtypes serve via the same knob; the "
           "r240b gate ran the full conc {1,2,3,4,8} sweep per preset (fresh "
-          "boot per cell, `VLLM_ARC_TQ_SPEC_FIX=1` default posture):",
+          "boot per cell, `VLLM_ARC_TQ_SPEC_FIX=1` default posture). Every "
+          "table below is the preset measured against the fp8_e4m3 incumbent "
+          "(`qf3`) on the same protocol:",
           ""]
     tq_rows = []
     for tp in TQ_PRESETS:
@@ -2862,168 +2958,49 @@ def kv_report(banks, out, date):
     # never a gap).
     mx_lines = _mx_conc_lines(
         b139, MX_Q_CELLS, (1024, 8192, 32768, 65536, 131072), "qwen fp8 k3",
-        "posture-confounded engine death mid-sweep (r240b, re-classified "
-        "2026-11-25): the gate script forced ARC_LMC=1 over the MX cells "
-        "against the certified LMC-free posture -- mxfp4/mxk8v4 died at "
-        "c32768_n4 with LMCache storing in the death windows (the r168 "
+        "all-dead pair (renders only from the r240b-era bank, never the "
+        "r241 LMC-free re-measurement which served 68/68 faces clean): "
+        "the r240b class was posture-confounded -- ARC_LMC=1 forced over "
+        "the MX cells, LMCache storing in the death windows (the r168 "
         "e2m1-V class; mxfp4 at the 300 s watchdog, mxk8v4 DEVICE_LOST), "
-        "while mxfp8 (e4m3-V) survived the same forced posture -- "
-        "re-measured LMC-free in r241")
+        "re-classified 2026-11-25 and retracted by r241; a dead pair "
+        "banked AFTER r241 would be a new class -- bank and re-classify")
     if mx_lines:
-        L += ["## MX KV lanes — concurrency sweep (Qwen3.8-27B FP8 + MTP k3, r240b)",
+        L += ["## FP8 versus MX KV lanes — the concurrency sweep (r240b, re-measured LMC-free in r241)",
               "",
               "Every MX lane swept at concurrency {1,2,4,8} at every "
               "context step of the canonical ladder — 1K/8K/32K/64K/128K "
               "(fresh boot per lane; one boot serves its whole grid). "
-              "Outcome: mxfp8 completes the full grid; mxfp4 and "
-              "mxk8v4 died at the sustained 32K × n4 decode face — "
-              "posture-confounded deaths (r240b forced ARC_LMC=1 over "
-              "the MX cells against the certified posture; LMCache stored "
-              "in both death windows — the r168 e2m1-V class; every "
-              "clean MX reference ran LMC-free): re-classified "
-              "2026-11-25, re-measured LMC-free in r241. A `-` rung or "
-              "a refusal-summary row below is a banked KV_CAP point or "
-              "banked engine-death face, never unmeasured coverage; "
-              "the 1K/8K grids and the 32K n1/n2 rungs are real "
-              "measurements on both lanes):",
+              "Outcome (r241, LMC-free): all three lanes serve their "
+              "full grids — the r240b deaths of mxfp4 and mxk8v4 at "
+              "the sustained 32K × n4 face were posture-confounded "
+              "(r240b forced ARC_LMC=1 over the MX cells against the "
+              "certified posture; LMCache stored in both death windows "
+              "— the r168 e2m1-V class), re-classified 2026-11-25 and "
+              "re-measured clean in r241: 68/68 faces, zero LMCache "
+              "lines, zero tracebacks, every death face alive with "
+              "full n_ok. A `-` rung below is the pool's KV_CAP point "
+              "(the grid ends where capacity ends — mxfp4 serves 128K "
+              "at n1–n4; mxfp8/mxk8v4 at n1–n2), never unmeasured "
+              "coverage:",
               ""] + mx_lines
+    _mx_conc_charts(b139, MX_Q_CELLS,
+                    (1024, 8192, 32768, 65536, 131072), ch, "qwen fp8 k3",
+                    "mxq_agg", L)
 
-    # ------------------------------------------------------------ gemma
-    L += ["## Gemma-4-31B (no MTP)",
+    # ------------------------------------------------------------ fp8-vs charts
+    L += ["## FP8 versus the alternatives — the comparison in one place",
           "",
-          "`auto` refuses at the certified gemma posture (`ARC_MAXLEN=40960`: "
-          "the fp16 KV pool cannot cover one 40K session on the 31B geometry "
-          "— cell `gkv_auto` banks the refusal); it serves at "
-          "`ARC_MAXLEN=16384` (cell `gkv_auto16`). The incumbent "
-          "fp8_e4m3 rows are the r240b `gf8` cell (online-fp8 weights — "
-          "the gemma KV table is weights-constant across its rows). The "
-          "three MX rows ride the r240b `gkv_m*` cells (same weights, "
-          "`ARC_KVDTYPE=mxfp4|mxfp8|mxk8v4` + `ARC_MXKV_NATIVE=1`) — "
-          "all three boot and bank their pools, but every decode face "
-          "fatals: gemma's 10 hd512 full-attention layers sit outside "
-          "the arc7 compiled instantiations (`mx_paged_decode` covers "
-          "head_size 128/256 only), so the native MX-KV menu does not "
-          "serve gemma on this image and those rows carry no "
-          "measurements (fp8_e4m3 is the only servable KV dtype for "
-          "gemma; the 128K capacity story rides the weights lane — the "
-          "`gm4x` cell). `gkv_e5m2` is the per-model e5m2 refusal probe "
-          "(the law is engine-level, banked on qwen `kve5m2`). A `-` "
-          "row is a banked boot refusal, KV_CAP point, or the banked "
-          "hd512 decode refusal, never unmeasured coverage. Full gemma "
-          "KV report: [gemma-4-31b-kv-cache-dtype]"
-          "(gemma-4-31b-kv-cache-dtype.md).",
+          "Every chart in this section holds the weights lane constant "
+          "(checkpoint-fp8 + MTP k3) and varies only the KV dtype; "
+          "the fp8_e4m3 incumbent (`qf3`) is the control series in "
+          "each. A missing point or a line that stops is a banked "
+          "refusal, KV_CAP point, or engine-death face — never "
+          "unmeasured coverage.",
           ""]
-    g_rows = _kv_solo_rows(banks, KVDTS_G, (8192, 32768),
-                           lambda c: c in KV139_G_CELLS)
-    L.append(md_table(["--kv-cache-dtype", "Context", "TTFT solo (s)",
-                       "Decode solo (tok/s)", "Agg @ c8 (tok/s)",
-                       "Per-user @ c8 (tok/s)", "ITL p50 (ms)", "KV pool (tok)",
-                       "Note"], g_rows))
-    L.append("")
-
-    # ------------------------------------------------------------ gemma 128K annex
-    if annex_ok or annex_pool:
-        L += ["## Gemma 128K annex (r240c): 131072 maxlen needs MXFP4 weights",
-              "",
-              "The certified gemma posture caps `max_model_len` at 40960. "
-              "Raising it to 131072 is a KV-headroom question: the annex "
-              "boots the 8-bit lane (`gm8x`) and the 4-bit lane (`gm4x`) at "
-              "`ARC_MAXLEN=131072` — the MXFP4 weight savings are what buy "
-              "the pool for a full 128K session.",
-              ""]
-        gm8x_oc = outcome(banks, "gm8x")
-        gm8x_pool, _ = pool_of(banks, "gm8x")
-        gm8x_rows = []
-        for cv in (8192, 32768, 131072):
-            d1 = load_conc(b139, "gm4x", cv, 1)
-            d8 = load_conc(b139, "gm4x", cv, 8)
-            gm8x_rows.append([
-                "MXFP4 (gm4x)", f"{cv // 1024}K",
-                ttft_fmt(d1["ttft_mean_s"]) if _conc_face_ok(d1) else "-",
-                "{:.1f}".format(d1["per_user_mean_tps"]) if _conc_face_ok(d1) else "-",
-                ("{:.0f}".format(d8["agg_tps_wall"])) if _conc_face_ok(d8) else "-",
-                ("{:.1f}".format(d8["per_user_mean_tps"])) if _conc_face_ok(d8) else "-",
-                _fmt_comma(annex_pool) if annex_pool else "-"])
-        tail = (", pool {} tokens".format(_fmt_comma(gm8x_pool))
-                if gm8x_pool else " — the boot refusal banks the boundary")
-        L.append("8-bit control (`gm8x`): outcome `{}`{}.".format(
-            gm8x_oc, tail))
-        L.append("")
-        L.append(md_table(["dtype (cell)", "Context", "TTFT solo (s)",
-                           "Decode solo (tok/s)", "Agg @ c8 (tok/s)",
-                           "Per-user @ c8 (tok/s)", "KV pool (tok)"], gm8x_rows))
-        L.append("")
-        L.append("Full lane report (main body + the 128K annex section): "
-                 "[gemma-4-31b-mxfp4](gemma-4-31b-mxfp4.md).")
-        L.append("")
-
-    # ------------------------------------------------------------ capacity
-    L += ["## Capacity cliffs (the whole point of the dtype menu)",
-          "",
-          "Session footprint = ctx + 600 + 64 tokens; pool = per-boot parsed "
-          "(`posture.txt`). Max concurrent **full-length** sessions per dtype:",
+    # ------------------------------------------------------------ snapshot charts
+    L += ["### The 8K/32K snapshot — every servable dtype versus fp8",
           ""]
-    cap_rows = []
-    entries = ([("fp8_e4m3", "qf3")] + [(tp["dtype"], tp["cell"]) for tp in TQ_PRESETS]
-               + [("fp8", "kvfp8"), ("auto@131072", "kvauto131"),
-                  ("mxfp4 (MX KV)", "kvm4"), ("mxfp8 (MX KV)", "kvm8"),
-                  ("mxk8v4 (MX KV)", "kvmk"),
-                  ("fp8_e4m3 (gemma)", "gf8"), ("auto@16384 (gemma)", "gkv_auto16"),
-                  ("mxfp4 MX KV (gemma)", "gkv_m4"),
-                  ("mxfp8 MX KV (gemma)", "gkv_m8"),
-                  ("mxk8v4 MX KV (gemma)", "gkv_mk")])
-    if annex_pool:
-        entries.append(("mxfp4@131072 (gemma)", "gm4x"))
-    for dt, cell in entries:
-        pool, pool_src = pool_of(banks, cell)
-        if not pool:
-            cap_rows.append([dt, "-", "-", "-", "-", POOL_FACTS.get(cell, ("", ""))[1]])
-            continue
-        cap_rows.append([dt, _fmt_comma(pool),
-                         f"{pool // (1024 + OVERHEAD)}",
-                         f"{pool // (8192 + OVERHEAD)}",
-                         f"{pool // (32768 + OVERHEAD)}",
-                         pool_src])
-    L.append(md_table(["dtype (cell)", "Pool (tok)", "@1K", "@8K", "@32K",
-                       "pool source"], cap_rows))
-    L.append("")
-    L.append("Refusal boundaries: `auto` at max_model_len 262144 (qwen, fp16 "
-             "capacity) and 40960 (gemma); `fp8_e5m2` at boot (kernel, not "
-             "memory). Every refusal is banked with its serve log.")
-    L.append("")
-
-    # ------------------------------------------------------------ config deltas
-    L += ["## Configuration (copyable deltas on the certified posture)",
-          "",
-          md_table(["dtype", "cell", "delta", "max_model_len"], [
-              ["fp8_e4m3", "qf3 / gf8", "(none — incumbent)", "262144 / 40960"],
-              ["fp8", "kvfp8", "ARC_KVDTYPE=fp8", "262144"],
-              ["auto", "kvauto131", "ARC_KVDTYPE=auto", "131072"],
-              ["mxfp4", "kvm4", "ARC_KVDTYPE=mxfp4 ARC_MXKV_NATIVE=1", "262144"],
-              ["mxfp8", "kvm8", "ARC_KVDTYPE=mxfp8 ARC_MXKV_NATIVE=1", "262144"],
-              ["mxk8v4", "kvmk", "ARC_KVDTYPE=mxk8v4 ARC_MXKV_NATIVE=1", "262144"],
-              ["mxfp4 (gemma)", "gkv_m4",
-               "ARC_QUANT=fp8 ARC_KVDTYPE=mxfp4 ARC_MXKV_NATIVE=1", "40960"],
-              ["mxfp8 (gemma)", "gkv_m8",
-               "ARC_QUANT=fp8 ARC_KVDTYPE=mxfp8 ARC_MXKV_NATIVE=1", "40960"],
-              ["mxk8v4 (gemma)", "gkv_mk",
-               "ARC_QUANT=fp8 ARC_KVDTYPE=mxk8v4 ARC_MXKV_NATIVE=1", "40960"],
-              ["fp8_e5m2 (gemma)", "gkv_e5m2",
-               "ARC_KVDTYPE=fp8_e5m2 — refusal probe", "40960"],
-              ["auto", "kvauto", "ARC_KVDTYPE=auto — refuses", "262144"],
-              ["auto (gemma)", "gkv_auto16", "ARC_KVDTYPE=auto ARC_MAXLEN=16384", "16384"],
-              ["auto (gemma)", "gkv_auto", "ARC_KVDTYPE=auto — refuses at 40960", "40960"],
-              ["turboquant_*", "tq_*", "ARC_KVDTYPE=turboquant_<preset>", "262144"],
-              ["mxfp4 (gemma 128K)", "gm4x",
-               "ARC_QUANT=mxfp4 ARC_MXFP4_MODE=w4a16 ARC_MAXLEN=131072", "131072"],
-              ["fp8_e5m2", "kve5m2", "ARC_KVDTYPE=fp8_e5m2 — refuses (no kernel)", "-"]]),
-          "",
-          "`ARC_MAXLEN` is what makes fp16-KV `auto` servable — the refusal "
-          "is the capacity cliff itself. The full qwen3.8-27b-fp8-k3 invocation: "
-          "[qwen3.8-27b-fp8-k3.md](qwen3.8-27b-fp8-k3.md).",
-          ""]
-
-    # ------------------------------------------------------------ charts
     for met, agg, ylab, yfmt, fname, cap in [
             ("ttft_mean_s", False, "TTFT (s)", "{:.1f}", "kvdt_ttft",
              "TTFT by KV-cache dtype (solo, 8K/32K)"),
@@ -3058,11 +3035,13 @@ def kv_report(banks, out, date):
                  "axis. A missing bar is a banked refusal (boot or "
                  "engine-death), never unmeasured coverage.")
         L.append("")
-    # MX KV aggregate-vs-conc charts (the {1,2,4,8} ladder as a picture)
-    _mx_conc_charts(b139, MX_Q_CELLS,
-                    (1024, 8192, 32768, 65536, 131072), ch, "qwen fp8 k3",
-                    "mxq_agg", L)
     # pool bars
+    L += ["### KV pool by dtype — the capacity axis",
+          ""]
+    entries = ([("fp8_e4m3", "qf3")] + [(tp["dtype"], tp["cell"]) for tp in TQ_PRESETS]
+               + [("fp8", "kvfp8"), ("auto@131072", "kvauto131"),
+                  ("mxfp4 (MX KV)", "kvm4"), ("mxfp8 (MX KV)", "kvm8"),
+                  ("mxk8v4 (MX KV)", "kvmk")])
     groups, vals = [], []
     for dt, cell in entries:
         pool, _src = pool_of(banks, cell)
@@ -3074,6 +3053,8 @@ def kv_report(banks, out, date):
     L.append(img("kvdt_pool", "KV pool by dtype — capacity is the dtype menu's axis"))
     L.append("")
     # turboquant overlay vs fp8 — x = context length, one line per dtype
+    L += ["### FP8 versus TurboQuant — speed, TTFT, aggregate vs context",
+          ""]
     overlay = [("fp8_e4m3 (qf3)", "qf3")] + [(tp["dtype"], tp["cell"]) for tp in TQ_PRESETS]
     for met, nsel, ylab, yfmt, fname, cap in [
             ("per_user_mean_tps", 1, "Per-user speed, solo (tok/s)", "{:.0f}",
@@ -3136,6 +3117,109 @@ def kv_report(banks, out, date):
                  "128K is the pool cliff reached later, not sooner.".format(
                      100 * max(tq_pairs)))
         L.append("")
+    # MX-vs-fp8 overlay — x = context length, fp8 control + one line
+    # per MX lane (conc faces only: MX_KV_QWEN solo faces ran the
+    # confounded LMC-forced posture and are blocked in solo_face)
+    L += ["### FP8 versus MX KV — speed, TTFT, and aggregate vs context",
+          "",
+          "The fp8_e4m3 control (`qf3`) against each native MX lane, "
+          "same protocol, same weights lane. The MX lines ride the "
+          "r240b conc grid (the r241 LMC-free re-measurement supersedes "
+          "those cells at close-out):",
+          ""]
+    mx_overlay = [("fp8_e4m3 (qf3)", "qf3")] + \
+                 [(lab, cell) for lab, cell in MX_Q_CELLS]
+    for met, nsel, ylab, yfmt, fname, cap in [
+            ("per_user_mean_tps", 1, "Per-user speed, solo (tok/s)", "{:.0f}",
+             "mx_speed_ctx",
+             "FP8 versus MX KV — per-user speed vs context length (solo)"),
+            ("agg_tps_wall", 8, "Aggregate @ c8 (tok/s)", "{:.0f}",
+             "mx_agg8_ctx",
+             "FP8 versus MX KV — aggregate throughput @ c8 vs context length"),
+            ("ttft_mean_s", 1, "TTFT solo (s)", "{:.1f}",
+             "mx_ttft_ctx",
+             "FP8 versus MX KV — TTFT vs context length (solo)")]:
+        series = []
+        for lab, cell in mx_overlay:
+            pts = []
+            for c in conc_ctxs(b139, cell):
+                d = load_conc(b139, cell, c, nsel)
+                if _conc_face_ok(d):
+                    pts.append((c, d[met]))
+                else:
+                    pts.append((c, None))
+            if any(p[1] is not None for p in pts):
+                series.append((lab, pts))
+        if len(series) > 1:
+            chart(os.path.join(ch, fname + ".svg"), cap, series,
+                  "Context length (tokens)", ylab, yfmt=yfmt,
+                  hlines=(TTFT_HL if "TTFT" in cap else
+                          (SPEED_HL if "speed" in cap.lower() else ())),
+                  label_all=True)
+            L.append(img(fname, cap))
+            L.append("")
+    if any(os.path.isfile(os.path.join(
+            ch, f + ".svg")) for f, _c in
+            [("mx_speed_ctx", 0), ("mx_agg8_ctx", 0), ("mx_ttft_ctx", 0)]):
+        L.append("*Interpretation:* the MX lanes hold a flat 0.79–0.81× "
+                 "of the fp8 control across the ladder — the menu trades "
+                 "a slice of speed for 1.26–1.81× the KV pool; a broken "
+                 "line is a banked engine-death face (the r240b "
+                 "posture-confound class, superseded by the r241 "
+                 "LMC-free grid), never unmeasured coverage.")
+        L.append("")
+    # ------------------------------------------------------------ capacity
+    L += ["## Capacity cliffs (the whole point of the dtype menu)",
+          "",
+          "Session footprint = ctx + 600 + 64 tokens; pool = per-boot parsed "
+          "(`posture.txt`). Max concurrent **full-length** sessions per dtype:",
+          ""]
+    cap_rows = []
+    for dt, cell in entries:
+        pool, pool_src = pool_of(banks, cell)
+        if not pool:
+            cap_rows.append([dt, "-", "-", "-", "-", POOL_FACTS.get(cell, ("", ""))[1]])
+            continue
+        cap_rows.append([dt, _fmt_comma(pool),
+                         f"{pool // (1024 + OVERHEAD)}",
+                         f"{pool // (8192 + OVERHEAD)}",
+                         f"{pool // (32768 + OVERHEAD)}",
+                         pool_src])
+    L.append(md_table(["dtype (cell)", "Pool (tok)", "@1K", "@8K", "@32K",
+                       "pool source"], cap_rows))
+    L.append("")
+    L.append("Refusal boundaries: `auto` at max_model_len 262144 (qwen, "
+             "fp16 capacity); `fp8_e5m2` at boot (kernel, not memory). "
+             "Every refusal is banked with its serve log. The gemma "
+             "capacity ladders live in the companion report: "
+             "[gemma-4-31b-kv-cache-dtype]"
+             "(gemma-4-31b-kv-cache-dtype.md).")
+    L.append("")
+
+    # ------------------------------------------------------------ config deltas
+    L += ["## Configuration (copyable deltas on the certified posture)",
+          "",
+          md_table(["dtype", "cell", "delta", "max_model_len"], [
+              ["fp8_e4m3", "qf3", "(none — incumbent)", "262144"],
+              ["fp8", "kvfp8", "ARC_KVDTYPE=fp8", "262144"],
+              ["auto", "kvauto131", "ARC_KVDTYPE=auto", "131072"],
+              ["auto", "kvauto", "ARC_KVDTYPE=auto — refuses", "262144"],
+              ["mxfp4", "kvm4", "ARC_KVDTYPE=mxfp4 ARC_MXKV_NATIVE=1", "262144"],
+              ["mxfp8", "kvm8", "ARC_KVDTYPE=mxfp8 ARC_MXKV_NATIVE=1", "262144"],
+              ["mxk8v4", "kvmk", "ARC_KVDTYPE=mxk8v4 ARC_MXKV_NATIVE=1", "262144"],
+              ["turboquant_*", "tq_*", "ARC_KVDTYPE=turboquant_<preset>", "262144"],
+              ["fp8_e5m2", "kve5m2", "ARC_KVDTYPE=fp8_e5m2 — refuses (no kernel)", "-"]]),
+          "",
+          "MX-KV posture law: `ARC_LMC=0` (or unset — the serve script "
+          "auto-offs) on every MX lane; the r240b deaths that ran "
+          "`ARC_LMC=1` are banked as the posture-confound class "
+          "(re-measured LMC-free in r241). `ARC_MAXLEN` is what makes "
+          "fp16-KV `auto` servable — the refusal is the capacity cliff "
+          "itself. The full qwen3.8-27b-fp8-k3 invocation: "
+          "[qwen3.8-27b-fp8-k3.md](qwen3.8-27b-fp8-k3.md). The gemma "
+          "deltas: [gemma-4-31b-kv-cache-dtype]"
+          "(gemma-4-31b-kv-cache-dtype.md).",
+          ""]
     L.append("Banks: r240b `results/2026-11-24-p647-r240b-conc/` (conc cells + "
              "posture pools), r240 `results/2026-11-24-p647-r240-reports/` (solo "
              "dtype cells + refusals); knob: `ARC_KVDTYPE` in "
@@ -3201,6 +3285,38 @@ def gemma_kv_report(banks, out, date):
          "128K posture). A `-` cell is a banked boot refusal, capacity "
          "cliff, or this banked decode refusal — never unmeasured "
          "coverage.",
+         "",
+         "## The KV menu by category (gemma)",
+         "",
+         md_table(["Category", "dtypes", "What it is", "Serves on gemma (this image)"], [
+             ["Byte-exact FP8 family",
+              "fp8_e4m3 (incumbent), auto (fp16 KV)",
+              "1- or 2-byte/elem KV; `auto` pays the fp16 2-byte law "
+              "on the 31B geometry — the pool cannot cover one 40K "
+              "session",
+              "fp8_e4m3 only; `auto` refuses at maxlen 40960, serves "
+              "at 16384"],
+             ["MX microscaling KV",
+              "mxfp4, mxfp8, mxk8v4",
+              "OCP-MX KV (e2m1/e4m3 + E8M0 scales) via the native "
+              "`mx_paged_decode` path; the pools prove the capacity "
+              "thesis (mxfp4@131072 banks 238,497 tokens)",
+              "**no — the hd512 decode refusal**: gemma's 10 "
+              "full-attention layers are head_size 512, outside the "
+              "compiled D=128/256 instantiations; every face is a "
+              "banked first-decode refusal"],
+             ["Weights-quant capacity lane",
+              "mxfp4 W4A16 + fp8_e4m3 KV (`gm4x`)",
+              "4-bit weights free the memory the KV pool needs — "
+              "5.15x the certified fp8 pool and the maxlen raise to "
+              "131072 in one posture",
+              "**yes — the only lane that serves 128K** (26/26 faces, "
+              "28.3 tok/s n1 @128K)"],
+             ["Hard refusal",
+              "fp8_e5m2",
+              "No e5m2 KV dequant path in esimd FA2 on Xe2 — "
+              "engine-level, same law as qwen",
+              "refuses at boot"]]),
          ""]
     g_rows = _kv_solo_rows(banks, KVDTS_G, (8192, 32768),
                            lambda c: c in KV139_G_CELLS)
@@ -3223,7 +3339,7 @@ def gemma_kv_report(banks, out, date):
         "outside the compiled D=128/256 instantiations) -- every face "
         "of this lane banks as a connection-refused artifact")
     if mx_lines:
-        L += ["## MX KV lanes — the attempted sweep (r240b, grid {1,2,4,8})",
+        L += ["## FP8 versus native MX KV — the hd512 refusal (the attempted r240b sweep)",
               "",
               "All three native MX lanes were attempted at maxlen 40960 "
               "(grid {1,2,4,8} at 1K/8K/32K + t1.0 solos). Zero faces "
@@ -3305,6 +3421,57 @@ def gemma_kv_report(banks, out, date):
              "from the weights side: "
              "[gemma-4-31b-mxfp4.md](gemma-4-31b-mxfp4.md).")
     L.append("")
+
+    # ------------------ FP8 versus the weights lane (the serving 128K story)
+    L += ["### FP8 versus the W4A16 weights lane — the comparison that serves",
+          "",
+          "The incumbent (`gf8`: online-fp8 weights + fp8_e4m3 KV at "
+          "maxlen 40960) against the capacity lane (`gm4x`: MXFP4 "
+          "W4A16 weights + fp8_e4m3 KV at maxlen 131072). Same KV "
+          "dtype — the weights quant is the difference; the lines "
+          "show the cost of the 128K posture in speed and TTFT "
+          "against the fp8 lane's 32K ceiling:",
+          ""]
+    wl_overlay = [("fp8 weights (gf8, maxlen 40960)", "gf8"),
+                  ("W4A16 weights (gm4x, maxlen 131072)", "gm4x")]
+    for met, nsel, ylab, yfmt, fname, cap in [
+            ("per_user_mean_tps", 1, "Per-user speed, solo (tok/s)", "{:.1f}",
+             "gw_speed_ctx",
+             "FP8 versus W4A16 weights — per-user speed vs context length (solo)"),
+            ("ttft_mean_s", 1, "TTFT solo (s)", "{:.1f}",
+             "gw_ttft_ctx",
+             "FP8 versus W4A16 weights — TTFT vs context length (solo)"),
+            ("agg_tps_wall", 8, "Aggregate @ c8 (tok/s)", "{:.0f}",
+             "gw_agg8_ctx",
+             "FP8 versus W4A16 weights — aggregate @ c8 vs context length")]:
+        series = []
+        for lab, cell in wl_overlay:
+            pts = []
+            for c in conc_ctxs(b139, cell):
+                d = load_conc(b139, cell, c, nsel)
+                if _conc_face_ok(d):
+                    pts.append((c, d[met]))
+                else:
+                    pts.append((c, None))
+            if any(p[1] is not None for p in pts):
+                series.append((lab, pts))
+        if len(series) > 1:
+            chart(os.path.join(ch, fname + ".svg"), cap, series,
+                  "Context length (tokens)", ylab, yfmt=yfmt,
+                  hlines=(TTFT_HL if "TTFT" in cap else
+                          (SPEED_HL if "speed" in cap.lower() else ())),
+                  label_all=True)
+            L.append(img(fname, cap))
+            L.append("")
+    if any(os.path.isfile(os.path.join(ch, f + ".svg"))
+           for f in ("gw_speed_ctx", "gw_ttft_ctx", "gw_agg8_ctx")):
+        L.append("*Interpretation:* the fp8 lane is faster per-token "
+                 "but tops out at 32K (its 40960 maxlen and 56,128-token "
+                 "pool); the W4A16 lane pays ~15–30 % solo speed for "
+                 "the 288,972-token pool and serves rungs the 8-bit "
+                 "lanes cannot boot. The lines never cross a refusal — "
+                 "the fp8 line simply ends where the pool ends.")
+        L.append("")
 
     # 8-bit 64K closure (owner directive #4: every ctx step on every
     # analyzed lane). One 64K session (ctx + 600 + 64 = 65,700 tokens)
@@ -3436,6 +3603,17 @@ def gemma_kv_report(banks, out, date):
           ""]
 
     # ------------------------------------------------------------ charts
+    L += ["## FP8 versus the alternatives — the charts in one place",
+          "",
+          "Every chart holds the weights lane constant unless the "
+          "comparison IS the weights lane, and varies the KV dtype; "
+          "the fp8_e4m3 incumbent (`gf8`) is the control series. A "
+          "missing bar or point is a banked refusal (boot, capacity "
+          "cliff, or the hd512 first-decode refusal) — never "
+          "unmeasured coverage.",
+          "",
+          "### The 8K/32K snapshot — every servable dtype versus fp8",
+          ""]
     for met, agg, ylab, yfmt, fname, cap in [
             ("ttft_mean_s", False, "TTFT (s)", "{:.1f}", "kvdtg_ttft",
              "TTFT by KV-cache dtype (gemma, solo 8K/32K)"),
@@ -3475,6 +3653,8 @@ def gemma_kv_report(banks, out, date):
     _mx_conc_charts(b139, MX_G_CELLS, (1024, 8192, 32768), ch,
                     "gemma online-fp8", "mxg_agg", L)
     # pool bars
+    L += ["### Gemma KV pool by dtype — the capacity axis",
+          ""]
     groups, vals = [], []
     for dt, cell in cap_entries:
         pool, _src = pool_of(banks, cell)
@@ -3761,9 +3941,12 @@ def index_report(banks, out, date):
          "interpretation together. Generated {} from the r240 bank "
          "(`results/2026-11-24-p647-r240-reports/`) + r240b bank "
          "(`results/2026-11-24-p647-r240b-conc/`) + gemma 128K annex / 64K "
-         "closure (`results/2026-11-24-p647-r240c-gemma128k/`) — the full "
+         "closure (`results/2026-11-24-p647-r240c-gemma128k/`) + the r241 "
+         "LMC-free re-measurement of the MX KV lanes "
+         "(`results/2026-11-25-p647-r241-mxkv-lmcfree/`) — the full "
          "battery re-run on the certified image by the 2026-11-24 currency "
-         "campaign.".format(date),
+         "campaign, MX KV lanes corrected by the 2026-11-25 r241 "
+         "posture-confound re-measurement.".format(date),
          "",
          "Metric definitions, UX bands and thresholds: "
          "[METHODOLOGY.md](METHODOLOGY.md).",
@@ -3856,14 +4039,14 @@ def main():
     b138 = Bank(sys.argv[1])
     b139 = Bank(sys.argv[2])
     out, rest = sys.argv[3], sys.argv[4:]
-    b140 = None
-    if rest and os.path.isdir(rest[0]):
-        b140 = Bank(rest[0])
-        date = rest[1] if len(rest) > 1 else "2026-11-24"
-    else:
-        date = rest[0] if rest else "2026-11-24"
-    banks139 = [b for b in (b139, b140) if b and b.ok]
-    banks = [b138] + banks139
+    conc = []
+    date = "2026-11-24"
+    for a in rest:
+        if os.path.isdir(a):
+            conc.append(Bank(a))
+        else:
+            date = a
+    banks = [b138] + [b for b in [b139] + conc if b and b.ok]
     os.makedirs(os.path.join(out, "charts"), exist_ok=True)
     for cfg in CONFIGS:
         per_config_report(banks, out, cfg, date)

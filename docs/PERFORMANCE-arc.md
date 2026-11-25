@@ -140,7 +140,8 @@ format-invariant residual distributions). Evidence:
 `results/2026-11-24-p647-cert28-battery/` +
 `results/2026-11-24-p647-r234-cert28-itl/`.
 **Packed-KV stability — r240b deaths re-classified as
-posture-confounded (2026-11-25; r241 re-measures)**: the r240b
+posture-confounded and re-measured clean by r241 (2026-11-25;
+Finding 2 retracted)**: the r240b
 sustained-decode deaths (mxfp4-KV 32K × n4 worker silent-hang → the
 300 s watchdog; mxk8v4 `UR_RESULT_ERROR_DEVICE_LOST` at the same
 face) ran under a harness posture defect — the gate script forced
@@ -152,12 +153,17 @@ windows (274/306 store lines; the surviving e4m3-V kvm8 logged
 r234, r237 — zero LMCache lines in their serve logs), and the
 deaths fit the r168-banked e2m1-V × LMCache interaction class
 escalated under MT=600 load — not a proven intrinsic packed-KV
-boundary. r241 re-runs the exact grids LMC-free to discriminate;
-until it banks, treat the ≥16K-context/low-concurrency restriction
-on 4-bit-V KV as provisional. The unchanged certified law: LMCache
+boundary. r241 re-ran the exact grids LMC-free (2026-11-25): 68
+real faces, zero dead or partial, zero tracebacks, zero LMCache
+lines — every r240b death face (mxfp4-KV 32K × n4/n8 and 64K × n8,
+mxk8v4 32K × n4/n8) served with full n_ok. The
+≥16K-context/low-concurrency restriction on 4-bit-V KV is
+RETRACTED — the packed-KV lanes are capacity-limited only
+(mxfp4-KV serves 128K at n1–n4; pools 721,994 / 386,484 / 504,832
+tokens for kvm4/kvm8/kvmk). The unchanged certified law: LMCache
 OFF on every MX-KV lane. Evidence:
-`results/2026-11-24-p647-r240b-conc/` (VERDICT re-audit +
-correction addendum).
+`results/2026-11-25-p647-r241-mxkv-lmcfree/` (VERDICT) +
+`results/2026-11-24-p647-r240b-conc/` (correction addendum).
 **Model scope (r240b/r240c)**: the native MX-KV lanes are qwen-only —
 on gemma every `gkv_m*` lane boots and banks its pool but fatals at
 the FIRST decode request: gemma's 10 hd512 full-attention layers sit

@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="500" viewBox="0 0 880 500" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+<rect width="880" height="500" fill="#ffffff"/>
+<text x="84" y="26" font-size="17" font-weight="600" fill="#101828">FP8 versus MX KV — TTFT vs context length (solo)</text>
+<line x1="84" y1="436.0" x2="816" y2="436.0" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="440.0" font-size="11" fill="#667085" text-anchor="end">0.0</text>
+<line x1="84" y1="350.3" x2="816" y2="350.3" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="354.3" font-size="11" fill="#667085" text-anchor="end">25.0</text>
+<line x1="84" y1="264.5" x2="816" y2="264.5" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="268.5" font-size="11" fill="#667085" text-anchor="end">50.0</text>
+<line x1="84" y1="178.8" x2="816" y2="178.8" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="182.8" font-size="11" fill="#667085" text-anchor="end">75.0</text>
+<line x1="84" y1="93.1" x2="816" y2="93.1" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="97.1" font-size="11" fill="#667085" text-anchor="end">100.0</text>
+<line x1="84.0" y1="52" x2="84.0" y2="436" stroke="#f0f0f0" stroke-width="1"/>
+<text x="84.0" y="454" font-size="11" fill="#667085" text-anchor="middle">1K</text>
+<line x1="267.0" y1="52" x2="267.0" y2="436" stroke="#f0f0f0" stroke-width="1"/>
+<text x="267.0" y="454" font-size="11" fill="#667085" text-anchor="middle">8K</text>
+<line x1="450.0" y1="52" x2="450.0" y2="436" stroke="#f0f0f0" stroke-width="1"/>
+<text x="450.0" y="454" font-size="11" fill="#667085" text-anchor="middle">32K</text>
+<line x1="633.0" y1="52" x2="633.0" y2="436" stroke="#f0f0f0" stroke-width="1"/>
+<text x="633.0" y="454" font-size="11" fill="#667085" text-anchor="middle">64K</text>
+<line x1="816.0" y1="52" x2="816.0" y2="436" stroke="#f0f0f0" stroke-width="1"/>
+<text x="816.0" y="454" font-size="11" fill="#667085" text-anchor="middle">128K</text>
+<line x1="84" y1="436" x2="816" y2="436" stroke="#d0d5dd" stroke-width="1"/>
+<line x1="84" y1="52" x2="84" y2="436" stroke="#d0d5dd" stroke-width="1"/>
+<line x1="84" y1="401.7" x2="816" y2="401.7" stroke="#98a2b3" stroke-width="1" stroke-dasharray="5 4"/>
+<text x="820" y="399.5" font-size="9.5" fill="#667085" font-style="italic">slow</text>
+<line x1="84" y1="418.9" x2="816" y2="418.9" stroke="#98a2b3" stroke-width="1" stroke-dasharray="5 4"/>
+<text x="820" y="411.0" font-size="9.5" fill="#667085" font-style="italic">noticeable</text>
+<line x1="84" y1="429.1" x2="816" y2="429.1" stroke="#98a2b3" stroke-width="1" stroke-dasharray="5 4"/>
+<text x="820" y="422.5" font-size="9.5" fill="#667085" font-style="italic">responsive</text>
+<line x1="84" y1="434.3" x2="816" y2="434.3" stroke="#98a2b3" stroke-width="1" stroke-dasharray="5 4"/>
+<text x="820" y="434.0" font-size="9.5" fill="#667085" font-style="italic">instant</text>
+<polyline points="84.0,435.0 267.0,425.5 450.0,383.6 633.0,311.2 816.0,99.2" fill="none" stroke="#2563eb" stroke-width="2.4"/>
+<circle cx="84.0" cy="435.0" r="4.4" fill="#2563eb"/>
+<circle cx="267.0" cy="425.5" r="4.4" fill="#2563eb"/>
+<circle cx="450.0" cy="383.6" r="4.4" fill="#2563eb"/>
+<circle cx="633.0" cy="311.2" r="4.4" fill="#2563eb"/>
+<circle cx="816.0" cy="99.2" r="4.4" fill="#2563eb"/>
+<polyline points="84.0,434.6 267.0,425.9 450.0,390.6 633.0,334.2 816.0,187.2" fill="none" stroke="#dc2626" stroke-width="2.4"/>
+<rect x="79.5" y="430.1" width="9" height="9" fill="#dc2626"/>
+<rect x="262.5" y="421.4" width="9" height="9" fill="#dc2626"/>
+<rect x="445.5" y="386.1" width="9" height="9" fill="#dc2626"/>
+<rect x="628.5" y="329.7" width="9" height="9" fill="#dc2626"/>
+<rect x="811.5" y="182.7" width="9" height="9" fill="#dc2626"/>
+<polyline points="84.0,435.0 267.0,426.0 450.0,388.7 633.0,332.4 816.0,182.6" fill="none" stroke="#059669" stroke-width="2.4"/>
+<polygon points="84.0,429.5 78.5,439.5 89.5,439.5" fill="#059669"/>
+<polygon points="267.0,420.5 261.5,430.5 272.5,430.5" fill="#059669"/>
+<polygon points="450.0,383.2 444.5,393.2 455.5,393.2" fill="#059669"/>
+<polygon points="633.0,326.9 627.5,336.9 638.5,336.9" fill="#059669"/>
+<polygon points="816.0,177.1 810.5,187.1 821.5,187.1" fill="#059669"/>
+<polyline points="84.0,435.0 267.0,425.7 450.0,390.7 633.0,333.4 816.0,187.7" fill="none" stroke="#9333ea" stroke-width="2.4"/>
+<polygon points="84.0,429.5 89.5,435.0 84.0,440.5 78.5,435.0" fill="#9333ea"/>
+<polygon points="267.0,420.2 272.5,425.7 267.0,431.2 261.5,425.7" fill="#9333ea"/>
+<polygon points="450.0,385.2 455.5,390.7 450.0,396.2 444.5,390.7" fill="#9333ea"/>
+<polygon points="633.0,327.9 638.5,333.4 633.0,338.9 627.5,333.4" fill="#9333ea"/>
+<polygon points="816.0,182.2 821.5,187.7 816.0,193.2 810.5,187.7" fill="#9333ea"/>
+<text x="96.2" y="425.6" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">0.4</text>
+<text x="96.2" y="402.0" font-size="10" fill="#9333ea" text-anchor="middle" font-weight="600">0.3</text>
+<text x="96.2" y="378.0" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">0.3</text>
+<text x="96.2" y="354.0" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">0.3</text>
+<text x="267.0" y="416.5" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">3.1</text>
+<text x="267.0" y="441.7" font-size="10" fill="#9333ea" text-anchor="middle" font-weight="600">3.0</text>
+<text x="267.0" y="392.9" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">2.9</text>
+<text x="267.0" y="369.0" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">2.9</text>
+<text x="450.0" y="374.6" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">15.3</text>
+<text x="450.0" y="404.7" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">13.8</text>
+<text x="450.0" y="357.6" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">13.2</text>
+<text x="450.0" y="428.7" font-size="10" fill="#9333ea" text-anchor="middle" font-weight="600">13.2</text>
+<text x="633.0" y="302.2" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">36.4</text>
+<text x="633.0" y="323.4" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">30.2</text>
+<text x="633.0" y="349.4" font-size="10" fill="#9333ea" text-anchor="middle" font-weight="600">29.9</text>
+<text x="633.0" y="372.2" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">29.7</text>
+<text x="800.8" y="90.2" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">98.2</text>
+<text x="800.8" y="173.6" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">73.9</text>
+<text x="800.8" y="203.2" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">72.5</text>
+<text x="800.8" y="154.7" font-size="10" fill="#9333ea" text-anchor="middle" font-weight="600">72.4</text>
+<line x1="84" y1="494" x2="100" y2="494" stroke="#2563eb" stroke-width="3"/>
+<text x="104" y="498" font-size="11.5" fill="#1d2939">fp8_e4m3 (qf3)</text>
+<line x1="220" y1="494" x2="236" y2="494" stroke="#dc2626" stroke-width="3"/>
+<text x="240" y="498" font-size="11.5" fill="#1d2939">mxfp4</text>
+<line x1="292" y1="494" x2="308" y2="494" stroke="#059669" stroke-width="3"/>
+<text x="312" y="498" font-size="11.5" fill="#1d2939">mxfp8</text>
+<line x1="364" y1="494" x2="380" y2="494" stroke="#9333ea" stroke-width="3"/>
+<text x="384" y="498" font-size="11.5" fill="#1d2939">mxk8v4</text>
+<text x="450" y="470" font-size="12.5" fill="#475467" text-anchor="middle">Context length (tokens)</text>
+<text x="16" y="244" font-size="12.5" fill="#475467" text-anchor="middle" transform="rotate(-90 16 244)">TTFT solo (s)</text>
+</svg>

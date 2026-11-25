@@ -39,21 +39,21 @@
 <polygon points="450.0,156.2 444.5,166.2 455.5,166.2" fill="#059669"/>
 <polygon points="633.0,182.1 627.5,192.1 638.5,192.1" fill="#059669"/>
 <polygon points="816.0,93.7 810.5,103.7 821.5,103.7" fill="#059669"/>
-<text x="84.0" y="93.2" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">64</text>
-<text x="84.0" y="219.9" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">40</text>
-<text x="84.0" y="245.9" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">40</text>
+<text x="93.1" y="93.2" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">64</text>
+<text x="93.1" y="219.9" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">40</text>
+<text x="93.1" y="245.9" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">40</text>
 <text x="267.0" y="209.3" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">42</text>
 <text x="267.0" y="241.3" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">41</text>
-<text x="267.0" y="252.9" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">40</text>
+<text x="267.0" y="192.9" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">40</text>
 <text x="450.0" y="152.7" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">53</text>
 <text x="450.0" y="204.9" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">43</text>
 <text x="450.0" y="230.3" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">43</text>
 <text x="633.0" y="178.6" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">48</text>
-<text x="633.0" y="189.6" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">46</text>
-<text x="633.0" y="214.9" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">46</text>
-<text x="816.0" y="90.2" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">65</text>
-<text x="816.0" y="158.6" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">52</text>
-<text x="816.0" y="185.0" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">51</text>
+<text x="633.0" y="214.6" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">46</text>
+<text x="633.0" y="236.9" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">46</text>
+<text x="806.9" y="90.2" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">65</text>
+<text x="806.9" y="158.6" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">52</text>
+<text x="806.9" y="185.0" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">51</text>
 <line x1="84" y1="494" x2="100" y2="494" stroke="#2563eb" stroke-width="3"/>
 <text x="104" y="498" font-size="11.5" fill="#1d2939">ITL p50</text>
 <line x1="170" y1="494" x2="186" y2="494" stroke="#dc2626" stroke-width="3"/>

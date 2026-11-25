@@ -1,15 +1,25 @@
-# KV-cache dtype comparison — both models, TurboQuant, capacity cliffs
+# Qwen3.8-27B FP8 — KV-cache dtype comparison (FP8 versus MX KV and TurboQuant)
 
 | Field | Value |
 |---|---|
-| Models | Qwen3.8-27B FP8 + MTP k3 (certified posture); Gemma-4-31B (certified posture, no MTP) |
+| Model | Qwen3.8-27B FP8 + MTP k3 (the certified posture) |
 | Knob | `ARC_KVDTYPE` in `tools/serve_arc_b70.sh` (default `fp8_e4m3`) → `--kv-cache-dtype` |
-| Menu | fp8_e4m3 · fp8 · auto (fp16 KV) · mxfp4 · mxfp8 · mxk8v4 (MX KV, native) · turboquant_k8v4 · turboquant_4bit_nc · turboquant_k3v4_nc · turboquant_3bit_nc (qwen); fp8_e4m3 · auto · mxfp4 · mxfp8 · mxk8v4 · fp8_e5m2-probe (gemma) |
-| Faces | r240b: conc {1,2,3,4,8} at 1K/8K/32K per dtype (MX lanes, BOTH models: the {1,2,4,8} grid at every rung 1K/8K/32K/64K/128K + t1.0 solos); r240: solo faces for fp8/auto/fp8/e5m2 + the MX lanes (qwen) |
+| Menu | fp8_e4m3 · fp8 · auto (fp16 KV) · mxfp4 · mxfp8 · mxk8v4 (MX KV, native) · turboquant_k8v4 · turboquant_4bit_nc · turboquant_k3v4_nc · turboquant_3bit_nc |
+| Faces | r240b: conc {1,2,3,4,8} at 1K/8K/32K per dtype (MX lanes: the {1,2,4,8} grid at every rung 1K/8K/32K/64K/128K + t1.0 solos; the r241 leg re-measures the MX lanes LMC-free and supersedes r240b on those cells); r240: solo faces for fp8/auto/fp8/e5m2 + the MX lanes (qwen) |
 | Engine | vLLM v0.30.0 — vllm-arc v0.30.0-b70-cert28, TP2 |
-| Date | 2026-11-24 |
+| Companion report | Gemma-4-31B: [gemma-4-31b-kv-cache-dtype](gemma-4-31b-kv-cache-dtype.md) — the native MX-KV menu does not serve gemma on this image (the hd512 decode gap); gemma capacity rides the W4A16 weights lane |
+| Date | 2026-11-25 |
 
-A dtype that refuses to boot is a valid outcome and is banked as such — two of the boundaries below are refusals.
+## The dtype menu by category
+
+| Category | dtypes | What it is | Serves on qwen (this image) |
+|---|---|---|---|
+| Byte-exact FP8 family | fp8_e4m3 (incumbent), fp8, auto (fp16 KV) | 1- or 2-byte/elem KV with no lossy step; `auto` is fp16 KV and pays the 2-byte law — exactly half the pool | fp8_e4m3, fp8; `auto` refuses at maxlen 262144 (8.73 > 6.78 GiB), serves at 131072 |
+| MX microscaling KV | mxfp4, mxfp8, mxk8v4 | OCP-MX format KV — e2m1/e4m3 data + E8M0 group scales, decoded by the native `mx_paged_decode` path (`ARC_MXKV_NATIVE=1`); trades a slice of decode speed for KV-token capacity per byte | all three, native-certified since cert27 (LMC-off posture) |
+| TurboQuant presets | turboquant_k8v4, turboquant_4bit_nc, turboquant_k3v4_nc, turboquant_3bit_nc | Wheel-side lossy KV presets on the same knob (`VLLM_ARC_TQ_SPEC_FIX=1` posture) | all four |
+| Hard refusal | fp8_e5m2 | No e5m2 KV dequant path in esimd FA2 on Xe2 — an engine-level kernel boundary, not a capacity one | refuses at boot |
+
+A dtype that refuses to boot is a valid outcome and is banked as such — two of the boundaries below are refusals. Every FP8-versus comparison in this report holds the weights lane constant (checkpoint-fp8 + MTP k3) and varies only the KV dtype.
 
 ## Qwen3.8-27B FP8 + MTP k3
 
@@ -27,16 +37,16 @@ The three `mxfp4`/`mxfp8`/`mxk8v4` rows are the P6.47 MX KV lane, native-certifi
 | fp8 | 32K | 16.5 | 91.1 | - | - | 42.7 | 397,470 |  |
 | fp8_e5m2 | 8K | - | - | - | - | - | - | refuses to boot - FA2 has no e5m2 KV path on Xe2 |
 | fp8_e5m2 | 32K | - | - | - | - | - | - | refuses to boot - FA2 has no e5m2 KV path on Xe2 |
-| mxfp4 | 8K | 2.97 | 78.8 | 121 | 28.8 | 48.4 | 721,994 | MX KV: e2m1 data + E8M0 group scales; native decode, LMC off; r240b death at c32768_n4 was posture-confounded (the gate script forced ARC_LMC=1 over the lane -- LMCache storing in the death window, the r168 e2m1-V class); re-classified 2026-11-25, re-measured LMC-free in r241 |
-| mxfp4 | 32K | 13.3 | 63.3 | - | - | 57.9 | 721,994 | MX KV: e2m1 data + E8M0 group scales; native decode, LMC off; r240b death at c32768_n4 was posture-confounded (the gate script forced ARC_LMC=1 over the lane -- LMCache storing in the death window, the r168 e2m1-V class); re-classified 2026-11-25, re-measured LMC-free in r241 |
-| mxfp8 | 8K | 2.97 | 76.9 | 118 | 27.7 | 50.0 | 386,484 | MX KV: e4m3 data + E8M0 group scales; native decode, LMC off; the only packed lane to survive the r240b grid (e4m3-V: the r176 store-tax class, immune to the e2m1-V x LMC kill class) |
-| mxfp8 | 32K | 13.9 | 59.4 | 33 | 9.6 | 64.3 | 386,484 | MX KV: e4m3 data + E8M0 group scales; native decode, LMC off; the only packed lane to survive the r240b grid (e4m3-V: the r176 store-tax class, immune to the e2m1-V x LMC kill class) |
-| mxk8v4 | 8K | 3.06 | 78.0 | 119 | 27.0 | 49.2 | 504,832 | mixed MX KV: e4m3 K + e2m1 V; native decode, LMC off; r240b death at c32768_n4 (DEVICE_LOST) was posture-confounded (ARC_LMC=1 forced -- the r168 e2m1-V class); re-classified 2026-11-25, re-measured LMC-free in r241 |
-| mxk8v4 | 32K | 13.3 | 63.5 | - | - | 61.8 | 504,832 | mixed MX KV: e4m3 K + e2m1 V; native decode, LMC off; r240b death at c32768_n4 (DEVICE_LOST) was posture-confounded (ARC_LMC=1 forced -- the r168 e2m1-V class); re-classified 2026-11-25, re-measured LMC-free in r241 |
+| mxfp4 | 8K | 2.93 | 79.7 | 125 | 29.6 | 48.3 | 721,994 | MX KV: e2m1 data + E8M0 group scales; native decode, LMC off; r240b death at c32768_n4 was posture-confounded (the gate script forced ARC_LMC=1 over the lane -- LMCache storing in the death window, the r168 e2m1-V class); re-classified 2026-11-25, re-measured LMC-free in r241 |
+| mxfp4 | 32K | 13.2 | 63.7 | 36 | 11.5 | 57.9 | 721,994 | MX KV: e2m1 data + E8M0 group scales; native decode, LMC off; r240b death at c32768_n4 was posture-confounded (the gate script forced ARC_LMC=1 over the lane -- LMCache storing in the death window, the r168 e2m1-V class); re-classified 2026-11-25, re-measured LMC-free in r241 |
+| mxfp8 | 8K | 2.93 | 77.8 | 119 | 27.8 | 49.9 | 386,484 | MX KV: e4m3 data + E8M0 group scales; native decode, LMC off; the only packed lane to survive the r240b grid (e4m3-V: the r176 store-tax class, immune to the e2m1-V x LMC kill class) |
+| mxfp8 | 32K | 13.8 | 59.7 | 35 | 10.0 | 64.1 | 386,484 | MX KV: e4m3 data + E8M0 group scales; native decode, LMC off; the only packed lane to survive the r240b grid (e4m3-V: the r176 store-tax class, immune to the e2m1-V x LMC kill class) |
+| mxk8v4 | 8K | 3.02 | 78.8 | 120 | 27.5 | 49.2 | 504,832 | mixed MX KV: e4m3 K + e2m1 V; native decode, LMC off; r240b death at c32768_n4 (DEVICE_LOST) was posture-confounded (ARC_LMC=1 forced -- the r168 e2m1-V class); re-classified 2026-11-25, re-measured LMC-free in r241 |
+| mxk8v4 | 32K | 13.2 | 63.5 | 36 | 10.5 | 61.9 | 504,832 | mixed MX KV: e4m3 K + e2m1 V; native decode, LMC off; r240b death at c32768_n4 (DEVICE_LOST) was posture-confounded (ARC_LMC=1 forced -- the r168 e2m1-V class); re-classified 2026-11-25, re-measured LMC-free in r241 |
 
-## TurboQuant presets (Qwen3.8-27B FP8 + MTP k3, r240b concurrency sweeps)
+## FP8 versus TurboQuant — the wheel's capacity presets (r240b sweeps)
 
-The wheel's four TurboQuant KV dtypes serve via the same knob; the r240b gate ran the full conc {1,2,3,4,8} sweep per preset (fresh boot per cell, `VLLM_ARC_TQ_SPEC_FIX=1` default posture):
+The wheel's four TurboQuant KV dtypes serve via the same knob; the r240b gate ran the full conc {1,2,3,4,8} sweep per preset (fresh boot per cell, `VLLM_ARC_TQ_SPEC_FIX=1` default posture). Every table below is the preset measured against the fp8_e4m3 incumbent (`qf3`) on the same protocol:
 
 | dtype | Context | TTFT solo (s) | Decode solo (tok/s) | Agg @ c8 (tok/s) | Per-user @ c8 (tok/s) | KV pool (tok, x vs fp8) | Note |
 |---|---|---|---|---|---|---|---|
@@ -129,212 +139,137 @@ The wheel's four TurboQuant KV dtypes serve via the same knob; the r240b gate ra
 | 4 | 36.9 | 57.2 | 7.0 | 5.7 | 19 | 28% | 499.2 |
 | 8 | 69.6 | 131.3 | 3.5 | 2.7 | 19 | 14% | 3203.6 |
 
-## MX KV lanes — concurrency sweep (Qwen3.8-27B FP8 + MTP k3, r240b)
+## FP8 versus MX KV lanes — the concurrency sweep (r240b, re-measured LMC-free in r241)
 
-Every MX lane swept at concurrency {1,2,4,8} at every context step of the canonical ladder — 1K/8K/32K/64K/128K (fresh boot per lane; one boot serves its whole grid). Outcome: mxfp8 completes the full grid; mxfp4 and mxk8v4 died at the sustained 32K × n4 decode face — posture-confounded deaths (r240b forced ARC_LMC=1 over the MX cells against the certified posture; LMCache stored in both death windows — the r168 e2m1-V class; every clean MX reference ran LMC-free): re-classified 2026-11-25, re-measured LMC-free in r241. A `-` rung or a refusal-summary row below is a banked KV_CAP point or banked engine-death face, never unmeasured coverage; the 1K/8K grids and the 32K n1/n2 rungs are real measurements on both lanes):
+Every MX lane swept at concurrency {1,2,4,8} at every context step of the canonical ladder — 1K/8K/32K/64K/128K (fresh boot per lane; one boot serves its whole grid). Outcome (r241, LMC-free): all three lanes serve their full grids — the r240b deaths of mxfp4 and mxk8v4 at the sustained 32K × n4 face were posture-confounded (r240b forced ARC_LMC=1 over the MX cells against the certified posture; LMCache stored in both death windows — the r168 e2m1-V class), re-classified 2026-11-25 and re-measured clean in r241: 68/68 faces, zero LMCache lines, zero tracebacks, every death face alive with full n_ok. A `-` rung below is the pool's KV_CAP point (the grid ends where capacity ends — mxfp4 serves 128K at n1–n4; mxfp8/mxk8v4 at n1–n2), never unmeasured coverage:
 
 ### `mxfp4` — qwen fp8 k3 — 1K context
 
 | Conc | TTFT mean (s) | TTFT max (s) | Per-user mean | Per-user worst | Aggregate (tok/s) | Scaling eff. | ITL p90 max (ms) |
 |---|---|---|---|---|---|---|---|
-| 1 | 0.39 | 0.39 | 88.4 | 88.4 | 84 | 100% | 50.7 |
-| 2 | 0.46 | 0.59 | 69.7 | 69.2 | 131 | 79% | 53.6 |
-| 4 | 0.78 | 0.89 | 70.5 | 67.4 | 245 | 73% | 58.7 |
-| 8 | 1.44 | 1.56 | 60.7 | 55.5 | 388 | 58% | 68.1 |
+| 1 | 0.40 | 0.40 | 88.5 | 88.5 | 84 | 100% | 50.6 |
+| 2 | 0.45 | 0.59 | 69.8 | 69.2 | 132 | 79% | 53.6 |
+| 4 | 0.76 | 0.88 | 71.4 | 68.4 | 249 | 74% | 58.7 |
+| 8 | 1.41 | 1.53 | 61.1 | 54.2 | 381 | 57% | 68.1 |
 
 ### `mxfp4` — qwen fp8 k3 — 8K context
 
 | Conc | TTFT mean (s) | TTFT max (s) | Per-user mean | Per-user worst | Aggregate (tok/s) | Scaling eff. | ITL p90 max (ms) |
 |---|---|---|---|---|---|---|---|
-| 1 | 2.97 | 2.97 | 78.8 | 78.8 | 57 | 100% | 49.5 |
-| 2 | 4.49 | 5.98 | 60.3 | 51.5 | 82 | 72% | 55.3 |
-| 4 | 8.91 | 12.4 | 44.0 | 30.8 | 102 | 45% | 65.9 |
-| 8 | 15.9 | 24.7 | 28.8 | 17.2 | 121 | 27% | 119.4 |
+| 1 | 2.93 | 2.93 | 79.7 | 79.7 | 57 | 100% | 49.4 |
+| 2 | 4.39 | 5.81 | 63.1 | 54.3 | 85 | 74% | 55.5 |
+| 4 | 8.92 | 12.4 | 43.3 | 30.3 | 101 | 44% | 65.6 |
+| 8 | 15.9 | 24.6 | 29.6 | 17.3 | 125 | 27% | 87.9 |
 
 ### `mxfp4` — qwen fp8 k3 — 32K context
 
 | Conc | TTFT mean (s) | TTFT max (s) | Per-user mean | Per-user worst | Aggregate (tok/s) | Scaling eff. | ITL p90 max (ms) |
 |---|---|---|---|---|---|---|---|
-| 1 | 13.3 | 13.3 | 63.3 | 63.3 | 26 | 100% | 58.1 |
-| 2 | 21.6 | 26.9 | 40.8 | 28.1 | 32 | 60% | 72.2 |
-| 4 | - | - | - | - | - | - | - |
-| 8 | - | - | - | - | - | - | - |
+| 1 | 13.2 | 13.2 | 63.7 | 63.7 | 26 | 100% | 58.1 |
+| 2 | 21.5 | 26.7 | 41.1 | 28.2 | 32 | 60% | 72.1 |
+| 4 | 35.6 | 53.6 | 22.1 | 11.7 | 34 | 32% | 101.2 |
+| 8 | 63.2 | 108.1 | 11.5 | 5.3 | 36 | 17% | 3380.7 |
+
+### `mxfp4` — qwen fp8 k3 — 64K context
+
+| Conc | TTFT mean (s) | TTFT max (s) | Per-user mean | Per-user worst | Aggregate (tok/s) | Scaling eff. | ITL p90 max (ms) |
+|---|---|---|---|---|---|---|---|
+| 1 | 29.7 | 29.7 | 54.6 | 54.6 | 15 | 100% | 69.7 |
+| 2 | 45.8 | 59.5 | 26.8 | 13.6 | 16 | 53% | 96.5 |
+| 4 | 76.8 | 120.1 | 13.0 | 5.6 | 17 | 29% | 3477.9 |
+| 8 | 138.1 | 243.6 | 6.2 | 2.5 | 17 | 15% | 4030.3 |
+
+### `mxfp4` — qwen fp8 k3 — 128K context
+
+| Conc | TTFT mean (s) | TTFT max (s) | Per-user mean | Per-user worst | Aggregate (tok/s) | Scaling eff. | ITL p90 max (ms) |
+|---|---|---|---|---|---|---|---|
+| 1 | 72.5 | 72.5 | 34.6 | 34.6 | 7 | 100% | 94.6 |
+| 2 | 109.8 | 145.6 | 16.3 | 6.1 | 7 | 52% | 146.9 |
+| 4 | 185.0 | 295.1 | 7.0 | 2.4 | 7 | 27% | 5001.3 |
 
 ### `mxfp8` — qwen fp8 k3 — 1K context
 
 | Conc | TTFT mean (s) | TTFT max (s) | Per-user mean | Per-user worst | Aggregate (tok/s) | Scaling eff. | ITL p90 max (ms) |
 |---|---|---|---|---|---|---|---|
-| 1 | 0.29 | 0.29 | 86.4 | 86.4 | 83 | 100% | 54.6 |
-| 2 | 0.46 | 0.60 | 73.5 | 70.6 | 132 | 80% | 58.3 |
-| 4 | 0.78 | 0.90 | 55.3 | 47.3 | 183 | 55% | 63.5 |
-| 8 | 1.91 | 2.09 | 53.1 | 44.1 | 305 | 46% | 73.2 |
+| 1 | 0.29 | 0.29 | 86.8 | 86.8 | 83 | 100% | 54.5 |
+| 2 | 0.47 | 0.60 | 72.2 | 67.8 | 131 | 78% | 58.2 |
+| 4 | 0.74 | 0.85 | 63.3 | 53.5 | 207 | 62% | 63.4 |
+| 8 | 1.91 | 2.10 | 51.6 | 44.0 | 305 | 46% | 73.2 |
 
 ### `mxfp8` — qwen fp8 k3 — 8K context
 
 | Conc | TTFT mean (s) | TTFT max (s) | Per-user mean | Per-user worst | Aggregate (tok/s) | Scaling eff. | ITL p90 max (ms) |
 |---|---|---|---|---|---|---|---|
-| 1 | 2.97 | 2.97 | 76.9 | 76.9 | 56 | 100% | 51.1 |
-| 2 | 4.48 | 5.97 | 59.5 | 50.9 | 81 | 73% | 58.6 |
-| 4 | 8.98 | 12.3 | 44.2 | 30.5 | 101 | 46% | 71.3 |
-| 8 | 16.1 | 24.9 | 27.7 | 16.7 | 118 | 26% | 98.7 |
+| 1 | 2.93 | 2.93 | 77.8 | 77.8 | 56 | 100% | 51.0 |
+| 2 | 4.37 | 5.81 | 57.1 | 51.3 | 78 | 69% | 58.6 |
+| 4 | 8.83 | 12.1 | 40.5 | 26.7 | 92 | 41% | 71.1 |
+| 8 | 15.8 | 24.6 | 27.8 | 17.0 | 119 | 26% | 98.6 |
 
 ### `mxfp8` — qwen fp8 k3 — 32K context
 
 | Conc | TTFT mean (s) | TTFT max (s) | Per-user mean | Per-user worst | Aggregate (tok/s) | Scaling eff. | ITL p90 max (ms) |
 |---|---|---|---|---|---|---|---|
-| 1 | 13.9 | 13.9 | 59.4 | 59.4 | 25 | 100% | 64.4 |
-| 2 | 23.0 | 27.4 | 36.8 | 28.1 | 30 | 59% | 83.2 |
-| 4 | 37.3 | 54.5 | 19.6 | 11.1 | 33 | 33% | 157.9 |
-| 8 | 65.3 | 110.4 | 9.6 | 5.1 | 33 | 17% | 3177.1 |
+| 1 | 13.8 | 13.8 | 59.7 | 59.7 | 25 | 100% | 64.3 |
+| 2 | 22.8 | 27.1 | 37.7 | 28.1 | 30 | 60% | 83.3 |
+| 4 | 37.0 | 54.1 | 19.0 | 11.3 | 32 | 32% | 123.3 |
+| 8 | 64.5 | 109.3 | 10.0 | 5.1 | 35 | 17% | 3161.0 |
 
 ### `mxfp8` — qwen fp8 k3 — 64K context
 
 | Conc | TTFT mean (s) | TTFT max (s) | Per-user mean | Per-user worst | Aggregate (tok/s) | Scaling eff. | ITL p90 max (ms) |
 |---|---|---|---|---|---|---|---|
-| 1 | 30.5 | 30.5 | 35.8 | 35.8 | 13 | 100% | 82.7 |
-| 2 | 47.8 | 61.1 | 23.1 | 13.3 | 15 | 59% | 119.0 |
-| 4 | 79.3 | 123.7 | 10.9 | 5.1 | 16 | 31% | 3394.2 |
+| 1 | 30.2 | 30.2 | 35.9 | 35.9 | 13 | 100% | 82.8 |
+| 2 | 47.3 | 60.4 | 23.3 | 13.4 | 15 | 60% | 118.7 |
+| 4 | 78.4 | 122.3 | 11.1 | 5.3 | 16 | 31% | 3444.1 |
 
 ### `mxfp8` — qwen fp8 k3 — 128K context
 
 | Conc | TTFT mean (s) | TTFT max (s) | Per-user mean | Per-user worst | Aggregate (tok/s) | Scaling eff. | ITL p90 max (ms) |
 |---|---|---|---|---|---|---|---|
-| 1 | 74.6 | 74.6 | 32.7 | 32.7 | 6 | 100% | 119.6 |
-| 2 | 114.5 | 149.7 | 11.2 | 5.5 | 6 | 50% | 191.5 |
+| 1 | 73.9 | 73.9 | 32.7 | 32.7 | 7 | 100% | 119.8 |
+| 2 | 113.4 | 148.4 | 11.2 | 5.5 | 6 | 49% | 191.1 |
 
 ### `mxk8v4` — qwen fp8 k3 — 1K context
 
 | Conc | TTFT mean (s) | TTFT max (s) | Per-user mean | Per-user worst | Aggregate (tok/s) | Scaling eff. | ITL p90 max (ms) |
 |---|---|---|---|---|---|---|---|
-| 1 | 0.30 | 0.30 | 80.0 | 80.0 | 77 | 100% | 53.3 |
-| 2 | 0.40 | 0.51 | 82.2 | 81.0 | 156 | 101% | 56.4 |
-| 4 | 0.79 | 0.90 | 69.4 | 66.5 | 242 | 79% | 62.1 |
-| 8 | 1.79 | 1.97 | 53.6 | 46.3 | 321 | 52% | 71.8 |
+| 1 | 0.29 | 0.29 | 79.9 | 79.9 | 77 | 100% | 53.6 |
+| 2 | 0.47 | 0.61 | 81.4 | 80.9 | 151 | 98% | 56.9 |
+| 4 | 0.79 | 0.90 | 66.8 | 61.8 | 226 | 73% | 62.1 |
+| 8 | 1.90 | 2.08 | 55.0 | 47.3 | 325 | 53% | 71.8 |
 
 ### `mxk8v4` — qwen fp8 k3 — 8K context
 
 | Conc | TTFT mean (s) | TTFT max (s) | Per-user mean | Per-user worst | Aggregate (tok/s) | Scaling eff. | ITL p90 max (ms) |
 |---|---|---|---|---|---|---|---|
-| 1 | 3.06 | 3.06 | 78.0 | 78.0 | 56 | 100% | 50.4 |
-| 2 | 4.74 | 6.38 | 53.6 | 40.9 | 68 | 61% | 57.3 |
-| 4 | 8.96 | 12.4 | 44.1 | 29.9 | 102 | 46% | 69.5 |
-| 8 | 16.0 | 25.0 | 27.0 | 16.5 | 119 | 27% | 117.2 |
+| 1 | 3.02 | 3.02 | 78.8 | 78.8 | 56 | 100% | 50.3 |
+| 2 | 4.63 | 6.22 | 60.2 | 50.9 | 81 | 71% | 57.3 |
+| 4 | 8.88 | 12.3 | 44.3 | 29.9 | 103 | 46% | 69.4 |
+| 8 | 15.9 | 24.8 | 27.5 | 16.7 | 120 | 27% | 95.4 |
 
 ### `mxk8v4` — qwen fp8 k3 — 32K context
 
 | Conc | TTFT mean (s) | TTFT max (s) | Per-user mean | Per-user worst | Aggregate (tok/s) | Scaling eff. | ITL p90 max (ms) |
 |---|---|---|---|---|---|---|---|
-| 1 | 13.3 | 13.3 | 63.5 | 63.5 | 26 | 100% | 62.1 |
-| 2 | 21.2 | 26.9 | 38.0 | 25.9 | 31 | 58% | 80.2 |
-| 4 | - | - | - | - | - | - | - |
-| 8 | - | - | - | - | - | - | - |
+| 1 | 13.2 | 13.2 | 63.5 | 63.5 | 26 | 100% | 62.1 |
+| 2 | 21.1 | 26.7 | 36.6 | 25.5 | 31 | 58% | 80.2 |
+| 4 | 36.2 | 53.7 | 20.8 | 11.0 | 34 | 32% | 116.7 |
+| 8 | 63.2 | 107.7 | 10.5 | 5.2 | 36 | 17% | 3260.8 |
 
-### Lane/ctx pairs with banked faces but zero served requests
+### `mxk8v4` — qwen fp8 k3 — 64K context
 
-| Lane | Context (K) | Banked faces | Outcome |
-|---|---|---|---|
-| mxfp4 | 64 | 5 | posture-confounded engine death mid-sweep (r240b, re-classified 2026-11-25) |
-| mxfp4 | 128 | 4 | posture-confounded engine death mid-sweep (r240b, re-classified 2026-11-25) |
-| mxk8v4 | 64 | 4 | posture-confounded engine death mid-sweep (r240b, re-classified 2026-11-25) |
-| mxk8v4 | 128 | 3 | posture-confounded engine death mid-sweep (r240b, re-classified 2026-11-25) |
+| Conc | TTFT mean (s) | TTFT max (s) | Per-user mean | Per-user worst | Aggregate (tok/s) | Scaling eff. | ITL p90 max (ms) |
+|---|---|---|---|---|---|---|---|
+| 1 | 29.9 | 29.9 | 50.6 | 50.6 | 14 | 100% | 78.0 |
+| 2 | 46.9 | 59.7 | 22.8 | 14.3 | 15 | 53% | 113.0 |
+| 4 | 78.0 | 120.4 | 11.0 | 5.5 | 16 | 28% | 3400.3 |
 
-Outcome detail: posture-confounded engine death mid-sweep (r240b, re-classified 2026-11-25): the gate script forced ARC_LMC=1 over the MX cells against the certified LMC-free posture -- mxfp4/mxk8v4 died at c32768_n4 with LMCache storing in the death windows (the r168 e2m1-V class; mxfp4 at the 300 s watchdog, mxk8v4 DEVICE_LOST), while mxfp8 (e4m3-V) survived the same forced posture -- re-measured LMC-free in r241.
+### `mxk8v4` — qwen fp8 k3 — 128K context
 
-## Gemma-4-31B (no MTP)
-
-`auto` refuses at the certified gemma posture (`ARC_MAXLEN=40960`: the fp16 KV pool cannot cover one 40K session on the 31B geometry — cell `gkv_auto` banks the refusal); it serves at `ARC_MAXLEN=16384` (cell `gkv_auto16`). The incumbent fp8_e4m3 rows are the r240b `gf8` cell (online-fp8 weights — the gemma KV table is weights-constant across its rows). The three MX rows ride the r240b `gkv_m*` cells (same weights, `ARC_KVDTYPE=mxfp4|mxfp8|mxk8v4` + `ARC_MXKV_NATIVE=1`) — all three boot and bank their pools, but every decode face fatals: gemma's 10 hd512 full-attention layers sit outside the arc7 compiled instantiations (`mx_paged_decode` covers head_size 128/256 only), so the native MX-KV menu does not serve gemma on this image and those rows carry no measurements (fp8_e4m3 is the only servable KV dtype for gemma; the 128K capacity story rides the weights lane — the `gm4x` cell). `gkv_e5m2` is the per-model e5m2 refusal probe (the law is engine-level, banked on qwen `kve5m2`). A `-` row is a banked boot refusal, KV_CAP point, or the banked hd512 decode refusal, never unmeasured coverage. Full gemma KV report: [gemma-4-31b-kv-cache-dtype](gemma-4-31b-kv-cache-dtype.md).
-
-| --kv-cache-dtype | Context | TTFT solo (s) | Decode solo (tok/s) | Agg @ c8 (tok/s) | Per-user @ c8 (tok/s) | ITL p50 (ms) | KV pool (tok) | Note |
-|---|---|---|---|---|---|---|---|---|
-| fp8_e4m3 | 8K | 3.75 | 26.7 | - | - | 37.6 | 56,128 | the gemma incumbent: online-fp8 weights + fp8_e4m3 KV (r240b gf8 cell, full conc ladder) |
-| fp8_e4m3 | 32K | 20.6 | 25.4 | - | - | 39.5 | 56,128 | the gemma incumbent: online-fp8 weights + fp8_e4m3 KV (r240b gf8 cell, full conc ladder) |
-| auto | 8K | - | - | - | - | - | - | fp16 KV; refuses at max_model_len 40960 (the certified gemma posture), servable at 16384 |
-| auto | 32K | - | - | - | - | - | - | fp16 KV; refuses at max_model_len 40960 (the certified gemma posture), servable at 16384 |
-| mxfp4 | 8K | - | - | - | - | - | 105,669 | MX KV on gemma: e2m1 data + E8M0 scales; boots + banks the pool, but every decode face fatals on the hd512 layers (D=128/256 instantiations only) -- zero served faces (r240b) |
-| mxfp4 | 32K | - | - | - | - | - | 105,669 | MX KV on gemma: e2m1 data + E8M0 scales; boots + banks the pool, but every decode face fatals on the hd512 layers (D=128/256 instantiations only) -- zero served faces (r240b) |
-| mxfp8 | 8K | - | - | - | - | - | 54,426 | MX KV on gemma: e4m3 data + E8M0 scales; boots + banks the pool, but every decode face fatals on the hd512 layers (D=128/256 instantiations only) -- zero served faces (r240b) |
-| mxfp8 | 32K | - | - | - | - | - | 54,426 | MX KV on gemma: e4m3 data + E8M0 scales; boots + banks the pool, but every decode face fatals on the hd512 layers (D=128/256 instantiations only) -- zero served faces (r240b) |
-| mxk8v4 | 8K | - | - | - | - | - | 71,856 | mixed MX KV on gemma: e4m3 K + e2m1 V; boots + banks the pool, but every decode face fatals on the hd512 layers (D=128/256 instantiations only) -- zero served faces (r240b) |
-| mxk8v4 | 32K | - | - | - | - | - | 71,856 | mixed MX KV on gemma: e4m3 K + e2m1 V; boots + banks the pool, but every decode face fatals on the hd512 layers (D=128/256 instantiations only) -- zero served faces (r240b) |
-| fp8_e5m2 | 8K | - | - | - | - | - | - | refusal probe: the e5m2 law is engine-level (no e5m2 KV dequant path in esimd FA2 on Xe2, banked on qwen kve5m2) |
-| fp8_e5m2 | 32K | - | - | - | - | - | - | refusal probe: the e5m2 law is engine-level (no e5m2 KV dequant path in esimd FA2 on Xe2, banked on qwen kve5m2) |
-
-## Gemma 128K annex (r240c): 131072 maxlen needs MXFP4 weights
-
-The certified gemma posture caps `max_model_len` at 40960. Raising it to 131072 is a KV-headroom question: the annex boots the 8-bit lane (`gm8x`) and the 4-bit lane (`gm4x`) at `ARC_MAXLEN=131072` — the MXFP4 weight savings are what buy the pool for a full 128K session.
-
-8-bit control (`gm8x`): outcome `BOOT_FAIL` — the boot refusal banks the boundary.
-
-| dtype (cell) | Context | TTFT solo (s) | Decode solo (tok/s) | Agg @ c8 (tok/s) | Per-user @ c8 (tok/s) | KV pool (tok) |
-|---|---|---|---|---|---|---|
-| MXFP4 (gm4x) | 8K | 3.71 | 37.3 | 91 | 18.2 | 288,972 |
-| MXFP4 (gm4x) | 32K | 20.9 | 35.0 | 25 | 8.4 | 288,972 |
-| MXFP4 (gm4x) | 128K | 175.6 | 28.3 | - | - | 288,972 |
-
-Full lane report (main body + the 128K annex section): [gemma-4-31b-mxfp4](gemma-4-31b-mxfp4.md).
-
-## Capacity cliffs (the whole point of the dtype menu)
-
-Session footprint = ctx + 600 + 64 tokens; pool = per-boot parsed (`posture.txt`). Max concurrent **full-length** sessions per dtype:
-
-| dtype (cell) | Pool (tok) | @1K | @8K | @32K | pool source |
-|---|---|---|---|---|---|
-| fp8_e4m3 | 398,363 | 235 | 44 | 11 | r240b posture |
-| turboquant_k8v4 | 517,815 | 306 | 58 | 15 | r240b posture |
-| turboquant_4bit_nc | 745,519 | 441 | 84 | 22 | r240b posture |
-| turboquant_k3v4_nc | 838,192 | 496 | 94 | 25 | r240b posture |
-| turboquant_3bit_nc | 959,909 | 568 | 108 | 28 | r240b posture |
-| fp8 | 397,470 | 235 | 44 | 11 | P6.37 G: ~= fp8_e4m3 (boot-day free-memory variance) |
-| auto@131072 | 198,735 | 117 | 22 | 5 | P6.37 G: exactly half the fp8 pool (fp16 law) |
-| mxfp4 (MX KV) | 721,994 | 427 | 81 | 21 | r240b posture |
-| mxfp8 (MX KV) | 386,484 | 228 | 43 | 11 | r240b posture |
-| mxk8v4 (MX KV) | 504,832 | 299 | 57 | 15 | r240b posture |
-| fp8_e4m3 (gemma) | 56,128 | 33 | 6 | 1 | r240b posture |
-| auto@16384 (gemma) | - | - | - | - |  |
-| mxfp4 MX KV (gemma) | 105,669 | 62 | 11 | 3 | r240b posture |
-| mxfp8 MX KV (gemma) | 54,426 | 32 | 6 | 1 | r240b posture |
-| mxk8v4 MX KV (gemma) | 71,856 | 42 | 8 | 2 | r240b posture |
-| mxfp4@131072 (gemma) | 288,972 | 171 | 32 | 8 | r240c posture |
-
-Refusal boundaries: `auto` at max_model_len 262144 (qwen, fp16 capacity) and 40960 (gemma); `fp8_e5m2` at boot (kernel, not memory). Every refusal is banked with its serve log.
-
-## Configuration (copyable deltas on the certified posture)
-
-| dtype | cell | delta | max_model_len |
-|---|---|---|---|
-| fp8_e4m3 | qf3 / gf8 | (none — incumbent) | 262144 / 40960 |
-| fp8 | kvfp8 | ARC_KVDTYPE=fp8 | 262144 |
-| auto | kvauto131 | ARC_KVDTYPE=auto | 131072 |
-| mxfp4 | kvm4 | ARC_KVDTYPE=mxfp4 ARC_MXKV_NATIVE=1 | 262144 |
-| mxfp8 | kvm8 | ARC_KVDTYPE=mxfp8 ARC_MXKV_NATIVE=1 | 262144 |
-| mxk8v4 | kvmk | ARC_KVDTYPE=mxk8v4 ARC_MXKV_NATIVE=1 | 262144 |
-| mxfp4 (gemma) | gkv_m4 | ARC_QUANT=fp8 ARC_KVDTYPE=mxfp4 ARC_MXKV_NATIVE=1 | 40960 |
-| mxfp8 (gemma) | gkv_m8 | ARC_QUANT=fp8 ARC_KVDTYPE=mxfp8 ARC_MXKV_NATIVE=1 | 40960 |
-| mxk8v4 (gemma) | gkv_mk | ARC_QUANT=fp8 ARC_KVDTYPE=mxk8v4 ARC_MXKV_NATIVE=1 | 40960 |
-| fp8_e5m2 (gemma) | gkv_e5m2 | ARC_KVDTYPE=fp8_e5m2 — refusal probe | 40960 |
-| auto | kvauto | ARC_KVDTYPE=auto — refuses | 262144 |
-| auto (gemma) | gkv_auto16 | ARC_KVDTYPE=auto ARC_MAXLEN=16384 | 16384 |
-| auto (gemma) | gkv_auto | ARC_KVDTYPE=auto — refuses at 40960 | 40960 |
-| turboquant_* | tq_* | ARC_KVDTYPE=turboquant_<preset> | 262144 |
-| mxfp4 (gemma 128K) | gm4x | ARC_QUANT=mxfp4 ARC_MXFP4_MODE=w4a16 ARC_MAXLEN=131072 | 131072 |
-| fp8_e5m2 | kve5m2 | ARC_KVDTYPE=fp8_e5m2 — refuses (no kernel) | - |
-
-`ARC_MAXLEN` is what makes fp16-KV `auto` servable — the refusal is the capacity cliff itself. The full qwen3.8-27b-fp8-k3 invocation: [qwen3.8-27b-fp8-k3.md](qwen3.8-27b-fp8-k3.md).
-
-![TTFT by KV-cache dtype (solo, 8K/32K) — qwen fp8 k3](charts/kvdt_ttft.svg)
-
-<i>TTFT by KV-cache dtype (solo, 8K/32K) — qwen fp8 k3</i>
-*Interpretation:* speed is flat across the servable dtypes — the KV dtype menu trades pool size, not per-token speed; the capacity table above is the real axis. A missing bar is a banked refusal (boot or engine-death), never unmeasured coverage.
-
-![Solo decode speed by KV-cache dtype (8K/32K) — qwen fp8 k3](charts/kvdt_decode.svg)
-
-<i>Solo decode speed by KV-cache dtype (8K/32K) — qwen fp8 k3</i>
-*Interpretation:* speed is flat across the servable dtypes — the KV dtype menu trades pool size, not per-token speed; the capacity table above is the real axis. A missing bar is a banked refusal (boot or engine-death), never unmeasured coverage.
-
-![Aggregate throughput @ c8 by KV-cache dtype (8K/32K) — qwen fp8 k3](charts/kvdt_agg8.svg)
-
-<i>Aggregate throughput @ c8 by KV-cache dtype (8K/32K) — qwen fp8 k3</i>
-*Interpretation:* speed is flat across the servable dtypes — the KV dtype menu trades pool size, not per-token speed; the capacity table above is the real axis. A missing bar is a banked refusal (boot or engine-death), never unmeasured coverage.
+| Conc | TTFT mean (s) | TTFT max (s) | Per-user mean | Per-user worst | Aggregate (tok/s) | Scaling eff. | ITL p90 max (ms) |
+|---|---|---|---|---|---|---|---|
+| 1 | 72.4 | 72.4 | 35.2 | 35.2 | 7 | 100% | 110.0 |
+| 2 | 110.0 | 145.4 | 14.7 | 6.3 | 7 | 52% | 2946.7 |
 
 ![MX KV aggregate vs concurrency — qwen fp8 k3 — 1K ctx (a missing bar is a banked refusal, KV_CAP point, or banked engine-death face — never unmeasured coverage)](charts/mxq_agg_1k.svg)
 
@@ -356,9 +291,34 @@ Refusal boundaries: `auto` at max_model_len 262144 (qwen, fp16 capacity) and 409
 
 <i>MX KV aggregate vs concurrency — qwen fp8 k3 — 128K ctx (a missing bar is a banked refusal, KV_CAP point, or banked engine-death face — never unmeasured coverage)</i>
 
+## FP8 versus the alternatives — the comparison in one place
+
+Every chart in this section holds the weights lane constant (checkpoint-fp8 + MTP k3) and varies only the KV dtype; the fp8_e4m3 incumbent (`qf3`) is the control series in each. A missing point or a line that stops is a banked refusal, KV_CAP point, or engine-death face — never unmeasured coverage.
+
+### The 8K/32K snapshot — every servable dtype versus fp8
+
+![TTFT by KV-cache dtype (solo, 8K/32K) — qwen fp8 k3](charts/kvdt_ttft.svg)
+
+<i>TTFT by KV-cache dtype (solo, 8K/32K) — qwen fp8 k3</i>
+*Interpretation:* speed is flat across the servable dtypes — the KV dtype menu trades pool size, not per-token speed; the capacity table above is the real axis. A missing bar is a banked refusal (boot or engine-death), never unmeasured coverage.
+
+![Solo decode speed by KV-cache dtype (8K/32K) — qwen fp8 k3](charts/kvdt_decode.svg)
+
+<i>Solo decode speed by KV-cache dtype (8K/32K) — qwen fp8 k3</i>
+*Interpretation:* speed is flat across the servable dtypes — the KV dtype menu trades pool size, not per-token speed; the capacity table above is the real axis. A missing bar is a banked refusal (boot or engine-death), never unmeasured coverage.
+
+![Aggregate throughput @ c8 by KV-cache dtype (8K/32K) — qwen fp8 k3](charts/kvdt_agg8.svg)
+
+<i>Aggregate throughput @ c8 by KV-cache dtype (8K/32K) — qwen fp8 k3</i>
+*Interpretation:* speed is flat across the servable dtypes — the KV dtype menu trades pool size, not per-token speed; the capacity table above is the real axis. A missing bar is a banked refusal (boot or engine-death), never unmeasured coverage.
+
+### KV pool by dtype — the capacity axis
+
 ![KV pool by dtype — capacity is the dtype menu's axis](charts/kvdt_pool.svg)
 
 <i>KV pool by dtype — capacity is the dtype menu's axis</i>
+
+### FP8 versus TurboQuant — speed, TTFT, aggregate vs context
 
 ![Per-user speed vs context length — fp8 vs TurboQuant (solo)](charts/tq_speed_ctx.svg)
 
@@ -373,5 +333,58 @@ Refusal boundaries: `auto` at max_model_len 262144 (qwen, fp16 capacity) and 409
 <i>Worst-user TTFT @ c8 vs context length — fp8 vs TurboQuant</i>
 
 *Interpretation:* TurboQuant holds solo speed within 90% of fp8 at every measured context (worst relative delta) while multiplying the KV pool up to 3.68x — the capacity table is the payoff; a line that stops before 128K is the pool cliff reached later, not sooner.
+
+### FP8 versus MX KV — speed, TTFT, and aggregate vs context
+
+The fp8_e4m3 control (`qf3`) against each native MX lane, same protocol, same weights lane. The MX lines ride the r240b conc grid (the r241 LMC-free re-measurement supersedes those cells at close-out):
+
+![FP8 versus MX KV — per-user speed vs context length (solo)](charts/mx_speed_ctx.svg)
+
+<i>FP8 versus MX KV — per-user speed vs context length (solo)</i>
+
+![FP8 versus MX KV — aggregate throughput @ c8 vs context length](charts/mx_agg8_ctx.svg)
+
+<i>FP8 versus MX KV — aggregate throughput @ c8 vs context length</i>
+
+![FP8 versus MX KV — TTFT vs context length (solo)](charts/mx_ttft_ctx.svg)
+
+<i>FP8 versus MX KV — TTFT vs context length (solo)</i>
+
+*Interpretation:* the MX lanes hold a flat 0.79–0.81× of the fp8 control across the ladder — the menu trades a slice of speed for 1.26–1.81× the KV pool; a broken line is a banked engine-death face (the r240b posture-confound class, superseded by the r241 LMC-free grid), never unmeasured coverage.
+
+## Capacity cliffs (the whole point of the dtype menu)
+
+Session footprint = ctx + 600 + 64 tokens; pool = per-boot parsed (`posture.txt`). Max concurrent **full-length** sessions per dtype:
+
+| dtype (cell) | Pool (tok) | @1K | @8K | @32K | pool source |
+|---|---|---|---|---|---|
+| fp8_e4m3 | 398,363 | 235 | 44 | 11 | r240b posture |
+| turboquant_k8v4 | 517,815 | 306 | 58 | 15 | r240b posture |
+| turboquant_4bit_nc | 745,519 | 441 | 84 | 22 | r240b posture |
+| turboquant_k3v4_nc | 838,192 | 496 | 94 | 25 | r240b posture |
+| turboquant_3bit_nc | 959,909 | 568 | 108 | 28 | r240b posture |
+| fp8 | 397,470 | 235 | 44 | 11 | P6.37 G: ~= fp8_e4m3 (boot-day free-memory variance) |
+| auto@131072 | 198,735 | 117 | 22 | 5 | P6.37 G: exactly half the fp8 pool (fp16 law) |
+| mxfp4 (MX KV) | 721,994 | 427 | 81 | 21 | r241 posture |
+| mxfp8 (MX KV) | 386,484 | 228 | 43 | 11 | r241 posture |
+| mxk8v4 (MX KV) | 504,832 | 299 | 57 | 15 | r241 posture |
+
+Refusal boundaries: `auto` at max_model_len 262144 (qwen, fp16 capacity); `fp8_e5m2` at boot (kernel, not memory). Every refusal is banked with its serve log. The gemma capacity ladders live in the companion report: [gemma-4-31b-kv-cache-dtype](gemma-4-31b-kv-cache-dtype.md).
+
+## Configuration (copyable deltas on the certified posture)
+
+| dtype | cell | delta | max_model_len |
+|---|---|---|---|
+| fp8_e4m3 | qf3 | (none — incumbent) | 262144 |
+| fp8 | kvfp8 | ARC_KVDTYPE=fp8 | 262144 |
+| auto | kvauto131 | ARC_KVDTYPE=auto | 131072 |
+| auto | kvauto | ARC_KVDTYPE=auto — refuses | 262144 |
+| mxfp4 | kvm4 | ARC_KVDTYPE=mxfp4 ARC_MXKV_NATIVE=1 | 262144 |
+| mxfp8 | kvm8 | ARC_KVDTYPE=mxfp8 ARC_MXKV_NATIVE=1 | 262144 |
+| mxk8v4 | kvmk | ARC_KVDTYPE=mxk8v4 ARC_MXKV_NATIVE=1 | 262144 |
+| turboquant_* | tq_* | ARC_KVDTYPE=turboquant_<preset> | 262144 |
+| fp8_e5m2 | kve5m2 | ARC_KVDTYPE=fp8_e5m2 — refuses (no kernel) | - |
+
+MX-KV posture law: `ARC_LMC=0` (or unset — the serve script auto-offs) on every MX lane; the r240b deaths that ran `ARC_LMC=1` are banked as the posture-confound class (re-measured LMC-free in r241). `ARC_MAXLEN` is what makes fp16-KV `auto` servable — the refusal is the capacity cliff itself. The full qwen3.8-27b-fp8-k3 invocation: [qwen3.8-27b-fp8-k3.md](qwen3.8-27b-fp8-k3.md). The gemma deltas: [gemma-4-31b-kv-cache-dtype](gemma-4-31b-kv-cache-dtype.md).
 
 Banks: r240b `results/2026-11-24-p647-r240b-conc/` (conc cells + posture pools), r240 `results/2026-11-24-p647-r240-reports/` (solo dtype cells + refusals); knob: `ARC_KVDTYPE` in `tools/serve_arc_b70.sh`. Identity records per TQ preset: CONFIGURATION-arc "KV-cache dtype".

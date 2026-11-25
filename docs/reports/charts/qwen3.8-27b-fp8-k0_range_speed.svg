@@ -38,16 +38,16 @@
 <circle cx="450.0" cy="365.5" r="4.2" fill="#9333ea"/>
 <circle cx="633.0" cy="387.0" r="4.2" fill="#9333ea"/>
 <circle cx="816.0" cy="366.1" r="4.2" fill="#9333ea"/>
-<text x="84.0" y="197.4" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">34</text>
-<text x="84.0" y="238.2" font-size="10" fill="#9333ea" text-anchor="middle" font-weight="600">28</text>
+<text x="93.1" y="197.4" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">34</text>
+<text x="93.1" y="238.2" font-size="10" fill="#9333ea" text-anchor="middle" font-weight="600">28</text>
 <text x="267.0" y="202.2" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">33</text>
 <text x="267.0" y="281.8" font-size="10" fill="#9333ea" text-anchor="middle" font-weight="600">22</text>
 <text x="450.0" y="217.9" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">31</text>
 <text x="450.0" y="356.5" font-size="10" fill="#9333ea" text-anchor="middle" font-weight="600">10</text>
 <text x="633.0" y="233.4" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">29</text>
 <text x="633.0" y="378.0" font-size="10" fill="#9333ea" text-anchor="middle" font-weight="600">7</text>
-<text x="816.0" y="257.9" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">25</text>
-<text x="816.0" y="357.1" font-size="10" fill="#9333ea" text-anchor="middle" font-weight="600">10</text>
+<text x="806.9" y="257.9" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">25</text>
+<text x="806.9" y="357.1" font-size="10" fill="#9333ea" text-anchor="middle" font-weight="600">10</text>
 <line x1="84" y1="494" x2="100" y2="494" stroke="#2563eb" stroke-width="3"/>
 <text x="104" y="498" font-size="11.5" fill="#1d2939">single request (top edge)</text>
 <line x1="300" y1="494" x2="316" y2="494" stroke="#9333ea" stroke-width="3"/>
