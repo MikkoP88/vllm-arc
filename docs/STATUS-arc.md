@@ -35,11 +35,16 @@ What the certified stack delivers:
   K-precision law (e2m1 K −10 % acc/step, e2m1 V free; r238). Net:
   MX KV decode at 0.81–0.84× fp8 with 1.28–1.88× KV-token capacity;
   the MX hunt idles on closed channels (engine-shape, workload-shape,
-  counters — the r236–r238 dispositions). Stability boundary
-  (r240b, sustained-decode MT=600 protocol): mxfp4/mxk8v4 die at
-  32K × n≥4 (watchdog timeout / DEVICE_LOST) — mxfp8-KV alone is
-  clean across the full concurrency grid; deploy packed KV above 16K
-  only at low concurrency or on the mxfp8 lane. Evidence:
+  counters — the r236–r238 dispositions). Packed-KV stability —
+  r240b deaths re-classified (2026-11-25): the 32K × n≥4 deaths of
+  mxfp4/mxk8v4 (mxfp8-KV clean across the full grid) ran under a
+  harness posture defect — the gate script forced `ARC_LMC=1` over
+  the MX cells against the certified LMC-free posture; LMCache stored
+  in both death windows (the r168 e2m1-V × LMCache class; every clean
+  MX reference ran LMC-free). Not a proven intrinsic boundary; r241
+  re-runs the exact grids LMC-free. The ≥16K packed-KV restriction is
+  provisional until that bank; LMC-off-on-MX stays the certified
+  posture either way. Evidence:
   `results/2026-11-24-p647-cert28-battery/` + the r234–r238 legs.
 - **Decode postures** — **MTP k3 is the certified, overall-best depth**
   (acceptance 83.7 % strict-gate at t0; deeper drafts measured and

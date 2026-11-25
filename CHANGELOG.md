@@ -12,6 +12,33 @@ the fork SHA it was built from.
 Phase labels P0–P6.38 refer to the plan's execution phases; every phase's
 raw evidence is banked under `results/YYYY-MM-DD-<phase>-*/`.
 
+## r241 — r240b packed-KV stability finding re-classified: posture-confounded deaths, LMC-free re-run in flight (2026-11-25)
+
+- **Root cause (banked evidence)**: the r240b qwen MX-KV cells ran
+  `ARC_LMC=1` — inherited from the `$QF8` base env
+  (`tools/ar/r240b_conc_cert28.sh`) — against the certified LMC-free
+  MX posture and each boot's own WARN. LMCache actively stored in both
+  death windows (kvm4 274 / kvmk 306 store lines; the surviving
+  e4m3-V kvm8 logged 1206); every clean MX reference (r233 qwen MX
+  cells, r234, r237 — zero LMCache lines) ran LMC-free. The deaths fit
+  the r168-banked e2m1-V × LMCache interaction class, escalated to
+  engine death under MT=600 sustained load.
+- **Re-classification**: r240b Finding 2 ("qwen packed-KV
+  sustained-decode stability boundary") is retracted as an
+  *intrinsic-engine* claim — the evidence was posture-confounded. The
+  banked artifacts stand; the ≥16K/low-concurrency packed-KV
+  restriction is provisional pending the re-run. The certified law is
+  unchanged (and was always the posture the deaths violated): LMC off
+  on every MX-KV lane.
+- **r241 in flight**: the three MX grids (kvm4/kvm8/kvmk — exact
+  r240b face lists, MT=600, cert28) re-run under `ARC_LMC=0` with a
+  semantic gate (per-face n_ok/n_fail, CONC_ENGINE_DEAD
+  discrimination — the existence-only-gate law applied) and a posture
+  refuse (zero LMCache lines or the leg aborts).
+- **Corrections landed**: PERFORMANCE/STATUS/CONFIGURATION passages
+  reworded to the re-classification; r240b VERDICT correction
+  addendum; generator notes + regenerated reports.
+
 ## r240 — deep-sweep close-out: the concurrency sweep + gemma 128K annex re-audited; two new engine boundaries banked (2026-11-25)
 
 - **Campaign legs r240b/r240c pulled, VERDICTed, and re-audited**

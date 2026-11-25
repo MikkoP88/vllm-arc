@@ -895,12 +895,18 @@ gate data in the "KV-cache dtype" section below. The native MX lanes
 banks its pool but fatals at the first decode request (the hd512
 instantiation gap — gemma's full-attention layers sit outside the
 compiled head_size 128/256 set; `fp8_e4m3` is gemma's only servable
-KV dtype). And on qwen a sustained-decode stability law applies
-(r240b, MT=600 protocol): at context ≥ 32K with request concurrency
-≥ 4, the two 4-bit-V lanes die mid-face (mxfp4 worker silent-hang →
-the 300 s watchdog; mxk8v4 `UR_RESULT_ERROR_DEVICE_LOST`) — only
-mxfp8-KV completes the full concurrency grid; keep packed 4-bit-V KV
-to ≤ 16K context or low concurrency, or prefer the mxfp8 lane).
+KV dtype). On qwen, the r240b sustained-decode deaths of the two
+4-bit-V lanes (context ≥ 32K, concurrency ≥ 4: mxfp4 worker
+silent-hang → the 300 s watchdog; mxk8v4
+`UR_RESULT_ERROR_DEVICE_LOST`) are **re-classified (2026-11-25) as
+posture-confounded**: the r240b gate script forced `ARC_LMC=1` over
+the MX cells against the certified LMC-free posture (LMCache stored
+in both death windows — the r168 e2m1-V × LMCache class; every clean
+MX reference ran LMC-free), so no intrinsic boundary is proven; r241
+re-runs the exact grids LMC-free. The certified law regardless:
+`ARC_LMC=0` (or unset → auto-off) on every MX-KV lane; treat the
+≤ 16K-context restriction on 4-bit-V KV as provisional until r241
+banks.
 
 ## Posture laws (never change in production)
 
