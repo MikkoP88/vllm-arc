@@ -16,11 +16,10 @@ change.
 ## Certified release — `rel/v0.30.0-b70-cert28`
 
 Every gate GREEN with banked evidence. The image carries the certified
-engine plus the **MX KV decode lane** (P6.47, the owner-directed
-decode goal): `--kv-cache-dtype {mxfp4, mxfp8, mxk8v4}` through the
+engine plus the **MX KV decode lane** (P6.47): `--kv-cache-dtype {mxfp4, mxfp8, mxk8v4}` through the
 `vllm_gaudi/xpu/patches/mx_kv/` family + the baked arc7mx build28
 wheel (`vllm_xpu_kernels-0.1.14.1+arc7mx`, `.so` md5s asserted
-in-image; cert27 content + the r231d seqused split clamp). The
+in-image; the arc7mx build28 seqused-tightened split clamp). The
 graph-exec double-buffer (cert23) and every earlier certified patch
 ride along — full inventory:
 [`PATCHES-arc.md`](PATCHES-arc.md).
@@ -79,9 +78,8 @@ What the certified stack delivers:
 P6.47 (the MX KV decode goal) is delivered and certified through
 cert28: the §10 correctness battery (r233) plus the record legs
 (r234–r238) are banked. The 2026-11-24 deep-sweep campaign: landed —
-the record-lane re-discrimination (r239/r239b: checkpoint-lane TTFTs
-1.5–3.5× faster than their prior anchors, gemma L1 record
-parity-or-better with the agg8 record 1.85–2.4× the prior aggregate;
+the record-lane legs (r239/r239b: checkpoint-lane TTFTs and the gemma
+L1 + agg8 records at their cert28 battery values;
 bank `results/2026-11-24-p647-r239-record-lanes/`) and the docs
 hard-currency sweep (this rewrite, the [`PATCHES-arc.md`](PATCHES-arc.md)
 MX KV family, and the `tools/check_currency.sh` anchors that close

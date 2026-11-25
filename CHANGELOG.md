@@ -12,10 +12,60 @@ the fork SHA it was built from.
 Phase labels P0–P6.38 refer to the plan's execution phases; every phase's
 raw evidence is banked under `results/YYYY-MM-DD-<phase>-*/`.
 
+## r240-docs5 — deep-sweep pass 5: current-value presentation + owner-note removal (2026-11-25)
+
+- **Improvement-vs-history framing removed from every current-facing
+  doc** — documents present the current certified image's measured
+  values, not how much better they are than past measurements. Every
+  "re-discriminated / re-verified / beats its historical anchor /
+  reproduces its banked anchors" clause is restated as the current
+  record; the deltas live only in the history homes (this file's
+  per-leg entries, `docs/history/`, superseded release-note sections):
+  - PERFORMANCE-arc: the "Current certified image" preamble presents
+    the build28 wheel as engine content and the r234 faces as the
+    record (drops "cert27 + … carry through unchanged", the
+    0.999–1.000×-banked-anchor and worst-ratio-1.001 clauses); the
+    identity row's carried-record provenance becomes record provenance
+    (measured natively on this image); the MXFP4 checkpoint-lane block
+    drops "every face beats its historical anchor by 1.5–3.5×" (the
+    p50-vs-ctrl-rows fact stays); the AutoRound and gemma-L1 lead-ins
+    become plain "cert28 (r239/r239b)"; the gemma 131072 refusal drops
+    "now".
+  - README: the release bullet reads "measured on the shipping image
+    itself"; the champion-faces preamble drops "E2E-neutral vs the
+    measurement eras"; the Repository-model tag row and the build
+    comment present build28 as the image content (no cert27-derivation
+    phrasing).
+  - STATUS-arc / MIGRATION-arc / CONFIGURATION-arc / release_notes
+    (current section): the cert-release image identity rows present
+    build28 directly (drops "cert27 content + the r231d …" in all five
+    sites); MIGRATION's r234 line and CONFIGURATION's KV-dtype row drop
+    their vs-banked-anchor clauses; release_notes' cert28 section drops
+    "2K −7.6% vs cert27" and "worst anchored ratio 1.001".
+  - envs.md / CONFIGURATION-arc: the CCL fp8-wire rows state "beats
+    its OFF-phase control (A/B/A/B)" instead of "beats the banked
+    baseline"; the CONFIGURATION recipe row drops the pre-cert10
+    absence caveat; the drafting table cell drops "beats its greedy
+    bank" (the vs-the-greedy-lane framing stays — the greedy lane is a
+    same-image env opt-out, a contemporaneous A/B).
+- **Owner-note language removed from tracked files** (the standing
+  residue law): the two doc mentions ("the owner-directed decode
+  goal/lane") and six CHANGELOG mentions ("(owner directive)", "owner
+  question resolved") are gone — the docs read as project records.
+  Grep-verified zero `owner` matches across current-facing docs.
+- **Legitimate survivors (audit-verified)**: contemporaneous
+  same-image lane comparisons (TurboQuant vs fp8, W4A16 vs mxfp8,
+  interleave ON vs OFF, greedy vs probabilistic posture, GEMM-variant
+  rankings), component-provenance stamps (per-patch "Cert: certNN",
+  the r231d clamp leg name in the wheel identity), bank names with
+  era tokens, and the designated history homes.
+- Gates at file-write time: validate_docs 0 errors / 0 advisories
+  (27 fork docs), leak_sweep clean, check_currency clean at cert28.
+
 ## r240-docs — MTP k3 unification + README feature-table completion (2026-11-25)
 
 - **MTP depth presentation unified on k3** — the certified, overall-best
-  depth — across every current-facing doc (owner directive). The README
+  depth — across every current-facing doc. The README
   performance table's two k5 rows are gone (the TTFT row now carries the
   banked k3 value: **3.76 s @ 8K** fresh-context, best-TTFT opt-in
   `CCL_SYCL_ALLREDUCE_FP8=1` 3.27 s); the spec-decoding row reads
@@ -53,8 +103,8 @@ raw evidence is banked under `results/YYYY-MM-DD-<phase>-*/`.
 
 ## r240-docs2 — README best-practice alignment + deep staleness sweep (2026-11-25)
 
-- **README restructured to GitHub README/DMS best practice** (owner
-  directive: deep-analyze best practices, align the fork): badge row
+- **README restructured to GitHub README/DMS best practice**
+  (deep-analyze best practices, align the fork): badge row
   under the title (release / license / Python / vLLM core), a Contents
   TOC, and a new **Dependencies** section — the full certified stack as
   a table (hardware, host runtime, Python 3.12, vLLM `0.30.0+xpu`,
@@ -62,7 +112,7 @@ raw evidence is banked under `results/YYYY-MM-DD-<phase>-*/`.
   0.1.14.1+arc7mx` build28, LMCache `0.5.6+arc1`, oneCCL `2022.0.0`),
   grounded in `external_patches/wheels.pins.md5`, the Dockerfile stage
   docs, and MIGRATION-arc. Title/tagline/fork-line block untouched.
-- **Release bullet cluster cleaned and simplified** (owner directive):
+- **Release bullet cluster cleaned and simplified**:
   the four dense sub-bullets (engine content kernel delta, battery
   detail, re-discrimination record, evidence) collapsed to four scannable
   bullets — the release content detail lives in this CHANGELOG's cert28
@@ -90,7 +140,7 @@ raw evidence is banked under `results/YYYY-MM-DD-<phase>-*/`.
 
 ## r240-docs4 — deep-sweep pass 4: era-comparison removal from current-facing docs (2026-11-25)
 
-- **Owner directive**: current-facing docs present only the latest
+- Current-facing docs present only the latest
   certified image's information; no comparisons against older-era
   images or values. Pass 4 removed/rewrote every era-comparison
   framing while keeping the measurements and evidence pointers:
@@ -147,7 +197,7 @@ raw evidence is banked under `results/YYYY-MM-DD-<phase>-*/`.
   graph-posture var + the LMCache 10) + 2 boot-time; count claims
   rewritten to the verified composition. The watchdog line's comment
   states it equals the vLLM stock default and only the gemma-4 lanes
-  override (1200 s) — owner question resolved on record. Rig script
+  override (1200 s) — resolved on record. Rig script
   parity re-verified: local vs rig md5 `72b1b4b0…` byte-identical.
 - **Evidence counts refreshed to the verified tree** (counted, not
   carried): **233 evidence dirs / 203 VERDICTs** — README Repository
@@ -188,7 +238,7 @@ raw evidence is banked under `results/YYYY-MM-DD-<phase>-*/`.
 
 ## r239 — P6.47: record-lane re-discrimination on cert28 — every face beats its era anchor; docs hard-currency sweep (2026-11-24)
 
-- The deep-sweep campaign's first leg (owner directive 2026-11-24:
+- The deep-sweep campaign's first leg (2026-11-24:
   re-run all analyses, validations and performance tests on the
   latest certified image): the era-stale record faces re-measured on
   cert28. VERDICT:

@@ -172,7 +172,7 @@ and posture), [`PERFORMANCE-arc.md`](PERFORMANCE-arc.md) (numbers),
 
 ## The MX KV lane — `vllm_gaudi/xpu/patches/mx_kv/` (cert24 → cert28)
 
-The owner-directed decode lane (P6.47, 2026-11-11+): MX (OCP
+The MX KV decode lane (P6.47, 2026-11-11+): MX (OCP
 microscaling) `--kv-cache-dtype {mxfp4, mxfp8, mxk8v4}` KV caches at
 FP8-class decode. From-scratch in-house — no donor carries MX KV
 (survey `results/2026-11-11-p647-mxkv-research/`); the engine

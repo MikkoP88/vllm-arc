@@ -143,7 +143,7 @@ CONFIGURATION-arc.md's knob table, posture guide in its
 
 | var | default | semantics |
 |---|---|---|
-| `CCL_SYCL_ALLREDUCE_FP8` | `0` = OFF (**the certified default** — proven env-absent at the gate, FP8_ENV_SET=0) | `=1` opts the TP2 fp16 large ring into the e4m3-wire allreduce (1.65× at the dominant 76,677,120 B AR; every TTFT face beats the banked baseline — A/B/A/B; decode/spec neutral, task-level quality parity; sub-`_MIN_COUNT` allreduces take the stock path — the `simple`-class byte-identity proof) |
+| `CCL_SYCL_ALLREDUCE_FP8` | `0` = OFF (**the certified default** — proven env-absent at the gate, FP8_ENV_SET=0) | `=1` opts the TP2 fp16 large ring into the e4m3-wire allreduce (1.65× at the dominant 76,677,120 B AR; every TTFT face beats its OFF-phase control — A/B/A/B; decode/spec neutral, task-level quality parity; sub-`_MIN_COUNT` allreduces take the stock path — the `simple`-class byte-identity proof) |
 | `CCL_SYCL_ALLREDUCE_FP8_MIN_COUNT` | `2097152` elements/rank | only messages ≥ this count use the fp8 wire (measured crossover — fp8 is slower below ~2M elements: 0.353 vs 0.327 ms at 2.6 MB); leave at default |
 | `CCL_SYCL_ALLREDUCE_FP8_STATS` | `0` = silent-off | `=1` per-stage kernel telemetry to stderr — diagnostic only, declared perturbation (drains the pipeline between stages; numbers attribute cost, they do not race) |
 
