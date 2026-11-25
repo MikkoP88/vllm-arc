@@ -27,12 +27,12 @@ The three `mxfp4`/`mxfp8`/`mxk8v4` rows are the P6.47 MX KV lane, native-certifi
 | fp8 | 32K | 16.5 | 91.1 | - | - | 42.7 | 397,470 |  |
 | fp8_e5m2 | 8K | - | - | - | - | - | - | refuses to boot - FA2 has no e5m2 KV path on Xe2 |
 | fp8_e5m2 | 32K | - | - | - | - | - | - | refuses to boot - FA2 has no e5m2 KV path on Xe2 |
-| mxfp4 | 8K | 2.97 | 78.8 | 121 | 28.8 | 48.4 | 721,994 | MX KV: e2m1 data + E8M0 group scales; native decode, LMC off; r240b: engine death at c32768_n4 (sustained 32K x n>=4 decode) -- every later face banks as a connection-refused artifact |
-| mxfp4 | 32K | 13.3 | 63.3 | - | - | 57.9 | 721,994 | MX KV: e2m1 data + E8M0 group scales; native decode, LMC off; r240b: engine death at c32768_n4 (sustained 32K x n>=4 decode) -- every later face banks as a connection-refused artifact |
-| mxfp8 | 8K | 2.97 | 76.9 | 118 | 27.7 | 50.0 | 386,484 | MX KV: e4m3 data + E8M0 group scales; native decode, LMC off; r240b: the only packed lane to survive the full 5-ctx grid |
-| mxfp8 | 32K | 13.9 | 59.4 | 33 | 9.6 | 64.3 | 386,484 | MX KV: e4m3 data + E8M0 group scales; native decode, LMC off; r240b: the only packed lane to survive the full 5-ctx grid |
-| mxk8v4 | 8K | 3.06 | 78.0 | 119 | 27.0 | 49.2 | 504,832 | mixed MX KV: e4m3 K + e2m1 V; native decode, LMC off; r240b: engine death at c32768_n4 (UR_RESULT_ERROR_DEVICE_LOST) -- every later face banks as a connection-refused artifact |
-| mxk8v4 | 32K | 13.3 | 63.5 | - | - | 61.8 | 504,832 | mixed MX KV: e4m3 K + e2m1 V; native decode, LMC off; r240b: engine death at c32768_n4 (UR_RESULT_ERROR_DEVICE_LOST) -- every later face banks as a connection-refused artifact |
+| mxfp4 | 8K | 2.97 | 78.8 | 121 | 28.8 | 48.4 | 721,994 | MX KV: e2m1 data + E8M0 group scales; native decode, LMC off; r240b death at c32768_n4 was posture-confounded (the gate script forced ARC_LMC=1 over the lane -- LMCache storing in the death window, the r168 e2m1-V class); re-classified 2026-11-25, re-measured LMC-free in r241 |
+| mxfp4 | 32K | 13.3 | 63.3 | - | - | 57.9 | 721,994 | MX KV: e2m1 data + E8M0 group scales; native decode, LMC off; r240b death at c32768_n4 was posture-confounded (the gate script forced ARC_LMC=1 over the lane -- LMCache storing in the death window, the r168 e2m1-V class); re-classified 2026-11-25, re-measured LMC-free in r241 |
+| mxfp8 | 8K | 2.97 | 76.9 | 118 | 27.7 | 50.0 | 386,484 | MX KV: e4m3 data + E8M0 group scales; native decode, LMC off; the only packed lane to survive the r240b grid (e4m3-V: the r176 store-tax class, immune to the e2m1-V x LMC kill class) |
+| mxfp8 | 32K | 13.9 | 59.4 | 33 | 9.6 | 64.3 | 386,484 | MX KV: e4m3 data + E8M0 group scales; native decode, LMC off; the only packed lane to survive the r240b grid (e4m3-V: the r176 store-tax class, immune to the e2m1-V x LMC kill class) |
+| mxk8v4 | 8K | 3.06 | 78.0 | 119 | 27.0 | 49.2 | 504,832 | mixed MX KV: e4m3 K + e2m1 V; native decode, LMC off; r240b death at c32768_n4 (DEVICE_LOST) was posture-confounded (ARC_LMC=1 forced -- the r168 e2m1-V class); re-classified 2026-11-25, re-measured LMC-free in r241 |
+| mxk8v4 | 32K | 13.3 | 63.5 | - | - | 61.8 | 504,832 | mixed MX KV: e4m3 K + e2m1 V; native decode, LMC off; r240b death at c32768_n4 (DEVICE_LOST) was posture-confounded (ARC_LMC=1 forced -- the r168 e2m1-V class); re-classified 2026-11-25, re-measured LMC-free in r241 |
 
 ## TurboQuant presets (Qwen3.8-27B FP8 + MTP k3, r240b concurrency sweeps)
 
@@ -131,7 +131,7 @@ The wheel's four TurboQuant KV dtypes serve via the same knob; the r240b gate ra
 
 ## MX KV lanes — concurrency sweep (Qwen3.8-27B FP8 + MTP k3, r240b)
 
-Every MX lane swept at concurrency {1,2,4,8} at every context step of the canonical ladder — 1K/8K/32K/64K/128K (fresh boot per lane; one boot serves its whole grid). Outcome: mxfp8 completes the full grid; mxfp4 and mxk8v4 died at the sustained 32K × n4 decode face (r240b engine-stability boundary — a `-` rung or a refusal-summary row below is a banked KV_CAP point or banked engine-death face, never unmeasured coverage; the 1K/8K grids and the 32K n1/n2 rungs are real measurements on both lanes):
+Every MX lane swept at concurrency {1,2,4,8} at every context step of the canonical ladder — 1K/8K/32K/64K/128K (fresh boot per lane; one boot serves its whole grid). Outcome: mxfp8 completes the full grid; mxfp4 and mxk8v4 died at the sustained 32K × n4 decode face — posture-confounded deaths (r240b forced ARC_LMC=1 over the MX cells against the certified posture; LMCache stored in both death windows — the r168 e2m1-V class; every clean MX reference ran LMC-free): re-classified 2026-11-25, re-measured LMC-free in r241. A `-` rung or a refusal-summary row below is a banked KV_CAP point or banked engine-death face, never unmeasured coverage; the 1K/8K grids and the 32K n1/n2 rungs are real measurements on both lanes):
 
 ### `mxfp4` — qwen fp8 k3 — 1K context
 
@@ -233,12 +233,12 @@ Every MX lane swept at concurrency {1,2,4,8} at every context step of the canoni
 
 | Lane | Context (K) | Banked faces | Outcome |
 |---|---|---|---|
-| mxfp4 | 64 | 5 | engine death mid-sweep (r240b) |
-| mxfp4 | 128 | 4 | engine death mid-sweep (r240b) |
-| mxk8v4 | 64 | 4 | engine death mid-sweep (r240b) |
-| mxk8v4 | 128 | 3 | engine death mid-sweep (r240b) |
+| mxfp4 | 64 | 5 | posture-confounded engine death mid-sweep (r240b, re-classified 2026-11-25) |
+| mxfp4 | 128 | 4 | posture-confounded engine death mid-sweep (r240b, re-classified 2026-11-25) |
+| mxk8v4 | 64 | 4 | posture-confounded engine death mid-sweep (r240b, re-classified 2026-11-25) |
+| mxk8v4 | 128 | 3 | posture-confounded engine death mid-sweep (r240b, re-classified 2026-11-25) |
 
-Outcome detail: engine death mid-sweep (r240b): the packed lanes died at c32768_n4 -- mxfp4 at the 300 s watchdog (worker silent-hang, EngineDeadError), mxk8v4 with UR_RESULT_ERROR_DEVICE_LOST -- so every later face of the lane banks as a connection-refused artifact; mxfp8 (kvm8) alone survived the full 5-ctx grid.
+Outcome detail: posture-confounded engine death mid-sweep (r240b, re-classified 2026-11-25): the gate script forced ARC_LMC=1 over the MX cells against the certified LMC-free posture -- mxfp4/mxk8v4 died at c32768_n4 with LMCache storing in the death windows (the r168 e2m1-V class; mxfp4 at the 300 s watchdog, mxk8v4 DEVICE_LOST), while mxfp8 (e4m3-V) survived the same forced posture -- re-measured LMC-free in r241.
 
 ## Gemma-4-31B (no MTP)
 

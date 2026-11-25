@@ -139,16 +139,25 @@ PASS; offline replay r225t/r226a/r229 all-formats PASS with
 format-invariant residual distributions). Evidence:
 `results/2026-11-24-p647-cert28-battery/` +
 `results/2026-11-24-p647-r234-cert28-itl/`.
-**Stability boundary (r240b, sustained-decode MT=600 protocol)**:
-under sustained concurrent decode the two 4-bit-V packed lanes die —
-mxfp4-KV at 32K × n4 (worker silent-hang → the 300 s watchdog
-`TimeoutError`, `EngineDeadError`) and mxk8v4 at the same face
-(`UR_RESULT_ERROR_DEVICE_LOST`); every later face of both lanes banks
-connection-refused. mxfp8-KV alone survives the full 5-ctx × {1,2,4,8}
-grid (22/22). The r237 clean cells were MT=128 short-decode — a
-different cell class, both results stand. Deployment law: above 16K
-context at request concurrency ≥ 4, run the mxfp8-KV lane (or fp8).
-Evidence: `results/2026-11-24-p647-r240b-conc/` (VERDICT re-audit).
+**Packed-KV stability — r240b deaths re-classified as
+posture-confounded (2026-11-25; r241 re-measures)**: the r240b
+sustained-decode deaths (mxfp4-KV 32K × n4 worker silent-hang → the
+300 s watchdog; mxk8v4 `UR_RESULT_ERROR_DEVICE_LOST` at the same
+face) ran under a harness posture defect — the gate script forced
+`ARC_LMC=1` over the MX cells (`r240b_conc_cert28.sh` env
+inheritance) against the certified LMC-free MX posture and each
+boot's own WARN, and LMCache was actively storing in both death
+windows (274/306 store lines; the surviving e4m3-V kvm8 logged
+1206). Every clean MX reference ran LMC-free (r233 qwen MX cells,
+r234, r237 — zero LMCache lines in their serve logs), and the
+deaths fit the r168-banked e2m1-V × LMCache interaction class
+escalated under MT=600 load — not a proven intrinsic packed-KV
+boundary. r241 re-runs the exact grids LMC-free to discriminate;
+until it banks, treat the ≥16K-context/low-concurrency restriction
+on 4-bit-V KV as provisional. The unchanged certified law: LMCache
+OFF on every MX-KV lane. Evidence:
+`results/2026-11-24-p647-r240b-conc/` (VERDICT re-audit +
+correction addendum).
 **Model scope (r240b/r240c)**: the native MX-KV lanes are qwen-only —
 on gemma every `gkv_m*` lane boots and banks its pool but fatals at
 the FIRST decode request: gemma's 10 hd512 full-attention layers sit

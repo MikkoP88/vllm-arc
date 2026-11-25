@@ -155,15 +155,19 @@ KVDTS_Q = [("fp8_e4m3", "qf3", "the certified incumbent"),
             "refuses to boot - FA2 has no e5m2 KV path on Xe2"),
            ("mxfp4", "kvm4",
             "MX KV: e2m1 data + E8M0 group scales; native decode, LMC off; "
-            "r240b: engine death at c32768_n4 (sustained 32K x n>=4 decode) "
-            "-- every later face banks as a connection-refused artifact"),
+            "r240b death at c32768_n4 was posture-confounded (the gate "
+            "script forced ARC_LMC=1 over the lane -- LMCache storing in "
+            "the death window, the r168 e2m1-V class); re-classified "
+            "2026-11-25, re-measured LMC-free in r241"),
            ("mxfp8", "kvm8",
             "MX KV: e4m3 data + E8M0 group scales; native decode, LMC off; "
-            "r240b: the only packed lane to survive the full 5-ctx grid"),
+            "the only packed lane to survive the r240b grid (e4m3-V: the "
+            "r176 store-tax class, immune to the e2m1-V x LMC kill class)"),
            ("mxk8v4", "kvmk",
             "mixed MX KV: e4m3 K + e2m1 V; native decode, LMC off; "
-            "r240b: engine death at c32768_n4 (UR_RESULT_ERROR_DEVICE_LOST) "
-            "-- every later face banks as a connection-refused artifact")]
+            "r240b death at c32768_n4 (DEVICE_LOST) was posture-confounded "
+            "(ARC_LMC=1 forced -- the r168 e2m1-V class); re-classified "
+            "2026-11-25, re-measured LMC-free in r241")]
 # cells whose kv rows + chart bars read the r139-style conc bank (n1/n8
 # faces + posture pool) instead of the r138 solo-face bank.
 KV139_CELLS = {"qf3", "kvm4", "kvm8", "kvmk"}
@@ -2858,11 +2862,13 @@ def kv_report(banks, out, date):
     # never a gap).
     mx_lines = _mx_conc_lines(
         b139, MX_Q_CELLS, (1024, 8192, 32768, 65536, 131072), "qwen fp8 k3",
-        "engine death mid-sweep (r240b): the packed lanes died at "
-        "c32768_n4 -- mxfp4 at the 300 s watchdog (worker silent-hang, "
-        "EngineDeadError), mxk8v4 with UR_RESULT_ERROR_DEVICE_LOST -- "
-        "so every later face of the lane banks as a connection-refused "
-        "artifact; mxfp8 (kvm8) alone survived the full 5-ctx grid")
+        "posture-confounded engine death mid-sweep (r240b, re-classified "
+        "2026-11-25): the gate script forced ARC_LMC=1 over the MX cells "
+        "against the certified LMC-free posture -- mxfp4/mxk8v4 died at "
+        "c32768_n4 with LMCache storing in the death windows (the r168 "
+        "e2m1-V class; mxfp4 at the 300 s watchdog, mxk8v4 DEVICE_LOST), "
+        "while mxfp8 (e4m3-V) survived the same forced posture -- "
+        "re-measured LMC-free in r241")
     if mx_lines:
         L += ["## MX KV lanes — concurrency sweep (Qwen3.8-27B FP8 + MTP k3, r240b)",
               "",
@@ -2870,9 +2876,13 @@ def kv_report(banks, out, date):
               "context step of the canonical ladder — 1K/8K/32K/64K/128K "
               "(fresh boot per lane; one boot serves its whole grid). "
               "Outcome: mxfp8 completes the full grid; mxfp4 and "
-              "mxk8v4 died at the sustained 32K × n4 decode face "
-              "(r240b engine-stability boundary — a `-` rung or a "
-              "refusal-summary row below is a banked KV_CAP point or "
+              "mxk8v4 died at the sustained 32K × n4 decode face — "
+              "posture-confounded deaths (r240b forced ARC_LMC=1 over "
+              "the MX cells against the certified posture; LMCache stored "
+              "in both death windows — the r168 e2m1-V class; every "
+              "clean MX reference ran LMC-free): re-classified "
+              "2026-11-25, re-measured LMC-free in r241. A `-` rung or "
+              "a refusal-summary row below is a banked KV_CAP point or "
               "banked engine-death face, never unmeasured coverage; "
               "the 1K/8K grids and the 32K n1/n2 rungs are real "
               "measurements on both lanes):",
@@ -3640,7 +3650,9 @@ def methodology_report(out, date):
          "comes from faces with `n_ok > 0`, and every all-vacuous lane "
          "renders into its banked refusal class instead (the gemma "
          "native MX-KV lanes' hd512 first-decode refusal; the qwen "
-         "packed lanes' mid-sweep engine deaths). VERDICTs: "
+         "packed lanes' mid-sweep engine deaths — re-classified "
+         "2026-11-25 as posture-confounded: r240b forced ARC_LMC=1 "
+         "over the MX cells, re-measured LMC-free in r241). VERDICTs: "
          "`results/2026-11-24-p647-r240b-conc/`, "
          "`results/2026-11-24-p647-r240c-gemma128k/`.",
          "- By-design capacity skips (pool < n x (ctx + 664)) are recorded "

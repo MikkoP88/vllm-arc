@@ -128,3 +128,56 @@ two new engine-boundary findings (gemma hd512 decode gap; qwen
 packed-KV sustained-decode stability), and the honest zero-served
 classes recorded in the docs as refusals, never as gaps. Reports
 regenerated from this bank: `docs/reports/` (the r240 close-out).
+
+## CORRECTION ADDENDUM — Finding 2 re-classified (2026-11-25)
+
+Raw artifacts above are untouched; this addendum corrects the
+*reading* of Finding 2 (the qwen packed-KV "sustained-decode
+stability boundary"). The re-audit that produced this VERDICT caught
+the gate-line vacuity but missed the posture defect underneath the
+deaths themselves.
+
+**Root cause (banked evidence, this bank + the r237 bank)**:
+
+- The gate script forced `ARC_LMC=1` onto the MX cells:
+  `tools/ar/r240b_conc_cert28.sh` defines `QF8` with `ARC_LMC=1`
+  and the kvm cells inherit it — against the certified LMC-free MX
+  posture (the serve script's auto-off) and against each boot's own
+  WARN line ("r168 banked essay-rehit REP-LOOP garble on e2m1-V
+  lanes"). All three banked `boot.txt` files carry that WARN.
+- LMCache was actively storing in both death windows:
+  `kvm4/serve.log` shows "Stored 6400 out of total 6400 tokens"
+  at 07:51:52 — seconds before the wedge (274 store lines total);
+  `kvmk` 306 store lines before its `UR_RESULT_ERROR_DEVICE_LOST`
+  at 08:40:50. `kvm8` (e4m3-V) logged 1206 stores and survived
+  22/22 — LMC storing per se does not kill the engine; the kill
+  class is e2m1-V-specific (the r168 law; the r176-banked e4m3-V
+  interaction is a store tax only).
+- Every clean MX reference ran LMC-free: r237's m4q/m8q/mkq cells
+  (the same three lanes) show **zero** LMCache lines in their serve
+  logs (its ctrl, standard fp8-KV + LMC=1, shows 492 — the
+  incumbent posture for standard KV, which is where LMC belongs);
+  r234 and r233's qwen MX cells pin nothing and ran the auto-off.
+
+**Re-classification**: the 32K × n4 deaths (and the vacuous
+connection-refused faces banked after them) are **posture-confounded**
+— consistent with the r168-banked e2m1-V × LMCache interaction class
+escalated to engine death under MT=600 sustained load. Finding 2 is
+retracted as an *intrinsic* packed-KV engine boundary. What stands:
+
+- The banked faces are unchanged (all numbers, pools, and death
+  signatures remain the record of what ran).
+- The MTP-k3, pool-ladder, and hd512 (Finding 1) results are
+  unaffected.
+
+**Re-measurement**: leg r241 (`tools/ar/r241_mxkv_lmcfree_cert28.sh`,
+in flight at this writing) re-runs the exact kvm grids on cert28 with
+`ARC_LMC=0` — same image, same MT=600 protocol, same face lists —
+plus a semantic gate (n_ok/n_fail parsed per face;
+CONC_ENGINE_DEAD discrimination instead of existence-only CONC_OK)
+and a posture refuse (zero LMCache lines in serve_full.log or the leg
+aborts). If the lanes survive LMC-free, the ≥16K packed-KV
+restriction in the docs is lifted and the capacity lanes reopen for
+≥32K deployment; if they die again, a genuine boundary is established
+on clean posture. Either way the certified law is unchanged: LMC off
+on every MX-KV lane.
