@@ -68,10 +68,10 @@ The script boots the certified container (`--privileged` REQUIRED —
 pidfd IPC law; `--network host --ipc host`, the model
 mount, cache mounts, and the 2 boot-layer `-e` vars) and execs the
 serve line with the full 25-var chain — env + CLI as one unit by
-construction. Boot takes ~5–6 min to health 200 on cert26 qwen legs
-(the cert23-lineage ×2 graph captures add ~29 s over the cert22 base's
-285–295 s; gemma native-KV legs take ~13 min — the larger KV pool
-profile, r184). Verify
+construction. Boot takes ~5–6 min to health 200 on qwen legs (the ×2
+graph captures of the graph-exec double-buffer add ~29 s; gemma
+native-KV legs take ~13 min — the larger KV pool profile, r184).
+Verify
 in `/root/serve_full.log`: wheel hooks install (zero `FAILED`, silent
 defer is DEBUG), `fp8 reroute ACTIVE`, `kvfmt TWO_HS`, the re-pin
 line both workers (`alloc/free_pinned_ptr re-pinned to the pageable

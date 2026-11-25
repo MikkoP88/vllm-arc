@@ -11,7 +11,7 @@ complete control surface + naming map); test definitions in
 | Item | Value |
 |---|---|
 | Image | `vllm-arc:v0.30.0-b70-cert28` — **the certified release**, tag `rel/v0.30.0-b70-cert28` (cert27 + the r231d seqused-tightened split clamp wheel: arc7mx build28 `vllm_xpu_kernels-0.1.14.1+arc7mx` md5 `e6d8d337e43b907504537061414128f8` BAKED over the cert27 wheel, installed `.so` md5s `61d2f5a365f05084b3dd72c4ae1da3e0`/`6e6c48508d40cb4c5007f27f79df97cf`/`190e261edc79b3b497d8d8e801e65757` asserted in-image; kernel delta: `seq_num_kv_splits = min(num_kv_splits, max(1, windowed_k_blocks/4))` legacy scalar path, mirrored `mx_paged_decode_kernel.hpp` + `mx_reduce_split.hpp` — the cert27 numerics fixes carry through unchanged; **certified KV-dtype decode posture**: `ARC_KVDTYPE={mxfp8,mxfp4,mxk8v4}` + `ARC_MXKV_NATIVE=1` — all three MX lanes native (cert28-measured record, r234: mxfp4 five-face ITL 43.4/45.2/48.5/52.2/58.1 ms at 2/4/8/16/32K, fp8 ctrl 40.4/41.1/42.5 at 0.999–1.000× its banked anchors, every anchored MX face within +0.1%; r233 battery certifies correctness on the clamp wheel); all MX lanes LMCache-free by serve-script auto-off, ctrl keeps LMC-on; evidence `results/2026-11-24-p647-cert28-battery/` + `results/2026-11-24-p647-r234-cert28-itl/`; **recommended weights-quant decode posture (serve-line choice)**: `ARC_QUANT=mxfp4 ARC_MXFP4_MODE=w4a16 ARC_QUANTCFG='{"ignore":["*visual*","*linear_attn*","mtp.fc"]}' ARC_GMU=0.85 ARC_SPEC=3 ARC_FP8=0` = **103.3 tok/s @ 8K**, the best online-quant lane — MTP k3, the certified overall-best depth; deeper drafts measured and dropped, decision record in the CHANGELOG). Prior certified images (wheel shas, Dockerfile asserts, gate evidence): [`../CHANGELOG.md`](../CHANGELOG.md) |
-| Manifest | `/etc/vllm-arc/IMAGE_MANIFEST` inside the image — fork SHA of record, wheel pins, dependency closure (`lmcache_closure=`), build host, and one description + `cert<N>_fork_sha` (+ wheel-sha/built) row set per release layered on it (base `fork_sha=aa2ee17d…` from cert9 + the cert10 oneCCL overlay rows; per-cert stamps through `cert28_fork_sha`). The per-cert row inventory: [`../CHANGELOG.md`](../CHANGELOG.md) |
+| Manifest | `/etc/vllm-arc/IMAGE_MANIFEST` inside the image — fork SHA of record, wheel pins, dependency closure (`lmcache_closure=`), build host, and one description + `cert<N>_fork_sha` (+ wheel-sha/built) row set per release layered on it (current stamp: `cert28_fork_sha`). The per-cert row inventory: [`../CHANGELOG.md`](../CHANGELOG.md) |
 | Base | upstream vllm-gaudi v0.30.0 + pinned wheels (vllm 0.30.0+xpu, triton 3.7.2+xpu, lmcache 0.5.6+arc1; `vllm_xpu_kernels` 0.1.14.1 base, overlaid by the certified arc wheels — current `+arc7mx` build28 for cert28, lineage + md5s in `external_patches/wheels.pins.md5`) |
 
 Superseded images: every prior certified image is superseded by
@@ -268,7 +268,7 @@ thinking; the full depth-selection history:
 |---|---|---|
 | **3** | **recommended (canonical)** | real-world sampled serving: +5.8 % steady agg / +3.8 % solo over k4 across temps 0.2–1.0 xhigh thinking; ties k4 on the certified greedy face (±0.7 %) |
 | 4 | documented alternative | near-deterministic non-thinking workloads (acceptance ≥ ~82 %): steady solo 104.3 vs k3's 92.2 at t0.7/tp0.80/pp1.5 |
-| 5 | **dropped** | certified in the early serve-layer era (greedy acceptance 89.2 %); under real-world sampling acceptance collapses to 33–42 % and its depth wastes — superseded evidence retained |
+| 5 | **dropped** | deeper drafts lose under real-world sampling: acceptance collapses to 33–42 % and the depth wastes (decision record: CHANGELOG) |
 | none (omit `--speculative-config`) | non-MTP baseline | 1.5–2.1× slower than MTP on every measured face — never recommended for this model |
 
 Mechanism (measured): speculative acceptance falls as temperature
@@ -528,7 +528,7 @@ ARC_IMAGE=vllm-arc:v0.30.0-b70-cert28 \
   CT-MX checkpoints (passing `--quantization fp8` would fight the
   config).
 
-**Image floor: quark checkpoints require a cert11+ image** — earlier
+**Image floor: quark checkpoints require a current certified image** —
 images reject them at config validation (`quark quantization is
 currently not supported in xpu`); the current image satisfies this.
 The `ArcXpuPlatform` override (commit 7ea0f27b) admits the format and
@@ -681,7 +681,7 @@ dtype × knob cell): PERFORMANCE-arc "Bystander-stall tuning" +
 "Master matrix" — the fp8 rows are the live first-choice menu (the TQ
 rows are the banked record, servable).
 
-The corruption-era record (reproduction battery, roundtest, guard
+The historical corruption record (reproduction battery, roundtest, guard
 gate) stays banked at
 `results/2026-11-03-p618{b-repro,c-roundtest,-cert7}/`; its
 precision-ceiling ROOT-CAUSE conclusion was corrected by the

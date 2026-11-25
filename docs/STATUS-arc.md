@@ -59,9 +59,10 @@ What the certified stack delivers:
   [`docs/reports/`](reports/README.md): model × quant × MTP,
   decode/TTFT/prefill/ITL at 1K–128K context, the MTP-k3 temperature
   sweep, the kv-cache-dtype comparison, line charts, and the copyable
-  configuration for every cell (cert23-era battery — being re-run on
-  cert28 by the 2026-11-24 currency campaign, see Project status;
-  bank `results/2026-11-10-p637-reports/`).
+  configuration for every cell — **re-generated on cert28 by the
+  2026-11-24 deep-sweep campaign** (the r240a solo-face bank is
+  pulled; the r240b/r240c banks land at their leg completions — close-
+  out refreshes every report under `docs/reports/`).
 - **Host compatibility** — 64 GB-RAM hosts run the recommended configs
   (`--shm-size 16g`, 16 GB LMCache CPU tier).
 - **KV-cache dtype knob** — `ARC_KVDTYPE`: `fp8` ≈ the incumbent;
@@ -79,8 +80,8 @@ P6.47 (the MX KV decode goal) is delivered and certified through
 cert28: the §10 correctness battery (r233) plus the record legs
 (r234–r238) are banked. The 2026-11-24 deep-sweep campaign: landed —
 the record-lane re-discrimination (r239/r239b: checkpoint-lane TTFTs
-1.5–3.5× faster than their era anchors, gemma L1 record
-parity-or-better with the agg8 record 1.85–2.4× the era aggregate;
+1.5–3.5× faster than their prior anchors, gemma L1 record
+parity-or-better with the agg8 record 1.85–2.4× the prior aggregate;
 bank `results/2026-11-24-p647-r239-record-lanes/`) and the docs
 hard-currency sweep (this rewrite, the [`PATCHES-arc.md`](PATCHES-arc.md)
 MX KV family, and the `tools/check_currency.sh` anchors that close

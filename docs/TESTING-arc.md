@@ -226,8 +226,8 @@ Rules:
 - **Comparability law**: only faces on the current certified image
   with the current face harnesses (`tools/ar/p138/p138_face.py`,
   `tools/ar/p139/p139_conc.py`) merge into `docs/reports/`.
-  Older-era 64K probes (the r29 TTFT ladder, the r46 soak face) stay
-  archived — different engine and harness conditions (54.8 s vs
+  Archived 64K probes (the r29 TTFT ladder, the r46 soak face) stay
+  out — different engine and harness conditions (54.8 s vs
   38–42 s at 64K makes the incomparability measurable).
 
 History and current state: the r138 solo gate carried the full

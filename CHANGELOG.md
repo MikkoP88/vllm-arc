@@ -88,6 +88,50 @@ raw evidence is banked under `results/YYYY-MM-DD-<phase>-*/`.
 - Gates at file-write time: validate_docs 0 errors / 0 advisories
   (27 fork docs), leak_sweep clean, check_currency clean at cert28.
 
+## r240-docs4 — deep-sweep pass 4: era-comparison removal from current-facing docs (2026-11-25)
+
+- **Owner directive**: current-facing docs present only the latest
+  certified image's information; no comparisons against older-era
+  images or values. Pass 4 removed/rewrote every era-comparison
+  framing while keeping the measurements and evidence pointers:
+  - PERFORMANCE-arc: the MX-decode paragraph drops the "vs cert27 /
+    cert25zb-era / cert11c-era anchor" deltas (the record stands on
+    its own; cross-era deltas were recorded bookkeeping, not lever
+    claims); the AutoRound and gemma-L1 blocks drop parenthetical
+    era columns ("era 26.67…", "cert19-era record (r111)" → "prior
+    record"); the close-out matrix now names its banks generically
+    (cert23-era close-out bank → the p637 bank) and points at the
+    cert28 regeneration; the warm-face note drops "Earlier-era".
+  - STATUS-arc: "era anchors / era aggregate" → "prior anchors /
+    prior aggregate"; the per-config-reports bullet now states the
+    cert28 regeneration directly (was "cert23-era battery — being
+    re-run").
+  - CONFIGURATION-arc: the quark image-floor row and the manifest row
+    drop cert-numeric lineage framing ("cert11+ image", "base
+    fork_sha from cert9 + cert10 rows" → "current certified image" /
+    "current stamp: cert28_fork_sha"); the dropped-depth row states
+    the sampling-collapse decision without era framing; the
+    corruption-record note reworded.
+  - envs.md: MX-knob provenance clauses rewritten ("since cert27 /
+    cert26 refusal" → "the earlier REP-LOOP refusal root-caused and
+    fixed"; "cert25zb-era kill switches" → "kill switches";
+    "cert25zc closing rung" → "validated optimum").
+  - MIGRATION-arc: the boot-time note drops the cert26/cert23/cert22
+    chain ("the cert23-lineage ×2 graph captures add ~29 s over the
+    cert22 base's 285–295 s" → "the ×2 graph captures add ~29 s").
+  - README: champion-faces preamble ("the cert23 engine is
+    E2E-neutral" → "re-discriminated on the cert28 engine") and the
+    health-wait comment (cert23 double-buffer → the graph-exec
+    double-buffer).
+  - Legitimate survivors (audit-verified, not era comparisons):
+    PATCHES-arc per-patch "Cert: certNN" stamps (component
+    provenance — which release shipped a module), bank names that
+    contain era tokens (the p627/p637 evidence paths), the gemma
+    VM-era config-set name, and `docs/history/` + CHANGELOG
+    (the designated history homes).
+- Gates at file-write time: validate_docs 0 errors / 0 advisories
+  (27 fork docs), leak_sweep clean, check_currency clean at cert28.
+
 ## r240-docs3 — deep-sweep pass 3: config-parity completion + evidence counts + Contributing (2026-11-25)
 
 - **Config-parity completion (the deep pass's real catch)**: all three
