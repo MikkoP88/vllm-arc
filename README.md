@@ -91,8 +91,9 @@ full reports with charts and copyable configs:
 
 **Champion record faces** — the probabilistic-drafting campaign of
 record (provenance and per-gate re-verification history:
-[`docs/PERFORMANCE-arc.md`](docs/PERFORMANCE-arc.md); the cert23 engine
-is E2E-neutral on these faces). Certified posture: probabilistic
+[`docs/PERFORMANCE-arc.md`](docs/PERFORMANCE-arc.md); re-discriminated
+on the cert28 engine — E2E-neutral vs the measurement eras). Certified
+posture: probabilistic
 drafting — `ARC_SPEC_METHOD=probabilistic`, the serve script's default.
 qwen3.8-27b-fp8, dtype `fp8_e4m3`:
 
@@ -278,7 +279,7 @@ docker cp serve_k3.sh arc-test:/root/
 docker exec -d arc-test bash /root/serve_k3.sh
 
 # 4. Health — first boot takes ~5-6 min to reach 200 (model load + tune
-#    warmup + the ×2 graph captures of the cert23 double-buffer)
+#    warmup + the ×2 graph captures of the graph-exec double-buffer)
 curl -s -o /dev/null -w "%{http_code}\n" -m 5 http://127.0.0.1:8000/health
 ```
 
