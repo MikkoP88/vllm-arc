@@ -233,16 +233,23 @@ estimate 120704; the face class is preserved exactly, face120k needs
 | face120k (maxlen 118784) | **108.4 s** |
 | face32k_2 (identical prompt, prefix re-hit) | **0.9 s** |
 | decode solo 1×256 (×3 reps) | **29.0 tok/s** ×3 |
-| decode agg8×2048 (per-user tps ×3) | 48.5 / 59.2 / 45.1 → **361–474 tok/s aggregate** |
+| decode agg8 (8-way, ×3 reps) | **24.6–26.4 tok/s per stream steady · 196–211 tok/s aggregate at full 8-way** |
 | erraudit (whole battery boot) | 0 ERROR / 0 Traceback, JIT 0 |
 
-The agg8 units: the battery reports per-user `tps_mean`; same-units
-cert28 aggregate = 8 ×
-(48.5/59.2/45.1) = 388 / 474 / 361 tok/s
-under the cert28 protocol (2048 ctok/stream: longer steady-state
-decode); the per-rep spread is the native gemma think-spam variance
-(the REP-LOOP law), with solo 29.0 ×3 the stable reference. Bank:
-`results/2026-11-24-p647-r239-record-lanes/r239b/gemma/`.
+The agg8 accounting (revalidated 2026-11-25): the r239b battery
+harness scored each stream as requested-budget/wall — invalid on this
+face, because the story-continuation streams stop early (finish=stop
+at ~460–760 of the 2048 requested tokens; engine `Running:` counts
+drop 8→7→6→5 inside every rep), inflating the banked client means
+×2.3–3.1 (retracted: 48.5/59.2/45.1 "tps_mean" and the derived
+361–474 aggregate). Honest values from the banked serve-log
+integration (13,204 / 11,875 / 11,631 tokens over the 78.4 / 77.4 /
+78.4 s spans → 148–168 tok/s per-rep wall aggregate; 196–211 at full
+concurrency): per-stream 24.6–26.4 tok/s — the expected batch tax on
+solo 29.0. Same-lane 8×256-protocol battery (all streams complete):
+195.9–196.6 aggregate — parity held. Re-derivation:
+`results/2026-11-24-p647-r239-record-lanes/` (`reval_agg8.py` +
+VERDICT correction).
 
 Lane parity analysis vs the qwen3.8-27b fp8 incumbent records
 (cert28 face values): face32k is AT
@@ -253,12 +260,13 @@ k-dependence + GEMM floor); face120k runs 0.985 ms/prompt-token
 (108.4 s / 110,028 ptok) vs qwen U64k's 0.594 (110,028 vs
 65,536 ptok faces — the hd512 quadratic share grows with k);
 face32k_2 re-hit 0.9 s beats the qwen C32k 1.09 s record. Decode:
-the cert28 gemma agg8 361–474 tok/s aggregate is 2.8–3.7× qwen's own
-NO-SPEC agg (124–127 aggregate);
+the cert28 gemma agg8 196–211 tok/s aggregate (full 8-way) is
+1.55–1.70× qwen's own
+NO-SPEC agg (124.5–127.1 aggregate);
 vs qwen's MTP-k3 spec lane the solo gap holds at 2.9× (29.0 vs
-83.7–84.9; the harder-protocol
-cert28 battery — 361–474 vs 326–328 aggregate, protocol-unequal
-steady-state) and is **structurally closed to parity work**:
+83.7–84.9) and the agg8 gap sits at 0.64–0.69× (196–211 vs 307.8 —
+the spec lane multiplies per-stream rate; gemma-4 has no draft head)
+and is **structurally closed to parity work**:
 gemma-4's checkpoint ships no MTP/draft head (nothing to draft from),
 and the draft-free ngram lane is refused by the upstream v1 spec path —
 `_get_mamba_bufs()` asserts "no mamba layers in the model" on

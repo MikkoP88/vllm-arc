@@ -12,6 +12,40 @@ the fork SHA it was built from.
 Phase labels P0–P6.38 refer to the plan's execution phases; every phase's
 raw evidence is banked under `results/YYYY-MM-DD-<phase>-*/`.
 
+## r240-docs6 — gemma agg8 revalidation: harness-numerator artifact corrected (2026-11-25)
+
+- **Revalidation request**: the gemma L1 agg8 row ("48.5 / 59.2 /
+  45.1 → 361–474 tok/s aggregate") sounded too high — confirmed and
+  corrected. The r239b gemma battery harness scored each stream as
+  requested-2048-budget / stream-wall with no `ignore_eos` and no
+  finish check; on this face streams stop early (finish=stop at
+  ~460–760 tokens; engine `Running:` drops 8→7→6→5 inside every
+  banked rep), inflating the client means ×2.3–3.1.
+- **Honest cert28 values, recomputed from the banked raw artifacts**
+  (engine 10-s telemetry integrated over the client rep windows —
+  `reval_agg8.py` banked in the r239 bank; client algebra and engine
+  integration agree to the token): **24.6–26.4 tok/s per stream
+  steady under 8-way (solo 29.0 — the expected batch tax), 196–211
+  tok/s aggregate at full 8-way, 148–168 tok/s per-rep wall
+  aggregate** (13,204 / 11,875 / 11,631 tokens over 78.4 / 77.4 /
+  78.4 s spans). Same-lane 8×256-protocol battery (all streams
+  complete): 195.9–196.6 aggregate — **parity held; the 1.85–2.4×
+  improvement claim is retracted**.
+- **Scope audit — every other aggregate in the docs is clean**:
+  the qwen agg8 numbers (r233/r236 batteries, `agg8 0.84× ctrl`,
+  307.8 ctrl) use `r113_battery.py` (numerator = actual
+  `usage.completion_tokens`); the r240a/b/c conc probes use
+  `p139_conc.py` (`ignore_eos: true`, `agg_tps_wall = conc·mt/wall`);
+  gemma solo 29.0 validates against engine-side rates directly.
+- Corrections landed: PERFORMANCE-arc gemma L1 row + accounting note
+  + lane-parity passage (gemma agg8 is 1.55–1.70× qwen's no-spec
+  aggregate and 0.64–0.69× qwen's MTP-k3 aggregate — the 2.8–3.7×
+  claim is gone), STATUS-arc campaign bullet, this file's r239 entry
+  (retraction marker), and the r239 bank VERDICT correction addendum
+  (raw artifacts + SHA256SUMS untouched).
+- Gates at file-write time: validate_docs 0 errors / 0 advisories
+  (27 fork docs), leak_sweep clean, check_currency clean at cert28.
+
 ## r240-docs5 — deep-sweep pass 5: current-value presentation + owner-note removal (2026-11-25)
 
 - **Improvement-vs-history framing removed from every current-facing
@@ -254,10 +288,13 @@ raw evidence is banked under `results/YYYY-MM-DD-<phase>-*/`.
 - **Gemma L1 record parity-or-better** at `ARC_MAXLEN=118784`:
   face8k 4.2, face32k 16.8, face120k 108.4, face32k_2 0.9 s, solo
   29.0 tok/s ×3 (era 4.9 / 17.2 / 110.9 / 0.9 / 28.4–28.5). The
-  r239b agg8 gate FAIL re-derived as a **units artifact** (era anchor
-  195.0 aggregate vs battery per-user `tps_mean`): same-units cert28
-  aggregate 361–474 tok/s = 1.85–2.4× the era record under the
-  harder 2048-ctok protocol.
+  r239b agg8 gate FAIL was re-derived as a units artifact — but the
+  "same-units 361–474 aggregate / 1.85–2.4× the era record" that
+  this derivation produced is itself RETRACTED (correction
+  2026-11-25, see the r240-docs6 entry: requested-budget-numerator
+  artifact over early-stopped streams; honest cert28 agg8 = 24.6–26.4
+  tok/s per stream, 196–211 tok/s aggregate at full 8-way — parity
+  with the same-lane 195.9–196.6 8×256-protocol aggregate).
 - Two boot-fail law-lessons banked: gemma maxlen 131072 no longer
   boots on cert28 (KV 5.83 > 5.64 GiB, est. max 120704 → 118784,
   face class preserved); a boot-fail branch that returns without

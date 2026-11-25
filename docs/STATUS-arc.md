@@ -79,7 +79,7 @@ P6.47 (the MX KV decode goal) is delivered and certified through
 cert28: the §10 correctness battery (r233) plus the record legs
 (r234–r238) are banked. The 2026-11-24 deep-sweep campaign: landed —
 the record-lane legs (r239/r239b: checkpoint-lane TTFTs and the gemma
-L1 + agg8 records at their cert28 battery values;
+L1 record faces at their cert28 values;
 bank `results/2026-11-24-p647-r239-record-lanes/`) and the docs
 hard-currency sweep (this rewrite, the [`PATCHES-arc.md`](PATCHES-arc.md)
 MX KV family, and the `tools/check_currency.sh` anchors that close

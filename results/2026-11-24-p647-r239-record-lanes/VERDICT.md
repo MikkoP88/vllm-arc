@@ -109,3 +109,52 @@ Banks: `results/2026-11-24-p647-r239-record-lanes/` (38 files,
 SHA256SUMS, host addresses byte-redacted post-pull — law 8). Legs:
 `tools/ar/r239_record_lanes_cert28.sh`, `tools/ar/r239b_gemma_rhmxfp4_fix.sh`,
 pull `tools/ar/r239_pull.sh`.
+
+## CORRECTION (2026-11-25) — the agg8 face revalidated: the "361–474
+## tok/s aggregate" is retracted as a harness-numerator artifact
+
+Owner revalidation request ("sounds too high") — confirmed. The r239b
+gemma battery harness (inline in `r239b_gemma_rhmxfp4_fix.sh`) scored
+each stream as `out[i] = mt / w_i` — the REQUESTED 2048-token budget
+over the stream's own wall — with no `ignore_eos` and no finish-reason
+check. On this face that numerator is invalid: the story-continuation
+seeds stop early (finish=stop at ~460–760 of the 2048 requested
+tokens; the engine's `Running:` counts drop 8→7→6→5 inside every
+rep — visible in the banked `r239b/gemma/serve.log`), so a stream that
+generated ~460 tokens in ~18 s was scored as 2048/18 ≈ 114 tok/s.
+The banked `tps_mean` values (48.5 / 59.2 / 45.1) are therefore
+inflated ×2.3–3.1, and the derivation "8 × tps_mean = 361–474 tok/s
+aggregate" (this VERDICT's units-artifact re-derivation and the
+1.85–2.4×-the-era-record claim above) is RETRACTED.
+
+Honest values, recomputed from the banked raw artifacts
+(`reval_agg8.py` in this bank; engine 10-s telemetry integrated over
+the client-side rep windows — client algebra and engine integration
+agree: rep1's two early-finished streams ≈ 460 tokens each,
+13,204 ≈ 6×2048 + 916):
+
+| rep | client tps_mean (retracted) | engine-integrated tokens | honest wall aggregate | full-8-way steady (first buckets) |
+|---|---|---|---|---|
+| 1 | 48.5 (→388) | 13,204 over 78.4 s | 168.4 tok/s | 196.5 |
+| 2 | 59.2 (→474) | 11,875 over 77.4 s | 153.4 tok/s | 211.2 |
+| 3 | 45.1 (→361) | 11,631 over 78.4 s | 148.4 tok/s | 208.0 |
+
+**The corrected cert28 gemma agg8 record: 24.6–26.4 tok/s per stream
+steady under 8-way (solo 29.0 — the expected batch tax), 196–211
+tok/s aggregate at full 8-way concurrency.** Same-lane comparison on
+the era protocol (8×256, actual-token numerator — the vmatrix
+`gf8` battery, all streams complete): 195.9–196.6 aggregate —
+**parity held, no improvement claim, no regression**. The rep-span
+aggregates (148–168) sit below the 256-budget batteries only because
+the 2048-budget streams stop early at different points (face-shape,
+not engine-shape).
+
+Every other r239/r239b face in this VERDICT is unaffected: the
+checkpoint-lane TTFT faces, probe98/G1/G2 walls, and solo 29.0 ×3 use
+`usage`-returned actual tokens or validate against engine-side rates
+directly. The qwen agg8 numbers elsewhere in the docs come from
+`r113_battery.py` (actual `usage.completion_tokens` numerator) and
+`p139_conc.py` (`ignore_eos: true`, `agg_tps_wall = conc·mt/wall`) —
+both audit-verified clean of this defect. Doc rows corrected in the
+r240-docs6 PR; the raw artifacts and SHA256SUMS of this bank are
+untouched (VERDICT addendum only, per the banking law).
