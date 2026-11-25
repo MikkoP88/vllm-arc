@@ -9,7 +9,7 @@
 
 A fork of [vllm-project/vllm-gaudi](https://github.com/vllm-project/vllm-gaudi) at **v0.30.0** (package name `vllm_gaudi` preserved; the Arc/XPU work lives in `vllm_gaudi/xpu/`).
 
-- Certified release: **`rel/v0.30.0-b70-cert28`** — every gate GREEN with banked evidence: the full release battery passed on all three MX-native KV lanes (mxfp8 / mxfp4 / mxk8v4) plus the fp8 control, gemma comparative PASS, and every record face re-discriminated on the shipping image itself. Release content, tag lineage, and validation legs: [`CHANGELOG.md`](CHANGELOG.md); release summaries: [`docs/release_notes.md`](docs/release_notes.md); current state: [`docs/STATUS-arc.md`](docs/STATUS-arc.md).
+- Certified release: **`rel/v0.30.0-b70-cert28`** — every gate GREEN with banked evidence: the full release battery passed on all three MX-native KV lanes (mxfp8 / mxfp4 / mxk8v4) plus the fp8 control, gemma comparative PASS, and every record face measured on the shipping image itself. Release content, tag lineage, and validation legs: [`CHANGELOG.md`](CHANGELOG.md); release summaries: [`docs/release_notes.md`](docs/release_notes.md); current state: [`docs/STATUS-arc.md`](docs/STATUS-arc.md).
 - **Project status: P6.47 certified — the MX KV-cache decode line is closed.** All three MX-native KV lanes serve at their record from shallow through long context, with 1.28–1.88× the fp8 KV-token capacity at 0.81–0.84× the fp8 decode speed. The measured close-out and the open-channel disposition live in [`docs/STATUS-arc.md`](docs/STATUS-arc.md).
 - **Per-config performance reports** — [`docs/reports/`](docs/reports/README.md): every model × quantization × MTP posture (qwen3.8-27b fp8/MXFP8/MXFP4-W4A16 with k3 + no-MTP, gemma-4-31b fp8/MXFP8/MXFP4), decode speed / TTFT / prefill rate / ITL at 1K–128K context, the MTP-k3 sampling-temperature sweep, the `--kv-cache-dtype` comparison (stock set + TurboQuant presets), line charts, and the complete copyable configuration for each cell. Every patch module documented with provenance + evidence: [`docs/PATCHES-arc.md`](docs/PATCHES-arc.md).
 - **Improvement-lane status: closed** — every prefill device slice is dispositioned by measurement and the stack sits at the practical in-scope floor. Per-slice table + closed-route disposition: [`docs/STATUS-arc.md`](docs/STATUS-arc.md).
@@ -85,14 +85,13 @@ full reports with charts and copyable configs:
 |---|---|---|
 | qwen fp8 · MTP k3 | 93.8 tok/s @ 1K | the certified default lane |
 | qwen mxfp4-W4A16 · MTP k3 | 103.3 tok/s @ 8K | best online-quant lane |
-| qwen `--kv-cache-dtype mxfp4` · native · k3 | 65.2 tok/s @ 32K (n1) · 258.4 agg8 (r233) | cert28 native MX-decode record, full five-face ITL 43.4→58.1 ms (2K→32K): the r231d clamp −7.6% at 2K with long-ctx parity exact; same-ctx gap +8.2% vs fp8 @2K (ctrl rows 40.1/40.0/40.4, r235); agg8 0.84× ctrl, clamp-neutral (r236) |
+| qwen `--kv-cache-dtype mxfp4` · native · k3 | 65.2 tok/s @ 32K (n1) · 258.4 agg8 | cert28 native MX-decode record, full five-face ITL 43.4→58.1 ms (2K→32K), same-ctx gap +8.2% vs the fp8 ctrl @2K (ctrl rows 40.1/40.0/40.4, r235); agg8 0.84× ctrl (r233/r236) |
 | gemma mxfp4-W4A16 | 38.0 tok/s @ 1K | +43 % vs gemma mxfp8 |
 | TTFT (qwen fp8 · MTP k3) | 3.76 s @ 8K | fresh-context, no caching; best-TTFT opt-in `CCL_SYCL_ALLREDUCE_FP8=1`: 3.27 s |
 
 **Champion record faces** — the probabilistic-drafting campaign of
-record (provenance and per-gate re-verification history:
-[`docs/PERFORMANCE-arc.md`](docs/PERFORMANCE-arc.md); re-discriminated
-on the cert28 engine — E2E-neutral vs the measurement eras). Certified
+record (provenance and per-gate verification:
+[`docs/PERFORMANCE-arc.md`](docs/PERFORMANCE-arc.md)). Certified
 posture: probabilistic
 drafting — `ARC_SPEC_METHOD=probabilistic`, the serve script's default.
 qwen3.8-27b-fp8, dtype `fp8_e4m3`:
@@ -179,10 +178,9 @@ ssh root@$RIG bash /root/build/build_image.sh /root/build/fork.tar $SHA vllm-arc
 #       ~15 min cold; ~1 min when only the source changed (stack layers
 #       cached — layer-order law in the Dockerfile).
 #
-#    cert28 = cert27 content + the r231d seqused-tightened split clamp
-#    wheel (arc7mx build28: deep splits at short contexts no longer
-#    serialize tiles the attention window cannot fill; the cert27
-#    numerics fixes carry through). The certified bytes were cut by the
+#    cert28 = the arc7mx build28 seqused-tightened split clamp
+#    wheel (deep splits at short contexts no longer
+#    serialize tiles the attention window cannot fill). The certified bytes were cut by the
 #    staged bake tools/ar/r232_build_cert28.sh (byte-pinned arc7mx
 #    build28 wheel on the cert27 base); the from-source path above
 #    reproduces the same engine from the tagged tree. The full tag
@@ -329,7 +327,7 @@ The uniform boot interface with posture knobs (rig paths) is
 ## Repository model
 
 - **`main` is linear and protected**: changes land as squash commits from per-item lanes (`feat/arc-pNN-*`); direct pushes, force pushes, and deletions are blocked; PRs are required.
-- **Certified releases are annotated tags** pointing at the certified `main` commit — current: `rel/v0.30.0-b70-cert28` (cert27 + the r231d seqused-tightened split clamp wheel — arc7mx build28 BAKED with in-image md5 asserts; native posture `ARC_KVDTYPE=mxfp8|mxfp4|mxk8v4` + `ARC_MXKV_NATIVE=1`, all three MX lanes native at their record — mxfp4 five-face ITL 43.4→58.1 ms; evidence `results/2026-11-24-p647-cert28-battery/` + `results/2026-11-24-p647-r234-cert28-itl/`). The full tag lineage — every cert's content, wheel deltas, validation legs, and supersession notes — lives in [`CHANGELOG.md`](CHANGELOG.md); release summaries: [`docs/release_notes.md`](docs/release_notes.md). The Docker image embeds the fork SHA in `/etc/vllm-arc/IMAGE_MANIFEST` for A/B verification.
+- **Certified releases are annotated tags** pointing at the certified `main` commit — current: `rel/v0.30.0-b70-cert28` (the arc7mx build28 seqused-tightened split clamp wheel — BAKED with in-image md5 asserts; native posture `ARC_KVDTYPE=mxfp8|mxfp4|mxk8v4` + `ARC_MXKV_NATIVE=1`, all three MX lanes native at their record — mxfp4 five-face ITL 43.4→58.1 ms; evidence `results/2026-11-24-p647-cert28-battery/` + `results/2026-11-24-p647-r234-cert28-itl/`). The full tag lineage — every cert's content, wheel deltas, validation legs, and supersession notes — lives in [`CHANGELOG.md`](CHANGELOG.md); release summaries: [`docs/release_notes.md`](docs/release_notes.md). The Docker image embeds the fork SHA in `/etc/vllm-arc/IMAGE_MANIFEST` for A/B verification.
 - **Evidence is in-tree**: every validation leg banks to `results/YYYY-MM-DD-<phase>-r<leg>-<slug>/` (VERDICT + raw outputs) — **233 evidence dirs, 203 VERDICTs of record**, P0 through P6.47.
 - **No secrets or real host addresses in-tree (publishing-hygiene law)**: tracked == pushable, so credentials, rig/host addresses, and private identities never enter tracked files; banked logs carry redacted host addresses (each banking-time scrub documented in its `results/REDACTION-*.md` note). `tools/leak_sweep.sh` must exit 0 before every push.
 - The `feat/arc-*` branches are kept deliberately: squash-merging leaves the per-item development history nowhere else.

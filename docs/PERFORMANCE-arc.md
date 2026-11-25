@@ -21,7 +21,7 @@ k5 measured and dropped — decision record: CHANGELOG).
 
 **Provenance rule:** the current record cites only faces measured
 natively on the certified image line under the certified (probabilistic)
-draft posture, each cert's neutrality re-verified at its gate
+draft posture, each cert's neutrality verified at its gate
 (per-gate proofs: [`../CHANGELOG.md`](../CHANGELOG.md)). The
 TurboQuant dtype faces carry their own labeled tables below.
 Superseded eras (the pre-probabilistic greedy lane, earlier images)
@@ -34,7 +34,7 @@ and never mix into current-record tables (comparator law).
 | Layer | Identity |
 |---|---|
 | Hardware | dual Intel Arc Pro B70 (BMG-G31, 32 GB each — 31.89 GiB visible), TP2, both cards on one CPU socket (`ZE_AFFINITY_MASK=0,1` exposes both device indices) |
-| Engine image | **current**: `vllm-arc:v0.30.0-b70-cert28` — tag `rel/v0.30.0-b70-cert28` (cert27 content + the r231d seqused-tightened split clamp wheel: arc7mx build28, `vllm_xpu_kernels-0.1.14.1+arc7mx`, the installed `.so` md5s asserted in-image — full pin inventory in the CHANGELOG cert28 entry; content detail: the "Current certified image" section below). The decode-posture best on this image: **qwen mxfp4-W4A16 + MTP k3 = 103.3 tok/s @ 8K** (per-config reports: `docs/reports/`). **Carried-record provenance**: the record numbers below were measured natively under the certified probabilistic posture and re-verified at every later cert's gate; on `fp8_e4m3` the compute bytes are identical across the bake chain (per-cert chain: [`../CHANGELOG.md`](../CHANGELOG.md)) |
+| Engine image | **current**: `vllm-arc:v0.30.0-b70-cert28` — tag `rel/v0.30.0-b70-cert28` (arc7mx build28 — the seqused-tightened split clamp wheel:, `vllm_xpu_kernels-0.1.14.1+arc7mx`, the installed `.so` md5s asserted in-image — full pin inventory in the CHANGELOG cert28 entry; content detail: the "Current certified image" section below). The decode-posture best on this image: **qwen mxfp4-W4A16 + MTP k3 = 103.3 tok/s @ 8K** (per-config reports: `docs/reports/`). **Record provenance**: the record numbers below are measured natively on this image under the certified probabilistic posture (per-cert gate proofs: [`../CHANGELOG.md`](../CHANGELOG.md)) |
 | Wheels | md5-pinned at build (`tools/wheel_guard.sh`, 4 pins: vllm/triton/vxk/lmcache 0.5.6+arc1) |
 | Serve line | the certified 25-var env chain + CLI ([`CONFIGURATION-arc.md`](CONFIGURATION-arc.md)): MTP k3 **+ probabilistic drafting (the certified default)**, `mode:none`, FULL_DECODE_ONLY graphs (85 capture sizes, 1–320), MNBT 8192, LMCacheConnectorV1 `kv_both` |
 | Record campaigns | prob-lane record: 5 fresh boots (comprehensive + family + no-spec A/B + default-path + greedy opt-out validation) — `results/2026-11-03-p617a-probcert/`; greedy-lane family baseline — `results/2026-10-31-p70-r70-cert4-comprehensive/` |
@@ -98,16 +98,14 @@ that face's traffic only.
 
 ## Current certified image — cert28 (`rel/v0.30.0-b70-cert28`): the current record
 
-**Current release = rel/v0.30.0-b70-cert28** (cert27 + the r231d
-seqused-tightened split clamp wheel — a decode-scheduling delta:
+**Current release = rel/v0.30.0-b70-cert28** (arc7mx build28 wheel
+with the seqused-tightened split clamp — a decode-scheduling delta:
 `seq_num_kv_splits = min(num_kv_splits, max(1, windowed_k_blocks/4))`,
 deep splits at short contexts no longer serialize tiles the attention
-window cannot fill; the cert27 numerics fixes carry through
-unchanged). The record numbers below are **re-discriminated on the
-cert28 image itself** (r234 long+shallow faces): fp8 reproduces its
-banked anchors at 0.999–1.000×; every anchored MX face within +0.1%
-(worst ratio 1.001); the clamp's shallow-ctx win is now the certified
-record and mxfp8/mxk8v4 get their first shallow rows. Correctness
+window cannot fill). The record numbers below are **measured on the
+cert28 image itself** (r234 long+shallow faces): the fp8 control rows
+sit flat at 40.1–42.5 ms; the clamp's shallow-ctx win is the certified
+record and mxfp8/mxk8v4 have their shallow rows. Correctness
 gates on the clamp wheel: the r233 §10 battery (8 legs, LONGRETURN/
 T1_SEED absolute PASS at native_lines=108, GEMMA_COMPARE PASS);
 per-gate proofs: [`../CHANGELOG.md`](../CHANGELOG.md). Current
@@ -143,16 +141,13 @@ format-invariant residual distributions). Evidence:
 `results/2026-11-24-p647-r234-cert28-itl/`.
 
 **MXFP4 checkpoint-lane faces (full certified posture)**: cert28
-re-discriminated (r239/r239b): rhmxfp4 (mixed CT — fp8-block attn +
+(r239/r239b): rhmxfp4 (mixed CT — fp8-block attn +
 native mxfp4 MLP) TTFT U32k 17.51 / C32k 1.09 / U8k 4.04 / U64k
 39.01 s, bystander decode p50 47.6 ms, acceptance 1.0; qurk
 (all-layer W4A4) 17.06 / 1.10 / 4.05 / 38.31 s, p50 45.6 ms,
-acceptance 1.0; erraudit 0/0, G1 3/3 on both. Every face beats its
-historical anchor by 1.5–3.5× (the prefill-lane closure + the
-r239 re-discrimination); the
-p50s now sit at the fp8 ctrl's cert28 ITL rows 40.1–42.5 ms
-(r234/r235), so the decode penalty only shrinks —
-under the 2× collapse trigger on every cert28 face. Disposition:
+acceptance 1.0; erraudit 0/0, G1 3/3 on both. The
+p50s sit at the fp8 ctrl's cert28 ITL rows 40.1–42.5 ms
+(r234/r235) — under the 2× collapse trigger on every face. Disposition:
 mxfp4 = certified weight-constrained lane (weights 9.03 GiB/rank on
 qurk vs ~13.6 fp8); **fp8 stays the performance default** —
 `results/2026-11-06-p626-mxfp4/` +
@@ -160,11 +155,10 @@ qurk vs ~13.6 fp8); **fp8 stays the performance default** —
 
 **MXFP8 AutoRound checkpoint-lane faces (zero engine change)**: intel-ai AutoRound checkpoint (W8A8-dynamic,
 group-32 E8M0, quantized MTP drafter) on the native
-`XPUMxFp8LinearKernel` — cert28 re-discriminated (r239): TTFT U32k
+`XPUMxFp8LinearKernel` — cert28 (r239): TTFT U32k
 16.95 / C32k 1.19 / U8k 3.73 / U64k 38.49 s — beating both mxfp4
 lanes on the U-face TTFTs but
-trailing on C32k (1.19 vs 1.09/1.10; the prefill-lane closure
-inverted the older every-face TTFT ordering); bystander decode p50
+trailing on C32k (1.19 vs 1.09/1.10); bystander decode p50
 59.8 ms = 1.31× qurk's 45.6 (the weight-byte law holds: W8 reads 2×
 the W4 bytes; prefill amortizes the quant pass); acceptance 0.9804 on
 the QUANTIZED drafter; 0/0 erraudit. Under the 2×
@@ -186,8 +180,8 @@ The per-config reports (full data + copyable configs + line charts:
 2026-11-24 deep-sweep campaign's close-out; the matrix below is the
 certified per-config record (solo streaming, per-tag seeded unique
 prompts — every face a cold prefill — 600 out tokens, `ignore_eos`).
-Banks: `results/2026-11-10-p637-reports/` (the cert23-era close-out
-bank: 61 faces, 0 tracebacks, 0 timeouts) +
+Banks: `results/2026-11-10-p637-reports/` (61 faces, 0 tracebacks,
+0 timeouts) +
 `results/2026-11-24-p647-r240-reports/` (the cert28 solo-face
 battery).
 
@@ -225,27 +219,27 @@ sliding-window hd256 layers + 10 full-attention hd512 layers per rank
 16Q/8KV hd256 win1024 and 16Q/2KV hd512) on the certified posture
 `graph=1 spec=0 ARC_LMC=0 ARC_RPC_TIMEOUT=1200`, TP2, chat template
 gemma4. Client walls, temperature 0, solo, finish=length. cert28
-re-discriminated (r239b, `ARC_MAXLEN=118784` — the 131072 boot now
-refuses on cert28: 5.83 GiB KV needed > 5.64 GiB available, engine
+(r239b, `ARC_MAXLEN=118784` — the 131072 boot refuses:
+5.83 GiB KV needed > 5.64 GiB available, engine
 estimate 120704; the face class is preserved exactly, face120k needs
 110044 ≤ 118784):
 
-| face | L1 fp8 (slide route), cert28 | prior record (r111) |
-|---|---|---|
-| probe98 (98-token gen probe) | **3.5 s** OK coherent | 5 s OK coherent |
-| G1 factual / code / reason | 3/3 | 3/3 |
-| face8k (8,028 ptok / 16 ctok) | **4.2 s** | 4.9 s |
-| face32k (32,028 ptok) | **16.8 s** — qwen-parity held | 17.2 s (1.016× of the U32k 16.93 record) |
-| face120k (maxlen 118784) | **108.4 s** | 110.9 s |
-| face32k_2 (identical prompt, prefix re-hit) | **0.9 s** | 0.9 s |
-| decode solo 1×256 (×3 reps) | **29.0 tok/s** ×3 | 28.4–28.5 tok/s |
-| decode agg8×2048 (per-user tps ×3) | 48.5 / 59.2 / 45.1 → **361–474 tok/s aggregate** | agg8×256: 194.5–195.5 tok/s aggregate |
-| erraudit (whole battery boot) | 0 ERROR / 0 Traceback, JIT 0 | 0 ERROR / 0 Traceback, JIT 0 |
+| face | L1 fp8 (slide route), cert28 |
+|---|---|
+| probe98 (98-token gen probe) | **3.5 s** OK coherent |
+| G1 factual / code / reason | 3/3 |
+| face8k (8,028 ptok / 16 ctok) | **4.2 s** |
+| face32k (32,028 ptok) | **16.8 s** — qwen-parity held |
+| face120k (maxlen 118784) | **108.4 s** |
+| face32k_2 (identical prompt, prefix re-hit) | **0.9 s** |
+| decode solo 1×256 (×3 reps) | **29.0 tok/s** ×3 |
+| decode agg8×2048 (per-user tps ×3) | 48.5 / 59.2 / 45.1 → **361–474 tok/s aggregate** |
+| erraudit (whole battery boot) | 0 ERROR / 0 Traceback, JIT 0 |
 
-The agg8 units: the battery reports per-user `tps_mean`; the prior
-record's 194.5–195.5 is aggregate. Same-units cert28 aggregate = 8 ×
-(48.5/59.2/45.1) = 388 / 474 / 361 tok/s — 1.85–2.4× the prior record
-under a harder protocol (2048 vs 256 ctok/stream: longer steady-state
+The agg8 units: the battery reports per-user `tps_mean`; same-units
+cert28 aggregate = 8 ×
+(48.5/59.2/45.1) = 388 / 474 / 361 tok/s
+under the cert28 protocol (2048 ctok/stream: longer steady-state
 decode); the per-rep spread is the native gemma think-spam variance
 (the REP-LOOP law), with solo 29.0 ×3 the stable reference. Bank:
 `results/2026-11-24-p647-r239-record-lanes/r239b/gemma/`.
@@ -420,8 +414,8 @@ faces, opt-in (A/B/A/B interleave, on/off ×2)**:
 | C32k re-hit | 1.09 s | 1.21 s | **1.04 s** | 0.855 | −4.6 % |
 
 The off phases ran ~4 % above the banked day (day drift — the
-interleave design exists for this); every face beats the BANKED
-baseline.
+interleave design exists for this); every ON face beats its OFF phase
+same-day.
 Microbench root: **1.65× at the dominant 76,677,120 B AR** (7.801→4.731
 ms, 16.2 GB/rank/s effective; 1.57–1.69× across all large sizes) with
 numerics at the measured e4m3 round-trip floor (rel-rms 0.02285 == the

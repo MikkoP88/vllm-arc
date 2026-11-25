@@ -21,8 +21,8 @@ in the upstream per-version detail files
 
 ## rel/v0.30.0-b70-cert28 — P6.47: seqused-tightened split clamp; the MX walk line closed (2026-11-24)
 
-Current certified release. cert27 + the r231d clamp wheel (arc7mx
-build28, md5-pinned with three installed-`.so` md5s asserted in-image):
+Current certified release. The arc7mx build28 clamp wheel
+(md5-pinned, three installed-`.so` md5s asserted in-image):
 `seq_num_kv_splits = min(num_kv_splits, max(1, windowed_k_blocks/4))` —
 deep splits at short contexts no longer serialize tiles the attention
 window cannot fill. **For the user**: the certified native KV-decode
@@ -30,9 +30,9 @@ lane (`ARC_KVDTYPE=mxfp8|mxfp4|mxk8v4` + `ARC_MXKV_NATIVE=1`) keeps
 every correctness gate green (r233 §10 battery, 8 legs — qwen MX lanes
 LONGRETURN/T1_SEED absolute PASS at native_lines=108, GEMMA_COMPARE
 PASS) and gets the **first full shallow-through-long record**: native
-mxfp4 ITL 43.4/45.2/48.5/52.2/58.1 ms at 2/4/8/16/32K (2K −7.6% vs
-cert27), first shallow rows for mxfp8 (44.4/46.5) and mxk8v4
-(44.1/46.0), long-ctx parity exact (worst anchored ratio 1.001, r234).
+mxfp4 ITL 43.4/45.2/48.5/52.2/58.1 ms at 2/4/8/16/32K, first shallow
+rows for mxfp8 (44.4/46.5) and mxk8v4 (44.1/46.0), long-ctx rows
+banked (r234).
 The MX KV-dtype walk line is closed at cert28 — the ladder's
 capture-point ledger is fully dispositioned by measurement (S1 knee
 cured r185/r186 and re-confirmed on cert28 at 1.78–1.81
