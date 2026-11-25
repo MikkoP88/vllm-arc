@@ -284,8 +284,8 @@ renders the empty 64K slots per its ladder laws.
 ## Evidence layout
 
 Each leg banks to `results/YYYY-MM-DD-<phase>-r<leg>-<slug>/` (VERDICT,
-raw bench outputs, hook audit, integrity shas, serve keylines) — 128
-dirs / 102 VERDICTs of record to date; the naming convention is
+raw bench outputs, hook audit, integrity shas, serve keylines) — 233
+dirs / 203 VERDICTs of record to date; the naming convention is
 documented in [`envs.md`](envs.md) (naming map).
 
 ## Validation record

@@ -101,8 +101,11 @@ the whole LMCache set:
 ```bash
 # serve_k3.sh — run INSIDE the container (docker cp + exec below)
 #!/bin/bash
-# --- serve environment: 23 of the certified 25-var chain (2 set at boot) ---
+# --- serve environment: the certified chain as the serve script resolves
+#     it for the default lane (13 runtime/system + the graph-posture var +
+#     the 10-var LMCACHE_* set; 2 more vars are set at boot in Step 1) ---
 export PYTHONHASHSEED=0                 # init determinism
+export VLLM_EXECUTE_MODEL_TIMEOUT_SECONDS=300  # RPC watchdog, = vLLM stock default; the ARC_RPC_TIMEOUT passthrough (gemma-4 lanes override: 1200 s, r108y)
 export ZE_AFFINITY_MASK=0,1             # expose both B70s (device indices 0,1)
 export LD_LIBRARY_PATH=/opt/venv/lib:/opt/venv/lib/python3.12/site-packages/torch/lib
 export CCL_ENABLE_SYCL_KERNELS=1
@@ -772,15 +775,17 @@ profile — usage blocks and the performance table — is the
 
 The step blocks above already carry all 25. This section is the
 reference view: what each layer is and where it is delivered. Delivery
-split (validated bytes): **23 serve-time** (13 runtime/system + the
-LMCache 10 — the export block inside Step 2) and **2 boot-time**
+split (validated bytes): **24 serve-time exports** in Step 2's block
+(13 runtime/system + the graph-posture var `VLLM_XPU_ENABLE_XPU_GRAPH=1`
+resolved from `ARC_GRAPH=1` + the LMCache 10) and **2 boot-time**
 (`VLLM_ALLOW_LONG_MAX_MODEL_LEN`, `VLLM_WORKER_MULTIPROC_METHOD` — the
 `-e` pair in Step 1's `docker run`).
 
-Serve-time runtime/system (13 — in Step 2's block):
+Serve-time runtime/system (13, + the graph-posture var — in Step 2's block):
 
 ```bash
 export PYTHONHASHSEED=0                # init determinism
+export VLLM_EXECUTE_MODEL_TIMEOUT_SECONDS=300  # RPC watchdog, = vLLM stock default; the ARC_RPC_TIMEOUT passthrough (gemma-4 lanes override: 1200 s, r108y)
 export ZE_AFFINITY_MASK=0,1            # expose both B70s (device indices 0,1)
 export LD_LIBRARY_PATH=/opt/venv/lib:/opt/venv/lib/python3.12/site-packages/torch/lib
 export CCL_ENABLE_SYCL_KERNELS=1

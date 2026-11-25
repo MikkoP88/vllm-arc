@@ -22,6 +22,7 @@ A fork of [vllm-project/vllm-gaudi](https://github.com/vllm-project/vllm-gaudi) 
 - [TurboQuant KV-cache dtypes](#turboquant-kv-cache-dtypes)
 - [Quick start](#quick-start)
 - [Documentation](#documentation)
+- [Contributing](#contributing)
 - [Repository model](#repository-model)
 - [Upstream & license](#upstream--license)
 
@@ -212,8 +213,11 @@ docker run -d --name arc-test --privileged --network host --ipc host \
 #    the env block — first bullet in Optional postures below.)
 cat > serve_k3.sh <<'EOF'
 #!/bin/bash
-# --- serve environment: 23 of the certified 25-var chain (2 set at boot) ---
+# --- serve environment: the certified chain as the serve script resolves
+#     it for the default lane (13 runtime/system + the graph-posture var +
+#     the 10-var LMCACHE_* set; 2 more vars are set at boot in Step 1) ---
 export PYTHONHASHSEED=0                 # init determinism
+export VLLM_EXECUTE_MODEL_TIMEOUT_SECONDS=300  # RPC watchdog, = vLLM stock default; the ARC_RPC_TIMEOUT passthrough (only the gemma-4 lanes override: 1200 s for long-prefill faces, r108y)
 export ZE_AFFINITY_MASK=0,1             # expose both B70s (device indices 0,1)
 export LD_LIBRARY_PATH=/opt/venv/lib:/opt/venv/lib/python3.12/site-packages/torch/lib
 export CCL_ENABLE_SYCL_KERNELS=1
@@ -315,11 +319,17 @@ The uniform boot interface with posture knobs (rig paths) is
 - [`docs/MIGRATION-arc.md`](docs/MIGRATION-arc.md) — swap an incumbent stack for this one (boot, verify, rollback)
 - [`docs/envs.md`](docs/envs.md) — complete env/knob control surface + naming map
 
+## Contributing
+
+- One branch per change (`feat/arc-pNN-<slug>` or `docs/<slug>`), Conventional Commit messages, squash-merge to `main` via PR — the full flow and the branch-protection rules are in the [Repository model](#repository-model) below.
+- Engineering conventions — architecture, code style, testing, and PR review rules — live in [`AGENTS.md`](AGENTS.md).
+- Every change ships with its evidence: validation legs bank under `results/`, and the push gates (`tools/leak_sweep.sh`, `tools/check_currency.sh`, `tools/validate_docs.py`) must pass.
+
 ## Repository model
 
 - **`main` is linear and protected**: changes land as squash commits from per-item lanes (`feat/arc-pNN-*`); direct pushes, force pushes, and deletions are blocked; PRs are required.
 - **Certified releases are annotated tags** pointing at the certified `main` commit — current: `rel/v0.30.0-b70-cert28` (cert27 + the r231d seqused-tightened split clamp wheel — arc7mx build28 BAKED with in-image md5 asserts; native posture `ARC_KVDTYPE=mxfp8|mxfp4|mxk8v4` + `ARC_MXKV_NATIVE=1`, all three MX lanes native at their record — mxfp4 five-face ITL 43.4→58.1 ms; evidence `results/2026-11-24-p647-cert28-battery/` + `results/2026-11-24-p647-r234-cert28-itl/`). The full tag lineage — every cert's content, wheel deltas, validation legs, and supersession notes — lives in [`CHANGELOG.md`](CHANGELOG.md); release summaries: [`docs/release_notes.md`](docs/release_notes.md). The Docker image embeds the fork SHA in `/etc/vllm-arc/IMAGE_MANIFEST` for A/B verification.
-- **Evidence is in-tree**: every validation leg banks to `results/YYYY-MM-DD-<phase>-r<leg>-<slug>/` (VERDICT + raw outputs) — **232 evidence dirs, 202 VERDICTs of record**, P0 through P6.47.
+- **Evidence is in-tree**: every validation leg banks to `results/YYYY-MM-DD-<phase>-r<leg>-<slug>/` (VERDICT + raw outputs) — **233 evidence dirs, 203 VERDICTs of record**, P0 through P6.47.
 - **No secrets or real host addresses in-tree (publishing-hygiene law)**: tracked == pushable, so credentials, rig/host addresses, and private identities never enter tracked files; banked logs carry redacted host addresses (each banking-time scrub documented in its `results/REDACTION-*.md` note). `tools/leak_sweep.sh` must exit 0 before every push.
 - The `feat/arc-*` branches are kept deliberately: squash-merging leaves the per-item development history nowhere else.
 
