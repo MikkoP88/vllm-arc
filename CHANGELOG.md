@@ -51,6 +51,43 @@ raw evidence is banked under `results/YYYY-MM-DD-<phase>-*/`.
   (27 fork docs; one table column-count fix — escaped pipes in the
   MX-native row), leak_sweep clean, check_currency clean at cert28.
 
+## r240-docs2 — README best-practice alignment + deep staleness sweep (2026-11-25)
+
+- **README restructured to GitHub README/DMS best practice** (owner
+  directive: deep-analyze best practices, align the fork): badge row
+  under the title (release / license / Python / vLLM core), a Contents
+  TOC, and a new **Dependencies** section — the full certified stack as
+  a table (hardware, host runtime, Python 3.12, vLLM `0.30.0+xpu`,
+  torch `2.13.0+xpu`, triton `3.7.2+xpu`, `vllm_xpu_kernels
+  0.1.14.1+arc7mx` build28, LMCache `0.5.6+arc1`, oneCCL `2022.0.0`),
+  grounded in `external_patches/wheels.pins.md5`, the Dockerfile stage
+  docs, and MIGRATION-arc. Title/tagline/fork-line block untouched.
+- **Release bullet cluster cleaned and simplified** (owner directive):
+  the four dense sub-bullets (engine content kernel delta, battery
+  detail, re-discrimination record, evidence) collapsed to four scannable
+  bullets — the release content detail lives in this CHANGELOG's cert28
+  entry + MIGRATION-arc + PERFORMANCE-arc (verified present before
+  removal; nothing lost, README links to all three). The project-status
+  and improvement-lane bullets tightened to their claims + links.
+- **Deep staleness sweep, second pass** — one real defect the k5-literal
+  grep missed: the CONFIGURATION-arc identity row still recommended the
+  weights-quant decode posture with **`ARC_SPEC=5`** spelled out (123.9
+  tok/s, +52 % vs k3) — rewritten to the certified k3 recommendation
+  (`ARC_SPEC=3`, **103.3 tok/s @ 8K**, best online-quant lane). Grep
+  classes run: depth-5 spellings (`SPEC=5`/`depth 5`/`k=5`) now zero
+  outside decision records; superseded numbers (81.6/115.2/123.9/128.3)
+  survive only as probe-tax/decision-record context; TODO/TBD markers
+  zero; currency claims all cert28.
+- **Known-pending class, documented not hand-patched**: `docs/reports/*`
+  + `METHODOLOGY.md` carry cert23 engine stamps — they are generator
+  output (the r139-era regen) and the held generator already stamps
+  cert28; the r240 close-out regen on the cert28 banks is the lawful
+  fix (hand-editing would falsify config-parity: the banks' engine was
+  cert23). `docs/README.md` is upstream's tracked index — untouched by
+  fork law.
+- Gates at file-write time: validate_docs 0 errors / 0 advisories
+  (27 fork docs), leak_sweep clean, check_currency clean at cert28.
+
 ## r240-prep — docs: professional sweep — identity-row currency fix + gate anchor (2026-11-24)
 
 - Editorial sweep of the fork-owned docs ahead of the r240 report
