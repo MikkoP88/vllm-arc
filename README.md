@@ -2,16 +2,28 @@
 
 **Certified vLLM stack for `qwen3.8-27b-fp8` (dense hybrid-GDN + MTP) on dual Intel® Arc™ Pro B70 — TP2.**
 
+[![Release](https://img.shields.io/badge/release-rel%2Fv0.30.0--b70--cert28-blue)](CHANGELOG.md)
+[![License](https://img.shields.io/badge/license-Apache--2.0-green)](LICENSE)
+[![Python](https://img.shields.io/badge/python-3.12-blue)](#dependencies)
+[![vLLM core](https://img.shields.io/badge/vLLM-0.30.0%2Bxpu-blue)](#dependencies)
+
 A fork of [vllm-project/vllm-gaudi](https://github.com/vllm-project/vllm-gaudi) at **v0.30.0** (package name `vllm_gaudi` preserved; the Arc/XPU work lives in `vllm_gaudi/xpu/`).
 
-- Certified release: **`rel/v0.30.0-b70-cert28`** — every gate GREEN with banked evidence.
-  - **Engine content** — cert27 + the r231d seqused-tightened split clamp wheel (arc7mx build28, `vllm_xpu_kernels 0.1.14.1+arc7mx` md5 `e6d8d337e43b907504537061414128f8` BAKED over the cert27 wheel; the installed `.so` md5s are asserted in-image — full pin inventory in the CHANGELOG cert28 entry). Kernel delta: `seq_num_kv_splits = min(num_kv_splits, max(1, windowed_k_blocks/4))` on the legacy scalar path, mirrored in `mx_paged_decode_kernel.hpp` + `mx_reduce_split.hpp` — deep splits at short contexts no longer serialize tiles the attention window cannot fill (r231c fixed-term decomposition closed the e2e per-call model; offline gates −43/−39/−51% at 2K decode record-neutral, r231de e2e −7.6% ITL at 2K).
-  - **Certified native posture** — `ARC_KVDTYPE=mxfp8|mxfp4|mxk8v4` + `ARC_MXKV_NATIVE=1`: all three MX lanes native (r233 §10 battery, 8 legs, PASS — LONGRETURN+T1_SEED absolute at native_lines=108, ctrl default-off + LMC-on intact, GEMMA_COMPARE PASS, no new modes vs g0). All MX lanes run LMCache-free (Phase-6 auto-off); the ctrl keeps LMC-on.
-  - **The record, re-discriminated on cert28 itself** (r234–r237): native mxfp4 five-face ITL **43.4/45.2/48.5/52.2/58.1 ms at 2/4/8/16/32K**; first shallow rows for mxfp8 (44.4/46.5) and mxk8v4 (44.1/46.0); the fp8 ctrl rows flat 40.1–42.5 ms at 0.999–1.000× their anchors — same-context shallow gaps +8.2% @2K, +13.0% @4K; n8 steady-state long-ctx faces closed the record (r237: 32K ss m4q 1.131×/m8q 1.182×/mkq 1.099× ctrl, first 16K rows 0.755–0.938×, every lane below its cert25zb-era anchor).
-  - **Evidence** — `results/2026-11-24-p647-cert28-battery/` + `results/2026-11-24-p647-r234-cert28-itl/` + the r231–r231de leg banks. Per-cert history: [`CHANGELOG.md`](CHANGELOG.md); release summaries: [`docs/release_notes.md`](docs/release_notes.md).
-- **Project status: P6.47 (MX KV-cache dtype lane) certified — the MX decode walk line CLOSED at cert28** (all three lanes at their record, shallow through long context). The improvement ladder's capture-point ledger is fully dispositioned by measurement: the S1 acceptance knee is CURED (r185/r186 — acceptance 76–95% through 32K, KNEE=none on all four lanes; cert28 battery metrics confirm, 1.78–1.81 accepted/draft on the MX lanes), the aux/plan-build terms are priced at noise (T1), the continuation-dequant tax refuted (p182), and the walk line converged through r192–r231d. The always-loop directive continues on new evidence — the next bottleneck hunt re-prices against the banked cert28 telemetry. The earlier full close-out (per-config performance reports, 64 GB-RAM host defaults, the `ARC_KVDTYPE` knob) stands; history: [`CHANGELOG.md`](CHANGELOG.md) + [`docs/history/`](docs/history/) archives; current state: [`docs/STATUS-arc.md`](docs/STATUS-arc.md).
-- **Per-config performance reports** — [`docs/reports/`](docs/reports/README.md): every model × quantization × MTP posture (qwen3.8-27b fp8/MXFP8/MXFP4-W4A16 with k3 + no-MTP, gemma-4-31b fp8/MXFP8/MXFP4), decode speed / TTFT / prefill rate / ITL at 1K–128K context, the MTP-k3 sampling-temperature sweep (0.0–1.0), the `--kv-cache-dtype` comparison (stock set + the TurboQuant presets), line charts of all data, and the complete copyable configuration for each cell. Every patch module documented with provenance + evidence: [`docs/PATCHES-arc.md`](docs/PATCHES-arc.md).
-- **Improvement-lane status: the in-scope ledger is CLOSED** — every prefill device slice is dispositioned by measurement (GEMM / allreduce / FA / GDN / norms-act; host path clean; the last unmeasured door — cross-stream AR∥GEMM co-tenancy — closed by measurement), the stack sits at the practical in-scope floor, and the transport was proven clean. Per-slice table + closed-route disposition: [`docs/STATUS-arc.md`](docs/STATUS-arc.md).
+- Certified release: **`rel/v0.30.0-b70-cert28`** — every gate GREEN with banked evidence: the full release battery passed on all three MX-native KV lanes (mxfp8 / mxfp4 / mxk8v4) plus the fp8 control, gemma comparative PASS, and every record face re-discriminated on the shipping image itself. Release content, tag lineage, and validation legs: [`CHANGELOG.md`](CHANGELOG.md); release summaries: [`docs/release_notes.md`](docs/release_notes.md); current state: [`docs/STATUS-arc.md`](docs/STATUS-arc.md).
+- **Project status: P6.47 certified — the MX KV-cache decode line is closed.** All three MX-native KV lanes serve at their record from shallow through long context, with 1.28–1.88× the fp8 KV-token capacity at 0.81–0.84× the fp8 decode speed. The measured close-out and the open-channel disposition live in [`docs/STATUS-arc.md`](docs/STATUS-arc.md).
+- **Per-config performance reports** — [`docs/reports/`](docs/reports/README.md): every model × quantization × MTP posture (qwen3.8-27b fp8/MXFP8/MXFP4-W4A16 with k3 + no-MTP, gemma-4-31b fp8/MXFP8/MXFP4), decode speed / TTFT / prefill rate / ITL at 1K–128K context, the MTP-k3 sampling-temperature sweep, the `--kv-cache-dtype` comparison (stock set + TurboQuant presets), line charts, and the complete copyable configuration for each cell. Every patch module documented with provenance + evidence: [`docs/PATCHES-arc.md`](docs/PATCHES-arc.md).
+- **Improvement-lane status: closed** — every prefill device slice is dispositioned by measurement and the stack sits at the practical in-scope floor. Per-slice table + closed-route disposition: [`docs/STATUS-arc.md`](docs/STATUS-arc.md).
+
+## Contents
+
+- [What this fork adds](#what-this-fork-adds)
+- [Certified performance](#certified-performance-dual-arc-pro-b70-tp2)
+- [TurboQuant KV-cache dtypes](#turboquant-kv-cache-dtypes)
+- [Dependencies](#dependencies)
+- [Quick start](#quick-start)
+- [Documentation](#documentation)
+- [Repository model](#repository-model)
+- [Upstream & license](#upstream--license)
 
 ## What this fork adds
 
@@ -112,6 +124,29 @@ true-default fp8 TTFT is 17.25/39.77 s — the honest TQ TTFT edge is
 For stall relief on the certified fp8 line the measured levers remain first
 choice: `ARC_MNBT=4096` or the p65 long-context profile — see "Optional
 postures" below.
+
+## Dependencies
+
+The certified image pins its full stack — nothing floats. Wheels are
+md5-pinned at build time (`tools/wheel_guard.sh`) and the installed
+kernel `.so`s are asserted in-image (`IMAGE_MANIFEST`).
+
+| Component | Certified version | Notes |
+|---|---|---|
+| Hardware | 2 × Intel Arc Pro B70 (BMG-G31, Xe2), TP2 | 32 GB each; both cards on one CPU socket |
+| Host runtime | Intel XPU stack (compute runtime + Level-Zero), Docker | validated base lineage; `--privileged` + `CCL_ZE_IPC_EXCHANGE=pidfd` for TP2 init |
+| Python | 3.12 (`/opt/venv`) | base-image venv |
+| vLLM core | `0.30.0+xpu` (upstream vllm-gaudi v0.30.0) | pinned wheel, md5-guarded |
+| PyTorch | `2.13.0+xpu` | the validated stack freeze |
+| Triton | `3.7.2+xpu` | pinned wheel |
+| `vllm_xpu_kernels` | `0.1.14.1+arc7mx` (build28) | our custom wheel — MX-native decode kernels + the seqused-tightened split clamp; installed `.so` md5s asserted in-image |
+| LMCache | `0.5.6+arc1` | internal wheel: upstream 0.5.6 sdist + the 4-patch arc kit, SYCL XPU build |
+| oneCCL | `2022.0.0` | torch-pinned exact; the e4m3-wire AR overlay is a same-version rebuild (opt-in) |
+
+Full pin inventory — every wheel md5, the in-image asserts, and the
+rebuild recipe: [`docs/MIGRATION-arc.md`](docs/MIGRATION-arc.md),
+[`docs/CONFIGURATION-arc.md`](docs/CONFIGURATION-arc.md), and the
+CHANGELOG cert28 entry.
 
 ## Quick start
 
