@@ -1,0 +1,631 @@
+R240B refuses passed (fork_sha=43f84cf977f9444900ff21387715ca5865db4c1a libattn=61d2f5a365f05084b3dd72c4ae1da3e0 libmqa=190e261edc79b3b497d8d8e801e65757)
+=== [r240b:qf3] boot 19:52:50 fam=qwen env=[ARC_MODEL=/models/qwen3.8-27b-fp8 ARC_SERVED=qwen3.8-27b-fp8 ARC_GRAPH=1 ARC_LMC=1 ARC_FP8=1 ARC_SPEC=3] ===
+HEALTH_OK_r240b_qf3 20:03:09
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert28 name=arc-r240b model=/models/qwen3.8-27b-fp8 served=qwen3.8-27b-fp8 quant=fp8 qcfg= graph=1 spec=3 gmu=0.8 maxlen=262144 mnbt=8192 seqs=64 fp8=1 xgc=0 tmpl=__qwen_default__ rp=<qwen3> tp=<qwen3_coder> port=8000 19:52:53
+tracebacks=0
+tq_hook_lines=0
+kv_pool_tokens=398363
+CONC_SKIP_qf3_c1024_n1 (banked)
+CONC_SKIP_qf3_c1024_n2 (banked)
+CONC_SKIP_qf3_c1024_n3 (banked)
+CONC_SKIP_qf3_c1024_n4 (banked)
+CONC_SKIP_qf3_c1024_n8 (banked)
+CONC_SKIP_qf3_c1024_n1_t1.0 (banked)
+CONC_SKIP_qf3_c8192_n1 (banked)
+CONC_SKIP_qf3_c8192_n2 (banked)
+CONC_SKIP_qf3_c8192_n3 (banked)
+CONC_SKIP_qf3_c8192_n4 (banked)
+CONC_SKIP_qf3_c8192_n8 (banked)
+CONC_SKIP_qf3_c8192_n1_t1.0 (banked)
+CONC_SKIP_qf3_c32768_n1 (banked)
+CONC_SKIP_qf3_c32768_n2 (banked)
+CONC_SKIP_qf3_c32768_n3 (banked)
+CONC_SKIP_qf3_c32768_n4 (banked)
+CONC_SKIP_qf3_c32768_n8 (banked)
+CONC_SKIP_qf3_c32768_n1_t1.0 (banked)
+CONC_SKIP_qf3_c65536_n1 (banked)
+CONC_SKIP_qf3_c65536_n2 (banked)
+CONC_SKIP_qf3_c65536_n3 (banked)
+CONC_SKIP_qf3_c65536_n4 (banked)
+KV_CAP qf3 c65536 n8 POOL=398363 NEED=529600
+CONC_OK_qf3_c65536_n6
+CONC_OK_qf3_c65536_n1_t1.0
+CONC_OK_qf3_c131072_n1
+CONC_OK_qf3_c131072_n2
+CONC_OK_qf3_c131072_n3
+KV_CAP qf3 c131072 n4 POOL=398363 NEED=526944
+KV_CAP qf3 c131072 n8 POOL=398363 NEED=1053888
+CONC_OK_qf3_c131072_n1_t1.0
+=== [r240b:qf3] done 20:22:04 ===
+=== [r240b:qf0] boot 20:22:04 fam=qwen env=[ARC_MODEL=/models/qwen3.8-27b-fp8 ARC_SERVED=qwen3.8-27b-fp8 ARC_GRAPH=1 ARC_LMC=1 ARC_FP8=1 ARC_SPEC=0] ===
+HEALTH_OK_r240b_qf0 20:31:33
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert28 name=arc-r240b model=/models/qwen3.8-27b-fp8 served=qwen3.8-27b-fp8 quant=fp8 qcfg= graph=1 spec=0 gmu=0.8 maxlen=262144 mnbt=8192 seqs=64 fp8=1 xgc=0 tmpl=__qwen_default__ rp=<qwen3> tp=<qwen3_coder> port=8000 20:22:07
+tracebacks=0
+tq_hook_lines=0
+kv_pool_tokens=494979
+CONC_OK_qf0_c1024_n1
+CONC_OK_qf0_c1024_n2
+CONC_OK_qf0_c1024_n3
+CONC_OK_qf0_c1024_n4
+CONC_OK_qf0_c1024_n8
+CONC_OK_qf0_c1024_n1_t1.0
+CONC_OK_qf0_c8192_n1
+CONC_OK_qf0_c8192_n2
+CONC_OK_qf0_c8192_n3
+CONC_OK_qf0_c8192_n4
+CONC_OK_qf0_c8192_n8
+CONC_OK_qf0_c8192_n1_t1.0
+CONC_OK_qf0_c32768_n1
+CONC_OK_qf0_c32768_n2
+CONC_OK_qf0_c32768_n3
+CONC_OK_qf0_c32768_n4
+CONC_OK_qf0_c32768_n8
+CONC_OK_qf0_c32768_n1_t1.0
+CONC_OK_qf0_c65536_n1
+CONC_OK_qf0_c65536_n2
+CONC_OK_qf0_c65536_n3
+CONC_OK_qf0_c65536_n4
+KV_CAP qf0 c65536 n8 POOL=494979 NEED=529600
+CONC_OK_qf0_c65536_n7
+CONC_OK_qf0_c65536_n1_t1.0
+CONC_OK_qf0_c131072_n1
+CONC_OK_qf0_c131072_n2
+CONC_OK_qf0_c131072_n3
+KV_CAP qf0 c131072 n4 POOL=494979 NEED=526944
+KV_CAP qf0 c131072 n8 POOL=494979 NEED=1053888
+CONC_OK_qf0_c131072_n1_t1.0
+=== [r240b:qf0] done 21:14:15 ===
+=== [r240b:q83] boot 21:14:15 fam=qwen env=[ARC_MODEL=/models/qwen3.8-27b ARC_SERVED=qwen3.8-27b ARC_QUANTCFG={"ignore":["*visual*","*linear_attn*","mtp.fc"]} ARC_GMU=0.85 ARC_GRAPH=1 ARC_LMC=1 ARC_FP8=0 ARC_QUANT=mxfp8 ARC_SPEC=3] ===
+HEALTH_OK_r240b_q83 21:24:45
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert28 name=arc-r240b model=/models/qwen3.8-27b served=qwen3.8-27b quant=mxfp8 qcfg={"ignore":["*visual*","*linear_attn*","mtp.fc"]} graph=1 spec=3 gmu=0.85 maxlen=262144 mnbt=8192 seqs=64 fp8=0 xgc=0 tmpl=__qwen_default__ rp=<qwen3> tp=<qwen3_coder> port=8000 21:14:18
+tracebacks=0
+tq_hook_lines=0
+kv_pool_tokens=306494
+CONC_OK_q83_c1024_n1
+CONC_OK_q83_c1024_n2
+CONC_OK_q83_c1024_n3
+CONC_OK_q83_c1024_n4
+CONC_OK_q83_c1024_n8
+CONC_OK_q83_c1024_n1_t1.0
+CONC_OK_q83_c8192_n1
+CONC_OK_q83_c8192_n2
+CONC_OK_q83_c8192_n3
+CONC_OK_q83_c8192_n4
+CONC_OK_q83_c8192_n8
+CONC_OK_q83_c8192_n1_t1.0
+CONC_OK_q83_c32768_n1
+CONC_OK_q83_c32768_n2
+CONC_OK_q83_c32768_n3
+CONC_OK_q83_c32768_n4
+CONC_OK_q83_c32768_n8
+CONC_OK_q83_c32768_n1_t1.0
+CONC_OK_q83_c65536_n1
+CONC_OK_q83_c65536_n2
+CONC_OK_q83_c65536_n3
+CONC_OK_q83_c65536_n4
+KV_CAP q83 c65536 n8 POOL=306494 NEED=529600
+CONC_OK_q83_c65536_n1_t1.0
+CONC_OK_q83_c131072_n1
+CONC_OK_q83_c131072_n2
+KV_CAP q83 c131072 n3 POOL=306494 NEED=395208
+KV_CAP q83 c131072 n4 POOL=306494 NEED=526944
+KV_CAP q83 c131072 n8 POOL=306494 NEED=1053888
+CONC_OK_q83_c131072_n1_t1.0
+=== [r240b:q83] done 21:54:44 ===
+=== [r240b:q80] boot 21:54:44 fam=qwen env=[ARC_MODEL=/models/qwen3.8-27b ARC_SERVED=qwen3.8-27b ARC_QUANTCFG={"ignore":["*visual*","*linear_attn*","mtp.fc"]} ARC_GMU=0.85 ARC_GRAPH=1 ARC_LMC=1 ARC_FP8=0 ARC_QUANT=mxfp8 ARC_SPEC=0] ===
+HEALTH_OK_r240b_q80 22:04:22
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert28 name=arc-r240b model=/models/qwen3.8-27b served=qwen3.8-27b quant=mxfp8 qcfg={"ignore":["*visual*","*linear_attn*","mtp.fc"]} graph=1 spec=0 gmu=0.85 maxlen=262144 mnbt=8192 seqs=64 fp8=0 xgc=0 tmpl=__qwen_default__ rp=<qwen3> tp=<qwen3_coder> port=8000 21:54:47
+tracebacks=0
+tq_hook_lines=0
+kv_pool_tokens=439620
+CONC_OK_q80_c1024_n1
+CONC_OK_q80_c1024_n2
+CONC_OK_q80_c1024_n3
+CONC_OK_q80_c1024_n4
+CONC_OK_q80_c1024_n8
+CONC_OK_q80_c1024_n1_t1.0
+CONC_OK_q80_c8192_n1
+CONC_OK_q80_c8192_n2
+CONC_OK_q80_c8192_n3
+CONC_OK_q80_c8192_n4
+CONC_OK_q80_c8192_n8
+CONC_OK_q80_c8192_n1_t1.0
+CONC_OK_q80_c32768_n1
+CONC_OK_q80_c32768_n2
+CONC_OK_q80_c32768_n3
+CONC_OK_q80_c32768_n4
+CONC_OK_q80_c32768_n8
+CONC_OK_q80_c32768_n1_t1.0
+CONC_OK_q80_c65536_n1
+CONC_OK_q80_c65536_n2
+CONC_OK_q80_c65536_n3
+CONC_OK_q80_c65536_n4
+KV_CAP q80 c65536 n8 POOL=439620 NEED=529600
+CONC_OK_q80_c65536_n6
+CONC_OK_q80_c65536_n1_t1.0
+CONC_OK_q80_c131072_n1
+CONC_OK_q80_c131072_n2
+CONC_OK_q80_c131072_n3
+KV_CAP q80 c131072 n4 POOL=439620 NEED=526944
+KV_CAP q80 c131072 n8 POOL=439620 NEED=1053888
+CONC_OK_q80_c131072_n1_t1.0
+=== [r240b:q80] done 22:49:44 ===
+=== [r240b:q43] boot 22:49:44 fam=qwen env=[ARC_MODEL=/models/qwen3.8-27b ARC_SERVED=qwen3.8-27b ARC_QUANTCFG={"ignore":["*visual*","*linear_attn*","mtp.fc"]} ARC_GMU=0.85 ARC_GRAPH=1 ARC_LMC=1 ARC_FP8=0 ARC_QUANT=mxfp4 ARC_MXFP4_MODE=w4a16 ARC_SPEC=3] ===
+HEALTH_OK_r240b_q43 23:00:03
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert28 name=arc-r240b model=/models/qwen3.8-27b served=qwen3.8-27b quant=mxfp4 qcfg={"ignore":["*visual*","*linear_attn*","mtp.fc"]} graph=1 spec=3 gmu=0.85 maxlen=262144 mnbt=8192 seqs=64 fp8=0 xgc=0 tmpl=__qwen_default__ rp=<qwen3> tp=<qwen3_coder> port=8000 22:49:47
+tracebacks=0
+tq_hook_lines=0
+kv_pool_tokens=599525
+CONC_OK_q43_c1024_n1
+CONC_OK_q43_c1024_n2
+CONC_OK_q43_c1024_n3
+CONC_OK_q43_c1024_n4
+CONC_OK_q43_c1024_n8
+CONC_OK_q43_c1024_n1_t1.0
+CONC_OK_q43_c8192_n1
+CONC_OK_q43_c8192_n2
+CONC_OK_q43_c8192_n3
+CONC_OK_q43_c8192_n4
+CONC_OK_q43_c8192_n8
+CONC_OK_q43_c8192_n1_t1.0
+CONC_OK_q43_c32768_n1
+CONC_OK_q43_c32768_n2
+CONC_OK_q43_c32768_n3
+CONC_OK_q43_c32768_n4
+CONC_OK_q43_c32768_n8
+CONC_OK_q43_c32768_n1_t1.0
+CONC_OK_q43_c65536_n1
+CONC_OK_q43_c65536_n2
+CONC_OK_q43_c65536_n3
+CONC_OK_q43_c65536_n4
+CONC_OK_q43_c65536_n8
+CONC_OK_q43_c65536_n1_t1.0
+CONC_OK_q43_c131072_n1
+CONC_OK_q43_c131072_n2
+CONC_OK_q43_c131072_n3
+CONC_OK_q43_c131072_n4
+KV_CAP q43 c131072 n8 POOL=599525 NEED=1053888
+CONC_OK_q43_c131072_n1_t1.0
+=== [r240b:q43] done 23:49:01 ===
+=== [r240b:q40] boot 23:49:01 fam=qwen env=[ARC_MODEL=/models/qwen3.8-27b ARC_SERVED=qwen3.8-27b ARC_QUANTCFG={"ignore":["*visual*","*linear_attn*","mtp.fc"]} ARC_GMU=0.85 ARC_GRAPH=1 ARC_LMC=1 ARC_FP8=0 ARC_QUANT=mxfp4 ARC_MXFP4_MODE=w4a16 ARC_SPEC=0] ===
+HEALTH_OK_r240b_q40 23:58:30
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert28 name=arc-r240b model=/models/qwen3.8-27b served=qwen3.8-27b quant=mxfp4 qcfg={"ignore":["*visual*","*linear_attn*","mtp.fc"]} graph=1 spec=0 gmu=0.85 maxlen=262144 mnbt=8192 seqs=64 fp8=0 xgc=0 tmpl=__qwen_default__ rp=<qwen3> tp=<qwen3_coder> port=8000 23:49:04
+tracebacks=0
+tq_hook_lines=0
+kv_pool_tokens=708277
+CONC_OK_q40_c1024_n1
+CONC_OK_q40_c1024_n2
+CONC_OK_q40_c1024_n3
+CONC_OK_q40_c1024_n4
+CONC_OK_q40_c1024_n8
+CONC_OK_q40_c1024_n1_t1.0
+CONC_OK_q40_c8192_n1
+CONC_OK_q40_c8192_n2
+CONC_OK_q40_c8192_n3
+CONC_OK_q40_c8192_n4
+CONC_OK_q40_c8192_n8
+CONC_OK_q40_c8192_n1_t1.0
+CONC_OK_q40_c32768_n1
+CONC_OK_q40_c32768_n2
+CONC_OK_q40_c32768_n3
+CONC_OK_q40_c32768_n4
+CONC_OK_q40_c32768_n8
+CONC_OK_q40_c32768_n1_t1.0
+CONC_OK_q40_c65536_n1
+CONC_OK_q40_c65536_n2
+CONC_OK_q40_c65536_n3
+CONC_OK_q40_c65536_n4
+CONC_OK_q40_c65536_n8
+CONC_OK_q40_c65536_n1_t1.0
+CONC_OK_q40_c131072_n1
+CONC_OK_q40_c131072_n2
+CONC_OK_q40_c131072_n3
+CONC_OK_q40_c131072_n4
+KV_CAP q40 c131072 n8 POOL=708277 NEED=1053888
+CONC_OK_q40_c131072_n5
+CONC_OK_q40_c131072_n1_t1.0
+=== [r240b:q40] done 00:59:28 ===
+=== [r240b:gf8] boot 00:59:28 fam=gemma env=[ARC_MODEL=/models/gemma4-31b ARC_SERVED=gemma4-31b ARC_GMU=0.8 ARC_GRAPH=1 ARC_SPEC=0 ARC_LMC=0 ARC_RPC=1200 ARC_MAXLEN=40960 ARC_FP8=0 ARC_QUANT=fp8] ===
+HEALTH_OK_r240b_gf8 01:12:19
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert28 name=arc-r240b model=/models/gemma4-31b served=gemma4-31b quant=fp8 qcfg= graph=1 spec=0 gmu=0.8 maxlen=40960 mnbt=8192 seqs=64 fp8=0 xgc=0 tmpl=__qwen_default__ rp=<qwen3> tp=<qwen3_coder> port=8000 00:59:31
+tracebacks=0
+tq_hook_lines=0
+kv_pool_tokens=56128
+CONC_OK_gf8_c1024_n1
+CONC_OK_gf8_c1024_n2
+CONC_OK_gf8_c1024_n3
+CONC_OK_gf8_c1024_n4
+CONC_OK_gf8_c1024_n8
+CONC_OK_gf8_c1024_n1_t1.0
+CONC_OK_gf8_c8192_n1
+CONC_OK_gf8_c8192_n2
+CONC_OK_gf8_c8192_n3
+CONC_OK_gf8_c8192_n4
+KV_CAP gf8 c8192 n8 POOL=56128 NEED=70848
+CONC_OK_gf8_c8192_n6
+CONC_OK_gf8_c8192_n1_t1.0
+CONC_OK_gf8_c32768_n1
+KV_CAP gf8 c32768 n2 POOL=56128 NEED=66864
+KV_CAP gf8 c32768 n3 POOL=56128 NEED=100296
+KV_CAP gf8 c32768 n4 POOL=56128 NEED=133728
+KV_CAP gf8 c32768 n8 POOL=56128 NEED=267456
+CONC_OK_gf8_c32768_n1_t1.0
+=== [r240b:gf8] done 01:22:43 ===
+=== [r240b:gm8] boot 01:22:43 fam=gemma env=[ARC_MODEL=/models/gemma4-31b ARC_SERVED=gemma4-31b ARC_GMU=0.8 ARC_GRAPH=1 ARC_SPEC=0 ARC_LMC=0 ARC_RPC=1200 ARC_MAXLEN=40960 ARC_FP8=0 ARC_QUANT=mxfp8] ===
+HEALTH_OK_r240b_gm8 01:35:24
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert28 name=arc-r240b model=/models/gemma4-31b served=gemma4-31b quant=mxfp8 qcfg= graph=1 spec=0 gmu=0.8 maxlen=40960 mnbt=8192 seqs=64 fp8=0 xgc=0 tmpl=__qwen_default__ rp=<qwen3> tp=<qwen3_coder> port=8000 01:22:46
+tracebacks=0
+tq_hook_lines=0
+kv_pool_tokens=52822
+CONC_OK_gm8_c1024_n1
+CONC_OK_gm8_c1024_n2
+CONC_OK_gm8_c1024_n3
+CONC_OK_gm8_c1024_n4
+CONC_OK_gm8_c1024_n8
+CONC_OK_gm8_c1024_n1_t1.0
+CONC_OK_gm8_c8192_n1
+CONC_OK_gm8_c8192_n2
+CONC_OK_gm8_c8192_n3
+CONC_OK_gm8_c8192_n4
+KV_CAP gm8 c8192 n8 POOL=52822 NEED=70848
+CONC_OK_gm8_c8192_n5
+CONC_OK_gm8_c8192_n1_t1.0
+CONC_OK_gm8_c32768_n1
+KV_CAP gm8 c32768 n2 POOL=52822 NEED=66864
+KV_CAP gm8 c32768 n3 POOL=52822 NEED=100296
+KV_CAP gm8 c32768 n4 POOL=52822 NEED=133728
+KV_CAP gm8 c32768 n8 POOL=52822 NEED=267456
+CONC_OK_gm8_c32768_n1_t1.0
+=== [r240b:gm8] done 01:46:01 ===
+=== [r240b:gm4] boot 01:46:01 fam=gemma env=[ARC_MODEL=/models/gemma4-31b ARC_SERVED=gemma4-31b ARC_GMU=0.8 ARC_GRAPH=1 ARC_SPEC=0 ARC_LMC=0 ARC_RPC=1200 ARC_MAXLEN=40960 ARC_FP8=0 ARC_QUANT=mxfp4 ARC_MXFP4_MODE=w4a16] ===
+HEALTH_OK_r240b_gm4 01:58:41
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert28 name=arc-r240b model=/models/gemma4-31b served=gemma4-31b quant=mxfp4 qcfg= graph=1 spec=0 gmu=0.8 maxlen=40960 mnbt=8192 seqs=64 fp8=0 xgc=0 tmpl=__qwen_default__ rp=<qwen3> tp=<qwen3_coder> port=8000 01:46:04
+tracebacks=0
+tq_hook_lines=0
+kv_pool_tokens=128033
+CONC_OK_gm4_c1024_n1
+CONC_OK_gm4_c1024_n2
+CONC_OK_gm4_c1024_n3
+CONC_OK_gm4_c1024_n4
+CONC_OK_gm4_c1024_n8
+CONC_OK_gm4_c1024_n1_t1.0
+CONC_OK_gm4_c8192_n1
+CONC_OK_gm4_c8192_n2
+CONC_OK_gm4_c8192_n3
+CONC_OK_gm4_c8192_n4
+CONC_OK_gm4_c8192_n8
+CONC_OK_gm4_c8192_n1_t1.0
+CONC_OK_gm4_c32768_n1
+CONC_OK_gm4_c32768_n2
+CONC_OK_gm4_c32768_n3
+KV_CAP gm4 c32768 n4 POOL=128033 NEED=133728
+KV_CAP gm4 c32768 n8 POOL=128033 NEED=267456
+CONC_OK_gm4_c32768_n1_t1.0
+=== [r240b:gm4] done 02:10:54 ===
+=== [r240b:tq_k8v4] boot 02:10:54 fam=qwen env=[ARC_MODEL=/models/qwen3.8-27b-fp8 ARC_SERVED=qwen3.8-27b-fp8 ARC_GRAPH=1 ARC_LMC=1 ARC_FP8=1 ARC_SPEC=3 ARC_KVDTYPE=turboquant_k8v4] ===
+HEALTH_OK_r240b_tq_k8v4 02:18:10
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert28 name=arc-r240b model=/models/qwen3.8-27b-fp8 served=qwen3.8-27b-fp8 quant=fp8 qcfg= graph=1 spec=3 gmu=0.8 maxlen=262144 mnbt=8192 seqs=64 fp8=1 xgc=0 tmpl=__qwen_default__ rp=<qwen3> tp=<qwen3_coder> port=8000 02:10:57
+tracebacks=0
+tq_hook_lines=4
+kv_pool_tokens=517815
+CONC_OK_tq_k8v4_c1024_n1
+CONC_OK_tq_k8v4_c1024_n2
+CONC_OK_tq_k8v4_c1024_n3
+CONC_OK_tq_k8v4_c1024_n4
+CONC_OK_tq_k8v4_c1024_n8
+CONC_OK_tq_k8v4_c1024_n1_t1.0
+CONC_OK_tq_k8v4_c8192_n1
+CONC_OK_tq_k8v4_c8192_n2
+CONC_OK_tq_k8v4_c8192_n3
+CONC_OK_tq_k8v4_c8192_n4
+CONC_OK_tq_k8v4_c8192_n8
+CONC_OK_tq_k8v4_c8192_n1_t1.0
+CONC_OK_tq_k8v4_c32768_n1
+CONC_OK_tq_k8v4_c32768_n2
+CONC_OK_tq_k8v4_c32768_n3
+CONC_OK_tq_k8v4_c32768_n4
+CONC_OK_tq_k8v4_c32768_n8
+CONC_OK_tq_k8v4_c32768_n1_t1.0
+CONC_OK_tq_k8v4_c65536_n1
+CONC_OK_tq_k8v4_c65536_n2
+CONC_OK_tq_k8v4_c65536_n3
+CONC_OK_tq_k8v4_c65536_n4
+KV_CAP tq_k8v4 c65536 n8 POOL=517815 NEED=529600
+CONC_OK_tq_k8v4_c65536_n7
+CONC_OK_tq_k8v4_c65536_n1_t1.0
+CONC_OK_tq_k8v4_c131072_n1
+CONC_OK_tq_k8v4_c131072_n2
+CONC_OK_tq_k8v4_c131072_n3
+KV_CAP tq_k8v4 c131072 n4 POOL=517815 NEED=526944
+KV_CAP tq_k8v4 c131072 n8 POOL=517815 NEED=1053888
+CONC_OK_tq_k8v4_c131072_n1_t1.0
+=== [r240b:tq_k8v4] done 03:21:07 ===
+=== [r240b:tq_4bit] boot 03:21:07 fam=qwen env=[ARC_MODEL=/models/qwen3.8-27b-fp8 ARC_SERVED=qwen3.8-27b-fp8 ARC_GRAPH=1 ARC_LMC=1 ARC_FP8=1 ARC_SPEC=3 ARC_KVDTYPE=turboquant_4bit_nc] ===
+HEALTH_OK_r240b_tq_4bit 03:29:14
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert28 name=arc-r240b model=/models/qwen3.8-27b-fp8 served=qwen3.8-27b-fp8 quant=fp8 qcfg= graph=1 spec=3 gmu=0.8 maxlen=262144 mnbt=8192 seqs=64 fp8=1 xgc=0 tmpl=__qwen_default__ rp=<qwen3> tp=<qwen3_coder> port=8000 03:21:10
+tracebacks=0
+tq_hook_lines=4
+kv_pool_tokens=745519
+CONC_OK_tq_4bit_c1024_n1
+CONC_OK_tq_4bit_c1024_n2
+CONC_OK_tq_4bit_c1024_n3
+CONC_OK_tq_4bit_c1024_n4
+CONC_OK_tq_4bit_c1024_n8
+CONC_OK_tq_4bit_c1024_n1_t1.0
+CONC_OK_tq_4bit_c8192_n1
+CONC_OK_tq_4bit_c8192_n2
+CONC_OK_tq_4bit_c8192_n3
+CONC_OK_tq_4bit_c8192_n4
+CONC_OK_tq_4bit_c8192_n8
+CONC_OK_tq_4bit_c8192_n1_t1.0
+CONC_OK_tq_4bit_c32768_n1
+CONC_OK_tq_4bit_c32768_n2
+CONC_OK_tq_4bit_c32768_n3
+CONC_OK_tq_4bit_c32768_n4
+CONC_OK_tq_4bit_c32768_n8
+CONC_OK_tq_4bit_c32768_n1_t1.0
+CONC_OK_tq_4bit_c65536_n1
+CONC_OK_tq_4bit_c65536_n2
+CONC_OK_tq_4bit_c65536_n3
+CONC_OK_tq_4bit_c65536_n4
+CONC_OK_tq_4bit_c65536_n8
+CONC_OK_tq_4bit_c65536_n1_t1.0
+CONC_OK_tq_4bit_c131072_n1
+CONC_OK_tq_4bit_c131072_n2
+CONC_OK_tq_4bit_c131072_n3
+CONC_OK_tq_4bit_c131072_n4
+KV_CAP tq_4bit c131072 n8 POOL=745519 NEED=1053888
+CONC_OK_tq_4bit_c131072_n5
+CONC_OK_tq_4bit_c131072_n1_t1.0
+=== [r240b:tq_4bit] done 04:36:01 ===
+=== [r240b:tq_k3v4] boot 04:36:01 fam=qwen env=[ARC_MODEL=/models/qwen3.8-27b-fp8 ARC_SERVED=qwen3.8-27b-fp8 ARC_GRAPH=1 ARC_LMC=1 ARC_FP8=1 ARC_SPEC=3 ARC_KVDTYPE=turboquant_k3v4_nc] ===
+HEALTH_OK_r240b_tq_k3v4 04:44:29
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert28 name=arc-r240b model=/models/qwen3.8-27b-fp8 served=qwen3.8-27b-fp8 quant=fp8 qcfg= graph=1 spec=3 gmu=0.8 maxlen=262144 mnbt=8192 seqs=64 fp8=1 xgc=0 tmpl=__qwen_default__ rp=<qwen3> tp=<qwen3_coder> port=8000 04:36:04
+tracebacks=0
+tq_hook_lines=4
+kv_pool_tokens=838192
+CONC_OK_tq_k3v4_c1024_n1
+CONC_OK_tq_k3v4_c1024_n2
+CONC_OK_tq_k3v4_c1024_n3
+CONC_OK_tq_k3v4_c1024_n4
+CONC_OK_tq_k3v4_c1024_n8
+CONC_OK_tq_k3v4_c1024_n1_t1.0
+CONC_OK_tq_k3v4_c8192_n1
+CONC_OK_tq_k3v4_c8192_n2
+CONC_OK_tq_k3v4_c8192_n3
+CONC_OK_tq_k3v4_c8192_n4
+CONC_OK_tq_k3v4_c8192_n8
+CONC_OK_tq_k3v4_c8192_n1_t1.0
+CONC_OK_tq_k3v4_c32768_n1
+CONC_OK_tq_k3v4_c32768_n2
+CONC_OK_tq_k3v4_c32768_n3
+CONC_OK_tq_k3v4_c32768_n4
+CONC_OK_tq_k3v4_c32768_n8
+CONC_OK_tq_k3v4_c32768_n1_t1.0
+CONC_OK_tq_k3v4_c65536_n1
+CONC_OK_tq_k3v4_c65536_n2
+CONC_OK_tq_k3v4_c65536_n3
+CONC_OK_tq_k3v4_c65536_n4
+CONC_OK_tq_k3v4_c65536_n8
+CONC_OK_tq_k3v4_c65536_n1_t1.0
+CONC_OK_tq_k3v4_c131072_n1
+CONC_OK_tq_k3v4_c131072_n2
+CONC_OK_tq_k3v4_c131072_n3
+CONC_OK_tq_k3v4_c131072_n4
+KV_CAP tq_k3v4 c131072 n8 POOL=838192 NEED=1053888
+CONC_OK_tq_k3v4_c131072_n6
+CONC_OK_tq_k3v4_c131072_n1_t1.0
+=== [r240b:tq_k3v4] done 05:58:46 ===
+=== [r240b:tq_3bit] boot 05:58:46 fam=qwen env=[ARC_MODEL=/models/qwen3.8-27b-fp8 ARC_SERVED=qwen3.8-27b-fp8 ARC_GRAPH=1 ARC_LMC=1 ARC_FP8=1 ARC_SPEC=3 ARC_KVDTYPE=turboquant_3bit_nc] ===
+HEALTH_OK_r240b_tq_3bit 06:07:04
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert28 name=arc-r240b model=/models/qwen3.8-27b-fp8 served=qwen3.8-27b-fp8 quant=fp8 qcfg= graph=1 spec=3 gmu=0.8 maxlen=262144 mnbt=8192 seqs=64 fp8=1 xgc=0 tmpl=__qwen_default__ rp=<qwen3> tp=<qwen3_coder> port=8000 05:58:49
+tracebacks=0
+tq_hook_lines=4
+kv_pool_tokens=959909
+CONC_OK_tq_3bit_c1024_n1
+CONC_OK_tq_3bit_c1024_n2
+CONC_OK_tq_3bit_c1024_n3
+CONC_OK_tq_3bit_c1024_n4
+CONC_OK_tq_3bit_c1024_n8
+CONC_OK_tq_3bit_c1024_n1_t1.0
+CONC_OK_tq_3bit_c8192_n1
+CONC_OK_tq_3bit_c8192_n2
+CONC_OK_tq_3bit_c8192_n3
+CONC_OK_tq_3bit_c8192_n4
+CONC_OK_tq_3bit_c8192_n8
+CONC_OK_tq_3bit_c8192_n1_t1.0
+CONC_OK_tq_3bit_c32768_n1
+CONC_OK_tq_3bit_c32768_n2
+CONC_OK_tq_3bit_c32768_n3
+CONC_OK_tq_3bit_c32768_n4
+CONC_OK_tq_3bit_c32768_n8
+CONC_OK_tq_3bit_c32768_n1_t1.0
+CONC_OK_tq_3bit_c65536_n1
+CONC_OK_tq_3bit_c65536_n2
+CONC_OK_tq_3bit_c65536_n3
+CONC_OK_tq_3bit_c65536_n4
+CONC_OK_tq_3bit_c65536_n8
+CONC_OK_tq_3bit_c65536_n1_t1.0
+CONC_OK_tq_3bit_c131072_n1
+CONC_OK_tq_3bit_c131072_n2
+CONC_OK_tq_3bit_c131072_n3
+CONC_OK_tq_3bit_c131072_n4
+KV_CAP tq_3bit c131072 n8 POOL=959909 NEED=1053888
+CONC_OK_tq_3bit_c131072_n7
+CONC_OK_tq_3bit_c131072_n1_t1.0
+=== [r240b:tq_3bit] done 07:34:47 ===
+=== [r240b:gkv_auto] boot 07:34:47 fam=kvface env=[ARC_MODEL=/models/gemma4-31b ARC_SERVED=gemma4-31b ARC_GMU=0.8 ARC_GRAPH=1 ARC_SPEC=0 ARC_LMC=0 ARC_RPC=1200 ARC_MAXLEN=40960 ARC_FP8=0 ARC_QUANT=fp8 ARC_KVDTYPE=auto] ===
+[r240b:gkv_auto] TRACEBACK poll=17
+R240B_BOOT_FAIL_gkv_auto -- banking log, matrix continues
+=== [r240b:gkv_auto16] boot 07:37:43 fam=kvface env=[ARC_MODEL=/models/gemma4-31b ARC_SERVED=gemma4-31b ARC_GMU=0.8 ARC_GRAPH=1 ARC_SPEC=0 ARC_LMC=0 ARC_RPC=1200 ARC_MAXLEN=40960 ARC_FP8=0 ARC_QUANT=fp8 ARC_KVDTYPE=auto ARC_MAXLEN=16384] ===
+[r240b:gkv_auto16] TRACEBACK poll=17
+R240B_BOOT_FAIL_gkv_auto16 -- banking log, matrix continues
+=== [r240b:kvm4] boot 07:40:39 fam=kvface env=[ARC_MODEL=/models/qwen3.8-27b-fp8 ARC_SERVED=qwen3.8-27b-fp8 ARC_GRAPH=1 ARC_LMC=1 ARC_FP8=1 ARC_SPEC=3 ARC_KVDTYPE=mxfp4 ARC_MXKV_NATIVE=1] ===
+HEALTH_OK_r240b_kvm4 07:45:54
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert28 name=arc-r240b model=/models/qwen3.8-27b-fp8 served=qwen3.8-27b-fp8 quant=fp8 qcfg= graph=1 spec=3 gmu=0.8 maxlen=262144 mnbt=8192 seqs=64 fp8=1 xgc=0 tmpl=__qwen_default__ rp=<qwen3> tp=<qwen3_coder> port=8000 07:40:42
+tracebacks=0
+tq_hook_lines=4
+kv_pool_tokens=721994
+CONC_OK_kvm4_c1024_n1
+CONC_OK_kvm4_c1024_n2
+CONC_OK_kvm4_c1024_n4
+CONC_OK_kvm4_c1024_n8
+CONC_OK_kvm4_c8192_n1
+CONC_OK_kvm4_c8192_n2
+CONC_OK_kvm4_c8192_n4
+CONC_OK_kvm4_c8192_n8
+CONC_OK_kvm4_c32768_n1
+CONC_OK_kvm4_c32768_n2
+CONC_OK_kvm4_c32768_n4
+CONC_OK_kvm4_c32768_n8
+CONC_OK_kvm4_c65536_n1
+CONC_OK_kvm4_c65536_n2
+CONC_OK_kvm4_c65536_n4
+CONC_OK_kvm4_c65536_n8
+CONC_OK_kvm4_c131072_n1
+CONC_OK_kvm4_c131072_n2
+CONC_OK_kvm4_c131072_n4
+KV_CAP kvm4 c131072 n8 POOL=721994 NEED=1053888
+CONC_OK_kvm4_c1024_n1_t1.0
+CONC_OK_kvm4_c8192_n1_t1.0
+CONC_OK_kvm4_c32768_n1_t1.0
+CONC_OK_kvm4_c65536_n1_t1.0
+CONC_OK_kvm4_c131072_n1_t1.0
+=== [r240b:kvm4] done 07:59:53 ===
+=== [r240b:kvm8] boot 07:59:53 fam=kvface env=[ARC_MODEL=/models/qwen3.8-27b-fp8 ARC_SERVED=qwen3.8-27b-fp8 ARC_GRAPH=1 ARC_LMC=1 ARC_FP8=1 ARC_SPEC=3 ARC_KVDTYPE=mxfp8 ARC_MXKV_NATIVE=1] ===
+HEALTH_OK_r240b_kvm8 08:05:08
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert28 name=arc-r240b model=/models/qwen3.8-27b-fp8 served=qwen3.8-27b-fp8 quant=fp8 qcfg= graph=1 spec=3 gmu=0.8 maxlen=262144 mnbt=8192 seqs=64 fp8=1 xgc=0 tmpl=__qwen_default__ rp=<qwen3> tp=<qwen3_coder> port=8000 07:59:56
+tracebacks=0
+tq_hook_lines=4
+kv_pool_tokens=386484
+CONC_OK_kvm8_c1024_n1
+CONC_OK_kvm8_c1024_n2
+CONC_OK_kvm8_c1024_n4
+CONC_OK_kvm8_c1024_n8
+CONC_OK_kvm8_c8192_n1
+CONC_OK_kvm8_c8192_n2
+CONC_OK_kvm8_c8192_n4
+CONC_OK_kvm8_c8192_n8
+CONC_OK_kvm8_c32768_n1
+CONC_OK_kvm8_c32768_n2
+CONC_OK_kvm8_c32768_n4
+CONC_OK_kvm8_c32768_n8
+CONC_OK_kvm8_c65536_n1
+CONC_OK_kvm8_c65536_n2
+CONC_OK_kvm8_c65536_n4
+KV_CAP kvm8 c65536 n8 POOL=386484 NEED=529600
+CONC_OK_kvm8_c131072_n1
+CONC_OK_kvm8_c131072_n2
+KV_CAP kvm8 c131072 n4 POOL=386484 NEED=526944
+KV_CAP kvm8 c131072 n8 POOL=386484 NEED=1053888
+CONC_OK_kvm8_c1024_n1_t1.0
+CONC_OK_kvm8_c8192_n1_t1.0
+CONC_OK_kvm8_c32768_n1_t1.0
+CONC_OK_kvm8_c65536_n1_t1.0
+CONC_OK_kvm8_c131072_n1_t1.0
+=== [r240b:kvm8] done 08:29:11 ===
+=== [r240b:kvmk] boot 08:29:11 fam=kvface env=[ARC_MODEL=/models/qwen3.8-27b-fp8 ARC_SERVED=qwen3.8-27b-fp8 ARC_GRAPH=1 ARC_LMC=1 ARC_FP8=1 ARC_SPEC=3 ARC_KVDTYPE=mxk8v4 ARC_MXKV_NATIVE=1] ===
+HEALTH_OK_r240b_kvmk 08:34:26
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert28 name=arc-r240b model=/models/qwen3.8-27b-fp8 served=qwen3.8-27b-fp8 quant=fp8 qcfg= graph=1 spec=3 gmu=0.8 maxlen=262144 mnbt=8192 seqs=64 fp8=1 xgc=0 tmpl=__qwen_default__ rp=<qwen3> tp=<qwen3_coder> port=8000 08:29:14
+tracebacks=0
+tq_hook_lines=4
+kv_pool_tokens=504832
+CONC_OK_kvmk_c1024_n1
+CONC_OK_kvmk_c1024_n2
+CONC_OK_kvmk_c1024_n4
+CONC_OK_kvmk_c1024_n8
+CONC_OK_kvmk_c8192_n1
+CONC_OK_kvmk_c8192_n2
+CONC_OK_kvmk_c8192_n4
+CONC_OK_kvmk_c8192_n8
+CONC_OK_kvmk_c32768_n1
+CONC_OK_kvmk_c32768_n2
+CONC_OK_kvmk_c32768_n4
+CONC_OK_kvmk_c32768_n8
+CONC_OK_kvmk_c65536_n1
+CONC_OK_kvmk_c65536_n2
+CONC_OK_kvmk_c65536_n4
+KV_CAP kvmk c65536 n8 POOL=504832 NEED=529600
+CONC_OK_kvmk_c131072_n1
+CONC_OK_kvmk_c131072_n2
+KV_CAP kvmk c131072 n4 POOL=504832 NEED=526944
+KV_CAP kvmk c131072 n8 POOL=504832 NEED=1053888
+CONC_OK_kvmk_c1024_n1_t1.0
+CONC_OK_kvmk_c8192_n1_t1.0
+CONC_OK_kvmk_c32768_n1_t1.0
+CONC_OK_kvmk_c65536_n1_t1.0
+CONC_OK_kvmk_c131072_n1_t1.0
+=== [r240b:kvmk] done 08:43:17 ===
+=== [r240b:gkv_m4] boot 08:43:17 fam=kvface env=[ARC_MODEL=/models/gemma4-31b ARC_SERVED=gemma4-31b ARC_GMU=0.8 ARC_GRAPH=1 ARC_SPEC=0 ARC_LMC=0 ARC_RPC=1200 ARC_MAXLEN=40960 ARC_FP8=0 ARC_QUANT=fp8 ARC_KVDTYPE=mxfp4 ARC_MXKV_NATIVE=1] ===
+HEALTH_OK_r240b_gkv_m4 08:47:31
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert28 name=arc-r240b model=/models/gemma4-31b served=gemma4-31b quant=fp8 qcfg= graph=1 spec=0 gmu=0.8 maxlen=40960 mnbt=8192 seqs=64 fp8=0 xgc=0 tmpl=__qwen_default__ rp=<qwen3> tp=<qwen3_coder> port=8000 08:43:20
+tracebacks=0
+tq_hook_lines=4
+kv_pool_tokens=105669
+CONC_OK_gkv_m4_c1024_n1
+CONC_OK_gkv_m4_c1024_n2
+CONC_OK_gkv_m4_c1024_n4
+CONC_OK_gkv_m4_c1024_n8
+CONC_OK_gkv_m4_c8192_n1
+CONC_OK_gkv_m4_c8192_n2
+CONC_OK_gkv_m4_c8192_n4
+CONC_OK_gkv_m4_c8192_n8
+CONC_OK_gkv_m4_c32768_n1
+CONC_OK_gkv_m4_c32768_n2
+KV_CAP gkv_m4 c32768 n4 POOL=105669 NEED=133728
+KV_CAP gkv_m4 c32768 n8 POOL=105669 NEED=267456
+CONC_OK_gkv_m4_c1024_n1_t1.0
+CONC_OK_gkv_m4_c8192_n1_t1.0
+CONC_OK_gkv_m4_c32768_n1_t1.0
+=== [r240b:gkv_m4] done 08:50:42 ===
+=== [r240b:gkv_m8] boot 08:50:42 fam=kvface env=[ARC_MODEL=/models/gemma4-31b ARC_SERVED=gemma4-31b ARC_GMU=0.8 ARC_GRAPH=1 ARC_SPEC=0 ARC_LMC=0 ARC_RPC=1200 ARC_MAXLEN=40960 ARC_FP8=0 ARC_QUANT=fp8 ARC_KVDTYPE=mxfp8 ARC_MXKV_NATIVE=1] ===
+HEALTH_OK_r240b_gkv_m8 08:54:56
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert28 name=arc-r240b model=/models/gemma4-31b served=gemma4-31b quant=fp8 qcfg= graph=1 spec=0 gmu=0.8 maxlen=40960 mnbt=8192 seqs=64 fp8=0 xgc=0 tmpl=__qwen_default__ rp=<qwen3> tp=<qwen3_coder> port=8000 08:50:45
+tracebacks=0
+tq_hook_lines=4
+kv_pool_tokens=54426
+CONC_OK_gkv_m8_c1024_n1
+CONC_OK_gkv_m8_c1024_n2
+CONC_OK_gkv_m8_c1024_n4
+CONC_OK_gkv_m8_c1024_n8
+CONC_OK_gkv_m8_c8192_n1
+CONC_OK_gkv_m8_c8192_n2
+CONC_OK_gkv_m8_c8192_n4
+KV_CAP gkv_m8 c8192 n8 POOL=54426 NEED=70848
+CONC_OK_gkv_m8_c32768_n1
+KV_CAP gkv_m8 c32768 n2 POOL=54426 NEED=66864
+KV_CAP gkv_m8 c32768 n4 POOL=54426 NEED=133728
+KV_CAP gkv_m8 c32768 n8 POOL=54426 NEED=267456
+CONC_OK_gkv_m8_c1024_n1_t1.0
+CONC_OK_gkv_m8_c8192_n1_t1.0
+CONC_OK_gkv_m8_c32768_n1_t1.0
+=== [r240b:gkv_m8] done 08:57:40 ===
+=== [r240b:gkv_mk] boot 08:57:40 fam=kvface env=[ARC_MODEL=/models/gemma4-31b ARC_SERVED=gemma4-31b ARC_GMU=0.8 ARC_GRAPH=1 ARC_SPEC=0 ARC_LMC=0 ARC_RPC=1200 ARC_MAXLEN=40960 ARC_FP8=0 ARC_QUANT=fp8 ARC_KVDTYPE=mxk8v4 ARC_MXKV_NATIVE=1] ===
+HEALTH_OK_r240b_gkv_mk 09:01:54
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert28 name=arc-r240b model=/models/gemma4-31b served=gemma4-31b quant=fp8 qcfg= graph=1 spec=0 gmu=0.8 maxlen=40960 mnbt=8192 seqs=64 fp8=0 xgc=0 tmpl=__qwen_default__ rp=<qwen3> tp=<qwen3_coder> port=8000 08:57:43
+tracebacks=0
+tq_hook_lines=4
+kv_pool_tokens=71856
+CONC_OK_gkv_mk_c1024_n1
+CONC_OK_gkv_mk_c1024_n2
+CONC_OK_gkv_mk_c1024_n4
+CONC_OK_gkv_mk_c1024_n8
+CONC_OK_gkv_mk_c8192_n1
+CONC_OK_gkv_mk_c8192_n2
+CONC_OK_gkv_mk_c8192_n4
+CONC_OK_gkv_mk_c8192_n8
+CONC_OK_gkv_mk_c32768_n1
+CONC_OK_gkv_mk_c32768_n2
+KV_CAP gkv_mk c32768 n4 POOL=71856 NEED=133728
+KV_CAP gkv_mk c32768 n8 POOL=71856 NEED=267456
+CONC_OK_gkv_mk_c1024_n1_t1.0
+CONC_OK_gkv_mk_c8192_n1_t1.0
+CONC_OK_gkv_mk_c32768_n1_t1.0
+=== [r240b:gkv_mk] done 09:05:04 ===
+=== [r240b:gkv_e5m2] boot 09:05:05 fam=kvface env=[ARC_MODEL=/models/gemma4-31b ARC_SERVED=gemma4-31b ARC_GMU=0.8 ARC_GRAPH=1 ARC_SPEC=0 ARC_LMC=0 ARC_RPC=1200 ARC_MAXLEN=40960 ARC_FP8=0 ARC_QUANT=fp8 ARC_KVDTYPE=fp8_e5m2] ===
+[r240b:gkv_e5m2] TRACEBACK poll=9
+R240B_BOOT_FAIL_gkv_e5m2 -- banking log, matrix continues
+BOOT_FAILS: gkv_auto gkv_auto16 gkv_e5m2
+R240B_CONC_COMPLETE 2026-11-25T09:06:41Z -- pull + report gen next
+W14_RESTORED 2026-11-25T09:06:41Z
+R240B: WARN W14 not 200 after restore poll (last=000)

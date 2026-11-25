@@ -1,0 +1,31 @@
+{
+ "tag": "gm8_c1024_n1",
+ "ctx": 1024,
+ "conc": 1,
+ "max_tokens": 600,
+ "model": "gemma4-31b",
+ "temperature": 0.0,
+ "n_ok": 1,
+ "n_fail": 0,
+ "requests": [
+  {
+   "slot": 0,
+   "error": null,
+   "ttft_s": 0.8843968770233914,
+   "total_s": 22.72631471103523,
+   "n_stream_chunks": 600,
+   "itl_ms_p50": 36.51259699836373,
+   "itl_ms_p90": 37.18305297661573,
+   "itl_ms_p99": 37.3312080046162
+  }
+ ],
+ "ttft_mean_s": 0.8843968770233914,
+ "ttft_max_s": 0.8843968770233914,
+ "per_user_tps": [
+  27.47
+ ],
+ "per_user_mean_tps": 27.47011524169782,
+ "per_user_min_tps": 27.47011524169782,
+ "agg_tps_wall": 26.40111287857233,
+ "wall_s": 22.72631471103523
+}

@@ -1,0 +1,29 @@
+{
+ "tag": "gkv_mkx_c1024_n1_t1.0",
+ "ctx": 1024,
+ "conc": 1,
+ "max_tokens": 600,
+ "model": "gemma4-31b",
+ "temperature": 1.0,
+ "n_ok": 0,
+ "n_fail": 1,
+ "requests": [
+  {
+   "slot": 0,
+   "error": "URLError: <urlopen error [Errno 111] Connection refused>",
+   "ttft_s": -1,
+   "total_s": -1,
+   "n_stream_chunks": 0,
+   "itl_ms_p50": -1.0,
+   "itl_ms_p90": -1.0,
+   "itl_ms_p99": -1.0
+  }
+ ],
+ "ttft_mean_s": -1,
+ "ttft_max_s": -1,
+ "per_user_tps": [],
+ "per_user_mean_tps": -1,
+ "per_user_min_tps": -1,
+ "agg_tps_wall": -1,
+ "wall_s": -1
+}

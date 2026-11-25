@@ -1,0 +1,10 @@
+# vllm-arc fork-owned (no upstream .gitattributes exists).
+#
+# Banked evidence under results/ is byte-frozen: SHA256SUMS in every
+# bank verify against the pulled working-tree bytes, and some banked
+# rig logs carry mixed CRLF/LF terminators (docker log bytes as
+# pulled). core.autocrlf=input would renormalize CRLF text on commit
+# and break those checksums on fresh checkouts — `-text` disables all
+# EOL conversion for the whole results tree (evidence immutability;
+# the banking law's byte-exact redaction pass keeps relying on it).
+results/** -text

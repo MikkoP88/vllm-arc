@@ -3,28 +3,26 @@
 <text x="84" y="26" font-size="17" font-weight="600" fill="#101828">Long-context assistant (RAG) (32K): worst-user TTFT vs concurrency</text>
 <line x1="84" y1="394.0" x2="816" y2="394.0" stroke="#f0f0f0" stroke-width="1"/>
 <text x="76" y="398.0" font-size="11" fill="#667085" text-anchor="end">0.0</text>
-<line x1="84" y1="286.3" x2="816" y2="286.3" stroke="#f0f0f0" stroke-width="1"/>
-<text x="76" y="290.3" font-size="11" fill="#667085" text-anchor="end">50.0</text>
-<line x1="84" y1="178.6" x2="816" y2="178.6" stroke="#f0f0f0" stroke-width="1"/>
-<text x="76" y="182.6" font-size="11" fill="#667085" text-anchor="end">100.0</text>
-<line x1="84" y1="70.9" x2="816" y2="70.9" stroke="#f0f0f0" stroke-width="1"/>
-<text x="76" y="74.9" font-size="11" fill="#667085" text-anchor="end">150.0</text>
-<line x1="84" y1="372.5" x2="816" y2="372.5" stroke="#98a2b3" stroke-width="1" stroke-dasharray="5 4"/>
-<text x="820" y="375.5" font-size="9.5" fill="#667085" font-style="italic">bar</text>
-<rect x="142.2" y="356.9" width="30.0" height="37.1" fill="#2563eb" rx="2"/>
-<text x="157.2" y="350.9" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">17.2</text>
+<line x1="84" y1="277.1" x2="816" y2="277.1" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="281.1" font-size="11" fill="#667085" text-anchor="end">50.0</text>
+<line x1="84" y1="160.3" x2="816" y2="160.3" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="164.3" font-size="11" fill="#667085" text-anchor="end">100.0</text>
+<line x1="84" y1="370.6" x2="816" y2="370.6" stroke="#98a2b3" stroke-width="1" stroke-dasharray="5 4"/>
+<text x="820" y="373.6" font-size="9.5" fill="#667085" font-style="italic">bar</text>
+<rect x="142.2" y="356.3" width="30.0" height="37.7" fill="#2563eb" rx="2"/>
+<text x="157.2" y="350.3" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">16.1</text>
 <text x="157.2" y="412" font-size="11.5" fill="#475467" text-anchor="middle">@ 1</text>
-<rect x="288.6" y="319.2" width="30.0" height="74.8" fill="#2563eb" rx="2"/>
-<text x="303.6" y="313.2" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">34.7</text>
+<rect x="288.6" y="320.3" width="30.0" height="73.7" fill="#2563eb" rx="2"/>
+<text x="303.6" y="314.3" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">31.5</text>
 <text x="303.6" y="412" font-size="11.5" fill="#475467" text-anchor="middle">@ 2</text>
-<rect x="435.0" y="283.2" width="30.0" height="110.8" fill="#2563eb" rx="2"/>
-<text x="450.0" y="277.2" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">51.4</text>
+<rect x="435.0" y="283.7" width="30.0" height="110.3" fill="#2563eb" rx="2"/>
+<text x="450.0" y="277.7" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">47.2</text>
 <text x="450.0" y="412" font-size="11.5" fill="#475467" text-anchor="middle">@ 3</text>
-<rect x="581.4" y="246.1" width="30.0" height="147.9" fill="#2563eb" rx="2"/>
-<text x="596.4" y="240.1" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">68.7</text>
+<rect x="581.4" y="247.2" width="30.0" height="146.8" fill="#2563eb" rx="2"/>
+<text x="596.4" y="241.2" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">62.8</text>
 <text x="596.4" y="412" font-size="11.5" fill="#475467" text-anchor="middle">@ 4</text>
 <rect x="727.8" y="99.2" width="30.0" height="294.8" fill="#2563eb" rx="2"/>
-<text x="742.8" y="93.2" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">136.9</text>
+<text x="742.8" y="93.2" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">126.2</text>
 <text x="742.8" y="412" font-size="11.5" fill="#475467" text-anchor="middle">@ 8</text>
 <rect x="84" y="416" width="12" height="12" fill="#2563eb" rx="2"/>
 <text x="101" y="426" font-size="11.5" fill="#1d2939">TTFT worst</text>

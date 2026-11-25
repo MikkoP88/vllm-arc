@@ -1,0 +1,42 @@
+{
+ "tag": "tq_3bit_c1024_n2",
+ "ctx": 1024,
+ "conc": 2,
+ "max_tokens": 600,
+ "model": "qwen3.8-27b-fp8",
+ "temperature": 0.0,
+ "n_ok": 2,
+ "n_fail": 0,
+ "requests": [
+  {
+   "slot": 0,
+   "error": null,
+   "ttft_s": 0.331764469970949,
+   "total_s": 7.716851170989685,
+   "n_stream_chunks": 156,
+   "itl_ms_p50": 46.775964088737965,
+   "itl_ms_p90": 48.344491980969906,
+   "itl_ms_p99": 49.06378698069602
+  },
+  {
+   "slot": 1,
+   "error": null,
+   "ttft_s": 0.574006488895975,
+   "total_s": 7.71847119089216,
+   "n_stream_chunks": 154,
+   "itl_ms_p50": 46.78098298609257,
+   "itl_ms_p90": 48.103451961651444,
+   "itl_ms_p99": 48.61086292658001
+  }
+ ],
+ "ttft_mean_s": 0.452885479433462,
+ "ttft_max_s": 0.574006488895975,
+ "per_user_tps": [
+  81.24,
+  83.98
+ ],
+ "per_user_mean_tps": 82.61295699069971,
+ "per_user_min_tps": 81.24481462312866,
+ "agg_tps_wall": 155.4712028226531,
+ "wall_s": 7.71847119089216
+}

@@ -3,10 +3,10 @@
 | Field | Value |
 |---|---|
 | Harnesses | `tools/ar/p138/p138_face.py` (solo), `tools/ar/p139/p139_conc.py` (concurrency) |
-| Banks | `results/2026-11-10-p637-reports/` (r138), `results/2026-11-11-p637b-conc/` (r139), `results/2026-11-11-r140-gemma128k/` (gemma 128K annex) |
-| Engine | vLLM v0.30.0 — vllm-arc fork, image `vllm-arc:v0.30.0-b70-cert23`, XPU graphs, TP2 |
+| Banks | `results/2026-11-24-p647-r240-reports/` (r240), `results/2026-11-24-p647-r240b-conc/` (r240b), `results/2026-11-24-p647-r240c-gemma128k/` (gemma 128K annex + 64K closure) |
+| Engine | vLLM v0.30.0 — vllm-arc fork, image `vllm-arc:v0.30.0-b70-cert28`, XPU graphs, TP2 |
 | Hardware | 2x Intel Arc Pro B70 (BMG-G31, 32 GB each), host 64 GB RAM, close-out F defaults |
-| Date | 2026-11-11 |
+| Date | 2026-11-24 |
 
 ## What each report measures
 
@@ -62,10 +62,10 @@ Every face and every concurrency slot uses a unique seeded-random prompt (seed d
 
 - Client-side timing only: queue wait is derived (ttft_mean(n) - ttft_mean(1)), not exported by the engine.
 - No GPU telemetry (utilization, power, temperature) is captured in these banks.
-- A concurrency face requires all n requests to succeed (`n_fail = 0`); failed faces are banked and shown, never averaged away.
+- A concurrency face requires all n requests to succeed (`n_fail = 0`); failed faces are banked and shown, never averaged away. Zero-request faces (the JSON a dead engine answers with `Connection refused`) still fail this definition — the cell outcome line `CONC_OK` printed by the r240b/r240c gate scripts checked face-file existence, not served requests, so those gate lines are re-audited here: every number in these reports comes from faces with `n_ok > 0`, and every all-vacuous lane renders into its banked refusal class instead (the gemma native MX-KV lanes' hd512 first-decode refusal; the qwen packed lanes' mid-sweep engine deaths). VERDICTs: `results/2026-11-24-p647-r240b-conc/`, `results/2026-11-24-p647-r240c-gemma128k/`.
 - By-design capacity skips (pool < n x (ctx + 664)) are recorded as `KV_CAP` rows in the gate log — the measured capacity wall, not a failure.
-- A dtype or posture that refuses to boot is a valid, banked outcome with its serve log.
+- A dtype or posture that refuses to boot is a valid, banked outcome with its serve log. A lane that boots but cannot serve (the gemma hd512 decode refusal) is the same class of banked outcome — its pools are real, its faces carry no measurements.
 
 ## Reproducing
 
-Each report's **Configuration** block is the byte-exact validated invocation (`tools/serve_arc_b70.sh` + the banked posture echo). The gate scripts are `tools/ar/r139_conc.sh` (concurrency matrix) and `tools/ar/r140_gemma128k.sh` (gemma 128K annex); reports regenerate with `tools/ar/p139/p139_report.py`.
+Each report's **Configuration** block is the byte-exact validated invocation (`tools/serve_arc_b70.sh` + the banked posture echo). The gate scripts are `tools/ar/r240_reports_cert28.sh` (solo faces), `tools/ar/r240b_conc_cert28.sh` (concurrency matrix) and `tools/ar/r240c_gemma128k_cert28.sh` (gemma 128K annex); reports regenerate with `tools/ar/p139/p139_report.py`.

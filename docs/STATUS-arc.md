@@ -35,7 +35,11 @@ What the certified stack delivers:
   K-precision law (e2m1 K −10 % acc/step, e2m1 V free; r238). Net:
   MX KV decode at 0.81–0.84× fp8 with 1.28–1.88× KV-token capacity;
   the MX hunt idles on closed channels (engine-shape, workload-shape,
-  counters — the r236–r238 dispositions). Evidence:
+  counters — the r236–r238 dispositions). Stability boundary
+  (r240b, sustained-decode MT=600 protocol): mxfp4/mxk8v4 die at
+  32K × n≥4 (watchdog timeout / DEVICE_LOST) — mxfp8-KV alone is
+  clean across the full concurrency grid; deploy packed KV above 16K
+  only at low concurrency or on the mxfp8 lane. Evidence:
   `results/2026-11-24-p647-cert28-battery/` + the r234–r238 legs.
 - **Decode postures** — **MTP k3 is the certified, overall-best depth**
   (acceptance 83.7 % strict-gate at t0; deeper drafts measured and
@@ -59,9 +63,10 @@ What the certified stack delivers:
   decode/TTFT/prefill/ITL at 1K–128K context, the MTP-k3 temperature
   sweep, the kv-cache-dtype comparison, line charts, and the copyable
   configuration for every cell — **re-generated on cert28 by the
-  2026-11-24 deep-sweep campaign** (the r240a solo-face bank is
-  pulled; the r240b/r240c banks land at their leg completions — close-
-  out refreshes every report under `docs/reports/`).
+  2026-11-24 deep-sweep campaign** (all three banks pulled:
+  `results/2026-11-24-p647-r240-reports/` +
+  `-r240b-conc/` + `-r240c-gemma128k/`, VERDICTed with the gate
+  re-audit).
 - **Host compatibility** — 64 GB-RAM hosts run the recommended configs
   (`--shm-size 16g`, 16 GB LMCache CPU tier).
 - **KV-cache dtype knob** — `ARC_KVDTYPE`: `fp8` ≈ the incumbent;
@@ -70,6 +75,10 @@ What the certified stack delivers:
   `fp8_e5m2` hard-refused (no e5m2 KV path in esimd FA2 on Xe2); the
   four `turboquant_*` presets servable (comparison:
   [`reports/qwen3.8-27b-fp8-kv-cache-dtype.md`](reports/qwen3.8-27b-fp8-kv-cache-dtype.md)).
+  Qwen-scoped: on gemma `fp8_e4m3` is the only servable KV dtype —
+  the native MX-KV lanes boot and bank their pools but fatal at the
+  first decode request (the hd512 instantiation gap; the gemma KV
+  report banks the refusal classes).
 - **Patch inventory** — [`PATCHES-arc.md`](PATCHES-arc.md): every
   module with purpose, mechanism, knob, and evidence.
 
@@ -80,13 +89,24 @@ cert28: the §10 correctness battery (r233) plus the record legs
 (r234–r238) are banked. The 2026-11-24 deep-sweep campaign: landed —
 the record-lane legs (r239/r239b: checkpoint-lane TTFTs and the gemma
 L1 record faces at their cert28 values;
-bank `results/2026-11-24-p647-r239-record-lanes/`) and the docs
+bank `results/2026-11-24-p647-r239-record-lanes/`), the docs
 hard-currency sweep (this rewrite, the [`PATCHES-arc.md`](PATCHES-arc.md)
 MX KV family, and the `tools/check_currency.sh` anchors that close
-the drift class). In flight: the full per-config report battery
-re-run ([`docs/reports/`](reports/README.md)) on the current image —
-r240a solo faces → r240b concurrency sweep → r240c gemma 128K annex
-→ report regeneration. The per-phase ledger:
+the drift class), and the full per-config report battery re-run
+(r240a/r240b/r240c: every report under [`docs/reports/`](reports/README.md)
+regenerated on cert28 with the gate re-audit). Two engine boundaries
+the re-run surfaced, banked and documented: **the gemma native MX-KV
+lanes cannot decode on this image** — gemma's 10 hd512
+full-attention layers sit outside the arc7 compiled
+`mx_paged_decode` instantiations (D=128/256 only), so on gemma
+`fp8_e4m3` is the only servable KV dtype and the 128K capacity
+story rides the W4A16 weights lane (`gm4x`: 28.3 tok/s n1 @ c131072,
+TTFT 175.6 s, 26/26 faces); and **the qwen packed-KV lanes
+(mxfp4/mxk8v4) die at sustained 32K × n≥4 decode** (300 s watchdog
+worker silent-hang / `UR_RESULT_ERROR_DEVICE_LOST`; mxfp8-KV clean
+22/22 across the full 5-ctx grid — a workload-shape stability
+boundary, MT=600 protocol; the r237 MT=128 cells are unaffected).
+The per-phase ledger:
 [`history/STATUS_HISTORY.md`](history/STATUS_HISTORY.md); per-phase
 changelog entries: [`../CHANGELOG.md`](../CHANGELOG.md).
 

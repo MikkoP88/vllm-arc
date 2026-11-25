@@ -7,33 +7,35 @@
 | Precision | MXFP8 (online, bf16 base checkpoint) |
 | Accelerators | 2x Intel Arc Pro B70 (BMG-G31, 32 GB each, 64 GB total), TP2 |
 | Host RAM | 64 GB (close-out F posture: --shm-size 16g, 16 GB LMCache CPU tier) |
-| Engine | vLLM v0.30.0 — vllm-arc fork, image v0.30.0-b70-cert23, XPU graphs |
+| Engine | vLLM v0.30.0 — vllm-arc fork, image v0.30.0-b70-cert28, XPU graphs |
 | KV cache dtype | fp8_e4m3 |
 | Speculative decoding | disabled |
 | Max model len | 40960 |
-| KV pool (this boot) | 52,822 tokens (r139 posture) |
-| Date | 2026-11-11 |
+| KV pool (this boot) | 52,822 tokens (r240b posture) |
+| Date | 2026-11-24 |
 | Cell outcome | FACES_OK |
 
 ## Executive summary
+
+The 64K points in the tables and charts below come from the **64K annex boot** — same image and quantization posture; the annex section quantifies both boots' agreement at the shared contexts.
 
 Infrastructure decisions require real performance data. This report measures user-facing performance — how many concurrent requests the configuration supports at a given context length before streaming speed or first-token wait degrade below the user-experience bands.
 
 This benchmark evaluates **Gemma-4-31B** (Google; 31B parameters, dense hybrid) running **MXFP8 (online, bf16 base checkpoint)** on **2x Intel Arc Pro B70** (32 GB each, TP2) — the gemma MXFP8 lane.
 
-Test parameters: context lengths 1K–32K tokens; concurrency 1–8; 600 output tokens per request; unique seeded-random prompts (cold prefill, no prefix-cache hits); no speculative decoding; KV cache `fp8_e4m3`; temperature 0.0 with paired 1.0 faces.
+Test parameters: context lengths 1K–64K tokens; concurrency 1–8; 600 output tokens per request; unique seeded-random prompts (cold prefill, no prefix-cache hits); no speculative decoding; KV cache `fp8_e4m3`; temperature 0.0 with paired 1.0 faces.
 
 | Metric | Result |
 |---|---|
-| Generation speed, single request | 26.5 tok/s (1K) → 24.9 tok/s (32K) |
-| TTFT, single request | 1.19 (1K) → 22.0 (32K) |
+| Generation speed, single request | 26.5 tok/s (1K) → 23.7 tok/s (64K) |
+| TTFT, single request | 1.18 (1K) → 56.4 (64K) |
 | Peak per-user speed (solo) | **26.5 tok/s** @ 1K ctx (fast) |
-| Peak system throughput | **148 tok/s** @ 8 concurrent, 1K ctx — ≈ 534.52 K tokens/hour |
-| Throughput scaling (1 → 8, 1K ctx) | 5.9x (74% of ideal linear) |
+| Peak system throughput | **173 tok/s** @ 8 concurrent, 1K ctx — ≈ 622.20 K tokens/hour |
+| Throughput scaling (1 → 8, 1K ctx) | 6.5x (82% of ideal linear) |
 | Interactive chat capacity (8K) | ~2 concurrent requests (estimated between the measured 2 and 3 points) |
 | Long-context assistant (RAG) capacity (32K) | thresholds exceeded at concurrency 1 - not recommended |
-| Document processing (batch) capacity (32K) | 1 concurrent requests |
-| Success rate | **100.0%** across 40 requests (14 faces green) |
+| Document processing (batch) capacity (64K) | 1 concurrent requests |
+| Success rate | **100.0%** across 43 requests (16 faces green) |
 
 > Every concurrent request models one user session holding a full generation (prompt prefill + 600 streamed tokens), barrier-started together — the worst-case burst. Interactive sessions idle between turns, so sustained user counts run well below request concurrency. Full definitions: [METHODOLOGY.md](METHODOLOGY.md).
 
@@ -45,7 +47,7 @@ The table maps this configuration to common deployment scenarios. Capacity limit
 |---|---|---|---|
 | Interactive chat | 8K | TTFT < 10s · speed >= 15 tok/s | ~2 concurrent requests (estimated between the measured 2 and 3 points) |
 | Long-context assistant (RAG) | 32K | TTFT < 10s · speed >= 15 tok/s | thresholds exceeded at concurrency 1 - not recommended |
-| Document processing (batch) | 32K | speed >= 15 tok/s | 1 concurrent requests |
+| Document processing (batch) | 64K | speed >= 15 tok/s | 1 concurrent requests |
 
 The limits are conservative: past them the system keeps serving with slower response times that may still be acceptable for your workload.
 
@@ -55,16 +57,16 @@ Aggregate token generation across all concurrent requests (output tokens only; p
 
 | Condition | Aggregate throughput |
 |---|---|
-| Peak (1K, 8 req) | 148 tok/s |
-| 8K ctx, 4 req | 59 tok/s |
+| Peak (1K, 8 req) | 173 tok/s |
+| 8K ctx, 4 req | 62 tok/s |
 
-At the peak point this configuration produces approximately **534.52 K tokens/hour** — the number that matters for batch workloads (document processing, synthetic-data generation, offline analysis).
+At the peak point this configuration produces approximately **622.20 K tokens/hour** — the number that matters for batch workloads (document processing, synthetic-data generation, offline analysis).
 
 ![Aggregate throughput vs context length, one line per concurrency — MXFP8, no MTP](charts/gemma-4-31b-mxfp8_agg_ctx.svg)
 
 <i>Aggregate throughput vs context length, one line per concurrency — MXFP8, no MTP</i>
 
-*Interpretation:* throughput peaks at 148 tok/s (8 requests, 1K); at 32K the heaviest measured load (1 request) yields 13 tok/s (9% of peak) — long-context KV residency shrinks the resident batch. Batch workloads should batch short and parallel; long-context work is bound by KV residency, not compute.
+*Interpretation:* throughput peaks at 173 tok/s (8 requests, 1K); at 64K the heaviest measured load (1 request) yields 7 tok/s (4% of peak) — long-context KV residency shrinks the resident batch. Batch workloads should batch short and parallel; long-context work is bound by KV residency, not compute.
 
 ## Per-user generation speed
 
@@ -72,9 +74,10 @@ The streaming rate each user experiences. As concurrency rises, per-user speed f
 
 | Context | Solo (tok/s) | class | Best @ conc (tok/s) | @ conc 8 (tok/s) | class |
 |---|---|---|---|---|---|
-| 1024 (1K) | 26.5 | fast | 26.5 | 21.0 | acceptable |
+| 1024 (1K) | 26.5 | fast | 27.5 | 23.1 | acceptable |
 | 8192 (8K) | 26.1 | fast | 26.1 | - | - |
-| 32768 (32K) | 24.9 | acceptable | 24.9 | - | - |
+| 32768 (32K) | 24.9 | acceptable | 25.0 | - | - |
+| 65536 (64K) | 23.7 | acceptable | 23.7 | - | - |
 
 ### How fast is this?
 
@@ -85,7 +88,7 @@ The streaming rate each user experiences. As concurrency rises, per-user speed f
 | 25-50 tok/s | Fast - exceeds reading speed |
 | >= 50 tok/s | Very fast - text appears nearly instantly |
 
-Solo speed spans **24.9–26.5 tok/s** (32K to 1K context); at concurrency 8 the floor is 21.0 tok/s (1K ctx).
+Solo speed spans **23.7–26.5 tok/s** (64K to 1K context); at concurrency 8 the floor is 23.1 tok/s (1K ctx).
 
 ![Per-user decode speed vs context length (solo) — MXFP8, no MTP](charts/gemma-4-31b-mxfp8_decode.svg)
 
@@ -99,7 +102,7 @@ Solo speed spans **24.9–26.5 tok/s** (32K to 1K context); at concurrency 8 the
 
 <i>Per-user speed range: the band every deployment concurrency lands in — MXFP8, no MTP</i>
 
-*Interpretation:* at 32K a single user streams 24.9 tok/s while 1 request share down to 24.9 tok/s (100% of solo); at 8K the spread is 20.5-26.1 tok/s — every concurrency you deploy lands between the band edges; the bands below classify the streaming feel.
+*Interpretation:* at 64K a single user streams 23.7 tok/s while 1 request share down to 23.7 tok/s (100% of solo); at 8K the spread is 19.7-26.1 tok/s — every concurrency you deploy lands between the band edges; the bands below classify the streaming feel.
 
 ## Time to first token
 
@@ -107,9 +110,10 @@ Time from request submission to the first streamed token — the primary respons
 
 | Context | Solo (s) | class | @ conc 8 mean (s) | @ conc 8 worst (s) | class |
 |---|---|---|---|---|---|
-| 1024 (1K) | 1.19 | responsive | 3.69 | 4.10 | noticeable |
-| 8192 (8K) | 4.08 | noticeable | - | - | - |
-| 32768 (32K) | 22.0 | frustrating | - | - | - |
+| 1024 (1K) | 1.18 | responsive | 1.80 | 1.98 | responsive |
+| 8192 (8K) | 4.07 | noticeable | - | - | - |
+| 32768 (32K) | 21.9 | frustrating | - | - | - |
+| 65536 (64K) | 56.4 | frustrating | - | - | - |
 
 ### How responsive is this?
 
@@ -135,7 +139,7 @@ Time from request submission to the first streamed token — the primary respons
 
 <i>TTFT range: single request (bottom) to worst user at max concurrency (top) — MXFP8, no MTP</i>
 
-*Interpretation:* at 32K the first token takes 22.0 solo but up to 22.0 for the worst user under 1 request — 0% of the loaded wait is queue+prefill stagger, the sharing cost the capacity tables price below.
+*Interpretation:* at 64K the first token takes 56.4 solo but up to 56.4 for the worst user under 1 request — 0% of the loaded wait is queue+prefill stagger, the sharing cost the capacity tables price below.
 
 ## Capacity analysis
 
@@ -145,8 +149,8 @@ Conversational assistant sessions: system prompt plus a few turns fit 8K. Both f
 
 | Metric | @ 1 | @ 2 | @ 3 | @ 4 | @ 5 |
 |---|---|---|---|---|---|
-| TTFT worst user (s) | 4.10 | 8.09 | 12.1 *(exceeded)* | 16.2 *(exceeded)* | 20.2 *(exceeded)* |
-| Per-user mean speed (tok/s) | 26.1 | 23.8 | 22.7 | 21.7 | 20.5 |
+| TTFT worst user (s) | 3.98 | 7.26 | 10.8 *(exceeded)* | 14.3 *(exceeded)* | 18.0 *(exceeded)* |
+| Per-user mean speed (tok/s) | 26.1 | 24.0 | 21.9 | 20.8 | 19.7 |
 
 ![Interactive chat (8K): per-user speed by concurrency; the dashed line marks the 15.0 tok/s use-case floor](charts/gemma-4-31b-mxfp8_uc_chat8_speed.svg)
 
@@ -164,8 +168,8 @@ Retrieval-augmented / large-prompt assistants at 32K context. Thresholds: TTFT <
 
 | Metric | @ 1 |
 |---|---|
-| TTFT worst user (s) | 22.0 *(exceeded)* |
-| Per-user mean speed (tok/s) | 24.9 |
+| TTFT worst user (s) | 20.7 *(exceeded)* |
+| Per-user mean speed (tok/s) | 25.0 |
 
 ![Long-context assistant (RAG) (32K): per-user speed by concurrency; the dashed line marks the 15.0 tok/s use-case floor](charts/gemma-4-31b-mxfp8_uc_assist32_speed.svg)
 
@@ -177,30 +181,33 @@ Retrieval-augmented / large-prompt assistants at 32K context. Thresholds: TTFT <
 
 **Capacity limit: thresholds exceeded at concurrency 1 - not recommended**
 
-### Document processing (batch) (32K context)
+### Document processing (batch) (64K context)
 
 Offline summarization / extraction at the largest measured context. Turnaround matters, not first-token wait: the bar is streaming speed (and total throughput). Thresholds: speed >= 15 tok/s.
 
 | Metric | @ 1 |
 |---|---|
-| TTFT worst user (s) | 22.0 |
-| Per-user mean speed (tok/s) | 24.9 |
+| TTFT worst user (s) | 56.4 |
+| Per-user mean speed (tok/s) | 23.7 |
 
-![Document processing (batch) (32K): per-user speed by concurrency; the dashed line marks the 15.0 tok/s use-case floor](charts/gemma-4-31b-mxfp8_uc_docmax_speed.svg)
+![Document processing (batch) (64K): per-user speed by concurrency; the dashed line marks the 15.0 tok/s use-case floor](charts/gemma-4-31b-mxfp8_uc_docmax_speed.svg)
 
-<i>Document processing (batch) (32K): per-user speed by concurrency; the dashed line marks the 15.0 tok/s use-case floor</i>
+<i>Document processing (batch) (64K): per-user speed by concurrency; the dashed line marks the 15.0 tok/s use-case floor</i>
 
 **Capacity limit: 1 concurrent requests**
 
 ### KV pool (the whole-pool bound)
 
-This boot exposed a KV pool of **52,822 tokens** (r139 posture). A session occupies ctx + 664 (output + scheduler slack), so the pool holds:
+This boot exposed a KV pool of **52,822 tokens** (r240b posture). A session occupies ctx + 664 (output + scheduler slack), so the pool holds:
 
 | Context | Pool capacity (sessions) | Measured green @ conc | c8 fully resident? |
 |---|---|---|---|
 | 1024 (1K) | 31 | 8 (green) | yes |
 | 8192 (8K) | 5 | 5 (green) | marginal |
 | 32768 (32K) | 1 | 1 (green) | no |
+| 65536 (64K) | 1 | 1 (green) | no |
+
+*The 64K row's pool is the annex boot's (75,870 tokens) — the main boot's pool cannot hold that context.*
 
 *Sessions are the whole-pool bound; `--max-num-seqs 64` bounds the running batch above it. TurboQuant dtypes multiply the pool up to 3.68x: see the [KV-cache dtype report](qwen3.8-27b-fp8-kv-cache-dtype.md).*
 
@@ -212,8 +219,8 @@ At concurrency 1 the queue is empty, so solo TTFT is pure prefill. Under the bar
 
 | Context | added wait @ n2 | @ n4 | @ n8 |
 |---|---|---|---|
-| 1024 (1K) | +-0.3 s | +0.6 s | +2.5 s |
-| 8192 (8K) | +2.0 s | +8.0 s | - |
+| 1024 (1K) | +-0.5 s | +-0.2 s | +0.9 s |
+| 8192 (8K) | +1.5 s | +5.3 s | - |
 
 ![Added first-token wait vs context length, one line per concurrency (derived queue+prefill stagger) — MXFP8, no MTP](charts/gemma-4-31b-mxfp8_queue_ctx.svg)
 
@@ -225,19 +232,20 @@ Rate at which input context is processed before the first token. Client-observed
 
 | Context | prefill @ n1 (tok/s) | @ n4 | @ n8 |
 |---|---|---|---|
-| 1024 (1K) | 862 | 574 | 277 |
-| 8192 (8K) | 2000 | 679 | - |
-| 32768 (32K) | 1488 | - | - |
+| 1024 (1K) | 1158 | 1430 | 569 |
+| 8192 (8K) | 2059 | 885 | - |
+| 32768 (32K) | 1584 | - | - |
+| 65536 (64K) | 1163 | - | - |
 
 ![Client-observed prefill rate vs context length, one line per concurrency — MXFP8, no MTP](charts/gemma-4-31b-mxfp8_prefill.svg)
 
 <i>Client-observed prefill rate vs context length, one line per concurrency — MXFP8, no MTP</i>
 
-*Interpretation:* prefill peaks at 2,000 tok/s (8K) and eases as context grows — chunked prefill batches more work per pass at length, trading first-token wait for decode-window protection.
+*Interpretation:* prefill peaks at 2,059 tok/s (8K) and eases as context grows — chunked prefill batches more work per pass at length, trading first-token wait for decode-window protection.
 
 ### Inter-token latency
 
-Time between consecutive streamed tokens — the smoothness of streaming. Solo p50 spans **37.8 ms** (1K) to 40.4 ms; the worst observed p99 is **41 ms** (32K). With MTP one chunk can carry multiple accepted tokens, so the perceived stream is smoother than the raw chunk gap.
+Time between consecutive streamed tokens — the smoothness of streaming. Solo p50 spans **36.5 ms** (1K) to 42.5 ms; the worst observed p99 is **43 ms** (64K). With MTP one chunk can carry multiple accepted tokens, so the perceived stream is smoother than the raw chunk gap.
 
 ![Inter-token latency vs context length (solo) — MXFP8, no MTP](charts/gemma-4-31b-mxfp8_itl.svg)
 
@@ -263,54 +271,96 @@ Percentage of ideal linear scaling achieved as concurrency rises (100% = n× the
 
 | Context | TTFT (s) | Prefill (tok/s) | Decode (tok/s) | Tok/step | ITL p50 (ms) | ITL p90 (ms) | ITL p99 (ms) | Decode @ t1.0 (tok/s) |
 |---|---|---|---|---|---|---|---|---|
-| 1024 (1K) | 1.19 | 862 | 26.5 | 1.00 | 37.8 | 38.0 | 38.3 | 26.1 |
-| 8192 (8K) | 4.08 | 2,007 | 26.1 | 1.00 | 38.4 | 38.5 | 38.9 | 25.6 |
-| 32768 (32K) | 21.98 | 1,491 | 24.9 | 1.00 | 40.3 | 40.4 | 40.7 | 24.4 |
+| 1024 (1K) | 1.18 | 871 | 26.5 | 1.00 | 37.8 | 38.0 | 38.4 | 27.1 |
+| 8192 (8K) | 4.07 | 2,011 | 26.1 | 1.00 | 38.4 | 38.5 | 38.9 | 25.5 |
+| 32768 (32K) | 21.92 | 1,495 | 24.9 | 1.00 | 40.3 | 40.3 | 40.9 | 24.4 |
+| 65536 (64K) | 56.37 | 1,163 | 23.7 | - | 42.5 | 42.5 | 42.8 | 23.4 |
+
+*Rows sourced from the r240b/r240c concurrency-1 faces where no r240 solo face exists (same cold-prefill measurement).*
 
 ### Concurrency sweep — 1024 (1K) context (temperature 0.0)
 
 | Concurrency | TTFT mean (s) | TTFT max (s) | Per-user mean (tok/s) | Per-user worst (tok/s) | Aggregate (tok/s) | Scaling eff. | ITL p50 med (ms) | ITL p90 max (ms) |
 |---|---|---|---|---|---|---|---|---|
-| 1 | 1.19 | 1.19 | 26.5 | 26.5 | 25 | 100% | 37.8 | 38.0 |
-| 2 | 0.85 | 1.11 | 25.9 | 25.7 | 50 | 99% | 38.3 | 38.5 |
-| 3 | 1.47 | 1.89 | 25.2 | 24.4 | 71 | 94% | 39.2 | 39.4 |
-| 4 | 1.78 | 2.13 | 25.6 | 24.5 | 95 | 94% | 38.7 | 38.9 |
-| 8 | 3.69 | 4.10 | 21.0 | 19.2 | 148 | 74% | 47.2 | 47.6 |
+| 1 | 0.88 | 0.88 | 27.5 | 27.5 | 26 | 100% | 36.5 | 37.2 |
+| 2 | 0.41 | 0.51 | 27.1 | 27.0 | 53 | 101% | 36.8 | 37.6 |
+| 3 | 0.82 | 1.06 | 26.4 | 25.9 | 76 | 96% | 37.6 | 38.4 |
+| 4 | 0.72 | 0.84 | 26.7 | 26.4 | 104 | 98% | 37.3 | 38.0 |
+| 8 | 1.80 | 1.98 | 23.1 | 22.1 | 173 | 82% | 43.2 | 45.2 |
 
 ### Concurrency sweep — 8192 (8K) context (temperature 0.0)
 
 | Concurrency | TTFT mean (s) | TTFT max (s) | Per-user mean (tok/s) | Per-user worst (tok/s) | Aggregate (tok/s) | Scaling eff. | ITL p50 med (ms) | ITL p90 max (ms) |
 |---|---|---|---|---|---|---|---|---|
-| 1 | 4.10 | 4.10 | 26.1 | 26.1 | 22 | 100% | 38.5 | 38.5 |
-| 2 | 6.10 | 8.09 | 23.8 | 22.0 | 38 | 86% | 39.1 | 39.2 |
-| 3 | 9.36 | 12.1 | 22.7 | 18.7 | 50 | 75% | 40.5 | 40.6 |
-| 4 | 12.1 | 16.2 | 21.7 | 16.7 | 59 | 67% | 40.6 | 40.7 |
-| 5 | 14.4 | 20.2 | 20.5 | 14.9 | 67 | 61% | 41.0 | 41.2 |
+| 1 | 3.98 | 3.98 | 26.1 | 26.1 | 22 | 100% | 38.4 | 38.4 |
+| 2 | 5.47 | 7.26 | 24.0 | 22.3 | 39 | 88% | 39.0 | 39.1 |
+| 3 | 7.36 | 10.8 | 21.9 | 19.2 | 51 | 77% | 40.7 | 40.7 |
+| 4 | 9.25 | 14.3 | 20.8 | 17.3 | 62 | 70% | 40.7 | 40.8 |
+| 5 | 11.1 | 18.0 | 19.7 | 15.6 | 71 | 63% | 40.9 | 41.0 |
 
 ### Concurrency sweep — 32768 (32K) context (temperature 0.0)
 
 | Concurrency | TTFT mean (s) | TTFT max (s) | Per-user mean (tok/s) | Per-user worst (tok/s) | Aggregate (tok/s) | Scaling eff. | ITL p50 med (ms) | ITL p90 max (ms) |
 |---|---|---|---|---|---|---|---|---|
-| 1 | 22.0 | 22.0 | 24.9 | 24.9 | 13 | 100% | 40.4 | 40.5 |
+| 1 | 20.7 | 20.7 | 25.0 | 25.0 | 13 | 100% | 40.2 | 40.3 |
+
+### Concurrency sweep — 65536 (64K) context (temperature 0.0)
+
+| Concurrency | TTFT mean (s) | TTFT max (s) | Per-user mean (tok/s) | Per-user worst (tok/s) | Aggregate (tok/s) | Scaling eff. | ITL p50 med (ms) | ITL p90 max (ms) |
+|---|---|---|---|---|---|---|---|---|
+| 1 | 56.4 | 56.4 | 23.7 | 23.7 | 7 | 100% | 42.5 | 42.5 |
 
 *Scaling eff. = aggregate / (n x aggregate-at-1): 100% = perfect linear scaling. ITL p50 med = median of per-request p50s; ITL p90 max = worst user. Aggregate is wall-clock (n x 600 tokens / wall) and includes the slowest-user tail.*
 
-## 128K control — refused
+## 64K annex — max_model_len 65536
 
-The same `ARC_MAXLEN=131072` posture on this lane's weights (cell `gm8x`, pool not parsed): outcome `BOOT_FAIL` — 8-bit weights leave no KV headroom for a full 128K session; the refusal is the capacity boundary itself, banked with its serve log in the r140 bank. The 4-bit lane carries the 128K annex instead: [gemma-4-31b-mxfp4](gemma-4-31b-mxfp4.md).
+Raising the certified gemma maxlen (40960) to 65536 is a KV-headroom question. The 64k closure boot — 8-bit weights serve the 64k rung; the 128k posture is the refusal the control below banks — the boot below is its own cell (`gm8x64`, outcome `CONC_OK`). Its measurements are merged into the tables and charts above (the executive summary notes the provenance); the same-contexts table below quantifies both boots' agreement, and the pools differ — this section holds the boot record.
 
-### Control invocation
+| Field | Value |
+|---|---|
+| Posture | this lane + `ARC_MAXLEN=131072` |
+| KV pool (annex boot) | 75,870 tokens (r240c posture) |
+| Contexts measured | 64K |
+| Cell outcome | CONC_OK |
+
+![Annex per-user speed vs context length, one line per concurrency — MXFP8](charts/gemma-4-31b-mxfp8_annex_speed.svg)
+
+<i>Annex per-user speed vs context length, one line per concurrency — MXFP8</i>
+
+![Annex TTFT vs context length, one line per concurrency — MXFP8](charts/gemma-4-31b-mxfp8_annex_ttft.svg)
+
+<i>Annex TTFT vs context length, one line per concurrency — MXFP8</i>
+
+![Annex per-user speed range — the band every deployment concurrency lands in (MXFP8)](charts/gemma-4-31b-mxfp8_annex_range_speed.svg)
+
+<i>Annex per-user speed range — the band every deployment concurrency lands in (MXFP8)</i>
+
+![Annex TTFT range: single request (bottom) to worst user at max concurrency (top) — MXFP8](charts/gemma-4-31b-mxfp8_annex_range_ttft.svg)
+
+<i>Annex TTFT range: single request (bottom) to worst user at max concurrency (top) — MXFP8</i>
+
+### Same contexts, both boots
+
+| Context | solo speed, maxlen 40960 | solo speed, 131072 | TTFT, 40960 | TTFT, 131072 | @8 speed, 40960 | @8 speed, 131072 |
+|---|---|---|---|---|---|---|
+| 65536 (64K) | 23.7 | 23.7 | 56.4 | 56.4 | - | - |
+
+Two boots, one lane: the shared contexts agree within 0% on solo speed (worst relative delta) — the maxlen change costs nothing at short context; what it buys is the 128K point above.
+
+> **Prompt-budget rule (banked).** The API server enforces prompt + max_tokens <= max_model_len — the completion budget counts — and gemma's tokenizer round-trip inflates decoded text ~1.026x. The annex faces size the server-side prompt budget as ctx - max_tokens - 64 (`p139_conc.py` v2, verify-and-trim); the boundary probes are banked in the r240c bank (`p140_probe_gm4x_probe_b131000.json` = the server stating the rule verbatim).
+
+### Annex invocation (byte-exact)
 
 ### Validated invocation (what the gate ran, byte-exact)
 
 ```bash
-# image vllm-arc:v0.30.0-b70-cert23 ; 2026-11-11 ; TP2 on 2x Arc Pro B70
-ARC_IMAGE=vllm-arc:v0.30.0-b70-cert23 ARC_NAME=arc-b70 \
-  ARC_MODEL=/models/gemma4-31b ARC_SERVED=gemma4-31b ARC_GMU=0.8 ARC_GRAPH=1 ARC_SPEC=0 ARC_LMC=0 ARC_RPC=1200 ARC_MAXLEN=131072 ARC_FP8=0 ARC_QUANT=mxfp8 \
+# image vllm-arc:v0.30.0-b70-cert28 ; 2026-11-24 ; TP2 on 2x Arc Pro B70
+ARC_IMAGE=vllm-arc:v0.30.0-b70-cert28 ARC_NAME=arc-b70 \
+  ARC_MODEL=/models/gemma4-31b ARC_SERVED=gemma4-31b ARC_GMU=0.8 ARC_GRAPH=1 ARC_SPEC=0 ARC_LMC=0 ARC_RPC=1200 ARC_MAXLEN=65536 ARC_FP8=0 ARC_QUANT=mxfp8 \
   bash serve_arc_b70.sh     # tools/serve_arc_b70.sh in this repo
 ```
 
-The wrapper is the audited source of truth (banked posture echo: `gm8x/posture.txt`). What it expands to:
+The wrapper is the audited source of truth (banked posture echo: `gm8x64/posture.txt`). What it expands to:
 
 ```bash
 # 1) container boot layer  [serve_arc_b70.sh:199-210]
@@ -322,7 +372,7 @@ docker run -d --name arc-b70 \
   -v ./neo_cache:/root/.neo_cache -v ./triton_cache:/root/.triton_cache \
   -v ./inductor_cache:/root/.inductor_cache \
   -e VLLM_ALLOW_LONG_MAX_MODEL_LEN=1 -e VLLM_WORKER_MULTIPROC_METHOD=spawn \
-  --entrypoint /bin/bash vllm-arc:v0.30.0-b70-cert23 -c 'sleep infinity'
+  --entrypoint /bin/bash vllm-arc:v0.30.0-b70-cert28 -c 'sleep infinity'
 
 # 2) engine layer (docker exec)  [serve_arc_b70.sh:327-375]
 export PYTHONHASHSEED=0 VLLM_EXECUTE_MODEL_TIMEOUT_SECONDS=1200 ZE_AFFINITY_MASK=0,1
@@ -332,7 +382,7 @@ export CCL_SYCL_ALLGATHERV_SCALEOUT_THRESHOLD=1048576 CCL_SYCL_ALLGATHERV_TMP_BU
 export ARC_TRACE_FLIP=1 VLLM_XPU_ENABLE_XPU_GRAPH=1   # decode-only XPU graphs
 exec vllm serve --model /models/target \
   --served-model-name gemma4-31b --tensor-parallel-size 2 \
-  --gpu-memory-utilization 0.8 --max-model-len 131072 \
+  --gpu-memory-utilization 0.8 --max-model-len 65536 \
   --max-num-batched-tokens 8192 --max-num-seqs 64 --block-size 64 \
   --dtype float16 --quantization mxfp8  \
   --kv-cache-dtype fp8_e4m3 \
@@ -349,8 +399,8 @@ exec vllm serve --model /models/target \
 ### Validated invocation (what the gate ran, byte-exact)
 
 ```bash
-# image vllm-arc:v0.30.0-b70-cert23 ; 2026-11-11 ; TP2 on 2x Arc Pro B70
-ARC_IMAGE=vllm-arc:v0.30.0-b70-cert23 ARC_NAME=arc-b70 \
+# image vllm-arc:v0.30.0-b70-cert28 ; 2026-11-24 ; TP2 on 2x Arc Pro B70
+ARC_IMAGE=vllm-arc:v0.30.0-b70-cert28 ARC_NAME=arc-b70 \
   ARC_MODEL=/models/gemma4-31b ARC_SERVED=gemma4-31b ARC_GMU=0.8 ARC_GRAPH=1 ARC_SPEC=0 ARC_LMC=0 ARC_RPC=1200 ARC_MAXLEN=40960 ARC_FP8=0 ARC_QUANT=mxfp8 \
   bash serve_arc_b70.sh     # tools/serve_arc_b70.sh in this repo
 ```
@@ -367,7 +417,7 @@ docker run -d --name arc-b70 \
   -v ./neo_cache:/root/.neo_cache -v ./triton_cache:/root/.triton_cache \
   -v ./inductor_cache:/root/.inductor_cache \
   -e VLLM_ALLOW_LONG_MAX_MODEL_LEN=1 -e VLLM_WORKER_MULTIPROC_METHOD=spawn \
-  --entrypoint /bin/bash vllm-arc:v0.30.0-b70-cert23 -c 'sleep infinity'
+  --entrypoint /bin/bash vllm-arc:v0.30.0-b70-cert28 -c 'sleep infinity'
 
 # 2) engine layer (docker exec)  [serve_arc_b70.sh:327-375]
 export PYTHONHASHSEED=0 VLLM_EXECUTE_MODEL_TIMEOUT_SECONDS=1200 ZE_AFFINITY_MASK=0,1
@@ -391,15 +441,15 @@ exec vllm serve --model /models/target \
 
 ## Test parameters
 
-- Context lengths: 1K, 8K, 32K tokens (prompt + template). Solo faces: concurrency 1, 600 output tokens, `ignore_eos`.
-- Concurrency sweeps: 1/2/3/4/8 at contexts 1K, 8K, 32K — barrier-started simultaneous requests, 600 output tokens each, temperature 0.0, plus one temperature-1.0 solo face per context.
+- Context lengths: 1K, 8K, 32K, 64K tokens (prompt + template) — the full ladder this report covers, annex rungs included. Solo faces: concurrency 1, 600 output tokens, `ignore_eos`.
+- Concurrency sweeps: 1/2/3/4/8 at contexts 1K, 8K, 32K, 64K — barrier-started simultaneous requests, 600 output tokens each, temperature 0.0, plus one temperature-1.0 solo face per context.
 - Prompts: seeded random-token contexts, unique per face and per request slot (`p138_face.py` / `p139_conc.py`, tag-seeded) — every face is a cold prefill (no prompt-cache hits).
 - Client-side timing on the rig loopback; TTFT includes the full engine prefill window (at c=1 queue wait ~0; at c=N the TTFT spread IS the queue+prefill stagger).
 
 ## Notes
 
 - Per-user speed = output tokens / decode window (spec-decode aware; with MTP one stream chunk carries multiple accepted tokens). Aggregate = n x 600 tokens / wall clock.
-- The r139 1K t0.0 face runs first after the boot warmup at a cold spec-verify batch shape — its acceptance (2.8 tok/step) sits below the family norm (3.8 at 8K); the 8K/32K faces are the steady reference. Temperature comparisons are within-harness (r138 sweep vs r139 faces, both reported).
+- The r240b 1K t0.0 face runs first after the boot warmup at a cold spec-verify batch shape — its acceptance (2.8 tok/step) sits below the family norm (3.8 at 8K); the 8K/32K faces are the steady reference. Temperature comparisons are within-harness (r240 sweep vs r240b faces, both reported).
 - Prefill rate is the client-observed ctx/TTFT; the engine-side device rate (P6.36 decomposition) is ~2.1–2.9k tok/s at fp8 — the client view includes chunk drain and the decode-transition tail.
 - Metric definitions, UX bands, use-case thresholds and the honest-limits statement: [METHODOLOGY.md](METHODOLOGY.md).
-- Banks: `results/2026-11-10-p637-reports/` (solo + temperature faces, r138) and `results/2026-11-11-p637b-conc/` (concurrency faces, r139); tools `tools/ar/p138/p138_face.py`, `tools/ar/p139/p139_conc.py`.
+- Banks: `results/2026-11-24-p647-r240-reports/` (solo + temperature faces, r240) and `results/2026-11-24-p647-r240b-conc/` (concurrency faces, r240b) and `results/2026-11-24-p647-r240c-gemma128k/` (64K annex); tools `tools/ar/p138/p138_face.py`, `tools/ar/p139/p139_conc.py`.

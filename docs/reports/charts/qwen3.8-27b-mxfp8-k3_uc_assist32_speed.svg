@@ -3,28 +3,30 @@
 <text x="84" y="26" font-size="17" font-weight="600" fill="#101828">Long-context assistant (RAG) (32K): per-user speed vs concurrency</text>
 <line x1="84" y1="394.0" x2="816" y2="394.0" stroke="#f0f0f0" stroke-width="1"/>
 <text x="76" y="398.0" font-size="11" fill="#667085" text-anchor="end">0</text>
-<line x1="84" y1="294.1" x2="816" y2="294.1" stroke="#f0f0f0" stroke-width="1"/>
-<text x="76" y="298.1" font-size="11" fill="#667085" text-anchor="end">20</text>
-<line x1="84" y1="194.2" x2="816" y2="194.2" stroke="#f0f0f0" stroke-width="1"/>
-<text x="76" y="198.2" font-size="11" fill="#667085" text-anchor="end">40</text>
-<line x1="84" y1="94.3" x2="816" y2="94.3" stroke="#f0f0f0" stroke-width="1"/>
-<text x="76" y="98.3" font-size="11" fill="#667085" text-anchor="end">60</text>
-<line x1="84" y1="319.1" x2="816" y2="319.1" stroke="#98a2b3" stroke-width="1" stroke-dasharray="5 4"/>
-<text x="820" y="322.1" font-size="9.5" fill="#667085" font-style="italic">floor</text>
+<line x1="84" y1="322.5" x2="816" y2="322.5" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="326.5" font-size="11" fill="#667085" text-anchor="end">20</text>
+<line x1="84" y1="251.0" x2="816" y2="251.0" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="255.0" font-size="11" fill="#667085" text-anchor="end">40</text>
+<line x1="84" y1="179.5" x2="816" y2="179.5" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="183.5" font-size="11" fill="#667085" text-anchor="end">60</text>
+<line x1="84" y1="108.1" x2="816" y2="108.1" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="112.1" font-size="11" fill="#667085" text-anchor="end">80</text>
+<line x1="84" y1="340.4" x2="816" y2="340.4" stroke="#98a2b3" stroke-width="1" stroke-dasharray="5 4"/>
+<text x="820" y="343.4" font-size="9.5" fill="#667085" font-style="italic">floor</text>
 <rect x="142.2" y="99.2" width="30.0" height="294.8" fill="#2563eb" rx="2"/>
-<text x="157.2" y="93.2" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">59</text>
+<text x="157.2" y="93.2" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">82</text>
 <text x="157.2" y="412" font-size="11.5" fill="#475467" text-anchor="middle">@ 1</text>
-<rect x="288.6" y="166.7" width="30.0" height="227.3" fill="#2563eb" rx="2"/>
-<text x="303.6" y="160.7" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">46</text>
+<rect x="288.6" y="217.7" width="30.0" height="176.3" fill="#2563eb" rx="2"/>
+<text x="303.6" y="211.7" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">49</text>
 <text x="303.6" y="412" font-size="11.5" fill="#475467" text-anchor="middle">@ 2</text>
-<rect x="435.0" y="221.6" width="30.0" height="172.4" fill="#2563eb" rx="2"/>
-<text x="450.0" y="215.6" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">35</text>
+<rect x="435.0" y="264.3" width="30.0" height="129.7" fill="#2563eb" rx="2"/>
+<text x="450.0" y="258.3" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">36</text>
 <text x="450.0" y="412" font-size="11.5" fill="#475467" text-anchor="middle">@ 3</text>
-<rect x="581.4" y="256.2" width="30.0" height="137.8" fill="#2563eb" rx="2"/>
-<text x="596.4" y="250.2" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">28</text>
+<rect x="581.4" y="293.4" width="30.0" height="100.6" fill="#2563eb" rx="2"/>
+<text x="596.4" y="287.4" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">28</text>
 <text x="596.4" y="412" font-size="11.5" fill="#475467" text-anchor="middle">@ 4</text>
-<rect x="727.8" y="306.0" width="30.0" height="88.0" fill="#2563eb" rx="2"/>
-<text x="742.8" y="300.0" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">18</text>
+<rect x="727.8" y="337.8" width="30.0" height="56.2" fill="#2563eb" rx="2"/>
+<text x="742.8" y="331.8" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">16</text>
 <text x="742.8" y="412" font-size="11.5" fill="#475467" text-anchor="middle">@ 8</text>
 <rect x="84" y="416" width="12" height="12" fill="#2563eb" rx="2"/>
 <text x="101" y="426" font-size="11.5" fill="#1d2939">speed</text>

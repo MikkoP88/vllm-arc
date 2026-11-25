@@ -3,18 +3,18 @@
 <text x="84" y="26" font-size="17" font-weight="600" fill="#101828">Gemma-4-31b: aggregate throughput @ concurrency 8 (8K ctx, t0.0)</text>
 <line x1="84" y1="394.0" x2="816" y2="394.0" stroke="#f0f0f0" stroke-width="1"/>
 <text x="76" y="398.0" font-size="11" fill="#667085" text-anchor="end">0</text>
-<line x1="84" y1="324.8" x2="816" y2="324.8" stroke="#f0f0f0" stroke-width="1"/>
-<text x="76" y="328.8" font-size="11" fill="#667085" text-anchor="end">20</text>
-<line x1="84" y1="255.5" x2="816" y2="255.5" stroke="#f0f0f0" stroke-width="1"/>
-<text x="76" y="259.5" font-size="11" fill="#667085" text-anchor="end">40</text>
-<line x1="84" y1="186.3" x2="816" y2="186.3" stroke="#f0f0f0" stroke-width="1"/>
-<text x="76" y="190.3" font-size="11" fill="#667085" text-anchor="end">60</text>
-<line x1="84" y1="117.0" x2="816" y2="117.0" stroke="#f0f0f0" stroke-width="1"/>
-<text x="76" y="121.0" font-size="11" fill="#667085" text-anchor="end">80</text>
+<line x1="84" y1="313.5" x2="816" y2="313.5" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="317.5" font-size="11" fill="#667085" text-anchor="end">25</text>
+<line x1="84" y1="233.0" x2="816" y2="233.0" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="237.0" font-size="11" fill="#667085" text-anchor="end">50</text>
+<line x1="84" y1="152.5" x2="816" y2="152.5" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="156.5" font-size="11" fill="#667085" text-anchor="end">75</text>
+<line x1="84" y1="72.1" x2="816" y2="72.1" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="76.1" font-size="11" fill="#667085" text-anchor="end">100</text>
 <text x="206.0" y="412" font-size="11.5" fill="#475467" text-anchor="middle">FP8 k0</text>
 <text x="450.0" y="412" font-size="11.5" fill="#475467" text-anchor="middle">MXFP8 k0</text>
 <rect x="679.0" y="99.2" width="30.0" height="294.8" fill="#2563eb" rx="2"/>
-<text x="694.0" y="93.2" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">85</text>
+<text x="694.0" y="93.2" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">92</text>
 <text x="694.0" y="412" font-size="11.5" fill="#475467" text-anchor="middle">MXFP4 k0</text>
 <rect x="84" y="416" width="12" height="12" fill="#2563eb" rx="2"/>
 <text x="101" y="426" font-size="11.5" fill="#1d2939">aggregate</text>

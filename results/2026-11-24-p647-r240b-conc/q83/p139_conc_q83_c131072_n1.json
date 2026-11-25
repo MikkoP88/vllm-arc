@@ -1,0 +1,31 @@
+{
+ "tag": "q83_c131072_n1",
+ "ctx": 131072,
+ "conc": 1,
+ "max_tokens": 600,
+ "model": "qwen3.8-27b",
+ "temperature": 0.0,
+ "n_ok": 1,
+ "n_fail": 0,
+ "requests": [
+  {
+   "slot": 0,
+   "error": null,
+   "ttft_s": 103.00127438904019,
+   "total_s": 111.8171427680063,
+   "n_stream_chunks": 155,
+   "itl_ms_p50": 55.87278300663456,
+   "itl_ms_p90": 55.941802042070776,
+   "itl_ms_p99": 82.6590729993768
+  }
+ ],
+ "ttft_mean_s": 103.00127438904019,
+ "ttft_max_s": 103.00127438904019,
+ "per_user_tps": [
+  68.06
+ ],
+ "per_user_mean_tps": 68.05909233304199,
+ "per_user_min_tps": 68.05909233304199,
+ "agg_tps_wall": 5.365903520221901,
+ "wall_s": 111.8171427680063
+}
