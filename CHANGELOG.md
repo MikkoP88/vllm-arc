@@ -88,6 +88,35 @@ raw evidence is banked under `results/YYYY-MM-DD-<phase>-*/`.
 - Gates at file-write time: validate_docs 0 errors / 0 advisories
   (27 fork docs), leak_sweep clean, check_currency clean at cert28.
 
+## r240-docs3 — deep-sweep pass 3: config-parity completion + evidence counts + Contributing (2026-11-25)
+
+- **Config-parity completion (the deep pass's real catch)**: all three
+  certified serve paste-blocks (README Quick start, CONFIGURATION Step
+  2, CONFIGURATION's runtime/system reference) were missing
+  **`VLLM_EXECUTE_MODEL_TIMEOUT_SECONDS=300`** — the serve script's
+  `ARC_RPC_TIMEOUT` passthrough (script line 388, p628; r108y evidence:
+  a face died at 300.5 s) — while their "23 of 25 / (13 runtime/system)"
+  count claims were composition-wrong (they showed the graph-posture
+  var, which rides `$GRAPH_ENV` gated by `ARC_GRAPH=1`, and omitted the
+  watchdog). All three blocks now byte-match the script's resolved
+  default-lane env: **24 serve-time exports** (13 runtime/system + the
+  graph-posture var + the LMCache 10) + 2 boot-time; count claims
+  rewritten to the verified composition. The watchdog line's comment
+  states it equals the vLLM stock default and only the gemma-4 lanes
+  override (1200 s) — owner question resolved on record. Rig script
+  parity re-verified: local vs rig md5 `72b1b4b0…` byte-identical.
+- **Evidence counts refreshed to the verified tree** (counted, not
+  carried): **233 evidence dirs / 203 VERDICTs** — README Repository
+  model (232/202) and TESTING-arc Evidence layout (128/102, three eras
+  stale) both corrected. Counts re-verified at write time against
+  `find results/ -maxdepth 1 -type d` / `-name VERDICT.md`.
+- **Contributing section added** (README best-practice completion):
+  branch/commit/PR flow pointer to the Repository model, AGENTS.md as
+  the conventions home, and the evidence + push-gate requirement; TOC
+  entry added.
+- Gates at file-write time: validate_docs 0 errors / 0 advisories
+  (27 fork docs), leak_sweep clean, check_currency clean at cert28.
+
 ## r240-prep — docs: professional sweep — identity-row currency fix + gate anchor (2026-11-24)
 
 - Editorial sweep of the fork-owned docs ahead of the r240 report
