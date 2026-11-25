@@ -1,0 +1,5 @@
+FACE_OK_qf0_c1024_t0.0 waited=28s
+FACE_OK_qf0_c8192_t0.0 waited=30s
+FACE_OK_qf0_c32768_t0.0 waited=42s
+FACE_OK_qf0_c65536_t0.0 waited=64s
+FACE_OK_qf0_c131072_t0.0 waited=128s

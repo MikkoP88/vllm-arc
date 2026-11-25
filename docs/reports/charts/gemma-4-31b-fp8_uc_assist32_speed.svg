@@ -3,12 +3,12 @@
 <text x="84" y="26" font-size="17" font-weight="600" fill="#101828">Long-context assistant (RAG) (32K): per-user speed vs concurrency</text>
 <line x1="84" y1="394.0" x2="816" y2="394.0" stroke="#f0f0f0" stroke-width="1"/>
 <text x="76" y="398.0" font-size="11" fill="#667085" text-anchor="end">0</text>
-<line x1="84" y1="277.6" x2="816" y2="277.6" stroke="#f0f0f0" stroke-width="1"/>
-<text x="76" y="281.6" font-size="11" fill="#667085" text-anchor="end">10</text>
-<line x1="84" y1="161.1" x2="816" y2="161.1" stroke="#f0f0f0" stroke-width="1"/>
-<text x="76" y="165.1" font-size="11" fill="#667085" text-anchor="end">20</text>
-<line x1="84" y1="219.4" x2="816" y2="219.4" stroke="#98a2b3" stroke-width="1" stroke-dasharray="5 4"/>
-<text x="820" y="222.4" font-size="9.5" fill="#667085" font-style="italic">floor</text>
+<line x1="84" y1="278.1" x2="816" y2="278.1" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="282.1" font-size="11" fill="#667085" text-anchor="end">10</text>
+<line x1="84" y1="162.3" x2="816" y2="162.3" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="166.3" font-size="11" fill="#667085" text-anchor="end">20</text>
+<line x1="84" y1="220.2" x2="816" y2="220.2" stroke="#98a2b3" stroke-width="1" stroke-dasharray="5 4"/>
+<text x="820" y="223.2" font-size="9.5" fill="#667085" font-style="italic">floor</text>
 <rect x="435.0" y="99.2" width="30.0" height="294.8" fill="#2563eb" rx="2"/>
 <text x="450.0" y="93.2" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">25</text>
 <text x="450.0" y="412" font-size="11.5" fill="#475467" text-anchor="middle">@ 1</text>

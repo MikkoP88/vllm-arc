@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="500" viewBox="0 0 880 500" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+<rect width="880" height="500" fill="#ffffff"/>
+<text x="84" y="26" font-size="17" font-weight="600" fill="#101828">Annex: time-to-first-token range across context length (band = measured envelope)</text>
+<line x1="84" y1="436.0" x2="816" y2="436.0" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="440.0" font-size="11" fill="#667085" text-anchor="end">0.0</text>
+<line x1="84" y1="316.5" x2="816" y2="316.5" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="320.5" font-size="11" fill="#667085" text-anchor="end">20.0</text>
+<line x1="84" y1="197.0" x2="816" y2="197.0" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="201.0" font-size="11" fill="#667085" text-anchor="end">40.0</text>
+<line x1="84" y1="77.5" x2="816" y2="77.5" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="81.5" font-size="11" fill="#667085" text-anchor="end">60.0</text>
+<line x1="450.0" y1="52" x2="450.0" y2="436" stroke="#f0f0f0" stroke-width="1"/>
+<text x="450.0" y="454" font-size="11" fill="#667085" text-anchor="middle">64K</text>
+<line x1="84" y1="436" x2="816" y2="436" stroke="#d0d5dd" stroke-width="1"/>
+<line x1="84" y1="52" x2="84" y2="436" stroke="#d0d5dd" stroke-width="1"/>
+<line x1="84" y1="376.2" x2="816" y2="376.2" stroke="#98a2b3" stroke-width="1" stroke-dasharray="5 4"/>
+<text x="820" y="390.4" font-size="9.5" fill="#667085" font-style="italic">slow</text>
+<line x1="84" y1="406.1" x2="816" y2="406.1" stroke="#98a2b3" stroke-width="1" stroke-dasharray="5 4"/>
+<text x="820" y="401.9" font-size="9.5" fill="#667085" font-style="italic">noticeable</text>
+<line x1="84" y1="424.0" x2="816" y2="424.0" stroke="#98a2b3" stroke-width="1" stroke-dasharray="5 4"/>
+<text x="820" y="413.4" font-size="9.5" fill="#667085" font-style="italic">responsive</text>
+<line x1="84" y1="433.0" x2="816" y2="433.0" stroke="#98a2b3" stroke-width="1" stroke-dasharray="5 4"/>
+<text x="820" y="424.9" font-size="9.5" fill="#667085" font-style="italic">instant</text>
+<circle cx="450.0" cy="99.2" r="4.2" fill="#2563eb"/>
+<circle cx="450.0" cy="99.2" r="4.2" fill="#9333ea"/>
+<text x="450.0" y="90.2" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">56.4</text>
+<text x="450.0" y="115.2" font-size="10" fill="#9333ea" text-anchor="middle" font-weight="600">56.4</text>
+<line x1="84" y1="494" x2="100" y2="494" stroke="#2563eb" stroke-width="3"/>
+<text x="104" y="498" font-size="11.5" fill="#1d2939">loaded ceiling (top edge)</text>
+<line x1="300" y1="494" x2="316" y2="494" stroke="#9333ea" stroke-width="3"/>
+<text x="320" y="498" font-size="11.5" fill="#1d2939">single request (bottom edge)</text>
+<text x="450" y="470" font-size="12.5" fill="#475467" text-anchor="middle">Context length (tokens)</text>
+<text x="16" y="244" font-size="12.5" fill="#475467" text-anchor="middle" transform="rotate(-90 16 244)">TTFT (s)</text>
+</svg>

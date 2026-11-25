@@ -1,0 +1,31 @@
+{
+ "tag": "gf8x64_c65536_n1",
+ "ctx": 65536,
+ "conc": 1,
+ "max_tokens": 600,
+ "model": "gemma4-31b",
+ "temperature": 0.0,
+ "n_ok": 1,
+ "n_fail": 0,
+ "requests": [
+  {
+   "slot": 0,
+   "error": null,
+   "ttft_s": 55.99258636299055,
+   "total_s": 80.87462320993654,
+   "n_stream_chunks": 599,
+   "itl_ms_p50": 41.72455007210374,
+   "itl_ms_p90": 41.77202004939318,
+   "itl_ms_p99": 42.320671025663614
+  }
+ ],
+ "ttft_mean_s": 55.99258636299055,
+ "ttft_max_s": 55.99258636299055,
+ "per_user_tps": [
+  24.11
+ ],
+ "per_user_mean_tps": 24.113781507949323,
+ "per_user_min_tps": 24.113781507949323,
+ "agg_tps_wall": 7.418890823670408,
+ "wall_s": 80.87462320993654
+}

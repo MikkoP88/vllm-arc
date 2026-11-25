@@ -889,7 +889,18 @@ Two measured boundaries: `auto` (fp16 KV) refuses at the certified
 the esimd FA2 backend has no e5m2 KV path on Xe2. `fp8` boots and
 measures close to the incumbent; the four `turboquant_*` presets
 remain servable via the same flag — their full matrix is the banked
-gate data in the "KV-cache dtype" section below).
+gate data in the "KV-cache dtype" section below. The native MX lanes
+(`ARC_KVDTYPE=mxfp4|mxfp8|mxk8v4` + `ARC_MXKV_NATIVE=1`) are
+**qwen-only** on this image: on gemma-4 every MX-KV lane boots and
+banks its pool but fatals at the first decode request (the hd512
+instantiation gap — gemma's full-attention layers sit outside the
+compiled head_size 128/256 set; `fp8_e4m3` is gemma's only servable
+KV dtype). And on qwen a sustained-decode stability law applies
+(r240b, MT=600 protocol): at context ≥ 32K with request concurrency
+≥ 4, the two 4-bit-V lanes die mid-face (mxfp4 worker silent-hang →
+the 300 s watchdog; mxk8v4 `UR_RESULT_ERROR_DEVICE_LOST`) — only
+mxfp8-KV completes the full concurrency grid; keep packed 4-bit-V KV
+to ≤ 16K context or low concurrency, or prefer the mxfp8 lane).
 
 ## Posture laws (never change in production)
 

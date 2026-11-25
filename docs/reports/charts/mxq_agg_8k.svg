@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="470" viewBox="0 0 880 470" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+<rect width="880" height="470" fill="#ffffff"/>
+<text x="84" y="26" font-size="17" font-weight="600" fill="#101828">MX KV aggregate vs concurrency — qwen fp8 k3 8K (t0)</text>
+<line x1="84" y1="394.0" x2="816" y2="394.0" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="398.0" font-size="11" fill="#667085" text-anchor="end">0</text>
+<line x1="84" y1="272.1" x2="816" y2="272.1" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="276.1" font-size="11" fill="#667085" text-anchor="end">50</text>
+<line x1="84" y1="150.2" x2="816" y2="150.2" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="154.2" font-size="11" fill="#667085" text-anchor="end">100</text>
+<rect x="126.5" y="255.8" width="30.0" height="138.2" fill="#2563eb" rx="2"/>
+<text x="141.5" y="249.8" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">57</text>
+<rect x="160.5" y="258.2" width="30.0" height="135.8" fill="#dc2626" rx="2"/>
+<text x="175.5" y="252.2" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">56</text>
+<rect x="194.5" y="258.0" width="30.0" height="136.0" fill="#059669" rx="2"/>
+<text x="209.5" y="252.0" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">56</text>
+<text x="175.5" y="412" font-size="11.5" fill="#475467" text-anchor="middle">c1</text>
+<rect x="309.5" y="194.4" width="30.0" height="199.6" fill="#2563eb" rx="2"/>
+<text x="324.5" y="188.4" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">82</text>
+<rect x="343.5" y="196.2" width="30.0" height="197.8" fill="#dc2626" rx="2"/>
+<text x="358.5" y="190.2" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">81</text>
+<rect x="377.5" y="229.3" width="30.0" height="164.7" fill="#059669" rx="2"/>
+<text x="392.5" y="223.3" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">68</text>
+<text x="358.5" y="412" font-size="11.5" fill="#475467" text-anchor="middle">c2</text>
+<rect x="492.5" y="145.8" width="30.0" height="248.2" fill="#2563eb" rx="2"/>
+<text x="507.5" y="139.8" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">102</text>
+<rect x="526.5" y="146.6" width="30.0" height="247.4" fill="#dc2626" rx="2"/>
+<text x="541.5" y="140.6" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">101</text>
+<rect x="560.5" y="144.3" width="30.0" height="249.7" fill="#059669" rx="2"/>
+<text x="575.5" y="138.3" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">102</text>
+<text x="541.5" y="412" font-size="11.5" fill="#475467" text-anchor="middle">c4</text>
+<rect x="675.5" y="99.2" width="30.0" height="294.8" fill="#2563eb" rx="2"/>
+<text x="690.5" y="93.2" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">121</text>
+<rect x="709.5" y="106.9" width="30.0" height="287.1" fill="#dc2626" rx="2"/>
+<text x="724.5" y="100.9" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">118</text>
+<rect x="743.5" y="103.9" width="30.0" height="290.1" fill="#059669" rx="2"/>
+<text x="758.5" y="97.9" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">119</text>
+<text x="724.5" y="412" font-size="11.5" fill="#475467" text-anchor="middle">c8</text>
+<rect x="84" y="416" width="12" height="12" fill="#2563eb" rx="2"/>
+<text x="101" y="426" font-size="11.5" fill="#1d2939">mxfp4</text>
+<rect x="164" y="416" width="12" height="12" fill="#dc2626" rx="2"/>
+<text x="181" y="426" font-size="11.5" fill="#1d2939">mxfp8</text>
+<rect x="244" y="416" width="12" height="12" fill="#059669" rx="2"/>
+<text x="261" y="426" font-size="11.5" fill="#1d2939">mxk8v4</text>
+<text x="450" y="458" font-size="12.5" fill="#475467" text-anchor="middle">Aggregate (tok/s)</text>
+</svg>

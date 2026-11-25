@@ -15,8 +15,8 @@
 <text x="820" y="102.2" font-size="9.5" fill="#667085" font-style="italic">fast</text>
 <text x="206.0" y="412" font-size="11.5" fill="#475467" text-anchor="middle">FP8 k0</text>
 <text x="450.0" y="412" font-size="11.5" fill="#475467" text-anchor="middle">MXFP8 k0</text>
-<rect x="679.0" y="285.6" width="30.0" height="108.4" fill="#2563eb" rx="2"/>
-<text x="694.0" y="279.6" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">18</text>
+<rect x="679.0" y="286.8" width="30.0" height="107.2" fill="#2563eb" rx="2"/>
+<text x="694.0" y="280.8" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">18</text>
 <text x="694.0" y="412" font-size="11.5" fill="#475467" text-anchor="middle">MXFP4 k0</text>
 <rect x="84" y="416" width="12" height="12" fill="#2563eb" rx="2"/>
 <text x="101" y="426" font-size="11.5" fill="#1d2939">per-user mean</text>

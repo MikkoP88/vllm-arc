@@ -3,28 +3,28 @@
 <text x="84" y="26" font-size="17" font-weight="600" fill="#101828">Interactive chat (8K): per-user speed vs concurrency</text>
 <line x1="84" y1="394.0" x2="816" y2="394.0" stroke="#f0f0f0" stroke-width="1"/>
 <text x="76" y="398.0" font-size="11" fill="#667085" text-anchor="end">0</text>
-<line x1="84" y1="280.8" x2="816" y2="280.8" stroke="#f0f0f0" stroke-width="1"/>
-<text x="76" y="284.8" font-size="11" fill="#667085" text-anchor="end">10</text>
-<line x1="84" y1="167.7" x2="816" y2="167.7" stroke="#f0f0f0" stroke-width="1"/>
-<text x="76" y="171.7" font-size="11" fill="#667085" text-anchor="end">20</text>
-<line x1="84" y1="54.5" x2="816" y2="54.5" stroke="#f0f0f0" stroke-width="1"/>
-<text x="76" y="58.5" font-size="11" fill="#667085" text-anchor="end">30</text>
-<line x1="84" y1="224.3" x2="816" y2="224.3" stroke="#98a2b3" stroke-width="1" stroke-dasharray="5 4"/>
-<text x="820" y="227.3" font-size="9.5" fill="#667085" font-style="italic">floor</text>
+<line x1="84" y1="281.2" x2="816" y2="281.2" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="285.2" font-size="11" fill="#667085" text-anchor="end">10</text>
+<line x1="84" y1="168.3" x2="816" y2="168.3" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="172.3" font-size="11" fill="#667085" text-anchor="end">20</text>
+<line x1="84" y1="55.5" x2="816" y2="55.5" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="59.5" font-size="11" fill="#667085" text-anchor="end">30</text>
+<line x1="84" y1="224.7" x2="816" y2="224.7" stroke="#98a2b3" stroke-width="1" stroke-dasharray="5 4"/>
+<text x="820" y="227.7" font-size="9.5" fill="#667085" font-style="italic">floor</text>
 <rect x="142.2" y="99.2" width="30.0" height="294.8" fill="#2563eb" rx="2"/>
 <text x="157.2" y="93.2" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">26</text>
 <text x="157.2" y="412" font-size="11.5" fill="#475467" text-anchor="middle">@ 1</text>
-<rect x="288.6" y="124.7" width="30.0" height="269.3" fill="#2563eb" rx="2"/>
-<text x="303.6" y="118.7" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">24</text>
+<rect x="288.6" y="123.1" width="30.0" height="270.9" fill="#2563eb" rx="2"/>
+<text x="303.6" y="117.1" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">24</text>
 <text x="303.6" y="412" font-size="11.5" fill="#475467" text-anchor="middle">@ 2</text>
-<rect x="435.0" y="137.4" width="30.0" height="256.6" fill="#2563eb" rx="2"/>
-<text x="450.0" y="131.4" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">23</text>
+<rect x="435.0" y="147.0" width="30.0" height="247.0" fill="#2563eb" rx="2"/>
+<text x="450.0" y="141.0" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">22</text>
 <text x="450.0" y="412" font-size="11.5" fill="#475467" text-anchor="middle">@ 3</text>
-<rect x="581.4" y="148.4" width="30.0" height="245.6" fill="#2563eb" rx="2"/>
-<text x="596.4" y="142.4" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">22</text>
+<rect x="581.4" y="159.2" width="30.0" height="234.8" fill="#2563eb" rx="2"/>
+<text x="596.4" y="153.2" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">21</text>
 <text x="596.4" y="412" font-size="11.5" fill="#475467" text-anchor="middle">@ 4</text>
-<rect x="727.8" y="161.5" width="30.0" height="232.5" fill="#2563eb" rx="2"/>
-<text x="742.8" y="155.5" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">21</text>
+<rect x="727.8" y="172.1" width="30.0" height="221.9" fill="#2563eb" rx="2"/>
+<text x="742.8" y="166.1" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">20</text>
 <text x="742.8" y="412" font-size="11.5" fill="#475467" text-anchor="middle">@ 5</text>
 <rect x="84" y="416" width="12" height="12" fill="#2563eb" rx="2"/>
 <text x="101" y="426" font-size="11.5" fill="#1d2939">speed</text>

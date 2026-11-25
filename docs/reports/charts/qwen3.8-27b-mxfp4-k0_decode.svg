@@ -25,15 +25,15 @@
 <text x="820" y="270.6" font-size="9.5" fill="#667085" font-style="italic">acceptable</text>
 <line x1="84" y1="99.2" x2="816" y2="99.2" stroke="#98a2b3" stroke-width="1" stroke-dasharray="5 4"/>
 <text x="820" y="102.2" font-size="9.5" fill="#667085" font-style="italic">fast</text>
-<polyline points="84.0,187.6 267.0,188.0 450.0,205.0 633.0,224.2 816.0,256.7" fill="none" stroke="#2563eb" stroke-width="2.4"/>
+<polyline points="84.0,187.6 267.0,188.0 450.0,205.1 633.0,224.2 816.0,256.7" fill="none" stroke="#2563eb" stroke-width="2.4"/>
 <circle cx="84.0" cy="187.6" r="4.4" fill="#2563eb"/>
 <circle cx="267.0" cy="188.0" r="4.4" fill="#2563eb"/>
-<circle cx="450.0" cy="205.0" r="4.4" fill="#2563eb"/>
+<circle cx="450.0" cy="205.1" r="4.4" fill="#2563eb"/>
 <circle cx="633.0" cy="224.2" r="4.4" fill="#2563eb"/>
 <circle cx="816.0" cy="256.7" r="4.4" fill="#2563eb"/>
 <text x="84.0" y="178.6" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">37</text>
 <text x="267.0" y="179.0" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">37</text>
-<text x="450.0" y="196.0" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">34</text>
+<text x="450.0" y="196.1" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">34</text>
 <text x="633.0" y="215.2" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">31</text>
 <text x="816.0" y="247.7" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">27</text>
 <line x1="84" y1="494" x2="100" y2="494" stroke="#2563eb" stroke-width="3"/>

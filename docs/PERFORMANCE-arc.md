@@ -139,6 +139,25 @@ PASS; offline replay r225t/r226a/r229 all-formats PASS with
 format-invariant residual distributions). Evidence:
 `results/2026-11-24-p647-cert28-battery/` +
 `results/2026-11-24-p647-r234-cert28-itl/`.
+**Stability boundary (r240b, sustained-decode MT=600 protocol)**:
+under sustained concurrent decode the two 4-bit-V packed lanes die —
+mxfp4-KV at 32K × n4 (worker silent-hang → the 300 s watchdog
+`TimeoutError`, `EngineDeadError`) and mxk8v4 at the same face
+(`UR_RESULT_ERROR_DEVICE_LOST`); every later face of both lanes banks
+connection-refused. mxfp8-KV alone survives the full 5-ctx × {1,2,4,8}
+grid (22/22). The r237 clean cells were MT=128 short-decode — a
+different cell class, both results stand. Deployment law: above 16K
+context at request concurrency ≥ 4, run the mxfp8-KV lane (or fp8).
+Evidence: `results/2026-11-24-p647-r240b-conc/` (VERDICT re-audit).
+**Model scope (r240b/r240c)**: the native MX-KV lanes are qwen-only —
+on gemma every `gkv_m*` lane boots and banks its pool but fatals at
+the FIRST decode request: gemma's 10 hd512 full-attention layers sit
+outside the arc7 compiled `mx_paged_decode` instantiations (the
+kernel guards head_size 128/256). On gemma `fp8_e4m3` is the only
+servable KV dtype; gemma capacity rides the W4A16 weights lane
+(above). Evidence: `results/2026-11-24-p647-r240b-conc/` +
+`results/2026-11-24-p647-r240c-gemma128k/` (85 zero-served faces,
+re-audited).
 
 **MXFP4 checkpoint-lane faces (full certified posture)**: cert28
 (r239/r239b): rhmxfp4 (mixed CT — fp8-block attn +
@@ -337,7 +356,15 @@ and fp8 gemm" — banked).
 Gemma W4A16: 1.90–2.21× over the same-window W4A4 control and faster
 than gemma's plain-fp8 online lane on 3 of 4 axes — the U32k exception
 is the W4A16 prefill physics ceiling (bf16-DPAS-par; Xe2 has no fp4
-MMA) against fp8's static-class lane. The qwen plain-fp8 online lane is
+MMA) against fp8's static-class lane. **The 128K posture is a W4A16
+exclusive (r240c annex, maxlen 131072)**: the 4-bit weight budget +
+fp8_e4m3 KV boots a 288,972-token pool where every 8-bit lane refuses
+(5.83 GiB > 5.3–5.64 GiB), and it serves the full rung ladder —
+40.1 / 37.3 / 35.0 / 32.3 / **28.3 tok/s** n1 decode at
+1K/8K/32K/64K/**128K** (TTFT 175.6 s at the 128K rung; t1.0 ladder
+38.5→26.3; 1K n8 aggregate 227 tok/s; KV_CAP boundaries at 64K n8 +
+128K n3+ banked). Evidence:
+`results/2026-11-24-p647-r240c-gemma128k/` (26/26 faces). The qwen plain-fp8 online lane is
 an upstream interface dead-end on this vLLM (`fp8` is not an online
 shorthand; `--quantization-config` is consumed by the online framework,
 which requires linear/moe/targets — gemma's QCFG-unset classic lane has

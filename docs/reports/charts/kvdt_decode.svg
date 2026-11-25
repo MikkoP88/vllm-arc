@@ -3,30 +3,45 @@
 <text x="84" y="26" font-size="17" font-weight="600" fill="#101828">Solo decode speed by KV-cache dtype (8K/32K) — qwen fp8 k3</text>
 <line x1="84" y1="394.0" x2="816" y2="394.0" stroke="#f0f0f0" stroke-width="1"/>
 <text x="76" y="398.0" font-size="11" fill="#667085" text-anchor="end">0</text>
-<line x1="84" y1="316.8" x2="816" y2="316.8" stroke="#f0f0f0" stroke-width="1"/>
-<text x="76" y="320.8" font-size="11" fill="#667085" text-anchor="end">25</text>
-<line x1="84" y1="239.6" x2="816" y2="239.6" stroke="#f0f0f0" stroke-width="1"/>
-<text x="76" y="243.6" font-size="11" fill="#667085" text-anchor="end">50</text>
-<line x1="84" y1="162.5" x2="816" y2="162.5" stroke="#f0f0f0" stroke-width="1"/>
-<text x="76" y="166.5" font-size="11" fill="#667085" text-anchor="end">75</text>
-<line x1="84" y1="85.3" x2="816" y2="85.3" stroke="#f0f0f0" stroke-width="1"/>
-<text x="76" y="89.3" font-size="11" fill="#667085" text-anchor="end">100</text>
-<rect x="143.5" y="107.0" width="30.0" height="287.0" fill="#2563eb" rx="2"/>
-<text x="158.5" y="101.0" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">93</text>
-<rect x="177.5" y="121.8" width="30.0" height="272.2" fill="#dc2626" rx="2"/>
-<text x="192.5" y="115.8" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">88</text>
-<text x="175.5" y="412" font-size="11.5" fill="#475467" text-anchor="middle">fp8_e4m3</text>
-<rect x="326.5" y="99.2" width="30.0" height="294.8" fill="#2563eb" rx="2"/>
-<text x="341.5" y="93.2" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">95</text>
-<rect x="360.5" y="109.4" width="30.0" height="284.6" fill="#dc2626" rx="2"/>
-<text x="375.5" y="103.4" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">92</text>
-<text x="358.5" y="412" font-size="11.5" fill="#475467" text-anchor="middle">auto</text>
-<rect x="509.5" y="102.6" width="30.0" height="291.4" fill="#2563eb" rx="2"/>
-<text x="524.5" y="96.6" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">94</text>
-<rect x="543.5" y="112.9" width="30.0" height="281.1" fill="#dc2626" rx="2"/>
-<text x="558.5" y="106.9" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">91</text>
-<text x="541.5" y="412" font-size="11.5" fill="#475467" text-anchor="middle">fp8</text>
-<text x="724.5" y="412" font-size="11.5" fill="#475467" text-anchor="middle">fp8_e5m2</text>
+<line x1="84" y1="318.2" x2="816" y2="318.2" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="322.2" font-size="11" fill="#667085" text-anchor="end">25</text>
+<line x1="84" y1="242.4" x2="816" y2="242.4" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="246.4" font-size="11" fill="#667085" text-anchor="end">50</text>
+<line x1="84" y1="166.6" x2="816" y2="166.6" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="170.6" font-size="11" fill="#667085" text-anchor="end">75</text>
+<line x1="84" y1="90.8" x2="816" y2="90.8" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="94.8" font-size="11" fill="#667085" text-anchor="end">100</text>
+<rect x="104.3" y="99.2" width="30.0" height="294.8" fill="#2563eb" rx="2"/>
+<text x="119.3" y="93.2" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">97</text>
+<rect x="138.3" y="114.8" width="30.0" height="279.2" fill="#dc2626" rx="2"/>
+<text x="153.3" y="108.8" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">92</text>
+<text x="136.3" y="412" font-size="11.5" fill="#475467" text-anchor="middle">fp8_e4m3</text>
+<rect x="208.9" y="104.1" width="30.0" height="289.9" fill="#2563eb" rx="2"/>
+<text x="223.9" y="98.1" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">96</text>
+<rect x="242.9" y="114.2" width="30.0" height="279.8" fill="#dc2626" rx="2"/>
+<text x="257.9" y="108.2" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">92</text>
+<text x="240.9" y="412" font-size="11.5" fill="#475467" text-anchor="middle">auto</text>
+<rect x="313.4" y="107.7" width="30.0" height="286.3" fill="#2563eb" rx="2"/>
+<text x="328.4" y="101.7" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">94</text>
+<rect x="347.4" y="117.8" width="30.0" height="276.2" fill="#dc2626" rx="2"/>
+<text x="362.4" y="111.8" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">91</text>
+<text x="345.4" y="412" font-size="11.5" fill="#475467" text-anchor="middle">fp8</text>
+<text x="450.0" y="412" font-size="11.5" fill="#475467" text-anchor="middle">fp8_e5m2</text>
+<rect x="522.6" y="155.1" width="30.0" height="238.9" fill="#2563eb" rx="2"/>
+<text x="537.6" y="149.1" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">79</text>
+<rect x="556.6" y="202.0" width="30.0" height="192.0" fill="#dc2626" rx="2"/>
+<text x="571.6" y="196.0" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">63</text>
+<text x="554.6" y="412" font-size="11.5" fill="#475467" text-anchor="middle">mxfp4</text>
+<rect x="627.1" y="160.8" width="30.0" height="233.2" fill="#2563eb" rx="2"/>
+<text x="642.1" y="154.8" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">77</text>
+<rect x="661.1" y="213.8" width="30.0" height="180.2" fill="#dc2626" rx="2"/>
+<text x="676.1" y="207.8" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">59</text>
+<text x="659.1" y="412" font-size="11.5" fill="#475467" text-anchor="middle">mxfp8</text>
+<rect x="731.7" y="157.5" width="30.0" height="236.5" fill="#2563eb" rx="2"/>
+<text x="746.7" y="151.5" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">78</text>
+<rect x="765.7" y="201.6" width="30.0" height="192.4" fill="#dc2626" rx="2"/>
+<text x="780.7" y="195.6" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">63</text>
+<text x="763.7" y="412" font-size="11.5" fill="#475467" text-anchor="middle">mxk8v4</text>
 <rect x="84" y="416" width="12" height="12" fill="#2563eb" rx="2"/>
 <text x="101" y="426" font-size="11.5" fill="#1d2939">8K ctx</text>
 <rect x="171" y="416" width="12" height="12" fill="#dc2626" rx="2"/>

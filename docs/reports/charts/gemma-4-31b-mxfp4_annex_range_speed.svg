@@ -25,25 +25,29 @@
 <text x="820" y="270.6" font-size="9.5" fill="#667085" font-style="italic">acceptable</text>
 <line x1="84" y1="99.2" x2="816" y2="99.2" stroke="#98a2b3" stroke-width="1" stroke-dasharray="5 4"/>
 <text x="820" y="102.2" font-size="9.5" fill="#667085" font-style="italic">fast</text>
-<polygon points="84.0,180.2 267.0,185.6 450.0,201.7 816.0,244.4 816.0,334.6 450.0,381.4 267.0,312.2 84.0,253.2" fill="#2563eb" fill-opacity="0.14" stroke="none"/>
-<polyline points="84.0,180.2 267.0,185.6 450.0,201.7 816.0,244.4" fill="none" stroke="#2563eb" stroke-width="2.4"/>
-<circle cx="84.0" cy="180.2" r="4.2" fill="#2563eb"/>
-<circle cx="267.0" cy="185.6" r="4.2" fill="#2563eb"/>
-<circle cx="450.0" cy="201.7" r="4.2" fill="#2563eb"/>
-<circle cx="816.0" cy="244.4" r="4.2" fill="#2563eb"/>
-<polyline points="84.0,253.2 267.0,312.2 450.0,381.4 816.0,334.6" fill="none" stroke="#9333ea" stroke-width="2.4"/>
-<circle cx="84.0" cy="253.2" r="4.2" fill="#9333ea"/>
-<circle cx="267.0" cy="312.2" r="4.2" fill="#9333ea"/>
-<circle cx="450.0" cy="381.4" r="4.2" fill="#9333ea"/>
-<circle cx="816.0" cy="334.6" r="4.2" fill="#9333ea"/>
-<text x="84.0" y="171.2" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">38</text>
-<text x="84.0" y="244.2" font-size="10" fill="#9333ea" text-anchor="middle" font-weight="600">27</text>
-<text x="267.0" y="176.6" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">37</text>
-<text x="267.0" y="303.2" font-size="10" fill="#9333ea" text-anchor="middle" font-weight="600">18</text>
-<text x="450.0" y="192.7" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">35</text>
-<text x="450.0" y="372.4" font-size="10" fill="#9333ea" text-anchor="middle" font-weight="600">8</text>
-<text x="816.0" y="235.4" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">28</text>
-<text x="816.0" y="325.6" font-size="10" fill="#9333ea" text-anchor="middle" font-weight="600">15</text>
+<polygon points="84.0,166.2 267.0,184.7 450.0,200.3 633.0,218.3 816.0,245.4 816.0,334.9 633.0,367.2 450.0,379.4 267.0,313.6 84.0,227.9" fill="#2563eb" fill-opacity="0.14" stroke="none"/>
+<polyline points="84.0,166.2 267.0,184.7 450.0,200.3 633.0,218.3 816.0,245.4" fill="none" stroke="#2563eb" stroke-width="2.4"/>
+<circle cx="84.0" cy="166.2" r="4.2" fill="#2563eb"/>
+<circle cx="267.0" cy="184.7" r="4.2" fill="#2563eb"/>
+<circle cx="450.0" cy="200.3" r="4.2" fill="#2563eb"/>
+<circle cx="633.0" cy="218.3" r="4.2" fill="#2563eb"/>
+<circle cx="816.0" cy="245.4" r="4.2" fill="#2563eb"/>
+<polyline points="84.0,227.9 267.0,313.6 450.0,379.4 633.0,367.2 816.0,334.9" fill="none" stroke="#9333ea" stroke-width="2.4"/>
+<circle cx="84.0" cy="227.9" r="4.2" fill="#9333ea"/>
+<circle cx="267.0" cy="313.6" r="4.2" fill="#9333ea"/>
+<circle cx="450.0" cy="379.4" r="4.2" fill="#9333ea"/>
+<circle cx="633.0" cy="367.2" r="4.2" fill="#9333ea"/>
+<circle cx="816.0" cy="334.9" r="4.2" fill="#9333ea"/>
+<text x="84.0" y="157.2" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">40</text>
+<text x="84.0" y="218.9" font-size="10" fill="#9333ea" text-anchor="middle" font-weight="600">31</text>
+<text x="267.0" y="175.7" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">37</text>
+<text x="267.0" y="304.6" font-size="10" fill="#9333ea" text-anchor="middle" font-weight="600">18</text>
+<text x="450.0" y="191.3" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">35</text>
+<text x="450.0" y="370.4" font-size="10" fill="#9333ea" text-anchor="middle" font-weight="600">8</text>
+<text x="633.0" y="209.3" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">32</text>
+<text x="633.0" y="358.2" font-size="10" fill="#9333ea" text-anchor="middle" font-weight="600">10</text>
+<text x="816.0" y="236.4" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">28</text>
+<text x="816.0" y="325.9" font-size="10" fill="#9333ea" text-anchor="middle" font-weight="600">15</text>
 <line x1="84" y1="494" x2="100" y2="494" stroke="#2563eb" stroke-width="3"/>
 <text x="104" y="498" font-size="11.5" fill="#1d2939">single request (top edge)</text>
 <line x1="300" y1="494" x2="316" y2="494" stroke="#9333ea" stroke-width="3"/>

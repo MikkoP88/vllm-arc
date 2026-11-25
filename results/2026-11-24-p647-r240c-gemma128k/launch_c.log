@@ -1,0 +1,206 @@
+R240C refuses passed (fork_sha=43f84cf977f9444900ff21387715ca5865db4c1a libattn=61d2f5a365f05084b3dd72c4ae1da3e0 libmqa=190e261edc79b3b497d8d8e801e65757)
+=== [r240c:gm8x] boot 10:16:36 fam=bootprobe env=[ARC_MODEL=/models/gemma4-31b ARC_SERVED=gemma4-31b ARC_GMU=0.8 ARC_GRAPH=1 ARC_SPEC=0 ARC_LMC=0 ARC_RPC=1200 ARC_MAXLEN=131072 ARC_FP8=0 ARC_QUANT=mxfp8] ===
+[r240c:gm8x] TRACEBACK poll=17
+R240C_BOOT_FAIL_gm8x -- banking log, gate continues
+=== [r240c:gm4x] boot 10:19:33 fam=gemma128 env=[ARC_MODEL=/models/gemma4-31b ARC_SERVED=gemma4-31b ARC_GMU=0.8 ARC_GRAPH=1 ARC_SPEC=0 ARC_LMC=0 ARC_RPC=1200 ARC_MAXLEN=131072 ARC_FP8=0 ARC_QUANT=mxfp4 ARC_MXFP4_MODE=w4a16] ===
+HEALTH_OK_r240c_gm4x 10:32:14
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert28 name=arc-r240c model=/models/gemma4-31b served=gemma4-31b quant=mxfp4 qcfg= graph=1 spec=0 gmu=0.8 maxlen=131072 mnbt=8192 seqs=64 fp8=0 xgc=0 tmpl=__qwen_default__ rp=<qwen3> tp=<qwen3_coder> port=8000 10:19:36
+tracebacks=0
+kv_pool_tokens=288972
+{
+ "tag": "gm4x_probe_b131000",
+ "budget": 131000,
+ "max_tokens": 600,
+ "client_len": 130877,
+ "status": 400,
+ "elapsed_s": 0.78,
+ "body": "{\"error\":{\"message\":\"This model's maximum context length is 131072 tokens. However, you requested 600 output tokens and your prompt contains at least 130473 input tokens, for a total of at least 131073 tokens. Please reduce the length of the input prompt or the number of requested output tokens. (parameter=input_tokens, value=130473)\",\"type\":\"BadRequestError\",\"param\":\"input_tokens\",\"code\":400}}"
+}PROBE_OK_gm4x_probe_b131000
+{
+ "tag": "gm4x_probe_b130300",
+ "budget": 130300,
+ "max_tokens": 600,
+ "client_len": 130212,
+ "status": 200,
+ "elapsed_s": 195.85,
+ "body": "{\"id\":\"cmpl-9158fd85a180f612\",\"object\":\"text_completion\",\"created\":1795602777,\"model\":\"gemma4-31b\",\"choices\":[{\"index\":0,\"text\":\"sutheir 1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+}PROBE_OK_gm4x_probe_b130300
+CONC_OK_gm4x_c1024_n1
+CONC_OK_gm4x_c1024_n2
+CONC_OK_gm4x_c1024_n3
+CONC_OK_gm4x_c1024_n4
+CONC_OK_gm4x_c1024_n8
+CONC_OK_gm4x_c1024_n1_t1.0
+CONC_OK_gm4x_c8192_n1
+CONC_OK_gm4x_c8192_n2
+CONC_OK_gm4x_c8192_n3
+CONC_OK_gm4x_c8192_n4
+CONC_OK_gm4x_c8192_n8
+CONC_OK_gm4x_c8192_n1_t1.0
+CONC_OK_gm4x_c32768_n1
+CONC_OK_gm4x_c32768_n2
+CONC_OK_gm4x_c32768_n3
+CONC_OK_gm4x_c32768_n4
+CONC_OK_gm4x_c32768_n8
+CONC_OK_gm4x_c32768_n1_t1.0
+CONC_OK_gm4x_c65536_n1
+CONC_OK_gm4x_c65536_n2
+CONC_OK_gm4x_c65536_n3
+CONC_OK_gm4x_c65536_n4
+KV_CAP gm4x c65536 n8 POOL=288972 NEED=529600
+CONC_OK_gm4x_c65536_n1_t1.0
+CONC_OK_gm4x_c131072_n1
+CONC_OK_gm4x_c131072_n2
+KV_CAP gm4x c131072 n3 POOL=288972 NEED=395208
+KV_CAP gm4x c131072 n4 POOL=288972 NEED=526944
+KV_CAP gm4x c131072 n8 POOL=288972 NEED=1053888
+CONC_OK_gm4x_c131072_n1_t1.0
+=== [r240c:gm4x] done 11:20:47 ===
+=== [r240c:gkv_m4x] boot 11:20:47 fam=gemma128 env=[ARC_MODEL=/models/gemma4-31b ARC_SERVED=gemma4-31b ARC_GMU=0.8 ARC_GRAPH=1 ARC_SPEC=0 ARC_LMC=0 ARC_RPC=1200 ARC_MAXLEN=131072 ARC_FP8=0 ARC_QUANT=fp8 ARC_KVDTYPE=mxfp4 ARC_MXKV_NATIVE=1] ===
+HEALTH_OK_r240c_gkv_m4x 11:25:01
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert28 name=arc-r240c model=/models/gemma4-31b served=gemma4-31b quant=fp8 qcfg= graph=1 spec=0 gmu=0.8 maxlen=131072 mnbt=8192 seqs=64 fp8=0 xgc=0 tmpl=__qwen_default__ rp=<qwen3> tp=<qwen3_coder> port=8000 11:20:50
+tracebacks=0
+kv_pool_tokens=238497
+{
+ "tag": "gkv_m4x_probe_b131000",
+ "budget": 131000,
+ "max_tokens": 600,
+ "client_len": 130898,
+ "status": -1,
+ "elapsed_s": 0.04,
+ "body": "URLError: <urlopen error [Errno 111] Connection refused>"
+}PROBE_OK_gkv_m4x_probe_b131000
+{
+ "tag": "gkv_m4x_probe_b130300",
+ "budget": 130300,
+ "max_tokens": 600,
+ "client_len": 130184,
+ "status": -1,
+ "elapsed_s": 0.04,
+ "body": "URLError: <urlopen error [Errno 111] Connection refused>"
+}PROBE_OK_gkv_m4x_probe_b130300
+CONC_OK_gkv_m4x_c1024_n1
+CONC_OK_gkv_m4x_c1024_n2
+CONC_OK_gkv_m4x_c1024_n3
+CONC_OK_gkv_m4x_c1024_n4
+CONC_OK_gkv_m4x_c1024_n8
+CONC_OK_gkv_m4x_c1024_n1_t1.0
+CONC_OK_gkv_m4x_c8192_n1
+CONC_OK_gkv_m4x_c8192_n2
+CONC_OK_gkv_m4x_c8192_n3
+CONC_OK_gkv_m4x_c8192_n4
+CONC_OK_gkv_m4x_c8192_n8
+CONC_OK_gkv_m4x_c8192_n1_t1.0
+CONC_OK_gkv_m4x_c32768_n1
+CONC_OK_gkv_m4x_c32768_n2
+CONC_OK_gkv_m4x_c32768_n3
+CONC_OK_gkv_m4x_c32768_n4
+KV_CAP gkv_m4x c32768 n8 POOL=238497 NEED=267456
+CONC_OK_gkv_m4x_c32768_n7
+CONC_OK_gkv_m4x_c32768_n1_t1.0
+CONC_OK_gkv_m4x_c65536_n1
+CONC_OK_gkv_m4x_c65536_n2
+CONC_OK_gkv_m4x_c65536_n3
+KV_CAP gkv_m4x c65536 n4 POOL=238497 NEED=264800
+KV_CAP gkv_m4x c65536 n8 POOL=238497 NEED=529600
+CONC_OK_gkv_m4x_c65536_n1_t1.0
+CONC_OK_gkv_m4x_c131072_n1
+KV_CAP gkv_m4x c131072 n2 POOL=238497 NEED=263472
+KV_CAP gkv_m4x c131072 n3 POOL=238497 NEED=395208
+KV_CAP gkv_m4x c131072 n4 POOL=238497 NEED=526944
+KV_CAP gkv_m4x c131072 n8 POOL=238497 NEED=1053888
+CONC_OK_gkv_m4x_c131072_n1_t1.0
+=== [r240c:gkv_m4x] done 11:31:06 ===
+=== [r240c:gkv_mkx] boot 11:31:06 fam=gemma128 env=[ARC_MODEL=/models/gemma4-31b ARC_SERVED=gemma4-31b ARC_GMU=0.8 ARC_GRAPH=1 ARC_SPEC=0 ARC_LMC=0 ARC_RPC=1200 ARC_MAXLEN=131072 ARC_FP8=0 ARC_QUANT=fp8 ARC_KVDTYPE=mxk8v4 ARC_MXKV_NATIVE=1] ===
+HEALTH_OK_r240c_gkv_mkx 11:35:20
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert28 name=arc-r240c model=/models/gemma4-31b served=gemma4-31b quant=fp8 qcfg= graph=1 spec=0 gmu=0.8 maxlen=131072 mnbt=8192 seqs=64 fp8=0 xgc=0 tmpl=__qwen_default__ rp=<qwen3> tp=<qwen3_coder> port=8000 11:31:09
+tracebacks=0
+kv_pool_tokens=162180
+{
+ "tag": "gkv_mkx_probe_b131000",
+ "budget": 131000,
+ "max_tokens": 600,
+ "client_len": 130911,
+ "status": -1,
+ "elapsed_s": 0.04,
+ "body": "URLError: <urlopen error [Errno 111] Connection refused>"
+}PROBE_OK_gkv_mkx_probe_b131000
+{
+ "tag": "gkv_mkx_probe_b130300",
+ "budget": 130300,
+ "max_tokens": 600,
+ "client_len": 130205,
+ "status": -1,
+ "elapsed_s": 0.04,
+ "body": "URLError: <urlopen error [Errno 111] Connection refused>"
+}PROBE_OK_gkv_mkx_probe_b130300
+CONC_OK_gkv_mkx_c1024_n1
+CONC_OK_gkv_mkx_c1024_n2
+CONC_OK_gkv_mkx_c1024_n3
+CONC_OK_gkv_mkx_c1024_n4
+CONC_OK_gkv_mkx_c1024_n8
+CONC_OK_gkv_mkx_c1024_n1_t1.0
+CONC_OK_gkv_mkx_c8192_n1
+CONC_OK_gkv_mkx_c8192_n2
+CONC_OK_gkv_mkx_c8192_n3
+CONC_OK_gkv_mkx_c8192_n4
+CONC_OK_gkv_mkx_c8192_n8
+CONC_OK_gkv_mkx_c8192_n1_t1.0
+CONC_OK_gkv_mkx_c32768_n1
+CONC_OK_gkv_mkx_c32768_n2
+CONC_OK_gkv_mkx_c32768_n3
+CONC_OK_gkv_mkx_c32768_n4
+KV_CAP gkv_mkx c32768 n8 POOL=162180 NEED=267456
+CONC_OK_gkv_mkx_c32768_n1_t1.0
+CONC_OK_gkv_mkx_c65536_n1
+CONC_OK_gkv_mkx_c65536_n2
+KV_CAP gkv_mkx c65536 n3 POOL=162180 NEED=198600
+KV_CAP gkv_mkx c65536 n4 POOL=162180 NEED=264800
+KV_CAP gkv_mkx c65536 n8 POOL=162180 NEED=529600
+CONC_OK_gkv_mkx_c65536_n1_t1.0
+CONC_OK_gkv_mkx_c131072_n1
+KV_CAP gkv_mkx c131072 n2 POOL=162180 NEED=263472
+KV_CAP gkv_mkx c131072 n3 POOL=162180 NEED=395208
+KV_CAP gkv_mkx c131072 n4 POOL=162180 NEED=526944
+KV_CAP gkv_mkx c131072 n8 POOL=162180 NEED=1053888
+CONC_OK_gkv_mkx_c131072_n1_t1.0
+=== [r240c:gkv_mkx] done 11:40:50 ===
+=== [r240c:gf8x64] boot 11:40:50 fam=kvface env=[ARC_MODEL=/models/gemma4-31b ARC_SERVED=gemma4-31b ARC_GMU=0.8 ARC_GRAPH=1 ARC_SPEC=0 ARC_LMC=0 ARC_RPC=1200 ARC_MAXLEN=65536 ARC_FP8=0 ARC_QUANT=fp8] ===
+HEALTH_OK_r240c_gf8x64 11:53:41
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert28 name=arc-r240c model=/models/gemma4-31b served=gemma4-31b quant=fp8 qcfg= graph=1 spec=0 gmu=0.8 maxlen=65536 mnbt=8192 seqs=64 fp8=0 xgc=0 tmpl=__qwen_default__ rp=<qwen3> tp=<qwen3_coder> port=8000 11:40:53
+tracebacks=0
+kv_pool_tokens=80619
+CONC_OK_gf8x64_c65536_n1
+KV_CAP gf8x64 c65536 n2 POOL=80619 NEED=132400
+KV_CAP gf8x64 c65536 n4 POOL=80619 NEED=264800
+KV_CAP gf8x64 c65536 n8 POOL=80619 NEED=529600
+CONC_OK_gf8x64_c65536_n1_t1.0
+=== [r240c:gf8x64] done 11:57:16 ===
+=== [r240c:gm8x64] boot 11:57:16 fam=kvface env=[ARC_MODEL=/models/gemma4-31b ARC_SERVED=gemma4-31b ARC_GMU=0.8 ARC_GRAPH=1 ARC_SPEC=0 ARC_LMC=0 ARC_RPC=1200 ARC_MAXLEN=65536 ARC_FP8=0 ARC_QUANT=mxfp8] ===
+HEALTH_OK_r240c_gm8x64 12:10:07
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert28 name=arc-r240c model=/models/gemma4-31b served=gemma4-31b quant=mxfp8 qcfg= graph=1 spec=0 gmu=0.8 maxlen=65536 mnbt=8192 seqs=64 fp8=0 xgc=0 tmpl=__qwen_default__ rp=<qwen3> tp=<qwen3_coder> port=8000 11:57:19
+tracebacks=0
+kv_pool_tokens=75870
+CONC_OK_gm8x64_c65536_n1
+KV_CAP gm8x64 c65536 n2 POOL=75870 NEED=132400
+KV_CAP gm8x64 c65536 n4 POOL=75870 NEED=264800
+KV_CAP gm8x64 c65536 n8 POOL=75870 NEED=529600
+CONC_OK_gm8x64_c65536_n1_t1.0
+=== [r240c:gm8x64] done 12:13:43 ===
+=== [r240c:gkv_m8x64] boot 12:13:43 fam=kvface env=[ARC_MODEL=/models/gemma4-31b ARC_SERVED=gemma4-31b ARC_GMU=0.8 ARC_GRAPH=1 ARC_SPEC=0 ARC_LMC=0 ARC_RPC=1200 ARC_MAXLEN=65536 ARC_FP8=0 ARC_QUANT=fp8 ARC_KVDTYPE=mxfp8 ARC_MXKV_NATIVE=1] ===
+HEALTH_OK_r240c_gkv_m8x64 12:17:57
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert28 name=arc-r240c model=/models/gemma4-31b served=gemma4-31b quant=fp8 qcfg= graph=1 spec=0 gmu=0.8 maxlen=65536 mnbt=8192 seqs=64 fp8=0 xgc=0 tmpl=__qwen_default__ rp=<qwen3> tp=<qwen3_coder> port=8000 12:13:46
+tracebacks=0
+kv_pool_tokens=78175
+CONC_OK_gkv_m8x64_c65536_n1
+KV_CAP gkv_m8x64 c65536 n2 POOL=78175 NEED=132400
+KV_CAP gkv_m8x64 c65536 n4 POOL=78175 NEED=264800
+KV_CAP gkv_m8x64 c65536 n8 POOL=78175 NEED=529600
+CONC_OK_gkv_m8x64_c65536_n1_t1.0
+=== [r240c:gkv_m8x64] done 12:18:46 ===
+=== [r240c:gkv_m8x131] boot 12:18:46 fam=kvface env=[ARC_MODEL=/models/gemma4-31b ARC_SERVED=gemma4-31b ARC_GMU=0.8 ARC_GRAPH=1 ARC_SPEC=0 ARC_LMC=0 ARC_RPC=1200 ARC_MAXLEN=131072 ARC_FP8=0 ARC_QUANT=fp8 ARC_KVDTYPE=mxfp8 ARC_MXKV_NATIVE=1] ===
+[r240c:gkv_m8x131] TRACEBACK poll=17
+R240C_BOOT_FAIL_gkv_m8x131 -- banking log, gate continues
+BOOT_FAILS: gm8x gkv_m8x131
+R240C_COMPLETE 2026-11-25T12:21:43Z -- pull + report gen next
+W14_RESTORED 2026-11-25T12:21:43Z

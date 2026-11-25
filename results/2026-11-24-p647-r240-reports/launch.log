@@ -1,0 +1,208 @@
+R240 refuses passed (fork_sha=43f84cf977f9444900ff21387715ca5865db4c1a libattn=61d2f5a365f05084b3dd72c4ae1da3e0 libmqa=190e261edc79b3b497d8d8e801e65757)
+=== [r240:qf3] boot 14:46:59 plan=qwen3 env=[ARC_MODEL=/models/qwen3.8-27b-fp8 ARC_SERVED=qwen3.8-27b-fp8 ARC_GRAPH=1 ARC_LMC=1 ARC_FP8=1 ARC_SPEC=3] ===
+HEALTH_OK_r240_qf3 14:57:29
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert28 name=arc-r240 model=/models/qwen3.8-27b-fp8 served=qwen3.8-27b-fp8 quant=fp8 qcfg= graph=1 spec=3 gmu=0.8 maxlen=262144 mnbt=8192 seqs=64 fp8=1 xgc=0 tmpl=__qwen_default__ rp=<qwen3> tp=<qwen3_coder> port=8000 14:47:02
+tracebacks=0
+FACE_OK_qf3_c1024_t0.0 waited=16s
+FACE_OK_qf3_c8192_t0.0 waited=22s
+FACE_OK_qf3_c32768_t0.0 waited=30s
+FACE_OK_qf3_c65536_t0.0 waited=52s
+FACE_OK_qf3_c131072_t0.0 waited=118s
+FACE_OK_qf3_s8192_t0.0 waited=18s
+FACE_OK_qf3_s8192_t0.2 waited=18s
+FACE_OK_qf3_s8192_t0.4 waited=18s
+FACE_OK_qf3_s8192_t0.6 waited=18s
+FACE_OK_qf3_s8192_t0.8 waited=18s
+FACE_OK_qf3_s8192_t1.0 waited=18s
+=== [r240:qf3] done 15:04:01 ===
+=== [r240:qf0] boot 15:04:01 plan=qwen0 env=[ARC_MODEL=/models/qwen3.8-27b-fp8 ARC_SERVED=qwen3.8-27b-fp8 ARC_GRAPH=1 ARC_LMC=1 ARC_FP8=1 ARC_SPEC=0] ===
+HEALTH_OK_r240_qf0 15:13:30
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert28 name=arc-r240 model=/models/qwen3.8-27b-fp8 served=qwen3.8-27b-fp8 quant=fp8 qcfg= graph=1 spec=0 gmu=0.8 maxlen=262144 mnbt=8192 seqs=64 fp8=1 xgc=0 tmpl=__qwen_default__ rp=<qwen3> tp=<qwen3_coder> port=8000 15:04:04
+tracebacks=0
+FACE_OK_qf0_c1024_t0.0 waited=28s
+FACE_OK_qf0_c8192_t0.0 waited=30s
+FACE_OK_qf0_c32768_t0.0 waited=42s
+FACE_OK_qf0_c65536_t0.0 waited=64s
+FACE_OK_qf0_c131072_t0.0 waited=128s
+=== [r240:qf0] done 15:19:03 ===
+=== [r240:q83] boot 15:19:03 plan=qwen3 env=[ARC_MODEL=/models/qwen3.8-27b ARC_SERVED=qwen3.8-27b ARC_QUANTCFG={"ignore":["*visual*","*linear_attn*","mtp.fc"]} ARC_GMU=0.85 ARC_GRAPH=1 ARC_LMC=1 ARC_FP8=0 ARC_QUANT=mxfp8 ARC_SPEC=3] ===
+HEALTH_OK_r240_q83 15:29:43
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert28 name=arc-r240 model=/models/qwen3.8-27b served=qwen3.8-27b quant=mxfp8 qcfg={"ignore":["*visual*","*linear_attn*","mtp.fc"]} graph=1 spec=3 gmu=0.85 maxlen=262144 mnbt=8192 seqs=64 fp8=0 xgc=0 tmpl=__qwen_default__ rp=<qwen3> tp=<qwen3_coder> port=8000 15:19:06
+tracebacks=0
+FACE_OK_q83_c1024_t0.0 waited=18s
+FACE_OK_q83_c8192_t0.0 waited=20s
+FACE_OK_q83_c32768_t0.0 waited=32s
+FACE_OK_q83_c65536_t0.0 waited=56s
+FACE_OK_q83_c131072_t0.0 waited=122s
+FACE_OK_q83_s8192_t0.0 waited=20s
+FACE_OK_q83_s8192_t0.2 waited=18s
+FACE_OK_q83_s8192_t0.4 waited=20s
+FACE_OK_q83_s8192_t0.6 waited=20s
+FACE_OK_q83_s8192_t0.8 waited=20s
+FACE_OK_q83_s8192_t1.0 waited=22s
+=== [r240:q83] done 15:36:41 ===
+=== [r240:q80] boot 15:36:41 plan=qwen0 env=[ARC_MODEL=/models/qwen3.8-27b ARC_SERVED=qwen3.8-27b ARC_QUANTCFG={"ignore":["*visual*","*linear_attn*","mtp.fc"]} ARC_GMU=0.85 ARC_GRAPH=1 ARC_LMC=1 ARC_FP8=0 ARC_QUANT=mxfp8 ARC_SPEC=0] ===
+HEALTH_OK_r240_q80 15:46:19
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert28 name=arc-r240 model=/models/qwen3.8-27b served=qwen3.8-27b quant=mxfp8 qcfg={"ignore":["*visual*","*linear_attn*","mtp.fc"]} graph=1 spec=0 gmu=0.85 maxlen=262144 mnbt=8192 seqs=64 fp8=0 xgc=0 tmpl=__qwen_default__ rp=<qwen3> tp=<qwen3_coder> port=8000 15:36:44
+tracebacks=0
+FACE_OK_q80_c1024_t0.0 waited=30s
+FACE_OK_q80_c8192_t0.0 waited=32s
+FACE_OK_q80_c32768_t0.0 waited=46s
+FACE_OK_q80_c65536_t0.0 waited=70s
+FACE_OK_q80_c131072_t0.0 waited=136s
+=== [r240:q80] done 15:52:15 ===
+=== [r240:q43] boot 15:52:15 plan=qwen3 env=[ARC_MODEL=/models/qwen3.8-27b ARC_SERVED=qwen3.8-27b ARC_QUANTCFG={"ignore":["*visual*","*linear_attn*","mtp.fc"]} ARC_GMU=0.85 ARC_GRAPH=1 ARC_LMC=1 ARC_FP8=0 ARC_QUANT=mxfp4 ARC_MXFP4_MODE=w4a16 ARC_SPEC=3] ===
+HEALTH_OK_r240_q43 16:02:24
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert28 name=arc-r240 model=/models/qwen3.8-27b served=qwen3.8-27b quant=mxfp4 qcfg={"ignore":["*visual*","*linear_attn*","mtp.fc"]} graph=1 spec=3 gmu=0.85 maxlen=262144 mnbt=8192 seqs=64 fp8=0 xgc=0 tmpl=__qwen_default__ rp=<qwen3> tp=<qwen3_coder> port=8000 15:52:18
+tracebacks=0
+FACE_OK_q43_c1024_t0.0 waited=16s
+FACE_OK_q43_c8192_t0.0 waited=18s
+FACE_OK_q43_c32768_t0.0 waited=32s
+FACE_OK_q43_c65536_t0.0 waited=54s
+FACE_OK_q43_c131072_t0.0 waited=122s
+FACE_OK_q43_s8192_t0.0 waited=18s
+FACE_OK_q43_s8192_t0.2 waited=18s
+FACE_OK_q43_s8192_t0.4 waited=18s
+FACE_OK_q43_s8192_t0.6 waited=18s
+FACE_OK_q43_s8192_t0.8 waited=20s
+FACE_OK_q43_s8192_t1.0 waited=18s
+=== [r240:q43] done 16:09:15 ===
+=== [r240:q40] boot 16:09:16 plan=qwen0 env=[ARC_MODEL=/models/qwen3.8-27b ARC_SERVED=qwen3.8-27b ARC_QUANTCFG={"ignore":["*visual*","*linear_attn*","mtp.fc"]} ARC_GMU=0.85 ARC_GRAPH=1 ARC_LMC=1 ARC_FP8=0 ARC_QUANT=mxfp4 ARC_MXFP4_MODE=w4a16 ARC_SPEC=0] ===
+HEALTH_OK_r240_q40 16:18:54
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert28 name=arc-r240 model=/models/qwen3.8-27b served=qwen3.8-27b quant=mxfp4 qcfg={"ignore":["*visual*","*linear_attn*","mtp.fc"]} graph=1 spec=0 gmu=0.85 maxlen=262144 mnbt=8192 seqs=64 fp8=0 xgc=0 tmpl=__qwen_default__ rp=<qwen3> tp=<qwen3_coder> port=8000 16:09:19
+tracebacks=0
+FACE_OK_q40_c1024_t0.0 waited=26s
+FACE_OK_q40_c8192_t0.0 waited=28s
+FACE_OK_q40_c32768_t0.0 waited=42s
+FACE_OK_q40_c65536_t0.0 waited=66s
+FACE_OK_q40_c131072_t0.0 waited=132s
+=== [r240:q40] done 16:24:30 ===
+=== [r240:gf8] boot 16:24:30 plan=gemma env=[ARC_MODEL=/models/gemma4-31b ARC_SERVED=gemma4-31b ARC_GMU=0.8 ARC_GRAPH=1 ARC_SPEC=0 ARC_LMC=0 ARC_RPC=1200 ARC_MAXLEN=40960 ARC_FP8=0 ARC_QUANT=fp8] ===
+HEALTH_OK_r240_gf8 16:37:21
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert28 name=arc-r240 model=/models/gemma4-31b served=gemma4-31b quant=fp8 qcfg= graph=1 spec=0 gmu=0.8 maxlen=40960 mnbt=8192 seqs=64 fp8=0 xgc=0 tmpl=__qwen_default__ rp=<qwen3> tp=<qwen3_coder> port=8000 16:24:33
+tracebacks=0
+FACE_OK_gf8_c1024_t0.0 waited=34s
+FACE_OK_gf8_c8192_t0.0 waited=36s
+FACE_OK_gf8_c32768_t0.0 waited=54s
+=== [r240:gf8] done 16:39:56 ===
+=== [r240:gm8] boot 16:39:56 plan=gemma env=[ARC_MODEL=/models/gemma4-31b ARC_SERVED=gemma4-31b ARC_GMU=0.8 ARC_GRAPH=1 ARC_SPEC=0 ARC_LMC=0 ARC_RPC=1200 ARC_MAXLEN=40960 ARC_FP8=0 ARC_QUANT=mxfp8] ===
+HEALTH_OK_r240_gm8 16:52:37
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert28 name=arc-r240 model=/models/gemma4-31b served=gemma4-31b quant=mxfp8 qcfg= graph=1 spec=0 gmu=0.8 maxlen=40960 mnbt=8192 seqs=64 fp8=0 xgc=0 tmpl=__qwen_default__ rp=<qwen3> tp=<qwen3_coder> port=8000 16:39:59
+tracebacks=0
+FACE_OK_gm8_c1024_t0.0 waited=34s
+FACE_OK_gm8_c8192_t0.0 waited=36s
+FACE_OK_gm8_c32768_t0.0 waited=54s
+=== [r240:gm8] done 16:55:12 ===
+=== [r240:gm4] boot 16:55:12 plan=gemma env=[ARC_MODEL=/models/gemma4-31b ARC_SERVED=gemma4-31b ARC_GMU=0.8 ARC_GRAPH=1 ARC_SPEC=0 ARC_LMC=0 ARC_RPC=1200 ARC_MAXLEN=40960 ARC_FP8=0 ARC_QUANT=mxfp4 ARC_MXFP4_MODE=w4a16] ===
+HEALTH_OK_r240_gm4 17:08:03
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert28 name=arc-r240 model=/models/gemma4-31b served=gemma4-31b quant=mxfp4 qcfg= graph=1 spec=0 gmu=0.8 maxlen=40960 mnbt=8192 seqs=64 fp8=0 xgc=0 tmpl=__qwen_default__ rp=<qwen3> tp=<qwen3_coder> port=8000 16:55:15
+tracebacks=0
+FACE_OK_gm4_c1024_t0.0 waited=26s
+FACE_OK_gm4_c8192_t0.0 waited=30s
+FACE_OK_gm4_c32768_t0.0 waited=48s
+=== [r240:gm4] done 17:10:17 ===
+=== [r240:kvauto] boot 17:10:17 plan=kv env=[ARC_MODEL=/models/qwen3.8-27b-fp8 ARC_SERVED=qwen3.8-27b-fp8 ARC_GRAPH=1 ARC_LMC=1 ARC_FP8=1 ARC_SPEC=3 ARC_KVDTYPE=auto] ===
+[r240:kvauto] TRACEBACK poll=17
+R240_BOOT_FAIL_kvauto -- banking log, matrix continues
+(APIServer pid=13)            ^^^^^^^^^^^^^^^^^^^^^
+(APIServer pid=13)   File "/opt/venv/lib/python3.12/site-packages/vllm/entrypoints/launchers/api_server/entry.py", line 94, in build_async_engine_client_from_engine_args
+(APIServer pid=13)     async_llm = AsyncLLM.from_vllm_config(
+(APIServer pid=13)                 ^^^^^^^^^^^^^^^^^^^^^^^^^^
+(APIServer pid=13)   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/engine/async_llm.py", line 235, in from_vllm_config
+(APIServer pid=13)     return cls(
+(APIServer pid=13)            ^^^^
+(APIServer pid=13)   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/engine/async_llm.py", line 169, in __init__
+(APIServer pid=13)     self.engine_core = EngineCoreClient.make_async_mp_client(
+(APIServer pid=13)                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(APIServer pid=13)   File "/opt/venv/lib/python3.12/site-packages/vllm/tracing/otel.py", line 178, in sync_wrapper
+(APIServer pid=13)     return func(*args, **kwargs)
+(APIServer pid=13)            ^^^^^^^^^^^^^^^^^^^^^
+(APIServer pid=13)   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/engine/core_client.py", line 163, in make_async_mp_client
+(APIServer pid=13)     return AsyncMPClient(
+(APIServer pid=13)            ^^^^^^^^^^^^^^
+(APIServer pid=13)   File "/opt/venv/lib/python3.12/site-packages/vllm/tracing/otel.py", line 178, in sync_wrapper
+(APIServer pid=13)     return func(*args, **kwargs)
+(APIServer pid=13)            ^^^^^^^^^^^^^^^^^^^^^
+(APIServer pid=13)   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/engine/core_client.py", line 1060, in __init__
+(APIServer pid=13)     super().__init__(
+(APIServer pid=13)   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/engine/core_client.py", line 656, in __init__
+(APIServer pid=13)     with launch_core_engines(
+(APIServer pid=13)   File "/usr/lib/python3.12/contextlib.py", line 144, in __exit__
+(APIServer pid=13)     next(self.gen)
+(APIServer pid=13)   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/engine/utils.py", line 1240, in launch_core_engines
+(APIServer pid=13)     wait_for_engine_startup(
+(APIServer pid=13)   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/engine/utils.py", line 1320, in wait_for_engine_startup
+(APIServer pid=13)     raise RuntimeError(
+(APIServer pid=13) RuntimeError: Engine core initialization failed. See root cause above. Failed core proc(s): {}
+=== [r240:kvfp8] boot 17:13:14 plan=kv env=[ARC_MODEL=/models/qwen3.8-27b-fp8 ARC_SERVED=qwen3.8-27b-fp8 ARC_GRAPH=1 ARC_LMC=1 ARC_FP8=1 ARC_SPEC=3 ARC_KVDTYPE=fp8] ===
+HEALTH_OK_r240_kvfp8 17:23:44
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert28 name=arc-r240 model=/models/qwen3.8-27b-fp8 served=qwen3.8-27b-fp8 quant=fp8 qcfg= graph=1 spec=3 gmu=0.8 maxlen=262144 mnbt=8192 seqs=64 fp8=1 xgc=0 tmpl=__qwen_default__ rp=<qwen3> tp=<qwen3_coder> port=8000 17:13:17
+tracebacks=0
+FACE_OK_kvfp8_c8192_t0.0 waited=18s
+FACE_OK_kvfp8_c32768_t0.0 waited=30s
+=== [r240:kvfp8] done 17:25:03 ===
+=== [r240:kve5m2] boot 17:25:03 plan=kv env=[ARC_MODEL=/models/qwen3.8-27b-fp8 ARC_SERVED=qwen3.8-27b-fp8 ARC_GRAPH=1 ARC_LMC=1 ARC_FP8=1 ARC_SPEC=3 ARC_KVDTYPE=fp8_e5m2] ===
+[r240:kve5m2] TRACEBACK poll=13
+R240_BOOT_FAIL_kve5m2 -- banking log, matrix continues
+(APIServer pid=13)     async_llm = AsyncLLM.from_vllm_config(
+(APIServer pid=13)                 ^^^^^^^^^^^^^^^^^^^^^^^^^^
+(APIServer pid=13)   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/engine/async_llm.py", line 235, in from_vllm_config
+(APIServer pid=13)     return cls(
+(APIServer pid=13)            ^^^^
+(APIServer pid=13)   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/engine/async_llm.py", line 169, in __init__
+(APIServer pid=13)     self.engine_core = EngineCoreClient.make_async_mp_client(
+(APIServer pid=13)                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(APIServer pid=13)   File "/opt/venv/lib/python3.12/site-packages/vllm/tracing/otel.py", line 178, in sync_wrapper
+(APIServer pid=13)     return func(*args, **kwargs)
+(APIServer pid=13)            ^^^^^^^^^^^^^^^^^^^^^
+(APIServer pid=13)   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/engine/core_client.py", line 163, in make_async_mp_client
+(APIServer pid=13)     return AsyncMPClient(
+(APIServer pid=13)            ^^^^^^^^^^^^^^
+(APIServer pid=13)   File "/opt/venv/lib/python3.12/site-packages/vllm/tracing/otel.py", line 178, in sync_wrapper
+(APIServer pid=13)     return func(*args, **kwargs)
+(APIServer pid=13)            ^^^^^^^^^^^^^^^^^^^^^
+(APIServer pid=13)   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/engine/core_client.py", line 1060, in __init__
+(APIServer pid=13)     super().__init__(
+(APIServer pid=13)   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/engine/core_client.py", line 656, in __init__
+(APIServer pid=13)     with launch_core_engines(
+(APIServer pid=13)   File "/usr/lib/python3.12/contextlib.py", line 144, in __exit__
+(APIServer pid=13)     next(self.gen)
+(APIServer pid=13)   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/engine/utils.py", line 1240, in launch_core_engines
+(APIServer pid=13)     wait_for_engine_startup(
+(APIServer pid=13)   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/engine/utils.py", line 1320, in wait_for_engine_startup
+(APIServer pid=13)     raise RuntimeError(
+(APIServer pid=13) RuntimeError: Engine core initialization failed. See root cause above. Failed core proc(s): {}
+/usr/lib/python3.12/multiprocessing/resource_tracker.py:254: UserWarning: resource_tracker: There appear to be 1 leaked shared_memory objects to clean up at shutdown
+  warnings.warn('resource_tracker: There appear to be %d '
+=== [r240:kvauto131] boot 17:27:19 plan=kv env=[ARC_MODEL=/models/qwen3.8-27b-fp8 ARC_SERVED=qwen3.8-27b-fp8 ARC_GRAPH=1 ARC_LMC=1 ARC_FP8=1 ARC_SPEC=3 ARC_KVDTYPE=auto ARC_MAXLEN=131072] ===
+HEALTH_OK_r240_kvauto131 17:37:39
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert28 name=arc-r240 model=/models/qwen3.8-27b-fp8 served=qwen3.8-27b-fp8 quant=fp8 qcfg= graph=1 spec=3 gmu=0.8 maxlen=131072 mnbt=8192 seqs=64 fp8=1 xgc=0 tmpl=__qwen_default__ rp=<qwen3> tp=<qwen3_coder> port=8000 17:27:22
+tracebacks=0
+FACE_OK_kvauto131_c8192_t0.0 waited=18s
+FACE_OK_kvauto131_c32768_t0.0 waited=28s
+=== [r240:kvauto131] done 17:38:55 ===
+=== [r240:kvm4] boot 17:38:55 plan=kv env=[ARC_MODEL=/models/qwen3.8-27b-fp8 ARC_SERVED=qwen3.8-27b-fp8 ARC_GRAPH=1 ARC_LMC=1 ARC_FP8=1 ARC_SPEC=3 ARC_KVDTYPE=mxfp4 ARC_MXKV_NATIVE=1] ===
+HEALTH_OK_r240_kvm4 17:44:10
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert28 name=arc-r240 model=/models/qwen3.8-27b-fp8 served=qwen3.8-27b-fp8 quant=fp8 qcfg= graph=1 spec=3 gmu=0.8 maxlen=262144 mnbt=8192 seqs=64 fp8=1 xgc=0 tmpl=__qwen_default__ rp=<qwen3> tp=<qwen3_coder> port=8000 17:38:58
+tracebacks=0
+FACE_OK_kvm4_c8192_t0.0 waited=18s
+FACE_OK_kvm4_c32768_t0.0 waited=32s
+=== [r240:kvm4] done 17:45:41 ===
+=== [r240:kvm8] boot 17:45:41 plan=kv env=[ARC_MODEL=/models/qwen3.8-27b-fp8 ARC_SERVED=qwen3.8-27b-fp8 ARC_GRAPH=1 ARC_LMC=1 ARC_FP8=1 ARC_SPEC=3 ARC_KVDTYPE=mxfp8 ARC_MXKV_NATIVE=1] ===
+HEALTH_OK_r240_kvm8 17:50:56
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert28 name=arc-r240 model=/models/qwen3.8-27b-fp8 served=qwen3.8-27b-fp8 quant=fp8 qcfg= graph=1 spec=3 gmu=0.8 maxlen=262144 mnbt=8192 seqs=64 fp8=1 xgc=0 tmpl=__qwen_default__ rp=<qwen3> tp=<qwen3_coder> port=8000 17:45:44
+tracebacks=0
+FACE_OK_kvm8_c8192_t0.0 waited=20s
+FACE_OK_kvm8_c32768_t0.0 waited=32s
+=== [r240:kvm8] done 17:52:29 ===
+=== [r240:kvmk] boot 17:52:29 plan=kv env=[ARC_MODEL=/models/qwen3.8-27b-fp8 ARC_SERVED=qwen3.8-27b-fp8 ARC_GRAPH=1 ARC_LMC=1 ARC_FP8=1 ARC_SPEC=3 ARC_KVDTYPE=mxk8v4 ARC_MXKV_NATIVE=1] ===
+HEALTH_OK_r240_kvmk 17:57:44
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert28 name=arc-r240 model=/models/qwen3.8-27b-fp8 served=qwen3.8-27b-fp8 quant=fp8 qcfg= graph=1 spec=3 gmu=0.8 maxlen=262144 mnbt=8192 seqs=64 fp8=1 xgc=0 tmpl=__qwen_default__ rp=<qwen3> tp=<qwen3_coder> port=8000 17:52:32
+tracebacks=0
+FACE_OK_kvmk_c8192_t0.0 waited=20s
+FACE_OK_kvmk_c32768_t0.0 waited=32s
+=== [r240:kvmk] done 17:59:15 ===
+BOOT_FAILS: kvauto kve5m2
+R240_REPORTS_COMPLETE 2026-11-24T17:59:15Z -- pull + report gen next
+W14_RESTORED 2026-11-24T17:59:16Z
+R240: W14 HEALTH 200 (18:04:16)

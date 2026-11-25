@@ -12,6 +12,66 @@ the fork SHA it was built from.
 Phase labels P0–P6.38 refer to the plan's execution phases; every phase's
 raw evidence is banked under `results/YYYY-MM-DD-<phase>-*/`.
 
+## r240 — deep-sweep close-out: the concurrency sweep + gemma 128K annex re-audited; two new engine boundaries banked (2026-11-25)
+
+- **Campaign legs r240b/r240c pulled, VERDICTed, and re-audited**
+  (recompute law — the gate lines alone were insufficient): r240b 22
+  cells, 436 faces, **373 real**; r240c 8 cells, 78 faces, **30
+  real**. The legs' `group()` gate printed `CONC_OK` on face-JSON
+  existence and never checked `n_ok` — **85 banked faces across 6
+  cells are connection-refused artifacts behind green gate lines**.
+  VERDICTs written into both banks with the full census; the
+  generator's every numeric cell gates on `n_ok>0` and all-vacuous
+  lanes render as banked refusal classes, never as gaps.
+- **Finding 1 — gemma native MX-KV cannot decode on this image
+  (hd512 gap)**: all six `gkv_m*` cells boot and bank their pools,
+  then the first decode request fatals — gemma's 10 full-attention
+  layers are head_size 512, outside the arc7 `mx_paged_decode`
+  instantiations (D=128/256 only, sealed in
+  `mx_paged_decode_xe2.cpp:198-203`; never surfaced before because
+  certified gemma legs ran fp8_e4m3 KV). On gemma `fp8_e4m3` is the
+  only servable KV dtype; the native MX-KV lane is qwen-scoped. An
+  hd512 instantiation is recorded as a reopened improvement channel.
+- **Finding 2 — qwen packed-KV sustained-decode stability boundary**:
+  mxfp4-KV and mxk8v4-KV both died mid-sweep at 32K × n4 sustained
+  decode (worker silent-hang → the 300 s watchdog `TimeoutError`;
+  `UR_RESULT_ERROR_DEVICE_LOST`) — mxfp8-KV alone survived the full
+  5-ctx × {1,2,4,8} grid (22/22). No contradiction of r237 (those
+  cells were MT=128 short-decode; r240b is MT=600 sustained — a new
+  cell class). Deployment law: packed 4-bit-V KV at ≥32K context only
+  at low concurrency, or the mxfp8 lane.
+- **The annex's serving record — gemma 128K is a W4A16 exclusive**:
+  `gm4x` (MXFP4 W4A16 weights + fp8_e4m3 KV at maxlen 131072,
+  26/26 faces) boots a 288,972-token pool where every 8-bit lane
+  refuses and serves the full rung ladder: 40.1 / 37.3 / 35.0 / 32.3
+  / **28.3 tok/s** n1 decode at 1K→128K (TTFT 175.6 s at 128K;
+  1K n8 aggregate 227 tok/s; KV_CAP boundaries banked).
+- **Real sweep results**: 3×2 qwen quant × spec matrix (MTP-k3
+  multiplier 2.8–2.9× on every weights lane; the W4A16-over-fp8 delta
+  −2.6 % @1K then monotone widening +5.7 % @8K → +8.9 % @128K);
+  pool ladders (TQ 398,363 → 959,909 = +141 %; native mxfp4-KV
+  721,994 = 1.81× ctrl; gemma W4A16 128,033 = 2.28× fp8);
+  KV-dtype menu n1 8K: fp8 97.2 vs MX 78.8/76.9/78.0 (0.79–0.81×),
+  TQ k3v4 frontier 70.2 at 2.10× pool; gemma gf8 conc ladder
+  (1K agg 27→178); 64K closure gf8x64 24.1 / gm8x64 23.7; five
+  by-design refusals banked (gkv_auto, gkv_auto16, gkv_e5m2, gm8x,
+  gkv_m8x131).
+- **Docs**: every report under `docs/reports/` regenerated on cert28
+  from the three campaign banks (generator honesty-corrected:
+  refusal-summary tables, re-audited outcome cells, refusal-class
+  legends); PERFORMANCE (stability boundary + model scope + the
+  W4A16 128K-exclusive passage), STATUS (campaign landed; the two
+  boundaries), CONFIGURATION (the knob paragraph carries the
+  qwen-only scope + the sustained-decode law).
+- **Evidence**: `results/2026-11-24-p647-r240-reports/` (VERDICT),
+  `results/2026-11-24-p647-r240b-conc/` (VERDICT + 22 cells),
+  `results/2026-11-24-p647-r240c-gemma128k/` (VERDICT + 8 cells),
+  `results/REDACTION-2026-11-24-r240a.md`; legs
+  `tools/ar/r240_reports_cert28.sh`, `tools/ar/r240b_conc_cert28.sh`,
+  `tools/ar/r240c_gemma128k_cert28.sh`, pull `tools/ar/r240_pull.sh`,
+  fill `tools/ar/r240_fill_verdicts.py`, reports
+  `tools/ar/p139/p139_report.py`.
+
 ## r240-docs6 — gemma agg8 revalidation: harness-numerator artifact corrected (2026-11-25)
 
 - **Revalidation request**: the gemma L1 agg8 row ("48.5 / 59.2 /

@@ -1,0 +1,20 @@
+{
+ "tag": "gkv_m4x_probe_b131000",
+ "budget": 131000,
+ "max_tokens": 600,
+ "client_len": 130898,
+ "status": -1,
+ "elapsed_s": 0.04,
+ "body": "URLError: <urlopen error [Errno 111] Connection refused>"
+}
+PROBE_OK_gkv_m4x_probe_b131000
+{
+ "tag": "gkv_m4x_probe_b130300",
+ "budget": 130300,
+ "max_tokens": 600,
+ "client_len": 130184,
+ "status": -1,
+ "elapsed_s": 0.04,
+ "body": "URLError: <urlopen error [Errno 111] Connection refused>"
+}
+PROBE_OK_gkv_m4x_probe_b130300

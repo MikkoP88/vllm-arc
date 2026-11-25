@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-"""p139_report.py -- P6.37B/P6.39 report generator v3 (local, post-pull).
+"""p139_report.py -- P6.37B/P6.39/P6.47 report generator v3 (local, post-pull).
 
-Reads the r138 bank (solo ctx sweeps + temperature sweeps + KV-dtype cells)
-AND the r139 bank (concurrency sweeps {1,2,3,4,8} per context, TurboQuant
-conc cells, gemma KV-dtype cells) plus the r140 gemma-128K annex bank and
+Reads the r240 bank (solo ctx sweeps + temperature sweeps + KV-dtype cells)
+AND the r240b bank (concurrency sweeps {1,2,3,4,8} per context, TurboQuant
+conc cells, gemma KV-dtype cells, MX KV conc cells) plus the r240c
+gemma-128K annex bank and
 regenerates the full docs/reports/ tree in the world-class format (per the
 millstoneai inference-benchmark layout):
 
@@ -31,8 +32,11 @@ Derived metrics (client-side, concurrency aware):
                   prefill-share under the barrier burst)
   scaling eff(n) = agg(n) / (n * agg(1))
 
-Usage: p139_report.py <bank138> <bank139> [bank140] <docs_out> [date]
-       (bank140 optional: the r140 gemma-128K annex bank)
+Usage: p139_report.py <bank_solo(r240)> <bank_conc(r240b)> [bank_annex(r240c)]
+       <docs_out> [date]
+       (bank_annex optional: the gemma-128K annex bank; the r240 banks
+       re-ran the P6.37/P6.39 battery on cert28 -- same cell names, same
+       protocols, plus the three MX KV cells kvm4/kvm8/kvmk)
 """
 import glob
 import json
@@ -59,9 +63,12 @@ GM = ("ARC_MODEL=/models/gemma4-31b ARC_SERVED=gemma4-31b ARC_GMU=0.8 "
       "ARC_GRAPH=1 ARC_SPEC=0 ARC_LMC=0 ARC_RPC=1200 ARC_MAXLEN=40960 ARC_FP8=0")
 GM128 = ("ARC_MODEL=/models/gemma4-31b ARC_SERVED=gemma4-31b ARC_GMU=0.8 "
          "ARC_GRAPH=1 ARC_SPEC=0 ARC_LMC=0 ARC_RPC=1200 ARC_MAXLEN=131072 ARC_FP8=0")
+GM64 = ("ARC_MODEL=/models/gemma4-31b ARC_SERVED=gemma4-31b ARC_GMU=0.8 "
+        "ARC_GRAPH=1 ARC_SPEC=0 ARC_LMC=0 ARC_RPC=1200 ARC_MAXLEN=65536 ARC_FP8=0")
 
 # cell -> report identity. env = the exact words the gate passed (parity
-# with tools/ar/r139_conc.sh / r140_gemma128k.sh; the banked posture.txt
+# with tools/ar/r240_reports_cert28.sh / r240b_conc_cert28.sh /
+# r240c_gemma128k_cert28.sh; the banked posture.txt
 # echo is the runtime evidence for each). kvdt = --kv-cache-dtype.
 CONFIGS = [
     dict(cell="qf3", slug="qwen3.8-27b-fp8-k3", model="Qwen3.8-27B", org="Qwen (Alibaba)",
@@ -93,7 +100,13 @@ CONFIGS = [
     dict(cell="gf8", slug="gemma-4-31b-fp8", model="Gemma-4-31B", org="Google",
          quant="FP8 (online, bf16 base checkpoint)", plan="gemma", mtp="no MTP",
          env=GM + " ARC_QUANT=fp8", kvdt="fp8_e4m3", ctxs=GCTX, temps=False,
-         blurb="the gemma online-FP8 capability lane"),
+         blurb="the gemma online-FP8 capability lane",
+         annex=dict(cell="gf8x64", ctxs=[65536],
+                    env=GM64 + " ARC_QUANT=fp8",
+                    blurb="the 64K closure boot — one 64K session fits "
+                          "the fp8-class pool, so the ladder's 64K rung "
+                          "is a measurement; 128K is the 8-bit refusal "
+                          "class only 4-bit weight budgets clear")),
     dict(cell="gm8", slug="gemma-4-31b-mxfp8", model="Gemma-4-31B", org="Google",
          quant="MXFP8 (online, bf16 base checkpoint)", plan="gemma", mtp="no MTP",
          env=GM + " ARC_QUANT=mxfp8", kvdt="fp8_e4m3", ctxs=GCTX, temps=False,
@@ -101,7 +114,12 @@ CONFIGS = [
          control=dict(cell="gm8x", ctxs=GCTX128,
                       env=GM128 + " ARC_QUANT=mxfp8",
                       blurb="the 128K-maxlen control (8-bit weights: the KV "
-                            "headroom question)")),
+                            "headroom question)"),
+         annex=dict(cell="gm8x64", ctxs=[65536],
+                    env=GM64 + " ARC_QUANT=mxfp8",
+                    blurb="the 64K closure boot — 8-bit weights serve "
+                          "the 64K rung; the 128K posture is the refusal "
+                          "the control below banks")),
     dict(cell="gm4", slug="gemma-4-31b-mxfp4", model="Gemma-4-31B", org="Google",
          quant="MXFP4 W4A16 (online, bf16 base checkpoint)", plan="gemma", mtp="no MTP",
          env=GM + " ARC_QUANT=mxfp4 ARC_MXFP4_MODE=w4a16", kvdt="fp8_e4m3", ctxs=GCTX,
@@ -126,19 +144,62 @@ TQ_PRESETS = [
 ]
 
 # r138 KV-dtype cells (qwen); kve5m2/kvauto are refusal banks.
+# The three MX rows (r240): the P6.47 lane, certified native since cert27
+# (ARC_KVDTYPE=mxfp4/mxfp8/mxk8v4 + ARC_MXKV_NATIVE=1; LMC auto-off).
 KVDTS_Q = [("fp8_e4m3", "qf3", "the certified incumbent"),
            ("auto", "kvauto131",
             "fp16 KV (2 bytes/elem); refuses at max_model_len 262144 "
             "(8.73 > 6.78 GiB), measured at 131072"),
            ("fp8", "kvfp8", ""),
            ("fp8_e5m2", "kve5m2",
-            "refuses to boot - FA2 has no e5m2 KV path on Xe2")]
-# r139 gemma KV-dtype cells.
-KVDTS_G = [("fp8_e4m3", "gm8", "the certified gemma incumbent"),
+            "refuses to boot - FA2 has no e5m2 KV path on Xe2"),
+           ("mxfp4", "kvm4",
+            "MX KV: e2m1 data + E8M0 group scales; native decode, LMC off; "
+            "r240b: engine death at c32768_n4 (sustained 32K x n>=4 decode) "
+            "-- every later face banks as a connection-refused artifact"),
+           ("mxfp8", "kvm8",
+            "MX KV: e4m3 data + E8M0 group scales; native decode, LMC off; "
+            "r240b: the only packed lane to survive the full 5-ctx grid"),
+           ("mxk8v4", "kvmk",
+            "mixed MX KV: e4m3 K + e2m1 V; native decode, LMC off; "
+            "r240b: engine death at c32768_n4 (UR_RESULT_ERROR_DEVICE_LOST) "
+            "-- every later face banks as a connection-refused artifact")]
+# cells whose kv rows + chart bars read the r139-style conc bank (n1/n8
+# faces + posture pool) instead of the r138 solo-face bank.
+KV139_CELLS = {"qf3", "kvm4", "kvm8", "kvmk"}
+# r139/r240b gemma KV-dtype cells. OWNER DIRECTIVE 2026-11-24: the MX KV
+# lanes cover BOTH models -- the gemma rows ride the r240b gkv_m* cells
+# (online-fp8 weights, matching the gkv_auto family, so the gemma KV
+# table is weights-constant; ctrl = gf8, the online-fp8 + fp8_e4m3 cell
+# that also runs the full gemma conc ladder).
+KVDTS_G = [("fp8_e4m3", "gf8",
+            "the gemma incumbent: online-fp8 weights + fp8_e4m3 KV "
+            "(r240b gf8 cell, full conc ladder)"),
            ("auto", "gkv_auto16",
             "fp16 KV; refuses at max_model_len 40960 (the certified gemma "
             "posture), servable at 16384"),
+           ("mxfp4", "gkv_m4",
+            "MX KV on gemma: e2m1 data + E8M0 scales; boots + banks the "
+            "pool, but every decode face fatals on the hd512 layers "
+            "(D=128/256 instantiations only) -- zero served faces (r240b)"),
+           ("mxfp8", "gkv_m8",
+            "MX KV on gemma: e4m3 data + E8M0 scales; boots + banks the "
+            "pool, but every decode face fatals on the hd512 layers "
+            "(D=128/256 instantiations only) -- zero served faces (r240b)"),
+           ("mxk8v4", "gkv_mk",
+            "mixed MX KV on gemma: e4m3 K + e2m1 V; boots + banks the "
+            "pool, but every decode face fatals on the hd512 layers "
+            "(D=128/256 instantiations only) -- zero served faces (r240b)"),
+           ("fp8_e5m2", "gkv_e5m2",
+            "refusal probe: the e5m2 law is engine-level (no e5m2 KV "
+            "dequant path in esimd FA2 on Xe2, banked on qwen kve5m2)"),
            ]
+# gemma cells whose kv rows + charts read the conc bank (n-ladder faces
+# + posture pool) -- gf8 runs the full gemma ladder, gkv_* the kvface
+# grid. A gkv_m* face that never served renders '-' (the cell dir banks
+# the face artifacts + outcome; the D=512 decode refusal killed every
+# MX face -- see the gkv note strings).
+KV139_G_CELLS = {"gf8", "gkv_auto16", "gkv_m4", "gkv_m8", "gkv_mk"}
 
 # banked pool facts where the cell has no parsed posture pool (P6.37 G
 # close-out analysis, results/2026-11-10-p637-reports/kvauto131 etc.)
@@ -257,6 +318,19 @@ def conc_concs(banks, cell, ctx, temp="0.0"):
     return sorted(out)
 
 
+def conc_face_count(banks, cell, ctx):
+    """All banked conc face JSONs for (cell, ctx) — every temperature
+    (the t0.0 grid plus the t1.0 solos). The refusal censuses report
+    this count, not the t0.0-only rung count."""
+    n = 0
+    for b in banks:
+        if b.ok:
+            n += len(glob.glob(os.path.join(
+                b.path or "\\\\", cell,
+                "p139_conc_{}_c{}_n*.json".format(cell, ctx))))
+    return n
+
+
 def itl_agg(d):
     """Aggregate per-request ITL percentiles: p50 = median of the
     per-request p50s, p90/p99 = max (worst user) - conservative."""
@@ -310,7 +384,19 @@ def pool_of(banks, cell):
                 if line.startswith("kv_pool_tokens="):
                     v = int(line.split("=", 1)[1].strip())
                     if v > 0:
-                        return v, "r139 posture"
+                        # source label from the supplying bank's dir name
+                        # (2026-11-24-p647-r240b-conc -> r240b; the
+                        # legacy p637* banks keep their r138/r139 labels)
+                        src = os.path.basename(b.path or "")
+                        for pat in ("-reports", "-conc", "-gemma128k"):
+                            src = src.replace(pat, "")
+                        seg = src.split("-")
+                        seg = seg[3:] if len(seg) > 3 else seg
+                        if seg and seg[0] == "p647":
+                            seg = seg[1:]
+                        src = "-".join(seg) or "banked"
+                        src = {"p637b": "r139", "p637": "r138"}.get(src, src)
+                        return v, "{} posture".format(src)
                 if "POOL_PARSE_FAIL" in line or "BOOT_FAIL" in line:
                     break
     if cell in POOL_FACTS:
@@ -1050,8 +1136,8 @@ def config_block(cfg, date):
     lines = []
     lines.append("### Validated invocation (what the gate ran, byte-exact)\n")
     lines.append("```bash")
-    lines.append("# image vllm-arc:v0.30.0-b70-cert23 ; {} ; TP2 on 2x Arc Pro B70".format(date))
-    lines.append("ARC_IMAGE=vllm-arc:v0.30.0-b70-cert23 ARC_NAME=arc-b70 \\")
+    lines.append("# image vllm-arc:v0.30.0-b70-cert28 ; {} ; TP2 on 2x Arc Pro B70".format(date))
+    lines.append("ARC_IMAGE=vllm-arc:v0.30.0-b70-cert28 ARC_NAME=arc-b70 \\")
     lines.append(("  {}{} \\".format(kv_flag, env)).replace("  \\ ", " \\")
                  if kv_flag else "  {} \\".format(env))
     lines.append("  bash serve_arc_b70.sh     # tools/serve_arc_b70.sh in this repo")
@@ -1069,7 +1155,7 @@ def config_block(cfg, date):
     lines.append("  -v ./neo_cache:/root/.neo_cache -v ./triton_cache:/root/.triton_cache \\")
     lines.append("  -v ./inductor_cache:/root/.inductor_cache \\")
     lines.append("  -e VLLM_ALLOW_LONG_MAX_MODEL_LEN=1 -e VLLM_WORKER_MULTIPROC_METHOD=spawn \\")
-    lines.append("  --entrypoint /bin/bash vllm-arc:v0.30.0-b70-cert23 -c 'sleep infinity'")
+    lines.append("  --entrypoint /bin/bash vllm-arc:v0.30.0-b70-cert28 -c 'sleep infinity'")
     lines.append("")
     lines.append("# 2) engine layer (docker exec)  [serve_arc_b70.sh:327-375]")
     lines.append("export PYTHONHASHSEED=0 "
@@ -1189,8 +1275,11 @@ def _solo_fill_n1(series, faces, sfield):
         filled = [((c, faces[c][sfield]) if v is None and faces.get(c)
                    and faces[c].get(sfield) else (c, v)) for c, v in ps]
         have = {c for c, _ in filled}
+        # faces.get(c) truthy: missing cells load as None (load_face
+        # contract) -- a boot-failed cell must skip, not crash the regen.
         filled += [(c, faces[c][sfield]) for c in sorted(faces)
-                   if c not in have and faces[c].get(sfield)]
+                   if c not in have and faces.get(c)
+                   and faces[c].get(sfield)]
         out.append((lab, sorted(filled)))
     return out
 
@@ -1201,8 +1290,11 @@ def _solo_fill_edge(pts, faces, sfield):
     out = [((c, faces[c][sfield]) if v is None and faces.get(c)
             and faces[c].get(sfield) else (c, v)) for c, v in pts]
     have = {c for c, _ in out}
+    # faces.get(c) truthy: missing cells load as None (load_face
+    # contract) -- a boot-failed cell must skip, not crash the regen.
     out += [(c, faces[c][sfield]) for c in sorted(faces)
-            if c not in have and faces[c].get(sfield)]
+            if c not in have and faces.get(c)
+            and faces[c].get(sfield)]
     return sorted(out)
 
 
@@ -1282,7 +1374,11 @@ def per_config_report(banks, out, cfg, date):
     pool, pool_src = pool_of(banks, cell)
     good = {c: f for c, f in faces.items() if f}
     qshort = cfg["quant"].split(" (")[0]
-    has_annex = bool(cfg.get("annex"))   # 128K annex rendered inside this report
+    has_annex = bool(cfg.get("annex"))   # annex rendered inside this report
+    annex_k = "128K"
+    if has_annex and "ARC_MAXLEN=" in cfg["annex"].get("env", ""):
+        annex_k = "{}K".format(
+            int(cfg["annex"]["env"].split("ARC_MAXLEN=")[1].split()[0]) // 1024)
 
     has_data = bool(good or any(_conc_face_ok(d) for cd in conc.values()
                                 for d in cd.values()))
@@ -1297,7 +1393,7 @@ def per_config_report(banks, out, cfg, date):
         ["Precision", cfg["quant"]],
         ["Accelerators", "2x Intel Arc Pro B70 (BMG-G31, 32 GB each, 64 GB total), TP2"],
         ["Host RAM", "64 GB (close-out F posture: --shm-size 16g, 16 GB LMCache CPU tier)"],
-        ["Engine", "vLLM v0.30.0 — vllm-arc fork, image v0.30.0-b70-cert23, XPU graphs"],
+        ["Engine", "vLLM v0.30.0 — vllm-arc fork, image v0.30.0-b70-cert28, XPU graphs"],
         ["KV cache dtype", cfg.get("kvdt", "fp8_e4m3")],
         ["Speculative decoding", cfg["mtp"] + ", probabilistic drafting" if "k3" in cfg["mtp"] else "disabled"],
         ["Max model len", (cfg["env"].split("ARC_MAXLEN=")[1].split()[0]
@@ -1328,12 +1424,16 @@ def per_config_report(banks, out, cfg, date):
         L.append("## Executive summary")
         L.append("")
         if annex_ctxs:
+            axml = 131072
+            if ann and "ARC_MAXLEN=" in ann.get("env", ""):
+                axml = int(ann["env"].split("ARC_MAXLEN=")[1].split()[0])
             L.append("The {} points in the tables and charts below come from "
-                     "the **128K annex boot** — same image and quantization "
+                     "the **{}K annex boot** — same image and quantization "
                      "posture; the annex section quantifies both boots' "
                      "agreement at the shared contexts.".format(
                          ", ".join("{}K".format(c // 1024)
-                                   for c in sorted(annex_ctxs))))
+                                   for c in sorted(annex_ctxs)),
+                         axml // 1024))
             L.append("")
         L.append("Infrastructure decisions require real performance data. This "
                  "report measures user-facing performance — how many "
@@ -2156,8 +2256,8 @@ def per_config_report(banks, out, cfg, date):
             L.append(md_table(hdr, rows))
             L.append("")
             if mixed_src:
-                L.append("*Rows sourced from the r139/r140 concurrency-1 "
-                         "faces where no r138 solo face exists (same "
+                L.append("*Rows sourced from the r240b/r240c concurrency-1 "
+                         "faces where no r240 solo face exists (same "
                          "cold-prefill measurement).*")
                 L.append("")
         # concurrency tables
@@ -2208,9 +2308,16 @@ def per_config_report(banks, out, cfg, date):
             L.append("")
 
     # ------------------------------------------------ 128K annex (in-report)
+    # data-gated: an annex cell not banked in these banks (the old-bank
+    # oracle) renders nothing here -- its story then lives in the
+    # top-level control section below.
     ax = cfg.get("annex")
-    if ax:
+    ax_rendered = False
+    if ax and outcome(banks, ax["cell"]) != "MISSING":
         acell = ax["cell"]
+        axml = 131072
+        if "ARC_MAXLEN=" in ax.get("env", ""):
+            axml = int(ax["env"].split("ARC_MAXLEN=")[1].split()[0])
         actxs = conc_ctxs(b139, acell)
         aconc = {c: {n: load_conc(b139, acell, c, n)
                      for n in conc_concs(b139, acell, c)} for c in actxs}
@@ -2218,15 +2325,16 @@ def per_config_report(banks, out, cfg, date):
         aoc = outcome(banks, acell)
         aany = any(_conc_face_ok(d) for cd in aconc.values()
                    for d in cd.values())
-        L.append("## 128K annex — max_model_len 131072")
+        ax_rendered = True
+        L.append("## {}K annex — max_model_len {}".format(axml // 1024, axml))
         L.append("")
-        L.append("Raising the certified gemma maxlen (40960) to 131072 is a "
+        L.append("Raising the certified gemma maxlen (40960) to {} is a "
                  "KV-headroom question. {} — the boot below is its own cell "
                  "(`{}`, outcome `{}`). Its measurements are merged into the "
                  "tables and charts above (the executive summary notes the "
                  "provenance); the same-contexts table below quantifies both "
                  "boots' agreement, and the pools differ — this section "
-                 "holds the boot record.".format(ax["blurb"].capitalize()
+                 "holds the boot record.".format(axml, ax["blurb"].capitalize()
                                                  if ax["blurb"][0].islower()
                                                  else ax["blurb"], acell, aoc))
         L.append("")
@@ -2234,7 +2342,7 @@ def per_config_report(banks, out, cfg, date):
         if ctrl:
             coc = outcome(banks, ctrl)
             cpool, _cs = pool_of(banks, ctrl)
-            L.append("The 8-bit control (`{}`) ran the same 128K posture at "
+            L.append("The 8-bit control (`{}`) ran the 128K posture at "
                      "8-bit weights and refused{} — the refusal is banked "
                      "with its serve log and is the capacity boundary "
                      "itself; only the 4-bit weight budget buys the "
@@ -2402,7 +2510,7 @@ def per_config_report(banks, out, cfg, date):
                  "decoded text ~1.026x. The annex faces size the server-side "
                  "prompt budget as ctx - max_tokens - 64 (`p139_conc.py` v2, "
                  "verify-and-trim); the boundary probes are banked in the "
-                 "r140 bank (`p140_probe_gm4x_probe_b131000.json` = the "
+                 "r240c bank (`p140_probe_gm4x_probe_b131000.json` = the "
                  "server stating the rule verbatim).")
         L.append("")
         L.append("### Annex invocation (byte-exact)")
@@ -2413,7 +2521,7 @@ def per_config_report(banks, out, cfg, date):
 
     # ------------------------------------------------ 128K control (refused)
     ctl = cfg.get("control")
-    if ctl and not ax:                     # the annex renders its own control
+    if ctl and not ax_rendered:            # the annex renders its own control
         coc = outcome(banks, ctl["cell"])
         cpool, _cs = pool_of(banks, ctl["cell"])
         if "OK" in coc:
@@ -2422,7 +2530,7 @@ def per_config_report(banks, out, cfg, date):
         else:
             body = ("outcome `{}` — 8-bit weights leave no KV headroom for "
                     "a full 128K session; the refusal is the capacity "
-                    "boundary itself, banked with its serve log in the r140 "
+                    "boundary itself, banked with its serve log in the r240c "
                     "bank".format(coc))
         L.append("## 128K control — {}".format(
             "measured" if "OK" in coc else "refused"))
@@ -2450,8 +2558,9 @@ def per_config_report(banks, out, cfg, date):
     # ------------------------------------------------ test parameters
     L.append("## Test parameters")
     L.append("")
-    L.append("- Context lengths: {} tokens (prompt + template). Solo faces: "
-             "concurrency 1, 600 output tokens, `ignore_eos`.".format(", ".join(f"{c // 1024}K" for c in cfg["ctxs"])))
+    L.append("- Context lengths: {} tokens (prompt + template) — the "
+             "full ladder this report covers, annex rungs included. Solo "
+             "faces: concurrency 1, 600 output tokens, `ignore_eos`.".format(", ".join(f"{c // 1024}K" for c in fctxs)))
     if conc:
         L.append("- Concurrency sweeps: {} at contexts {} — barrier-started "
                  "simultaneous requests, 600 output tokens each, temperature "
@@ -2473,23 +2582,23 @@ def per_config_report(banks, out, cfg, date):
     L.append("- Per-user speed = output tokens / decode window (spec-decode "
              "aware; with MTP one stream chunk carries multiple accepted "
              "tokens). Aggregate = n x 600 tokens / wall clock.")
-    L.append("- The r139 1K t0.0 face runs first after the boot warmup at a "
+    L.append("- The r240b 1K t0.0 face runs first after the boot warmup at a "
              "cold spec-verify batch shape — its acceptance (2.8 tok/step) "
              "sits below the family norm (3.8 at 8K); the 8K/32K faces are "
              "the steady reference. Temperature comparisons are within-harness "
-             "(r138 sweep vs r139 faces, both reported).")
+             "(r240 sweep vs r240b faces, both reported).")
     L.append("- Prefill rate is the client-observed ctx/TTFT; the engine-side "
              "device rate (P6.36 decomposition) is ~2.1–2.9k tok/s at fp8 — "
              "the client view includes chunk drain and the decode-transition "
              "tail.")
     L.append("- Metric definitions, UX bands, use-case thresholds and the "
              "honest-limits statement: [METHODOLOGY.md](METHODOLOGY.md).")
-    L.append("- Banks: `results/2026-11-10-p637-reports/` (solo + temperature "
-             "faces, r138) and `results/2026-11-11-p637b-conc/` (concurrency "
-             "faces, r139){}; tools `tools/ar/p138/p138_face.py`, "
+    L.append("- Banks: `results/2026-11-24-p647-r240-reports/` (solo + temperature "
+             "faces, r240) and `results/2026-11-24-p647-r240b-conc/` (concurrency "
+             "faces, r240b){}; tools `tools/ar/p138/p138_face.py`, "
              "`tools/ar/p139/p139_conc.py`.".format(
-                 " and `results/2026-11-11-r140-gemma128k/` (128K annex)"
-                 if has_annex else ""))
+                 " and `results/2026-11-24-p647-r240c-gemma128k/` ({} annex)"
+                 .format(annex_k) if has_annex else ""))
     L = drop_missing_imgs(L, out)
     with open(os.path.join(out, slug + ".md"), "w", encoding="utf-8", newline="\n") as f:
         f.write("\n".join(L) + "\n")
@@ -2533,6 +2642,95 @@ def _kv_solo_rows(banks, entries, ctxs, src139):
     return rows
 
 
+# The MX KV lanes on each model (owner directive 2026-11-24: MX KV
+# coverage on BOTH models, concurrency {1,2,4,8}).
+MX_Q_CELLS = [("mxfp4", "kvm4"), ("mxfp8", "kvm8"), ("mxk8v4", "kvmk")]
+MX_G_CELLS = [("mxfp4", "gkv_m4"), ("mxfp8", "gkv_m8"), ("mxk8v4", "gkv_mk")]
+
+
+def _mx_conc_lines(b139, lanes, ctxs, model, refusal_note=""):
+    """Per-lane concurrency tables for the MX KV lanes: every banked n
+    (the r240b grid = {1,2,4,8} + t1.0 solos) per lane per ctx. A
+    (lane, ctx) pair whose banked faces ALL carry zero served requests
+    (connection-refused artifacts from a decode-refusal or an earlier
+    engine death) renders into one refusal-summary table instead of an
+    all-dash concurrency table; the per-n tables below carry only pairs
+    with at least one real face. Returns the line list."""
+    lines, refused = [], []
+    for lab, cell in lanes:
+        for cv in ctxs:
+            ns = conc_concs(b139, cell, cv)
+            if not ns:
+                continue
+            faces = [load_conc(b139, cell, cv, n) for n in ns]
+            if not any(_conc_face_ok(d) for d in faces):
+                refused.append((lab, cv, conc_face_count(b139, cell, cv)))
+                continue
+            base = load_conc(b139, cell, cv, 1)
+            base_agg = base["agg_tps_wall"] if _conc_face_ok(base) else None
+            rows = []
+            for n, d in zip(ns, faces):
+                if not _conc_face_ok(d):
+                    rows.append([n, "-", "-"] + ["-"] * 5)
+                    continue
+                ia = itl_agg(d) or {}
+                rows.append([n, ttft_fmt(d["ttft_mean_s"]), ttft_fmt(d["ttft_max_s"]),
+                             "{:.1f}".format(d["per_user_mean_tps"]),
+                             "{:.1f}".format(d["per_user_min_tps"]),
+                             "{:.0f}".format(d["agg_tps_wall"]),
+                             ("%.0f%%" % (100 * d["agg_tps_wall"] / (n * base_agg))
+                              if base_agg else "-"),
+                             "{:.1f}".format(ia.get("p90", float("nan")))])
+            lines.append("### `{}` — {} — {}K context".format(lab, model, cv // 1024))
+            lines.append("")
+            lines.append(md_table(["Conc", "TTFT mean (s)", "TTFT max (s)",
+                                   "Per-user mean", "Per-user worst", "Aggregate (tok/s)",
+                                   "Scaling eff.", "ITL p90 max (ms)"], rows))
+            lines.append("")
+    if refused:
+        lines.append("### Lane/ctx pairs with banked faces but zero served "
+                     "requests")
+        lines.append("")
+        short = (refusal_note.split(":")[0] if refusal_note
+                 else "banked, zero served")
+        lines.append(md_table(["Lane", "Context (K)", "Banked faces",
+                               "Outcome"],
+                               [[lab, cv // 1024, n, short]
+                                for lab, cv, n in refused]))
+        lines.append("")
+        if refusal_note:
+            lines.append("Outcome detail: {}.".format(
+                refusal_note[0].lower() + refusal_note[1:]
+                if refusal_note[0].isupper() else refusal_note))
+            lines.append("")
+    return lines
+
+
+def _mx_conc_charts(b139, lanes, ctxs, ch, model, fname, L):
+    """Aggregate-vs-concurrency bars per ctx: groups = the conc rungs,
+    one series per MX lane (the {1,2,4,8} ladder as a picture)."""
+    for cv in ctxs:
+        groups, values = [], []
+        for n in (1, 2, 4, 8):
+            row = []
+            for _lab, cell in lanes:
+                d = load_conc(b139, cell, cv, n)
+                row.append(d["agg_tps_wall"] if _conc_face_ok(d) else None)
+            groups.append("c{}".format(n))
+            values.append(row)
+        nm = "{}_{:d}k".format(fname, cv // 1024)
+        bars(os.path.join(ch, nm + ".svg"),
+             "MX KV aggregate vs concurrency — {} {}K (t0)".format(model, cv // 1024),
+             groups, [lab for lab, _c in lanes], values,
+             "Aggregate (tok/s)", yfmt="{:.0f}")
+        if os.path.isfile(os.path.join(ch, nm + ".svg")):
+            L.append(img(nm, "MX KV aggregate vs concurrency — {} — {}K ctx "
+                             "(a missing bar is a banked refusal, KV_CAP "
+                             "point, or banked engine-death face — never "
+                             "unmeasured coverage)".format(model, cv // 1024)))
+            L.append("")
+
+
 def kv_report(banks, out, date):
     b138, b139 = banks[0], banks[1:]
     ch = os.path.join(out, "charts")
@@ -2546,12 +2744,17 @@ def kv_report(banks, out, date):
                         "Gemma-4-31B (certified posture, no MTP)"],
              ["Knob", "`ARC_KVDTYPE` in `tools/serve_arc_b70.sh` (default `fp8_e4m3`) "
                       "→ `--kv-cache-dtype`"],
-             ["Menu", "fp8_e4m3 · fp8 · auto (fp16 KV) · turboquant_k8v4 · "
+             ["Menu", "fp8_e4m3 · fp8 · auto (fp16 KV) · mxfp4 · mxfp8 · "
+                      "mxk8v4 (MX KV, native) · turboquant_k8v4 · "
                       "turboquant_4bit_nc · turboquant_k3v4_nc · turboquant_3bit_nc "
-                      "(qwen); fp8_e4m3 · auto (gemma, maxlen-capped)"],
-             ["Faces", "r139: conc {1,2,3,4,8} at 1K/8K/32K per dtype; "
-                       "r138: solo faces for fp8/auto/fp8/e5m2"],
-             ["Engine", "vLLM v0.30.0 — vllm-arc v0.30.0-b70-cert23, TP2"],
+                      "(qwen); fp8_e4m3 · auto · mxfp4 · mxfp8 · mxk8v4 · "
+                      "fp8_e5m2-probe (gemma)"],
+             ["Faces", "r240b: conc {1,2,3,4,8} at 1K/8K/32K per dtype "
+                       "(MX lanes, BOTH models: the {1,2,4,8} grid at "
+                       "every rung 1K/8K/32K/64K/128K + t1.0 solos); "
+                       "r240: solo faces for fp8/auto/fp8/"
+                       "e5m2 + the MX lanes (qwen)"],
+             ["Engine", "vLLM v0.30.0 — vllm-arc v0.30.0-b70-cert28, TP2"],
              ["Date", date]]),
          "",
          "A dtype that refuses to boot is a valid outcome and is banked as "
@@ -2573,9 +2776,19 @@ def kv_report(banks, out, date):
           "FlashAttention does not support fp8_e5m2 kv-cache on this device` "
           "(cell `kve5m2`) — the esimd FA2 backend ships no e5m2 KV dequant "
           "path on Xe2.",
+          "",
+          "The three `mxfp4`/`mxfp8`/`mxk8v4` rows are the P6.47 MX KV "
+          "lane, native-certified on this image (`ARC_MXKV_NATIVE=1`; the "
+          "MX postures auto-off LMC by the e2m1-V law): microscaling KV "
+          "with E8M0 group scales, decoded by the native `mx_paged_decode` "
+          "path. They trade a slice of decode speed for KV-token capacity "
+          "per byte — the capacity table below carries the measured pools. "
+          "Full lane documentation: "
+          "`docs/PATCHES-arc.md` (the mx_kv family), the P6.47 record in "
+          "`docs/PERFORMANCE-arc.md`.",
           ""]
     rows = _kv_solo_rows(banks, KVDTS_Q, (8192, 32768),
-                         lambda c: c in ("qf3",))
+                         lambda c: c in KV139_CELLS)
     L.append(md_table(["--kv-cache-dtype", "Context", "TTFT solo (s)",
                        "Decode solo (tok/s)", "Agg @ c8 (tok/s)",
                        "Per-user @ c8 (tok/s)", "ITL p50 (ms)", "KV pool (tok)",
@@ -2583,10 +2796,10 @@ def kv_report(banks, out, date):
     L.append("")
 
     # ------------------------------------------------------------ turboquant
-    L += ["## TurboQuant presets (Qwen3.8-27B FP8 + MTP k3, r139 concurrency sweeps)",
+    L += ["## TurboQuant presets (Qwen3.8-27B FP8 + MTP k3, r240b concurrency sweeps)",
           "",
           "The wheel's four TurboQuant KV dtypes serve via the same knob; the "
-          "r139 gate ran the full conc {1,2,3,4,8} sweep per preset (fresh "
+          "r240b gate ran the full conc {1,2,3,4,8} sweep per preset (fresh "
           "boot per cell, `VLLM_ARC_TQ_SPEC_FIX=1` default posture):",
           ""]
     tq_rows = []
@@ -2637,6 +2850,34 @@ def kv_report(banks, out, date):
                                "Scaling eff.", "ITL p90 max (ms)"], rows))
             L.append("")
 
+    # ------------------------------------------------- MX KV conc sweep (qwen)
+    # owner directive 2026-11-24: the MX lanes carry concurrency
+    # {1,2,4,8} at EVERY context step (1K/8K/32K/64K/128K) — per-lane
+    # tables, not just the c8 summary columns. KV_CAP points bank as
+    # rows (a "-" is a capacity cliff or a banked engine-death face,
+    # never a gap).
+    mx_lines = _mx_conc_lines(
+        b139, MX_Q_CELLS, (1024, 8192, 32768, 65536, 131072), "qwen fp8 k3",
+        "engine death mid-sweep (r240b): the packed lanes died at "
+        "c32768_n4 -- mxfp4 at the 300 s watchdog (worker silent-hang, "
+        "EngineDeadError), mxk8v4 with UR_RESULT_ERROR_DEVICE_LOST -- "
+        "so every later face of the lane banks as a connection-refused "
+        "artifact; mxfp8 (kvm8) alone survived the full 5-ctx grid")
+    if mx_lines:
+        L += ["## MX KV lanes — concurrency sweep (Qwen3.8-27B FP8 + MTP k3, r240b)",
+              "",
+              "Every MX lane swept at concurrency {1,2,4,8} at every "
+              "context step of the canonical ladder — 1K/8K/32K/64K/128K "
+              "(fresh boot per lane; one boot serves its whole grid). "
+              "Outcome: mxfp8 completes the full grid; mxfp4 and "
+              "mxk8v4 died at the sustained 32K × n4 decode face "
+              "(r240b engine-stability boundary — a `-` rung or a "
+              "refusal-summary row below is a banked KV_CAP point or "
+              "banked engine-death face, never unmeasured coverage; "
+              "the 1K/8K grids and the 32K n1/n2 rungs are real "
+              "measurements on both lanes):",
+              ""] + mx_lines
+
     # ------------------------------------------------------------ gemma
     L += ["## Gemma-4-31B (no MTP)",
           "",
@@ -2644,10 +2885,26 @@ def kv_report(banks, out, date):
           "the fp16 KV pool cannot cover one 40K session on the 31B geometry "
           "— cell `gkv_auto` banks the refusal); it serves at "
           "`ARC_MAXLEN=16384` (cell `gkv_auto16`). The incumbent "
-          "fp8_e4m3 rows are the r139 `gm8` cell.",
+          "fp8_e4m3 rows are the r240b `gf8` cell (online-fp8 weights — "
+          "the gemma KV table is weights-constant across its rows). The "
+          "three MX rows ride the r240b `gkv_m*` cells (same weights, "
+          "`ARC_KVDTYPE=mxfp4|mxfp8|mxk8v4` + `ARC_MXKV_NATIVE=1`) — "
+          "all three boot and bank their pools, but every decode face "
+          "fatals: gemma's 10 hd512 full-attention layers sit outside "
+          "the arc7 compiled instantiations (`mx_paged_decode` covers "
+          "head_size 128/256 only), so the native MX-KV menu does not "
+          "serve gemma on this image and those rows carry no "
+          "measurements (fp8_e4m3 is the only servable KV dtype for "
+          "gemma; the 128K capacity story rides the weights lane — the "
+          "`gm4x` cell). `gkv_e5m2` is the per-model e5m2 refusal probe "
+          "(the law is engine-level, banked on qwen `kve5m2`). A `-` "
+          "row is a banked boot refusal, KV_CAP point, or the banked "
+          "hd512 decode refusal, never unmeasured coverage. Full gemma "
+          "KV report: [gemma-4-31b-kv-cache-dtype]"
+          "(gemma-4-31b-kv-cache-dtype.md).",
           ""]
     g_rows = _kv_solo_rows(banks, KVDTS_G, (8192, 32768),
-                           lambda c: c in ("gm8", "gkv_auto16"))
+                           lambda c: c in KV139_G_CELLS)
     L.append(md_table(["--kv-cache-dtype", "Context", "TTFT solo (s)",
                        "Decode solo (tok/s)", "Agg @ c8 (tok/s)",
                        "Per-user @ c8 (tok/s)", "ITL p50 (ms)", "KV pool (tok)",
@@ -2656,7 +2913,7 @@ def kv_report(banks, out, date):
 
     # ------------------------------------------------------------ gemma 128K annex
     if annex_ok or annex_pool:
-        L += ["## Gemma 128K annex (r140): 131072 maxlen needs MXFP4 weights",
+        L += ["## Gemma 128K annex (r240c): 131072 maxlen needs MXFP4 weights",
               "",
               "The certified gemma posture caps `max_model_len` at 40960. "
               "Raising it to 131072 is a KV-headroom question: the annex "
@@ -2699,7 +2956,12 @@ def kv_report(banks, out, date):
     cap_rows = []
     entries = ([("fp8_e4m3", "qf3")] + [(tp["dtype"], tp["cell"]) for tp in TQ_PRESETS]
                + [("fp8", "kvfp8"), ("auto@131072", "kvauto131"),
-                  ("fp8_e4m3 (gemma)", "gm8"), ("auto@16384 (gemma)", "gkv_auto16")])
+                  ("mxfp4 (MX KV)", "kvm4"), ("mxfp8 (MX KV)", "kvm8"),
+                  ("mxk8v4 (MX KV)", "kvmk"),
+                  ("fp8_e4m3 (gemma)", "gf8"), ("auto@16384 (gemma)", "gkv_auto16"),
+                  ("mxfp4 MX KV (gemma)", "gkv_m4"),
+                  ("mxfp8 MX KV (gemma)", "gkv_m8"),
+                  ("mxk8v4 MX KV (gemma)", "gkv_mk")])
     if annex_pool:
         entries.append(("mxfp4@131072 (gemma)", "gm4x"))
     for dt, cell in entries:
@@ -2724,9 +2986,20 @@ def kv_report(banks, out, date):
     L += ["## Configuration (copyable deltas on the certified posture)",
           "",
           md_table(["dtype", "cell", "delta", "max_model_len"], [
-              ["fp8_e4m3", "qf3 / gm8", "(none — incumbent)", "262144 / 40960"],
+              ["fp8_e4m3", "qf3 / gf8", "(none — incumbent)", "262144 / 40960"],
               ["fp8", "kvfp8", "ARC_KVDTYPE=fp8", "262144"],
               ["auto", "kvauto131", "ARC_KVDTYPE=auto", "131072"],
+              ["mxfp4", "kvm4", "ARC_KVDTYPE=mxfp4 ARC_MXKV_NATIVE=1", "262144"],
+              ["mxfp8", "kvm8", "ARC_KVDTYPE=mxfp8 ARC_MXKV_NATIVE=1", "262144"],
+              ["mxk8v4", "kvmk", "ARC_KVDTYPE=mxk8v4 ARC_MXKV_NATIVE=1", "262144"],
+              ["mxfp4 (gemma)", "gkv_m4",
+               "ARC_QUANT=fp8 ARC_KVDTYPE=mxfp4 ARC_MXKV_NATIVE=1", "40960"],
+              ["mxfp8 (gemma)", "gkv_m8",
+               "ARC_QUANT=fp8 ARC_KVDTYPE=mxfp8 ARC_MXKV_NATIVE=1", "40960"],
+              ["mxk8v4 (gemma)", "gkv_mk",
+               "ARC_QUANT=fp8 ARC_KVDTYPE=mxk8v4 ARC_MXKV_NATIVE=1", "40960"],
+              ["fp8_e5m2 (gemma)", "gkv_e5m2",
+               "ARC_KVDTYPE=fp8_e5m2 — refusal probe", "40960"],
               ["auto", "kvauto", "ARC_KVDTYPE=auto — refuses", "262144"],
               ["auto (gemma)", "gkv_auto16", "ARC_KVDTYPE=auto ARC_MAXLEN=16384", "16384"],
               ["auto (gemma)", "gkv_auto", "ARC_KVDTYPE=auto — refuses at 40960", "40960"],
@@ -2754,7 +3027,7 @@ def kv_report(banks, out, date):
             row = []
             for cv in (8192, 32768):
                 v = None
-                if cell == "qf3":
+                if cell in KV139_CELLS:
                     d = load_conc(b139, cell, cv, 8 if agg else 1)
                     if _conc_face_ok(d):
                         v = d[met]
@@ -2772,9 +3045,13 @@ def kv_report(banks, out, date):
         L.append("*Interpretation:* speed is flat across the servable "
                  "dtypes — the KV dtype menu trades pool size, not "
                  "per-token speed; the capacity table above is the real "
-                 "axis. A missing bar is a banked refusal, not a gap in "
-                 "measurement.")
+                 "axis. A missing bar is a banked refusal (boot or "
+                 "engine-death), never unmeasured coverage.")
         L.append("")
+    # MX KV aggregate-vs-conc charts (the {1,2,4,8} ladder as a picture)
+    _mx_conc_charts(b139, MX_Q_CELLS,
+                    (1024, 8192, 32768, 65536, 131072), ch, "qwen fp8 k3",
+                    "mxq_agg", L)
     # pool bars
     groups, vals = [], []
     for dt, cell in entries:
@@ -2849,13 +3126,364 @@ def kv_report(banks, out, date):
                  "128K is the pool cliff reached later, not sooner.".format(
                      100 * max(tq_pairs)))
         L.append("")
-    L.append("Banks: r139 `results/2026-11-11-p637b-conc/` (conc cells + "
-             "posture pools), r138 `results/2026-11-10-p637-reports/` (solo "
+    L.append("Banks: r240b `results/2026-11-24-p647-r240b-conc/` (conc cells + "
+             "posture pools), r240 `results/2026-11-24-p647-r240-reports/` (solo "
              "dtype cells + refusals); knob: `ARC_KVDTYPE` in "
              "`tools/serve_arc_b70.sh`. Identity records per TQ preset: "
              "CONFIGURATION-arc \"KV-cache dtype\".")
     L = drop_missing_imgs(L, out)
     with open(os.path.join(out, "qwen3.8-27b-fp8-kv-cache-dtype.md"), "w",
+              encoding="utf-8", newline="\n") as f:
+        f.write("\n".join(L) + "\n")
+
+
+# --------------------------------------------------------- gemma kv dtype
+
+def gemma_kv_report(banks, out, date):
+    """The dedicated gemma-4-31B KV-cache dtype report (owner directive
+    2026-11-24: the MX KV lanes cover BOTH models, conc {1,2,4,8})."""
+    b138, b139 = banks[0], banks[1:]
+    ch = os.path.join(out, "charts")
+    L = ["# Gemma-4-31B — KV-cache dtype comparison",
+         "",
+         md_table(["Field", "Value"], [
+             ["Model", "Gemma-4-31B (60-layer two-head-size hybrid, "
+                       "no MTP head)"],
+             ["Posture", "online-fp8 weights — constant across every row "
+                         "of this report — TP2, maxlen 40960, LMC off, "
+                         "graphs on"],
+             ["Knob", "`ARC_KVDTYPE` in `tools/serve_arc_b70.sh` (default "
+                      "`fp8_e4m3`) → `--kv-cache-dtype`"],
+             ["Menu", "fp8_e4m3 · auto (fp16 KV, maxlen-capped) · mxfp4 · "
+                      "mxfp8 · mxk8v4 (MX KV, native) · fp8_e5m2 "
+                      "(refusal probe)"],
+             ["Faces", "r240b: the `gf8` ctrl full ladder {1,2,3,4,5,6,7,8} "
+                       "at 1K/8K/32K + t1.0 (14/14 served); the `gkv_m*` "
+                       "MX lanes banked the {1,2,4,8} grid + t1.0 solos "
+                       "but ZERO faces served (hd512 decode refusal "
+                       "below); r240c annex: `gm4x` (W4A16 weights + "
+                       "fp8 KV at maxlen 131072, 26/26 served) carries "
+                       "the 128K story, `gf8x64`/`gm8x64` close the "
+                       "64K rung (2/2 each), `gkv_m4x`/`gkv_mkx`/"
+                       "`gkv_m8x64` banked the native MX grids but "
+                       "zero faces served, and `gm8x`/`gkv_m8x131` "
+                       "bank the 8-bit 128K refusals"],
+             ["Engine", "vLLM v0.30.0 — vllm-arc v0.30.0-b70-cert28, TP2"],
+             ["Date", date]]),
+         "",
+         "The gemma-side answer to the question the qwen report asks "
+         "([qwen3.8-27b-fp8-kv-cache-dtype.md](qwen3.8-27b-fp8-"
+         "kv-cache-dtype.md)): what the KV-cache dtype menu buys on the "
+         "second model. Gemma's geometry sets the terms — no MTP head "
+         "(every row is spec-free k0 decode), maxlen 40960, and pools "
+         "roughly an order below qwen's, so high-ctx concurrency points "
+         "can bank as KV_CAP rows rather than measurements. **The "
+         "r240b/r240c outcome sets the headline: the native MX-KV menu "
+         "does not serve gemma on this image.** Every `gkv_m*` lane "
+         "boots and banks its pool, but the FIRST decode request "
+         "fatals — gemma's 10 hd512 full-attention layers sit outside "
+         "the arc7 compiled instantiations (`mx_paged_decode` covers "
+         "head_size 128/256 only), so all 85 banked `gkv_m*` faces "
+         "across r240b + r240c are connection-refused artifacts with "
+         "zero served requests. On gemma, `fp8_e4m3` is the only "
+         "servable KV dtype; the packed-capacity story rides the "
+         "weights lane instead (`gm4x`: W4A16 + fp8 KV serves the full "
+         "128K posture). A `-` cell is a banked boot refusal, capacity "
+         "cliff, or this banked decode refusal — never unmeasured "
+         "coverage.",
+         ""]
+    g_rows = _kv_solo_rows(banks, KVDTS_G, (8192, 32768),
+                           lambda c: c in KV139_G_CELLS)
+    L.append(md_table(["--kv-cache-dtype", "Context", "TTFT solo (s)",
+                       "Decode solo (tok/s)", "Agg @ c8 (tok/s)",
+                       "Per-user @ c8 (tok/s)", "ITL p50 (ms)", "KV pool (tok)",
+                       "Note"], g_rows))
+    L.append("")
+
+    # ------------------------------------------------- MX conc sweep (gemma)
+    # the three native MX lanes were ATTEMPTED at maxlen 40960
+    # (1K/8K/32K, conc {1,2,4,8}) -- zero faces served (the hd512
+    # decode refusal); _mx_conc_lines collapses them into the refusal
+    # summary. The 64K/128K steps live in the annex section below.
+    mx_lines = _mx_conc_lines(
+        b139, MX_G_CELLS, (1024, 8192, 32768), "gemma online-fp8",
+        "first-decode engine refusal (r240b): the engine fatals on "
+        "gemma's hd512 full-attention layers the instant the first "
+        "decode request reaches the native MX path (head_size 512 "
+        "outside the compiled D=128/256 instantiations) -- every face "
+        "of this lane banks as a connection-refused artifact")
+    if mx_lines:
+        L += ["## MX KV lanes — the attempted sweep (r240b, grid {1,2,4,8})",
+              "",
+              "All three native MX lanes were attempted at maxlen 40960 "
+              "(grid {1,2,4,8} at 1K/8K/32K + t1.0 solos). Zero faces "
+              "served — every banked face is the same first-decode "
+              "engine refusal, so the sweep collapses into the "
+              "refusal-summary table below rather than all-dash "
+              "concurrency tables. The pools these lanes banked at "
+              "boot remain real capacity facts (the capacity table "
+              "below) — the lane is refused at decode, not at boot.",
+              ""] + mx_lines
+
+    # ------------------------------------------------------------ auto cliff
+    L += ["## The `auto` (fp16 KV) boundary",
+          "",
+          "At the certified gemma posture (maxlen 40960) fp16 KV cannot "
+          "cover one full 40K session — cell `gkv_auto` banks the boot "
+          "refusal; `ARC_MAXLEN=16384` buys a servable pool (cell "
+          "`gkv_auto16`). The MX rows above run at the full certified "
+          "maxlen 40960 — their packed KV buys per-byte capacity instead "
+          "(the pools in the capacity table below).",
+          ""]
+
+    # ------------------------------------------------------------ 128K annex
+    # the 64K/128K steps of the packed-capacity ladder run in the r240c
+    # annex (maxlen 131072). INTENDED: native MX KV buys the boot fp8 KV
+    # cannot make. OUTCOME (r240c): the native gkv_m4x/gkv_mkx lanes
+    # boot at 131072 with fp8-beating pools but fatal at the first
+    # decode request (the same hd512 refusal) -- zero served faces; the
+    # 128K gemma capacity record is carried by the WEIGHTS lane
+    # (gm4x: W4A16 + fp8 KV, 26/26 faces served, the mxfp4 report).
+    L += ["## The 128K annex — what actually buys the capacity fp8 cannot",
+          "",
+          "The r240b gemma cells above run at the certified maxlen 40960. "
+          "The 64K/128K steps of the ladder need maxlen 131072, where "
+          "fp8 KV no longer boots on this engine (r239: one 40K session "
+          "needs 5.83 GiB against a 5.64 GiB pool — est. max 120704 "
+          "tokens). The native packed-KV lanes boot at the full 131072 "
+          "(mxfp4-KV pool 238,497 tokens, mxk8v4-KV 162,180) — but both "
+          "then fatal on the same hd512 first-decode refusal as their "
+          "r240b counterparts, so every `gkv_m4x`/`gkv_mkx` face banked "
+          "with zero served requests (the all-dash rows below). The "
+          "128K capacity story that SERVES rides the weights lane: "
+          "**`gm4x` — MXFP4 W4A16 weights + fp8_e4m3 KV at maxlen "
+          "131072, pool 288,972 tokens — boots and serves the full "
+          "128K posture (26/26 faces: 28.3 tok/s single-stream decode "
+          "@ c131072, TTFT 175.6 s; 40.1 tok/s @ 1K)**: "
+          "[gemma-4-31b-mxfp4.md](gemma-4-31b-mxfp4.md).",
+          ""]
+    ax_rows = []
+    for lab, cell in [("mxfp4 (gkv_m4x)", "gkv_m4x"),
+                      ("mxk8v4 (gkv_mkx)", "gkv_mkx")]:
+        for cv in (1024, 8192, 32768, 65536, 131072):
+            d = load_conc(b139, cell, cv, 1)
+            if not _conc_face_ok(d):
+                ax_rows.append([lab, cv // 1024] + ["-"] * 5)
+                continue
+            ia = itl_agg(d) or {}
+            ns = conc_concs(b139, cell, cv)
+            agg_max = "-"
+            if ns:
+                dm = load_conc(b139, cell, cv, max(ns))
+                if _conc_face_ok(dm):
+                    agg_max = "{:.0f}".format(dm["agg_tps_wall"])
+            ax_rows.append([lab, cv // 1024,
+                            ttft_fmt(d["ttft_mean_s"]),
+                            "{:.1f}".format(d["per_user_mean_tps"]),
+                            "{:.1f}".format(ia.get("p50", float("nan"))),
+                            "n{}".format(max(ns)) if ns else "-",
+                            agg_max])
+    L.append(md_table(["Lane", "Context (K)", "TTFT n1 (s)",
+                       "Decode n1 (tok/s)", "ITL p50 (ms)",
+                       "max banked n", "Agg @ max n (tok/s)"], ax_rows))
+    L.append("")
+    L.append("Every `-` row above is the same banked first-decode "
+             "refusal (hd512 outside the compiled D=128/256 "
+             "instantiations) — attempted, never served. The "
+             "weights-side rows that DID serve at 131072, and the "
+             "mxfp8 controls' refusal that banks the same capacity law "
+             "from the weights side: "
+             "[gemma-4-31b-mxfp4.md](gemma-4-31b-mxfp4.md).")
+    L.append("")
+
+    # 8-bit 64K closure (owner directive #4: every ctx step on every
+    # analyzed lane). One 64K session (ctx + 600 + 64 = 65,700 tokens)
+    # fits the fp8-class pool; two do not -- the n2/4/8 points of the
+    # closure grids bank as KV_CAP rows, so the closure is the n1/t1.0
+    # pair per lane. gkv_m8x131 banks the mxfp8-KV lane's OWN 128K
+    # refusal (fp8-class bytes: the same boundary gm8x banks from the
+    # weights side). Data-gated: absent cells (old-bank oracle) skip.
+    clo = [c for c in ("gf8x64", "gm8x64", "gkv_m8x64", "gkv_m8x131")
+           if outcome(banks, c) != "MISSING"]
+    if clo:
+        L += ["### The 64K closure — the 8-bit lanes at maxlen 65536",
+              "",
+              "The 128K annex above is the 4-bit story. The 8-bit lanes "
+              "close their ladders one rung down: at `ARC_MAXLEN=65536` "
+              "a single 64K session fits every fp8-class pool, so 64K "
+              "is a measurement on the serving lanes (`gf8x64` 24.1, "
+              "`gm8x64` 23.7 tok/s n1) — while 128K on these lanes is "
+              "the refusal `gkv_m8x131` banks from the KV side (mxfp8 "
+              "KV = fp8 bytes, the 5.83-vs-5.64 GiB class) and `gm8x` "
+              "from the weights side. The native mxfp8-KV cell "
+              "`gkv_m8x64` is in neither class: it boots, banks the "
+              "78,175-token pool, and then fatals at the first decode "
+              "request on the same hd512 layers (both its faces banked "
+              "with zero served requests — the `-` row below). Only "
+              "4-bit budgets buy the 128K pool:",
+              ""]
+        clo_rows = []
+        for lab, cell, cv in [("fp8_e4m3 (gf8x64)", "gf8x64", 65536),
+                              ("mxfp8 weights (gm8x64)", "gm8x64", 65536),
+                              ("mxfp8 KV (gkv_m8x64)", "gkv_m8x64", 65536),
+                              ("mxfp8 KV @128K (gkv_m8x131)", "gkv_m8x131",
+                               131072)]:
+            d = load_conc(b139, cell, cv, 1)
+            oc = outcome(banks, cell)
+            if not _conc_face_ok(d):
+                nbc = conc_face_count(b139, cell, cv)
+                if cv == 131072:
+                    clo_rows.append([lab, "refused", "-", "-", "-", oc])
+                elif nbc:
+                    # booted + banked faces, but zero served (the
+                    # hd512 decode refusal): show the banked gate
+                    # line re-audited, not the vacuous CONC_OK alone
+                    clo_rows.append([lab, "decode-refused", "-", "-", "-",
+                                     "{} (vacuous — 0/{} faces served)"
+                                     .format(oc, nbc)])
+                else:
+                    clo_rows.append([lab, "-", "-", "-", "-", oc])
+                continue
+            d1 = load_conc(b139, cell, cv, 1, "1.0")
+            ia = itl_agg(d) or {}
+            clo_rows.append([lab, ttft_fmt(d["ttft_mean_s"]),
+                             "{:.1f}".format(d["per_user_mean_tps"]),
+                             "{:.1f}".format(ia.get("p50", float("nan"))),
+                             ("{:.1f}".format(d1["per_user_mean_tps"])
+                              if _conc_face_ok(d1) else "-"), oc])
+        L.append(md_table(["Lane (cell)", "TTFT n1 (s)", "Decode n1 (tok/s)",
+                           "ITL p50 (ms)", "Decode n1 t1.0 (tok/s)",
+                           "outcome"], clo_rows))
+        L.append("")
+        L.append("`CONC_OK (vacuous — 0/N faces served)` is the r240c "
+                 "gate line re-audited at report time: the gate printed "
+                 "CONC_OK on face-file existence, the audit re-counts "
+                 "served requests from the banked JSONs (VERDICT "
+                 "r240b/r240c). A `decode-refused` row carries no "
+                 "measurements.")
+        L.append("")
+
+    # ------------------------------------------------------------ capacity
+    L += ["## Capacity (gemma pools)",
+          "",
+          "Session footprint = ctx + 600 + 64 tokens; pool = per-boot "
+          "parsed (`posture.txt`):",
+          ""]
+    cap_entries = [("fp8_e4m3", "gf8"), ("auto@16384", "gkv_auto16"),
+                   ("mxfp4 (MX KV)", "gkv_m4"), ("mxfp8 (MX KV)", "gkv_m8"),
+                   ("mxk8v4 (MX KV)", "gkv_mk"),
+                   ("mxfp4@128K (annex)", "gkv_m4x"),
+                   ("mxk8v4@128K (annex)", "gkv_mkx"),
+                   ("mxfp8@64K (annex)", "gkv_m8x64")]
+    cap_rows = []
+    for dt, cell in cap_entries:
+        pool, pool_src = pool_of(banks, cell)
+        if not pool:
+            cap_rows.append([dt] + ["-"] * 6 +
+                            [POOL_FACTS.get(cell, ("", ""))[1]])
+            continue
+        cap_rows.append([dt, _fmt_comma(pool)] +
+                        [f"{pool // (cv + OVERHEAD)}"
+                         for cv in (1024, 8192, 32768, 65536, 131072)] +
+                        [pool_src])
+    L.append(md_table(["dtype (cell)", "Pool (tok)", "@1K", "@8K", "@32K",
+                       "@64K", "@128K", "pool source"], cap_rows))
+    L.append("")
+    L.append("The @64K/@128K cells are whole-pool arithmetic; for the "
+             "maxlen-40960 rows the rung is also beyond `max_model_len` — "
+             "there the boundary, not the number, is the story.")
+    L.append("")
+
+    # ------------------------------------------------------------ config deltas
+    L += ["## Configuration (copyable deltas on the certified gemma posture)",
+          "",
+          md_table(["dtype", "cell", "delta"], [
+              ["fp8_e4m3", "gf8", "(none — incumbent)"],
+              ["auto", "gkv_auto16", "ARC_KVDTYPE=auto ARC_MAXLEN=16384"],
+              ["auto", "gkv_auto", "ARC_KVDTYPE=auto — refuses at 40960"],
+              ["mxfp4", "gkv_m4",
+               "ARC_QUANT=fp8 ARC_KVDTYPE=mxfp4 ARC_MXKV_NATIVE=1"],
+              ["mxfp8", "gkv_m8",
+               "ARC_QUANT=fp8 ARC_KVDTYPE=mxfp8 ARC_MXKV_NATIVE=1"],
+              ["mxk8v4", "gkv_mk",
+               "ARC_QUANT=fp8 ARC_KVDTYPE=mxk8v4 ARC_MXKV_NATIVE=1"],
+              ["mxfp4@128K", "gkv_m4x",
+               "ARC_QUANT=fp8 ARC_KVDTYPE=mxfp4 ARC_MXKV_NATIVE=1 "
+               "ARC_MAXLEN=131072"],
+              ["mxk8v4@128K", "gkv_mkx",
+               "ARC_QUANT=fp8 ARC_KVDTYPE=mxk8v4 ARC_MXKV_NATIVE=1 "
+               "ARC_MAXLEN=131072"],
+              ["mxfp8@64K", "gkv_m8x64",
+               "ARC_QUANT=fp8 ARC_KVDTYPE=mxfp8 ARC_MXKV_NATIVE=1 "
+               "ARC_MAXLEN=65536 — the 64K closure"],
+              ["mxfp8@128K", "gkv_m8x131",
+               "ARC_QUANT=fp8 ARC_KVDTYPE=mxfp8 ARC_MXKV_NATIVE=1 "
+               "ARC_MAXLEN=131072 — refusal probe"],
+              ["fp8_e5m2", "gkv_e5m2", "ARC_KVDTYPE=fp8_e5m2 — refusal probe"]]),
+          "",
+          "The full gemma fp8 lane invocation: "
+          "[gemma-4-31b-fp8.md](gemma-4-31b-fp8.md).",
+          ""]
+
+    # ------------------------------------------------------------ charts
+    for met, agg, ylab, yfmt, fname, cap in [
+            ("ttft_mean_s", False, "TTFT (s)", "{:.1f}", "kvdtg_ttft",
+             "TTFT by KV-cache dtype (gemma, solo 8K/32K)"),
+            ("per_user_mean_tps", False, "Decode speed (tok/s)", "{:.0f}",
+             "kvdtg_decode",
+             "Solo decode speed by KV-cache dtype (gemma, 8K/32K)"),
+            ("agg_tps_wall", True, "Aggregate @ c8 (tok/s)", "{:.0f}",
+             "kvdtg_agg8",
+             "Aggregate throughput @ c8 by KV-cache dtype (gemma, 8K/32K)")]:
+        groups = [dt for dt, _c, _n in KVDTS_G]
+        values = []
+        for dt, cell, _n in KVDTS_G:
+            row = []
+            for cv in (8192, 32768):
+                v = None
+                if cell in KV139_G_CELLS:
+                    d = load_conc(b139, cell, cv, 8 if agg else 1)
+                    if _conc_face_ok(d):
+                        v = d[met]
+                else:
+                    f = load_face(b138, cell, f"{cell}_c{cv}_t0.0")
+                    if f:
+                        v = (f["ttft_s"] if met == "ttft_mean_s"
+                             else f["decode_tps"] if not agg else None)
+                row.append(v)
+            values.append(row)
+        bars(os.path.join(ch, fname + ".svg"), cap,
+             groups, ["8K ctx", "32K ctx"], values, ylab, yfmt=yfmt,
+             hlines=TTFT_HL if "TTFT" in cap else ())
+        if os.path.isfile(os.path.join(ch, fname + ".svg")):
+            L.append(img(fname, cap))
+            L.append("*Interpretation:* a missing bar is a banked boot "
+                     "refusal, KV_CAP point, or the hd512 first-decode "
+                     "refusal — never unmeasured coverage.")
+            L.append("")
+    # MX aggregate-vs-conc charts (the {1,2,4,8} ladder as a picture)
+    _mx_conc_charts(b139, MX_G_CELLS, (1024, 8192, 32768), ch,
+                    "gemma online-fp8", "mxg_agg", L)
+    # pool bars
+    groups, vals = [], []
+    for dt, cell in cap_entries:
+        pool, _src = pool_of(banks, cell)
+        groups.append(dt)
+        vals.append([pool])
+    bars(os.path.join(ch, "kvdtg_pool.svg"),
+         "Gemma KV pool by dtype (tokens, per-boot parsed)",
+         groups, ["KV pool"], vals, "KV pool (tokens)", yfmt="{:,.0f}")
+    L.append(img("kvdtg_pool", "Gemma KV pool by dtype — the dtype "
+                              "menu's real axis"))
+    L.append("")
+    L.append("Banks: r240b `results/2026-11-24-p647-r240b-conc/` (the gemma "
+             "kv cells + the gf8 ladder), r240 "
+             "`results/2026-11-24-p647-r240-reports/`; knob: `ARC_KVDTYPE` "
+             "in `tools/serve_arc_b70.sh`. The qwen-side comparison: "
+             "[qwen3.8-27b-fp8-kv-cache-dtype.md](qwen3.8-27b-fp8-"
+             "kv-cache-dtype.md).")
+    L = drop_missing_imgs(L, out)
+    with open(os.path.join(out, "gemma-4-31b-kv-cache-dtype.md"), "w",
               encoding="utf-8", newline="\n") as f:
         f.write("\n".join(L) + "\n")
 
@@ -2868,11 +3496,12 @@ def methodology_report(out, date):
          md_table(["Field", "Value"], [
              ["Harnesses", "`tools/ar/p138/p138_face.py` (solo), "
               "`tools/ar/p139/p139_conc.py` (concurrency)"],
-             ["Banks", "`results/2026-11-10-p637-reports/` (r138), "
-              "`results/2026-11-11-p637b-conc/` (r139), "
-              "`results/2026-11-11-r140-gemma128k/` (gemma 128K annex)"],
+             ["Banks", "`results/2026-11-24-p647-r240-reports/` (r240), "
+              "`results/2026-11-24-p647-r240b-conc/` (r240b), "
+              "`results/2026-11-24-p647-r240c-gemma128k/` (gemma 128K "
+              "annex + 64K closure)"],
              ["Engine", "vLLM v0.30.0 — vllm-arc fork, image "
-              "`vllm-arc:v0.30.0-b70-cert23`, XPU graphs, TP2"],
+              "`vllm-arc:v0.30.0-b70-cert28`, XPU graphs, TP2"],
              ["Hardware", "2x Intel Arc Pro B70 (BMG-G31, 32 GB each), "
               "host 64 GB RAM, close-out F defaults"],
              ["Date", date]]),
@@ -3003,20 +3632,33 @@ def methodology_report(out, date):
          "in these banks.",
          "- A concurrency face requires all n requests to succeed "
          "(`n_fail = 0`); failed faces are banked and shown, never averaged "
-         "away.",
+         "away. Zero-request faces (the JSON a dead engine answers with "
+         "`Connection refused`) still fail this definition — the cell "
+         "outcome line `CONC_OK` printed by the r240b/r240c gate scripts "
+         "checked face-file existence, not served requests, so those "
+         "gate lines are re-audited here: every number in these reports "
+         "comes from faces with `n_ok > 0`, and every all-vacuous lane "
+         "renders into its banked refusal class instead (the gemma "
+         "native MX-KV lanes' hd512 first-decode refusal; the qwen "
+         "packed lanes' mid-sweep engine deaths). VERDICTs: "
+         "`results/2026-11-24-p647-r240b-conc/`, "
+         "`results/2026-11-24-p647-r240c-gemma128k/`.",
          "- By-design capacity skips (pool < n x (ctx + 664)) are recorded "
          "as `KV_CAP` rows in the gate log — the measured capacity wall, "
          "not a failure.",
          "- A dtype or posture that refuses to boot is a valid, banked "
-         "outcome with its serve log.",
+         "outcome with its serve log. A lane that boots but cannot serve "
+         "(the gemma hd512 decode refusal) is the same class of banked "
+         "outcome — its pools are real, its faces carry no measurements.",
          "",
          "## Reproducing",
          "",
          "Each report's **Configuration** block is the byte-exact validated "
          "invocation (`tools/serve_arc_b70.sh` + the banked posture echo). "
-         "The gate scripts are `tools/ar/r139_conc.sh` (concurrency matrix) "
-         "and `tools/ar/r140_gemma128k.sh` (gemma 128K annex); reports "
-         "regenerate with `tools/ar/p139/p139_report.py`."]
+         "The gate scripts are `tools/ar/r240_reports_cert28.sh` (solo "
+         "faces), `tools/ar/r240b_conc_cert28.sh` (concurrency matrix) "
+         "and `tools/ar/r240c_gemma128k_cert28.sh` (gemma 128K annex); "
+         "reports regenerate with `tools/ar/p139/p139_report.py`."]
     with open(os.path.join(out, "METHODOLOGY.md"), "w", encoding="utf-8", newline="\n") as f:
         f.write("\n".join(L) + "\n")
 
@@ -3093,7 +3735,7 @@ def index_report(banks, out, date):
                  "{}: aggregate throughput @ concurrency 8 (8K ctx, t0.0)".format(tag.capitalize()),
                  groups, ["aggregate"], av, "Aggregate throughput (tok/s)", yfmt="{:.0f}")
 
-    L = ["# Performance reports — 2x Intel Arc Pro B70 (vllm-arc cert23)",
+    L = ["# Performance reports — 2x Intel Arc Pro B70 (vllm-arc cert28)",
          "",
          "World-class close-out reports per model x quantization x MTP "
          "posture: executive summary and key findings, use-case guidance "
@@ -3104,10 +3746,12 @@ def index_report(banks, out, date):
          "Every line chart measures context length on the x-axis "
          "(concurrency is the series), range bands span the measured "
          "envelope, and each section carries its table, its chart, and an "
-         "interpretation together. Generated {} from the r138 bank "
-         "(`results/2026-11-10-p637-reports/`) + r139 bank "
-         "(`results/2026-11-11-p637b-conc/`) + gemma 128K annex "
-         "(`results/2026-11-11-r140-gemma128k/`).".format(date),
+         "interpretation together. Generated {} from the r240 bank "
+         "(`results/2026-11-24-p647-r240-reports/`) + r240b bank "
+         "(`results/2026-11-24-p647-r240b-conc/`) + gemma 128K annex / 64K "
+         "closure (`results/2026-11-24-p647-r240c-gemma128k/`) — the full "
+         "battery re-run on the certified image by the 2026-11-24 currency "
+         "campaign.".format(date),
          "",
          "Metric definitions, UX bands and thresholds: "
          "[METHODOLOGY.md](METHODOLOGY.md).",
@@ -3158,6 +3802,9 @@ def index_report(banks, out, date):
     L += ["", "## Cross-cutting", "",
           "- [KV-cache dtype comparison — both models + TurboQuant + capacity "
           "cliffs](qwen3.8-27b-fp8-kv-cache-dtype.md)",
+          "- [KV-cache dtype comparison — gemma-4-31B: the attempted MX "
+          "KV lanes (refused at decode: hd512) + the auto/e5m2 "
+          "refusals](gemma-4-31b-kv-cache-dtype.md)",
           "- [Benchmark methodology](METHODOLOGY.md)",
           ""]
     for nm, cap in [("qwen3.8-27b_all_decode", "Qwen: solo decode speed vs context (all configs)"),
@@ -3177,13 +3824,13 @@ def index_report(banks, out, date):
           "acceptable · 25–50 fast · ≥ 50 very fast.",
           "- **TTFT**: < 0.5 s instant · 0.5–2 s responsive · 2–5 s "
           "noticeable · 5–10 s slow · > 10 s frustrating.",
-          "- **Concurrency**: r139 barrier-starts N simultaneous requests, "
+          "- **Concurrency**: r240b barrier-starts N simultaneous requests, "
           "each a full cold prefill + 600 streamed tokens — the worst-case "
           "burst; sustained interactive user counts run well below request "
           "concurrency.",
-          "- Solo faces (r138): concurrency 1, 600 output tokens, "
+          "- Solo faces (r240): concurrency 1, 600 output tokens, "
           "temperature 0.0 unless stated; unique per-face prompts (cold "
-          "prefill). MTP lanes add the 6-point temperature sweep; r139 adds "
+          "prefill). MTP lanes add the 6-point temperature sweep; r240b adds "
           "a t1.0 solo face per context on every config.",
           "- Hardware: 2x Arc Pro B70 (32 GB each, one card per socket, TP2), "
           "host 64 GB RAM; close-out F defaults (--shm-size 16g, 16 GB "
@@ -3200,9 +3847,9 @@ def main():
     b140 = None
     if rest and os.path.isdir(rest[0]):
         b140 = Bank(rest[0])
-        date = rest[1] if len(rest) > 1 else "2026-11-11"
+        date = rest[1] if len(rest) > 1 else "2026-11-24"
     else:
-        date = rest[0] if rest else "2026-11-11"
+        date = rest[0] if rest else "2026-11-24"
     banks139 = [b for b in (b139, b140) if b and b.ok]
     banks = [b138] + banks139
     os.makedirs(os.path.join(out, "charts"), exist_ok=True)
@@ -3211,6 +3858,8 @@ def main():
         print("report: {}.md".format(cfg["slug"]))
     kv_report(banks, out, date)
     print("report: qwen3.8-27b-fp8-kv-cache-dtype.md")
+    gemma_kv_report(banks, out, date)
+    print("report: gemma-4-31b-kv-cache-dtype.md")
     methodology_report(out, date)
     print("report: METHODOLOGY.md")
     index_report(banks, out, date)
