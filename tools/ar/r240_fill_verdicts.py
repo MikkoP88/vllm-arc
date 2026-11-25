@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
-"""r240b/r240c VERDICT fill extraction (local, post-pull audit 2026-11-25).
+"""r240b/r240c/r241 VERDICT fill extraction (local, post-pull audit
+2026-11-25).
 
-Prints every value the two VERDICT drafts need, recomputed from the
+Prints every value the VERDICT drafts need, recomputed from the
 banked face JSONs (gate-script law: recompute from banked artifacts,
-never from gate lines). Run from the repository root:
+never from gate lines). The r241 section prints only after the bank
+is pulled (results/2026-11-25-p647-r241-mxkv-lmcfree/). Run from the
+repository root:
 
   python tools/ar/r240_fill_verdicts.py
 """
@@ -12,6 +15,7 @@ import os
 
 B240B = "results/2026-11-24-p647-r240b-conc"
 B240C = "results/2026-11-24-p647-r240c-gemma128k"
+B241 = "results/2026-11-25-p647-r241-mxkv-lmcfree"
 
 
 def load(bank, cell, ctx, n, temp="0.0"):
@@ -130,3 +134,47 @@ if os.path.isfile(p):
         for line in f:
             if "KV_CAP" in line or "POOL" in line or "NEED" in line:
                 print("  " + line.rstrip()[:160])
+
+# ---- r241: the LMC-free re-run of the r240b kvm grids ----
+# (prints only when the bank exists locally, i.e. post-pull)
+if os.path.isdir(B241):
+    print("== r241: posture evidence (per-cell posture.txt)")
+    for c in ["kvm4", "kvm8", "kvmk"]:
+        pp = os.path.join(B241, c, "posture.txt")
+        if not os.path.isfile(pp):
+            print("  {:4s} NO_POSTURE".format(c))
+            continue
+        with open(pp, encoding="utf8") as f:
+            fields = {}
+            for line in f:
+                if "=" in line:
+                    k, v = line.split("=", 1)
+                    fields[k] = v.strip()
+        print("  {:4s} pool={} lmc_boot={} lmc_end={} tracebacks={}".format(
+            c, fields.get("kv_pool_tokens", "?"),
+            fields.get("lmc_lines", "?"), fields.get("lmc_lines_end", "?"),
+            fields.get("tracebacks", "?")))
+    print("== r241: MX grids LMC-free, per lane per ctx per n")
+    for c in ["kvm4", "kvm8", "kvmk"]:
+        for cv in [1024, 8192, 32768, 65536, 131072]:
+            for n in [1, 2, 4, 8]:
+                d = load(B241, c, cv, n)
+                if d is not None:
+                    print("  {:4s} c{:6d} n{} {}".format(c, cv, n, row(d)))
+    print("== r241: t1.0 solos")
+    for c in ["kvm4", "kvm8", "kvmk"]:
+        for cv in [1024, 8192, 32768, 65536, 131072]:
+            d = load(B241, c, cv, 1, "1.0")
+            if d is not None:
+                print("  {:4s} c{:6d} t1.0 {}".format(c, cv, row(d)))
+    print("== r241: KV_CAP evidence (per-cell conc.log POOL/NEED lines)")
+    for c in ["kvm4", "kvm8", "kvmk"]:
+        p = os.path.join(B241, c, "conc.log")
+        if os.path.isfile(p):
+            with open(p, encoding="utf8", errors="replace") as f:
+                for line in f:
+                    if "KV_CAP" in line or "ENGINE_DEAD" in line or \
+                            "PARTIAL" in line or "TIMEOUT" in line:
+                        print("  " + line.rstrip()[:160])
+else:
+    print("== r241 bank not pulled yet (results/2026-11-25-p647-r241-*)")
