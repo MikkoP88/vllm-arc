@@ -15,18 +15,28 @@ A fork of [vllm-project/vllm-gaudi](https://github.com/vllm-project/vllm-gaudi) 
 
 ## What this fork adds
 
+Everything below ships in the certified image and is load-bearing on at
+least one certified lane (full per-patch provenance, evidence and
+load-layer mechanics: [`docs/PATCHES-arc.md`](docs/PATCHES-arc.md)):
+
 | Area | What | Where |
 |---|---|---|
-| Platform | Arc XPU platform: device detection, mem-info patch, GMU conditional relax | `vllm_gaudi/xpu/platform.py` |
-| Graphs | `FULL_DECODE_ONLY` XPU graphs (capture sizes 1–320), stream hygiene, first-request warmup interlock | `patches/`, `vllm_gaudi/xpu/patches/` |
-| Speculative decoding | MTP (multi-token prediction) — **k3 recommended**, k4 documented alternative; acceptance gate instrument | `tools/arc_spec_gate.py` |
-| KV cache | LMCache hybrid-KV connector: mamba/GDN boundary snap, TWO_HS transfer, lookup memo, pinned-memory safety law; **off-thread store** (default ON — engine thread never waits on the store body's D2H gathers); TurboQuant dtypes SERVE CLEAN (spec-verify fix active by default; see the TurboQuant section) | `vllm_gaudi/xpu/patches/lmcache_hma_connector.py`, `vllm_gaudi/xpu/patches/lmcint/vllm_v1_adapter.py`, `vllm_gaudi/xpu/patches/tq_spec_fix.py` |
-| Quantization | FP8 weights with a block-quant **W8A16** route (vs stock per-token W8A8) | `vllm_gaudi/xpu/patches/fp8_block_w8a16.py` |
+| Platform | Arc XPU platform: B70 device detection, XPU mem-info patch, GMU conditional relax; admission + platform routing for the MX KV lanes | `vllm_gaudi/xpu/platform.py` |
+| XPU graphs | `FULL_DECODE_ONLY` graphs (capture sizes 1–320) with stream hygiene, **first-request warmup interlock**, **graph-safe output copies**, **speculator full-capture coercion** (PIECEWISE→FULL), and **graph-exec double-buffer** (every graph captured ×2, alternate-exec replays — same-exec replay blocking eliminated; E2E-neutral hygiene fix) | `patches/`, `vllm_gaudi/xpu/patches/{first_request_warmup,graph_safe_output,speculator_full_capture,graph_exec_doublebuffer}.py` |
+| Speculative decoding | MTP (multi-token prediction) — **k3: the certified, overall-best depth** (acceptance 83.7 % strict-gate at t0; deeper drafts measured and dropped — decision record in the CHANGELOG); probabilistic drafting default; acceptance-gate instrument | `tools/arc_spec_gate.py`, `tools/serve_arc_b70.sh` |
+| **MX-native KV cache** | The certified `ARC_KVDTYPE=mxfp8 / mxfp4 / mxk8v4` + `ARC_MXKV_NATIVE=1` lane: `MxAttentionBackend` engine integration, slot layout + pool arithmetic, bit-exact quant reference, fused Triton quantize+pack+scatter store, paged flash-decode split-KV v2, whole-cache dequant for continuation prefill, and the arc7mx native-decode bridge | `vllm_gaudi/xpu/patches/mx_kv/`, `vllm_gaudi/xpu/patches/mx_dtype_map.py`, `vllm_gaudi/xpu/patches/mx_kv_mode.py` |
+| Hybrid-KV cache | LMCache hybrid-KV connector (HMA + 0.5.5 port): mamba/GDN boundary snap, TWO_HS transfer, KV-format detector, lookup memo, pinned-memory safety law; **off-thread store** (default ON — the engine thread never waits on the store body's D2H gathers); Phase-6 auto-off on the MX lanes | `vllm_gaudi/xpu/patches/lmcache_hma_connector.py`, `vllm_gaudi/xpu/patches/lmcint/`, `vllm_gaudi/xpu/patches/mamba_*_glue.py` |
+| TurboQuant KV dtypes | All four `turboquant_*` presets **serve clean** (three stacked spec-verify defects fixed wheel-side, fix active by default); opt-in MQ verify kernel (+21 % agg8, experimental) | `vllm_gaudi/xpu/patches/tq_spec_fix.py`, `vllm_gaudi/xpu/patches/tq_mq_aos.py` |
+| Quantization | FP8 checkpoint lane with a block-quant **W8A16** route (vs stock per-token W8A8); **online MXFP4-W4A16** (`ARC_MXFP4_MODE=w4a16`, the best online-quant decode lane); **online MXFP8-W8A16**; skinny-M decode reroute (banked OFF) | `vllm_gaudi/xpu/patches/{fp8_block_w8a16,mxfp4_w4a16,mxfp8_w8a16,skinny_m}.py` |
+| Attention routing | Image-overlay patches on the stock attention stack: B70 prefill launch-config table, engine warmup gate, full-attention FA2 dispatch, sliding-window FA2 dispatch (gemma hd256 → ESVD); GDN metadata fast path | `tools/patch_arc_xpu_*.py`, `vllm_gaudi/xpu/patches/gdn_metadata_fastpath.py` |
 | Scheduler | Tail-split v4 for hybrid prefix-cache loads | `vllm_gaudi/xpu/patches/sched_tail_split.py` |
-| Telemetry | Silent-off diagnostics instruments: per-step host timeline (`ARC_STEP_TRACE`) + per-call distributed-collective census (`ARC_AR_TRACE`) — registry-exempt, zero cost when off | `vllm_gaudi/xpu/patches/step_trace.py`, `vllm_gaudi/xpu/patches/ar_trace.py` |
+| Telemetry | Silent-off diagnostics instruments: per-step host timeline (`ARC_STEP_TRACE`) + per-call distributed-collective census (`ARC_AR_TRACE`) — registry-exempt, zero cost when off | `vllm_gaudi/xpu/patches/{step_trace,ar_trace}.py` |
 | Comm (image overlay) | **e4m3-wire allreduce** for the TP2 fp16 large ring (oneCCL 2022.0.0 same-version rebuild + patch, default-OFF env `CCL_SYCL_ALLREDUCE_FP8`; ships as a two-file lib overlay — opt-in 1.65× at the dominant AR) | `external_patches/oneccl/`, `tools/build_oneccl_arc.sh` |
-| Structured output | XGrammar backend, compact-JSON posture | `tools/serve_arc_b70.sh` |
-| Distribution | Certified Docker image with `IMAGE_MANIFEST` (fork SHA, pinned wheels, vendored lmcache closure) | `Dockerfile`, `tools/build_image.sh` |
+| Structured output | XGrammar backend, compact-JSON posture; qwen3 reasoning + tool-call parsers | `tools/serve_arc_b70.sh` |
+| Wheels | **arc7mx kernel wheel** (`vllm_xpu_kernels 0.1.14.1+arc7mx` build28: MX decode kernels + the r231d seqused-tightened split clamp) pinned by md5 manifest and enforced at image-build time, with in-image pin assertions on the installed `.so`s | `tools/pin_kit.sh`, `tools/wheel_guard.sh`, `external_patches/wheels.pins.md5` |
+| Distribution | Certified Docker image with `IMAGE_MANIFEST` (fork SHA, pinned wheels, vendored lmcache closure); the uniform boot interface `serve_arc_b70.sh` (25-variable chain); push gates: leak sweep, currency check, docs validation | `Dockerfile`, `tools/build_image.sh`, `tools/serve_arc_b70.sh` |
+
+- **Change log** — every change to this fork is recorded in [`CHANGELOG.md`](CHANGELOG.md): per-cert and per-phase entries with what shipped, the release tag, fork SHA, key numbers and the evidence path. Release summaries: [`docs/release_notes.md`](docs/release_notes.md).
 
 ## Certified performance (dual Arc Pro B70, TP2)
 
@@ -39,10 +49,9 @@ full reports with charts and copyable configs:
 |---|---|---|
 | qwen fp8 · MTP k3 | 93.8 tok/s @ 1K | the certified default lane |
 | qwen mxfp4-W4A16 · MTP k3 | 103.3 tok/s @ 8K | best online-quant lane |
-| qwen mxfp4-W4A16 · MTP **k5** | **128.3 tok/s** | **project best** (+36 % vs fp8-k3); TTFT 3.98 s < the k3-baseline 4.55 s |
 | qwen `--kv-cache-dtype mxfp4` · native · k3 | 65.2 tok/s @ 32K (n1) · 258.4 agg8 (r233) | cert28 native MX-decode record, full five-face ITL 43.4→58.1 ms (2K→32K): the r231d clamp −7.6% at 2K with long-ctx parity exact; same-ctx gap +8.2% vs fp8 @2K (ctrl rows 40.1/40.0/40.4, r235); agg8 0.84× ctrl, clamp-neutral (r236) |
 | gemma mxfp4-W4A16 | 38.0 tok/s @ 1K | +43 % vs gemma mxfp8 |
-| TTFT best (qwen fp8 · k5) | 3.48 s @ 8K | fresh-context, no caching |
+| TTFT (qwen fp8 · MTP k3) | 3.76 s @ 8K | fresh-context, no caching; best-TTFT opt-in `CCL_SYCL_ALLREDUCE_FP8=1`: 3.27 s |
 
 **Champion record faces** — the probabilistic-drafting campaign of
 record (provenance and per-gate re-verification history:

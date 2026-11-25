@@ -38,23 +38,23 @@ What the certified stack delivers:
   the MX hunt idles on closed channels (engine-shape, workload-shape,
   counters — the r236–r238 dispositions). Evidence:
   `results/2026-11-24-p647-cert28-battery/` + the r234–r238 legs.
-- **Decode postures** — MTP depth k5 = +41 % decode (115.2 tok/s solo
-  U8k vs 81.6 at k3); **mxfp4-W4A16 + k5 = 123.9 tok/s (+52 %) with
-  TTFT 3.98 s < the 4.55 s baseline** — the recommended decode posture
-  (`ARC_QUANT=mxfp4 ARC_MXFP4_MODE=w4a16
+- **Decode postures** — **MTP k3 is the certified, overall-best depth**
+  (acceptance 83.7 % strict-gate at t0; deeper drafts measured and
+  dropped — decision record in the CHANGELOG). Certified lanes: qwen
+  fp8 + k3 = 93.8 tok/s @ 1K (the default posture, `ARC_SPEC=3
+  ARC_FP8=1`); **qwen mxfp4-W4A16 + k3 = 103.3 tok/s @ 8K, the best
+  online-quant lane** (`ARC_QUANT=mxfp4 ARC_MXFP4_MODE=w4a16
   ARC_QUANTCFG='{"ignore":["*visual*","*linear_attn*","mtp.fc"]}'
-  ARC_GMU=0.85 ARC_SPEC=5 ARC_FP8=0`, BASE checkpoint; cert23-era
-  vmatrix values — the W4A16 engine paths are unchanged since);
-  project best **128.3 tok/s** in the full validation matrix.
-  mxfp8-W8A16 is a decode dud (≈ baseline — no weight savings,
-  bf16-activation tax). Evidence:
-  `results/2026-11-10-p635-telemetry/` (+ `vmatrix/`).
-- **Full validation matrix** — 11 cells, both models, all online
-  quants × spec depths, uniform protocol, 0 tracebacks: qwen
-  mx4-W4A16 wins every spec column; gemma mx4-W4A16 37.1 tok/s
-  (+43 % vs mxfp8); gemma online fp8 boots + serves; mxfp8 deprecated
-  for decode. Evidence:
-  `results/2026-11-10-p635-telemetry/vmatrix/`.
+  ARC_GMU=0.85 ARC_SPEC=3 ARC_FP8=0`, BASE checkpoint); W4A16's edge
+  widens monotonically with context. mxfp8-W8A16 is a decode dud
+  (≈ baseline — no weight savings, bf16-activation tax). Evidence:
+  `results/2026-11-10-p635-telemetry/` (+ `vmatrix/`) + the
+  per-config report banks under `results/` (docs/reports).
+- **Full validation matrix** — 11 cells, both models, online quants ×
+  MTP k3/no-spec, uniform protocol, 0 tracebacks: qwen mx4-W4A16 wins
+  both spec columns; gemma mx4-W4A16 37.1 tok/s (+43 % vs mxfp8);
+  gemma online fp8 boots + serves; mxfp8 deprecated for decode.
+  Evidence: `results/2026-11-10-p635-telemetry/vmatrix/`.
 - **Per-config performance reports** —
   [`docs/reports/`](reports/README.md): model × quant × MTP,
   decode/TTFT/prefill/ITL at 1K–128K context, the MTP-k3 temperature

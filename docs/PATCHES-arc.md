@@ -122,8 +122,9 @@ and posture), [`PERFORMANCE-arc.md`](PERFORMANCE-arc.md) (numbers),
   weights, group-32 e8m0 scales, oneDNN weight-decomposition GEMM) —
   kills the two stock W4A4 defects (per-call act quant ≈ GEMM cost at
   decode Ms; the (f4,f4) joint dtype can never pass oneDNN gemmstone's
-  counter-operand gate). **The decode champion lane** (P6.35-V:
-  qwen k5 128.3 tok/s).
+  counter-operand gate). **The decode champion lane** (P6.35-V
+  lineage; certified read: qwen mxfp4-W4A16 + MTP k3 = 103.3 tok/s @
+  8K).
 - **Provenance**: in-house (P6.30 FIX-P; wheel op from the
   `vllm-xpu-kernels` arc4 build kit).
 - **Knob**: `ARC_MXFP4_MODE` = `w4a16` (route, default) / stock w4a4

@@ -34,7 +34,7 @@ and never mix into current-record tables (comparator law).
 | Layer | Identity |
 |---|---|
 | Hardware | dual Intel Arc Pro B70 (BMG-G31, 32 GB each — 31.89 GiB visible), TP2, both cards on one CPU socket (`ZE_AFFINITY_MASK=0,1` exposes both device indices) |
-| Engine image | **current**: `vllm-arc:v0.30.0-b70-cert28` — tag `rel/v0.30.0-b70-cert28` (cert27 content + the r231d seqused-tightened split clamp wheel: arc7mx build28, `vllm_xpu_kernels-0.1.14.1+arc7mx`, the installed `.so` md5s asserted in-image — full pin inventory in the CHANGELOG cert28 entry; content detail: the "Current certified image" section below). The decode-posture gains are POSTURE: mx4-W4A16+k5 123.9 tok/s, re-read 128.3 in the validation matrix (`…/vmatrix/`). **Carried-record provenance**: the record numbers below were measured natively under the certified probabilistic posture and re-verified at every later cert's gate; on `fp8_e4m3` the compute bytes are identical across the bake chain (per-cert chain: [`../CHANGELOG.md`](../CHANGELOG.md)) |
+| Engine image | **current**: `vllm-arc:v0.30.0-b70-cert28` — tag `rel/v0.30.0-b70-cert28` (cert27 content + the r231d seqused-tightened split clamp wheel: arc7mx build28, `vllm_xpu_kernels-0.1.14.1+arc7mx`, the installed `.so` md5s asserted in-image — full pin inventory in the CHANGELOG cert28 entry; content detail: the "Current certified image" section below). The decode-posture best on this image: **qwen mxfp4-W4A16 + MTP k3 = 103.3 tok/s @ 8K** (per-config reports: `docs/reports/`). **Carried-record provenance**: the record numbers below were measured natively under the certified probabilistic posture and re-verified at every later cert's gate; on `fp8_e4m3` the compute bytes are identical across the bake chain (per-cert chain: [`../CHANGELOG.md`](../CHANGELOG.md)) |
 | Wheels | md5-pinned at build (`tools/wheel_guard.sh`, 4 pins: vllm/triton/vxk/lmcache 0.5.6+arc1) |
 | Serve line | the certified 25-var env chain + CLI ([`CONFIGURATION-arc.md`](CONFIGURATION-arc.md)): MTP k3 **+ probabilistic drafting (the certified default)**, `mode:none`, FULL_DECODE_ONLY graphs (85 capture sizes, 1–320), MNBT 8192, LMCacheConnectorV1 `kv_both` |
 | Record campaigns | prob-lane record: 5 fresh boots (comprehensive + family + no-spec A/B + default-path + greedy opt-out validation) — `results/2026-11-03-p617a-probcert/`; greedy-lane family baseline — `results/2026-10-31-p70-r70-cert4-comprehensive/` |
@@ -174,9 +174,8 @@ trigger everywhere → REPORT lane — `results/2026-11-06-p627-mxfp8/`
 (era) + `results/2026-11-24-p647-r239-record-lanes/` (cert28).
 
 Nothing validated beats the certified default (the two
-faster-on-paper postures are rejected: k5-depth for the certified
-battery — its greedy edge inverts under sampling, though k5 returns as
-the decode-posture winner on the probabilistic lane; compile —
+faster-on-paper postures are rejected: deeper-than-k3 drafting for the
+certified battery — the greedy edge inverts under sampling; compile —
 acceptance-gate rejection). The opt-in slice profile (experimental) is
 NOT part of the certified default. The TurboQuant dtype faces are
 servable (their tables are below). How to run: the 25-var chain in
