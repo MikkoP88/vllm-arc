@@ -27,24 +27,24 @@
 <text x="362.4" y="111.8" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">91</text>
 <text x="345.4" y="412" font-size="11.5" fill="#475467" text-anchor="middle">fp8</text>
 <text x="450.0" y="412" font-size="11.5" fill="#475467" text-anchor="middle">fp8_e5m2</text>
-<rect x="522.6" y="155.1" width="30.0" height="238.9" fill="#2563eb" rx="2"/>
-<text x="537.6" y="149.1" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">79</text>
-<rect x="556.6" y="202.0" width="30.0" height="192.0" fill="#dc2626" rx="2"/>
-<text x="571.6" y="196.0" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">63</text>
+<rect x="522.6" y="152.2" width="30.0" height="241.8" fill="#2563eb" rx="2"/>
+<text x="537.6" y="146.2" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">80</text>
+<rect x="556.6" y="200.9" width="30.0" height="193.1" fill="#dc2626" rx="2"/>
+<text x="571.6" y="194.9" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">64</text>
 <text x="554.6" y="412" font-size="11.5" fill="#475467" text-anchor="middle">mxfp4</text>
-<rect x="627.1" y="160.8" width="30.0" height="233.2" fill="#2563eb" rx="2"/>
-<text x="642.1" y="154.8" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">77</text>
-<rect x="661.1" y="213.8" width="30.0" height="180.2" fill="#dc2626" rx="2"/>
-<text x="676.1" y="207.8" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">59</text>
+<rect x="627.1" y="158.2" width="30.0" height="235.8" fill="#2563eb" rx="2"/>
+<text x="642.1" y="152.2" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">78</text>
+<rect x="661.1" y="212.9" width="30.0" height="181.1" fill="#dc2626" rx="2"/>
+<text x="676.1" y="206.9" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">60</text>
 <text x="659.1" y="412" font-size="11.5" fill="#475467" text-anchor="middle">mxfp8</text>
-<rect x="731.7" y="157.5" width="30.0" height="236.5" fill="#2563eb" rx="2"/>
-<text x="746.7" y="151.5" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">78</text>
-<rect x="765.7" y="201.6" width="30.0" height="192.4" fill="#dc2626" rx="2"/>
-<text x="780.7" y="195.6" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">63</text>
+<rect x="731.7" y="154.9" width="30.0" height="239.1" fill="#2563eb" rx="2"/>
+<text x="746.7" y="148.9" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">79</text>
+<rect x="765.7" y="201.5" width="30.0" height="192.5" fill="#dc2626" rx="2"/>
+<text x="780.7" y="195.5" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">63</text>
 <text x="763.7" y="412" font-size="11.5" fill="#475467" text-anchor="middle">mxk8v4</text>
-<rect x="84" y="416" width="12" height="12" fill="#2563eb" rx="2"/>
-<text x="101" y="426" font-size="11.5" fill="#1d2939">8K ctx</text>
-<rect x="171" y="416" width="12" height="12" fill="#dc2626" rx="2"/>
-<text x="188" y="426" font-size="11.5" fill="#1d2939">32K ctx</text>
+<rect x="84" y="420" width="12" height="12" fill="#2563eb" rx="2"/>
+<text x="101" y="430" font-size="11.5" fill="#1d2939">8K ctx</text>
+<rect x="171" y="420" width="12" height="12" fill="#dc2626" rx="2"/>
+<text x="188" y="430" font-size="11.5" fill="#1d2939">32K ctx</text>
 <text x="450" y="458" font-size="12.5" fill="#475467" text-anchor="middle">Decode speed (tok/s)</text>
 </svg>

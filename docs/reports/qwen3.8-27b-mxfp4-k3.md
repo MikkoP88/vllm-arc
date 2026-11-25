@@ -12,7 +12,7 @@
 | Speculative decoding | MTP k3, probabilistic drafting |
 | Max model len | 262144 |
 | KV pool (this boot) | 599,525 tokens (r240b posture) |
-| Date | 2026-11-24 |
+| Date | 2026-11-25 |
 | Cell outcome | FACES_OK |
 
 ## Executive summary
@@ -363,7 +363,7 @@ Higher sampling temperature lowers draft acceptance (tok/step falls), so decode 
 ### Validated invocation (what the gate ran, byte-exact)
 
 ```bash
-# image vllm-arc:v0.30.0-b70-cert28 ; 2026-11-24 ; TP2 on 2x Arc Pro B70
+# image vllm-arc:v0.30.0-b70-cert28 ; 2026-11-25 ; TP2 on 2x Arc Pro B70
 ARC_IMAGE=vllm-arc:v0.30.0-b70-cert28 ARC_NAME=arc-b70 \
   ARC_MODEL=/models/qwen3.8-27b ARC_SERVED=qwen3.8-27b ARC_QUANTCFG={"ignore":["*visual*","*linear_attn*","mtp.fc"]} ARC_GMU=0.85 ARC_GRAPH=1 ARC_LMC=1 ARC_FP8=0 ARC_QUANT=mxfp4 ARC_MXFP4_MODE=w4a16 ARC_SPEC=3 \
   bash serve_arc_b70.sh     # tools/serve_arc_b70.sh in this repo

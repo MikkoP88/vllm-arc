@@ -6,7 +6,7 @@
 | Banks | `results/2026-11-24-p647-r240-reports/` (r240), `results/2026-11-24-p647-r240b-conc/` (r240b), `results/2026-11-24-p647-r240c-gemma128k/` (gemma 128K annex + 64K closure) |
 | Engine | vLLM v0.30.0 — vllm-arc fork, image `vllm-arc:v0.30.0-b70-cert28`, XPU graphs, TP2 |
 | Hardware | 2x Intel Arc Pro B70 (BMG-G31, 32 GB each), host 64 GB RAM, close-out F defaults |
-| Date | 2026-11-24 |
+| Date | 2026-11-25 |
 
 ## What each report measures
 

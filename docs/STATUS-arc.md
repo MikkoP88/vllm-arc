@@ -42,9 +42,12 @@ What the certified stack delivers:
   the MX cells against the certified LMC-free posture; LMCache stored
   in both death windows (the r168 e2m1-V × LMCache class; every clean
   MX reference ran LMC-free). Not a proven intrinsic boundary; r241
-  re-runs the exact grids LMC-free. The ≥16K packed-KV restriction is
-  provisional until that bank; LMC-off-on-MX stays the certified
-  posture either way. Evidence:
+  re-ran the exact grids LMC-free and every face served clean (68/68,
+  zero LMCache lines, zero tracebacks) — the ≥16K packed-KV
+  restriction is RETRACTED; the lanes are capacity-limited only.
+  LMC-off-on-MX stays the certified posture either way (P-D will
+  refuse the combination at boot). Evidence:
+  `results/2026-11-25-p647-r241-mxkv-lmcfree/` +
   `results/2026-11-24-p647-cert28-battery/` + the r234–r238 legs.
 - **Decode postures** — **MTP k3 is the certified, overall-best depth**
   (acceptance 83.7 % strict-gate at t0; deeper drafts measured and

@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="880" height="470" viewBox="0 0 880 470" font-family="Segoe UI, Helvetica, Arial, sans-serif">
-<rect width="880" height="470" fill="#ffffff"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="454" viewBox="0 0 880 454" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+<rect width="880" height="454" fill="#ffffff"/>
 <text x="84" y="26" font-size="17" font-weight="600" fill="#101828">Gemma KV pool by dtype (tokens, per-boot parsed)</text>
 <line x1="84" y1="394.0" x2="816" y2="394.0" stroke="#f0f0f0" stroke-width="1"/>
 <text x="76" y="398.0" font-size="11" fill="#667085" text-anchor="end">0</text>
@@ -10,26 +10,24 @@
 <rect x="114.8" y="324.6" width="30.0" height="69.4" fill="#2563eb" rx="2"/>
 <text x="129.8" y="318.6" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">56,128</text>
 <text x="129.8" y="412" font-size="11.5" fill="#475467" text-anchor="middle">fp8_e4m3</text>
-<text x="221.2" y="412" font-size="11.5" fill="#475467" text-anchor="middle">auto@16384</text>
+<text x="221.2" y="426" font-size="11.5" fill="#475467" text-anchor="middle">auto@16384</text>
 <rect x="297.8" y="263.4" width="30.0" height="130.6" fill="#2563eb" rx="2"/>
 <text x="312.8" y="257.4" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">105,669</text>
 <text x="312.8" y="412" font-size="11.5" fill="#475467" text-anchor="middle">mxfp4 (MX KV)</text>
 <rect x="389.2" y="326.7" width="30.0" height="67.3" fill="#2563eb" rx="2"/>
 <text x="404.2" y="320.7" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">54,426</text>
-<text x="404.2" y="412" font-size="11.5" fill="#475467" text-anchor="middle">mxfp8 (MX KV)</text>
+<text x="404.2" y="426" font-size="11.5" fill="#475467" text-anchor="middle">mxfp8 (MX KV)</text>
 <rect x="480.8" y="305.2" width="30.0" height="88.8" fill="#2563eb" rx="2"/>
 <text x="495.8" y="299.2" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">71,856</text>
 <text x="495.8" y="412" font-size="11.5" fill="#475467" text-anchor="middle">mxk8v4 (MX KV)</text>
 <rect x="572.2" y="99.2" width="30.0" height="294.8" fill="#2563eb" rx="2"/>
 <text x="587.2" y="93.2" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">238,497</text>
-<text x="587.2" y="412" font-size="11.5" fill="#475467" text-anchor="middle">mxfp4@128K (annex)</text>
+<text x="587.2" y="426" font-size="11.5" fill="#475467" text-anchor="middle">mxfp4@128K (annex)</text>
 <rect x="663.8" y="193.5" width="30.0" height="200.5" fill="#2563eb" rx="2"/>
 <text x="678.8" y="187.5" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">162,180</text>
 <text x="678.8" y="412" font-size="11.5" fill="#475467" text-anchor="middle">mxk8v4@128K (annex)</text>
 <rect x="755.2" y="297.4" width="30.0" height="96.6" fill="#2563eb" rx="2"/>
 <text x="770.2" y="291.4" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">78,175</text>
-<text x="770.2" y="412" font-size="11.5" fill="#475467" text-anchor="middle">mxfp8@64K (annex)</text>
-<rect x="84" y="416" width="12" height="12" fill="#2563eb" rx="2"/>
-<text x="101" y="426" font-size="11.5" fill="#1d2939">KV pool</text>
-<text x="450" y="458" font-size="12.5" fill="#475467" text-anchor="middle">KV pool (tokens)</text>
+<text x="770.2" y="426" font-size="11.5" fill="#475467" text-anchor="middle">mxfp8@64K (annex)</text>
+<text x="450" y="442" font-size="12.5" fill="#475467" text-anchor="middle">KV pool (tokens)</text>
 </svg>

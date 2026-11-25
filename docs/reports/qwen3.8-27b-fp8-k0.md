@@ -12,7 +12,7 @@
 | Speculative decoding | disabled |
 | Max model len | 262144 |
 | KV pool (this boot) | 494,979 tokens (r240b posture) |
-| Date | 2026-11-24 |
+| Date | 2026-11-25 |
 | Cell outcome | FACES_OK |
 
 ## Executive summary
@@ -342,7 +342,7 @@ Percentage of ideal linear scaling achieved as concurrency rises (100% = n× the
 ### Validated invocation (what the gate ran, byte-exact)
 
 ```bash
-# image vllm-arc:v0.30.0-b70-cert28 ; 2026-11-24 ; TP2 on 2x Arc Pro B70
+# image vllm-arc:v0.30.0-b70-cert28 ; 2026-11-25 ; TP2 on 2x Arc Pro B70
 ARC_IMAGE=vllm-arc:v0.30.0-b70-cert28 ARC_NAME=arc-b70 \
   ARC_MODEL=/models/qwen3.8-27b-fp8 ARC_SERVED=qwen3.8-27b-fp8 ARC_GRAPH=1 ARC_LMC=1 ARC_FP8=1 ARC_SPEC=0 \
   bash serve_arc_b70.sh     # tools/serve_arc_b70.sh in this repo

@@ -3,27 +3,41 @@
 <text x="84" y="26" font-size="17" font-weight="600" fill="#101828">MX KV aggregate vs concurrency — qwen fp8 k3 64K (t0)</text>
 <line x1="84" y1="394.0" x2="816" y2="394.0" stroke="#f0f0f0" stroke-width="1"/>
 <text x="76" y="398.0" font-size="11" fill="#667085" text-anchor="end">0</text>
-<line x1="84" y1="300.4" x2="816" y2="300.4" stroke="#f0f0f0" stroke-width="1"/>
-<text x="76" y="304.4" font-size="11" fill="#667085" text-anchor="end">5</text>
-<line x1="84" y1="206.8" x2="816" y2="206.8" stroke="#f0f0f0" stroke-width="1"/>
-<text x="76" y="210.8" font-size="11" fill="#667085" text-anchor="end">10</text>
-<line x1="84" y1="113.2" x2="816" y2="113.2" stroke="#f0f0f0" stroke-width="1"/>
-<text x="76" y="117.2" font-size="11" fill="#667085" text-anchor="end">15</text>
-<rect x="160.5" y="156.4" width="30.0" height="237.6" fill="#dc2626" rx="2"/>
-<text x="175.5" y="150.4" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">13</text>
+<line x1="84" y1="307.9" x2="816" y2="307.9" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="311.9" font-size="11" fill="#667085" text-anchor="end">5</text>
+<line x1="84" y1="221.7" x2="816" y2="221.7" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="225.7" font-size="11" fill="#667085" text-anchor="end">10</text>
+<line x1="84" y1="135.6" x2="816" y2="135.6" stroke="#f0f0f0" stroke-width="1"/>
+<text x="76" y="139.6" font-size="11" fill="#667085" text-anchor="end">15</text>
+<rect x="126.5" y="140.0" width="30.0" height="254.0" fill="#2563eb" rx="2"/>
+<text x="141.5" y="134.0" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">15</text>
+<rect x="160.5" y="173.9" width="30.0" height="220.1" fill="#dc2626" rx="2"/>
+<text x="175.5" y="167.9" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">13</text>
+<rect x="194.5" y="146.6" width="30.0" height="247.4" fill="#059669" rx="2"/>
+<text x="209.5" y="140.6" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">14</text>
 <text x="175.5" y="412" font-size="11.5" fill="#475467" text-anchor="middle">c1</text>
-<rect x="343.5" y="112.0" width="30.0" height="282.0" fill="#dc2626" rx="2"/>
-<text x="358.5" y="106.0" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">15</text>
+<rect x="309.5" y="122.7" width="30.0" height="271.3" fill="#2563eb" rx="2"/>
+<text x="324.5" y="116.7" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">16</text>
+<rect x="343.5" y="131.9" width="30.0" height="262.1" fill="#dc2626" rx="2"/>
+<text x="358.5" y="125.9" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">15</text>
+<rect x="377.5" y="131.8" width="30.0" height="262.2" fill="#059669" rx="2"/>
+<text x="392.5" y="125.8" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">15</text>
 <text x="358.5" y="412" font-size="11.5" fill="#475467" text-anchor="middle">c2</text>
-<rect x="526.5" y="99.2" width="30.0" height="294.8" fill="#dc2626" rx="2"/>
-<text x="541.5" y="93.2" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">16</text>
+<rect x="492.5" y="104.4" width="30.0" height="289.6" fill="#2563eb" rx="2"/>
+<text x="507.5" y="98.4" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">17</text>
+<rect x="526.5" y="119.2" width="30.0" height="274.8" fill="#dc2626" rx="2"/>
+<text x="541.5" y="113.2" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">16</text>
+<rect x="560.5" y="118.6" width="30.0" height="275.4" fill="#059669" rx="2"/>
+<text x="575.5" y="112.6" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">16</text>
 <text x="541.5" y="412" font-size="11.5" fill="#475467" text-anchor="middle">c4</text>
+<rect x="675.5" y="99.2" width="30.0" height="294.8" fill="#2563eb" rx="2"/>
+<text x="690.5" y="93.2" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">17</text>
 <text x="724.5" y="412" font-size="11.5" fill="#475467" text-anchor="middle">c8</text>
-<rect x="84" y="416" width="12" height="12" fill="#2563eb" rx="2"/>
-<text x="101" y="426" font-size="11.5" fill="#1d2939">mxfp4</text>
-<rect x="164" y="416" width="12" height="12" fill="#dc2626" rx="2"/>
-<text x="181" y="426" font-size="11.5" fill="#1d2939">mxfp8</text>
-<rect x="244" y="416" width="12" height="12" fill="#059669" rx="2"/>
-<text x="261" y="426" font-size="11.5" fill="#1d2939">mxk8v4</text>
+<rect x="84" y="420" width="12" height="12" fill="#2563eb" rx="2"/>
+<text x="101" y="430" font-size="11.5" fill="#1d2939">mxfp4</text>
+<rect x="164" y="420" width="12" height="12" fill="#dc2626" rx="2"/>
+<text x="181" y="430" font-size="11.5" fill="#1d2939">mxfp8</text>
+<rect x="244" y="420" width="12" height="12" fill="#059669" rx="2"/>
+<text x="261" y="430" font-size="11.5" fill="#1d2939">mxk8v4</text>
 <text x="450" y="458" font-size="12.5" fill="#475467" text-anchor="middle">Aggregate (tok/s)</text>
 </svg>

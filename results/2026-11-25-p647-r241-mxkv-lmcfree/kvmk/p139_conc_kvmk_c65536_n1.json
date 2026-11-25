@@ -1,0 +1,31 @@
+{
+ "tag": "kvmk_c65536_n1",
+ "ctx": 65536,
+ "conc": 1,
+ "max_tokens": 600,
+ "model": "qwen3.8-27b-fp8",
+ "temperature": 0.0,
+ "n_ok": 1,
+ "n_fail": 0,
+ "requests": [
+  {
+   "slot": 0,
+   "error": null,
+   "ttft_s": 29.9218647290254,
+   "total_s": 41.78029119002167,
+   "n_stream_chunks": 154,
+   "itl_ms_p50": 77.70125498063862,
+   "itl_ms_p90": 77.9676609672606,
+   "itl_ms_p99": 78.82253604475409
+  }
+ ],
+ "ttft_mean_s": 29.9218647290254,
+ "ttft_max_s": 29.9218647290254,
+ "per_user_tps": [
+  50.6
+ ],
+ "per_user_mean_tps": 50.59693222987629,
+ "per_user_min_tps": 50.59693222987629,
+ "agg_tps_wall": 14.360838158621958,
+ "wall_s": 41.78029119002167
+}

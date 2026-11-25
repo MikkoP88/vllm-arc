@@ -46,10 +46,10 @@
 <polygon points="267.0,319.4 272.5,324.9 267.0,330.4 261.5,324.9" fill="#9333ea"/>
 <polygon points="450.0,404.3 455.5,409.8 450.0,415.3 444.5,409.8" fill="#9333ea"/>
 <polygon points="633.0,424.9 638.5,430.4 633.0,435.9 627.5,430.4" fill="#9333ea"/>
-<text x="84.0" y="98.1" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">96</text>
-<text x="84.0" y="114.8" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">92</text>
-<text x="84.0" y="130.9" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">88</text>
-<text x="84.0" y="179.3" font-size="10" fill="#9333ea" text-anchor="middle" font-weight="600">76</text>
+<text x="93.1" y="98.1" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">96</text>
+<text x="93.1" y="114.8" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">92</text>
+<text x="93.1" y="130.9" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">88</text>
+<text x="93.1" y="179.3" font-size="10" fill="#9333ea" text-anchor="middle" font-weight="600">76</text>
 <text x="267.0" y="148.5" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">84</text>
 <text x="267.0" y="195.3" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">73</text>
 <text x="267.0" y="229.5" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">64</text>
@@ -62,9 +62,9 @@
 <text x="633.0" y="318.0" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">42</text>
 <text x="633.0" y="357.4" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">33</text>
 <text x="633.0" y="421.4" font-size="10" fill="#9333ea" text-anchor="middle" font-weight="600">17</text>
-<text x="816.0" y="267.8" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">55</text>
-<text x="816.0" y="338.0" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">38</text>
-<text x="816.0" y="375.1" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">29</text>
+<text x="806.9" y="267.8" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">55</text>
+<text x="806.9" y="338.0" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">38</text>
+<text x="806.9" y="375.1" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">29</text>
 <line x1="84" y1="494" x2="100" y2="494" stroke="#2563eb" stroke-width="3"/>
 <text x="104" y="498" font-size="11.5" fill="#1d2939">2 requests</text>
 <line x1="192" y1="494" x2="208" y2="494" stroke="#dc2626" stroke-width="3"/>

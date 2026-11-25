@@ -39,9 +39,9 @@
 <polygon points="450.0,175.9 444.5,185.9 455.5,185.9" fill="#059669"/>
 <polygon points="633.0,166.7 627.5,176.7 638.5,176.7" fill="#059669"/>
 <polygon points="816.0,93.7 810.5,103.7 821.5,103.7" fill="#059669"/>
-<text x="84.0" y="134.2" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">61</text>
-<text x="84.0" y="210.8" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">45</text>
-<text x="84.0" y="237.0" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">45</text>
+<text x="93.1" y="134.2" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">61</text>
+<text x="93.1" y="210.8" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">45</text>
+<text x="93.1" y="237.0" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">45</text>
 <text x="267.0" y="192.3" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">49</text>
 <text x="267.0" y="207.9" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">46</text>
 <text x="267.0" y="233.3" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">45</text>
@@ -51,9 +51,9 @@
 <text x="633.0" y="163.2" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">55</text>
 <text x="633.0" y="182.5" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">51</text>
 <text x="633.0" y="208.1" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">51</text>
-<text x="816.0" y="90.2" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">70</text>
-<text x="816.0" y="154.4" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">57</text>
-<text x="816.0" y="180.4" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">56</text>
+<text x="806.9" y="90.2" font-size="10" fill="#059669" text-anchor="middle" font-weight="600">70</text>
+<text x="806.9" y="154.4" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="600">57</text>
+<text x="806.9" y="180.4" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="600">56</text>
 <line x1="84" y1="494" x2="100" y2="494" stroke="#2563eb" stroke-width="3"/>
 <text x="104" y="498" font-size="11.5" fill="#1d2939">ITL p50</text>
 <line x1="170" y1="494" x2="186" y2="494" stroke="#dc2626" stroke-width="3"/>

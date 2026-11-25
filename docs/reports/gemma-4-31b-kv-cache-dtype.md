@@ -8,9 +8,18 @@
 | Menu | fp8_e4m3 · auto (fp16 KV, maxlen-capped) · mxfp4 · mxfp8 · mxk8v4 (MX KV, native) · fp8_e5m2 (refusal probe) |
 | Faces | r240b: the `gf8` ctrl full ladder {1,2,3,4,5,6,7,8} at 1K/8K/32K + t1.0 (14/14 served); the `gkv_m*` MX lanes banked the {1,2,4,8} grid + t1.0 solos but ZERO faces served (hd512 decode refusal below); r240c annex: `gm4x` (W4A16 weights + fp8 KV at maxlen 131072, 26/26 served) carries the 128K story, `gf8x64`/`gm8x64` close the 64K rung (2/2 each), `gkv_m4x`/`gkv_mkx`/`gkv_m8x64` banked the native MX grids but zero faces served, and `gm8x`/`gkv_m8x131` bank the 8-bit 128K refusals |
 | Engine | vLLM v0.30.0 — vllm-arc v0.30.0-b70-cert28, TP2 |
-| Date | 2026-11-24 |
+| Date | 2026-11-25 |
 
 The gemma-side answer to the question the qwen report asks ([qwen3.8-27b-fp8-kv-cache-dtype.md](qwen3.8-27b-fp8-kv-cache-dtype.md)): what the KV-cache dtype menu buys on the second model. Gemma's geometry sets the terms — no MTP head (every row is spec-free k0 decode), maxlen 40960, and pools roughly an order below qwen's, so high-ctx concurrency points can bank as KV_CAP rows rather than measurements. **The r240b/r240c outcome sets the headline: the native MX-KV menu does not serve gemma on this image.** Every `gkv_m*` lane boots and banks its pool, but the FIRST decode request fatals — gemma's 10 hd512 full-attention layers sit outside the arc7 compiled instantiations (`mx_paged_decode` covers head_size 128/256 only), so all 85 banked `gkv_m*` faces across r240b + r240c are connection-refused artifacts with zero served requests. On gemma, `fp8_e4m3` is the only servable KV dtype; the packed-capacity story rides the weights lane instead (`gm4x`: W4A16 + fp8 KV serves the full 128K posture). A `-` cell is a banked boot refusal, capacity cliff, or this banked decode refusal — never unmeasured coverage.
+
+## The KV menu by category (gemma)
+
+| Category | dtypes | What it is | Serves on gemma (this image) |
+|---|---|---|---|
+| Byte-exact FP8 family | fp8_e4m3 (incumbent), auto (fp16 KV) | 1- or 2-byte/elem KV; `auto` pays the fp16 2-byte law on the 31B geometry — the pool cannot cover one 40K session | fp8_e4m3 only; `auto` refuses at maxlen 40960, serves at 16384 |
+| MX microscaling KV | mxfp4, mxfp8, mxk8v4 | OCP-MX KV (e2m1/e4m3 + E8M0 scales) via the native `mx_paged_decode` path; the pools prove the capacity thesis (mxfp4@131072 banks 238,497 tokens) | **no — the hd512 decode refusal**: gemma's 10 full-attention layers are head_size 512, outside the compiled D=128/256 instantiations; every face is a banked first-decode refusal |
+| Weights-quant capacity lane | mxfp4 W4A16 + fp8_e4m3 KV (`gm4x`) | 4-bit weights free the memory the KV pool needs — 5.15x the certified fp8 pool and the maxlen raise to 131072 in one posture | **yes — the only lane that serves 128K** (26/26 faces, 28.3 tok/s n1 @128K) |
+| Hard refusal | fp8_e5m2 | No e5m2 KV dequant path in esimd FA2 on Xe2 — engine-level, same law as qwen | refuses at boot |
 
 | --kv-cache-dtype | Context | TTFT solo (s) | Decode solo (tok/s) | Agg @ c8 (tok/s) | Per-user @ c8 (tok/s) | ITL p50 (ms) | KV pool (tok) | Note |
 |---|---|---|---|---|---|---|---|---|
@@ -27,7 +36,7 @@ The gemma-side answer to the question the qwen report asks ([qwen3.8-27b-fp8-kv-
 | fp8_e5m2 | 8K | - | - | - | - | - | - | refusal probe: the e5m2 law is engine-level (no e5m2 KV dequant path in esimd FA2 on Xe2, banked on qwen kve5m2) |
 | fp8_e5m2 | 32K | - | - | - | - | - | - | refusal probe: the e5m2 law is engine-level (no e5m2 KV dequant path in esimd FA2 on Xe2, banked on qwen kve5m2) |
 
-## MX KV lanes — the attempted sweep (r240b, grid {1,2,4,8})
+## FP8 versus native MX KV — the hd512 refusal (the attempted r240b sweep)
 
 All three native MX lanes were attempted at maxlen 40960 (grid {1,2,4,8} at 1K/8K/32K + t1.0 solos). Zero faces served — every banked face is the same first-decode engine refusal, so the sweep collapses into the refusal-summary table below rather than all-dash concurrency tables. The pools these lanes banked at boot remain real capacity facts (the capacity table below) — the lane is refused at decode, not at boot.
 
@@ -69,6 +78,24 @@ The r240b gemma cells above run at the certified maxlen 40960. The 64K/128K step
 | mxk8v4 (gkv_mkx) | 128 | - | - | - | - | - |
 
 Every `-` row above is the same banked first-decode refusal (hd512 outside the compiled D=128/256 instantiations) — attempted, never served. The weights-side rows that DID serve at 131072, and the mxfp8 controls' refusal that banks the same capacity law from the weights side: [gemma-4-31b-mxfp4.md](gemma-4-31b-mxfp4.md).
+
+### FP8 versus the W4A16 weights lane — the comparison that serves
+
+The incumbent (`gf8`: online-fp8 weights + fp8_e4m3 KV at maxlen 40960) against the capacity lane (`gm4x`: MXFP4 W4A16 weights + fp8_e4m3 KV at maxlen 131072). Same KV dtype — the weights quant is the difference; the lines show the cost of the 128K posture in speed and TTFT against the fp8 lane's 32K ceiling:
+
+![FP8 versus W4A16 weights — per-user speed vs context length (solo)](charts/gw_speed_ctx.svg)
+
+<i>FP8 versus W4A16 weights — per-user speed vs context length (solo)</i>
+
+![FP8 versus W4A16 weights — TTFT vs context length (solo)](charts/gw_ttft_ctx.svg)
+
+<i>FP8 versus W4A16 weights — TTFT vs context length (solo)</i>
+
+![FP8 versus W4A16 weights — aggregate @ c8 vs context length](charts/gw_agg8_ctx.svg)
+
+<i>FP8 versus W4A16 weights — aggregate @ c8 vs context length</i>
+
+*Interpretation:* the fp8 lane is faster per-token but tops out at 32K (its 40960 maxlen and 56,128-token pool); the W4A16 lane pays ~15–30 % solo speed for the 288,972-token pool and serves rungs the 8-bit lanes cannot boot. The lines never cross a refusal — the fp8 line simply ends where the pool ends.
 
 ### The 64K closure — the 8-bit lanes at maxlen 65536
 
@@ -118,6 +145,12 @@ The @64K/@128K cells are whole-pool arithmetic; for the maxlen-40960 rows the ru
 
 The full gemma fp8 lane invocation: [gemma-4-31b-fp8.md](gemma-4-31b-fp8.md).
 
+## FP8 versus the alternatives — the charts in one place
+
+Every chart holds the weights lane constant unless the comparison IS the weights lane, and varies the KV dtype; the fp8_e4m3 incumbent (`gf8`) is the control series. A missing bar or point is a banked refusal (boot, capacity cliff, or the hd512 first-decode refusal) — never unmeasured coverage.
+
+### The 8K/32K snapshot — every servable dtype versus fp8
+
 ![TTFT by KV-cache dtype (gemma, solo 8K/32K)](charts/kvdtg_ttft.svg)
 
 <i>TTFT by KV-cache dtype (gemma, solo 8K/32K)</i>
@@ -127,6 +160,8 @@ The full gemma fp8 lane invocation: [gemma-4-31b-fp8.md](gemma-4-31b-fp8.md).
 
 <i>Solo decode speed by KV-cache dtype (gemma, 8K/32K)</i>
 *Interpretation:* a missing bar is a banked boot refusal, KV_CAP point, or the hd512 first-decode refusal — never unmeasured coverage.
+
+### Gemma KV pool by dtype — the capacity axis
 
 ![Gemma KV pool by dtype — the dtype menu's real axis](charts/kvdtg_pool.svg)
 
