@@ -1,0 +1,74 @@
+INFO 11-26 17:54:51 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+INFO 11-26 17:54:51 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+INFO 11-26 17:54:51 [__init__.py:54] - hpu -> vllm_gaudi:register
+INFO 11-26 17:54:51 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+INFO 11-26 17:54:51 [platform.py:417] ArcXpuPlatform: wheel hook torch_utils <- patches.mx_dtype_map OK (already imported)
+INFO 11-26 17:54:51 [platform.py:437] ArcXpuPlatform: source-transform targets already imported at install: ['vllm.v1.attention.backends.registry']
+INFO 11-26 17:54:51 [platform.py:221] ArcXpuPlatform: injected AttentionBackendEnum.MXKV -> vllm_gaudi.xpu.patches.mx_kv.engine.MxAttentionBackend
+INFO 11-26 17:54:52 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+INFO 11-26 17:54:52 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+INFO 11-26 17:54:52 [__init__.py:54] - hpu -> vllm_gaudi:register
+INFO 11-26 17:54:52 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+INFO 11-26 17:54:52 [__init__.py:272] Platform plugin arc is activated
+INFO 11-26 17:54:52 [__init__.py:272] Platform plugin arc is activated
+INFO 11-26 17:55:02 [platform.py:371] ArcXpuPlatform: wheel hook kv_cache_interface <- patches.mx_kv_mode OK
+WARNING 11-26 17:55:04 [argparse_utils.py:276] With `vllm serve`, you should provide the model as a positional argument or in a config file instead of via the `--model` option. The `--model` option will be removed in a future version.
+(APIServer pid=13) INFO 11-26 17:55:04 [api_utils.py:347] 
+(APIServer pid=13) INFO 11-26 17:55:04 [api_utils.py:347]        █     █     █▄   ▄█
+(APIServer pid=13) INFO 11-26 17:55:04 [api_utils.py:347]  ▄▄ ▄█ █     █     █ ▀▄▀ █  version 0.30.0
+(APIServer pid=13) INFO 11-26 17:55:04 [api_utils.py:347]   █▄█▀ █     █     █     █  model   /models/target
+(APIServer pid=13) INFO 11-26 17:55:04 [api_utils.py:347]    ▀▀  ▀▀▀▀▀ ▀▀▀▀▀ ▀     ▀
+(APIServer pid=13) INFO 11-26 17:55:04 [api_utils.py:347] 
+(APIServer pid=13) INFO 11-26 17:55:04 [api_utils.py:286] non-default args: {'model_tag': '/models/target', 'chat_template': '/root/chat_template_qwen38_high.jinja', 'enable_auto_tool_choice': True, 'tool_call_parser': 'qwen3_coder', 'model': '/models/target', 'trust_remote_code': True, 'dtype': 'float16', 'max_model_len': 262144, 'quantization': 'mxfp4', 'served_model_name': ['qwen3.8-27b-fp8'], 'reasoning_parser': 'qwen3', 'tensor_parallel_size': 2, 'block_size': 64, 'gpu_memory_utilization': 0.8, 'kv_cache_dtype': 'fp8_e4m3', 'enable_prefix_caching': True, 'mamba_ssm_cache_dtype': 'float16', 'mamba_cache_mode': 'align', 'max_num_batched_tokens': 8192, 'max_num_seqs': 64, 'disable_hybrid_kv_cache_manager': False, 'speculative_config': {'method': 'mtp', 'num_speculative_tokens': 3, 'draft_sample_method': 'probabilistic'}, 'kv_transfer_config': KVTransferConfig(kv_connector='LMCacheConnectorV1', engine_id='arc-p40', kv_buffer_device='xpu', kv_buffer_size=1000000000.0, kv_role='kv_both', kv_rank=None, kv_parallel_size=1, kv_ip='127.0.0.1', kv_port=14579, kv_connector_extra_config={'use_native': True, 'lmcache.extra_config': {'mamba_pool_ratio': 2}}, kv_connector_module_path=None, enable_permute_local_kv=False, kv_load_failure_policy='fail'), 'compilation_config': {'mode': <CompilationMode.NONE: 0>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': [], 'ir_enable_torch_wrap': None, 'splitting_ops': None, 'compile_mm_encoder': False, 'cudagraph_mm_encoder': False, 'encoder_cudagraph_token_budgets': [], 'encoder_cudagraph_max_vision_items_per_batch': 0, 'encoder_cudagraph_max_frames_per_batch': None, 'compile_sizes': None, 'compile_ranges_endpoints': None, 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.FULL_DECODE_ONLY: (2, 0)>, 'cudagraph_num_of_warmups': 0, 'cudagraph_capture_sizes': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 20, 25, 30, 35, 40, 45, 48, 50, 55, 60, 64, 65, 70, 75, 80, 85, 90, 95, 96, 100, 105, 110, 112, 115, 120, 125, 128, 130, 135, 140, 145, 150, 155, 160, 165, 170, 175, 180, 185, 190, 192, 195, 200, 205, 210, 215, 220, 224, 225, 230, 235, 240, 245, 250, 255, 256, 260, 265, 270, 275, 280, 285, 290, 295, 300, 305, 310, 315, 320], 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': None, 'pass_config': {}, 'max_cudagraph_capture_size': None, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': False}, 'local_cache_dir': None, 'fast_moe_cold_start': None, 'static_all_moe_layers': []}}
+(APIServer pid=13) WARNING 11-26 17:55:04 [envs.py:2248] Unknown vLLM environment variable detected: VLLM_QUANTIZE_Q40_LIB
+(APIServer pid=13) INFO 11-26 17:55:30 [model.py:692] Resolved architecture: Qwen3_5ForConditionalGeneration
+(APIServer pid=13) WARNING 11-26 17:55:30 [model.py:2364] Casting torch.bfloat16 to torch.float16.
+(APIServer pid=13) INFO 11-26 17:55:30 [model.py:2030] Using max model len 262144
+(APIServer pid=13) WARNING 11-26 17:55:31 [indexer_topk.py:29] Failed to import the DeepSelect extension (vllm._deepselect_C): No module named 'vllm._deepselect_C'
+(APIServer pid=13) Traceback (most recent call last):
+(APIServer pid=13)   File "/opt/venv/bin/vllm", line 6, in <module>
+(APIServer pid=13)     sys.exit(main())
+(APIServer pid=13)              ^^^^^^
+(APIServer pid=13)   File "/opt/venv/lib/python3.12/site-packages/vllm/entrypoints/cli/main.py", line 106, in main
+(APIServer pid=13)     args.dispatch_function(args)
+(APIServer pid=13)   File "/opt/venv/lib/python3.12/site-packages/vllm/entrypoints/cli/serve.py", line 154, in cmd
+(APIServer pid=13)     uvloop.run(run_server(args))
+(APIServer pid=13)   File "/opt/venv/lib/python3.12/site-packages/uvloop/__init__.py", line 96, in run
+(APIServer pid=13)     return __asyncio.run(
+(APIServer pid=13)            ^^^^^^^^^^^^^^
+(APIServer pid=13)   File "/usr/lib/python3.12/asyncio/runners.py", line 194, in run
+(APIServer pid=13)     return runner.run(main)
+(APIServer pid=13)            ^^^^^^^^^^^^^^^^
+(APIServer pid=13)   File "/usr/lib/python3.12/asyncio/runners.py", line 118, in run
+(APIServer pid=13)     return self._loop.run_until_complete(task)
+(APIServer pid=13)            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(APIServer pid=13)   File "uvloop/loop.pyx", line 1515, in uvloop.loop.Loop.run_until_complete
+(APIServer pid=13)   File "/opt/venv/lib/python3.12/site-packages/uvloop/__init__.py", line 48, in wrapper
+(APIServer pid=13)     return await main
+(APIServer pid=13)            ^^^^^^^^^^
+(APIServer pid=13)   File "/opt/venv/lib/python3.12/site-packages/vllm/entrypoints/launchers/api_server/entry.py", line 176, in run_server
+(APIServer pid=13)     await run_server_worker(listen_address, sock, args, **uvicorn_kwargs)
+(APIServer pid=13)   File "/opt/venv/lib/python3.12/site-packages/vllm/entrypoints/launchers/api_server/entry.py", line 190, in run_server_worker
+(APIServer pid=13)     async with build_async_engine_client(
+(APIServer pid=13)   File "/usr/lib/python3.12/contextlib.py", line 210, in __aenter__
+(APIServer pid=13)     return await anext(self.gen)
+(APIServer pid=13)            ^^^^^^^^^^^^^^^^^^^^^
+(APIServer pid=13)   File "/opt/venv/lib/python3.12/site-packages/vllm/entrypoints/launchers/api_server/entry.py", line 58, in build_async_engine_client
+(APIServer pid=13)     async with build_async_engine_client_from_engine_args(
+(APIServer pid=13)   File "/usr/lib/python3.12/contextlib.py", line 210, in __aenter__
+(APIServer pid=13)     return await anext(self.gen)
+(APIServer pid=13)            ^^^^^^^^^^^^^^^^^^^^^
+(APIServer pid=13)   File "/opt/venv/lib/python3.12/site-packages/vllm/entrypoints/launchers/api_server/entry.py", line 82, in build_async_engine_client_from_engine_args
+(APIServer pid=13)     vllm_config = engine_args.create_engine_config(usage_context=usage_context)
+(APIServer pid=13)                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(APIServer pid=13)   File "/opt/venv/lib/python3.12/site-packages/vllm/engine/arg_utils.py", line 2073, in create_engine_config
+(APIServer pid=13)     model_config = self.create_model_config()
+(APIServer pid=13)                    ^^^^^^^^^^^^^^^^^^^^^^^^^^
+(APIServer pid=13)   File "/opt/venv/lib/python3.12/site-packages/vllm/engine/arg_utils.py", line 1820, in create_model_config
+(APIServer pid=13)     return ModelConfig(
+(APIServer pid=13)            ^^^^^^^^^^^^
+(APIServer pid=13)   File "/opt/venv/lib/python3.12/site-packages/pydantic/_internal/_dataclasses.py", line 121, in __init__
+(APIServer pid=13)     s.__pydantic_validator__.validate_python(ArgsKwargs(args, kwargs), self_instance=s)
+(APIServer pid=13) pydantic_core._pydantic_core.ValidationError: 1 validation error for ModelConfig
+(APIServer pid=13)   Value error, Quantization method specified in the model config (fp8) does not match the quantization method specified in the `quantization` argument (mxfp4). [type=value_error, input_value=ArgsKwargs((), {'model': ...nderer_num_workers': 1}), input_type=ArgsKwargs]
+(APIServer pid=13)     For further information visit https://errors.pydantic.dev/2.13/v/value_error

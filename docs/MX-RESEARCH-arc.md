@@ -37,8 +37,8 @@ cert29).
 | mxfp4-W4A4 (joint dtypes) | stock `XPUMxFp4LinearKernel` + `_xpu_C.fp4_gemm` | per-call activation quant to mxfp4 group-32 then joint-dtypes gemm | **closed (measured inferior)** — the p630 FIX-P reroute exists precisely to skip the per-call activation quant; shape-dependent gemm losses (`results/2026-11-08-p630-mxfp4-perf/`) |
 | mxfp8-W8A16 | torch `float8_e4m3fn` + conversion | no weight savings vs fp8, bf16-activation tax | **closed (measured dud)** — ≈ baseline decode (`results/2026-11-08-p631-mxfp8-w8a16/`, decomposition `results/2026-11-10-p635-telemetry/vmatrix/`) |
 | checkpoint-fp8 | certified incumbent path | native lane | **CERTIFIED** — the perf default |
-| **mxfp4-W4A8** | C-ext `fp4_gemm_w4a8` (per-token activation quant + packed f4 weights — the op ships in the onednn family) | e4m3 activations on the counter-operand-conversion dot (the mechanism that runs W8A16 at ~1.03× bf16); Intel's own `greedy_w4a8` quant-GEMM kernels are xe_3-only (xe2 verdict class b) — our lane is the conversion dot, not a native-rate claim; the old W4A8 refusal was OUR dispatch default, not hardware | **OPEN candidate** (§5.3) — the op exists, the lane is hardware-legal, nothing measured |
-| group size 16 / 64 | MX standard is 32; the C-ext op contract and the mx_kv layout are group-32 | 64 halves scale bytes (1 B/32 → 1 B/64); 16 doubles them | **open (offline-oracle first)** — no measured basis; coarser scales risk the K-precision acceptance class (§5) |
+| **mxfp4-W4A8** | C-ext `fp4_gemm_w4a8` (per-token activation quant + packed f4 weights — the op ships in the onednn family) | e4m3 activations on the counter-operand-conversion dot (the mechanism that runs W8A16 at ~1.03× bf16); Intel's own `greedy_w4a8` quant-GEMM kernels are xe_3-only (xe2 verdict class b) — our lane is the conversion dot, not a native-rate claim; the old W4A8 refusal was OUR dispatch default, not hardware | **closed (measured dominated, r252)** — first e2e measurement, on cert28 at the r240 record lane: −34–44 % per-user decode TPS, +76–80 % solo ITL vs W4A16 at every face, acceptance parity (no compensating gain); the per-call activation-quant tax applies at ANY granularity (`results/2026-11-26-p647-pi-r252-w4a8-ab/`) |
+| group size 16 / 64 | MX standard is 32; the C-ext op contract and the mx_kv layout are group-32 | 64 halves scale bytes (1 B/32 → 1 B/64); 16 doubles them | **closed (deferred, r251)** — band measured: e4m3/K ratio 1.000 everywhere (scale-free RN), e2m1/V +3–18 % worst-case on the acceptance-free operand; weights side vendor-locked (PWAL `[k/32, n]`, OCP MX block); +2 % capacity with no pool-binding target face and the wiring surface is the code cert29 freezes (`results/2026-11-26-p647-pi-r251-group64-band/`) |
 | per-channel E8M0 (weights) | composition of existing pieces | coarser than per-group | **open (low)** — marginal size win, error-profile risk |
 | torchao mx_formats / `to_mx` | **not installed** | — | **closed (absent + scope law)** — new dependency for a surface the fork owns more directly |
 | torch native `scaled_mm` recipe API | present (§1) | conversion-based dot | **closed as a vehicle today** — the dedicated C-ext ops already beat the generic path at our shapes; re-open only on a torch/oneCCL rebase (watch 2.14, upgrade verdict) |
@@ -70,31 +70,61 @@ That asymmetry defines the whole mixed-lane space:
 
 ## 5. Ranked open candidates (feeds the improvement loop)
 
-1. **mxfp4-W4A8 weights lane** — the op ships (`fp4_gemm_w4a8`), the
-   lane is hardware-legal per the xe2 verdict; activation quant is
-   per-token (not per-call group-32) so the p630 tax class does not
-   apply. Measure decode + ITL vs W4A16 at 8K–128K.
-2. per-channel E8M0 / per-head KV scales — marginal; offline-oracle
-   only if 1 leaves headroom.
+The P-I improve phase (2026-11-26) dispositioned all three ranked
+candidates — **no open candidate remains pre-cert29**:
 
-(Group-64 E8M0 — the former #1 — closed DEFERRED at P-I r251 with
-the band measured: e4m3/K ratio 1.000 at every population including
-adversarial (the float RN error is scale-free; e4m3's floor never
-binds), e2m1/V +3–18 % rmse worst-case with the cost landing on the
-r238 acceptance-free operand; weights side vendor-locked (PWAL
-[k/32, n], OCP MX block); capacity +2.0 % on the champion lane with
-no pool-binding target face, and the wiring surface is exactly the
-P-H2-validated interop code cert29 freezes. Reopen on any qwen
-pool-binding face; the band is the enabling evidence.
-`results/2026-11-26-p647-pi-r251-group64-band/`. The former #1
-before that — k4v8 — closed dominated at P-I r250; see §6.)
+1. **mxfp4-W4A8 weights lane — CLOSED-DOMINATED at P-I r252**: the
+   first e2e measurement (cert28, the r240 q43 record lane — online
+   mxfp4 of the base checkpoint, spec3, graphs, KV fp8_e4m3), one
+   boot per mode, both legs op-presence-gated on the "probe
+   ACTIVE"/"reroute ACTIVE" serve line, erraudit clean, POOL
+   identical. Measured: **−34–44 % per-user decode TPS and +76–80 %
+   solo ITL vs W4A16 at every face** ({8K n1, 8K n8, 32K n1}),
+   TTFT +37–88 %. Acceptance canary parity (solo 8K byte-identical
+   131/186; 32K +0.7 %; n8 −2.3 %, in-band) — no compensating gain,
+   and informationally none possible (e4m3 acts are a subset of the
+   W4A16 route's bf16 acts). Mechanism: the p630 per-call
+   activation-quant tax applies at ANY granularity (per-token row-
+   amax softens the reduction, not the tax) plus the (e4m3×f4)
+   conversion dot loses to the weight-decomposition route. Reopen
+   only on a native xe2 W4A8 kernel class change (vendor kernels are
+   xe_3-only). The r247 "per-token avoids the p630 tax class" framing
+   was the third lever slip.
+   `results/2026-11-26-p647-pi-r252-w4a8-ab/`.
+2. per-channel E8M0 / per-head KV scales — open (LOW), post-cert29:
+   scale bytes are 3–6 % of payload (the r251 group-capacity law),
+   so the ceiling is a few percent; offline-oracle first.
+3. group-64 E8M0 — closed DEFERRED at r251 with the band measured:
+   e4m3/K ratio 1.000 at every population including adversarial (the
+   float RN error is scale-free; e4m3's floor never binds), e2m1/V
+   +3–18 % rmse worst-case with the cost landing on the r238
+   acceptance-free operand; weights side vendor-locked (PWAL
+   [k/32, n], OCP MX block); capacity +2.0 % on the champion lane
+   with no pool-binding target face, and the wiring surface is
+   exactly the P-H2-validated interop code cert29 freezes. Reopen on
+   any qwen pool-binding face; the band is the enabling evidence.
+   `results/2026-11-26-p647-pi-r251-group64-band/`.
+4. k4v8 — closed dominated at r250: byte-identical to mxk8v4 at
+   every D while paying the twice-convicted e2m1 K on the only axis
+   that gates; see §6.
 
 Post-cert29 rungs by default (§10 gates first); nothing here blocks
 the cert29 cut — every blocking issue is closed (P-C kernel, P-D
-gate).
+gate) and the improvement phase is complete.
 
 ## 6. Closed channels (with the reason)
 
+- mxfp4-W4A8 weights lane (P-I r252, 2026-11-26): dominated by the
+  certified W4A16 record lane at every face — the first e2e
+  measurement (cert28, r240 record lane, one boot per mode,
+  op-presence-gated): −34–44 % per-user decode TPS, +76–80 % solo
+  ITL, +37–88 % TTFT; acceptance parity (no compensating gain —
+  e4m3 acts are informationally a subset of the bf16 acts). The
+  p630-class per-call activation-quant tax applies at ANY
+  granularity; the (e4m3×f4) conversion dot loses to the
+  weight-decomposition route. Reopen only on a native xe2 W4A8 kernel
+  class change (vendor kernels xe_3-only per the xe2 verdict).
+  `results/2026-11-26-p647-pi-r252-w4a8-ab/`.
 - k4v8 KV lane (P-I r250, 2026-11-26): dominated by certified
   mxk8v4 — slot bytes are symmetric in the K/V width mix, so k4v8 is
   byte-identical at every D (200/400/800 B at 128/256/512 — the

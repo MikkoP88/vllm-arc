@@ -1,0 +1,33 @@
+r252 W4A8 vs W4A16 A/B (cert28, qwen3.8-27b online mxfp4, spec3, graphs, KV fp8_e4m3)
+face       metric            w4a16      w4a8     delta      %
+c8192_n1           ttft       3.61      5.21    +1.604   +44.4%
+c8192_n1            pum      80.77     45.40   -35.370   -43.8%
+c8192_n1            agg      32.07     20.33   -11.734   -36.6%
+c8192_n1          itl50      37.16     67.02   +29.861   +80.4%
+c8192_n1          itl90      37.28     67.15   +29.869   +80.1%
+c8192_n1           wall       5.99      9.44    +3.456   +57.7%
+
+c8192_n8           ttft      19.60     36.90   +17.300   +88.3%
+c8192_n8            pum      19.90     13.15    -6.756   -33.9%
+c8192_n8            agg      31.30     17.91   -13.385   -42.8%
+c8192_n8          itl50      59.12     86.16   +27.042   +45.7%
+c8192_n8          itl90    1528.92   2178.26  +649.341   +42.5%
+c8192_n8           wall      32.72     57.16   +24.446   +74.7%
+
+c32768_n1          ttft      17.23     23.53    +6.301   +36.6%
+c32768_n1           pum      86.91     49.43   -37.485   -43.1%
+c32768_n1           agg       9.88      7.00    -2.874   -29.1%
+c32768_n1         itl50      39.34     69.26   +29.918   +76.0%
+c32768_n1         itl90      39.67     69.56   +29.892   +75.4%
+c32768_n1          wall      19.44     27.41    +7.976   +41.0%
+
+acceptance canary (spec_decode counter deltas per face window)
+  w4a16 c8192_n1: accepted=131 draft=186 acc/position=0.704
+  w4a16 c8192_n8: accepted=742 draft=864 acc/position=0.859
+  w4a16 c32768_n1: accepted=137 draft=168 acc/position=0.815
+  w4a8 c8192_n1: accepted=131 draft=186 acc/position=0.704
+  w4a8 c8192_n8: accepted=735 draft=876 acc/position=0.839
+  w4a8 c32768_n1: accepted=138 draft=168 acc/position=0.821
+
+erraudit: w4a16 ERROR=0 TRACEBACK=0 ; w4a8 ERROR=0 TRACEBACK=0
+POOL both legs: 599525 tokens (identical -- same weights bytes, same KV lane)

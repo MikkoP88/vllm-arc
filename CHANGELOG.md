@@ -12,6 +12,30 @@ the fork SHA it was built from.
 Phase labels P0–P6.38 refer to the plan's execution phases; every phase's
 raw evidence is banked under `results/YYYY-MM-DD-<phase>-*/`.
 
+## P-I r252 — W4A8 measured dominated at every face; the improve phase completes (2026-11-26)
+
+P-I cycle 3 of 3 — the corrected lever map's last pre-cert29 open
+candidate, measured e2e for the first time. Same-boot A/B on cert28
+at the r240 q43 record lane (online mxfp4 of the base qwen3.8-27b,
+spec3, graphs, KV fp8_e4m3): the `mxfp4-W4A8` probe lane (`_xpu_C.
+fp4_gemm_w4a8`, per-token e4m3 activations — op-presence gated on
+the "probe ACTIVE" serve line in both APIServer and Worker) vs the
+certified W4A16 incumbent. **Dominated at every face**: −34–44 %
+per-user decode TPS, +76–80 % solo ITL, +37–88 % TTFT at
+{8K n1, 8K n8, 32K n1}; erraudit clean on both boots; acceptance
+canary parity (solo 8K byte-identical 131/186 — no compensating
+gain, and informationally none possible). Mechanism: the p630-class
+per-call activation-quant tax applies at ANY granularity (per-token
+row-amax softens the reduction, not the tax) and the (e4m3×f4)
+conversion dot loses to the W4A16 weight-decomposition route —
+the r247 "per-token avoids the tax class" framing was the third
+lever slip. Reopen only on a native xe2 W4A8 kernel class change.
+With this, all three P-I cycles are dispositioned (r250 k4v8
+closed-dominated, r251 group-64 closed-deferred, r252 W4A8
+closed-dominated) — **no open improvement candidate remains
+pre-cert29; the next rung is the cert29 cut**.
+`results/2026-11-26-p647-pi-r252-w4a8-ab/`.
+
 ## P-I r251 — group-64 E8M0 band measured: zero cost on the gating operand; lane closed-deferred (2026-11-26)
 
 P-I cycle 2 of 3. The offline band oracle (cert28 container, the
