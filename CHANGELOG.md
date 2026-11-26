@@ -12,6 +12,31 @@ the fork SHA it was built from.
 Phase labels P0–P6.38 refer to the plan's execution phases; every phase's
 raw evidence is banked under `results/YYYY-MM-DD-<phase>-*/`.
 
+## P-I r251 — group-64 E8M0 band measured: zero cost on the gating operand; lane closed-deferred (2026-11-26)
+
+P-I cycle 2 of 3. The offline band oracle (cert28 container, the
+certified wheel's own `mx_quant` at torch 2.13.0+xpu, CPU-only,
+W14 untouched) measured group-64 vs the OCP group-32 round-trip
+error on three populations per operand format: **e4m3 — the
+acceptance-gating K operand of the champion mxk8v4 lane — costs
+literally zero** (rmse ratio 1.000 at every population including
+the adversarial 4x-adjacent-block case; float RN error is
+scale-free and e4m3's small-element floor never binds). e2m1 (V)
+takes +3–18 % rmse worst-case via its 0.5-of-scale grid floor —
+landing on the operand r238 measured acceptance-free; no new
+max-error class anywhere. Mechanism banked, 12 cells at D=128/256.
+The disposition closes DEFERRED, not on quality: the weights side
+is vendor-locked (PWAL `[k/32, n]` e8m0, the OCP MX 32-block, the
+fp4_gemm weight-decomposition route — the r247 "everywhere"
+framing was the second lever slip), capacity is +2.0 % on the
+champion lane with **no pool-binding target face** (the KV_CAP
+class was gemma D=512; target-only law), and the wiring surface is
+exactly the P-H2-validated interop code cert29 must freeze. Reopen
+trigger banked: any qwen pool-binding face — the band is the
+enabling evidence, acceptance probe the mandated next rung then.
+Bank: `results/2026-11-26-p647-pi-r251-group64-band/` (oracle +
+JSON + VERDICT).
+
 ## P-I r250 — k4v8 dispositioned closed-dominated; the lever map corrected (2026-11-26)
 
 The P-I improve phase opens with cycle 1 of 3. The k4v8 KV lane
