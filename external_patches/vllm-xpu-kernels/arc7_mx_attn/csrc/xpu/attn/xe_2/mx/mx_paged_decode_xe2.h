@@ -4,7 +4,8 @@
 // current SYCL queue. The MX deltas: a single uint8 TQ-AoS slot cache
 // in place of separate K/V caches, a format id in place of the dtype
 // pair, and decode-fixed flags (paged, varlen, no causal — the vendor
-// decode law).
+// decode law). Sliding-window bounds flow through since P-C2
+// (2026-11-25); -1/-1 keeps the historical windowless decode.
 #pragma once
 
 #include <sycl/sycl.hpp>
@@ -26,6 +27,11 @@ void cutlass_mx_paged_decode_xe2(
     int max_seqlen_q,
     int max_seqlen_k,
     double sm_scale,
+    // P-C2 (2026-11-25): sliding-window bounds, vendor convention
+    // (stock cutlass_paged_decode_impl order; -1/-1 = no local mask).
+    // W-token window = (W-1, 0) — the last W tokens per row.
+    int window_size_left,
+    int window_size_right,
     int num_kv_splits,
     std::optional<at::Tensor>& splits_per_seq,
     std::optional<at::Tensor>& work_list);

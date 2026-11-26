@@ -1,0 +1,55 @@
+[face: exact/d256p64] windowed native (W=64) vs window-masked fp64
+  ok   exact/d256p64/mxfp8: win64: d=1.95e-03 d_rounded=0.00e+00 cos=0.9999986 d_blind=8.28e-01
+  ok   exact/d256p64/mxfp4: win64: d=1.95e-03 d_rounded=6.10e-05 cos=0.9999987 d_blind=7.78e-01
+  ok   exact/d256p64/mxk8v4: win64: d=1.93e-03 d_rounded=1.49e-08 cos=0.9999986 d_blind=8.28e-01
+[face: exact/d256p16] windowed native (W=64) vs window-masked fp64
+  ok   exact/d256p16/mxfp8: win64: d=1.95e-03 d_rounded=0.00e+00 cos=0.9999986 d_blind=7.02e-01
+  ok   exact/d256p16/mxfp4: win64: d=1.92e-03 d_rounded=2.44e-04 cos=0.9999986 d_blind=7.62e-01
+  ok   exact/d256p16/mxk8v4: win64: d=1.91e-03 d_rounded=1.49e-08 cos=0.9999986 d_blind=6.99e-01
+[face: nonbinding/d256p64] lens <= W=64: windowed vs windowless twin
+  ok   nonbinding/d256p64/mxfp8: win64: d=3.45e-03 d_rounded=0.00e+00 cos=0.9999986 d_other=3.45e-03
+  ok   nonbinding/d256p64/mxfp4: win64: d=3.46e-03 d_rounded=1.22e-04 cos=0.9999986 d_other=3.46e-03
+  ok   nonbinding/d256p64/mxk8v4: win64: d=3.82e-03 d_rounded=0.00e+00 cos=0.9999986 d_other=3.82e-03
+[face: nonbinding/d256p16] lens <= W=64: windowed vs windowless twin
+  ok   nonbinding/d256p16/mxfp8: win64: d=3.45e-03 d_rounded=0.00e+00 cos=0.9999987 d_other=3.45e-03
+  ok   nonbinding/d256p16/mxfp4: win64: d=3.11e-03 d_rounded=1.22e-04 cos=0.9999987 d_other=3.11e-03
+  ok   nonbinding/d256p16/mxk8v4: win64: d=3.82e-03 d_rounded=0.00e+00 cos=0.9999986 d_other=3.82e-03
+[face: boundary/d256p64] window-edge lens through shuffled tables
+  ok   boundary/d256p64/mxfp4: W64: d=3.28e-03 d_rounded=1.91e-06 cos=0.9999997
+  ok   boundary/d256p64/mxfp4: W1024: d=5.52e-04 d_rounded=6.10e-05 cos=0.9999986
+[face: boundary/d256p16] window-edge lens through shuffled tables
+  ok   boundary/d256p16/mxfp4: W64: d=3.42e-03 d_rounded=9.77e-04 cos=0.9999997
+  ok   boundary/d256p16/mxfp4: W1024: d=4.87e-04 d_rounded=3.05e-05 cos=0.9999987
+[face: bitwise/d256p64] windowed seq_len==1 dequant bit-math oracle
+  ok   bitwise/d256p64/mxfp8: W64: 0/4096 mismatches — dequant bit law exact
+  ok   bitwise/d256p64/mxfp4: W64: 0/4096 mismatches — dequant bit law exact
+  ok   bitwise/d256p64/mxk8v4: W64: 0/4096 mismatches — dequant bit law exact
+[face: bitwise/d256p16] windowed seq_len==1 dequant bit-math oracle
+  ok   bitwise/d256p16/mxfp8: W64: 0/3072 mismatches — dequant bit law exact
+  ok   bitwise/d256p16/mxfp4: W64: 0/3072 mismatches — dequant bit law exact
+  ok   bitwise/d256p16/mxk8v4: W64: 0/3072 mismatches — dequant bit law exact
+[face: splits/d256p64] windowed forced split-KV + default at ctx 8192
+  ok   splits/d256p64/mxfp8: W64/forced8: d=1.94e-03 d_rounded=2.98e-08 cos=0.9999986
+  ok   splits/d256p64/mxfp8: W64/default: d=1.94e-03 d_rounded=2.98e-08 cos=0.9999986
+  ok   splits/d256p64/mxfp8: W2048/forced8: d=4.34e-04 d_rounded=1.22e-04 cos=0.9999986
+  ok   splits/d256p64/mxfp8: W2048/default: d=4.34e-04 d_rounded=1.22e-04 cos=0.9999986
+  ok   splits/d256p64/mxfp4: W64/forced8: d=1.94e-03 d_rounded=1.22e-04 cos=0.9999986
+  ok   splits/d256p64/mxfp4: W64/default: d=1.94e-03 d_rounded=1.22e-04 cos=0.9999986
+  ok   splits/d256p64/mxfp4: W2048/forced8: d=4.43e-04 d_rounded=0.00e+00 cos=0.9999986
+  ok   splits/d256p64/mxfp4: W2048/default: d=4.43e-04 d_rounded=0.00e+00 cos=0.9999986
+  ok   splits/d256p64/mxk8v4: W64/forced8: d=1.95e-03 d_rounded=9.54e-07 cos=0.9999986
+  ok   splits/d256p64/mxk8v4: W64/default: d=1.95e-03 d_rounded=9.54e-07 cos=0.9999986
+  ok   splits/d256p64/mxk8v4: W2048/forced8: d=3.97e-04 d_rounded=3.05e-05 cos=0.9999986
+  ok   splits/d256p64/mxk8v4: W2048/default: d=3.97e-04 d_rounded=3.05e-05 cos=0.9999986
+[face: widewin/d256p64] W=1024 at ctx 8192/32768/40960 (gemma lane)
+  ok   widewin/d256p64/mxfp4: ctx8192: d=4.80e-04 d_rounded=7.63e-06 cos=0.9999987
+  ok   widewin/d256p64/mxfp4: ctx32768: d=4.81e-04 d_rounded=2.98e-08 cos=0.9999986
+  ok   widewin/d256p64/mxfp4: ctx40960: d=4.85e-04 d_rounded=2.98e-08 cos=0.9999986
+[face: telemetry/d256p64] windowed native decode timings (W=1024)
+  ok   telemetry/d256p64/mxfp8 ctx=8192: windowed 0.403 ms vs windowless 0.839 ms (0.48x)
+  ok   telemetry/d256p64/mxfp8 ctx=40960: windowed 0.271 ms vs windowless 1.147 ms (0.24x)
+  ok   telemetry/d256p64/mxfp4 ctx=8192: windowed 0.208 ms vs windowless 0.472 ms (0.44x)
+  ok   telemetry/d256p64/mxfp4 ctx=40960: windowed 0.209 ms vs windowless 0.925 ms (0.23x)
+  ok   telemetry/d256p64/mxk8v4 ctx=8192: windowed 0.284 ms vs windowless 0.570 ms (0.50x)
+  ok   telemetry/d256p64/mxk8v4 ctx=40960: windowed 0.260 ms vs windowless 1.117 ms (0.23x)
+VERDICT: PASS

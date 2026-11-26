@@ -105,6 +105,11 @@ struct mx_paged_decode_args_t {
   // 4 tiles x VTiles x 16 WI x 32 floats = dequant_vslm outputs.
   // Null = off, zero cost.
   void* debug_buf = nullptr;
+  // r212m direct-bf16 decode switch (env ARC_MXKV_DIRECTBF16; the
+  // fast path folds the e8m0 code into the bf16 exponent — bit-
+  // identical in the normal band, see mx_dequant.hpp). Default on;
+  // 0 forces the float path (A/B oracle).
+  int direct_bf16 = 1;
 };
 
 template <class FMHAKernel, class ReductionSplitKernel>
@@ -299,14 +304,15 @@ struct MxDecodeKernelLauncher {
          args.window_size_right,
          args.page_stride_elements,
          args.vlane_probe,
-         args.debug_buf},
+         args.debug_buf,
+         args.direct_bf16},
         {},
         hw_info,
         args.num_kv_splits};
 
     typename ReductionSplitKernel::Arguments reduce_arg{
         {shape,
-         reinterpret_cast<ElementO*>(args.out),
+         reinterpret_cast<bfloat16_t*>(args.out),
          stride_O,
          reinterpret_cast<ElementO*>(args.tem_out),
          stride_Oaccum,
@@ -352,7 +358,10 @@ struct MxDecodeKernelLauncher {
 
     ReductionSplitKernel::initialize_workspace(
         reduce_arg, workspace.get() + workspace_size);
-    run(queue, params, reduce_params, args.num_kv_splits > 1);
+    // r225 delta (4): the combine ALWAYS runs -- it is the single
+    // bf16 quantization point now (fp32 partials in, final cast out;
+    // one-split sequences ride the epilogue's sentinel pass-through).
+    run(queue, params, reduce_params, /*need_reduce=*/true);
 
     return cutlass::Status::kSuccess;
   }
@@ -411,7 +420,8 @@ template <
     typename TileShapeQK,
     typename TileShapePV,
     typename TileShapeOutput,
-    typename SubgroupLayoutQK>
+    typename SubgroupLayoutQK,
+    bool LocalMask = false>
 struct MxPagedDecodeConfig {
   static constexpr int SGTileQ =
       get<0>(shape_div(TileShapeQK{}, shape(SubgroupLayoutQK{})))();
@@ -432,7 +442,20 @@ struct MxPagedDecodeConfig {
 
   using ElementQ = bfloat16_t;
   using ElementBytes = uint8_t;
-  using ElementO = bfloat16_t;  // the out dtype; accumulators stay float
+  // r225 delta (4): the O element roles split. FINAL out stays bf16,
+  // but the decode kernel's O write -- the KV-split partials, or the
+  // normalized value at one split -- lands in the temp buffer, which
+  // the binding now allocates fp32: bf16 partials quantized every
+  // split to 2^-9 relative BEFORE the combine divides by the softmax
+  // sum, which a FLAT decode softmax (deep-layer Ks codes 119-122;
+  // r225l) amplifies to hundreds-thousands of output ulp (sum ~ 5e3
+  // shrinks |O| ~5000x under the same absolute partial error). A
+  // PEAKED softmax (sum ~ 1) masked it sub-ulp -- why every synthetic
+  // gate was clean while real deep-layer payloads carried 15-26%
+  // off-grid elements. The reduce kernel is now the ONE bf16
+  // quantization point.
+  using ElementO = bfloat16_t;  // the FINAL out dtype (reduce write)
+  using ElementOAccum = float;  // decode O write / split partials
 
   using StrideQ = Stride<int, _1, int, int>;
   using StrideK = Stride<int, _1, int, int>;
@@ -446,6 +469,10 @@ struct MxPagedDecodeConfig {
     mx_paged_decode_args_t args_p = args;
     if (const char* vprobe = std::getenv("ARC_MXKV_VPROBE")) {
       args_p.vlane_probe = std::atoi(vprobe);
+    }
+    // r212m: direct-bf16 decode switch (default on; 0 = float path).
+    if (const char* dbf = std::getenv("ARC_MXKV_DIRECTBF16")) {
+      args_p.direct_bf16 = std::atoi(dbf);
     }
     // r200c debug lane: env-gated static device buffer + post-launch
     // D2H dump (see args.debug_buf layout comment). Leak-once on
@@ -491,7 +518,8 @@ struct MxPagedDecodeConfig {
     using TensorQ = decltype(make_dummy_tensor(ElementQ{}, StrideQ{}));
     using TensorK = decltype(make_dummy_tensor(ElementBytes{}, StrideK{}));
     using TensorV = decltype(make_dummy_tensor(ElementBytes{}, StrideV{}));
-    using TensorO = decltype(make_dummy_tensor(ElementO{}, StrideO{}));
+    using TensorO =
+        decltype(make_dummy_tensor(ElementOAccum{}, StrideO{}));
     using TensorLSE = decltype(make_dummy_tensor(float{}, StrideO{}));
 
     // Mainloop: the scale surfaces share the K/V stride types.
@@ -512,7 +540,15 @@ struct MxPagedDecodeConfig {
         TensorK,  // TensorKS: same type as TensorK (u8, K strides)
         TensorV,
         TensorV,  // TensorVS: same type as TensorV (u8, V strides)
-        false>;   // Local
+        // P-C2 (2026-11-25): LocalMask rides the config template — the
+        // vendor masking machinery (mainloop ~L1270, kernel k_block0
+        // walk-bound) is compiled in only where a sliding-window model
+        // can reach (256/16 + 256/64 at qgroup _8, the gemma-4-31b
+        // sliding class; see the binding's dispatch_geom). is_local at
+        // runtime pairs window_size_left = W-1 / right = 0 = the last
+        // W tokens per row (wheel-law: triton_unified
+        // sliding_window_val = 1 + window_size[0]).
+        LocalMask>;
 
     // Epilogue (stock, format-agnostic)
     using CollectiveEpilogue = cutlass::fmha::collective::DecodeFwdEpilogue<
@@ -539,7 +575,15 @@ struct MxPagedDecodeConfig {
 
     MxDecodeKernelLauncher<FMHAKernel, ReduceSplitKernel> launcher;
 
-    launcher.run(queue, args_p, hw_info);
+    // r217: can_implement failures (e.g. num_kv_splits > the kernel
+    // ceiling) previously returned kErrorInvalidProblem SILENTLY --
+    // the engine streamed uninitialized attention (the ns96
+    // fast-garbage cell, r216b). Fail loudly instead.
+    TORCH_CHECK(
+        launcher.run(queue, args_p, hw_info) ==
+            cutlass::Status::kSuccess,
+        "mx_paged_decode: kernel cannot implement the request "
+        "(check num_kv_splits <= max_num_kv_splits)");
 
     if (args_p.debug_buf != nullptr) {
       constexpr size_t kDbgBufBytes = 8256 + 4 * 4 * 16 * 32 * 4;
@@ -560,7 +604,13 @@ struct MxPagedDecodeConfig {
 // Policy dispatch: format x qgroup, head _128, page _16 (the served
 // target's cell). Head/page coverage widens by adding instantiations
 // here — the policies and kernels themselves are shape-generic.
-template <typename decode_policy, cutlass::fmha::collective::mx::MxFormat Fmt>
+// P-C2: the trailing bool routes is_local into the compile-time
+// LocalMask instantiation (masked/unmasked kernels are separate TUs;
+// the binding refuses geometries whose masked twin is not compiled).
+template <
+    typename decode_policy,
+    cutlass::fmha::collective::mx::MxFormat Fmt,
+    bool LocalMask = false>
 void mx_decode_policy_dispatch(
     sycl::queue& queue,
     const mx_paged_decode_args_t& args) {
@@ -571,5 +621,6 @@ void mx_decode_policy_dispatch(
       typename decode_policy::ShapeQK,
       typename decode_policy::ShapePV,
       typename decode_policy::ShapeOut,
-      typename decode_policy::SubgroupLayoutQK>::kernel_dispatch(queue, args);
+      typename decode_policy::SubgroupLayoutQK,
+      LocalMask>::kernel_dispatch(queue, args);
 }

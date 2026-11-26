@@ -2,7 +2,8 @@
 //
 // Fork-owned copy of the stock ReduceSplitK
 // (csrc/xpu/attn/xe_2/kernel/paged_decode_kernel.hpp, class ReduceSplitK)
-// with TWO functional deltas, both required once num_kv_splits exceeds
+// with THREE deltas: two functional ones required once num_kv_splits
+// exceeds
 // the workgroup thread count (16 at page 16; raised to 64 in r207):
 //
 // 1. Stock step-1 loader was `thr_id < effective_splits` -- ONE THREAD
@@ -53,6 +54,10 @@ class MxReduceSplitK {
   using TileSchedulerParams = typename TileScheduler::Params;
 
   using ElementO = typename FMHAKernel_::ElementO;
+  // r225 delta (4): the O WRITE is the final bf16 out (the decode
+  // kernel's ElementO became the fp32 partial type -- see
+  // mx_paged_decode.hpp delta (4)); Oaccum follows it as fp32.
+  using ElementOFinal = bfloat16_t;
   using StrideO = typename FMHAKernel_::StrideO;
   using TileShapeO = typename FMHAKernel_::TileShapeO;
   using TileShapeQK = typename FMHAKernel_::TileShapeQK;
@@ -72,7 +77,7 @@ class MxReduceSplitK {
   struct KernelArguments {
     ProblemShape shape;
     // outputs:
-    ElementO* O;
+    ElementOFinal* O;
     StrideO dO;
     // below are inputs
     // TODO(stock): whether same dtype as output or accum?
@@ -209,9 +214,18 @@ class MxReduceSplitK {
                     : 0;
       const int windowed_k_blocks = k_blocks - k_block0;
       // Per-sequence adaptive split count
+      // r231d MIRROR (seqused-tightened splits): must derive the SAME
+      // clamped count the FMHA kernel derived for this seq -- the
+      // legacy path clamps on the windowed block count (>=4 k-tiles
+      // per split) so shallow-ctx decode stops over-provisioning
+      // splits it then has to memset/reduce; a count mismatch here
+      // would iterate past the last written Oaccum slot.
       int seq_num_kv_splits = (p.splits_per_seq != nullptr)
                                   ? p.splits_per_seq[idx_b]
-                                  : num_kv_splits;
+                                  : cute::min(num_kv_splits,
+                                              cute::max(1,
+                                                        windowed_k_blocks /
+                                                            4));
 
       int num_blocks_per_split =
           cute::ceil_div(windowed_k_blocks, seq_num_kv_splits);
@@ -356,7 +370,19 @@ class MxReduceSplitK {
           if (local_exp_sum <= ElementLSE(0)) continue;
 
           ElementLSE rescale =
-              sycl::native::exp2(local_max_logit - global_max_logits);
+              // r225 delta (3), numerics: precise exp2. Stock (and the
+              // r208 fork copy) rescaled partials with native::exp2 --
+              // ~1e-3 relative (the instruction r198 evicted from the
+              // mainloop softmax). Invisible in a peaked softmax (the
+              // dominant split rescales by exp2(0) == 1 exactly, the
+              // rest by ~0), but a FLAT decode softmax (deep-layer Ks
+              // codes 119-122, r225k) makes every per-split delta
+              // nontrivial and the approximation error lands on the
+              // output -- the r225 residual (err/|O| p50 ~ 2^-9.4,
+              // 15-26% of elements off-grid; r225l: nsplit1 exact,
+              // auto/nsplit2/nsplit8 wrong, a flat synthetic with zero
+              // real bytes reproduces it).
+              sycl::exp2(local_max_logit - global_max_logits);
 
           // Partial outputs are unnormalized (not divided by exp_sum in the
           // epilogue), so combine them directly with the rescale factor.
@@ -371,7 +397,8 @@ class MxReduceSplitK {
         ElementLSE inv_global_exp_sums = 1. / global_exp_sums;
 
         acc *= inv_global_exp_sums;
-        O(seq_idx, idx, head_q, l_coord) = static_cast<ElementO>(acc);
+        O(seq_idx, idx, head_q, l_coord) =
+            static_cast<ElementOFinal>(acc);
       }
     }
   }

@@ -1,0 +1,351 @@
+{
+  "bitwise": {
+    "d256p16": {
+      "mxfp4": {
+        "W64": {
+          "bit_mismatches": 0
+        }
+      },
+      "mxfp8": {
+        "W64": {
+          "bit_mismatches": 0
+        }
+      },
+      "mxk8v4": {
+        "W64": {
+          "bit_mismatches": 0
+        }
+      }
+    },
+    "d256p64": {
+      "mxfp4": {
+        "W64": {
+          "bit_mismatches": 0
+        }
+      },
+      "mxfp8": {
+        "W64": {
+          "bit_mismatches": 0
+        }
+      },
+      "mxk8v4": {
+        "W64": {
+          "bit_mismatches": 0
+        }
+      }
+    }
+  },
+  "boundary": {
+    "d256p16": {
+      "mxfp4": {
+        "W1024": {
+          "cos_same": 0.99999866178863,
+          "gated": true,
+          "maxdiff": 0.0004867461785884042,
+          "maxdiff_rounded": 3.0517578125e-05
+        },
+        "W64": {
+          "cos_same": 0.9999996927915866,
+          "gated": true,
+          "maxdiff": 0.0034238030556421606,
+          "maxdiff_rounded": 0.0009765625
+        }
+      }
+    },
+    "d256p64": {
+      "mxfp4": {
+        "W1024": {
+          "cos_same": 0.9999986370940979,
+          "gated": true,
+          "maxdiff": 0.00055215624465349,
+          "maxdiff_rounded": 6.103515625e-05
+        },
+        "W64": {
+          "cos_same": 0.999999693066835,
+          "gated": true,
+          "maxdiff": 0.003283138584993406,
+          "maxdiff_rounded": 1.9073486328125e-06
+        }
+      }
+    }
+  },
+  "cells": {
+    "ctrl256p16": {
+      "BLOCK": 16,
+      "D": 256,
+      "HK": 2,
+      "HREP": 6
+    },
+    "d256p64": {
+      "BLOCK": 64,
+      "D": 256,
+      "HK": 2,
+      "HREP": 8
+    }
+  },
+  "exact": {
+    "d256p16": {
+      "mxfp4": {
+        "win64": {
+          "cos_same": 0.9999986133121848,
+          "d_window_blind": 0.7618705584487381,
+          "gated": true,
+          "maxdiff": 0.0019175700593391243,
+          "maxdiff_rounded": 0.000244140625
+        }
+      },
+      "mxfp8": {
+        "win64": {
+          "cos_same": 0.9999985912389072,
+          "d_window_blind": 0.7018110948734222,
+          "gated": true,
+          "maxdiff": 0.0019516291415970777,
+          "maxdiff_rounded": 0.0
+        }
+      },
+      "mxk8v4": {
+        "win64": {
+          "cos_same": 0.9999985808462923,
+          "d_window_blind": 0.6994594240184551,
+          "gated": true,
+          "maxdiff": 0.0019075258885019597,
+          "maxdiff_rounded": 1.4901161193847656e-08
+        }
+      }
+    },
+    "d256p64": {
+      "mxfp4": {
+        "win64": {
+          "cos_same": 0.9999987013201312,
+          "d_window_blind": 0.7775094376630267,
+          "gated": true,
+          "maxdiff": 0.001951378869035958,
+          "maxdiff_rounded": 6.103515625e-05
+        }
+      },
+      "mxfp8": {
+        "win64": {
+          "cos_same": 0.9999986116818259,
+          "d_window_blind": 0.8277629941621268,
+          "gated": true,
+          "maxdiff": 0.0019516291415970777,
+          "maxdiff_rounded": 0.0
+        }
+      },
+      "mxk8v4": {
+        "win64": {
+          "cos_same": 0.9999986192258075,
+          "d_window_blind": 0.8280819296789907,
+          "gated": true,
+          "maxdiff": 0.0019321089765391708,
+          "maxdiff_rounded": 1.4901161193847656e-08
+        }
+      }
+    }
+  },
+  "failures": [],
+  "nonbinding": {
+    "d256p16": {
+      "mxfp4": {
+        "win64": {
+          "cos_same": 0.9999986564413623,
+          "gated": true,
+          "maxdiff": 0.003108128357122819,
+          "maxdiff_rounded": 0.0001220703125
+        }
+      },
+      "mxfp8": {
+        "win64": {
+          "cos_same": 0.9999986565803705,
+          "gated": true,
+          "maxdiff": 0.00345466210776757,
+          "maxdiff_rounded": 0.0
+        }
+      },
+      "mxk8v4": {
+        "win64": {
+          "cos_same": 0.999998623475572,
+          "gated": true,
+          "maxdiff": 0.0038154714516693833,
+          "maxdiff_rounded": 0.0
+        }
+      }
+    },
+    "d256p64": {
+      "mxfp4": {
+        "win64": {
+          "cos_same": 0.9999986094277904,
+          "gated": true,
+          "maxdiff": 0.003459349950508228,
+          "maxdiff_rounded": 0.0001220703125
+        }
+      },
+      "mxfp8": {
+        "win64": {
+          "cos_same": 0.9999986259540353,
+          "gated": true,
+          "maxdiff": 0.00345466210776757,
+          "maxdiff_rounded": 0.0
+        }
+      },
+      "mxk8v4": {
+        "win64": {
+          "cos_same": 0.9999985682444575,
+          "gated": true,
+          "maxdiff": 0.0038154714516693833,
+          "maxdiff_rounded": 0.0
+        }
+      }
+    }
+  },
+  "splits": {
+    "d256p64": {
+      "mxfp4": {
+        "W2048_default": {
+          "cos_same": 0.9999986323214062,
+          "gated": true,
+          "maxdiff": 0.0004427036404270057,
+          "maxdiff_rounded": 0.0
+        },
+        "W2048_forced8": {
+          "cos_same": 0.9999986323214062,
+          "gated": true,
+          "maxdiff": 0.0004427036404270057,
+          "maxdiff_rounded": 0.0
+        },
+        "W64_default": {
+          "cos_same": 0.9999985865193628,
+          "gated": true,
+          "maxdiff": 0.0019407226963323865,
+          "maxdiff_rounded": 0.0001220703125
+        },
+        "W64_forced8": {
+          "cos_same": 0.9999985865193628,
+          "gated": true,
+          "maxdiff": 0.0019407226963323865,
+          "maxdiff_rounded": 0.0001220703125
+        }
+      },
+      "mxfp8": {
+        "W2048_default": {
+          "cos_same": 0.9999986213500605,
+          "gated": true,
+          "maxdiff": 0.000434016785654634,
+          "maxdiff_rounded": 0.0001220703125
+        },
+        "W2048_forced8": {
+          "cos_same": 0.9999986213500605,
+          "gated": true,
+          "maxdiff": 0.000434016785654634,
+          "maxdiff_rounded": 0.0001220703125
+        },
+        "W64_default": {
+          "cos_same": 0.9999986058864794,
+          "gated": true,
+          "maxdiff": 0.001937863336822998,
+          "maxdiff_rounded": 2.9802322387695312e-08
+        },
+        "W64_forced8": {
+          "cos_same": 0.9999986058864794,
+          "gated": true,
+          "maxdiff": 0.001937863336822998,
+          "maxdiff_rounded": 2.9802322387695312e-08
+        }
+      },
+      "mxk8v4": {
+        "W2048_default": {
+          "cos_same": 0.9999986366989655,
+          "gated": true,
+          "maxdiff": 0.0003968082724890021,
+          "maxdiff_rounded": 3.0517578125e-05
+        },
+        "W2048_forced8": {
+          "cos_same": 0.9999986366989655,
+          "gated": true,
+          "maxdiff": 0.0003968082724890021,
+          "maxdiff_rounded": 3.0517578125e-05
+        },
+        "W64_default": {
+          "cos_same": 0.9999985752693522,
+          "gated": true,
+          "maxdiff": 0.0019482540640155532,
+          "maxdiff_rounded": 9.5367431640625e-07
+        },
+        "W64_forced8": {
+          "cos_same": 0.9999985752693522,
+          "gated": true,
+          "maxdiff": 0.0019482540640155532,
+          "maxdiff_rounded": 9.5367431640625e-07
+        }
+      }
+    }
+  },
+  "telemetry": {
+    "d256p64": {
+      "device": {
+        "name": "Intel(R) Graphics [0xe223]"
+      },
+      "mxfp4": {
+        "40960": {
+          "walk_ratio": 0.226,
+          "windowed_ms": 0.2093,
+          "windowless_ms": 0.925
+        },
+        "8192": {
+          "walk_ratio": 0.441,
+          "windowed_ms": 0.2081,
+          "windowless_ms": 0.4717
+        }
+      },
+      "mxfp8": {
+        "40960": {
+          "walk_ratio": 0.236,
+          "windowed_ms": 0.271,
+          "windowless_ms": 1.1468
+        },
+        "8192": {
+          "walk_ratio": 0.481,
+          "windowed_ms": 0.4032,
+          "windowless_ms": 0.8387
+        }
+      },
+      "mxk8v4": {
+        "40960": {
+          "walk_ratio": 0.233,
+          "windowed_ms": 0.2604,
+          "windowless_ms": 1.1168
+        },
+        "8192": {
+          "walk_ratio": 0.498,
+          "windowed_ms": 0.2837,
+          "windowless_ms": 0.5696
+        }
+      }
+    }
+  },
+  "verdict": "PASS",
+  "widewin": {
+    "d256p64": {
+      "mxfp4": {
+        "ctx32768": {
+          "cos_same": 0.9999986322069356,
+          "gated": true,
+          "maxdiff": 0.00048097291353371707,
+          "maxdiff_rounded": 2.9802322387695312e-08
+        },
+        "ctx40960": {
+          "cos_same": 0.9999986357813438,
+          "gated": true,
+          "maxdiff": 0.00048468204777807333,
+          "maxdiff_rounded": 2.9802322387695312e-08
+        },
+        "ctx8192": {
+          "cos_same": 0.9999986641498416,
+          "gated": true,
+          "maxdiff": 0.00047998925443867857,
+          "maxdiff_rounded": 7.62939453125e-06
+        }
+      }
+    }
+  }
+}

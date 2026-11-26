@@ -264,6 +264,33 @@ struct MxDecodeFwdMainloop<
   using SubgroupLayoutQK = decltype(TiledMMAQK{}.get_atom_layout_mnk());
   using SGPerWG = decltype(product(
       take<1, 4>(shape(typename TiledMMAQK::ThrLayoutVMNK{}))));
+  // r220a multi-SG MX decode law: the SGPerWG subgroups stack along the
+  // B-tile k rows (SubgroupLayoutQK mode 1), each owning a disjoint
+  // kBandRows band. Every per-SG FRAGMENT form is IDENTICAL to the
+  // single-SG policy's (ShapeQK per SG = 16 rows x 64 d, ShapePV per
+  // SG = 32 v x 16 rows), so the pinned tv laws ((2,8) Thr modes, the
+  // r198/r200f forms) hold within-band — but fragment Thr modes span
+  // ONE subgroup: tv_coord decodes that index them take the SG-relative
+  // wi16, never WG-linear thr_id (out-of-frame for SG>0, the r212c
+  // ~0.64-relative corruption class). The TiledCopy thr modes are a
+  // DIFFERENT object: every copy builder here (bwidth byte copies and
+  // the kd element copy alike) composes sg_to_vnk into svB — a
+  // WG-spanning value distribution whose partition coords land each
+  // SG's slots in its own k-band. Consequences: copy/prefetch slices
+  // are WG-linear (thr_id); scale-row anchors (dequant_reg org_row,
+  // vslm prep k_row_base, the remainder mask) self-resolve with NO
+  // band bake (the r220a bakes double-counted: foreign scale rows =
+  // the r220c uniform deviation on _64); and sg_row_off appears ONLY
+  // at the SLM V image's WG frame — the scatter destination row and
+  // the vslm slm base (kr stays within-band). Zero on the single-SG
+  // policies, so the shipping _16 paths are behavior-identical.
+  static constexpr int kSGBands =
+      int(cute::size(cute::get<1>(SubgroupLayoutQK{})));
+  static constexpr int kBandRows =
+      int(cute::get<1>(TileShapeQK{})) / kSGBands;
+  static_assert(
+      kBandRows == 16,
+      "r220a: per-SG band must stay 16 rows (the pinned tv laws)");
 
   using TensorQ = TensorQ_;
   using TensorK = TensorK_;    // (k, k_bytes) u8 surface per head
@@ -302,6 +329,11 @@ struct MxDecodeFwdMainloop<
   // r200b SLM V staging: one k-tile of V payload bytes in the dense
   // (k, byte) frame — full v-byte width as the row pitch.
   static constexpr int kVStagePitch = VTiles * kVBytesPerStep;
+  // P-C1 r242b: MX scale groups one V-slice spans (the workgroup's
+  // whole VV-step group window — the slice-local scale-line law, see
+  // dequant_vslm_prep). ShapeOut V <= 256 keeps this <= 8.
+  static constexpr int kVSliceGroups =
+      kVStagePitch * kElemsPerByteV / mx::kMxGroupSize;
 
   // Tiled copies. Q is the stock A-copy. The K payload copy is a
   // B-copy over the u8 byte surface (byte-extent builder above; for
@@ -407,6 +439,11 @@ struct MxDecodeFwdMainloop<
     // r200c debug lane (args.debug_buf layout documented at the args
     // struct; SINGLE-workgroup shapes only — WGs race on the buffer).
     void* debug_buf = nullptr;
+    // r212m direct-bf16 decode switch (env ARC_MXKV_DIRECTBF16; the
+    // fast path folds the e8m0 code into the bf16 exponent — bit-
+    // identical in the normal band, see mx_dequant.hpp). Default on;
+    // 0 forces the float path (A/B oracle).
+    int direct_bf16 = 1;
   };
 
   // Kernel-facing parameters
@@ -446,15 +483,55 @@ struct MxDecodeFwdMainloop<
         args.window_size_right,
         args.page_stride_elements,
         args.vlane_probe,
-        args.debug_buf};
+        args.debug_buf,
+        args.direct_bf16};
   }
 
   CUTLASS_HOST_DEVICE static bool can_implement(Arguments const&) {
     return true;
   }
 
+  // r212aa TEMPLATE-SPLIT dispatch: vlane_probe==0 runs the
+  // SHIPPING body (kInstr=false -- every probe read folds to a
+  // constant at compile time; zero probe branches survive in the
+  // GEMM regions). Any probe value runs the instrumented body
+  // (kInstr=true -- the r200c/r212 apparatus, runtime cell
+  // selection as before). m0 and the m8 mxfp8 oracle ride the
+  // shipping body BY CONSTRUCTION.
   template <bool has_large_surface, typename QVCoord>
   CUTLASS_DEVICE void operator()(
+      TensorQ2D const& Q_2D,    // (q,d)
+      TensorK2D const& K_2D,    // (k, k_bytes) u8
+      TensorKS2D const& KS_2D,  // (k, k_groups) u8
+      TensorV2D const& V_2D,    // (v_bytes, k) u8
+      TensorVS2D const& VS_2D,  // (v_groups, k) u8
+      FragA& tArA,              // Output accumulator (q,v)
+      FragARow& tA_max,         // Softmax row-wise max accumulator
+      FragARow& tA_sum,         // Softmax row-wise sum accumulator
+      QVCoord blk_qv,           // WG tile indices: (Q,V)
+      int const& idx_b,         // WG tile indices: (B)
+      int blk_k0,               // K block range: [K0,K1)
+      int blk_k1,
+      int total_blk,  // Total # of K blocks
+      int thr_id,
+      int seq_len,
+      int full_tile_offset,
+      int discard_seq_coord) {
+    if (params.vlane_probe == 0) {
+      this->template body<has_large_surface, false, QVCoord>(
+          Q_2D, K_2D, KS_2D, V_2D, VS_2D, tArA, tA_max, tA_sum, blk_qv,
+          idx_b, blk_k0, blk_k1, total_blk, thr_id, seq_len,
+          full_tile_offset, discard_seq_coord);
+    } else {
+      this->template body<has_large_surface, true, QVCoord>(
+          Q_2D, K_2D, KS_2D, V_2D, VS_2D, tArA, tA_max, tA_sum, blk_qv,
+          idx_b, blk_k0, blk_k1, total_blk, thr_id, seq_len,
+          full_tile_offset, discard_seq_coord);
+    }
+  }
+
+  template <bool has_large_surface, bool kInstr, typename QVCoord>
+  CUTLASS_DEVICE void body(
       TensorQ2D const& Q_2D,    // (q,d)
       TensorK2D const& K_2D,    // (k, k_bytes) u8
       TensorKS2D const& KS_2D,  // (k, k_groups) u8
@@ -513,9 +590,24 @@ struct MxDecodeFwdMainloop<
     // lookup removed — the custom-extent and stock copies distribute
     // tiles on incompatible work-item grids). The 2^24 surface split
     // below/lambda updates these alongside the payload surfaces.
+    // P-C1 r242b V-SLICE LAW: head_size_vo > kDecodeMaxShapeOutV (256)
+    // splits V across grid.x (blk_v); the dense-frame V accesses below
+    // — the byte-load copy's ctor base (vb_surf, all three builds) and
+    // the scale-line window (dequant_vslm_prep) — must ride THIS
+    // slice. The r242 oracle proved the hazard at D=512 (the first
+    // grid.x=2 geometry): 16/16 faces failed with corruption confined
+    // to columns > 256 — every blk_v=1 workgroup re-staged slice 0's
+    // payload AND scale groups 0..7, so slice 1 duplicated slice 0
+    // (cos ~0.49). The identity partitions walk the slice's tiles
+    // from byte 0, so v_byte_base/v_base stay within-slice and the
+    // dequant walk's group law needs no change — only these two gmem
+    // bases move. Zero at D <= 256 (grid.x=1): byte-identical.
+    const int64_t v_slice_bytes =
+        int64_t(get<1>(blk_qv)) * kVStagePitch;
+    const int v_slice_grp0 = int(get<1>(blk_qv)) * kVSliceGroups;
     [[maybe_unused]] auto kb_surf = K_2D;
     [[maybe_unused]] auto vb_surf = make_tensor(
-        V_2D.data(),
+        V_2D.data() + v_slice_bytes,
         make_layout(
             make_shape(get<1>(V_2D.shape()), get<0>(V_2D.shape())),
             make_stride(get<1>(V_2D.stride()), get<0>(V_2D.stride()))));
@@ -647,8 +739,9 @@ struct MxDecodeFwdMainloop<
           get<0>(V_2D.shape())));  // (k,vb)
 
       kb_surf = K_2D_0;
+      // r242b: surface-0 rebuild rides the same V-slice base.
       vb_surf = make_tensor(
-          V_2D_0.data(),
+          V_2D_0.data() + v_slice_bytes,
           make_layout(
               make_shape(get<1>(V_2D_0.shape()), get<0>(V_2D_0.shape())),
               make_stride(
@@ -724,7 +817,27 @@ struct MxDecodeFwdMainloop<
     TiledMMAQK mma_qk{};
     TiledMMAPV mma_pv{};
 
-    /* Slice TiledCopy/TiledMMA operations down to work-item level */
+    // r220a3: SG-relative decode id + this SG's k-band offset. The
+    // FRAGMENT Thr modes span ONE subgroup (16) — every tv_coord that
+    // indexes a fragment's thr mode takes wi16 (WG-linear thr_id wraps
+    // there, the r212c corruption class). The TiledCopy thr modes are
+    // a different object: the bwidth/kd builders compose sg_to_vnk
+    // into svB (WG-spanning value distribution — see the builders
+    // above), so their slices and partition coords are WG-canonical
+    // and already carry this SG's band. sg_row_off therefore appears
+    // ONLY at the SLM image's WG frame (scatter destination + vslm
+    // slm base) — never at scale-row anchors, which self-resolve.
+    // Zero on the single-SG policies — the shipping _16 paths are
+    // behavior-identical.
+    int wi16 = thr_id % intel::sg_size;
+    int sg_row_off = (thr_id / intel::sg_size) * kBandRows;
+
+    /* Slice TiledCopy/TiledMMA operations down to work-item level.
+    All copy slices are WG-linear (thr_id): the TiledCopy Thr modes
+    span the workgroup — svB distributes each SG its k-band (probe
+    note: per-SG FRAGMENT tvs are 16-thr forms; that says nothing
+    about copy coverage, and the builders' svB composition is the
+    decisive text). */
     auto thr_copy_q = copy_q.get_slice(thr_id);
     auto thr_copy_kb = copy_kb.get_slice(thr_id);
     auto thr_copy_kd = copy_kd.get_slice(thr_id);
@@ -738,7 +851,9 @@ struct MxDecodeFwdMainloop<
     the V lane the same via the dense (k, v_bytes) frame. On e2m1
     lanes dequant reads payload bytes through staged u32 windows from
     the gmem surfaces (kb/vb/ks/vs_surf above) and only the prefetch
-    partitions matter. */
+    partitions matter. r220a3: partitions ride the UNSLICED tiles —
+    svB makes the coords WG-canonical (each SG's slots land in its own
+    k-band), so scale-row anchors self-resolve with no bake. */
     auto tQgQ = thr_copy_q.partition_S(gQ);          // (atom_val,q',d',D)
     auto tKBgK = thr_copy_kb.partition_S(gK);        // (atom_val,k',kb',K,DB)
     auto tKDgKD = thr_copy_kd.partition_S(gKD);      // (atom_val,k',d',K,DD)
@@ -788,7 +903,9 @@ struct MxDecodeFwdMainloop<
     auto prefetch_vb =
         make_block_2d_prefetch<SGPerWG::value>(tile_shape_vb, V_2D_0);
 
-    /* Partition global tensors for prefetch */
+    /* Partition global tensors for prefetch. All WG-linear: the kb
+    prefetch rides copy_kb's WG-spanning svB (same law as the load);
+    pVbgV's builder is SGPerWP-aware; Q wraps harmlessly. */
     auto pQgQ = prefetch_q.get_slice(thr_id).partition_S(gQ);
     auto pKBgK = prefetch_kb.get_slice(thr_id).partition_S(gK);
     auto pVbgV = prefetch_vb.get_slice(thr_id).partition_S(gV);
@@ -827,8 +944,9 @@ struct MxDecodeFwdMainloop<
         auto VS_2D_n = make_vs_surface(k_surf);
 
         copy_kb = TiledCopyK{K_2D_n};
+        // r242b: per-surface rebuild rides the same V-slice base.
         auto vb_surf_n = make_tensor(
-            V_2D_n.data(),
+            V_2D_n.data() + v_slice_bytes,
             make_layout(
                 make_shape(get<1>(V_2D_n.shape()), get<0>(V_2D_n.shape())),
                 make_stride(
@@ -916,6 +1034,17 @@ struct MxDecodeFwdMainloop<
     ElementS effective_scale = params.scale;
 
     /* Main loop, blocked in k. */
+    // r212y hoist (kept): sever conditions precomputed before the K
+    // loop. r212aa TEMPLATE-SPLIT: under kInstr=false the kInstr
+    // conjunct folds both gates constant-false -- the severed arms
+    // die at compile time and the shipping GEMM regions carry zero
+    // probe branches.
+    const int vprobe = params.vlane_probe;
+    const bool kp_sever =
+        kInstr && vprobe >= 6 && vprobe != 17 && vprobe != 20;
+    const bool vp_sever =
+        kInstr && vprobe >= 2 && vprobe != 4 && vprobe != 5 &&
+        vprobe != 6 && vprobe != 17;
     for (int K = blk_k0; K < blk_k1; K++) {
       [[maybe_unused]] auto tKDgKD_cache =
           PagedKV ? tKDgKD(_, _, _, tile_idx, _) : tKDgKD(_, _, _, K, _);
@@ -932,7 +1061,10 @@ struct MxDecodeFwdMainloop<
         copy(copy_q, tQgQ(_, _, _, D), tQrQ);
         reorder(tQrQ, tSrQ);
 
-        if (params.vlane_probe >= 6) {
+        if (kp_sever) {
+          // r212v: 17 is EXEMPT from the r200g const-K sever (probe
+          // 17 = K real + V light; splits the m0-m11 pool into K vs
+          // V; the K walk below runs its REAL fast loop).
           // r200g probe 6/7/8: const-K — severs the whole K load chain
           // (byte copy -> dequant -> reorder). Timing floor only: a
           // severed chain understates (const-fill ablation law).
@@ -946,8 +1078,17 @@ struct MxDecodeFwdMainloop<
           // its ElementQ mirror (group scales are the only gmem
           // reads), and the stock reorder performs the layout change.
           copy(copy_kb, tKBgK_cache(_, _, _, D), tKrB);
+          // r220a3 NO BAKE: svB makes the partition coords
+          // WG-canonical (this SG's band is already in the anchor) —
+          // the r220a bake double-counted and read foreign scale rows
+          // (the r220c uniform deviation).
           mx::dequant_reg<true, true>(
-              ks_surf, tKrB, tKrBq, tKBgK_cache(_, _, _, D));
+              ks_surf,
+              tKrB,
+              tKrBq,
+              tKBgK_cache(_, _, _, D),
+              kInstr && params.vlane_probe == 9,
+              params.direct_bf16 != 0);
           reorder(tKrBq, tSrK);
         } else {
           // MX dequant (e2m1): staged u32 byte windows -> bf16 in the
@@ -961,9 +1102,33 @@ struct MxDecodeFwdMainloop<
           mx::dequant_dtile<true, true>(
               kb_surf,
               ks_surf,
-              tKrDeq,
-              tKDgKD_cache(_, _, _, D));
-          reorder(tKrDeq, tSrK);
+              tSrK,
+              tKDgKD_cache(_, _, _, D),
+              kInstr && params.vlane_probe == 9,
+              params.direct_bf16 != 0,
+              kInstr &&
+                  ((params.vlane_probe >= 11 &&
+                    params.vlane_probe <= 16) ||
+                   params.vlane_probe == 20),
+              kInstr ? params.vlane_probe : 0);
+          if (false && params.vlane_probe == 18) {
+            // r212w: sever ONLY the reorder (layout change) — dtile
+            // ran fully above; tSrK const-filled so GEMM 1 consumes.
+            // m17-m18 = the reorder's share of the K lane.
+            CUTLASS_PRAGMA_UNROLL
+            for (int i = 0; i < tSrK.size(); ++i) {
+              tSrK(i) = typename decltype(tSrK)::value_type(1.f);
+            }
+          } else {
+            // r212x: the K REORDER IS DELETED. r212w priced it at
+            // 100% of the K lane (m17-m18 = 595 us; loads+staging+
+            // decode = +0.5 us vs K-const): dequant_dtile now writes
+            // tSrK directly -- its walk derives the law from the dst
+            // fragment's tv_layout (staged branch if the val form
+            // qualifies, r198 scalar-walk fallback otherwise; both
+            // correct by construction). The V lane's r200b precedent.
+            // The r212w probe-18 severance is retired with it.
+          }
         }
 
         cute::gemm(mma_qk, tSrQ, tSrK, tSrS);
@@ -1025,15 +1190,24 @@ struct MxDecodeFwdMainloop<
       gather then reads stale SLM), 4 stages WITHOUT the barrier
       (isolates the barrier's serialization cost). */
       uint8_t* vst = reinterpret_cast<uint8_t*>(&smem.v_stage);
-      bool stage_on = params.vlane_probe != 1 && params.vlane_probe != 3 &&
-          params.vlane_probe != 7 && params.vlane_probe != 8;
+      // r212aa: under kInstr=false stage_on folds constant-true.
+      bool stage_on =
+          !kInstr || (params.vlane_probe != 1 && params.vlane_probe != 3 &&
+                      params.vlane_probe != 7 && params.vlane_probe != 8);
       if (stage_on) {
         CUTLASS_PRAGMA_UNROLL
         for (int VP = 0; VP < kVCopySteps; VP++) {
           copy(copy_vdb, tVDBgV_cache(_, _, _, VP), tVrDB);
           CUTLASS_PRAGMA_UNROLL
           for (int i = 0; i < tVrDB.size(); ++i) {
-            auto pc = mx::detail::tv_coord(tVrDB.tv_layout(), thr_id, i);
+            // r220a: decode SG-relative (the Thr mode spans one SG);
+            // the staged row bakes the band so the image stays WG-frame
+            // (all 64 rows of the _64 tile live in v_stage).
+            static_assert(
+                cute::size(cute::shape<0>(
+                    decltype(tVrDB.tv_layout()){})) == intel::sg_size,
+                "r220a: tVrDB Thr mode must span one SG for the scatter");
+            auto pc = mx::detail::tv_coord(tVrDB.tv_layout(), wi16, i);
             // r203 PERMUTED V frame: dequant_vslm reads each (k-row,
             // WI) quad as ONE u32, so the scatter lands bytes by the
             // transpose law — e4m3: byte col c of a VV step goes to
@@ -1056,11 +1230,15 @@ struct MxDecodeFwdMainloop<
               col = (VP * 2 + (vb >> 4)) * kVBytesPerStep +
                     ((bl & 3) * 4 + (bl >> 2));
             }
-            vst[int(cute::get<0>(pc)) * kVStagePitch + col] =
+            vst[(int(cute::get<0>(pc)) + sg_row_off) * kVStagePitch + col] =
                 uint8_t(tVrDB(i));
           }
         }
-        if (params.vlane_probe != 4) {
+        if constexpr (kInstr) {
+          if (params.vlane_probe != 4) {
+            barrier();
+          }
+        } else {
           barrier();
         }
       }
@@ -1079,18 +1257,35 @@ struct MxDecodeFwdMainloop<
       // C = per-VV gathered fragments (written in the VV loop).
       uint8_t* dbg = reinterpret_cast<uint8_t*>(params.debug_buf);
       int dbg_tile = K - blk_k0;
-      bool dbg_on = dbg != nullptr && dbg_tile < 4;
+      // r212aa: debug lane folds away in the shipping body.
+      bool dbg_on = kInstr && dbg != nullptr && dbg_tile < 4;
       if (dbg_on) {
         if (thr_id == 0) {
           int64_t* dbgB = reinterpret_cast<int64_t*>(dbg + 8192);
           dbgB[2 * dbg_tile + 0] = v_krow_base;
           dbgB[2 * dbg_tile + 1] = v_byte_base;
         }
-        uint8_t* dbgA = dbg + dbg_tile * 2048;
-        for (int j = thr_id;
-             j < get<1>(TileShapeQK{}) * kVStagePitch;
-             j += 16) {
-          dbgA[(j / kVStagePitch) * 128 + (j % kVStagePitch)] = vst[j];
+        // r220a world-bit probe: each SG's WI-0 anchor pair at tile 0
+        // (slots 16+2*sg). RESOLVED (r220a3, from the copy builders'
+        // text): svB composes sg_to_vnk, so partition coords are
+        // WG-canonical — SG s prints krow = 16*s (the band rides the
+        // anchor) and the scale-row walks take NO bake. The r220a
+        // bakes double-counted; this probe remains as the runtime
+        // confirmation if ever re-run.
+        if (dbg_tile == 0 && (thr_id % intel::sg_size) == 0 &&
+            (thr_id / intel::sg_size) < 4) {
+          int64_t* dbgB = reinterpret_cast<int64_t*>(dbg + 8192);
+          dbgB[16 + 2 * (thr_id / intel::sg_size) + 0] = v_krow_base;
+          dbgB[16 + 2 * (thr_id / intel::sg_size) + 1] = v_byte_base;
+        }
+        // r220a: image dump gated to SG 0's band — the 2048-byte slot
+        // mapping is sized for 16 rows; a 64-row dump would walk into
+        // the next tile's slot and the anchors.
+        if (thr_id < intel::sg_size) {
+          uint8_t* dbgA = dbg + dbg_tile * 2048;
+          for (int j = thr_id; j < 16 * kVStagePitch; j += 16) {
+            dbgA[(j / kVStagePitch) * 128 + (j % kVStagePitch)] = vst[j];
+          }
         }
       }
 
@@ -1115,7 +1310,12 @@ struct MxDecodeFwdMainloop<
       /* k masking for remainder tiles (stock) */
       if (check_remainder_k && K == blk_k1 - 1) {
         FragSCol k_rem_mask;
-        int k = get<0>(tKDgKD(0, 0, 0, K, 0)) + get_sub_group().get_local_id()[0];
+        // r220a2 NO BAKE: tKDgKD partitions through TiledCopyKD (the
+        // make_block_2d_copy_B family whose svB composes sg_to_vnk) —
+        // slice-canonical like the dtile anchor, the slot-0 coord
+        // already carries this SG's k-band.
+        int k = get<0>(tKDgKD(0, 0, 0, K, 0)) +
+            get_sub_group().get_local_id()[0];
         CUTLASS_PRAGMA_UNROLL
         for (int i = 0; i < k_rem_mask.size(); i++, k += intel::sg_size) {
           k_rem_mask(i) =
@@ -1128,13 +1328,18 @@ struct MxDecodeFwdMainloop<
       }
 
       /* Apply softmax and scaling */
-      if (params.vlane_probe == 8) {
-        // r200g probe 8: const-P — skip the softmax math entirely
-        // (max/sum stay neutral, epilogue LSE garbage). Timing floor
-        // only: severed chains understate.
-        CUTLASS_PRAGMA_UNROLL
-        for (int i = 0; i < tSrS.size(); ++i) {
-          tSrS(i) = ElementS(1.f);
+      if constexpr (kInstr) {
+        if (params.vlane_probe == 8) {
+          // r200g probe 8: const-P — skip the softmax math entirely
+          // (max/sum stay neutral, epilogue LSE garbage). Timing floor
+          // only: severed chains understate.
+          CUTLASS_PRAGMA_UNROLL
+          for (int i = 0; i < tSrS.size(); ++i) {
+            tSrS(i) = ElementS(1.f);
+          }
+        } else {
+          softmax(effective_scale, K == blk_k0, tSrS, tA_max, tA_sum,
+                  tArA);
         }
       } else {
         softmax(effective_scale, K == blk_k0, tSrS, tA_max, tA_sum, tArA);
@@ -1168,6 +1373,36 @@ struct MxDecodeFwdMainloop<
       reorder(tSrS2, tArP2);
       reorder(tSrS3, tArP3);
 
+      /* r212l per-tile invariants: the PV B-form's 8 rows and their
+      scale lines (2 u32 per row; every VV step's group byte lives in
+      them) are VV-invariant — derived once here, consumed by every
+      dequant_vslm walk below (was 8 tv evals + 8 scalar gmem scale
+      loads PER VV step). r242b: the line is the blk_v SLICE's group
+      window [v_slice_grp0, +kVSliceGroups) — see dequant_vslm_prep. */
+      int vslm_kr[8];
+      uint32_t vslm_line[8][2];
+      {
+        CUTE_UNROLL
+        for (int r = 0; r < 8; ++r) {
+          // r220a3: SG-relative decode (tArV's Thr mode spans one SG);
+          // kr is WITHIN-BAND (vslm reads SLM rows through its slm
+          // base, which carries the band for the WG-frame image). The
+          // SCALE rows need no band: prep's k_row_base comes from the
+          // vdb partition coords, which svB makes WG-canonical.
+          auto pc0 = mx::detail::tv_coord(
+              tArV.tv_layout(), wi16, 2 * r);
+          vslm_kr[r] = int(cute::get<1>(pc0));
+        }
+        mx::dequant_vslm_prep(
+            vs_surf,
+            v_krow_base,
+            vslm_kr,
+            vslm_line,
+            v_slice_grp0,
+            kVSliceGroups,
+            kInstr && params.vlane_probe == 5);
+      }
+
       /* GEMM 2: A += P * V, split in v dimension */
       CUTLASS_PRAGMA_UNROLL
       for (int VV = 0; VV < VTiles; VV++) {
@@ -1179,8 +1414,7 @@ struct MxDecodeFwdMainloop<
         // flat-basis bridge derivation was wrong) AND classified
         // Generic in reorder_atom_xe (scalar shuffles, +0.36 ms on the
         // e2m1 lanes); staging deletes both problems at once.
-        if (params.vlane_probe >= 2 && params.vlane_probe != 4 &&
-            params.vlane_probe != 5 && params.vlane_probe != 6) {
+        if (vp_sever) {
           // r200c probe 2/3: const-fill (timing only — severs the
           // gather chain; a structural floor, not a reachable target).
           CUTLASS_PRAGMA_UNROLL
@@ -1189,24 +1423,36 @@ struct MxDecodeFwdMainloop<
           }
         } else {
           mx::dequant_vslm<Mx::v_is_e4m3>(
-              vst + VV * kVBytesPerStep,
+              vst + sg_row_off * kVStagePitch + VV * kVBytesPerStep,
               kVStagePitch,
-              vs_surf,
               tArV,
-              v_krow_base,
+              vslm_kr,
+              vslm_line,
               v_byte_base * kElemsPerByteV + VV * kVStepElems,
-              params.vlane_probe == 5);
+              kInstr && params.vlane_probe == 5,
+              kInstr && params.vlane_probe == 9,
+              params.direct_bf16 != 0,
+              kInstr &&
+                  ((params.vlane_probe >= 11 &&
+                    params.vlane_probe <= 16) ||
+                   params.vlane_probe == 17),
+              kInstr ? params.vlane_probe : 0);
         }
         cute::gemm(mma_pv, tArP, tArV, tArA(_, _, _, VV));
         cute::gemm(mma_pv, tArP2, tArV, tArA(_, _, _, VV));
         cute::gemm(mma_pv, tArP3, tArV, tArA(_, _, _, VV));
         if (dbg_on) {
-          float* dbgC =
-              reinterpret_cast<float*>(dbg + 8256) +
-              ((dbg_tile * VTiles + VV) * 16 + thr_id) * 32;
-          CUTLASS_PRAGMA_UNROLL
-          for (int i = 0; i < tArV.size(); ++i) {
-            dbgC[i] = float(tArV(i));
+          // r220a: dump SG 0's WIs only — the C slots are sized for 16
+          // WIs per VV step (the _16 policy's WG); bands 1..3 read
+          // back through the anchors + canary instead.
+          if (thr_id < intel::sg_size) {
+            float* dbgC =
+                reinterpret_cast<float*>(dbg + 8256) +
+                ((dbg_tile * VTiles + VV) * 16 + thr_id) * 32;
+            CUTLASS_PRAGMA_UNROLL
+            for (int i = 0; i < tArV.size(); ++i) {
+              dbgC[i] = float(tArV(i));
+            }
           }
         }
       }
