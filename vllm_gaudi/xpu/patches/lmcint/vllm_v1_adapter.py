@@ -677,6 +677,34 @@ def _init_lmcache_engine(
         "turboquant_"
     )
     _tq_hidden = 0
+    # P-H2 (r249): the MX attn lanes are packed-row pools too. The
+    # pool-view side already classifies them as packed -- the leg-B
+    # elem-class alias (mx_dtype_map) makes every attention spec
+    # report kv_quant_mode.is_turboquant over mxfp4/mxfp8/mxk8v4, so
+    # _arc_attn_pool_view hands lmcache the TRUE packed view (NB, N,
+    # 1, TWO=2, HS=H_kv*slot//2; diag-proven r248: HS=272 @ D=256).
+    # This metadata side tested the raw dtype STRING, so MX lanes
+    # fell to the standard-shape branch (kv_heads*head_size rows =
+    # 512 B/token) while the pool view carried 544 B/token rows --
+    # every store/restore misaddressed with a 32 B/token cumulative
+    # drift. The drift-scrambled chunks restore as pool clobber on
+    # re-hit: the r168 quality garble and the r240b sustained-sweep
+    # wedge/device-lost, both one geometry disagreement. Fix: take
+    # the packed-row branch for the MX names, slot width from the
+    # fork's single source of truth (mx_layout.slot_bytes).
+    _mx_fmt = ""
+    if isinstance(_tq_cache_dtype, str) and _tq_cache_dtype in (
+        "mxfp4", "mxfp8", "mxk8v4"
+    ):
+        _mx_fmt = _tq_cache_dtype
+    # P-H2 (r249b): _packed covers the MX names too -- the connector's
+    # hidden_dim_size must be the packed row half for every packed lane,
+    # or the KV_2LTD tmp_gpu_buffer (built from hidden_dim_size) stops
+    # matching the kv_shape-derived MemoryObjs: the r249 first leg hit
+    # 96 "Lagged attn store failed" RuntimeErrors (tensor a 272 vs
+    # b 512 at dim 3) on the lagged from_gpu path while the sync path
+    # stored byte-true (the re-hit A/A passed).
+    _packed = _tq or bool(_mx_fmt)
     if _tq:
         from vllm.model_executor.layers.quantization.turboquant.config import (
             TurboQuantConfig,
@@ -685,6 +713,11 @@ def _init_lmcache_engine(
         _tq_cfg = TurboQuantConfig.from_cache_dtype(
             _tq_cache_dtype, model_config.get_head_size()
         )
+        kv_dtype = torch.uint8
+    elif _mx_fmt:
+        from vllm_gaudi.xpu.patches.mx_kv.mx_layout import slot_bytes as _mx_slot_bytes
+
+        _mx_slot = _mx_slot_bytes(int(model_config.get_head_size()), _mx_fmt)
         kv_dtype = torch.uint8
     else:
         kv_dtype = get_kv_cache_torch_dtype(
@@ -721,6 +754,22 @@ def _init_lmcache_engine(
                 "not split across the KV_2LTD 2-axis"
             )
         _tq_hidden = _tq_row // 2
+        kv_shape = (num_layer, 2, chunk_size, 1, _tq_hidden)
+    elif _mx_fmt:
+        # P-H2 (r249): the MX per-token packed row = H_kv * slot bytes
+        # (one slot = K + K-scales + V + V-scales per (token, head));
+        # even by construction at D=256 (mxfp4 272 / mxk8v4 400 /
+        # mxfp8 528 B slots), so the KV_2LTD 2-axis split is exact.
+        # This MUST equal the pool view _arc_attn_pool_view hands the
+        # connector (the r248 triage law: metadata row == view row or
+        # every transfer misaddresses the pool).
+        _mx_row = num_kv_head * _mx_slot
+        if _mx_row % 2 != 0:
+            raise ValueError(
+                f"arc P-H2: MX per-token row {_mx_row} bytes does not "
+                "split across the KV_2LTD 2-axis"
+            )
+        _tq_hidden = _mx_row // 2
         kv_shape = (num_layer, 2, chunk_size, 1, _tq_hidden)
     else:
         kv_shape = (
@@ -772,7 +821,7 @@ def _init_lmcache_engine(
     # When use_mla is True, num_kv_head is 1
     # arc p614: under TurboQuant the connector's hidden is the packed row
     # half (matches the KV_2LTD objs and the pool view's HS axis).
-    hidden_dim_size = _tq_hidden if _tq else num_kv_head * head_size
+    hidden_dim_size = _tq_hidden if _packed else num_kv_head * head_size
     if lmcache_config.use_layerwise:
         if lmcache_config.enable_blending:
             # Use layerwise connector for blending

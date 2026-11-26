@@ -1,0 +1,4 @@
+WARN: ARC_LMC=1 forced on ARC_KVDTYPE=mxfp4 — r168 banked essay-rehit REP-LOOP garble on e2m1-V lanes; r176 measured the mxfp8 store tax
+ARC_CONTAINER_FRESH image=vllm-arc:v0.30.0-b70-cert28 id=9852a2ce091a model=/models/qwen3.8-27b-fp8 (recreated from none)
+276e39173739fed8d7a493bc4365dc4264652f0d3db48d47e31dd7b87626d27e
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert28 name=arc-r248 model=/models/qwen3.8-27b-fp8 served=qwen3.8-27b-fp8 quant=fp8 qcfg= graph=1 spec=3 gmu=0.8 maxlen=262144 mnbt=8192 seqs=64 fp8=1 xgc=0 tmpl=__qwen_default__ rp=<qwen3> tp=<qwen3_coder> port=8000 16:30:27

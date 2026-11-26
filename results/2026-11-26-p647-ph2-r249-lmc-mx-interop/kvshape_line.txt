@@ -1,0 +1,1 @@
+(Worker_TP1 pid=1138) [32;20m[2026-11-26 17:13:10,250] LMCache INFO:[0m use mla: False, kv shape: (17, 2, 1600, 1, 272), num_mtp_layers: 1 [3m(vllm_v1_adapter.py:782:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.vllm_v1_adapter)[0m

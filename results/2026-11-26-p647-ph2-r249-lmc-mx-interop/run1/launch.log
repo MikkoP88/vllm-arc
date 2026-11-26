@@ -1,0 +1,22 @@
+R249_STAGE_OK
+R249 refuses passed
+=== [r249:interop] boot 16:54:38 (ARC_LMC=1 + mxfp4 + PATCHED adapter, GATE=0) ===
+error: no such object: arc-r249
+R249_HEALTH_OK 16:59:53
+G1_PACKED_METADATA_OK
+(Worker_TP1 pid=1138) [32;20m[2026-11-26 16:57:22,932] LMCache INFO:[0m use mla: False, kv shape: (17, 2, 1600, 1, 272), num_mtp_layers: 1 [3m(vllm_v1_adapter.py:775:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.vllm_v1_adapter)[0m
+G2_CLEAN_FACE_OK n_ok=1 store_lines=4
+t1=6.151642 t2=1.882572 retrieve_before=4 retrieve_after=4
+G3_REHIT_AA_OK_QUIETLOG (texts equal + wall 1.882572s < 50% of 6.151642s = functional hit; retrieval log quiet)
+G4 cell r249d_n1 run1 n_ok=1 OK
+G4 cell r249d_n1 run2 n_ok=1 OK
+G4 cell r249d_n2 run3 n_ok=2 OK
+G4 cell r249d_n4 run4 n_ok=4 OK
+G4_DEATH_SEQUENCE_CLEAN (no wedge, no device-lost, no watchdog)
+store_lines=72
+retrieve_lines=4
+tracebacks=96
+timeout_errors=0 device_lost=0
+lmc_error_lines=96
+R249_DONE failed=[] 2026-11-26T17:04:01Z
+W14_RESTORE_FIRED_fullres 2026-11-26T17:04:01Z

@@ -252,6 +252,11 @@ if [ "$HAVE_IMG_ID" != "$WANT_IMG_ID" ] || [ "$HAVE_MODEL_SRC" != "$ARC_MODEL" ]
     --shm-size 16g \
     -v "$ARC_MODEL":/models/target:ro \
     ${ARC_MXKV_OVERLAY:+-v "$ARC_MXKV_OVERLAY":/opt/venv/lib/python3.12/site-packages/vllm_gaudi/xpu/patches/mx_kv:ro} \
+    ${ARC_PD_PLATFORM:+-v "$ARC_PD_PLATFORM":/opt/venv/lib/python3.12/site-packages/vllm_gaudi/xpu/platform.py:ro} \
+    ${ARC_PD_ENVS:+-v "$ARC_PD_ENVS":/opt/venv/lib/python3.12/site-packages/vllm_gaudi/envs.py:ro} \
+    ${ARC_PD_GATE:+-v "$ARC_PD_GATE":/opt/venv/lib/python3.12/site-packages/vllm_gaudi/xpu/patches/lmc_mx_boot_gate.py:ro} \
+    ${ARC_PD_LMCDIAG_DET:+-v "$ARC_PD_LMCDIAG_DET":/opt/venv/lib/python3.12/site-packages/vllm_gaudi/xpu/patches/lmcint/lmc_kvfmt_detector.py:ro} \
+    ${ARC_PD_LMCDIAG_AD:+-v "$ARC_PD_LMCDIAG_AD":/opt/venv/lib/python3.12/site-packages/vllm_gaudi/xpu/patches/lmcint/vllm_v1_adapter.py:ro} \
     ${ARC_MXKV_WHEEL_DIR:+-v "$ARC_MXKV_WHEEL_DIR":/wheels:ro} \
     $CT_MOUNT \
     -v /root/build/neo_cache:/root/.neo_cache \
@@ -403,6 +408,7 @@ export ARC_TRACE_FLIP=1
 ${ARC_MXFP4_MODE:+export ARC_MXFP4_MODE=${ARC_MXFP4_MODE};}
 ${ARC_MXFP8_MODE:+export ARC_MXFP8_MODE=${ARC_MXFP8_MODE};}
 ${ARC_SKINNY_M:+export ARC_SKINNY_M=${ARC_SKINNY_M};}
+${VLLM_ARC_LMC_MX_GATE:+export VLLM_ARC_LMC_MX_GATE=${VLLM_ARC_LMC_MX_GATE};}
 ${VLLM_ARC_GRAPH_EXEC_DB:+export VLLM_ARC_GRAPH_EXEC_DB=${VLLM_ARC_GRAPH_EXEC_DB};}
 ${ARC_MXKV_VERIFY_DECODER:+export ARC_MXKV_VERIFY_DECODER=${ARC_MXKV_VERIFY_DECODER};}
 ${ARC_MXKV_NATIVE:+export ARC_MXKV_NATIVE=${ARC_MXKV_NATIVE};}

@@ -1,0 +1,20 @@
+(Worker_TP1 pid=1138) [r248diag:register] first-of-kind dim=4 dtype=torch.int8 name=language_model.model.layers.0.linear_attn shape=(493, 1, 1, 847872) strides=(870400, 847872, 847872, 1)
+(Worker_TP1 pid=1138) [r248diag:register] first-of-kind dim=4 dtype=torch.uint8 name=language_model.model.layers.3.self_attn.attn shape=(12325, 2, 64, 272) strides=(34816, 272, 544, 1)
+(Worker_TP1 pid=1138) [r248diag:kvgate] rows=[272] kv_shape=(17, 2, 1600, 2, 256) kv_dtype=torch.uint8
+(Worker_TP1 pid=1138) [r248diag:poolview] call#1 in shape=(12325, 2, 64, 272) dtype=torch.uint8 strides=(34816, 272, 544, 1) contig=False tq_attn=True tq_slot=272
+(Worker_TP1 pid=1138) [r248diag:poolview] call#1 out branch=tq-page-merge shape=(493, 1600, 1, 2, 272) strides=(870400, 544, 544, 272, 1)
+(Worker_TP1 pid=1138) [r248diag:poolview] call#2 in shape=(12325, 2, 64, 272) dtype=torch.uint8 strides=(34816, 272, 544, 1) contig=False tq_attn=True tq_slot=272
+(Worker_TP1 pid=1138) [r248diag:poolview] call#2 out branch=tq-page-merge shape=(493, 1600, 1, 2, 272) strides=(870400, 544, 544, 272, 1)
+(Worker_TP1 pid=1138) [r248diag:poolview] call#3 in shape=(12325, 2, 64, 272) dtype=torch.uint8 strides=(34816, 272, 544, 1) contig=False tq_attn=True tq_slot=272
+(Worker_TP1 pid=1138) [r248diag:poolview] call#3 out branch=tq-page-merge shape=(493, 1600, 1, 2, 272) strides=(870400, 544, 544, 272, 1)
+(Worker_TP0 pid=1026) [r248diag:register] first-of-kind dim=4 dtype=torch.int8 name=language_model.model.layers.0.linear_attn shape=(493, 1, 1, 847872) strides=(870400, 847872, 847872, 1)
+(Worker_TP0 pid=1026) [r248diag:register] first-of-kind dim=4 dtype=torch.uint8 name=language_model.model.layers.3.self_attn.attn shape=(12325, 2, 64, 272) strides=(34816, 272, 544, 1)
+(Worker_TP0 pid=1026) [r248diag:kvgate] rows=[272] kv_shape=(17, 2, 1600, 2, 256) kv_dtype=torch.uint8
+(Worker_TP0 pid=1026) [r248diag:poolview] call#1 in shape=(12325, 2, 64, 272) dtype=torch.uint8 strides=(34816, 272, 544, 1) contig=False tq_attn=True tq_slot=272
+(Worker_TP0 pid=1026) [r248diag:poolview] call#1 out branch=tq-page-merge shape=(493, 1600, 1, 2, 272) strides=(870400, 544, 544, 272, 1)
+(Worker_TP0 pid=1026) [r248diag:poolview] call#2 in shape=(12325, 2, 64, 272) dtype=torch.uint8 strides=(34816, 272, 544, 1) contig=False tq_attn=True tq_slot=272
+(Worker_TP0 pid=1026) [r248diag:poolview] call#2 out branch=tq-page-merge shape=(493, 1600, 1, 2, 272) strides=(870400, 544, 544, 272, 1)
+(Worker_TP0 pid=1026) [r248diag:poolview] call#3 in shape=(12325, 2, 64, 272) dtype=torch.uint8 strides=(34816, 272, 544, 1) contig=False tq_attn=True tq_slot=272
+(Worker_TP0 pid=1026) [r248diag:poolview] call#3 out branch=tq-page-merge shape=(493, 1600, 1, 2, 272) strides=(870400, 544, 544, 272, 1)
+(Worker_TP0 pid=1026) [r248diag:discover] call#1 n_tensors=17 t0.shape=(493, 1600, 1, 2, 272) t0.dtype=torch.uint8 t0.strides=(870400, 544, 544, 272, 1) t0.contig=True
+(Worker_TP1 pid=1138) [r248diag:discover] call#1 n_tensors=17 t0.shape=(493, 1600, 1, 2, 272) t0.dtype=torch.uint8 t0.strides=(870400, 544, 544, 272, 1) t0.contig=True

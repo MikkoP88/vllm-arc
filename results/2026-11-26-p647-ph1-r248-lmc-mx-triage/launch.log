@@ -1,0 +1,37 @@
+R248_STAGE_OK
+R248 refuses passed
+=== [r248:triage] boot 16:24:39 (ARC_LMC=1 over mxfp4, GATE=0, diag mounts live) ===
+[r248] TRACEBACK poll=17
+R248_BOOT_FAIL -- banking the instrumented log anyway (the boot death IS triage evidence)
+(APIServer pid=13)            ^^^^^^^^^^^^^^^^^^^^^
+(APIServer pid=13)   File "/opt/venv/lib/python3.12/site-packages/vllm/entrypoints/launchers/api_server/entry.py", line 94, in build_async_engine_client_from_engine_args
+(APIServer pid=13)     async_llm = AsyncLLM.from_vllm_config(
+(APIServer pid=13)                 ^^^^^^^^^^^^^^^^^^^^^^^^^^
+(APIServer pid=13)   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/engine/async_llm.py", line 235, in from_vllm_config
+(APIServer pid=13)     return cls(
+(APIServer pid=13)            ^^^^
+(APIServer pid=13)   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/engine/async_llm.py", line 169, in __init__
+(APIServer pid=13)     self.engine_core = EngineCoreClient.make_async_mp_client(
+(APIServer pid=13)                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(APIServer pid=13)   File "/opt/venv/lib/python3.12/site-packages/vllm/tracing/otel.py", line 178, in sync_wrapper
+(APIServer pid=13)     return func(*args, **kwargs)
+(APIServer pid=13)            ^^^^^^^^^^^^^^^^^^^^^
+(APIServer pid=13)   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/engine/core_client.py", line 163, in make_async_mp_client
+(APIServer pid=13)     return AsyncMPClient(
+(APIServer pid=13)            ^^^^^^^^^^^^^^
+(APIServer pid=13)   File "/opt/venv/lib/python3.12/site-packages/vllm/tracing/otel.py", line 178, in sync_wrapper
+(APIServer pid=13)     return func(*args, **kwargs)
+(APIServer pid=13)            ^^^^^^^^^^^^^^^^^^^^^
+(APIServer pid=13)   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/engine/core_client.py", line 1060, in __init__
+(APIServer pid=13)     super().__init__(
+(APIServer pid=13)   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/engine/core_client.py", line 656, in __init__
+(APIServer pid=13)     with launch_core_engines(
+(APIServer pid=13)   File "/usr/lib/python3.12/contextlib.py", line 144, in __exit__
+(APIServer pid=13)     next(self.gen)
+(APIServer pid=13)   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/engine/utils.py", line 1240, in launch_core_engines
+(APIServer pid=13)     wait_for_engine_startup(
+(APIServer pid=13)   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/engine/utils.py", line 1320, in wait_for_engine_startup
+(APIServer pid=13)     raise RuntimeError(
+(APIServer pid=13) RuntimeError: Engine core initialization failed. See root cause above. Failed core proc(s): {}
+R248_DONE TRIAGE_CAPTURED=boot_death 2026-11-26T16:27:32Z
+W14_RESTORE_FIRED_fullres 2026-11-26T16:27:33Z
