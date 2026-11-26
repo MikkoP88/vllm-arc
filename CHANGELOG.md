@@ -12,6 +12,56 @@ the fork SHA it was built from.
 Phase labels P0–P6.38 refer to the plan's execution phases; every phase's
 raw evidence is banked under `results/YYYY-MM-DD-<phase>-*/`.
 
+## r246 — P-D LMC x MX boot gate: the r240b posture confound made structural (2026-11-26)
+
+The engine itself now refuses the posture every r240b death shared:
+an LMCache-named connector over an MX KV dtype. `patches/lmc_mx_boot_
+gate.py` exec-hooks `KVConnectorFactory.create_connector` (beside the
+stock factory's own HMA refusal — same method, same shape) and raises
+`ARC_LMC_MX_REFUSED` at connector construction; `VLLM_ARC_LMC_MX_
+GATE=0` is the A/B-evidence-only bypass knob (envs.py). Scope is
+evidence-bounded: non-LMC connectors over MX pass through, and LMCache
+over non-MX dtypes stays the lawful certified lane.
+
+Validated on both layers (bank:
+`results/2026-11-26-p647-pd-lmc-mx-boot-gate/`):
+
+- **Offline probe (r246 run 4): 11/11** over the real factory wiring —
+  hook fired, refusal over mxfp4/mxfp8/mxk8v4, the real registry
+  resolves `LMCacheConnectorV1` (detection basis), non-LMC scope
+  pass-through, lawful non-MX pass-through, knob bypass posture,
+  stock None-config ValueError intact, idempotence.
+- **e2e (r246b run 3): both cells green** — the exact r240b confound
+  posture (ARC_LMC=1 over mxfp4) dies at construction with 5x
+  `ARC_LMC_MX_REFUSED` in the serve log; the lawful posture
+  (ARC_LMC=0) boots HEALTH_OK with the gate hook installed (4 install
+  lines), zero LMCache lines, and serves a real face (CONC_OK n_ok=1).
+
+Two defects found and fixed on the way, both banked in the runners'
+headers — **the validation legs earned their keep twice**:
+
+1. **Runner poll defect (r246b run 1)**: the refusal marker poll broke
+   at iteration 1 on the not-yet-created container and pkilled a
+   healthy 14-second boot — the connector constructs minutes into
+   init, after model load. Fixed: wait for the container, then a slow
+   poll (marker / health / EngineCore liveness); health=200 over the
+   confound posture is the genuine-leak discriminator.
+2. **The 0.30 cache_dtype rename (r246b run 2)**: the gate read the
+   pre-rename attr `cache_config.kv_cache_dtype` — vllm 0.30 renamed
+   the field to `cache_dtype` (config/cache.py:111, no legacy alias;
+   the CLI kwarg and the AttentionSelectorConfig tuple kept the old
+   name) — so the live engine surfaced `kv_dtype=None` and the gate
+   passed the confound posture through to health. The offline probe
+   masked it: its stub invented the pre-rename attr (the ref-harness
+   law — only the e2e leg over the real config object catches
+   attr-name drift). Fixed: the gate reads both surfaces (legacy
+   first, then the 0.30 field); the probe models the real surface and
+   pins the chain (B_legacy, 11 faces).
+
+The gate rides cert29 from the build6 lineage. Posture law unchanged:
+LMC off on every MX-KV lane — now enforced by the engine, not just the
+harness.
+
 ## r242–r245 — P-C hd512 MX-native decode + sliding-window phase: gemma hybrid MX-KV served e2e at D=512/page-128 (2026-11-26)
 
 The gemma-4-31b first-decode refusal named in the cert29 gate is

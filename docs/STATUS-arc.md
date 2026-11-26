@@ -45,8 +45,12 @@ What the certified stack delivers:
   re-ran the exact grids LMC-free and every face served clean (68/68,
   zero LMCache lines, zero tracebacks) — the ≥16K packed-KV
   restriction is RETRACTED; the lanes are capacity-limited only.
-  LMC-off-on-MX stays the certified posture either way (P-D will
-  refuse the combination at boot). Evidence:
+  LMC-off-on-MX stays the certified posture either way — and since
+  r246 the refusal is STRUCTURAL: the engine itself raises
+  `ARC_LMC_MX_REFUSED` at connector construction (LMCache-named
+  connector over an MX dtype; `VLLM_ARC_LMC_MX_GATE=0` bypasses for
+  A/B evidence only). Validated probe 11/11 + e2e both cells
+  (2026-11-26): `results/2026-11-26-p647-pd-lmc-mx-boot-gate/` +
   `results/2026-11-25-p647-r241-mxkv-lmcfree/` +
   `results/2026-11-24-p647-cert28-battery/` + the r234–r238 legs.
 - **Decode postures** — **MTP k3 is the certified, overall-best depth**

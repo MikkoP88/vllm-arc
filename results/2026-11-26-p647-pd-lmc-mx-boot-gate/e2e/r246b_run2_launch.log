@@ -1,0 +1,17 @@
+R246B_STAGE_OK
+R246B refuses passed
+=== [r246b:pd_refuse] boot 13:30:43 (ARC_LMC=1 over mxfp4 -- refusal REQUIRED) ===
+tracebacks=0
+lmc_mx_refused=0
+engine_dead=0 health_up=1
+warn_line=1
+NO_REFUSAL_pd_refuse -- the gate leaked (confound posture reached the engine; health=1 engine_dead=0)
+=== [r246b:pd_clean] boot 13:36:06 (ARC_LMC=0 mxfp4) ===
+HEALTH_OK_r246b_pd_clean 13:41:11
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert28 name=arc-r246b model=/models/qwen3.8-27b-fp8 served=qwen3.8-27b-fp8 quant=fp8 qcfg= graph=1 spec=3 gmu=0.8 maxlen=262144 mnbt=8192 seqs=64 fp8=1 xgc=0 tmpl=__qwen_default__ rp=<qwen3> tp=<qwen3_coder> port=8000 13:36:09
+gate_hook_installed=4
+tracebacks=0
+lmc_lines=0
+CONC_OK_pd_clean n_ok=1
+R246B_DONE failed=[ pd_refuse] 2026-11-26T13:41:52Z
+W14_RESTORE_FIRED_fullres 2026-11-26T13:41:52Z

@@ -1,0 +1,30 @@
+== p246 LMC x MX boot-gate probe (rev 4)
+INFO 11-26 13:43:45 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+INFO 11-26 13:43:45 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+INFO 11-26 13:43:45 [__init__.py:54] - hpu -> vllm_gaudi:register
+INFO 11-26 13:43:45 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+INFO 11-26 13:43:49 [platform.py:421] ArcXpuPlatform: wheel hook torch_utils <- patches.mx_dtype_map OK (already imported)
+INFO 11-26 13:43:49 [platform.py:441] ArcXpuPlatform: source-transform targets already imported at install: ['vllm.v1.attention.backends.registry']
+INFO 11-26 13:43:49 [platform.py:225] ArcXpuPlatform: injected AttentionBackendEnum.MXKV -> vllm_gaudi.xpu.patches.mx_kv.engine.MxAttentionBackend
+INFO 11-26 13:43:51 [platform.py:375] ArcXpuPlatform: wheel hook kv_cache_interface <- patches.mx_kv_mode OK
+INFO 11-26 13:43:56 [platform.py:375] ArcXpuPlatform: wheel hook factory <- patches.lmc_mx_boot_gate OK
+[face A_fired] ok hook fired on the real factory create_connector
+INFO 11-26 13:43:56 [platform.py:375] ArcXpuPlatform: wheel hook lmcache_connector <- patches.lmcache_hma_connector OK
+[face B_refuse] ok mxfp4 refused: ARC_LMC_MX_REFUSED: LMCache connector 'LMCacheConnec...
+[face B_mxfp8] ok mxfp8 refused: ARC_LMC_MX_REFUSED: LMCache connector 'LMCacheConnec...
+[face B_mxk8v4] ok mxk8v4 refused: ARC_LMC_MX_REFUSED: LMCache connector 'LMCacheConnec...
+[face B_legacy] ok kv_cache_dtype surface refused (fallback pinned)
+[face D_resolve] ok real registry resolves LMCacheConnectorV1 -> LMCacheConnectorV1
+INFO 11-26 13:43:56 [lmc_mx_boot_gate.py:69] ARC_LMC_MX_POSTURE gate=on connector=NixlConnector kv_dtype=mxfp8
+INFO 11-26 13:43:56 [factory.py:62] Creating v1 connector with name: _StubNixl and engine_id: p246-probe
+[face C_scope] ok pass-through + posture (gate=on connector=NixlConnector)
+INFO 11-26 13:43:56 [lmc_mx_boot_gate.py:69] ARC_LMC_MX_POSTURE gate=on connector=LMCacheConnectorV1 kv_dtype=checkpoint_fp8
+INFO 11-26 13:43:56 [factory.py:62] Creating v1 connector with name: _StubLMC and engine_id: p246-probe
+[face D_lawful] ok pass-through + posture (gate=on connector=LMCacheConnectorV1)
+INFO 11-26 13:43:56 [lmc_mx_boot_gate.py:69] ARC_LMC_MX_POSTURE gate=bypassed connector=LMCacheConnectorV1 kv_dtype=mxfp4
+INFO 11-26 13:43:56 [factory.py:62] Creating v1 connector with name: _StubLMC and engine_id: p246-probe
+[face E_bypass] ok pass-through + posture (gate=bypassed)
+[face F_stock] ok stock None-config ValueError intact
+[face G_idem] ok second _install kept exactly one wrapped constructor
+== p246 faces ok=11/11
+VERDICT: PASS
