@@ -1,0 +1,65 @@
+== p253 P-H4 posture-aware gate-flip probe (rev 2)
+INFO 11-26 21:45:04 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+INFO 11-26 21:45:04 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+INFO 11-26 21:45:04 [__init__.py:54] - hpu -> vllm_gaudi:register
+INFO 11-26 21:45:04 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+INFO 11-26 21:45:07 [platform.py:421] ArcXpuPlatform: wheel hook torch_utils <- patches.mx_dtype_map OK (already imported)
+INFO 11-26 21:45:07 [platform.py:441] ArcXpuPlatform: source-transform targets already imported at install: ['vllm.v1.attention.backends.registry']
+INFO 11-26 21:45:07 [platform.py:225] ArcXpuPlatform: injected AttentionBackendEnum.MXKV -> vllm_gaudi.xpu.patches.mx_kv.engine.MxAttentionBackend
+INFO 11-26 21:45:09 [platform.py:375] ArcXpuPlatform: wheel hook kv_cache_interface <- patches.mx_kv_mode OK
+INFO 11-26 21:45:15 [platform.py:375] ArcXpuPlatform: wheel hook factory <- patches.lmc_mx_boot_gate OK
+[face A_fired] ok hook fired on the real factory create_connector
+INFO 11-26 21:45:15 [platform.py:375] ArcXpuPlatform: wheel hook lmcache_connector <- patches.lmcache_hma_connector OK
+[face R_bootstrap] ok real resolution ran (p41b lmcint src-override finder installed)
+INFO 11-26 21:45:15 [platform.py:375] ArcXpuPlatform: wheel hook torch_ops <- patches.lmcint.lmc_twohs_transfer OK
+[32;20m[2026-11-26 21:45:15,560] LMCache INFO:[0m torch_dev=<module 'torch.xpu' from '/opt/venv/lib/python3.12/site-packages/torch/xpu/__init__.py'>, torch_device_type=xpu [3m(_device_detect.py:311:lmcache.v1.platform._device_detect)[0m
+INFO 11-26 21:45:15 [platform.py:375] ArcXpuPlatform: wheel hook vllm <- patches.lmcint.lmc_kvfmt_detector OK
+[32;20m[2026-11-26 21:45:15,793] LMCache INFO:[0m Discovered API module: env_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+[32;20m[2026-11-26 21:45:15,819] LMCache INFO:[0m Discovered API module: loglevel_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+[32;20m[2026-11-26 21:45:15,820] LMCache INFO:[0m Discovered API module: metrics_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+[32;20m[2026-11-26 21:45:15,823] LMCache INFO:[0m Discovered API module: periodic_thread_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+[32;20m[2026-11-26 21:45:15,824] LMCache INFO:[0m Discovered API module: run_script_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+[32;20m[2026-11-26 21:45:15,825] LMCache INFO:[0m Discovered API module: thread_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+[32;20m[2026-11-26 21:45:15,832] LMCache INFO:[0m Discovered API module: backend_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+[32;20m[2026-11-26 21:45:15,833] LMCache INFO:[0m Discovered API module: bypass_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+[32;20m[2026-11-26 21:45:15,840] LMCache INFO:[0m Discovered API module: cache_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+[32;20m[2026-11-26 21:45:15,848] LMCache INFO:[0m Discovered API module: chunk_statistics_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+[32;20m[2026-11-26 21:45:15,850] LMCache INFO:[0m Discovered API module: conf_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+[32;20m[2026-11-26 21:45:15,851] LMCache INFO:[0m Discovered API module: freeze_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+[32;20m[2026-11-26 21:45:15,852] LMCache INFO:[0m Discovered API module: hot_cache_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+[32;20m[2026-11-26 21:45:15,854] LMCache INFO:[0m Discovered API module: inference_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+[32;20m[2026-11-26 21:45:15,859] LMCache INFO:[0m Discovered API module: load_fs_chunks_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+[32;20m[2026-11-26 21:45:15,861] LMCache INFO:[0m Discovered API module: lookup_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+[32;20m[2026-11-26 21:45:15,861] LMCache INFO:[0m Discovered API module: version_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+[32;20m[2026-11-26 21:45:15,875] LMCache INFO:[0m Discovered API module: key_stats_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+[32;20m[2026-11-26 21:45:15,878] LMCache INFO:[0m Discovered API module: worker_info_api [3m(router_discovery.py:53:lmcache.v1.utils.router_discovery)[0m
+[utils@lmcint] src-override OK (pid=1)
+[vllm_v1_adapter@lmcint] src-override OK (pid=1)
+[lmcache_integration@lmcint] src-override OK (pid=1)
+INFO 11-26 21:45:15 [lmc_mx_boot_gate.py:102] ARC_LMC_MX_POSTURE gate=interop-live connector=LMCacheConnectorV1 kv_dtype=mxfp4 (packed-row/r249; r249 INTEROP_PASS: re-hit byte-equal, zero transfer errors)
+INFO 11-26 21:45:15 [factory.py:62] Creating v1 connector with name: _StubLMC and engine_id: p253-probe
+[face H_live_mxfp4] ok pass-through + posture (gate=interop-live)
+INFO 11-26 21:45:15 [lmc_mx_boot_gate.py:102] ARC_LMC_MX_POSTURE gate=interop-live connector=LMCacheConnectorV1 kv_dtype=mxfp8 (packed-row/r249; r249 INTEROP_PASS: re-hit byte-equal, zero transfer errors)
+INFO 11-26 21:45:15 [factory.py:62] Creating v1 connector with name: _StubLMC and engine_id: p253-probe
+[face H_live_mxfp8] ok pass-through + posture (gate=interop-live)
+INFO 11-26 21:45:15 [lmc_mx_boot_gate.py:102] ARC_LMC_MX_POSTURE gate=interop-live connector=LMCacheConnectorV1 kv_dtype=mxk8v4 (packed-row/r249; r249 INTEROP_PASS: re-hit byte-equal, zero transfer errors)
+INFO 11-26 21:45:15 [factory.py:62] Creating v1 connector with name: _StubLMC and engine_id: p253-probe
+[face H_live_mxk8v4] ok pass-through + posture (gate=interop-live)
+[face B_stock_mxfp4] ok mxfp4 refused (interop absent): ARC_LMC_MX_REFUSED: LMCache connector 'LMCacheCo...
+[face B_stock_mxfp8] ok mxfp8 refused (interop absent): ARC_LMC_MX_REFUSED: LMCache connector 'LMCacheCo...
+[face B_stock_mxk8v4] ok mxk8v4 refused (interop absent): ARC_LMC_MX_REFUSED: LMCache connector 'LMCacheCo...
+[face B_legacy_stock] ok kv_cache_dtype surface refused (fallback pinned)
+[face D_resolve] ok real registry resolves LMCacheConnectorV1 -> LMCacheConnectorV1
+INFO 11-26 21:45:15 [lmc_mx_boot_gate.py:102] ARC_LMC_MX_POSTURE gate=on connector=NixlConnector kv_dtype=mxfp8
+INFO 11-26 21:45:15 [factory.py:62] Creating v1 connector with name: _StubNixl and engine_id: p253-probe
+[face C_scope] ok pass-through + posture (gate=on connector=NixlConnector)
+INFO 11-26 21:45:15 [lmc_mx_boot_gate.py:102] ARC_LMC_MX_POSTURE gate=on connector=LMCacheConnectorV1 kv_dtype=checkpoint_fp8
+INFO 11-26 21:45:15 [factory.py:62] Creating v1 connector with name: _StubLMC and engine_id: p253-probe
+[face D_lawful] ok pass-through + posture (gate=on connector=LMCacheConnectorV1)
+INFO 11-26 21:45:15 [lmc_mx_boot_gate.py:102] ARC_LMC_MX_POSTURE gate=bypassed connector=LMCacheConnectorV1 kv_dtype=mxfp4 interop=absent
+INFO 11-26 21:45:15 [factory.py:62] Creating v1 connector with name: _StubLMC and engine_id: p253-probe
+[face E_bypass_stock] ok pass-through + posture (gate=bypassed)
+[face F_stock] ok stock None-config ValueError intact
+[face G_idem] ok second _install kept exactly one wrapped constructor
+== p253 faces ok=15/15
+VERDICT: PASS

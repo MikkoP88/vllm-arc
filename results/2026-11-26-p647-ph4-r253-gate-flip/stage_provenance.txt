@@ -1,0 +1,33 @@
+# Stage provenance — r253 P-H4 gate-flip leg (2026-11-26)
+
+Five files staged at `/root/build/p253_stage` on the rig, md5-verified
+both sides by the runner (`R253_STAGE_OK md5s verified` in the launch
+log). The four `vllm_gaudi` files are the P-H4 content-commit blobs;
+`platform.py` / `envs.py` are the unchanged P-D blobs pinned for a
+complete cert28 + overlay posture.
+
+| staged file | md5 | role |
+| --- | --- | --- |
+| platform.py | 0733f0b8c7dd2fb89422bafa56ec35f5 | P-D blob (unchanged) |
+| envs.py | 31ca4ac7cfcd996aed6446d4b24c2bcd | P-D blob (unchanged) |
+| lmc_mx_boot_gate.py | 04408d2e12cbdd8587cac4633624b7bc | P-H4 posture-aware flip |
+| vllm_v1_adapter.py | 7ca7cff4e1e04d4e0ea73573b1234664 | P-H2 fix + ARC_LMC_MX_INTEROP marker |
+| p253_ph4_gate_flip_probe.py | 1561daf77a0ec7009561d2aa3c1ff6f5 | probe rev 2 (R_bootstrap face) |
+
+Runner `tools/ar/r253_ph4_gate_flip_offline.sh` (md5
+28a232341c197841296f8e3c4d5ba98f) mounts the four patch files over
+site-packages inside `vllm-arc:v0.30.0-b70-cert28` and the probe at
+`/root/p253_ph4_gate_flip_probe.py` (read-only), then runs
+`/opt/venv/bin/python /root/p253_ph4_gate_flip_probe.py` with
+`--device /dev/dri --group-add video` and the stock probe env
+(`ZES_ENABLE_SYSMAN=1`, `DISABLE_VECLIB=1`, stock LD_LIBRARY_PATH).
+No engine boot; W14 quiesced before, trap-restored after
+(`W14_RESTORED 2026-11-26T21:45:18Z`).
+
+Repo-side hashes of the content-commit files at bank time (git-worktree
+bytes; the serve-script rig copy is re-shipped after this leg — see
+VERDICT "parity" note):
+
+- tools/serve_arc_b70.sh c2db777506e776a86426852b6bb80de4 (edited repo copy)
+- vllm_gaudi/xpu/patches/lmc_mx_boot_gate.py 04408d2e12cbdd8587cac4633624b7bc
+- vllm_gaudi/xpu/patches/lmcint/vllm_v1_adapter.py 7ca7cff4e1e04d4e0ea73573b1234664
