@@ -1,0 +1,72 @@
+R245 refuses passed (img=vllm-arc:v0.30.0-b70-cert28 wheel=95451e404b463d9d6efa4bd4a4939b26 overlay_engine=789b229582c257f213d51157ace31650)
+=== [r245:gkv_m4] boot 12:07:11 env=[ARC_MODEL=/models/gemma4-31b ARC_SERVED=gemma4-31b ARC_GMU=0.8 ARC_GRAPH=1 ARC_SPEC=0 ARC_LMC=0 ARC_RPC=1200 ARC_MAXLEN=40960 ARC_FP8=0 ARC_QUANT=fp8 ARC_KVDTYPE=mxfp4 ARC_MXKV_NATIVE=1] ===
+HEALTH_OK_r245_gkv_m4 12:11:35
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert28 name=arc-r245 model=/models/gemma4-31b served=gemma4-31b quant=fp8 qcfg= graph=1 spec=0 gmu=0.8 maxlen=40960 mnbt=8192 seqs=64 fp8=0 xgc=0 tmpl=__qwen_default__ rp=<qwen3> tp=<qwen3_coder> port=8000 12:07:24
+tracebacks=0
+lmc_lines=0
+pc2_windowed_impl=100
+kv_pool_tokens=105669
+CONC_OK_gkv_m4_c1024_n1 n_ok=1
+CONC_OK_gkv_m4_c1024_n2 n_ok=2
+CONC_OK_gkv_m4_c1024_n4 n_ok=4
+CONC_OK_gkv_m4_c1024_n8 n_ok=8
+CONC_OK_gkv_m4_c8192_n1 n_ok=1
+CONC_OK_gkv_m4_c8192_n2 n_ok=2
+CONC_OK_gkv_m4_c8192_n4 n_ok=4
+CONC_OK_gkv_m4_c8192_n8 n_ok=8
+CONC_OK_gkv_m4_c32768_n1 n_ok=1
+CONC_OK_gkv_m4_c32768_n2 n_ok=2
+KV_CAP gkv_m4 c32768 n4 POOL=105669 NEED=133728
+KV_CAP gkv_m4 c32768 n8 POOL=105669 NEED=267456
+CONC_OK_gkv_m4_c1024_n1_t1.0 n_ok=1
+CONC_OK_gkv_m4_c8192_n1_t1.0 n_ok=1
+CONC_OK_gkv_m4_c32768_n1_t1.0 n_ok=1
+=== [r245:gkv_m4] done 12:26:33 outcome=CONC_OK ===
+=== [r245:gkv_m8] boot 12:26:33 env=[ARC_MODEL=/models/gemma4-31b ARC_SERVED=gemma4-31b ARC_GMU=0.8 ARC_GRAPH=1 ARC_SPEC=0 ARC_LMC=0 ARC_RPC=1200 ARC_MAXLEN=40960 ARC_FP8=0 ARC_QUANT=fp8 ARC_KVDTYPE=mxfp8 ARC_MXKV_NATIVE=1] ===
+HEALTH_OK_r245_gkv_m8 12:30:57
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert28 name=arc-r245 model=/models/gemma4-31b served=gemma4-31b quant=fp8 qcfg= graph=1 spec=0 gmu=0.8 maxlen=40960 mnbt=8192 seqs=64 fp8=0 xgc=0 tmpl=__qwen_default__ rp=<qwen3> tp=<qwen3_coder> port=8000 12:26:46
+tracebacks=0
+lmc_lines=0
+pc2_windowed_impl=100
+kv_pool_tokens=54426
+CONC_OK_gkv_m8_c1024_n1 n_ok=1
+CONC_OK_gkv_m8_c1024_n2 n_ok=2
+CONC_OK_gkv_m8_c1024_n4 n_ok=4
+CONC_OK_gkv_m8_c1024_n8 n_ok=8
+CONC_OK_gkv_m8_c8192_n1 n_ok=1
+CONC_OK_gkv_m8_c8192_n2 n_ok=2
+CONC_OK_gkv_m8_c8192_n4 n_ok=4
+KV_CAP gkv_m8 c8192 n8 POOL=54426 NEED=70848
+CONC_OK_gkv_m8_c32768_n1 n_ok=1
+KV_CAP gkv_m8 c32768 n2 POOL=54426 NEED=66864
+KV_CAP gkv_m8 c32768 n4 POOL=54426 NEED=133728
+KV_CAP gkv_m8 c32768 n8 POOL=54426 NEED=267456
+CONC_OK_gkv_m8_c1024_n1_t1.0 n_ok=1
+CONC_OK_gkv_m8_c8192_n1_t1.0 n_ok=1
+CONC_OK_gkv_m8_c32768_n1_t1.0 n_ok=1
+=== [r245:gkv_m8] done 12:42:40 outcome=CONC_OK ===
+=== [r245:gkv_mk] boot 12:42:40 env=[ARC_MODEL=/models/gemma4-31b ARC_SERVED=gemma4-31b ARC_GMU=0.8 ARC_GRAPH=1 ARC_SPEC=0 ARC_LMC=0 ARC_RPC=1200 ARC_MAXLEN=40960 ARC_FP8=0 ARC_QUANT=fp8 ARC_KVDTYPE=mxk8v4 ARC_MXKV_NATIVE=1] ===
+HEALTH_OK_r245_gkv_mk 12:47:04
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert28 name=arc-r245 model=/models/gemma4-31b served=gemma4-31b quant=fp8 qcfg= graph=1 spec=0 gmu=0.8 maxlen=40960 mnbt=8192 seqs=64 fp8=0 xgc=0 tmpl=__qwen_default__ rp=<qwen3> tp=<qwen3_coder> port=8000 12:42:53
+tracebacks=0
+lmc_lines=0
+pc2_windowed_impl=100
+kv_pool_tokens=71856
+CONC_OK_gkv_mk_c1024_n1 n_ok=1
+CONC_OK_gkv_mk_c1024_n2 n_ok=2
+CONC_OK_gkv_mk_c1024_n4 n_ok=4
+CONC_OK_gkv_mk_c1024_n8 n_ok=8
+CONC_OK_gkv_mk_c8192_n1 n_ok=1
+CONC_OK_gkv_mk_c8192_n2 n_ok=2
+CONC_OK_gkv_mk_c8192_n4 n_ok=4
+CONC_OK_gkv_mk_c8192_n8 n_ok=8
+CONC_OK_gkv_mk_c32768_n1 n_ok=1
+CONC_OK_gkv_mk_c32768_n2 n_ok=2
+KV_CAP gkv_mk c32768 n4 POOL=71856 NEED=133728
+KV_CAP gkv_mk c32768 n8 POOL=71856 NEED=267456
+CONC_OK_gkv_mk_c1024_n1_t1.0 n_ok=1
+CONC_OK_gkv_mk_c8192_n1_t1.0 n_ok=1
+CONC_OK_gkv_mk_c32768_n1_t1.0 n_ok=1
+=== [r245:gkv_mk] done 13:04:09 outcome=CONC_OK ===
+R245_DONE failed=[] 2026-11-26T13:04:09Z
+W14_RESTORE_FIRED_fullres 2026-11-26T13:04:09Z

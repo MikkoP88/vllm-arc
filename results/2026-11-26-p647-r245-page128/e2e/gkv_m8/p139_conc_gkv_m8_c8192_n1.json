@@ -1,0 +1,31 @@
+{
+ "tag": "gkv_m8_c8192_n1",
+ "ctx": 8192,
+ "conc": 1,
+ "max_tokens": 600,
+ "model": "gemma4-31b",
+ "temperature": 0.0,
+ "n_ok": 1,
+ "n_fail": 0,
+ "requests": [
+  {
+   "slot": 0,
+   "error": null,
+   "ttft_s": 3.5268088260199875,
+   "total_s": 38.03837816801388,
+   "n_stream_chunks": 600,
+   "itl_ms_p50": 57.72238504141569,
+   "itl_ms_p90": 57.8088229522109,
+   "itl_ms_p99": 58.23187797795981
+  }
+ ],
+ "ttft_mean_s": 3.5268088260199875,
+ "ttft_max_s": 3.5268088260199875,
+ "per_user_tps": [
+  17.39
+ ],
+ "per_user_mean_tps": 17.38547424645556,
+ "per_user_min_tps": 17.38547424645556,
+ "agg_tps_wall": 15.773543166057864,
+ "wall_s": 38.03837816801388
+}
