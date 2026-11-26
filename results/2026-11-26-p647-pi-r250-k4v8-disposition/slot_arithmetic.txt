@@ -1,0 +1,17 @@
+k4v8 slot-byte identity vs certified mxk8v4 — the r250 disposition arithmetic
+(computed 2026-11-26 from vllm_gaudi/xpu/patches/mx_kv/mx_layout.py geometry:
+ slot = D*k_bits/8 + D/32 (K scales, E8M0 per 32-group) + D*v_bits/8 + D/32 (V scales))
+
+D= 128  mxk8v4= 200  k4v8= 200  mxfp4= 136  mxfp8= 264  identical=True
+D= 256  mxk8v4= 400  k4v8= 400  mxfp4= 272  mxfp8= 528  identical=True
+D= 512  mxk8v4= 800  k4v8= 800  mxfp4= 544  mxfp8=1056  identical=True
+
+Cross-checks vs mx_layout.slot_bytes (D=128 certified values): mxfp8 264,
+mxfp4 136, mxk8v4 200 — all match. D=256 matches the lmcint adapter geometry
+comment (mxfp4 272 / mxk8v4 400 / mxfp8 528, r249 G1 oracle readout class).
+
+Reading: the slot cost is symmetric in (k_bits, v_bits) — the mix changes
+QUALITY allocation, never BYTES. k4v8 therefore cannot beat mxk8v4 on
+capacity at any head size; its only distinct property is paying the
+twice-convicted e2m1-K cost (r238 acceptance, cert24 gate run1) in exchange
+for upgrading the operand measured quality-free (e2m1 V, r238 + r245).

@@ -12,6 +12,28 @@ the fork SHA it was built from.
 Phase labels P0–P6.38 refer to the plan's execution phases; every phase's
 raw evidence is banked under `results/YYYY-MM-DD-<phase>-*/`.
 
+## P-I r250 — k4v8 dispositioned closed-dominated; the lever map corrected (2026-11-26)
+
+The P-I improve phase opens with cycle 1 of 3. The k4v8 KV lane
+(e2m1 K + e4m3 V — the mirror of certified mxk8v4, the P-E lever
+map's ranked candidate #1) is **closed-dominated by banked evidence,
+zero rig time**: slot bytes are symmetric in the K/V width mix, so
+k4v8 is byte-identical to mxk8v4 at every head size (200/400/800 B
+at D=128/256/512) — the r247 lever map's "K-half capacity" framing
+was the arithmetic slip. The lane would pay the twice-convicted
+e2m1 K (r238: −10 % acc/step at deep positions, the acceptance
+factorial's only above-noise claim; cert24 gate run1: the gate's
+one REAL quality-limit failure, essay REP-LOOP under churn) to
+upgrade the operand two batteries measured quality-free (e2m1 V:
+r238 sub-noise; r245 full-grid certification 37/37 + 8 KV_CAP). No
+face — capacity, acceptance, corruption, throughput — where it can
+beat the certified lane; a rig cycle would only confirm arithmetic.
+Lever map §4/§5 corrected: **group-64 E8M0** is the open candidate
+#1 (offline oracle first, acceptance probe mandatory — coarser
+scales on the same K operand), **mxfp4-W4A8** #2. Bank:
+`results/2026-11-26-p647-pi-r250-k4v8-disposition/` (VERDICT +
+slot arithmetic).
+
 ## r248-r249 — P-H1/P-H2: the LMC x MX interop — triaged, fixed, validated (2026-11-26)
 
 The fix phase (owner directive: all LMCache-MX issues solved). **P-H1
