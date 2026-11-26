@@ -97,7 +97,18 @@ class MxXeFMHAFwdSplitKVKernel {
   // on every path and writer/reduce agree on those strides; 64 matches
   // the widest policy cap. Evidence: forced s>16 used to die in
   // can_implement with a swallowed Status (r207 splits-artifact bank).
-  static constexpr int max_num_kv_splits = 64;
+  // r217: 64 -> 128. The engine split sweep (r216/r216b) found the
+  // timing trend monotone improving to the old 64 cap (-11.45 pct at
+  // 32K, A/A 0.03 pct); the reduce SharedStorage scales with this
+  // (2 x max x 4B SLM = 1 KB at 128) and the r208 fork-owned reduce
+  // loops splits in chunks (no per-thread array dependence).
+  // r219: 128 -> 256. The r216-r217 curve is monotone improving but
+  // decelerating (-11.45/-6.45/-2.6 pct per octave); 256 prices the
+  // tail. Reduce SharedStorage scales with the constant (2 x 256 x 4B
+  // = 2 KB SLM at 256) and the r208 fork-owned reduce loops splits in
+  // chunks (no per-thread array dependence). Env pin ARC_MXKV_NSPLIT
+  // remains the probe instrument above the auto pick.
+  static constexpr int max_num_kv_splits = 256;
   static constexpr int dpas_max_repeat_count = 8;
   static constexpr bool Sink = CollectiveEpilogue::Sink;
   using ElementSink = typename CollectiveEpilogue::ElementSink;
@@ -312,16 +323,38 @@ class MxXeFMHAFwdSplitKVKernel {
       bool is_single_split;
 
       if (wl_tile_start >= 0) {
+        // r243a WINDOWED WORK-LIST CLAMP (2026-11-26): the work list is
+        // expressed in WINDOWED tile units (the interface prices the
+        // plan from the windowed extent), so a well-formed plan lands
+        // inside [k_block0, k_blocks). Clamp regardless: a full-length
+        // plan plus the k_block0 offset walks past k_blocks -- past the
+        // block-table row (r243 mxfp4 DEVICE_LOST at W=64/ctx 8192
+        // forced-8; the mxfp8 cell survived on mapped garbage with
+        // every OOB column masked). A mispriced plan now under-covers
+        // visibly (a correctness failure) instead of killing the
+        // device; the <= 0 skip below already handles a fully
+        // out-of-range item.
         kv_split_offset = k_block0 + wl_tile_start;
-        num_effective_kv_blocks = wl_tile_count;
+        num_effective_kv_blocks =
+            cute::min(wl_tile_count, k_blocks - kv_split_offset);
         seq_num_kv_splits = (p.splits_per_seq != nullptr)
                                 ? p.splits_per_seq[idx_b]
                                 : num_kv_splits;
         is_single_split = (seq_num_kv_splits <= 1);
       } else {
+        // r231d SEQUSED-TIGHTENED SPLITS (r231c pricing): the host
+        // count prices from max_seqlen_k capacity (the r212f no-sync
+        // law) and over-provisions at shallow walked ctx (+92% @2K);
+        // clamp on the device-side windowed block count -- >=4
+        // k-tiles per split. 8K+ ctx is unchanged (the clamp hits
+        // capacity) and MxReduceSplitK derives the identical count
+        // (mirrored edit) or it would read unwritten Oaccum slots.
         seq_num_kv_splits = (p.splits_per_seq != nullptr)
                                 ? p.splits_per_seq[idx_b]
-                                : num_kv_splits;
+                                : cute::min(num_kv_splits,
+                                            cute::max(1,
+                                                      windowed_k_blocks /
+                                                          4));
 
         if (idx_kv_split >= seq_num_kv_splits) {
           continue;

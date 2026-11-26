@@ -22,22 +22,19 @@ on the caller's existing path.
 
 from __future__ import annotations
 
+import contextlib
 import os
-from typing import Optional
 
 import torch
 
-try:
+with contextlib.suppress(ImportError):
     from . import _vllm_fa2_C  # noqa: F401  (dlopens the extension — the
     # package __init__ does NOT; arc4 law: a bare package import leaves
     # torch.ops._vllm_fa2_C empty)
-except ImportError:
-    pass
 
 from .flash_attn_interface import (
     _as_int32_device_tensor,
     _infer_num_xe_cores,
-    _kv_tile_from_block_size,
     _min_blocks_for_split,
 )
 
@@ -128,10 +125,11 @@ def mx_paged_decode(
     seqused_k: torch.Tensor,
     block_table: torch.Tensor,
     max_seqlen_k: int,
-    softmax_scale: Optional[float] = None,
+    softmax_scale: float | None = None,
     num_splits_kv: int = 0,
-    host_kv_lens: Optional[torch.Tensor] = None,
-    out: Optional[torch.Tensor] = None,
+    host_kv_lens: torch.Tensor | None = None,
+    out: torch.Tensor | None = None,
+    window_size: tuple[int, int] | None = None,
 ) -> torch.Tensor:
     """MX-native paged decode.
 
@@ -152,6 +150,13 @@ def mx_paged_decode(
            per-seq split plan without a device sync — same contract as
            flash_attn_varlen_func).
         out: optional preallocated [total_q, num_heads_q, D] output.
+        window_size: optional (left, right) sliding-window bounds —
+           the flash-attn convention (wheel-law: sliding_window_val =
+           1 + window_size[0]). A W-token window rides (W-1, 0) = the
+           last W tokens per row; None keeps the windowless decode.
+           The masked kernel twin is compiled for D=256 at page 16/64
+           (qgroup <= 8); other geometries refuse loudly, never
+           serve unmasked (P-C2, 2026-11-25).
     """
     if fmt not in _FORMATS:
         raise ValueError(f"unknown MX KV format: {fmt} (known: {sorted(_FORMATS)})")
@@ -165,10 +170,8 @@ def mx_paged_decode(
     if q.dim() != 3:
         raise ValueError(f"q must be [total_q, heads, D], got {tuple(q.shape)}")
 
-    batch = cu_seqlens_q.numel() - 1
     max_seqlen_q = 1
     head_size = q.size(2)
-    block_size = cache.size(1)
 
     expected_slot = _slot_bytes(head_size, fmt_id)
     if cache.size(3) < expected_slot:
@@ -186,11 +189,46 @@ def mx_paged_decode(
     work_list_dev = None
     if (host_kv_lens is not None and num_splits_kv is not None
             and num_splits_kv > 1):
-        kv_tile = _kv_tile_from_block_size(block_size)
+        # r242d (2026-11-26): the plan MUST price tiles in the KERNEL's
+        # k-walk units. Every geometry this fork dispatches walks 16-row
+        # k-tiles (the r212c single-SG law: page-64 pools ride the _16
+        # policy via 16-row sub-tiles), so the stock block-size mirror
+        # (_kv_tile_from_block_size -> 64 at page 64) under-covered the
+        # work list 4x: forced-split work items walked only the FIRST
+        # QUARTER of each seq's K blocks (r242 forced8 cos~0.51, D=512
+        # page 64, all three formats; the legacy/auto path was always
+        # correct -- mx_get_num_splits prices 16). Page 16 is unchanged
+        # (the mirror already returned 16 there).
+        kv_tile = 16
+        # r243a (2026-11-26): with a window riding the call, the plan
+        # must price the WINDOWED extent. The kernel adds k_block0 (=
+        # max(L-1-wl, 0) // kv_tile, the walk bound from
+        # window_size_left) to every work item's tile start, so a plan
+        # built from FULL lens walks past k_blocks -- past the
+        # block-table row: at W=64 / ctx 8192 forced-8, the split-0
+        # item walked tiles 508..571 of 512 (r243 mxfp4 DEVICE_LOST;
+        # the mxfp8 cell survived on mapped garbage with every OOB
+        # column masked -- correct output, undefined reads). Price each
+        # seq at the device's windowed tile count ceil(L/kv_tile) -
+        # k_block0, padded to a tile multiple so the builder's ceil-div
+        # reproduces it exactly.
+        plan_lens = host_kv_lens
+        if window_size is not None:
+            wl = max(int(window_size[0]), 0)
+            if isinstance(host_kv_lens, torch.Tensor):
+                full_lens = host_kv_lens.to(
+                    dtype=torch.int64, device="cpu").tolist()
+            else:
+                full_lens = [int(v) for v in host_kv_lens]
+            plan_lens = [
+                ((L + kv_tile - 1) // kv_tile
+                 - max(L - 1 - wl, 0) // kv_tile) * kv_tile
+                for L in full_lens
+            ]
         num_xe_cores = _infer_num_xe_cores(q.device)
         num_heads_kv = cache.size(2)
         splits_cpu, work_list_cpu = _mx_build_decode_split_plan(
-            host_kv_lens,
+            plan_lens,
             kv_tile=kv_tile,
             num_kv_splits=num_splits_kv,
             num_xe_cores=num_xe_cores,
@@ -205,6 +243,11 @@ def mx_paged_decode(
     if out is None:
         out = torch.empty_like(q)
 
+    # P-C2 (2026-11-25): the flash window pair rides the schema after
+    # softmax_scale; None = the historical windowless decode (-1/-1).
+    wl, wr = (-1, -1) if window_size is None else (
+        int(window_size[0]), int(window_size[1]))
+
     # The decode kernel reads per-seq KV lengths from the cu_seqlens_k
     # slot (the vendor decode flow passes seqused_k there — see
     # flash_api.cpp's cutlass_paged_decode_interface call).
@@ -218,6 +261,8 @@ def mx_paged_decode(
         max_seqlen_q,
         max_seqlen_k,
         softmax_scale,
+        wl,
+        wr,
         num_splits_kv if num_splits_kv > 0 else -1,
         splits_per_seq_dev,
         work_list_dev,

@@ -41,11 +41,10 @@ int mx_get_num_splits(
   if (block_size == 16) {
     kv_tile = 16;
     sg_per_wg = 1;
-    // r207: 16 -> 64. The old cap equaled the kernel's (sanity-only)
-    // max_num_kv_splits and pinned auto at 16 splits; the splits sweep
-    // shows the walk still scales there (r207 bank). Reduce cap and
-    // splits_bw still bound the request for short/mixed batches.
-    policy_split_cap = 64;
+    // r219b: 64 -> 128 = the validated optimum (r217/r217b A/A;
+    // r219 tail cells show 192/256 regress). Not the engine branch
+    // (page 64 -> else), kept consistent for page-16 deployments.
+    policy_split_cap = 128;
   } else if (block_size == 32) {
     kv_tile = 32;
     sg_per_wg = 2;
@@ -53,7 +52,12 @@ int mx_get_num_splits(
   } else {
     kv_tile = 64;
     sg_per_wg = 4;
-    policy_split_cap = 64;
+    // r219b: 64 -> 128. This ELSE branch is the ENGINE branch (page
+    // 64): r219 e2e showed auto pinned at exactly 64 by this cap
+    // while the 13x reduce cap allowed 130; ns128 is the validated
+    // optimum (r217/r217b/r218), and ns192/ns256 REGRESS (+7-13 pct,
+    // r219 tail cells) so the cap sits AT the optimum, not above it.
+    policy_split_cap = 128;
   }
 
   int kv_tiles = (max_seqlen_k + kv_tile - 1) / kv_tile;
@@ -71,14 +75,16 @@ int mx_get_num_splits(
   int splits = std::max(splits_par, splits_bw);
 
   // Reduction-cost cap: ReduceSplitK output volume scales with
-  // splits * num_heads_q; keep it bounded (stock 4-slots/head knee,
-  // RESTORED in r210: the r209 8x lift let 32K run 64 splits = +0-13%
-  // worse on the probe A/B; 40 slots/head is the measured optimum on
-  // BOTH probe (B=32) and telemetry (B=1) geometries, and the r207/r208
-  // bench sweep that favored 64 was a 2-seq slot-fill artifact — 4 WGs
-  // per split-set wants deep splits, engine batches do not).
+  // splits * num_heads_q. r219: 4 -> 13 slots/head, re-priced at
+  // ENGINE geometry — the r210 4-slots/head knee (40 splits at the
+  // c32768 bucket: W=120, H_q=12) was probe-priced and INVERTED on the
+  // e2e faces (third sign-inversion-class instance): 64 = -11.45 pct,
+  // 128 = -8.79 pct further, both A/A-confirmed (r216b/r217b); auto
+  // now lands ~128-130 at the bucket (min with the policy cap). The
+  // r207/r208 bench sweep that favored shallow splits was a 2-seq
+  // slot-fill artifact. Short ctx stays workload-bounded (kv_tiles/12).
   int splits_reduce_cap =
-      std::max(1, 4 * num_wg_slots / std::max(1, num_heads_q));
+      std::max(1, 13 * num_wg_slots / std::max(1, num_heads_q));
   splits = std::min(splits, splits_reduce_cap);
 
   // r210 workload bound: splits_par over-requests at small batch +
@@ -159,9 +165,18 @@ void cutlass_mx_paged_decode_xe2(
     int max_seqlen_q,
     int max_seqlen_k,
     double sm_scale,
+    // P-C2 (2026-11-25): sliding-window bounds, the stock
+    // cutlass_paged_decode_impl arg order. W-token window = (W-1, 0)
+    // — the last W tokens per row (right bound 0 keeps the diagonal;
+    // the vendor mainloop masks col > pos + w_right). -1/-1 = the
+    // historical windowless decode.
+    int window_size_left,
+    int window_size_right,
     int num_kv_splits,
     std::optional<at::Tensor>& splits_per_seq,
     std::optional<at::Tensor>& work_list) {
+  const bool is_local =
+      window_size_left >= 0 || window_size_right >= 0;
   TORCH_CHECK(
       mx_cache.scalar_type() == at::ScalarType::Byte && mx_cache.dim() == 4,
       "mx_paged_decode: cache must be the uint8 MX slot pool "
@@ -194,10 +209,10 @@ void cutlass_mx_paged_decode_xe2(
       " at D=",
       head_size);
   TORCH_CHECK(
-      head_size == 128 || head_size == 256,
+      head_size == 128 || head_size == 256 || head_size == 512,
       "mx_paged_decode: head_size ",
       head_size,
-      " not yet compiled (arc7 instantiations cover D=128/256)");
+      " not yet compiled (arc7 instantiations cover D=128/256/512)");
   TORCH_CHECK(
       block_size == 16 || block_size == 64,
       "mx_paged_decode: block_size ",
@@ -242,12 +257,18 @@ void cutlass_mx_paged_decode_xe2(
         {total_seqlen_q, num_heads_q, head_size},
         query.options().device(query.device()));
   }
-  if (num_kv_splits == 1) {
-    temp_out = out;
-  } else if (!temp_out.defined()) {
+  // r225 delta (4): partials ALWAYS fp32 in a dedicated temp buffer.
+  // The old alias (num_kv_splits == 1 -> temp_out = out) and the bf16
+  // partial allocation quantized each split's unnormalized
+  // accumulator to 2^-9 relative BEFORE the combine divided by the
+  // softmax sum -- hundreds-thousands of output ulp in the flat
+  // deep-layer decode regime (see mx_paged_decode.hpp delta (4)).
+  // Single-split runs keep the fp32 buffer too; the reduce kernel is
+  // the one bf16 quantization point (sentinel pass-through).
+  if (!temp_out.defined()) {
     temp_out = at::empty(
         {total_seqlen_q, num_heads_q * num_kv_splits, head_size},
-        query.options().device(query.device()));
+        query.options().dtype(at::kFloat).device(query.device()));
   }
   if (!exp_sums.defined()) {
     exp_sums = at::empty(
@@ -289,10 +310,10 @@ void cutlass_mx_paged_decode_xe2(
       head_size,  // v_head_size == D on this lane
       max_blocks_per_seq,
       block_size,
-      -1,  // window_size_left (no local mask)
-      -1,  // window_size_right
+      window_size_left,  // P-C2: -1/-1 keeps the windowless decode
+      window_size_right,
       false,  // is_causal: always false for decode (vendor law)
-      false,  // is_local
+      is_local,
       false,  // is_sink
       num_kv_splits,
       nullptr,  // splits_per_seq, filled below
@@ -334,28 +355,63 @@ void cutlass_mx_paged_decode_xe2(
   //   256/64  the e2e engine pool page — served by the _16 policy's
   //           16-row sub-tiles (r212c SG law: the MX staging is
   //           single-SG; see the dispatch branch below)
-  auto dispatch_fmt = [&](auto qgroup, auto head, auto page) {
+  //   512/64  the gemma-4-31b full_attention head class (P-C1) —
+  //           same _16 sub-tile frame; V tiles across grid.x per
+  //           the vendor accumulator budget (see the branch below)
+  // P-C2: `local` rides a compile-time tag (std::true_type/false_type)
+  // — a runtime bool would instantiate BOTH masked/unmasked twins for
+  // every geometry this lambda touches (the vendor
+  // decode_policy_dispatch_func bool-resolution law). The masked twin
+  // exists ONLY where a sliding-window model reaches: 256/16 +
+  // 256/64-via-_16 at the qgroup<=8 bucket (gemma-4-31b sliding
+  // class); the geometry gates TORCH_CHECK-refuse everything else.
+  auto dispatch_fmt = [&](auto qgroup, auto head, auto page, auto local) {
     using policy_t = decode_policy_qpacked_head<
         decltype(qgroup),
         decltype(head),
         decltype(page)>;
+    constexpr bool kLocal = decltype(local)::value;
     switch (fmt_id) {
       case 0:
-        mx_decode_policy_dispatch<policy_t, MxFormat::mxfp8>(queue, args);
+        mx_decode_policy_dispatch<policy_t, MxFormat::mxfp8, kLocal>(
+            queue, args);
         break;
       case 1:
-        mx_decode_policy_dispatch<policy_t, MxFormat::mxfp4>(queue, args);
+        mx_decode_policy_dispatch<policy_t, MxFormat::mxfp4, kLocal>(
+            queue, args);
         break;
       default:
-        mx_decode_policy_dispatch<policy_t, MxFormat::mxk8v4>(queue, args);
+        mx_decode_policy_dispatch<policy_t, MxFormat::mxk8v4, kLocal>(
+            queue, args);
         break;
     }
   };
-  auto dispatch_geom = [&](auto qgroup) {
+  // allow_local rides a compile-time tag so dispatch_geom<_16> never
+  // instantiates a masked twin (the qgroup>8 + is_local posture is
+  // refused above the call); only _8 x {256/16, 256/64-via-_16} carries
+  // the masked twins — the instantiation discipline (P-C2).
+  auto dispatch_geom = [&](auto qgroup, auto allow_local) {
+    constexpr bool kAllowLocal = decltype(allow_local)::value;
     if (head_size == 128 && block_size == 16) {
-      dispatch_fmt(qgroup, _128{}, _16{});
+      TORCH_CHECK(
+          !is_local,
+          "mx_paged_decode: window masking not compiled for D=",
+          head_size,
+          " page=",
+          block_size,
+          " (masked twins compiled: 256/16 + 256/64 at the qgroup<=8 "
+          "bucket)");
+      dispatch_fmt(qgroup, _128{}, _16{}, std::false_type{});
     } else if (head_size == 256 && block_size == 16) {
-      dispatch_fmt(qgroup, _256{}, _16{});
+      if constexpr (kAllowLocal) {
+        if (is_local) {
+          dispatch_fmt(qgroup, _256{}, _16{}, std::true_type{});
+        } else {
+          dispatch_fmt(qgroup, _256{}, _16{}, std::false_type{});
+        }
+      } else {
+        dispatch_fmt(qgroup, _256{}, _16{}, std::false_type{});
+      }
     } else if (head_size == 256 && block_size == 64) {
       // r212c law (2026-11-21): page-64 pools ride the _16 policy — the
       // vendor _64 policy's SubgroupLayoutQK (1,4,1) puts FOUR subgroups
@@ -368,7 +424,50 @@ void cutlass_mx_paged_decode_xe2(
       // indirection) keep the certified frame; the true multi-SG p64
       // tile (1.5-2x lower fixed term: 306-404 vs ~600 us at 1K) is the
       // r212d deep-dive.
-      dispatch_fmt(qgroup, _256{}, _16{});
+      //
+      // r220a (2026-11-22): the multi-SG decode laws landed (band-baked
+      // coordinates in the mainloop/dequant tv sites); this env route
+      // probes the TRUE _64 policy offline before any shipping flip.
+      // Probe instrument only -- the default stays the certified _16
+      // sub-tile frame until p204 oracle + canary + e2e A/A pass.
+      if (std::getenv("ARC_MXKV_P64NATIVE") != nullptr) {
+        TORCH_CHECK(
+            !is_local,
+            "mx_paged_decode: window masking not compiled on the "
+            "ARC_MXKV_P64NATIVE probe policy (256/64-via-_16 carries "
+            "the masked twin)");
+        dispatch_fmt(qgroup, _256{}, _64{}, std::false_type{});
+      } else if constexpr (kAllowLocal) {
+        if (is_local) {
+          dispatch_fmt(qgroup, _256{}, _16{}, std::true_type{});
+        } else {
+          dispatch_fmt(qgroup, _256{}, _16{}, std::false_type{});
+        }
+      } else {
+        dispatch_fmt(qgroup, _256{}, _16{}, std::false_type{});
+      }
+    } else if (head_size == 512 && block_size == 64) {
+      // P-C1 (2026-11-25): gemma-4-31b full_attention layers — the
+      // hybrid's D=512 head class (10/60 layers; sliding layers ride
+      // 256/64 above). The FIRST r240b decode attempt refused here
+      // ("head_size 512 not yet compiled") and no MX KV lane on this
+      // image ever served gemma. Same certified _16 sub-tile frame as
+      // 256/64 (r212c single-SG law — the _64 policy's (1,4,1) SG
+      // layout breaks the MX staging); the policy carries _512 so the
+      // vendor accumulator-budget V-cap tiles V across grid.x
+      // (q_packed _8: ShapeOut V 256, two slices; gemma GQA G=2/8 both
+      // land the _8 bucket). K walks D in the same 64-elem chunks — 8
+      // per QK pass instead of 4, loop-count-generic (size<4> of the
+      // runtime-strided partition). No new kernel surface: the stock
+      // fp16 paged-decode lane already serves this head class with
+      // the same policy machinery on this image (r240b gf8 cells).
+      TORCH_CHECK(
+          !is_local,
+          "mx_paged_decode: window masking not compiled for the D=512 "
+          "full-attention class (gemma-4-31b full_attention layers carry "
+          "sliding_window=None; a windowed D=512 model needs the masked "
+          "twin instantiated first)");
+      dispatch_fmt(qgroup, _512{}, _16{}, std::false_type{});
     } else {
       TORCH_CHECK(
           false,
@@ -376,12 +475,19 @@ void cutlass_mx_paged_decode_xe2(
           head_size,
           " page=",
           block_size,
-          " (compiled: 128/16, 256/16, 256/64-via-_16)");
+          " (compiled: 128/16, 256/16, 256/64-via-_16, 512/64-via-_16)");
     }
   };
+  TORCH_CHECK(
+      !is_local || num_q_group_size <= 8,
+      "mx_paged_decode: window masking compiled at the qgroup<=8 bucket "
+      "only (this call carries G=",
+      num_q_group_size,
+      "; instantiate the _16 masked twin on a real model's evidence — "
+      "no unevidenced surface)");
   if (num_q_group_size <= 8) {
-    dispatch_geom(_8{});
+    dispatch_geom(_8{}, std::true_type{});
   } else {
-    dispatch_geom(_16{});
+    dispatch_geom(_16{}, std::false_type{});
   }
 }

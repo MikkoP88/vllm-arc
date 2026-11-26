@@ -142,6 +142,9 @@ def main() -> None:
             "    int max_seqlen_q,\n"
             "    int max_seqlen_k,\n"
             "    double sm_scale,\n"
+            "    // P-C2 (2026-11-25): sliding-window bounds, -1/-1 = none.\n"
+            "    int window_size_left,\n"
+            "    int window_size_right,\n"
             "    int num_kv_splits,\n"
             "    std::optional<at::Tensor>& splits_per_seq,\n"
             "    std::optional<at::Tensor>& work_list);",
@@ -201,6 +204,8 @@ def main() -> None:
             "    int max_seqlen_q,\n"
             "    int max_seqlen_k,\n"
             "    double sm_scale,\n"
+            "    int window_size_left,\n"
+            "    int window_size_right,\n"
             "    int num_kv_splits,\n"
             "    std::optional<at::Tensor>& splits_per_seq,\n"
             "    std::optional<at::Tensor>& work_list) {\n"
@@ -221,6 +226,8 @@ def main() -> None:
             "        max_seqlen_q,\n"
             "        max_seqlen_k,\n"
             "        sm_scale,\n"
+            "        window_size_left,\n"
+            "        window_size_right,\n"
             "        num_kv_splits,\n"
             "        splits_per_seq,\n"
             "        work_list);\n"
@@ -259,6 +266,8 @@ def main() -> None:
             "    int max_seqlen_q,\n"
             "    int max_seqlen_k,\n"
             "    float softmax_scale,\n"
+            "    int window_size_left,\n"
+            "    int window_size_right,\n"
             "    int num_kv_splits,\n"
             "    std::optional<at::Tensor>& splits_per_seq,\n"
             "    std::optional<at::Tensor>& work_list,\n"
@@ -280,6 +289,8 @@ def main() -> None:
             "      max_seqlen_q,\n"
             "      max_seqlen_k,\n"
             "      softmax_scale,\n"
+            "      window_size_left,\n"
+            "      window_size_right,\n"
             "      num_kv_splits,\n"
             "      splits_per_seq,\n"
             "      work_list);\n"
@@ -304,10 +315,13 @@ def main() -> None:
             "      make_pytorch_shim(&FLASH_NAMESPACE::mha_varlen_fwd));\n"
             "\n"
             "  // arc7 (P6.47 Phase 8): MX-native paged decode (MX KV lanes).\n"
+            "  // P-C2 (2026-11-25): window pair after softmax_scale —\n"
+            "  // sliding decode = (W-1, 0); -1/-1 = the windowless lane.\n"
             "  ops.def(\n"
             '      "mx_paged_decode(Tensor q, Tensor mx_cache, int fmt_id, Tensor "\n'
             '      "cu_seqlens_q, Tensor seqused_k, Tensor block_table, int "\n'
             '      "max_seqlen_q, int max_seqlen_k, float softmax_scale, int "\n'
+            '      "window_size_left, int window_size_right, int "\n'
             '      "num_kv_splits, Tensor? splits_per_seq, Tensor? work_list, "\n'
             '      "Tensor! out) -> ()");\n'
             "  ops.impl(\n"

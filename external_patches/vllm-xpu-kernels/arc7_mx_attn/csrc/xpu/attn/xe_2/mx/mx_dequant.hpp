@@ -101,6 +101,87 @@ e4m3_to_float(uint8_t b) {
   return (e == 0) ? sub : fn;
 }
 
+// r212m DIRECT-BF16 DECODE LAW (the probe-9 measurement: the decode
+// tail -- bit assembly + scale multiply + f32->bf16 convert -- is
+// 56-72% of the 32K-context walk): assemble the bf16 BITS of
+// payload * 2^k directly. Every e2m1/e4m3 value times a power of
+// two is exactly representable in bf16 (<= 4 significant bits vs 8),
+// so whenever the biased exponent lands in the normal band [1, 254]
+// the direct bits are IDENTICAL to the float-assembly + multiply +
+// convert bits -- no rounding anywhere. base_e is the biased bf16
+// exponent of the group's smallest normal payload value scaled:
+// e2m1 base_e = 126 + k = code - 1 (normals; the subnormal m=1 is
+// exactly 0.5 = 2^(base_e-127) with mantissa ZERO -- r225: the
+// assembly must DROP the mantissa bit for ee==0, subnormals carry no
+// implicit leading 1; ee=0 m=0 is +-0); e4m3
+// base_e = 120 + k = code - 7 (normals only -- payload subnormals
+// ee==0 take the float path). Out-of-band codes (including code 0,
+// whose bit-assembly float semantics the legacy path preserves)
+// route slow via the band checks. The r198 bitwise faces gate the
+// whole claim exhaustively at seq_len==1.
+CUTE_HOST_DEVICE
+inline uint16_t
+e2m1_scaled_bf16(uint32_t nib, int base_e) {
+  uint32_t s = (nib >> 3) & 1u;
+  uint32_t ee = (nib >> 1) & 3u;
+  uint32_t m = nib & 1u;
+  // r225: subnormals (ee==0) carry NO implicit bit — value = m * 0.5,
+  // so m=1 scaled is exactly 2^(base_e-127): mantissa ZERO, not m<<6.
+  // The old form applied the implicit 1 to the subnormal band and
+  // decoded every +-0.5 element 1.5x (the mxk8v4 NATIVE_WRONG root
+  // cause — 23-25% of deep-layer V nibbles are that class; r225a
+  // factor matrix + r225c nibble simulation, P6.47).
+  uint32_t man = ee ? (m << 6) : 0u;
+  uint16_t nz = uint16_t(
+      (s << 15) | (uint32_t(base_e + int(ee)) << 7) | man);
+  return (m | ee) ? nz : uint16_t(s << 15);
+}
+
+// r212q U32-NATIVE VARIANT: same field math, no intermediate 16-bit
+// truncation -- the u8/u16 form pays GRF emulation in the hot loop
+// (r212p: the tail machinery pipelines free; the bit-assembly codegen
+// is the 361 us). In-band base_e+ee <= 254 so the assembled value
+// always fits 16 bits; the caller memcpy's the low 2 bytes.
+CUTE_HOST_DEVICE
+inline uint32_t
+e2m1_scaled_bf16_u32(uint32_t nib, uint32_t base_e) {
+  uint32_t s = (nib >> 3) & 1u;
+  uint32_t ee = (nib >> 1) & 3u;
+  uint32_t m = nib & 1u;
+  // r225: same subnormal fix as the u16 variant (see above).
+  uint32_t man = ee ? (m << 6) : 0u;
+  uint32_t bits = (s << 15) | ((base_e + ee) << 7) | man;
+  return (m | ee) ? bits : (s << 15);
+}
+
+CUTE_HOST_DEVICE
+inline uint16_t
+e4m3_scaled_bf16(uint32_t b, int base_e) {
+  uint32_t s = (b >> 7) & 1u;
+  uint32_t ee = (b >> 3) & 0xFu;
+  uint32_t m = b & 7u;
+  return uint16_t(
+      (s << 15) | (uint32_t(base_e + int(ee)) << 7) | (m << 4));
+}
+
+// Group-band checks: every payload value of a group whose code passes
+// stays in the bf16 normal band after scaling, so the fast path covers
+// the whole group (one predictable branch per group; e2m1 needs no
+// per-element predication at all).
+CUTE_HOST_DEVICE
+inline bool
+e2m1_band_ok(uint8_t code) {
+  int k = int(code) - 127;
+  return k >= -125 && k <= 125;  // E' = 126+ee+k in [1, 254]
+}
+
+CUTE_HOST_DEVICE
+inline bool
+e4m3_band_ok(uint8_t code) {
+  int k = int(code) - 127;
+  return k >= -120 && k <= 119;  // E' = 120+ee+k in [1, 254], ee >= 1
+}
+
 // Evaluate a subgroup tv_layout at flat (work-item, register) indices.
 // partition_sg_fragment_D produces the rank-3 nesting (Thr, Val, Rest)
 // (instantiated evidence, K lane: ((2,8), ((2,8),4), (1,1))): idx2crd
@@ -180,7 +261,9 @@ dequant_reg(
     ScaleTensor const& scales,
     SrcFrag const& src,
     DstFrag& dst,
-    CoordView const& src_coords) {
+    CoordView const& src_coords,
+    bool probe_val = false,
+    bool direct_bf16 = true) {
   // The mainloop resolves get_sub_group via its function-scope
   // using-directive (vendor pattern); this header sits outside it.
   using namespace sycl::ext::oneapi::this_work_item;
@@ -190,6 +273,13 @@ dequant_reg(
   // position — both describe (WI 0, register 0), so the difference is
   // the tile base in surface BYTE coordinates (for e4m3 the byte
   // column IS the element column).
+  // r220a3 NO BAKE: the bwidth TiledCopy composes sg_to_vnk into svB
+  // (WG-spanning value distribution — same construction as the kd
+  // copy), so this SG's partition coords land IN its own k-band: the
+  // slot-0 anchor already carries the band and the scale rows
+  // self-resolve. The r220a bake double-counted (foreign scale rows =
+  // the r220c uniform deviation on _64; _16 with one SG/WG was never
+  // affected). Mirrors the r220a2 dtile verdict.
   auto p00 = detail::tv_coord(src.tv_layout(), 0, 0);
   auto c0 = src_coords(0);
   int org_row =
@@ -238,6 +328,11 @@ dequant_reg(
         (kFrame0IsRow ? int(cute::get<0>(pc0)) : int(cute::get<1>(pc0)));
   }
   int grp0 = org_col / kMxGroupSize;
+  // r212m3 E4M3 REVERT: the e4m3 lanes keep the r212l float path —
+  // the direct-bf16 gain (+17.4% same-wheel) did not cover the
+  // restructured tail's cost (float path 1359 -> 1862 monatone across
+  // r212m/r212m2; net fast = +13% over the old float path). e2m1
+  // lanes keep direct-bf16 (see dequant_vslm / dequant_dtile).
   float sc0[8], sc1[8];
   CUTE_UNROLL
   for (int r = 0; r < 8; ++r) {
@@ -279,10 +374,14 @@ dequant_reg(
     }
 
     // Byte from the loaded fragment register — no per-element memory.
-    float val = detail::e4m3_to_float(uint8_t(src(i)));
+    // r212m probe 9: sever ONLY the decode tail (assembly + scale mul);
+    // loads/extracts/selects/writes stay.
+    float val = probe_val
+        ? float(uint8_t(src(i)))
+        : detail::e4m3_to_float(uint8_t(src(i)));
     // bfloat16_t's float ctor is explicit (no implicit conversion on
     // assignment); build the element type directly.
-    dst(i) = typename DstFrag::value_type(val * scale);
+    dst(i) = typename DstFrag::value_type(probe_val ? val : val * scale);
   }
 }
 
@@ -296,28 +395,79 @@ dequant_reg(
 // identical to the r198 walk; only the byte source moved to SLM.
 // One code path for both payload dtypes (VIsE4m3 picks the byte law).
 //
+// r212l SPLIT: the form-(ii) law makes this WI's EIGHT rows and their
+// scale lines (this workgroup's whole VV-step group span, two u32;
+// slot pitches and scale offsets are multiples of 4 by the mx_types
+// law, so u32 line loads are aligned by construction) VV-INVARIANT.
+// dequant_vslm_prep derives them once per k-tile; this walk consumes
+// the registers (was: 8 tv evals + 8 scalar gmem scale loads PER VV
+// step = 64 of each per k-tile).
+//
+// P-C1 r242b SLICE WINDOW: head_size_vo > kDecodeMaxShapeOutV (256)
+// splits V across grid.x, so a workgroup's VV steps span only the
+// blk_v SLICE's groups — at most ShapeOutV/32 <= 8. The line is
+// therefore SLICE-LOCAL: prep gathers the row's groups
+// [grp_base, grp_base + slice_groups) (grp_base a multiple of 4 by
+// the ShapeOut law — the u32 alignment holds) and the walk's grp0 is
+// within-slice by construction (v_base below). D=512 rows span 16
+// bytes (4 u32) — windowing keeps the r212l 2-u32 footprint instead
+// of caching all D/32 groups. D<=256 is blk_v=0 with grp_base=0:
+// byte-identical to the r212l law.
+//
 //   slm         : this VV step's byte window base (rows at slm_pitch)
-//   scales      : gmem u8 view (k row, group), full width; indexed
-//                 directly by coordinate
 //   dst         : per-WI ElementQ PV B-operand fragment (tArV)
-//   k_row_base  : global (surface-local) k row of the tile, from the
-//                 identity-slot-0 anchor law
-//   v_base      : global v element of this VV step's first element
+//   kr          : the WI's 8 k-rows (tile-local), from prep
+//   line        : the 8 rows' scale lines (u32 x2 each), from prep
+//   v_base      : this VV step's first element, within the slice
 //   skip_scales : r200c probe 5 — true = val only, scale 1 (timing)
-template <
-    bool VIsE4m3,
-    class ScaleTensor,
-    class DstFrag>
+template <class ScaleTensor>
+CUTE_HOST_DEVICE
+void
+dequant_vslm_prep(
+    ScaleTensor const& scales,
+    int k_row_base,
+    int const (&kr)[8],
+    uint32_t (&line)[8][2],
+    int grp_base,
+    int slice_groups,
+    bool skip_scales) {
+  // The second u32 is loaded ONLY when the slice actually spans 8
+  // groups — at D=128 (or a 128-wide budget slice) the window is 4
+  // bytes and an unpredicated pair read would walk into the next row
+  // (past the pool on the last page). grp0 < 4 there, so line[.][1]
+  // is never selected by the walk.
+  if (!skip_scales) {
+    CUTE_UNROLL
+    for (int r = 0; r < 8; ++r) {
+      const uint32_t* p = reinterpret_cast<const uint32_t*>(
+          &scales(k_row_base + kr[r], grp_base));
+      line[r][0] = p[0];
+      line[r][1] = (slice_groups >= 8) ? p[1] : 0u;
+    }
+  } else {
+    CUTE_UNROLL
+    for (int r = 0; r < 8; ++r) {
+      line[r][0] = 0x7F7F7F7Fu;  // every group byte = code 127 = 1.0
+      line[r][1] = 0x7F7F7F7Fu;
+    }
+  }
+}
+
+template <bool VIsE4m3, class DstFrag>
 CUTE_HOST_DEVICE
 void
 dequant_vslm(
     uint8_t const* slm,
     int slm_pitch,
-    ScaleTensor const& scales,
     DstFrag& dst,
-    int k_row_base,
+    int const (&kr)[8],
+    uint32_t const (&line)[8][2],
     int v_base,
-    bool skip_scales = false) {
+    bool skip_scales = false,
+    bool probe_val = false,
+    bool direct_bf16 = true,
+    bool probe_light = false,
+    int probe_mode = 0) {
   // The mainloop resolves get_sub_group via its function-scope
   // using-directive (vendor pattern); this header sits outside it.
   using namespace sycl::ext::oneapi::this_work_item;
@@ -345,27 +495,44 @@ dequant_vslm(
           cute::size(vslm_val_sh) == 32,
       "val mode must be ((2,8),2) for the form-(ii) V walk");
 
-  // Per-VV scale VECTOR, direct-indexed: the pinned form-(ii) law
-  // gives register i the row k_loc = t0 + 2*v1 with v1 = (i>>1)&7 —
-  // exactly 8 rows per WI — and the group is constant within a VV
-  // step (v spans [0,32)). So scales ride sc[v1] with zero scan and
-  // zero eviction (r200f probe 5: the 4-entry scanned cache thrashed
-  // at ~50% miss and cost 1.8-1.9 ms of the 32K walk; rows are read
-  // through tv_coord at even registers — kr[r] == k_loc(2r) — so the
-  // vector stays derived from the layout, not a parallel law).
-  int kr[8];
-  float sc[8];
-  CUTE_UNROLL
-  for (int r = 0; r < 8; ++r) {
-    auto pc0 = detail::tv_coord(dst.tv_layout(), wi, 2 * r);
-    kr[r] = int(cute::get<1>(pc0));
-    sc[r] = 1.f;
-  }
-  if (!skip_scales) {
-    int grp0 = v_base / kMxGroupSize;
-    CUTE_UNROLL
-    for (int r = 0; r < 8; ++r) {
-      sc[r] = e8m0_to_scale(scales(k_row_base + kr[r], grp0));
+  // r212l: kr and the full scale lines arrive from prep (per-k-tile
+  // invariants). Per VV step only the group byte extracts: grp0 is
+  // constant within the step (v spans [0,32)); byte = line[r] >>
+  // (8*grp0) selects the group from the row's staged line.
+  int grp0 = v_base / kMxGroupSize;
+  uint32_t gsh = 8 * (grp0 & 3);
+  const uint32_t* gl = (grp0 < 4) ? &line[0][0] : &line[0][1];
+  // r212m3 DTYPE SPLIT: e2m1 (mxfp4 V, mxk8v4 V) keeps the trimmed
+  // direct-bf16 machinery — kc[r] (two u32 registers) is the only
+  // added live state, base_e derives inline (int(code) - 1), the rare
+  // out-of-band element converts its own code on demand. e4m3
+  // (mxfp8 V) restores the r212l float-vector prep and tail — the
+  // direct-bf16 gain did not cover the restructured tail's cost
+  // (see dequant_reg's r212m3 note).
+  uint8_t kc[8];
+  bool fast_band = false;
+  float sc[8] = {};
+  // r212p LIGHT PROBE (probe 11) severs the prep too — the light
+  // tail needs no scale codes, no band, no float vector.
+  if (!probe_light) {
+    if constexpr (VIsE4m3) {
+      CUTE_UNROLL
+      for (int r = 0; r < 8; ++r) {
+        sc[r] = skip_scales ? 1.f : e8m0_to_scale(
+            uint8_t((gl[2 * r] >> gsh) & 0xFF));
+      }
+    } else {
+      bool fb = direct_bf16;
+      CUTE_UNROLL
+      for (int r = 0; r < 8; ++r) {
+        kc[r] = skip_scales ? uint8_t(127)
+                            : uint8_t((gl[2 * r] >> gsh) & 0xFF);
+        fb = fb && detail::e2m1_band_ok(kc[r]);
+      }
+      fast_band = fb;
+      // r212o: the e2m1 sc vector was dead (the slow tail derives
+      // its scale inline from kc[r]) — removed; only the e4m3 arm
+      // reads sc.
     }
   }
 
@@ -387,16 +554,95 @@ dequant_vslm(
     u[r] = *reinterpret_cast<const uint32_t*>(
         slm + kr[r] * slm_pitch + qbase);
   }
+  // r212p LIGHT PROBE TAIL (probe 11): extracts + float convert +
+  // store ONLY — severs more than probe 9 (whose tail kept the nibble
+  // decode arithmetic and scale re-derivation). Prices the
+  // extracts/store floor vs the decode machinery (r212o's puzzle).
+  if (probe_light) {
+    CUTE_UNROLL
+    for (int i = 0; i < dst.size(); ++i) {
+      int r = (i >> 1) & 7;
+      int j = (i & 1) + 2 * (i >> 4);
+      uint8_t b = uint8_t((u[r] >> (8 * j)) & 0xFF);
+      // r212s/r212t PROBE LADDER: 11 = light tail; 12/13 = +4/+8
+      // dependent scalar int ops (2 shifts + xor + and, chained so
+      // nothing folds); 14 = + the REAL helper call (full assembly
+      // incl. the ternary select, base 120) with the convert-shaped
+      // store; 15 = trivial bits with the memcpy-shaped store. The
+      // rungs split the m0-m11 pool into assembly/select vs store
+      // shape (r212s: int ops alone are FREE — the ladder is flat).
+      uint32_t nib = VIsE4m3
+          ? uint32_t(b)
+          : uint32_t(nib_phase ? (b >> 4) : (b & 0xF));
+      int kops = probe_mode == 12 ? 4 : (probe_mode == 13 ? 8 : 0);
+      for (int k = 0; k + 3 <= kops; k += 3) {
+        uint32_t t = nib;
+        nib = ((t << 1) ^ (t >> 1)) & 0xFu;
+      }
+      if (probe_mode == 15) {
+        typename DstFrag::value_type o;
+        uint32_t bits = nib;
+        __builtin_memcpy(&o, &bits, 2);
+        dst(i) = o;
+      } else {
+        if (probe_mode == 14) {
+          uint32_t bits = detail::e2m1_scaled_bf16_u32(nib, 120u);
+          nib = bits & 0xFu;
+        }
+        dst(i) = typename DstFrag::value_type(float(uint8_t(nib)));
+      }
+    }
+    return;
+  }
+  // r212o LOOP SPLIT: the per-element runtime branch
+  // (!probe_val && fast_band) evaluated dst.size() times per step is
+  // a measured cost class (r212n: e2m1 skeleton floor +104 us across
+  // the m-series; the assembly ALU itself counts ~2-3 us of prep).
+  // The branch hoists to per-step: a branch-free direct-assembly
+  // loop for the in-band common case, the float loop for slow bands
+  // and every probe mode. Identical math per element.
+  if constexpr (!VIsE4m3) {
+    if (!probe_val && fast_band) {
+      // r212r NO-UNROLL PROBE: the identical r212q body under a
+      // runtime loop — prices the 32x-unrolled code size (icache /
+      // cross-element interleave) against the m11-class light loops.
+      for (int i = 0; i < dst.size(); ++i) {
+        int r = (i >> 1) & 7;
+        int j = (i & 1) + 2 * (i >> 4);
+        // r212q U32-DOMAIN ASSEMBLY: one fused native shift for the
+        // nibble (byte extract folded away), u32 field math, single
+        // 2-byte touch at the store.
+        uint32_t nib = (u[r] >> (8 * j + 4 * nib_phase)) & 0xFu;
+        uint32_t bits = detail::e2m1_scaled_bf16_u32(
+            nib, uint32_t(int(kc[r]) - 1));
+        typename DstFrag::value_type o;
+        __builtin_memcpy(&o, &bits, 2);
+        dst(i) = o;
+      }
+      return;
+    }
+  }
   CUTE_UNROLL
   for (int i = 0; i < dst.size(); ++i) {
     int r = (i >> 1) & 7;
     int j = (i & 1) + 2 * (i >> 4);
     uint8_t b = uint8_t((u[r] >> (8 * j)) & 0xFF);
-    float val = VIsE4m3 ? detail::e4m3_to_float(b)
-                        : e2m1_to_float(uint8_t(
-                              nib_phase ? (b >> 4) : (b & 0xF)));
+    // r212m probe 9: sever ONLY the decode tail (assembly + scale
+    // mul); the SLM reads, extracts and fragment writes stay.
+    float val = probe_val
+        ? float(b)
+        : (VIsE4m3 ? detail::e4m3_to_float(b)
+                   : e2m1_to_float(uint8_t(
+                         nib_phase ? (b >> 4) : (b & 0xF))));
 
-    dst(i) = typename DstFrag::value_type(val * sc[r]);
+    if constexpr (VIsE4m3) {
+      dst(i) = typename DstFrag::value_type(
+          probe_val ? val : val * sc[r]);
+    } else {
+      dst(i) = typename DstFrag::value_type(
+          probe_val ? val
+                    : val * (skip_scales ? 1.f : e8m0_to_scale(kc[r])));
+    }
   }
 }
 
@@ -430,7 +676,11 @@ dequant_dtile(
     ByteView const& bytes,
     ScaleTensor const& scales,
     DstFrag& dst,
-    CoordView const& dst_coords) {
+    CoordView const& dst_coords,
+    bool probe_val = false,
+    bool direct_bf16 = true,
+    bool probe_light = false,
+    int probe_mode = 0) {
   // The mainloop resolves get_sub_group via its function-scope
   // using-directive (vendor pattern); this header sits outside it.
   using namespace sycl::ext::oneapi::this_work_item;
@@ -440,6 +690,12 @@ dequant_dtile(
   // Tile origin: identity slot 0 (WI-canonical) minus its own tv
   // position — both describe (WI 0, register 0), so the difference is
   // the tile base in surface coordinates.
+  // r220a2 NO BAKE: TiledCopyKD is the make_block_2d_copy_B family
+  // whose svB composition bakes sg_to_vnk into the value layout —
+  // this anchor is SLICE-canonical (carries the SG's k-band) under
+  // multi-SG, so the walk adds NO band. Evidence: r220a offline —
+  // mxfp8/mxk8v4 (bwidth-copy lanes: reg + V) clean with the band
+  // baked at decode; mxfp4 (e2m1 K = this path) NaN with the bake.
   auto p00 = detail::tv_coord(tv, 0, 0);
   auto c0 = dst_coords(0);
   int org_row =
@@ -474,29 +730,47 @@ dequant_dtile(
     // (asserted) makes register dv = v0 + 16*v2 the representative of
     // window (row(v0), bytes [8*v2, 8*v2+8)). K d-tile: 2x4 windows
     // (64 elements, 2 u32 each); a same-form V step would be 2x2.
-    detail::assert_staged_tv_form(tv);
+    // r212x NESTED-FORM GUARD: dst may be the MMA B operand (tSrK --
+    // the K reorder deletion). Its tv is rank-2 with the rest mode
+    // folded into val as a stride-0 degenerate: ((2,8),((2,8),(1,4)))
+    // -- the SAME walk law as the pinned rank-3 form (dv = v0 + 2*v1
+    // + 16*v2; row = t_b + 8*v0, elem = t_a + 2*v1 + 16*v2), so the
+    // staged body below applies verbatim. Only the form pin differs.
+    if constexpr (cute::rank_v<decltype(tv)> == 3) {
+      detail::assert_staged_tv_form(tv);
+    } else {
+      constexpr auto vsh = cute::shape<1>(decltype(tv){});
+      static_assert(
+          cute::rank_v<decltype(vsh)> == 2 &&
+              cute::size(cute::get<0>(vsh)) == 16 &&
+              cute::size(vsh) % 16 == 0,
+          "r212x: unexpected rank-2 tv form (expected the nested "
+          "((2,8),((2,8),(1,4))) MMA B operand)");
+    }
     using TV = decltype(tv);
     constexpr int kV2Max = int(cute::size(cute::shape<1>(TV{}))) / 16;
     static_assert(kV2Max >= 1, "val count must be a multiple of 16");
     uint32_t st[2][2 * kV2Max];
 
-    CUTE_UNROLL
-    for (int r = 0; r < 2; ++r) {
+    // r212l STATIC WINDOW LAW: the pinned form (assert_staged_tv_form)
+    // gives register r + 16*g the element t0 + 16*g of row t1 + 8*r, so
+    // the window address is pure arithmetic — the per-window tv_coord
+    // eval (16 layout evaluations per d-tile) retires. t0 floors away
+    // in the byte window ((even + t0) >> 1 == even >> 1) and org_elem
+    // is 64-aligned (d-tile base), so w = org_elem/2 + 8*g exactly.
+    {
+      int t1w = (wi >> 1) & 7;
       CUTE_UNROLL
-      for (int g = 0; g < kV2Max; ++g) {
-        auto pg = detail::tv_coord(tv, wi, r + 16 * g);
-        int row = org_row +
-            (kFrame0IsRow ? int(cute::get<0>(pg)) : int(cute::get<1>(pg)));
-        int elem = org_elem +
-            (kFrame0IsRow ? int(cute::get<1>(pg)) : int(cute::get<0>(pg)));
-        // 8-byte window holding elements [16*g, 16*g+16) of this row:
-        // bytes (elem>>1) & ~7 .. +8. Both nibble phases (t0 = 0/1)
-        // share the window — phases only select the nibble.
-        int w = (elem >> 1) & ~7;
-        const uint32_t* p =
-            reinterpret_cast<const uint32_t*>(&bytes(row, w));
-        st[r][2 * g + 0] = p[0];
-        st[r][2 * g + 1] = p[1];
+      for (int r = 0; r < 2; ++r) {
+        int row = org_row + t1w + 8 * r;
+        CUTE_UNROLL
+        for (int g = 0; g < kV2Max; ++g) {
+          int w = (org_elem >> 1) + 8 * g;
+          const uint32_t* p =
+              reinterpret_cast<const uint32_t*>(&bytes(row, w));
+          st[r][2 * g + 0] = p[0];
+          st[r][2 * g + 1] = p[1];
+        }
       }
     }
 
@@ -512,19 +786,89 @@ dequant_dtile(
     int grp0 = org_elem / kMxGroupSize;
     int org_emod = org_elem & (kMxGroupSize - 1);
     int row0 = org_row + t1;
-    float sc00 = e8m0_to_scale(scales(row0, grp0));
-    float sc01 = e8m0_to_scale(scales(row0, grp0 + 1));
-    float sc10 = e8m0_to_scale(scales(row0 + 8, grp0));
-    float sc11 = e8m0_to_scale(scales(row0 + 8, grp0 + 1));
+    // r212m CODE-DOMAIN SCALES: base_e = code - 1 (= 126 + k); the
+    // slow path derives its float on demand. Identical gmem traffic
+    // (same 4 byte reads).
+    // r212p LIGHT PROBE (probe 11): prep severed — the light tail
+    // needs no scale codes and no band.
+    uint8_t c00 = 127, c01 = 127, c10 = 127, c11 = 127;
+    bool fast_band = false;
+    int be00 = 0, be01 = 0, be10 = 0, be11 = 0;
+    if (!probe_light) {
+      c00 = uint8_t(scales(row0, grp0));
+      c01 = uint8_t(scales(row0, grp0 + 1));
+      c10 = uint8_t(scales(row0 + 8, grp0));
+      c11 = uint8_t(scales(row0 + 8, grp0 + 1));
+      fast_band = direct_bf16 && detail::e2m1_band_ok(c00) &&
+                  detail::e2m1_band_ok(c01) &&
+                  detail::e2m1_band_ok(c10) &&
+                  detail::e2m1_band_ok(c11);
+      be00 = int(c00) - 1;
+      be01 = int(c01) - 1;
+      be10 = int(c10) - 1;
+      be11 = int(c11) - 1;
+    }
 
     // SubgroupTensor::size() is a non-static member in this tree
     // (unlike cute::Tensor's static size()) — call it on the object.
+    // r212p LIGHT PROBE TAIL (probe 11): extracts + float convert +
+    // store ONLY (see dequant_vslm). The st[] window loads above stay
+    // — they ARE the walk's load path.
+    if (probe_light) {
+      CUTE_UNROLL
+      for (int dv = 0; dv < dst.size(); ++dv) {
+        int v0 = dv & 1;
+        int jb = ((dv >> 1) & 7) + 8 * (dv >> 4);
+        uint32_t b = (st[v0][jb >> 2] >> ((jb & 3) * 8)) & 0xFF;
+        // r212s/r212t PROBE LADDER (see dequant_vslm).
+        uint32_t nib = t0 ? (b >> 4) : (b & 0xF);
+        int kops = probe_mode == 12 ? 4 : (probe_mode == 13 ? 8 : 0);
+        for (int k = 0; k + 3 <= kops; k += 3) {
+          uint32_t t = nib;
+          nib = ((t << 1) ^ (t >> 1)) & 0xFu;
+        }
+        if (probe_mode == 15) {
+          typename DstFrag::value_type o;
+          uint32_t bits = nib;
+          __builtin_memcpy(&o, &bits, 2);
+          dst(dv) = o;
+        } else {
+          if (probe_mode == 14) {
+            uint32_t bits = detail::e2m1_scaled_bf16_u32(nib, 120u);
+            nib = bits & 0xFu;
+          }
+          dst(dv) = typename DstFrag::value_type(float(uint8_t(nib)));
+        }
+      }
+      return;
+    }
+    // r212o LOOP SPLIT (see dequant_vslm): the per-element runtime
+    // branch hoists to per-d-tile; the fast loop is branch-free and
+    // drops the jb decode comments (same arithmetic verbatim).
+    if (!probe_val && fast_band) {
+      // r212r NO-UNROLL PROBE (see dequant_vslm).
+      for (int dv = 0; dv < dst.size(); ++dv) {
+        int off = t0 + 2 * ((dv >> 1) & 7) + 16 * (dv >> 4);
+        int goff = (off + org_emod) >> 5;
+        int v0 = dv & 1;
+        int jb = ((dv >> 1) & 7) + 8 * (dv >> 4);
+        // r212q U32-DOMAIN ASSEMBLY (see dequant_vslm).
+        uint32_t nib =
+            (st[v0][jb >> 2] >> ((jb & 3) * 8 + 4 * t0)) & 0xFu;
+        uint32_t bits = detail::e2m1_scaled_bf16_u32(
+            nib,
+            uint32_t((dv & 1) ? (goff ? be11 : be10)
+                              : (goff ? be01 : be00)));
+        typename DstFrag::value_type o;
+        __builtin_memcpy(&o, &bits, 2);
+        dst(dv) = o;
+      }
+      return;
+    }
     CUTE_UNROLL
     for (int dv = 0; dv < dst.size(); ++dv) {
       int off = t0 + 2 * ((dv >> 1) & 7) + 16 * (dv >> 4);
       int goff = (off + org_emod) >> 5;
-      float scale =
-          goff ? (dv & 1 ? sc11 : sc01) : (dv & 1 ? sc10 : sc00);
 
       // Staged byte fetch. Address the staging array by the DECODED
       // val coordinates (compile-time per dv after unrolling — a
@@ -539,10 +883,19 @@ dequant_dtile(
       int jb = v1 + 8 * v2;
       uint32_t b = (st[v0][jb >> 2] >> ((jb & 3) * 8)) & 0xFF;
 
-      float val = e2m1_to_float(uint8_t(t0 ? (b >> 4) : (b & 0xF)));
+      // Slow path: derive the float scale on demand.
+      float scale = e8m0_to_scale(
+          goff ? (dv & 1 ? c11 : c01) : (dv & 1 ? c10 : c00));
+      // r212m probe 9: sever ONLY the decode tail (assembly + scale
+      // mul); the staged window reads and decode arithmetic on the
+      // addresses stay.
+      float val = probe_val
+          ? float(uint8_t(b))
+          : e2m1_to_float(uint8_t(t0 ? (b >> 4) : (b & 0xF)));
       // bfloat16_t's float ctor is explicit (no implicit conversion on
       // assignment); build the element type directly.
-      dst(dv) = typename DstFrag::value_type(val * scale);
+      dst(dv) = typename DstFrag::value_type(
+          probe_val ? val : val * scale);
     }
     return;
   }
