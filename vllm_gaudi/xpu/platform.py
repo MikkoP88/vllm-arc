@@ -130,6 +130,10 @@ _WHEEL_HOOKS = (
     ("vllm.v1.kv_cache_interface", "mx_kv_mode"),  # p647 leg B: mode alias
     # element-class alias onto TURBOQUANT members (mode conveys only
     # packed-uint8-class semantics; format identity travels on the string)
+    # P-D (r241 posture law made structural): the factory refuses
+    # LMCache-over-MX at connector construction, beside its own HMA
+    # check (no donor file touched; knob VLLM_ARC_LMC_MX_GATE).
+    ("vllm.distributed.kv_transfer.kv_connector.factory", "lmc_mx_boot_gate"),
 )
 # gdn_metadata_fastpath and fp8_block_w8a16 are NOT here: they self-install
 # in-place (_XPU_PATCH_MODULES) — no exec-wrap needed.

@@ -1,0 +1,4 @@
+tracebacks=5
+lmc_mx_refused=5
+engine_dead=0 health_up=0
+warn_line=1

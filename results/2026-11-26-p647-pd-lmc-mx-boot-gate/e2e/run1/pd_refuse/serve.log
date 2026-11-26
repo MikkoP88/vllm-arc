@@ -1,0 +1,13 @@
+INFO 11-26 13:20:02 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+INFO 11-26 13:20:02 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+INFO 11-26 13:20:02 [__init__.py:54] - hpu -> vllm_gaudi:register
+INFO 11-26 13:20:02 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+INFO 11-26 13:20:03 [platform.py:421] ArcXpuPlatform: wheel hook torch_utils <- patches.mx_dtype_map OK (already imported)
+INFO 11-26 13:20:03 [platform.py:441] ArcXpuPlatform: source-transform targets already imported at install: ['vllm.v1.attention.backends.registry']
+INFO 11-26 13:20:03 [platform.py:225] ArcXpuPlatform: injected AttentionBackendEnum.MXKV -> vllm_gaudi.xpu.patches.mx_kv.engine.MxAttentionBackend
+INFO 11-26 13:20:03 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+INFO 11-26 13:20:03 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+INFO 11-26 13:20:03 [__init__.py:54] - hpu -> vllm_gaudi:register
+INFO 11-26 13:20:03 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+INFO 11-26 13:20:03 [__init__.py:272] Platform plugin arc is activated
+INFO 11-26 13:20:03 [__init__.py:272] Platform plugin arc is activated

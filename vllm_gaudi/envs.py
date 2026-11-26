@@ -35,6 +35,7 @@ if TYPE_CHECKING:
     VLLM_ARC_LOOKUP_ELIDE: int = 0
     VLLM_ARC_LOOKUP_MEMO: bool = True
     VLLM_ARC_LMC_HMA: bool = True
+    VLLM_ARC_LMC_MX_GATE: bool = True
     VLLM_ARC_LMC_TORCH_KV: bool = True
     VLLM_ARC_LMC_MAMBA_SNAP: bool = True
     VLLM_MAMBA_FP16_SEED_REPAIR: bool = True
@@ -201,6 +202,13 @@ environment_variables: dict[str, Callable[[], Any]] = {
     # patches/lmcache_hma_connector.py:170.
     "VLLM_ARC_LMC_HMA":
     lambda: os.environ.get("VLLM_ARC_LMC_HMA", "1") != "0",
+
+    # P-D LMC x MX boot gate (r241 posture law made structural): the
+    # factory refuses LMCache-over-MX KV dtypes at connector
+    # construction; =0 bypasses the refusal — A/B evidence only.
+    # patches/lmc_mx_boot_gate.py.
+    "VLLM_ARC_LMC_MX_GATE":
+    lambda: os.environ.get("VLLM_ARC_LMC_MX_GATE", "1") != "0",
 
     # p40d KV-transfer ops on the torch baseline (native instance-bound
     # pinned ops segfault >16-32 GiB/process): =0 forces back to native.
