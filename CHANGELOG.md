@@ -12,6 +12,41 @@ the fork SHA it was built from.
 Phase labels P0–P6.38 refer to the plan's execution phases; every phase's
 raw evidence is banked under `results/YYYY-MM-DD-<phase>-*/`.
 
+## r248-r249 — P-H1/P-H2: the LMC x MX interop — triaged, fixed, validated (2026-11-26)
+
+The fix phase (owner directive: all LMCache-MX issues solved). **P-H1
+(r248)** located the root issue with instrumented telemetry on the real
+serve path: the MX attn pool registers as a packed uint8 LBNHC tensor
+(12325, 2, 64, 272), the pool-view side hands lmcache the byte-true
+packed view (493, 1600, 1, 2, 272 — 544 B/token), but the metadata side
+classified the same lane as standard geometry (17, 2, 1600, 2, 256 —
+512 B/token): a cumulative 32 B/token misaddress on every transfer.
+Load-dependent (fires on re-hit) — re-explaining the r168 essay garble
+and the r240b sustained-sweep wedge/device-lost as one mechanism. Bank:
+`results/2026-11-26-p647-ph1-r248-lmc-mx-triage/`.
+
+**P-H2 (r249/r249b)** fixed both classification sites in the fork-owned
+lmcint adapter: the MX dtypes take the packed-row branch (`kv_shape=
+(17, 2, 1600, 1, 272)`, mirroring the p614 TurboQuant template, slot
+width from `mx_layout.slot_bytes`) and `hidden_dim_size` takes the
+packed row half (the run-1 residual: the KV_2LTD tmp buffer at the old
+512 made every lagged store throw 272-vs-512 RuntimeErrors the
+catch-all swallowed as "cached chunk absent"). Validated **INTEROP_PASS
+on five gates**: the packed-metadata line; the clean face; the re-hit
+A/A (byte-equal 148-byte texts at 6.18->1.89 s wall, plus the
+metric-window proof — pass 2's window shows 0.0 prompt-tokens/s, the
+prefill genuinely skipped over retrieved chunks); the exact r240b kill
+sequence (c32768 n1 -> same-tag re-hit -> n2 -> n4, n_ok 1/1/2/4, zero
+wedge/device-lost); and zero transfer errors (run 1: 72 stored + 96
+dropped; run 2: 168 stored = 72+96 exactly). Store-size classes
+attribute the engines: attn 0.0138 GB/chunk at the corrected geometry,
+mamba 0.0379 unchanged. Bank:
+`results/2026-11-26-p647-ph2-r249-lmc-mx-interop/` (run1/ = the
+96-error iteration evidence). `tools/serve_arc_b70.sh` at byte-parity
+with the rig artifact (the env-optional lmcint mounts + the
+`VLLM_ARC_LMC_MX_GATE` pass-through). The Phase-6 auto-off and the P-D
+gate stay ON until cert29 ships the fixed adapter (P-H4 flip).
+
 ## r247 — P-E MX deep-research: the pinned-stack MX lever map (2026-11-26)
 
 The P-E deliverable, `docs/MX-RESEARCH-arc.md`: every model-weights-side

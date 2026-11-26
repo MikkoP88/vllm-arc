@@ -1,0 +1,31 @@
+{
+ "tag": "r249d_n1",
+ "ctx": 32768,
+ "conc": 1,
+ "max_tokens": 600,
+ "model": "qwen3.8-27b-fp8",
+ "temperature": 0.0,
+ "n_ok": 1,
+ "n_fail": 0,
+ "requests": [
+  {
+   "slot": 0,
+   "error": null,
+   "ttft_s": 13.278678340953775,
+   "total_s": 22.095568311982788,
+   "n_stream_chunks": 153,
+   "itl_ms_p50": 57.929222006350756,
+   "itl_ms_p90": 58.05991601664573,
+   "itl_ms_p99": 58.74357698485255
+  }
+ ],
+ "ttft_mean_s": 13.278678340953775,
+ "ttft_max_s": 13.278678340953775,
+ "per_user_tps": [
+  68.05
+ ],
+ "per_user_mean_tps": 68.0512064879465,
+ "per_user_min_tps": 68.0512064879465,
+ "agg_tps_wall": 27.154766581614023,
+ "wall_s": 22.095568311982788
+}

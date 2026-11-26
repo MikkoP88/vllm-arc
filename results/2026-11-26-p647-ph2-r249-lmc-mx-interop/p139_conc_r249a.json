@@ -1,0 +1,31 @@
+{
+ "tag": "r249a",
+ "ctx": 8192,
+ "conc": 1,
+ "max_tokens": 64,
+ "model": "qwen3.8-27b-fp8",
+ "temperature": 0.0,
+ "n_ok": 1,
+ "n_fail": 0,
+ "requests": [
+  {
+   "slot": 0,
+   "error": null,
+   "ttft_s": 3.289921932038851,
+   "total_s": 4.34976639598608,
+   "n_stream_chunks": 22,
+   "itl_ms_p50": 48.50137303583324,
+   "itl_ms_p90": 49.85535505693406,
+   "itl_ms_p99": 82.22980494610965
+  }
+ ],
+ "ttft_mean_s": 3.289921932038851,
+ "ttft_max_s": 3.289921932038851,
+ "per_user_tps": [
+  60.39
+ ],
+ "per_user_mean_tps": 60.386219088829094,
+ "per_user_min_tps": 60.386219088829094,
+ "agg_tps_wall": 14.713433820045726,
+ "wall_s": 4.34976639598608
+}
