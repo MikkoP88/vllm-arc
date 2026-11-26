@@ -66,6 +66,19 @@ from vllm.v1.attention.backends.turboquant_attn import (
 from vllm.v1.kv_cache_interface import AttentionSpec
 from vllm.v1.worker.workspace import current_workspace_manager
 
+try:
+    # P-C2 (2026-11-25): the fa_utils shim (vllm._xpu_ops
+    # flash_attn_varlen_func on XPU) accepts window_size and threads
+    # the pair to the wheel interface. Windowless engines never touch
+    # this import — the fallback keeps every pre-P-C2 posture intact.
+    from vllm.v1.attention.backends.fa_utils import (
+        flash_attn_varlen_func as _fa_varlen,
+    )
+    _HAS_FA_VARLEN = True
+except ImportError:  # noqa: BLE001 — module must import on any posture
+    _fa_varlen = None
+    _HAS_FA_VARLEN = False
+
 from .mx_dequant import mx_dequant_cache
 from .mx_layout import offsets as _mx_offsets
 from .mx_layout import slot_bytes
@@ -597,6 +610,98 @@ class MxAttentionImpl(TurboQuantAttentionImpl):
             _DUMP,
             self._mxkv_ord,
         )
+        # P-C2 (2026-11-25): sliding-window impls (gemma-4-31b's 50
+        # sliding layers, W=1024) boot ONLY on the native decode lane
+        # — the Triton decode lanes are window-blind, and the native
+        # masked kernel twin is compiled at D=256 (page 16/64) in the
+        # qgroup<=8 bucket. Refuse at INIT (boot-loud), never at the
+        # first decode. Windowless impls (qwen target; gemma
+        # full_attention layers) are unaffected.
+        if sliding_window:
+            if not _NATIVE:
+                raise ValueError(
+                    "MxAttentionImpl with sliding_window="
+                    f"{sliding_window} requires the native decode lane "
+                    "(set ARC_MXKV_NATIVE=1): the Triton decode lanes "
+                    "carry no window surface and would attend the full "
+                    "context at ctx > W — refusing rather than serving "
+                    "window-blind"
+                )
+            if head_size != 256:
+                raise ValueError(
+                    "MxAttentionImpl with sliding_window="
+                    f"{sliding_window}: the native masked kernel twin is "
+                    f"compiled at D=256 only (this impl is D={head_size}; "
+                    "instantiate the masked twin for this head class "
+                    "before serving a windowed model on it)"
+                )
+            _g = num_heads // (num_kv_heads or num_heads)
+            if _g > 8:
+                raise ValueError(
+                    "MxAttentionImpl with sliding_window="
+                    f"{sliding_window}: the native masked kernel twin is "
+                    f"compiled at the qgroup<=8 bucket only (this impl "
+                    f"carries G={_g})"
+                )
+            logger.info(
+                "MXKV P-C2 windowed impl: fmt=%s head=%d W=%d (native "
+                "masked decode; prefill rides the flash window pair "
+                "(W-1, 0))",
+                self.mx_config.fmt,
+                head_size,
+                sliding_window,
+            )
+
+    def _flash_attn_varlen(
+        self,
+        q: torch.Tensor,
+        k: torch.Tensor,
+        v: torch.Tensor,
+        cu_seqlens_q: torch.Tensor,
+        cu_seqlens_k: torch.Tensor,
+        max_seqlen_q: int,
+        max_seqlen_k: int,
+    ) -> torch.Tensor:
+        """P-C2 (2026-11-25): window-correct prefill for sliding impls.
+
+        The inherited TQ method is window-blind (causal only) — a
+        gemma-4-31b 40K prefill on a sliding layer would attend the
+        whole context instead of the last W tokens per row. The shim
+        threads the flash pair (W-1, 0) into the wheel interface
+        (real_window_size -> the stock cutlass Local tuples); the
+        right-aligned varlen rows keep continuation chunks correct
+        (query row i rides position k_len - q_len + i). Windowless
+        impls fall through byte-identical to the inherited path
+        (qwen target, gemma full_attention layers).
+        """
+        if self.sliding_window:
+            if not _tq._HAS_FLASH_ATTN or not _HAS_FA_VARLEN:
+                raise NotImplementedError(
+                    "MXKV sliding_window="
+                    f"{self.sliding_window} prefill requires the flash "
+                    "varlen lane with window_size support"
+                )
+            return _fa_varlen(
+                q=q,
+                k=k,
+                v=v,
+                cu_seqlens_q=cu_seqlens_q,
+                cu_seqlens_k=cu_seqlens_k,
+                max_seqlen_q=max_seqlen_q,
+                max_seqlen_k=max_seqlen_k,
+                softmax_scale=self.scale,
+                causal=True,
+                window_size=(self.sliding_window - 1, 0),
+            )
+        return super()._flash_attn_varlen(
+            q=q,
+            k=k,
+            v=v,
+            cu_seqlens_q=cu_seqlens_q,
+            cu_seqlens_k=cu_seqlens_k,
+            max_seqlen_q=max_seqlen_q,
+            max_seqlen_k=max_seqlen_k,
+        )
 
     # ------------------------------------------------------------------ #
     # Buffers: no rotation, no centroids — sentinels for the inherited   #
@@ -690,6 +795,31 @@ class MxAttentionImpl(TurboQuantAttentionImpl):
         # to fp32 in-kernel — bit-equal to the old .float() upcast (A9
         # dtype face) and two fewer cast kernels per layer. out follows
         # q's dtype via empty_like, so the .to() below is a no-op guard.
+        if self.sliding_window:
+            # P-C2 (2026-11-25): windowed solo decode rides the native
+            # lane — the Triton decode kernel carries no window surface
+            # and would attend the full context at ctx > W. Same row
+            # contract as the verify path: one row per request, its
+            # causal limit is the live seq_len (device tensor; the
+            # bridge casts/cu-fills device-side — capture-safe).
+            if not _NATIVE:
+                raise NotImplementedError(
+                    "MXKV sliding_window="
+                    f"{self.sliding_window} decode requires "
+                    "ARC_MXKV_NATIVE=1 (the init gate normally refuses "
+                    "this posture at boot)"
+                )
+            out = mx_decode_native(
+                query,
+                kv_cache,
+                attn_metadata.block_table,
+                attn_metadata.seq_lens,
+                self.scale,
+                attn_metadata.max_seq_len,
+                self.mx_config.fmt,
+                sliding_window=self.sliding_window,
+            )
+            return out.to(query.dtype)
         out = mx_decode(
             query,
             kv_cache,
@@ -1082,13 +1212,31 @@ class MxAttentionImpl(TurboQuantAttentionImpl):
                     attn_metadata.seq_lens[i] - q_len
                 ) + _ac[1 : q_len + 1]
                 synth_bt = bt_row.expand(q_len, -1)
-                out = mx_decode(
-                    q_seq,
-                    kv_cache,
-                    synth_bt,
-                    synth_seq_lens.to(attn_metadata.seq_lens.dtype),
-                    self.scale,
-                )
+                if self.sliding_window:
+                    # P-C2: windowed synthetic decode rides native
+                    # (eager-only path; the Triton kernel is
+                    # window-blind). Rows share one block table; the
+                    # per-row synth limits carry each row's true
+                    # position — the window band rides them in the
+                    # kernel.
+                    out = mx_decode_native(
+                        q_seq,
+                        kv_cache,
+                        synth_bt,
+                        synth_seq_lens,
+                        self.scale,
+                        attn_metadata.max_seq_len,
+                        self.mx_config.fmt,
+                        sliding_window=self.sliding_window,
+                    )
+                else:
+                    out = mx_decode(
+                        q_seq,
+                        kv_cache,
+                        synth_bt,
+                        synth_seq_lens.to(attn_metadata.seq_lens.dtype),
+                        self.scale,
+                    )
                 output[q_start:q_end] = out.to(query.dtype)
             else:
                 _trace("path", f"i={i}", "bulk", f"q={q_len}", f"sl={seq_len}")
@@ -1239,7 +1387,12 @@ class MxAttentionImpl(TurboQuantAttentionImpl):
             )
             decoder = (
                 "native"
-                if _NATIVE and _g <= 16 and _native_ctx_ok
+                if _NATIVE
+                and _g <= 16
+                # P-C2: windowed impls ride native at ANY walk length —
+                # the Triton lanes are window-blind and the E5b
+                # crossing is a perf choice correctness forbids.
+                and (_native_ctx_ok or self.sliding_window)
                 else _DECODER_OVERRIDE or (
                     "v5"
                     if _V5_DOT
@@ -1264,6 +1417,22 @@ class MxAttentionImpl(TurboQuantAttentionImpl):
                     )
                 )
             )
+            # P-C2 (2026-11-25): the Triton decode lanes carry no
+            # window surface — a sliding impl that lands on one would
+            # serve window-blind (gemma sliding layers at ctx > W
+            # silently attend the whole context). Refuse loudly; the
+            # native kernel owns every windowed decode. Fires at
+            # plan-build time, so graph capture dies here too —
+            # nothing replays a window-blind plan.
+            if self.sliding_window and decoder != "native":
+                raise NotImplementedError(
+                    "MXKV sliding_window="
+                    f"{self.sliding_window} requires the native decode "
+                    "lane (ARC_MXKV_NATIVE=1 and the format's E5b "
+                    "crossing reached); the Triton lanes are "
+                    "window-blind — refusing rather than serving "
+                    "unmasked"
+                )
             # r212a posture line (once per fmt per SIDE per process —
             # the engagement marker A/B banks cite; the cap value
             # identifies the bucket class that froze each side).
@@ -1334,8 +1503,16 @@ class MxAttentionImpl(TurboQuantAttentionImpl):
                 self.scale,
                 attn_metadata.max_seq_len,
                 self.mx_config.fmt,
+                # P-C2: the impl's window width rides the masked twin
+                # ((W-1, 0) inside the bridge); None on windowless
+                # impls (qwen target, gemma full_attention layers).
+                sliding_window=self.sliding_window,
             )
-            if _ab_ok():
+            if _ab_ok() and not self.sliding_window:
+                # P-C2: the A/B's Triton ref is window-blind — a
+                # windowed impl would false-alarm on the unmasked
+                # reference (the offline window oracle owns the
+                # masked-lane correctness verdict).
                 try:
                     _mx_ab(self, q_rows, kv_cache, bt_rows, sl_rows, out)
                 except Exception as exc:  # noqa: BLE001 — never kill serving
@@ -1433,6 +1610,11 @@ class MxAttentionImpl(TurboQuantAttentionImpl):
             q_pos = torch.arange(q_len, device=device).unsqueeze(1) + cached_len
             k_pos = torch.arange(seq_len, device=device).unsqueeze(0)
             mask = k_pos <= q_pos
+            if self.sliding_window:
+                # P-C2: window band on the fallback — allowed keys ride
+                # [pos - W + 1, pos] (the same (W-1, 0) pair as the
+                # flash lane).
+                mask = mask & (k_pos >= q_pos - (self.sliding_window - 1))
             out = F.scaled_dot_product_attention(
                 query.transpose(0, 1).unsqueeze(0),
                 k_full.transpose(0, 1).unsqueeze(0),

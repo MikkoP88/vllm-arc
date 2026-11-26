@@ -1,0 +1,104 @@
+{
+ "_meta": {
+  "import_path": "fa_utils",
+  "torch": "2.13.0+xpu",
+  "verdict": "PASS",
+  "failures": []
+ },
+ "stock": {
+  "d128": {
+   "causal": {
+    "maxdiff": 0.009347386188252482,
+    "maxdiff_rounded": 0.015625,
+    "cos_same": 0.9999981316219005,
+    "gated": true,
+    "is_stock_floor": true
+   }
+  },
+  "d256": {
+   "causal": {
+    "maxdiff": 0.008684046294140213,
+    "maxdiff_rounded": 0.015625,
+    "cos_same": 0.9999981354498958,
+    "gated": true,
+    "is_stock_floor": true
+   }
+  }
+ },
+ "exact": {
+  "d128": {
+   "win64": {
+    "maxdiff": 0.0071797299151876715,
+    "maxdiff_rounded": 0.0078125,
+    "cos_same": 0.9999980927426069,
+    "gated": true,
+    "d_window_blind": 1.123451004944674
+   }
+  },
+  "d256": {
+   "win64": {
+    "maxdiff": 0.008404495953733715,
+    "maxdiff_rounded": 0.015625,
+    "cos_same": 0.9999980968415827,
+    "gated": true,
+    "d_window_blind": 0.9229332052510184
+   }
+  }
+ },
+ "nonbinding": {
+  "d128": {
+   "win1024": {
+    "maxdiff": 0.00846813009226599,
+    "maxdiff_rounded": 0.015625,
+    "cos_same": 0.9999982268977357,
+    "gated": true
+   }
+  },
+  "d256": {
+   "win1024": {
+    "maxdiff": 0.008056599123289931,
+    "maxdiff_rounded": 0.015625,
+    "cos_same": 0.9999982468805515,
+    "gated": true
+   }
+  }
+ },
+ "boundary": {
+  "d128": {
+   "win64": {
+    "maxdiff": 0.007740950611292874,
+    "maxdiff_rounded": 0.0078125,
+    "cos_same": 0.9999983190815239,
+    "gated": true
+   },
+   "win1024": {
+    "maxdiff": 0.007944068217462075,
+    "maxdiff_rounded": 0.015625,
+    "cos_same": 0.9999980329612457,
+    "gated": true
+   }
+  },
+  "d256": {
+   "win64": {
+    "maxdiff": 0.010203018678355491,
+    "maxdiff_rounded": 0.015625,
+    "cos_same": 0.9999983302420727,
+    "gated": true
+   },
+   "win1024": {
+    "maxdiff": 0.008938765535511983,
+    "maxdiff_rounded": 0.015625,
+    "cos_same": 0.9999980123510579,
+    "gated": true
+   }
+  }
+ },
+ "telemetry": {
+  "d256": {
+   "ctx": 8192,
+   "W": 1024,
+   "win_ms": 1.2661449999999999,
+   "windowless_ms": 3.8975519999999997
+  }
+ }
+}

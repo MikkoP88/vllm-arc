@@ -1,0 +1,21 @@
+[face: stock/d128] windowless causal varlen vs causal fp64
+  ok   stock/d128: causal: d=9.35e-03 d_rounded=1.56e-02 cos=0.9999981
+[face: exact/d128] windowed varlen (W=64) vs window-masked fp64
+  ok   exact/d128: win64: d=7.18e-03 d_rounded=7.81e-03 cos=0.9999981 d_blind=1.12e+00
+[face: nonbinding/d128] lens <= W=1024: windowed vs windowless twin
+  ok   nonbinding/d128: win1024: d=8.47e-03 d_rounded=1.56e-02 cos=0.9999982 d_other=8.47e-03
+[face: boundary/d128] window-edge lens
+  ok   boundary/d128: win64: d=7.74e-03 d_rounded=7.81e-03 cos=0.9999983
+  ok   boundary/d128: win1024: d=7.94e-03 d_rounded=1.56e-02 cos=0.9999980
+[face: stock/d256] windowless causal varlen vs causal fp64
+  ok   stock/d256: causal: d=8.68e-03 d_rounded=1.56e-02 cos=0.9999981
+[face: exact/d256] windowed varlen (W=64) vs window-masked fp64
+  ok   exact/d256: win64: d=8.40e-03 d_rounded=1.56e-02 cos=0.9999981 d_blind=9.23e-01
+[face: nonbinding/d256] lens <= W=1024: windowed vs windowless twin
+  ok   nonbinding/d256: win1024: d=8.06e-03 d_rounded=1.56e-02 cos=0.9999982 d_other=8.06e-03
+[face: boundary/d256] window-edge lens
+  ok   boundary/d256: win64: d=1.02e-02 d_rounded=1.56e-02 cos=0.9999983
+  ok   boundary/d256: win1024: d=8.94e-03 d_rounded=1.56e-02 cos=0.9999980
+[face: telemetry/d256] ctx 8192: windowed W=1024 vs windowless
+telemetry/d256: win1024=1.266ms windowless=3.898ms
+VERDICT PASS (0 failures)

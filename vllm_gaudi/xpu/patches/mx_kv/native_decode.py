@@ -63,8 +63,17 @@ def mx_decode_native(
     sm_scale: float,
     max_seq_len: int,  # metadata field — SUPERSEDED (see r212c-e2e law below)
     fmt: str,  # "mxfp8" | "mxfp4" | "mxk8v4"
+    sliding_window: int | None = None,
 ) -> torch.Tensor:
-    """One native-kernel call for the whole verify-batch step."""
+    """One native-kernel call for the whole verify-batch step.
+
+    sliding_window (P-C2, 2026-11-25): the impl's per-layer window
+    width. Rides the kernel as the flash pair (W-1, 0) = the last W
+    tokens per row — None keeps the windowless decode (qwen target;
+    gemma-4-31b full_attention layers). The masked kernel twin exists
+    for D=256 page 16/64 at qgroup<=8; anything else refuses loudly
+    rather than serving window-blind.
+    """
     mx_paged_decode = _load()
     n_rows = q_rows.shape[0]
     # each row is its own one-query "sequence" (device fill — capture-safe)
@@ -106,19 +115,22 @@ def mx_decode_native(
     # law demanded the e2e re-price (r216/216b/217/217b: 128 banked).
     # Defined BEFORE the telemetry block so splits= can log it.
     _ns = int(os.environ.get("ARC_MXKV_NSPLIT", "0") or 0)
-    _tkey = (fmt, n_rows, _max_sk, int(bt_rows.shape[1]))
+    _w = int(sliding_window) if sliding_window else -1
+    _tkey = (fmt, n_rows, _max_sk, int(bt_rows.shape[1]), _w)
     if _tkey not in _telemetry_logged:
         _telemetry_logged.add(_tkey)
         logging.getLogger("vllm.mx_native").info(
             "MXKV native call fmt=%s rows=%d max_seqlen_k=%d "
-            "bt_width=%d stride=%d splits=%s (r212f walk; r219 splits"
-            " logged: int pin or auto)",
+            "bt_width=%d stride=%d splits=%s window=%d (r212f walk; "
+            "r219 splits logged: int pin or auto; P-C2 window rides "
+            "the masked twin)",
             fmt,
             n_rows,
             _max_sk,
             int(bt_rows.shape[1]),
             int(kv_cache.stride(1)) if kv_cache.dim() == 4 else -1,
             _ns if _ns else "auto",
+            _w,
         )
     return mx_paged_decode(
         q_in,
@@ -130,4 +142,5 @@ def mx_decode_native(
         max_seqlen_k=_max_sk,
         softmax_scale=sm_scale,
         num_splits_kv=_ns,
+        window_size=(sliding_window - 1, 0) if sliding_window else None,
     )
