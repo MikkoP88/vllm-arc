@@ -35,8 +35,13 @@ import os
 # The MX KV dtype strings (CLI --kv-cache-dtype members widened by
 # platform._widen_cache_dtype_literal). Kept in lockstep with
 # mx_kv_mode._MX_TQ_ALIAS and platform._MX_KV_DTYPES — the admission
-# set, not the alias map: only the raw strings arrive on
-# config.cache_config.kv_cache_dtype.
+# set, not the alias map: only the raw strings arrive on the cache
+# config. vllm 0.30 renamed CacheConfig.kv_cache_dtype -> cache_dtype
+# (config/cache.py:111; no legacy alias — the CLI kwarg and the
+# AttentionSelectorConfig tuple field kept the old name, which is why
+# platform.get_attn_backend_cls's selector read predates-proof worked
+# while the first gate revision leaked with kv_dtype=None over the
+# real serve path, r246b run 2). The read below covers both surfaces.
 _MX_KV_DTYPES = ("mxfp4", "mxfp8", "mxk8v4")
 
 
@@ -66,8 +71,13 @@ def _install(mod) -> None:
     def create_connector(cls, config, role, kv_cache_config):
         ktc = getattr(config, "kv_transfer_config", None)
         if ktc is not None:
-            kv_dtype = getattr(getattr(config, "cache_config", None),
-                               "kv_cache_dtype", None)
+            cc = getattr(config, "cache_config", None)
+            # legacy surface first (pre-rename/stub objects), then the
+            # vllm-0.30 field (config/cache.py:111) the live engine
+            # actually carries.
+            kv_dtype = getattr(cc, "kv_cache_dtype", None)
+            if kv_dtype is None:
+                kv_dtype = getattr(cc, "cache_dtype", None)
             configured = str(getattr(ktc, "kv_connector", "") or "")
             resolved = ""
             # Registry miss / import failure: the original call below

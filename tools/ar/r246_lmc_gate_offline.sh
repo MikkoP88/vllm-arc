@@ -20,13 +20,23 @@
 # four files at /root/build/p246/stage BEFORE this runner starts:
 #   platform.py            0733f0b8c7dd2fb89422bafa56ec35f5
 #   envs.py                31ca4ac7cfcd996aed6446d4b24c2bcd
-#   lmc_mx_boot_gate.py    1267b826a214953c9e7130e804f615f5
-#   p246_lmc_gate_probe.py 05c0385bd08562acc77549bfe64545a5 (rev 3)
+#   lmc_mx_boot_gate.py    ffb1ef11b17bf7b99987c84940c16360 (rev 2:
+#                          the 0.30 cache_dtype rename -- the first
+#                          revision read the pre-rename kv_cache_dtype
+#                          and leaked with kv_dtype=None over the real
+#                          serve path, r246b run 2)
+#   p246_lmc_gate_probe.py 682f42d6b17b00cbc381a43be9292742 (rev 4)
 # RUN HISTORY: run 1 (rev 1, 13:10:59Z) gate core green on the real
 # factory (refusal x3 dtypes, wiring, idempotence, stock behavior);
 # 4 FAILs = stub gaps (scheduler_config, kv_connector_module_path).
-# run 2 (rev 2, 13:14:50Z) 7/10; last stub gap = engine_id. rev 3
-# adds it. Logs preserved in the r246 rig logs.
+# run 2 (rev 2, 13:14:50Z) 7/10; last stub gap = engine_id. run 3
+# (rev 3, 13:17:30Z) 10/10 PASS -- but on a probe-invented surface
+# (_CC carried kv_cache_dtype; the real 0.30 CacheConfig field is
+# cache_dtype, config/cache.py:111, no legacy alias). The e2e leg
+# (r246b run 2) caught the leak: posture kv_dtype=None at worker AND
+# scheduler sites, engine reached health on the confound posture.
+# Rev 4: _CC models the real surface, B_legacy (11th face) pins the
+# legacy fallback chain. Logs preserved in the r246 rig logs.
 # (branch blob md5s at 71ff9cb4). W14 quiesce before, trap restore
 # after (r24x law). Artifacts -> /root/build/p246/{out,logs}.
 # Exit 0 = P-D probe PASS.
@@ -39,8 +49,8 @@ CNAME=arc-r246
 declare -A MD5=( \
   [platform.py]=0733f0b8c7dd2fb89422bafa56ec35f5 \
   [envs.py]=31ca4ac7cfcd996aed6446d4b24c2bcd \
-  [lmc_mx_boot_gate.py]=1267b826a214953c9e7130e804f615f5 \
-  [p246_lmc_gate_probe.py]=05c0385bd08562acc77549bfe64545a5 )
+  [lmc_mx_boot_gate.py]=ffb1ef11b17bf7b99987c84940c16360 \
+  [p246_lmc_gate_probe.py]=682f42d6b17b00cbc381a43be9292742 )
 
 for f in platform.py envs.py lmc_mx_boot_gate.py p246_lmc_gate_probe.py; do
   [ -f "$SP/$f" ] || { echo "R246_NO_STAGED_FILE $f (run the ship step)"; exit 1; }

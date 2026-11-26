@@ -10,8 +10,8 @@ fires at connector construction, so the probe drives the REAL wiring
 (platform _install_wheel_hooks -> meta-path finder -> factory import
 -> exec-wrap -> KVConnectorFactory.create_connector wrap).
 
-RUN HISTORY (logs preserved on the rig; each FAIL class was a
-probe-stub gap, never a gate defect):
+RUN HISTORY (logs preserved on the rig; the ref-harness lesson lives
+in run 3 -> 4):
   run 1 (rev 1, 13:10:59Z): gate core PROVEN -- hook fired, refusal
   green x3 dtypes, stock None-config intact, idempotence green;
   stub gaps: config.scheduler_config (the stock HMA check) +
@@ -22,13 +22,29 @@ probe-stub gap, never a gate defect):
   it (scheduler_config.disable=True keeps the stock HMA refuse off
   the pass-through path; module_path=None routes the real registry
   loader).
+  run 3 (rev 3, 13:17:30Z): 10/10 PASS -- but on a PROBE-INVENTED
+  surface: _CC carried kv_cache_dtype, while vllm 0.30 renamed the
+  CacheConfig field to cache_dtype (config/cache.py:111, no legacy
+  alias). The e2e leg caught what the stub masked (r246b run 2,
+  13:30:43Z): the gate fired on the real serve path -- posture line
+  gate=on connector=LMCacheConnectorV1 kv_dtype=None at the worker
+  AND scheduler sites -- and passed the confound posture through to
+  health. (r246b run 1's NO_REFUSAL was a runner poll defect: the
+  marker poll broke at iteration 1 on the not-yet-created container
+  and pkilled a healthy 14-s boot.) Rev 4: _CC models the REAL
+  surface (cache_dtype); B_legacy pins the kv_cache_dtype fallback
+  chain (the gate reads legacy first, then the 0.30 field).
 
   A_fired        the hook fired on the real factory (marker on the
                  wrapped create_connector __func__).
   B_refuse       (a) LMC-named connector over mxfp4 -> ValueError
                  carrying ARC_LMC_MX_REFUSED (the r241 posture law
-                 made structural).
+                 made structural). All B faces drive the REAL
+                 vllm-0.30 surface (cache_config.cache_dtype).
   B_mxfp8/_mxk8v4 the refusal holds for the other two MX dtypes.
+  B_legacy       the same refusal over the pre-rename attr
+                 (cache_config.kv_cache_dtype) -- the fallback chain
+                 stays pinned.
   D_resolve      the REAL registry entry "LMCacheConnectorV1"
                  resolves to an LMC-named class (the detection basis)
                  -- resolve-only, never constructed.
@@ -68,6 +84,7 @@ FACES = (
     "B_refuse",
     "B_mxfp8",
     "B_mxk8v4",
+    "B_legacy",
     "D_resolve",
     "C_scope",
     "D_lawful",
@@ -104,7 +121,12 @@ class _KTC:  # kv_transfer_config stub
         self.engine_id = "p246-probe"
 
 
-class _CC:  # cache_config stub
+class _CC:  # cache_config stub -- the vllm-0.30 surface (cache.py:111)
+    def __init__(self, dt: str | None) -> None:
+        self.cache_dtype = dt
+
+
+class _CCLegacy:  # pre-rename surface (pins the fallback chain order)
     def __init__(self, dt: str | None) -> None:
         self.kv_cache_dtype = dt
 
@@ -114,8 +136,9 @@ class _SC:  # scheduler_config stub (the stock HMA check reads it)
 
 
 class _Cfg:  # VllmConfig stub (the gate + stock path attrs)
-    def __init__(self, dt: str | None, name: str) -> None:
-        self.cache_config = _CC(dt)
+    def __init__(self, dt: str | None, name: str,
+                 cc_cls: type = _CC) -> None:
+        self.cache_config = cc_cls(dt)
         self.scheduler_config = _SC()
         self.kv_transfer_config = _KTC(name)
 
@@ -151,7 +174,7 @@ def main() -> int:  # noqa: C901 -- probe faces are one flat census
     def _ok(face: str, msg: str) -> None:
         print(f"[face {face}] ok {msg}")
 
-    print("== p246 LMC x MX boot-gate probe (rev 3)")
+    print("== p246 LMC x MX boot-gate probe (rev 4)")
 
     # ---- A: platform import + hook install + factory wrap ----------
     try:
@@ -186,6 +209,17 @@ def main() -> int:  # noqa: C901 -- probe faces are one flat census
                 _ok(face, f"{dt} refused: {str(e)[:52]}...")
             else:
                 _fail(face, f"wrong ValueError over {dt}: {str(e)[:70]}")
+
+    # ---- B_legacy: the same refusal over the pre-rename attr -------
+    try:
+        factory.create_connector(
+            _Cfg("mxfp4", "LMCacheConnectorV1", _CCLegacy), "r", None)
+        _fail("B_legacy", "LMCache over mxfp4 (kv_cache_dtype) NOT refused")
+    except ValueError as e:
+        if "ARC_LMC_MX_REFUSED" in str(e):
+            _ok("B_legacy", "kv_cache_dtype surface refused (fallback pinned)")
+        else:
+            _fail("B_legacy", f"wrong ValueError: {str(e)[:70]}")
 
     # ---- D_resolve: the REAL registry entry (detection basis) -------
     real_name = ""

@@ -25,6 +25,28 @@
 # leg in flight, port check. W14 quiesce before, EXIT-trap fullres
 # restore after (r24x law). Artifacts -> /root/build/p246b/{cells}.
 # Exit 0 = both cells meet their expectations.
+#
+# RUN HISTORY: run 1 (rev 1, 13:19:34Z) pd_refuse NO_REFUSAL was a
+# RUNNER defect, never a gate verdict: the marker poll broke at
+# iteration 1 on the not-yet-created container (the serve script
+# reaches docker run seconds after nohup), banked a 3-second serve
+# log, declared NO_REFUSAL, and pkilled a healthy booting engine --
+# the connector constructs minutes into init, after model load, so
+# the refusal never had its window. Rev 2 waits for the container,
+# then polls marker/health/EngineCore liveness (seen-once-then-gone
+# = engine death -> flush -> final grep). pd_clean (rev 1) ran the
+# old code but is cell-independent of the defect (boot_wait always
+# waited for health); rev 2 reruns both cells for one coherent bank.
+# Run 2 (rev 2, 13:30:43Z): pd_clean PASS (HEALTH_OK 13:41:11,
+# gate_hook_installed=4, lmc_lines=0, CONC_OK n_ok=1) -- pd_refuse
+# GENUINELY LEAKED: the gate fired on the real serve path (posture
+# lines at worker AND scheduler sites) but read kv_dtype=None --
+# vllm 0.30 renamed CacheConfig.kv_cache_dtype -> cache_dtype
+# (config/cache.py:111, no legacy alias; the CLI kwarg and the
+# AttentionSelectorConfig tuple kept the old name) and the gate rev
+# 1 read the pre-rename attr. Gate rev 2 reads both surfaces
+# (legacy first, then the 0.30 field). This rev 3 reruns both
+# cells over gate rev 2.
 set -uo pipefail
 R=/root/build
 IMG=vllm-arc:v0.30.0-b70-cert28
@@ -37,7 +59,7 @@ PDM="ARC_PD_PLATFORM=$SP/platform.py ARC_PD_ENVS=$SP/envs.py ARC_PD_GATE=$SP/lmc
 declare -A MD5=( \
   [platform.py]=0733f0b8c7dd2fb89422bafa56ec35f5 \
   [envs.py]=31ca4ac7cfcd996aed6446d4b24c2bcd \
-  [lmc_mx_boot_gate.py]=1267b826a214953c9e7130e804f615f5 )
+  [lmc_mx_boot_gate.py]=ffb1ef11b17bf7b99987c84940c16360 )
 FAILED=""
 
 fail() { echo "R246B_ABORT: $*"; }
@@ -126,13 +148,43 @@ docker rm -f $CNAME >/dev/null 2>&1; verify_removed $CNAME || true
 echo "=== [r246b:pd_refuse] boot $(date +%H:%M:%S) (ARC_LMC=1 over mxfp4 -- refusal REQUIRED) ==="
 nohup env ARC_IMAGE="$IMG" ARC_NAME=$CNAME $QM $MX ARC_LMC=1 $PDM \
   bash $R/serve_arc_b70.sh > "$CD/boot.txt" 2>&1 &
-# poll the serve log for the refusal (connector constructs during
-# engine init, before /health binds; cap 300 s)
-i=0; REF=0
-while [ $i -lt 100 ]; do
+# poll the serve log for the refusal. The connector constructs minutes
+# into engine init (after config/device/model load), so this is a slow
+# poll, not a fast one -- and the container must EXIST before absence
+# can mean anything: the serve script takes seconds to reach docker
+# run, and run 1 broke at iteration 1 on the not-yet-created
+# container, banked a 3-second log, and pkilled a healthy booting
+# engine (NO_REFUSAL was a runner defect, never a gate verdict).
+# Order per poll: marker -> health (200 over the confound posture =
+# the gate truly leaked) -> EngineCore liveness (seen-once-then-gone =
+# engine died; flush window, final marker grep). Cap 150 x 3s + slack
+# ~= 9 min > the ~6 min LMC=1 MX boot window. The refusal ValueError
+# kills the CLI; its traceback lands in serve_full.log.
+i=0; SEEN=0
+while [ $i -lt 30 ]; do
+  docker inspect $CNAME >/dev/null 2>&1 && { SEEN=1; break; }
+  sleep 3; i=$((i+1))
+done
+if [ "$SEEN" != "1" ]; then
+  echo "R246B_ABORT_pd_refuse: container never appeared (90 s)"
+  echo "BOOT_FAIL" > "$CD/outcome.txt"
+  FAILED="$FAILED pd_refuse"
+  echo "R246B_DONE failed=[$FAILED] $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+  exit 1
+fi
+i=0; REF=0; HEALTH=0; CORE_SEEN=0; ENG_DEAD=0
+while [ $i -lt 150 ]; do
   n=$(gcount "ARC_LMC_MX_REFUSED")
   [ "${n:-0}" -gt 0 ] && { REF=1; break; }
-  docker inspect $CNAME >/dev/null 2>&1 || { sleep 5; break; }
+  if curl -sf -m 4 http://127.0.0.1:8000/health >/dev/null 2>&1; then
+    HEALTH=1; break
+  fi
+  if docker exec $CNAME pgrep -f EngineCore >/dev/null 2>&1; then CORE_SEEN=1
+  elif [ "$CORE_SEEN" = "1" ]; then
+    ENG_DEAD=1; sleep 8
+    n=$(gcount "ARC_LMC_MX_REFUSED"); [ "${n:-0}" -gt 0 ] && REF=1
+    break
+  fi
   sleep 3; i=$((i+1))
 done
 sleep 2
@@ -141,6 +193,7 @@ n=$(gcount "ARC_LMC_MX_REFUSED")
 docker cp $CNAME:/root/serve_full.log "$CD/serve.log" >/dev/null 2>&1 || true
 echo "tracebacks=$(gcount 'Traceback (most recent call last)')" > "$CD/posture.txt"
 echo "lmc_mx_refused=$n" >> "$CD/posture.txt"
+echo "engine_dead=$ENG_DEAD health_up=$HEALTH" >> "$CD/posture.txt"
 # the serve script's own WARN line (boot.txt -- script stdout, not the
 # engine log) proves the confound posture was armed before the refusal
 echo "warn_line=$(grep -c 'forced on ARC_KVDTYPE' "$CD/boot.txt" 2>/dev/null || echo 0)" >> "$CD/posture.txt"
@@ -149,7 +202,7 @@ if [ "$REF" = "1" ]; then
   echo "GATE_FIRED_pd_refuse (refusal count=$n)"
   echo "GATE_FIRED" > "$CD/outcome.txt"
 else
-  echo "NO_REFUSAL_pd_refuse -- the gate leaked (confound posture reached the engine)"
+  echo "NO_REFUSAL_pd_refuse -- the gate leaked (confound posture reached the engine; health=$HEALTH engine_dead=$ENG_DEAD)"
   echo "NO_REFUSAL" > "$CD/outcome.txt"
   FAILED="$FAILED pd_refuse"
 fi
