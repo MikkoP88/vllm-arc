@@ -12,6 +12,34 @@ the fork SHA it was built from.
 Phase labels P0–P6.38 refer to the plan's execution phases; every phase's
 raw evidence is banked under `results/YYYY-MM-DD-<phase>-*/`.
 
+## r254 — cert29 image built: cert28 + the build34 page-128 wheel + the 16effb49 six-file delta (2026-11-26)
+
+The cert29 cut (r232 recipe). `vllm-arc:v0.30.0-b70-cert29` =
+`FROM cert28` + the r245a build34 wheel (md5 `95451e40...` byte-pinned
++ `.r245a.md5` sidecar; page-128 admission at the gemma full-attention
+geometry, r231d split-clamp lineage; .so pins `libattn c20ca755...`,
+`_vllm_fa2_C 046e915e...`, `libmqa_logits 190e261e...` unrelinked —
+all asserted in-image) + the six-file `vllm_gaudi` delta of the
+16effb49 content commit: P-C2 window plumbing (engine/native_decode),
+P-D factory hook + `VLLM_ARC_LMC_MX_GATE` knob (platform/envs), P-H2
+packed-row interop fix + P-H4 marker (lmcint adapter), P-H4
+posture-aware gate flip. All refuses passed (base cert28 fork_sha,
+wheel bytes + sidecar, six evidence greps: r245a oracle 40 faces /
+r245 grid `R245_DONE failed=[]` / r246 11/11 / r249 INTEROP_PASS /
+r253 15/15, six staged-file md5s); the Dockerfile RUN block asserts 22
+checks live inside the image (`CERT29_WHEEL_PLUS_DELTA_LIVE asserts OK`)
+— the adapter read via `read_text`, never imported bare (the r253
+probe law). Manifest: `cert29_fork_sha=16effb497cd36cb25df7c19cb6f1938d2d45cdc5`,
+`cert29_built=2026-11-26T21:53:34Z`,
+`R254_CERT29_BUILT 2026-11-26T21:56:16Z`. Bank:
+`results/2026-11-26-p647-cert29-build/` (VERDICT PASS, full launch log
+md5-verified both sides, stage provenance, shipped builder). The
+section-10 gate `tools/ar/r255_cert29_gate.sh` is launched on the
+image: ctrl/m8q/m4q/mkq + the knob-free `lmc` interop leg
+(`gate=interop-live` required) + the `gref` P-C2 boot-loud refusal
+face + the gemma native+window legs (the r245-validated posture) +
+g0 + gemma_compare; results bank at close-out.
+
 ## P-H4 r253 — the LMC x MX gate is posture-aware: interop live admits the lane, absent keeps the refusal (2026-11-26)
 
 P-H4, the fix-phase capstone riding the cert29 content commit. The
