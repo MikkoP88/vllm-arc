@@ -830,13 +830,13 @@ P619I forward: is_prefill=True n_tok=236 qlens=(4, 8, 12, 16, 20, 24, 28, 32) se
 (APIServer pid=13) INFO 11-26 16:36:24 [loggers.py:315] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 0.0 tokens/s, Running: 0 reqs, Waiting: 0 reqs, XPU KV cache usage: 0.0%, Prefix cache hit rate: 0.0%, External prefix cache hit rate: 0.0%
 (Worker_TP0 pid=1026) LMCBOUND NONFINITE req=cmpl-a1d3134899f35c31-0-a5584c78 B=8000 nf=12049 am=3.51e+01 (v138c sanitize-carry REVAL trigger)
 (Worker_TP1 pid=1138) LMCBOUND NONFINITE req=cmpl-a1d3134899f35c31-0-a5584c78 B=8000 nf=11861 am=4.13e+01 (v138c sanitize-carry REVAL trigger)
-(APIServer pid=13) INFO:     10.100.8.6:50498 - "GET /v1/models HTTP/1.1" 200 OK
-(APIServer pid=13) INFO:     10.100.8.6:50474 - "GET /v1/models HTTP/1.1" 200 OK
-(APIServer pid=13) INFO:     10.100.8.6:50504 - "GET /v1/models HTTP/1.1" 200 OK
-(APIServer pid=13) INFO:     10.100.8.6:50484 - "GET /v1/models HTTP/1.1" 200 OK
-(APIServer pid=13) INFO:     10.100.8.6:50520 - "GET /v1/models HTTP/1.1" 200 OK
-(APIServer pid=13) INFO:     10.100.8.6:50506 - "GET /v1/models HTTP/1.1" 200 OK
-(APIServer pid=13) INFO:     10.100.8.6:50524 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     10.100.8.REDACTED:50498 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     10.100.8.REDACTED:50474 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     10.100.8.REDACTED:50504 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     10.100.8.REDACTED:50484 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     10.100.8.REDACTED:50520 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     10.100.8.REDACTED:50506 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     10.100.8.REDACTED:50524 - "GET /v1/models HTTP/1.1" 200 OK
 (Worker_TP1 pid=1138) [32;20m[2026-11-26 16:36:28,344] LMCache INFO:[0m [req_id=unspecified] Stored 1600 out of total 1600 tokens. size: 0.0379 GB, cost 9.2645 ms, throughput: 4.0913 GB/s; offload_time: 9.1971 ms, put_time: 0.0313 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
 (Worker_TP0 pid=1026) [32;20m[2026-11-26 16:36:28,344] LMCache INFO:[0m [req_id=unspecified] Stored 1600 out of total 1600 tokens. size: 0.0379 GB, cost 9.3599 ms, throughput: 4.0496 GB/s; offload_time: 9.2948 ms, put_time: 0.0298 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
 (Worker_TP0 pid=1026) [32;20m[2026-11-26 16:36:28,437] LMCache INFO:[0m [req_id=unspecified] Stored 8000 out of total 8000 tokens. size: 0.1297 GB, cost 91.7641 ms, throughput: 1.4134 GB/s; offload_time: 91.6385 ms, put_time: 0.0597 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
