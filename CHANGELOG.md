@@ -12,6 +12,64 @@ the fork SHA it was built from.
 Phase labels P0–P6.38 refer to the plan's execution phases; every phase's
 raw evidence is banked under `results/YYYY-MM-DD-<phase>-*/`.
 
+## r242–r245 — P-C hd512 MX-native decode + sliding-window phase: gemma hybrid MX-KV served e2e at D=512/page-128 (2026-11-26)
+
+The gemma-4-31b first-decode refusal named in the cert29 gate is
+closed end-to-end. Four increments, PRs #147/#148/#149 + the r245 e2e
+close-out:
+
+- **r242 (P-C1)**: the hd512 kernel-instantiation gap. Build1's 16/16
+  D=512 faces failed — the **V-slice law**: at D=512 q8 the output
+  head size exceeds the single-slice V stage (`kDecodeMaxShapeOutV`
+  256), every blk_v=1 workgroup re-staged slice 0's payload/scales
+  (cos 0.49). Fix: `v_slice_bytes` staged once per slice at all three
+  dense-frame sites; splits' plan tile units unified to the 16-row
+  kernel tile (the r242d floor). 24/24 faces green on build5.
+- **r243 (P-C2 kernel half)**: the MX-native paged-decode
+  sliding-window surface (masked twin). Build4's splits face died
+  `UR_RESULT_ERROR_DEVICE_LOST` — the **windowed work-list clamp**:
+  split plans were built from FULL seq lens while the kernel walks
+  the window-bounded list; r243a clamps the plan to the window's own
+  bound. All faces green at both pages (16/64), W=64..2048.
+- **r244 (P-C2 engine half)**: the stock TQ-lane prefill window. The
+  vendor varlen op already threads `window_size` — the fork's engine
+  never passed it. Proven on the vendor surface (windowed W=1024
+  prefill **3.1x faster** at ctx 8192: 1.266 vs 3.898 ms); the
+  engine override now passes it (50 sliding layers shed 75% of their
+  prefill walk), boot-loud refusals guard the unsupported classes.
+- **r245a (P-C1 addendum)**: the **page-128 admission**. The gemma
+  hybrid KV manager banks the D=512 full_attention group a PAGE-128
+  pool (sliding D=256 rides page 64) — the r245 grid on build5 died
+  at the FIRST REAL REQUEST with `block_size 128 not yet compiled`
+  while /health stayed green. The mainloop's page indirection is
+  runtime-generic (tiles_per_page / page_local_idx computed from
+  params.page_size at all three sites), so page 128 is admission
+  only: TORCH_CHECK widening + a dispatch branch on the certified
+  `_512/_16` frame. Offline oracle 40/40 (exact d 9.7e-4 / bitwise
+  0/8192 / splits over 512 page transitions / boundary edge lens /
+  same-wheel regression guards). The gate evolution banked the
+  **F32 near-cancellation discriminator**: the 1-ulp law excludes
+  elements where an honest fp32 pipeline itself exceeds 1 ulp (order
+  noise at cancellation sums; zero free parameters; cannot mask
+  corruption) — runs 1-2 failed on exactly that element class, run 3
+  passed with n_f32_excluded=1, the census count.
+- **r245 e2e (phase close-out)**: 3 cells (mxfp4/mxfp8/mxk8v4) × 15
+  faces on the hardened runner. **45 scheduled = 37 CONC_OK (all
+  n_ok>0) + 8 honest KV_CAP rows, 0 dead/timeout**; zero tracebacks
+  and zero LMCache lines in every serve log; the death-signature call
+  (`bt_width=320 window=-1`) executed clean in all three cells. The
+  r245 failrun (37 n_ok=0 faces behind green gate lines) banked the
+  **existence-only-green-gate law** that hardened the runner (n_ok>0
+  per face; non-200 warmup banks WARMUP_DEAD). mxfp4-KV leads gemma
+  tps at every depth (21.2 tps/user at 1K n1; 105K-token pool).
+- **Wheel authority chain**: build4 → build5 `ead038b1` (r243a) →
+  **build6** `95451e40` (r245a = build5 + page-128) — the cert29
+  image builds on build6.
+
+Evidence: `results/2026-11-26-p647-r242-hd512/`, `-r243-window/`,
+`-r244-tq-window/`, `-r245-page128/` (oracle + failrun) and
+`-r245-page128/e2e/` (the grid).
+
 ## r241 — r240b packed-KV finding re-classified posture-confounded and re-measured LMC-free: Finding 2 fully retracted (2026-11-25)
 
 - **Root cause (banked evidence)**: the r240b qwen MX-KV cells ran

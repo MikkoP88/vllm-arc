@@ -164,13 +164,21 @@ tokens for kvm4/kvm8/kvmk). The unchanged certified law: LMCache
 OFF on every MX-KV lane. Evidence:
 `results/2026-11-25-p647-r241-mxkv-lmcfree/` (VERDICT) +
 `results/2026-11-24-p647-r240b-conc/` (correction addendum).
-**Model scope (r240b/r240c)**: the native MX-KV lanes are qwen-only —
-on gemma every `gkv_m*` lane boots and banks its pool but fatals at
-the FIRST decode request: gemma's 10 hd512 full-attention layers sit
-outside the arc7 compiled `mx_paged_decode` instantiations (the
-kernel guards head_size 128/256). On gemma `fp8_e4m3` is the only
-servable KV dtype; gemma capacity rides the W4A16 weights lane
-(above). Evidence: `results/2026-11-24-p647-r240b-conc/` +
+**Model scope (r240b/r240c, closed at P-C 2026-11-26)**: the native
+MX-KV lanes were qwen-only through cert28 — on gemma every `gkv_m*`
+lane booted and banked its pool but fataled at the FIRST decode
+request: gemma's 10 hd512 full-attention layers sat outside the arc7
+compiled `mx_paged_decode` instantiations, and the full-attention
+pool banks page 128 (not compiled on the cert28 wheel). CLOSED on
+the build6 lineage (r242/r243/r245a + the r245 e2e: D=512 native
+lanes at page 64/128, the sliding-window masked twin; 37/37 real
+faces across all three MX dtypes, zero tracebacks; mxfp4-KV leads
+gemma tps at every depth — 21.2 tps/user at 1K n1 — with the
+largest pool, 105,669 tokens). On cert28 gemma `fp8_e4m3` remains
+the only servable KV dtype; gemma capacity rides the W4A16 weights
+lane (above). The fix rides the cert29 image. Evidence:
+`results/2026-11-26-p647-r242-hd512/` …
+`results/2026-11-26-p647-r245-page128/e2e/` +
 `results/2026-11-24-p647-r240c-gemma128k/` (85 zero-served faces,
 re-audited).
 

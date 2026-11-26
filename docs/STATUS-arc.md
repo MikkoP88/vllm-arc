@@ -83,10 +83,16 @@ What the certified stack delivers:
   `fp8_e5m2` hard-refused (no e5m2 KV path in esimd FA2 on Xe2); the
   four `turboquant_*` presets servable (comparison:
   [`reports/qwen3.8-27b-fp8-kv-cache-dtype.md`](reports/qwen3.8-27b-fp8-kv-cache-dtype.md)).
-  Qwen-scoped: on gemma `fp8_e4m3` is the only servable KV dtype —
-  the native MX-KV lanes boot and bank their pools but fatal at the
-  first decode request (the hd512 instantiation gap; the gemma KV
-  report banks the refusal classes).
+  Qwen-scoped: on cert28 gemma `fp8_e4m3` is the only servable KV
+  dtype — the hd512/page-128 instantiation gap fataled the native
+  lanes at the first decode request. CLOSED at the P-C phase
+  (2026-11-26, build6 lineage): the D=512 native lanes (page 64 and
+  the gemma full-attention pool's page 128) plus the sliding-window
+  masked twin are offline-oracled (r242/r243/r245a: 88 faces green)
+  and served e2e — 37/37 real faces across all three MX dtypes, zero
+  tracebacks, the death-signature page-128 call clean in every cell
+  (`results/2026-11-26-p647-r242-hd512/` …
+  `-r245-page128/e2e/`). Rides the cert29 image.
 - **Patch inventory** — [`PATCHES-arc.md`](PATCHES-arc.md): every
   module with purpose, mechanism, knob, and evidence.
 
@@ -103,18 +109,20 @@ MX KV family, and the `tools/check_currency.sh` anchors that close
 the drift class), and the full per-config report battery re-run
 (r240a/r240b/r240c: every report under [`docs/reports/`](reports/README.md)
 regenerated on cert28 with the gate re-audit). Two engine boundaries
-the re-run surfaced, banked and documented: **the gemma native MX-KV
-lanes cannot decode on this image** — gemma's 10 hd512
-full-attention layers sit outside the arc7 compiled
-`mx_paged_decode` instantiations (D=128/256 only), so on gemma
-`fp8_e4m3` is the only servable KV dtype and the 128K capacity
-story rides the W4A16 weights lane (`gm4x`: 28.3 tok/s n1 @ c131072,
-TTFT 175.6 s, 26/26 faces); and **the qwen packed-KV lanes
-(mxfp4/mxk8v4) die at sustained 32K × n≥4 decode** (300 s watchdog
-worker silent-hang / `UR_RESULT_ERROR_DEVICE_LOST`; mxfp8-KV clean
-22/22 across the full 5-ctx grid — a workload-shape stability
-boundary, MT=600 protocol; the r237 MT=128 cells are unaffected).
-The per-phase ledger:
+the re-run surfaced — both since closed with banked evidence:
+**the gemma native MX-KV lanes could not decode on cert28** (the
+hd512/page-128 instantiation gap: gemma's 10 hd512 full-attention
+layers sat outside the arc7 compiled `mx_paged_decode`
+instantiations; on cert28 gemma `fp8_e4m3` stayed the only servable
+KV dtype and the 128K capacity story rode the W4A16 weights lane —
+`gm4x`: 28.3 tok/s n1 @ c131072, TTFT 175.6 s, 26/26 faces) —
+CLOSED at the P-C phase on the build6 lineage (D=512 native lanes
+at page 64/128 + the sliding-window masked twin; e2e 37/37 faces,
+r245); and **the qwen packed-KV 32K × n≥4 deaths** — re-classified
+at r241 as a harness posture confound (ARC_LMC forced over MX; the
+LMC-free re-run served every face clean, 68/68) and CLOSED as a
+claim; LMC-off-on-MX stays the certified posture, and the P-D boot
+gate will refuse the combination structurally. The per-phase ledger:
 [`history/STATUS_HISTORY.md`](history/STATUS_HISTORY.md); per-phase
 changelog entries: [`../CHANGELOG.md`](../CHANGELOG.md).
 
