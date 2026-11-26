@@ -1,0 +1,27 @@
+== p247 MX surface census (pinned stack, CPU-safe)
+torch.version=2.13.0+xpu
+torch.xpu.build=True
+torch.dtype.float4_e2m1fn_x2=yes
+torch.dtype.float8_e4m3fn=yes
+torch.dtype.float8_e4m3fnuz=yes
+torch.dtype.float8_e5m2=yes
+torch.dtype.float8_e8m0fnu=yes
+torch._scaled_mm=yes <builtin/no-sig>
+torch.scaled_mm=NO
+torch._scaled_grouped_mm=yes <builtin/no-sig>
+torch._scaled_dot_product=NO
+torch.nn.functional.scaled_mm=yes (mat_a: torch.Tensor, mat_b: torch.Tensor, scale_a: torch.Tensor | list[torch.Tensor], scale_recipe_a: torch.nn.functional._ScalingType | list[torch.nn.functional._ScalingType], scale_b: torch.Tensor | list[torch.Tensor], scale_recipe_b: torch.nn.functional._ScalingType | list[torch.nn.functional._ScalingType], swizzle_a: torch.nn.functional._SwizzleType | list[torch.nn.functional._SwizzleType]...
+torch._rowwise=NO
+torch.swap_rowwise_layout=NO
+torch.nn.functional scale/recipe names: ['scaled_dot_product_attention', 'scaled_grouped_mm', 'scaled_mm']
+dispatch[_scaled_mm]: XPU entries=0
+dispatch[aten::_scaled_mm]: XPU entries=4
+aten scan 'float4': none
+aten scan 'e2m1': none
+aten scan 'e8m0': none
+aten scan 'mx': none
+aten scan 'scaled': ['special_scaled_modified_bessel_k0', 'special_scaled_modified_bessel_k1']
+aten scan 'quantize': ['quantize_per_tensor', 'quantized_gru', 'quantized_lstm']
+TORCHAO_CENSUS_FAIL ModuleNotFoundError("No module named 'torchao'")
+ipex: IMPORT_FAIL (ModuleNotFoundError("No module named 'intel_extension_for_pytorch'"))
+CENSUS_DONE

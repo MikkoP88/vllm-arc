@@ -13,6 +13,7 @@ A fork of [vllm-project/vllm-gaudi](https://github.com/vllm-project/vllm-gaudi) 
 - **Project status: P6.47 certified — the MX KV-cache decode line is closed.** All three MX-native KV lanes serve at their record from shallow through long context, with 1.28–1.88× the fp8 KV-token capacity at 0.81–0.84× the fp8 decode speed. The measured close-out and the open-channel disposition live in [`docs/STATUS-arc.md`](docs/STATUS-arc.md).
 - **Per-config performance reports** — [`docs/reports/`](docs/reports/README.md): every model × quantization × MTP posture (qwen3.8-27b fp8/MXFP8/MXFP4-W4A16 with k3 + no-MTP, gemma-4-31b fp8/MXFP8/MXFP4), decode speed / TTFT / prefill rate / ITL at 1K–128K context, the MTP-k3 sampling-temperature sweep, the `--kv-cache-dtype` comparison (stock set + TurboQuant presets), line charts, and the complete copyable configuration for each cell. Every patch module documented with provenance + evidence: [`docs/PATCHES-arc.md`](docs/PATCHES-arc.md).
 - **Improvement-lane status: closed** — every prefill device slice is dispositioned by measurement and the stack sits at the practical in-scope floor. Per-slice table + closed-route disposition: [`docs/STATUS-arc.md`](docs/STATUS-arc.md).
+- **MX design-space map (P-E)** — every model-weights-side and KV-side MX lever: pinned-stack existence proof (the r247 census), Xe2 hardware mapping, disposition, and verified evidence pointer; ranked open candidates for the improvement loop: [`docs/MX-RESEARCH-arc.md`](docs/MX-RESEARCH-arc.md).
 
 ## Contents
 
