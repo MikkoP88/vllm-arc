@@ -1,0 +1,53 @@
+p245a_p128_offline — device=xpu, torch=2.13.0+xpu
+[face: exact/d512p128] native decode vs fp64 exact on dequantized cache
+  ok   exact/d512p128/mxfp8: random549: d=9.74e-04 d_rounded=3.05e-05 cos=0.9999986 d_v2=1.41e-07
+  ok   exact/d512p128/mxfp4: random549: d=9.70e-04 d_rounded=1.22e-04 cos=0.9999986 d_v2=1.94e-07
+  ok   exact/d512p128/mxk8v4: random549: d=9.73e-04 d_rounded=0.00e+00 cos=0.9999986 d_v2=1.41e-07
+[face: v2/d512p128] native vs certified Triton v2 on the same cache
+  ok   v2/d512p128/mxfp8: random549: d=9.76e-04 d_rounded=4.88e-04 cos=0.9999986
+  ok   v2/d512p128/mxfp4: random549: d=9.76e-04 d_rounded=1.22e-04 cos=0.9999986
+  ok   v2/d512p128/mxk8v4: random549: d=9.72e-04 d_rounded=1.22e-04 cos=0.9999986
+[face: bitwise/d512p128] seq_len==1 dequant bit-math oracle (O == bf16(V_deq))
+  ok   bitwise/d512p128/mxfp8: 0/8192 mismatches — dequant bit law exact
+  ok   bitwise/d512p128/mxfp4: 0/8192 mismatches — dequant bit law exact
+  ok   bitwise/d512p128/mxk8v4: 0/8192 mismatches — dequant bit law exact
+[face: splits/d512p128] forced split-KV (ReduceSplitK) + default plan at ctx 8192
+  ok   splits/d512p128/mxfp8: forced8: d=4.24e-04 d_rounded=4.88e-04 cos=0.9999986
+  ok   splits/d512p128/mxfp8: default: d=4.24e-04 d_rounded=4.88e-04 cos=0.9999986
+  ok   splits/d512p128/mxfp4: forced8: d=2.43e-04 d_rounded=9.54e-07 cos=0.9999987
+  ok   splits/d512p128/mxfp4: default: d=2.43e-04 d_rounded=7.45e-09 cos=0.9999987
+  ok   splits/d512p128/mxk8v4: forced8: d=2.44e-04 d_rounded=1.22e-04 cos=0.9999986
+  ok   splits/d512p128/mxk8v4: default: d=2.44e-04 d_rounded=2.44e-04 cos=0.9999986
+[face: boundary/d512p128] page-128 edge lens, shuffled tables
+  ok   boundary/d512p128/mxfp4: edges: d=2.27e-03 d_rounded=4.88e-04 cos=0.9999998 d_v2=2.33e-07
+[face: exact/d512p64] native decode vs fp64 exact on dequantized cache
+  ok   exact/d512p64/mxfp8: random549: d=9.74e-04 d_rounded=3.05e-05 cos=0.9999986 d_v2=1.41e-07
+  ok   exact/d512p64/mxfp4: random549: d=9.70e-04 d_rounded=1.22e-04 cos=0.9999986 d_v2=1.94e-07
+  ok   exact/d512p64/mxk8v4: random549: d=9.73e-04 d_rounded=0.00e+00 cos=0.9999986 d_v2=1.41e-07
+[face: bitwise/d512p64] seq_len==1 dequant bit-math oracle (O == bf16(V_deq))
+  ok   bitwise/d512p64/mxfp8: 0/8192 mismatches — dequant bit law exact
+  ok   bitwise/d512p64/mxfp4: 0/8192 mismatches — dequant bit law exact
+  ok   bitwise/d512p64/mxk8v4: 0/8192 mismatches — dequant bit law exact
+[face: exact/d256p64] native decode vs fp64 exact on dequantized cache
+  ok   exact/d256p64/mxfp8: random549: d=1.28e-03 d_rounded=0.00e+00 cos=0.9999987 d_v2=1.18e-07
+  ok   exact/d256p64/mxfp4: random549: d=1.62e-03 d_rounded=1.49e-08 cos=0.9999986 d_v2=1.90e-07
+  ok   exact/d256p64/mxk8v4: random549: d=1.20e-03 d_rounded=1.91e-06 cos=0.9999986 d_v2=1.02e-07
+[face: bitwise/d256p64] seq_len==1 dequant bit-math oracle (O == bf16(V_deq))
+  ok   bitwise/d256p64/mxfp8: 0/3072 mismatches — dequant bit law exact
+  ok   bitwise/d256p64/mxfp4: 0/3072 mismatches — dequant bit law exact
+  ok   bitwise/d256p64/mxk8v4: 0/3072 mismatches — dequant bit law exact
+[face: telemetry/d512p128] native decode timings at page 128
+  ok   telemetry/d512p128/mxfp8 ctx=1024: v2 0.264 ms, native 1.055 ms (0.25x), 16.4 GB/s effective
+  ok   telemetry/d512p128/mxfp8 ctx=8192: v2 1.379 ms, native 1.018 ms (1.35x), 136.0 GB/s effective
+  ok   telemetry/d512p128/mxfp8 ctx=32768: v2 5.100 ms, native 1.695 ms (3.01x), 326.7 GB/s effective
+  ok   telemetry/d512p128/mxfp8 ctx=40960: v2 6.262 ms, native 1.862 ms (3.36x), 371.8 GB/s effective
+  ok   telemetry/d512p128/mxfp4 ctx=1024: v2 0.235 ms, native 0.765 ms (0.31x), 11.6 GB/s effective
+  ok   telemetry/d512p128/mxfp4 ctx=8192: v2 1.301 ms, native 0.712 ms (1.83x), 100.2 GB/s effective
+  ok   telemetry/d512p128/mxfp4 ctx=32768: v2 4.507 ms, native 1.303 ms (3.46x), 218.9 GB/s effective
+  ok   telemetry/d512p128/mxfp4 ctx=40960: v2 5.560 ms, native 1.415 ms (3.93x), 252.0 GB/s effective
+  ok   telemetry/d512p128/mxk8v4 ctx=1024: v2 0.241 ms, native 1.038 ms (0.23x), 12.6 GB/s effective
+  ok   telemetry/d512p128/mxk8v4 ctx=8192: v2 1.427 ms, native 0.928 ms (1.54x), 113.0 GB/s effective
+  ok   telemetry/d512p128/mxk8v4 ctx=32768: v2 5.070 ms, native 1.618 ms (3.13x), 259.2 GB/s effective
+  ok   telemetry/d512p128/mxk8v4 ctx=40960: v2 6.262 ms, native 1.769 ms (3.54x), 296.4 GB/s effective
+
+VERDICT: PASS

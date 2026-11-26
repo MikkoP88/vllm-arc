@@ -1,0 +1,311 @@
+{
+  "bitwise": {
+    "d256p64": {
+      "mxfp4": {
+        "bit_mismatches": 0
+      },
+      "mxfp8": {
+        "bit_mismatches": 0
+      },
+      "mxk8v4": {
+        "bit_mismatches": 0
+      }
+    },
+    "d512p128": {
+      "mxfp4": {
+        "bit_mismatches": 0
+      },
+      "mxfp8": {
+        "bit_mismatches": 0
+      },
+      "mxk8v4": {
+        "bit_mismatches": 0
+      }
+    },
+    "d512p64": {
+      "mxfp4": {
+        "bit_mismatches": 0
+      },
+      "mxfp8": {
+        "bit_mismatches": 0
+      },
+      "mxk8v4": {
+        "bit_mismatches": 0
+      }
+    }
+  },
+  "boundary": {
+    "d512p128": {
+      "mxfp4": {
+        "edges": {
+          "cos_same": 0.9999998119349519,
+          "gated": true,
+          "maxdiff": 0.002271465423830943,
+          "maxdiff_rounded": 0.00048828125,
+          "n_f32_excluded": 1
+        }
+      }
+    }
+  },
+  "cells": {
+    "ctrl256p64": {
+      "BLOCK": 64,
+      "D": 256,
+      "HK": 2,
+      "HREP": 6
+    },
+    "d512p128": {
+      "BLOCK": 128,
+      "D": 512,
+      "HK": 2,
+      "HREP": 8
+    },
+    "d512p64": {
+      "BLOCK": 64,
+      "D": 512,
+      "HK": 2,
+      "HREP": 8
+    }
+  },
+  "exact": {
+    "d256p64": {
+      "mxfp4": {
+        "random549": {
+          "cos_same": 0.9999986421809814,
+          "gated": true,
+          "maxdiff": 0.001616290093817141,
+          "maxdiff_rounded": 1.4901161193847656e-08
+        }
+      },
+      "mxfp8": {
+        "random549": {
+          "cos_same": 0.9999986649269929,
+          "gated": true,
+          "maxdiff": 0.0012833094352641128,
+          "maxdiff_rounded": 0.0
+        }
+      },
+      "mxk8v4": {
+        "random549": {
+          "cos_same": 0.9999986061211553,
+          "gated": true,
+          "maxdiff": 0.0012020081320230913,
+          "maxdiff_rounded": 1.9073486328125e-06
+        }
+      }
+    },
+    "d512p128": {
+      "mxfp4": {
+        "random549": {
+          "cos_same": 0.9999986121923202,
+          "gated": true,
+          "maxdiff": 0.0009699832484305615,
+          "maxdiff_rounded": 0.0001220703125
+        }
+      },
+      "mxfp8": {
+        "random549": {
+          "cos_same": 0.9999986000796878,
+          "gated": true,
+          "maxdiff": 0.0009744162307626092,
+          "maxdiff_rounded": 3.0517578125e-05
+        }
+      },
+      "mxk8v4": {
+        "random549": {
+          "cos_same": 0.9999986424566489,
+          "gated": true,
+          "maxdiff": 0.0009734566767374275,
+          "maxdiff_rounded": 0.0
+        }
+      }
+    },
+    "d512p64": {
+      "mxfp4": {
+        "random549": {
+          "cos_same": 0.9999986121923202,
+          "gated": true,
+          "maxdiff": 0.0009699832484305615,
+          "maxdiff_rounded": 0.0001220703125
+        }
+      },
+      "mxfp8": {
+        "random549": {
+          "cos_same": 0.9999986000796878,
+          "gated": true,
+          "maxdiff": 0.0009744162307626092,
+          "maxdiff_rounded": 3.0517578125e-05
+        }
+      },
+      "mxk8v4": {
+        "random549": {
+          "cos_same": 0.9999986424566489,
+          "gated": true,
+          "maxdiff": 0.0009734566767374275,
+          "maxdiff_rounded": 0.0
+        }
+      }
+    }
+  },
+  "failures": [],
+  "splits": {
+    "d512p128": {
+      "mxfp4": {
+        "default": {
+          "cos_same": 0.9999986517398892,
+          "gated": true,
+          "maxdiff": 0.00024285691530893938,
+          "maxdiff_rounded": 7.450580596923828e-09
+        },
+        "forced8": {
+          "cos_same": 0.9999986517398894,
+          "gated": true,
+          "maxdiff": 0.00024285691530893938,
+          "maxdiff_rounded": 9.5367431640625e-07
+        }
+      },
+      "mxfp8": {
+        "default": {
+          "cos_same": 0.9999986081215082,
+          "gated": true,
+          "maxdiff": 0.0004243111281933831,
+          "maxdiff_rounded": 0.00048828125
+        },
+        "forced8": {
+          "cos_same": 0.9999986081215789,
+          "gated": true,
+          "maxdiff": 0.0004243111281933831,
+          "maxdiff_rounded": 0.00048828125
+        }
+      },
+      "mxk8v4": {
+        "default": {
+          "cos_same": 0.9999986202103235,
+          "gated": true,
+          "maxdiff": 0.00024367199459431055,
+          "maxdiff_rounded": 0.000244140625
+        },
+        "forced8": {
+          "cos_same": 0.9999986202165991,
+          "gated": true,
+          "maxdiff": 0.00024367199459431055,
+          "maxdiff_rounded": 0.0001220703125
+        }
+      }
+    }
+  },
+  "telemetry": {
+    "d512p128": {
+      "device": {
+        "name": "Intel(R) Graphics [0xe223]"
+      },
+      "mxfp4": {
+        "1024": {
+          "native_gbps": 11.65,
+          "native_ms": 0.7651,
+          "speedup": 0.307,
+          "v2_ms": 0.235
+        },
+        "32768": {
+          "native_gbps": 218.89,
+          "native_ms": 1.303,
+          "speedup": 3.459,
+          "v2_ms": 4.5065
+        },
+        "40960": {
+          "native_gbps": 252.03,
+          "native_ms": 1.4146,
+          "speedup": 3.93,
+          "v2_ms": 5.5601
+        },
+        "8192": {
+          "native_gbps": 100.16,
+          "native_ms": 0.7119,
+          "speedup": 1.827,
+          "v2_ms": 1.3006
+        }
+      },
+      "mxfp8": {
+        "1024": {
+          "native_gbps": 16.39,
+          "native_ms": 1.0554,
+          "speedup": 0.25,
+          "v2_ms": 0.2643
+        },
+        "32768": {
+          "native_gbps": 326.65,
+          "native_ms": 1.6949,
+          "speedup": 3.009,
+          "v2_ms": 5.0999
+        },
+        "40960": {
+          "native_gbps": 371.78,
+          "native_ms": 1.8615,
+          "speedup": 3.364,
+          "v2_ms": 6.2622
+        },
+        "8192": {
+          "native_gbps": 135.98,
+          "native_ms": 1.0179,
+          "speedup": 1.355,
+          "v2_ms": 1.3788
+        }
+      },
+      "mxk8v4": {
+        "1024": {
+          "native_gbps": 12.63,
+          "native_ms": 1.0378,
+          "speedup": 0.232,
+          "v2_ms": 0.241
+        },
+        "32768": {
+          "native_gbps": 259.2,
+          "native_ms": 1.6182,
+          "speedup": 3.133,
+          "v2_ms": 5.0704
+        },
+        "40960": {
+          "native_gbps": 296.42,
+          "native_ms": 1.7687,
+          "speedup": 3.54,
+          "v2_ms": 6.2617
+        },
+        "8192": {
+          "native_gbps": 113.05,
+          "native_ms": 0.9276,
+          "speedup": 1.538,
+          "v2_ms": 1.427
+        }
+      }
+    }
+  },
+  "v2": {
+    "d512p128": {
+      "mxfp4": {
+        "random549": {
+          "cos_same": 0.9999986397282464,
+          "gated": true,
+          "maxdiff": 0.0009757876396179199,
+          "maxdiff_rounded": 0.0001220703125
+        }
+      },
+      "mxfp8": {
+        "random549": {
+          "cos_same": 0.9999985986106242,
+          "gated": true,
+          "maxdiff": 0.0009759366512298584,
+          "maxdiff_rounded": 0.00048828125
+        }
+      },
+      "mxk8v4": {
+        "random549": {
+          "cos_same": 0.9999986223401869,
+          "gated": true,
+          "maxdiff": 0.000972360372543335,
+          "maxdiff_rounded": 0.0001220703125
+        }
+      }
+    }
+  },
+  "verdict": "PASS"
+}

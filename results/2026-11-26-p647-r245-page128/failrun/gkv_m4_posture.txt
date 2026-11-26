@@ -1,0 +1,5 @@
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert28 name=arc-r245 model=/models/gemma4-31b served=gemma4-31b quant=fp8 qcfg= graph=1 spec=0 gmu=0.8 maxlen=40960 mnbt=8192 seqs=64 fp8=0 xgc=0 tmpl=__qwen_default__ rp=<qwen3> tp=<qwen3_coder> port=8000 06:34:28
+tracebacks=0
+lmc_lines=0
+pc2_windowed_impl=100
+kv_pool_tokens=105669
