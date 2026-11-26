@@ -21,8 +21,10 @@ scp -o StrictHostKeyChecking=no "$RIG:/root/build/p248/serve.log" \
   "$BANK/serve.log" || { echo "PULL_MISS serve.log"; exit 1; }
 
 # law-8: byte-exact host-address redaction (escaped literals only --
-# never the raw bytes in this file)
-perl -pi -e 's/\b10\.20\.3\.65\b/RIG_ADDR/g; s/\b10\.20\.3\.\d+\b/CLIENT_ADDR/g' \
+# never the raw bytes in this file). Client subnet pattern added
+# 2026-11-26 (REDACTION-2026-11-26-r248-r249: the first pull missed it
+# and shipped 21 client-LAN access lines).
+perl -pi -e 's/\b10\.20\.3\.65\b/RIG_ADDR/g; s/\b10\.20\.3\.\d+\b/CLIENT_ADDR/g; s/\b10\.100\.8\.\d+\b/10.100.8.REDACTED/g' \
   "$BANK"/*.txt "$BANK"/*.log "$BANK"/*.json "$BANK"/serve.log 2>/dev/null || true
 
 ( cd "$BANK" && sha256sum $(ls | grep -v '^SHA256SUMS$') > SHA256SUMS )

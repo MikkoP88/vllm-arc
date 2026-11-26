@@ -6,11 +6,23 @@
 # hits (each printed). Run before every push/merge; new exceptions go
 # in tools/leak_sweep.allow with a reason (path ERE + reason per line).
 #
-# TWO passes (2026-11-11, leak-sweep-before-add law): "tracked" — the
-# tracked tree via git grep (tracked == pushable); "untracked" — the
-# working tree's untracked non-ignored files via git ls-files (the next
-# commit's candidates, incl. bank dirs before their force-adds; git
-# grep cannot see them until staged — the pre-add window was unswept).
+# THREE passes: "tracked" — the working tree of tracked files via
+# git grep (tracked == pushable); "untracked" — the working tree's
+# untracked non-ignored files via git ls-files (the next commit's
+# candidates, incl. bank dirs before their force-adds; git grep
+# cannot see them until staged — the pre-add window was unswept,
+# 2026-11-11, leak-sweep-before-add law); "staged" — the INDEX via
+# `git grep --cached` (2026-11-26, REDACTION-2026-11-26-r248-r249:
+# the index is the pushable-bytes truth at commit time; the pass
+# closes the miss-window where bytes are staged dirty and the
+# working tree is cleaned afterwards — the tracked pass reads the
+# working tree and would false-pass).
+#
+# OPERATIONAL LAW: re-run after every `git add -f` — gitignored bank
+# files are invisible to the untracked pass (gitignore) and to the
+# tracked/staged passes until staged. Both shipped leaks so far
+# (r231de 2026-11-24, r248/r249 2026-11-26) were this window: swept
+# at bank time, force-added, committed without a re-run.
 #
 # Scope notes:
 # - Private/RFC1918 subnets + the rig subnet are matched with NUMERIC
@@ -28,10 +40,12 @@ ALLOW=tools/leak_sweep.allow
 fail=0
 total=0
 
-scan() {  # scan <tracked|untracked> <ERE> — emits path:line:match lines
+scan() {  # scan <tracked|untracked|staged> <ERE> — emits path:line:match lines
   if [ "$1" = untracked ]; then
     git ls-files --others --exclude-standard |
       xargs -r grep -nI -E -- "$2" 2>/dev/null
+  elif [ "$1" = staged ]; then
+    git grep --cached -nI -E -- "$2"
   else
     git grep -nI -E -- "$2"
   fi
@@ -59,7 +73,7 @@ sweep() {  # sweep <name> <ERE> <mode>
   done < <(scan "$mode" "$pat")
 }
 
-for mode in tracked untracked; do
+for mode in tracked untracked staged; do
   sweep rig-subnet      '10\.20\.[0-9]{1,3}\.[0-9]{1,3}' "$mode"
   sweep rfc1918        '(^|[^0-9.])(10\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}|192\.168\.[0-9]{1,3}\.[0-9]{1,3}|172\.(1[6-9]|2[0-9]|3[01])\.[0-9]{1,3}\.[0-9]{1,3})([^0-9.]|$)' "$mode"
   sweep root-at-host    'root@[0-9]{1,3}\.' "$mode"
@@ -73,4 +87,4 @@ if [ "$fail" -ne 0 ]; then
   echo "leak_sweep: $total hit(s) — scrub or allowlist-with-reason; do not push."
   exit 1
 fi
-echo "leak_sweep: clean (tracked + untracked passes)."
+echo "leak_sweep: clean (tracked + untracked + staged passes)."

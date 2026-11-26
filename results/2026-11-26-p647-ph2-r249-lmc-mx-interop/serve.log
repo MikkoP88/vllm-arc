@@ -820,13 +820,13 @@ P619I forward: is_prefill=True n_tok=236 qlens=(4, 8, 12, 16, 20, 24, 28, 32) se
 (APIServer pid=13) INFO:     127.0.0.1:33328 - "POST /v1/completions HTTP/1.1" 200 OK
 (APIServer pid=13) INFO 11-26 17:16:23 [loggers.py:315] Engine 000: Avg prompt throughput: 1305.8 tokens/s, Avg generation throughput: 6.4 tokens/s, Running: 0 reqs, Waiting: 0 reqs, XPU KV cache usage: 0.0%, Prefix cache hit rate: 0.0%, External prefix cache hit rate: 0.0%
 (APIServer pid=13) INFO 11-26 17:16:23 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 4.00, Accepted throughput: 4.80 tokens/s, Drafted throughput: 4.80 tokens/s, Accepted: 48 tokens, Drafted: 48 tokens, Per-position acceptance rate: 1.000, 1.000, 1.000, Avg Draft acceptance rate: 100.0%
-(APIServer pid=13) INFO:     10.100.8.6:44608 - "GET /v1/models HTTP/1.1" 200 OK
-(APIServer pid=13) INFO:     10.100.8.6:44594 - "GET /v1/models HTTP/1.1" 200 OK
-(APIServer pid=13) INFO:     10.100.8.6:44620 - "GET /v1/models HTTP/1.1" 200 OK
-(APIServer pid=13) INFO:     10.100.8.6:44610 - "GET /v1/models HTTP/1.1" 200 OK
-(APIServer pid=13) INFO:     10.100.8.6:44630 - "GET /v1/models HTTP/1.1" 200 OK
-(APIServer pid=13) INFO:     10.100.8.6:44612 - "GET /v1/models HTTP/1.1" 200 OK
-(APIServer pid=13) INFO:     10.100.8.6:44634 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     10.100.8.REDACTED:44608 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     10.100.8.REDACTED:44594 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     10.100.8.REDACTED:44620 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     10.100.8.REDACTED:44610 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     10.100.8.REDACTED:44630 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     10.100.8.REDACTED:44612 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     10.100.8.REDACTED:44634 - "GET /v1/models HTTP/1.1" 200 OK
 (Worker_TP0 pid=1026) LMCBOUND NONFINITE req=cmpl-b39bcacfaf129ed0-0-beb22795 B=11200 nf=11495 am=3.29e+01 (v138c sanitize-carry REVAL trigger)
 (Worker_TP1 pid=1138) LMCBOUND NONFINITE req=cmpl-b39bcacfaf129ed0-0-beb22795 B=11200 nf=11397 am=3.03e+01 (v138c sanitize-carry REVAL trigger)
 (Worker_TP1 pid=1138) [32;20m[2026-11-26 17:16:30,650] LMCache INFO:[0m [req_id=unspecified] Stored 1600 out of total 1600 tokens. size: 0.0138 GB, cost 60.9715 ms, throughput: 0.2260 GB/s; offload_time: 60.8266 ms, put_time: 0.1059 ms [3m(cache_engine.py:592:lmcache.v1.cache_engine)[0m
