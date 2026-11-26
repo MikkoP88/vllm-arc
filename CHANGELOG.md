@@ -12,6 +12,35 @@ the fork SHA it was built from.
 Phase labels P0–P6.38 refer to the plan's execution phases; every phase's
 raw evidence is banked under `results/YYYY-MM-DD-<phase>-*/`.
 
+## P-H4 r253 — the LMC x MX gate is posture-aware: interop live admits the lane, absent keeps the refusal (2026-11-26)
+
+P-H4, the fix-phase capstone riding the cert29 content commit. The
+P-D boot gate was blanket: LMCache over any MX KV dtype refused at
+connector construction, regardless of adapter capability. With the
+P-H2 packed-row interop fixed and validated (r249: re-hit A/A
+byte-equal at 6.18 -> 1.89 s wall, the exact r240b kill sequence
+clean, zero transfer errors), the blanket refusal blocked the lawful
+lane it was protecting. The gate is now posture-aware via a capability
+marker on the fork-owned adapter (`ARC_LMC_MX_INTEROP =
+"packed-row/r249"`, `lmcint/vllm_v1_adapter.py`): **present ->
+allow with a `gate=interop-live` posture line; absent -> still
+`ARC_LMC_MX_REFUSED`** (pre-r249 installs stay protected), knob
+`VLLM_ARC_LMC_MX_GATE=0` bypasses for A/B evidence only. Probe
+15/15 (rev 2): interop-live pass-through x3 dtypes, absent-adapter
+refusal x3 + the legacy `kv_cache_dtype` surface, real-registry
+resolve, non-LMC scope, the lawful checkpoint_fp8 lane, bypass,
+stock behavior, idempotence. The run-1 lesson is a banked probe law:
+the lmcint kit path must never be imported bare — the p41b exec-wrap
+installs the lmcint src-override finder at registry RESOLUTION, and
+the vendored `lmcache_integration/__init__` dies on lmcache 0.5.5
+(`CudaIPCWrapper` is main-only) without it; the gate is safe by
+construction (its wrap resolves the connector class before the
+posture branch). The Phase-6 auto-off review rides the same commit:
+serve-script `ARC_LMC=0` default on MX lanes now rests on the r176
+perf posture alone (the r168 correctness reason is REPEALED at
+P-H2/r249), explicit `ARC_LMC=1` is legal, WARN -> NOTE.
+`results/2026-11-26-p647-ph4-r253-gate-flip/`.
+
 ## P-I r252 — W4A8 measured dominated at every face; the improve phase completes (2026-11-26)
 
 P-I cycle 3 of 3 — the corrected lever map's last pre-cert29 open

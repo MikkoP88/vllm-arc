@@ -29,14 +29,20 @@
 #               the certified posture: LMCacheConnectorV1 + the 10-var
 #               LMCACHE_* chain, keep as a set). P6.47 exception: on ALL
 #               ARC_KVDTYPE MX lanes (mxfp4/mxk8v4/mxfp8) the DEFAULT is 0
-#               (auto-off) — e2m1-V correctness (r168 discriminator: same
-#               m4q posture, ARC_LMC=1 essay-rehit REP-LOOP garble vs
-#               ARC_LMC=0 all classes CLEAN) and the P6.47 Phase 6
-#               decode-parity posture (r176 clean A/B on mxfp8: LMC-off
-#               leaves ITL unchanged — 67.28->67.25 ms @8K, 95.76->95.78
-#               @32K — and saves the 26/259 ms TTFT store tax while
-#               freeing the store worker + its fp16-expanded blob
-#               capacity; explicit ARC_LMC=1 still forces it, with a WARN)
+#               (auto-off). P-H4 review (r253): the r168 correctness
+#               reason was REPEALED at P-H2 — the root cause was the
+#               adapter's standard-geometry misclassification of MX
+#               packed-row pools (32 B/token cumulative misaddress),
+#               fixed and validated r249 (re-hit A/A byte-equal; the
+#               exact r240b kill sequence clean); the lane is LEGAL
+#               since the P-H4 posture-aware engine gate. The auto-off
+#               now rides ONLY the Phase-6 perf posture (r176 clean A/B
+#               on mxfp8: LMC-off leaves ITL unchanged — 67.28->67.25
+#               ms @8K, 95.76->95.78 @32K — and saves the 26/259 ms
+#               TTFT store tax while freeing the store worker + its
+#               fp16-expanded blob capacity; the r249 re-hit win —
+#               6.18->1.89 s wall on warm re-hit — is available by
+#               explicit ARC_LMC=1, with a NOTE)
 #   ARC_GMU     --gpu-memory-utilization (default 0.8, D-champion certified
 #               posture — V1227_GMU lineage, plan Appendix F)
 #   ARC_MAXLEN  --max-model-len (default 262144 = the certified incumbent
@@ -123,20 +129,30 @@ ARC_SPEC=${ARC_SPEC:-3}
 # the second quantization — r161 m4q ARC_LMC=1 banked essay-rehit REP-LOOP
 # garble on full+rehit faces while r168's byte-identical posture with
 # ARC_LMC=0 came back CLEAN on all 4 classes with deterministic hashes.
-# P6.47 Phase 5, r176 amendment (2026-11-13): the earlier class-wide
-# auto-off was narrowed back to the e2m1-V lanes. The r176 clean A/B on
-# cert25za (replica vs ARC_LMC=0, m8, rungs {8192,32768} n1) measured the
-# LMCache store cost at 26 ms TTFT @8K / 259 ms @32K with ITL unchanged —
-# the p620 off-thread store worker keeps the fp16-expanded stores OFF the
-# prefill critical path (stores overlap decode), so the r172 m8 TTFT
-# +2.97 s reading (instrumented leg, first-request cold effects) does not
-# reproduce under matched clean conditions. P6.47 Phase 6 (2026-11-18)
+# P-H2 ROOT-CAUSE REPEAL (r249, 2026-11-26): the r168 garble was NOT
+# re-quantization — the lmcint adapter classed MX packed-row pools as
+# standard geometry (512 vs 544 B/token, a 32 B/token cumulative
+# store/restore misaddress); fixed in the fork-owned adapter and
+# validated byte-exact (re-hit A/A, zero transfer errors, the exact
+# r240b kill sequence clean). LEGAL since the P-H4 posture-aware
+# engine gate (r253); the auto-off default survives on perf grounds
+# only (below). P6.47 Phase 5, r176 amendment (2026-11-13): the
+# earlier class-wide auto-off was narrowed back to the e2m1-V lanes.
+# The r176 clean A/B on cert25za (replica vs ARC_LMC=0, m8, rungs
+# {8192,32768} n1) measured the LMCache store cost at 26 ms TTFT @8K
+# / 259 ms @32K with ITL unchanged — the p620 off-thread store worker
+# keeps the fp16-expanded stores OFF the prefill critical path
+# (stores overlap decode), so the r172 m8 TTFT +2.97 s reading
+# (instrumented leg, first-request cold effects) does not reproduce
+# under matched clean conditions. P6.47 Phase 6 (2026-11-18)
 # extends the auto-off to ALL MX lanes including mxfp8: the r176 A/B
-# shows LMC-off is e2e-neutral-to-positive on mxfp8 (ITL unchanged, TTFT
-# −26/−259 ms, store worker + blob capacity freed), and the decode-parity
-# goal runs the MX lanes LMCache-free by posture. F1b (MX-native LMCache
-# storage, pinned dep) stays a documented lane for future cross-request
-# prefix-reuse workloads.
+# shows LMC-off is e2e-neutral-to-positive on mxfp8 (ITL unchanged,
+# TTFT −26/−259 ms, store worker + blob capacity freed), and the
+# decode-parity goal runs the MX lanes LMCache-free by posture. The
+# r249 re-hit win (6.18->1.89 s wall on warm re-hit) is the measured
+# upside available at explicit ARC_LMC=1. F1b (MX-native LMCache
+# storage, pinned dep) stays a documented lane for future
+# cross-request prefix-reuse workloads.
 KVD_EFF=${ARC_KVDTYPE:-fp8_e4m3}
 case "$KVD_EFF" in
   mxfp4|mxk8v4|mxfp8) MX_LANE=1 ;;
@@ -144,9 +160,9 @@ case "$KVD_EFF" in
 esac
 if [ -z "${ARC_LMC:-}" ] && [ "$MX_LANE" = 1 ]; then
   ARC_LMC=0
-  echo "NOTE: ARC_LMC auto-off for ARC_KVDTYPE=$KVD_EFF (MX lane posture: e2m1-V double-quant garble r168 + decode-parity LMC-free run, r176 A/B; P6.47 Phase 6)"
+  echo "NOTE: ARC_LMC auto-off for ARC_KVDTYPE=$KVD_EFF (MX lane perf posture r176: ITL unchanged, 26/259 ms TTFT store tax saved; the r168 garble reason repealed at P-H2/r249 — the lane is legal + byte-exact under the P-H4 posture-aware gate)"
 elif [ "${ARC_LMC:-1}" = 1 ] && [ "$MX_LANE" = 1 ]; then
-  echo "WARN: ARC_LMC=1 forced on ARC_KVDTYPE=$KVD_EFF — r168 banked essay-rehit REP-LOOP garble on e2m1-V lanes; r176 measured the mxfp8 store tax"
+  echo "NOTE: ARC_LMC=1 forced on ARC_KVDTYPE=$KVD_EFF — legal + byte-exact since the r249 interop (P-H4 posture-aware gate); r176 store tax on cold faces, r249 re-hit win 6.18->1.89 s on warm"
 fi
 ARC_LMC=${ARC_LMC:-1}
 ARC_GMU=${ARC_GMU:-0.8}

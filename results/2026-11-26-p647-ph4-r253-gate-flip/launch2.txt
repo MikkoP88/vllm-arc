@@ -1,0 +1,24 @@
+R253_STAGE_OK md5s verified
+=== [r253] W14 quiesce 21:44:45 ===
+=== [r253] probe in vllm-arc:v0.30.0-b70-cert28 + P-H4 overlay 21:45:01 ===
+=== [r253] probe exit rc=0 21:45:18 ===
+== p253 P-H4 posture-aware gate-flip probe (rev 2)
+[face A_fired] ok hook fired on the real factory create_connector
+[face R_bootstrap] ok real resolution ran (p41b lmcint src-override finder installed)
+[face H_live_mxfp4] ok pass-through + posture (gate=interop-live)
+[face H_live_mxfp8] ok pass-through + posture (gate=interop-live)
+[face H_live_mxk8v4] ok pass-through + posture (gate=interop-live)
+[face B_stock_mxfp4] ok mxfp4 refused (interop absent): ARC_LMC_MX_REFUSED: LMCache connector 'LMCacheCo...
+[face B_stock_mxfp8] ok mxfp8 refused (interop absent): ARC_LMC_MX_REFUSED: LMCache connector 'LMCacheCo...
+[face B_stock_mxk8v4] ok mxk8v4 refused (interop absent): ARC_LMC_MX_REFUSED: LMCache connector 'LMCacheCo...
+[face B_legacy_stock] ok kv_cache_dtype surface refused (fallback pinned)
+[face D_resolve] ok real registry resolves LMCacheConnectorV1 -> LMCacheConnectorV1
+[face C_scope] ok pass-through + posture (gate=on connector=NixlConnector)
+[face D_lawful] ok pass-through + posture (gate=on connector=LMCacheConnectorV1)
+[face E_bypass_stock] ok pass-through + posture (gate=bypassed)
+[face F_stock] ok stock None-config ValueError intact
+[face G_idem] ok second _install kept exactly one wrapped constructor
+== p253 faces ok=15/15
+VERDICT: PASS
+R253_DONE rc=0 2026-11-26T21:45:18Z
+W14_RESTORED 2026-11-26T21:45:18Z

@@ -76,6 +76,16 @@ if TYPE_CHECKING:
 
 logger = init_logger(__name__)
 
+# P-H4 (r253): the packed-row MX interop capability marker. The P-D
+# boot gate (patches/lmc_mx_boot_gate.py) keys its posture on THIS
+# attribute: present -> LMCache x MX constructs with telemetry (the
+# r249 INTEROP_PASS evidence: re-hit A/A byte-equal at 6.18->1.89 s
+# wall, the exact r240b kill sequence clean, zero transfer errors);
+# absent -> the posture stays refused (the pre-r249 adapter classed
+# MX lanes as standard geometry -- the 32 B/token cumulative
+# misaddress behind the r168 garble and the r240b wedge).
+ARC_LMC_MX_INTEROP = "packed-row/r249"
+
 
 @dataclass
 class LoadSpec:
