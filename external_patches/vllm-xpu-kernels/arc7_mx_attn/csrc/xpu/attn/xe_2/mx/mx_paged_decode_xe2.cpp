@@ -214,10 +214,10 @@ void cutlass_mx_paged_decode_xe2(
       head_size,
       " not yet compiled (arc7 instantiations cover D=128/256/512)");
   TORCH_CHECK(
-      block_size == 16 || block_size == 64,
+      block_size == 16 || block_size == 64 || block_size == 128,
       "mx_paged_decode: block_size ",
       block_size,
-      " not yet compiled (arc7 covers page 16/64)");
+      " not yet compiled (arc7 covers page 16/64/128)");
   TORCH_CHECK(
       query.stride(-1) == 1 && mx_cache.stride(-1) == 1,
       "mx_paged_decode: query and cache must be contiguous in the last "
@@ -468,6 +468,25 @@ void cutlass_mx_paged_decode_xe2(
           "sliding_window=None; a windowed D=512 model needs the masked "
           "twin instantiated first)");
       dispatch_fmt(qgroup, _512{}, _16{}, std::false_type{});
+    } else if (head_size == 512 && block_size == 128) {
+      // r245a (2026-11-26): gemma-4-31b's hybrid KV manager gives the
+      // D=512 full_attention group a PAGE-128 pool (the sliding D=256
+      // group rides page 64 — the same boot banks both; r245 e2e died
+      // at the first real request with "block_size 128 not yet
+      // compiled" while the sliding layers' capture-time native calls
+      // with window=1024 had already succeeded). Same _512/_16
+      // sub-tile frame: the mainloop's page indirection is
+      // runtime-generic (tiles_per_page = page_size/16 -> 8 sub-tiles
+      // per 128-page vs 4 at page 64; page_local_idx = tile*16/
+      // page_size), so no new kernel surface — only the admission.
+      // Windowless class (see the 512/64 branch's refusal note).
+      TORCH_CHECK(
+          !is_local,
+          "mx_paged_decode: window masking not compiled for the D=512 "
+          "full-attention class (gemma-4-31b full_attention layers carry "
+          "sliding_window=None; a windowed D=512 model needs the masked "
+          "twin instantiated first)");
+      dispatch_fmt(qgroup, _512{}, _16{}, std::false_type{});
     } else {
       TORCH_CHECK(
           false,
@@ -475,7 +494,8 @@ void cutlass_mx_paged_decode_xe2(
           head_size,
           " page=",
           block_size,
-          " (compiled: 128/16, 256/16, 256/64-via-_16, 512/64-via-_16)");
+          " (compiled: 128/16, 256/16, 256/64-via-_16, 512/64, "
+          "512/128-via-_16)");
     }
   };
   TORCH_CHECK(

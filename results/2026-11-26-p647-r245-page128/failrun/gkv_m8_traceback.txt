@@ -1,0 +1,33 @@
+693-(Worker_TP0 pid=807) ERROR 11-26 06:46:20 [multiproc_executor.py:1055]     return self._op(*args, **kwargs)
+694-(Worker_TP0 pid=807) ERROR 11-26 06:46:20 [multiproc_executor.py:1055]            ^^^^^^^^^^^^^^^^^^^^^^^^^
+695:(Worker_TP0 pid=807) ERROR 11-26 06:46:20 [multiproc_executor.py:1055] RuntimeError: mx_paged_decode: block_size 128 not yet compiled (arc7 covers page 16/64)
+696-(Worker_TP0 pid=807) ERROR 11-26 06:46:20 [multiproc_executor.py:1055] Traceback (most recent call last):
+697-(Worker_TP0 pid=807) ERROR 11-26 06:46:20 [multiproc_executor.py:1055]   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/executor/multiproc_executor.py", line 1047, in _execute_worker_rpc
+698-(Worker_TP0 pid=807) ERROR 11-26 06:46:20 [multiproc_executor.py:1055]     output = func(*args, **kwargs)
+699-(Worker_TP0 pid=807) ERROR 11-26 06:46:20 [multiproc_executor.py:1055]              ^^^^^^^^^^^^^^^^^^^^^
+700-(Worker_TP0 pid=807) ERROR 11-26 06:46:20 [multiproc_executor.py:1055]   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/worker/worker_base.py", line 375, in execute_model
+701-(Worker_TP0 pid=807) ERROR 11-26 06:46:20 [multiproc_executor.py:1055]     return self.worker.execute_model(scheduler_output)
+702-(Worker_TP0 pid=807) ERROR 11-26 06:46:20 [multiproc_executor.py:1055]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+703-(Worker_TP0 pid=807) ERROR 11-26 06:46:20 [multiproc_executor.py:1055]   File "/opt/venv/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+704-(Worker_TP0 pid=807) ERROR 11-26 06:46:20 [multiproc_executor.py:1055]     return func(*args, **kwargs)
+705-(Worker_TP0 pid=807) ERROR 11-26 06:46:20 [multiproc_executor.py:1055]            ^^^^^^^^^^^^^^^^^^^^^
+706-(Worker_TP0 pid=807) ERROR 11-26 06:46:20 [multiproc_executor.py:1055]   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/worker/gpu_worker.py", line 1416, in execute_model
+707-(Worker_TP0 pid=807) ERROR 11-26 06:46:20 [multiproc_executor.py:1055]     output = self.model_runner.execute_model(
+708-(Worker_TP0 pid=807) ERROR 11-26 06:46:20 [multiproc_executor.py:1055]              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+709-(Worker_TP0 pid=807) ERROR 11-26 06:46:20 [multiproc_executor.py:1055]   File "/opt/venv/lib/python3.12/site-packages/vllm_gaudi/xpu/patches/graph_safe_output.py", line 876, in _arc_execute_model
+710-(Worker_TP0 pid=807) ERROR 11-26 06:46:20 [multiproc_executor.py:1055]     out = orig_exec(self, *args, **kwargs)
+711-(Worker_TP0 pid=807) ERROR 11-26 06:46:20 [multiproc_executor.py:1055]           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+712-(Worker_TP0 pid=807) ERROR 11-26 06:46:20 [multiproc_executor.py:1055]   File "/opt/venv/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+713-(Worker_TP0 pid=807) ERROR 11-26 06:46:20 [multiproc_executor.py:1055]     return func(*args, **kwargs)
+714-(Worker_TP0 pid=807) ERROR 11-26 06:46:20 [multiproc_executor.py:1055]            ^^^^^^^^^^^^^^^^^^^^^
+715-(Worker_TP0 pid=807) ERROR 11-26 06:46:20 [multiproc_executor.py:1055]   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/worker/gpu/model_runner.py", line 1948, in execute_model
+716-(Worker_TP0 pid=807) ERROR 11-26 06:46:20 [multiproc_executor.py:1055]     model_output = self.model(**model_inputs)
+717-(Worker_TP0 pid=807) ERROR 11-26 06:46:20 [multiproc_executor.py:1055]                    ^^^^^^^^^^^^^^^^^^^^^^^^^^
+718-(Worker_TP0 pid=807) ERROR 11-26 06:46:20 [multiproc_executor.py:1055]   File "/opt/venv/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+719-(Worker_TP0 pid=807) ERROR 11-26 06:46:20 [multiproc_executor.py:1055]     return self._call_impl(*args, **kwargs)
+720-(Worker_TP0 pid=807) ERROR 11-26 06:46:20 [multiproc_executor.py:1055]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+721-(Worker_TP0 pid=807) ERROR 11-26 06:46:20 [multiproc_executor.py:1055]   File "/opt/venv/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+722-(Worker_TP0 pid=807) ERROR 11-26 06:46:20 [multiproc_executor.py:1055]     return forward_call(*args, **kwargs)
+723-(Worker_TP0 pid=807) ERROR 11-26 06:46:20 [multiproc_executor.py:1055]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+724-(Worker_TP0 pid=807) ERROR 11-26 06:46:20 [multiproc_executor.py:1055]   File "/opt/venv/lib/python3.12/site-packages/vllm/model_executor/models/gemma4_mm.py", line 2142, in forward
+725-(Worker_TP0 pid=807) ERROR 11-26 06:46:20 [multiproc_executor.py:1055]     hidden_states = self.language_model.model(
