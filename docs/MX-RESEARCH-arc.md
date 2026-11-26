@@ -65,24 +65,24 @@ That asymmetry defines the whole mixed-lane space:
 | mxk8v4 | e4m3 / e2m1 | parity (V-side free) | V-half | **certified** (r245: 18.7 tps @ 1K n1, pool 71,856) |
 | mxfp4 | e2m1 / e2m1 | −10 % class | both halves | **certified with known acceptance cost** (r238) |
 | mxfp8 | e4m3 / e4m3 | parity | none (1.0×) | **certified** (r234–r237) |
-| **k4v8** | e2m1 / e4m3 | −10 % class (K-side cost) | K-half | **open candidate** — capacity-for-acceptance trade; the r238 cost estimate prices it |
+| **k4v8** | e2m1 / e4m3 | −10 % class (K-side cost) | **none — byte-identical to mxk8v4 at every D** (r250) | **closed-dominated** (r250: no face where it can beat mxk8v4) |
 | k4v4 | e2m1 / e2m1 | −10 % class | both | == mxfp4 (same operands) — covered |
 
 ## 5. Ranked open candidates (feeds the improvement loop)
 
-1. **k4v8 KV lane** — the named frontier: half the K bytes (K-side
-   capacity headroom at deep context) priced at the measured r238
-   acceptance cost. Offline oracle first (corruption bands), then the
-   e2e acceptance battery (draft-lane-invariant, verify-side is not).
-2. **group-64 E8M0 reach** — halves scale bytes everywhere (weights +
+1. **group-64 E8M0 reach** — halves scale bytes everywhere (weights +
    KV); offline oracle first; acceptance probe mandatory (coarser
-   scales, K-side risk).
-3. **mxfp4-W4A8 weights lane** — the op ships (`fp4_gemm_w4a8`), the
+   scales, K-side risk — the same operand the r250 disposition
+   convicts).
+2. **mxfp4-W4A8 weights lane** — the op ships (`fp4_gemm_w4a8`), the
    lane is hardware-legal per the xe2 verdict; activation quant is
    per-token (not per-call group-32) so the p630 tax class does not
    apply. Measure decode + ITL vs W4A16 at 8K–128K.
-4. per-channel E8M0 / per-head KV scales — marginal; offline-oracle
-   only if 1–3 leave headroom.
+3. per-channel E8M0 / per-head KV scales — marginal; offline-oracle
+   only if 1–2 leave headroom.
+
+(The former #1 — the k4v8 KV lane — closed dominated at P-I r250;
+see §6.)
 
 Post-cert29 rungs by default (§10 gates first); nothing here blocks
 the cert29 cut — every blocking issue is closed (P-C kernel, P-D
@@ -90,6 +90,16 @@ gate).
 
 ## 6. Closed channels (with the reason)
 
+- k4v8 KV lane (P-I r250, 2026-11-26): dominated by certified
+  mxk8v4 — slot bytes are symmetric in the K/V width mix, so k4v8 is
+  byte-identical at every D (200/400/800 B at 128/256/512 — the
+  r247 lever map's "K-half capacity" framing was the slip); it pays
+  the twice-convicted e2m1 K (r238 acceptance −10%/step; cert24
+  gate run1: the one REAL quality-limit failure, essay REP-LOOP
+  under churn) on the only axis that gates, to upgrade the operand
+  two batteries measured quality-free (e2m1 V: r238 sub-noise, r245
+  full grid). Zero rig time — banked evidence + arithmetic.
+  `results/2026-11-26-p647-pi-r250-k4v8-disposition/`.
 - torchao branch: absent from the pinned image + scope law.
 - W8A16: measured decode dud.
 - W4A4: measured inferior (per-call activation quant).
