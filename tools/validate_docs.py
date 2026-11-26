@@ -31,6 +31,7 @@ FORK_DOCS = [
     "docs/TESTING-arc.md",
     "docs/MIGRATION-arc.md",
     "docs/PATCHES-arc.md",
+    "docs/MX-RESEARCH-arc.md",
     "docs/envs.md",
     "docs/release_notes.md",
     "docs/history/STATUS_HISTORY.md",

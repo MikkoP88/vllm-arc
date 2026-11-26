@@ -12,6 +12,29 @@ the fork SHA it was built from.
 Phase labels P0–P6.38 refer to the plan's execution phases; every phase's
 raw evidence is banked under `results/YYYY-MM-DD-<phase>-*/`.
 
+## r247 — P-E MX deep-research: the pinned-stack MX lever map (2026-11-26)
+
+The P-E deliverable, `docs/MX-RESEARCH-arc.md`: every model-weights-side
+and KV-side MX lever mapped against (a) its **existence proof in the
+pinned stack** (the r247 census — CPU-safe, W14 untouched), (b) its
+**Xe2 hardware mapping** (BMG-G31: no native FP8/MX dot, counter-operand
+conversion only), (c) lawful scope, (d) disposition, (e) verified
+evidence pointer. Bank: `results/2026-11-26-p647-r247-mx-surface/`.
+
+Census facts: torch `2.13.0+xpu` ships every MX dtype (incl.
+`float8_e8m0fnu`, packed `float4_e2m1fn_x2`) and a public
+`scaled_mm` recipe API with 4 XPU dispatch entries — but **zero
+aten-level MX format ops** and **no torchao**; the de-facto MX compute
+lanes are the fork's own C-ext ops and the mx_kv wheel kernels.
+
+Ranked open candidates (post-cert29, none block the cut): **k4v8 KV**
+(K-side capacity at the measured r238 acceptance cost — e2m1 K ~-10 %,
+e2m1 V free), **group-64 E8M0**, **mxfp4-W4A8** (the op ships; the old
+refusal was our dispatch default, not hardware). Closed with reasons:
+torchao (absent), W8A16 (measured dud), W4A4 (per-call quant tax),
+torch `scaled_mm` as vehicle (beaten by the dedicated ops at our
+shapes), int4-KV (reference), torch/oneCCL upgrades (negative verdict).
+
 ## r246 — P-D LMC x MX boot gate: the r240b posture confound made structural (2026-11-26)
 
 The engine itself now refuses the posture every r240b death shared:
