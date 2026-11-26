@@ -70,19 +70,24 @@ That asymmetry defines the whole mixed-lane space:
 
 ## 5. Ranked open candidates (feeds the improvement loop)
 
-1. **group-64 E8M0 reach** — halves scale bytes everywhere (weights +
-   KV); offline oracle first; acceptance probe mandatory (coarser
-   scales, K-side risk — the same operand the r250 disposition
-   convicts).
-2. **mxfp4-W4A8 weights lane** — the op ships (`fp4_gemm_w4a8`), the
+1. **mxfp4-W4A8 weights lane** — the op ships (`fp4_gemm_w4a8`), the
    lane is hardware-legal per the xe2 verdict; activation quant is
    per-token (not per-call group-32) so the p630 tax class does not
    apply. Measure decode + ITL vs W4A16 at 8K–128K.
-3. per-channel E8M0 / per-head KV scales — marginal; offline-oracle
-   only if 1–2 leave headroom.
+2. per-channel E8M0 / per-head KV scales — marginal; offline-oracle
+   only if 1 leaves headroom.
 
-(The former #1 — the k4v8 KV lane — closed dominated at P-I r250;
-see §6.)
+(Group-64 E8M0 — the former #1 — closed DEFERRED at P-I r251 with
+the band measured: e4m3/K ratio 1.000 at every population including
+adversarial (the float RN error is scale-free; e4m3's floor never
+binds), e2m1/V +3–18 % rmse worst-case with the cost landing on the
+r238 acceptance-free operand; weights side vendor-locked (PWAL
+[k/32, n], OCP MX block); capacity +2.0 % on the champion lane with
+no pool-binding target face, and the wiring surface is exactly the
+P-H2-validated interop code cert29 freezes. Reopen on any qwen
+pool-binding face; the band is the enabling evidence.
+`results/2026-11-26-p647-pi-r251-group64-band/`. The former #1
+before that — k4v8 — closed dominated at P-I r250; see §6.)
 
 Post-cert29 rungs by default (§10 gates first); nothing here blocks
 the cert29 cut — every blocking issue is closed (P-C kernel, P-D
