@@ -14,14 +14,20 @@
 # VLLM_ARC_LMC_MX_GATE=0 bypass logs gate=bypassed; the stock
 # None-config ValueError intact; idempotent second _install.
 # The serve-path proof (gate files overlaid, real MX boot + faces)
-# rides the P-D e2e leg after serve_arc_b70.sh gains the env-optional
-# P-D file mounts (NOT editable while the r245 grid is live).
+# rides the P-D e2e leg (r246b) over the serve script's ARC_PD_*
+# mounts (applied 2026-11-26 13:09Z).
 # Ship step (separate ssh call, md5-verified both sides) stages the
 # four files at /root/build/p246/stage BEFORE this runner starts:
 #   platform.py            0733f0b8c7dd2fb89422bafa56ec35f5
 #   envs.py                31ca4ac7cfcd996aed6446d4b24c2bcd
 #   lmc_mx_boot_gate.py    1267b826a214953c9e7130e804f615f5
-#   p246_lmc_gate_probe.py 088532bac686fcfca2bbcf2ad9f88564
+#   p246_lmc_gate_probe.py a17b96ee2756aae3db8f2c8decf771e3 (rev 2)
+# RUN 1 (rev 1, 2026-11-26 13:10:59Z): gate core green on the real
+# factory (refusal x3 dtypes, wiring, idempotence, stock behavior);
+# 4 face FAILs were stub gaps (stock create_connector reads
+# config.scheduler_config; real get_connector_class reads
+# kv_connector_module_path) -- rev 2 adds the stub attrs. Run-1 log
+# preserved in the r246 rig logs.
 # (branch blob md5s at 71ff9cb4). W14 quiesce before, trap restore
 # after (r24x law). Artifacts -> /root/build/p246/{out,logs}.
 # Exit 0 = P-D probe PASS.
@@ -35,7 +41,7 @@ declare -A MD5=( \
   [platform.py]=0733f0b8c7dd2fb89422bafa56ec35f5 \
   [envs.py]=31ca4ac7cfcd996aed6446d4b24c2bcd \
   [lmc_mx_boot_gate.py]=1267b826a214953c9e7130e804f615f5 \
-  [p246_lmc_gate_probe.py]=088532bac686fcfca2bbcf2ad9f88564 )
+  [p246_lmc_gate_probe.py]=a17b96ee2756aae3db8f2c8decf771e3 )
 
 for f in platform.py envs.py lmc_mx_boot_gate.py p246_lmc_gate_probe.py; do
   [ -f "$SP/$f" ] || { echo "R246_NO_STAGED_FILE $f (run the ship step)"; exit 1; }

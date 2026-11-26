@@ -8,8 +8,18 @@ Runs INSIDE the cert image with the three P-D files overlaid
 offline.sh mounts them over site-packages). No engine boot: the gate
 fires at connector construction, so the probe drives the REAL wiring
 (platform _install_wheel_hooks -> meta-path finder -> factory import
--> exec-wrap -> KVConnectorFactory.create_connector wrap) and proves
-ten faces:
+-> exec-wrap -> KVConnectorFactory.create_connector wrap).
+
+RUN 1 (rev 1, 2026-11-26 13:10:59Z, preserved in the r246 rig logs):
+the gate's core PROVEN on the real factory -- hook fired, refusal
+green over all three MX dtypes, stock None-config intact, idempotence
+green. 4 FAILs were probe-stub gaps, not gate defects: the stock
+create_connector reads config.scheduler_config (the HMA check) and
+the real get_connector_class reads kv_transfer_config.
+kv_connector_module_path -- both missing from the rev-1 stubs. Rev 2
+adds the two stub attrs (disable_hybrid_kv_cache_manager=True keeps
+the stock HMA refuse off the pass-through path; module_path=None
+routes the real registry loader).
 
   A_fired        the hook fired on the real factory (marker on the
                  wrapped create_connector __func__).
@@ -86,6 +96,8 @@ class _StubNixl(_Stub):
 class _KTC:  # kv_transfer_config stub
     def __init__(self, name: str) -> None:
         self.kv_connector = name
+        # the real get_connector_class reads this attr unconditionally
+        self.kv_connector_module_path = None
 
 
 class _CC:  # cache_config stub
@@ -93,9 +105,14 @@ class _CC:  # cache_config stub
         self.kv_cache_dtype = dt
 
 
-class _Cfg:  # VllmConfig stub (the gate reads two attrs)
+class _SC:  # scheduler_config stub (the stock HMA check reads it)
+    disable_hybrid_kv_cache_manager = True
+
+
+class _Cfg:  # VllmConfig stub (the gate + stock path attrs)
     def __init__(self, dt: str | None, name: str) -> None:
         self.cache_config = _CC(dt)
+        self.scheduler_config = _SC()
         self.kv_transfer_config = _KTC(name)
 
 
@@ -130,7 +147,7 @@ def main() -> int:  # noqa: C901 -- probe faces are one flat census
     def _ok(face: str, msg: str) -> None:
         print(f"[face {face}] ok {msg}")
 
-    print("== p246 LMC x MX boot-gate probe (rev 1)")
+    print("== p246 LMC x MX boot-gate probe (rev 2)")
 
     # ---- A: platform import + hook install + factory wrap ----------
     try:
