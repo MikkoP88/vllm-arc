@@ -10,16 +10,18 @@ fires at connector construction, so the probe drives the REAL wiring
 (platform _install_wheel_hooks -> meta-path finder -> factory import
 -> exec-wrap -> KVConnectorFactory.create_connector wrap).
 
-RUN 1 (rev 1, 2026-11-26 13:10:59Z, preserved in the r246 rig logs):
-the gate's core PROVEN on the real factory -- hook fired, refusal
-green over all three MX dtypes, stock None-config intact, idempotence
-green. 4 FAILs were probe-stub gaps, not gate defects: the stock
-create_connector reads config.scheduler_config (the HMA check) and
-the real get_connector_class reads kv_transfer_config.
-kv_connector_module_path -- both missing from the rev-1 stubs. Rev 2
-adds the two stub attrs (disable_hybrid_kv_cache_manager=True keeps
-the stock HMA refuse off the pass-through path; module_path=None
-routes the real registry loader).
+RUN HISTORY (logs preserved on the rig; each FAIL class was a
+probe-stub gap, never a gate defect):
+  run 1 (rev 1, 13:10:59Z): gate core PROVEN -- hook fired, refusal
+  green x3 dtypes, stock None-config intact, idempotence green;
+  stub gaps: config.scheduler_config (the stock HMA check) +
+  kv_connector_module_path (the real registry loader).
+  run 2 (rev 2, 13:14:50Z): 7/10 -- the two gaps closed, D_resolve
+  green (real registry -> LMCacheConnectorV1); last stub gap:
+  kv_transfer_config.engine_id (the stock logger.info). Rev 3 adds
+  it (scheduler_config.disable=True keeps the stock HMA refuse off
+  the pass-through path; module_path=None routes the real registry
+  loader).
 
   A_fired        the hook fired on the real factory (marker on the
                  wrapped create_connector __func__).
@@ -98,6 +100,8 @@ class _KTC:  # kv_transfer_config stub
         self.kv_connector = name
         # the real get_connector_class reads this attr unconditionally
         self.kv_connector_module_path = None
+        # the stock create_connector's logger.info reads it
+        self.engine_id = "p246-probe"
 
 
 class _CC:  # cache_config stub
@@ -147,7 +151,7 @@ def main() -> int:  # noqa: C901 -- probe faces are one flat census
     def _ok(face: str, msg: str) -> None:
         print(f"[face {face}] ok {msg}")
 
-    print("== p246 LMC x MX boot-gate probe (rev 2)")
+    print("== p246 LMC x MX boot-gate probe (rev 3)")
 
     # ---- A: platform import + hook install + factory wrap ----------
     try:
