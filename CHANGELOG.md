@@ -12,6 +12,32 @@ the fork SHA it was built from.
 Phase labels P0–P6.38 refer to the plan's execution phases; every phase's
 raw evidence is banked under `results/YYYY-MM-DD-<phase>-*/`.
 
+## r258 — the static audit closed + the content classes exonerated in the direct eager form: the crash needs the graph-replay or engine-state context (2026-11-27)
+
+The r258a static audit read the entire 118-tail native path
+(launcher → kernel → mainloop → reduce) and cleared every address /
+plan / reduce derivation for allocator-issued ids: the per-row walk
+`[k_block0, k_blocks)` covers only the real-id region of the block
+table, the staging/barrier structure is uniform per WG, and the
+reduce mirrors the kernel's clamp — the r243 past-the-end class is
+excluded on this path. r258b then replayed the crash step's six
+per-pool native calls DIRECTLY (no engine) on the cert29 wheel,
+crossing the byte-exact banked crash tables (m8g + r257 literals +
+consecutive-fresh ctl) with the never-zeroed fresh-block bytes (zero /
+recycled / random / nanband) × 3 seeds — in the engine's exact form
+(Hk 8/2 per TP2, bt widths 640/320, `max_seqlen_k=40960`, both classes
+NATIVE: 256/64-via-_16 masked + 512/128-via-_16 windowless per the
+banked `window=-1` telemetry). **CLEAN: 36/36 cells, 216/216 calls
+OK, zero hangs/devlosts/resets** — fragmented id order and garbage
+pool bytes are exonerated in the direct eager form (run-1 of the leg
+was vacuous: a fmt-slot harness bug, banked as evidence). The
+triangulation now: graph-replay + suite state → crash (r257); graph +
+pristine state → clean (r257 minimal); eager + crash content → clean
+(r258b). The banked capture telemetry confirms `rows=118` is a captured
+bucket — the crash step rode an XPU-graph replay. Next: r259 = the
+suite replay with `ARC_GRAPH=0` (crash → engine-level state; clean →
+the graph replay is implicated → r260 offline graph-capture synthetic).
+
 ## r257 — the faithful replay: REPRODUCED with the dumps captured, the state delta isolated (suite-fragmented block walk, not the bytes) (2026-11-27)
 
 The decisive leg on `vllm-arc:v0.30.0-b70-cert29`: the ACTUAL
