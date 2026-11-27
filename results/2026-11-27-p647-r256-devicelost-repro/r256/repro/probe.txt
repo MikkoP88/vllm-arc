@@ -1,0 +1,5 @@
+CALIB tokenize=93 engine_prompt_tokens=93 MATCH
+FULL_MULTI_N 3493 (r255 crash prompt = 3446; a constant offset here shifts the tails uniformly -- the per-rung n records the actual)
+RUNG {"face": "multi", "tail": 118, "n": 3446, "fresh": {"ok": true, "dt": 2.9, "prompt_tok": 3446, "finish": "length", "head": "Okay, so I need to verifys thats the our our our our our"}, "resend": {"ok": true, "dt": 1.7, "prompt_tok": 3446, "finish": "length", "head": " our our our our our our our our our our our our our our our"}, "alive": true}
+LADDER_SURVIVED_ALL_RUNGS
+R256_PROBE_DONE

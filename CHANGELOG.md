@@ -12,6 +12,40 @@ the fork SHA it was built from.
 Phase labels P0–P6.38 refer to the plan's execution phases; every phase's
 raw evidence is banked under `results/YYYY-MM-DD-<phase>-*/`.
 
+## r256 — the DEVICE_LOST minimal repro: no crash under the ON-branch template, the repro gap exposed (the r255 request rode the enable_thinking OFF branch) (2026-11-27)
+
+The r255 open-defect repro leg on `vllm-arc:v0.30.0-b70-cert29`
+(gemma m8 crash posture, one boot per phase, a 2 s-cadence devcoredump
+watcher so the retention window cannot eat the dumps again). Two probe
+defects fixed en route (banked in `run1_probe_defects/`): the serve
+script remaps ARC_MODEL to the fixed in-container mount `/models/target`
+(the host dir name never appears), and the model dir ships NO chat
+template — a local AutoTokenizer can never see the engine's prompt
+stream. The fix: the count oracle is the server's own `POST /tokenize`
+(messages payload = the chat-completion preprocessing verbatim),
+runtime-calibrated `CALIB tokenize=93 engine_prompt_tokens=93 MATCH`.
+Run2 results — **all clean, zero DEVICE_LOST**: phase A (the exact
+r255 length, 3,446 tok, fresh + A/A resend), the tail bisect 24/48/
+63/64/65/96/118 (prefix held at 3,328 tok, every rung a real
+prefix-hit prefill pair, engine counts recorded), and the English
+content control at 3,446 tok. But the run EXPOSED the repro gap: the
+engine serves gemma with the QWEN template
+(`chat_template_qwen38_high.jinja` — GEMMA_NAT sets no ARC_TEMPLATE),
+the r255 probe sent every face with `chat_template_kwargs
+{"enable_thinking": False}` (the OFF branch), and this leg's requests
+carried no kwarg (the ON branch, a constant 47-token template delta —
+uncut multi = 3,493 ON vs 3,446 OFF). Phase A matched the r255 LENGTH
+by truncating under the wrong branch: same length, different bytes —
+the tail-prefill window never saw r255's content. The negative narrows
+the trigger to (a) the OFF-branch prompt bytes and/or (b) the
+suite-state allocator layout (the r255 multi rehit ran after the
+essay+code faces seeded the block table). The banked dmesg ring also
+hard-copies the r255 crash resets (ccs both GPUs 23:34:17/23:53:22/
+00:14:13 + bcs follow-ups) plus pre-gate resets on Nov 26 (04:51,
+13:19) as context. Next rung r257: the faithful replay — uncut text +
+the kwarg, then the actual `p647_longprobe.py` full suite on the same
+boot. Bank: `results/2026-11-27-p647-r256-devicelost-repro/`.
+
 ## r255/r255a — the cert29 section-10 gate: qwen side clean, P-C2 refusal green, gemma MX e2e DEVICE_LOST open (2026-11-27)
 
 The 10-leg battery on `vllm-arc:v0.30.0-b70-cert29` (fork_sha

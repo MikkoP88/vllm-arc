@@ -1,0 +1,4 @@
+CALIB tokenize=93 engine_prompt_tokens=93 MATCH
+FULL_ENGLISH_N 5895
+RUNG {"face": "english-control", "tail": 118, "n": 3446, "fresh": {"ok": true, "dt": 3.0, "prompt_tok": 3446, "finish": "length", "head": "Okay, I need to carefully read throughing the task our our o"}, "resend": {"ok": true, "dt": 1.7, "prompt_tok": 3446, "finish": "length", "head": " our our our our our our our our our our our our our our our"}, "alive": true}
+R256_PROBE_DONE
