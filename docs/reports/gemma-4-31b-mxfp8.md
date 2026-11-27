@@ -368,7 +368,7 @@ docker run -d --name arc-b70 \
   --privileged --network host --ipc host \
   --shm-size 16g \              # close-out F: 64 GB-RAM hosts
   -v /models/gemma4-31b:/models/target:ro \
-  -v <chat-template.json>:/root/chat_template.json:ro \
+  -v /root/v127_stage/chat_template_qwen38_high.jinja:/root/chat_template_qwen38_high.jinja:ro \
   -v ./neo_cache:/root/.neo_cache -v ./triton_cache:/root/.triton_cache \
   -v ./inductor_cache:/root/.inductor_cache \
   -e VLLM_ALLOW_LONG_MAX_MODEL_LEN=1 -e VLLM_WORKER_MULTIPROC_METHOD=spawn \
@@ -388,8 +388,7 @@ exec vllm serve --model /models/target \
   --kv-cache-dtype fp8_e4m3 \
   --mamba-ssm-cache-dtype float16 --mamba-cache-mode=align \
   --enable-prefix-caching --trust-remote-code \
-  --chat-template /root/chat_template.json \   # gemma: no qwen parsers
-  --no-disable-hybrid-kv-cache-manager \
+  --chat-template /root/chat_template_qwen38_high.jinja # banked posture: the qwen skin (tmpl=__qwen_default__ rp=<qwen3>); the gemma-skin lane is r266+, NOT this run\n  --no-disable-hybrid-kv-cache-manager \
   --compilation-config '{"mode":"none","cudagraph_mode":"FULL_DECODE_ONLY","cudagraph_capture_sizes":[1..320]}' \   # 64-size discipline, see wrapper
   --port 8000
 ```
@@ -413,7 +412,7 @@ docker run -d --name arc-b70 \
   --privileged --network host --ipc host \
   --shm-size 16g \              # close-out F: 64 GB-RAM hosts
   -v /models/gemma4-31b:/models/target:ro \
-  -v <chat-template.json>:/root/chat_template.json:ro \
+  -v /root/v127_stage/chat_template_qwen38_high.jinja:/root/chat_template_qwen38_high.jinja:ro \
   -v ./neo_cache:/root/.neo_cache -v ./triton_cache:/root/.triton_cache \
   -v ./inductor_cache:/root/.inductor_cache \
   -e VLLM_ALLOW_LONG_MAX_MODEL_LEN=1 -e VLLM_WORKER_MULTIPROC_METHOD=spawn \
@@ -433,8 +432,7 @@ exec vllm serve --model /models/target \
   --kv-cache-dtype fp8_e4m3 \
   --mamba-ssm-cache-dtype float16 --mamba-cache-mode=align \
   --enable-prefix-caching --trust-remote-code \
-  --chat-template /root/chat_template.json \   # gemma: no qwen parsers
-  --no-disable-hybrid-kv-cache-manager \
+  --chat-template /root/chat_template_qwen38_high.jinja # banked posture: the qwen skin (tmpl=__qwen_default__ rp=<qwen3>); the gemma-skin lane is r266+, NOT this run\n  --no-disable-hybrid-kv-cache-manager \
   --compilation-config '{"mode":"none","cudagraph_mode":"FULL_DECODE_ONLY","cudagraph_capture_sizes":[1..320]}' \   # 64-size discipline, see wrapper
   --port 8000
 ```
