@@ -126,3 +126,16 @@ surface, all offline-reproducible per the pageable-H2D capture law).
 
 W14 restored by the driver's health-aware trap (serve re-booted
 post-leg; health-200 verified before session end).
+
+## Correction addendum (r260 / r261, 2026-11-27)
+
+The exoneration claimed above is RETRACTED (r260): `make_table(tail=True)`
+placed the 18 windowed ids at columns 622..639 of the 640-wide table,
+while the kernel's window walk reads columns 36..53 — every cell read
+block 0 eighteen times and the real crash ids never entered the walk.
+The 36/36 CLEAN verdict exonerates only the mis-placed form. The graph
+replay is not a component either (r259: the eager suite crashes). The
+corrected real-walk replay (r261, 60/60 clean) and the static audit
+that followed — the synth path's stride-0 expand VIEW of one
+block-table row is the defect — are in
+`results/2026-11-27-p647-r261-realwalk-replay/VERDICT.md`.

@@ -1,0 +1,72 @@
+R261_HARNESS_MD5 71f12c947e1b77400029dbe0598911df  /root/build/p647/r261_realwalk_replay.py
+R261_IMAGE vllm-arc:v0.30.0-b70-cert29 cert29_fork_sha=16effb497cd36cb25df7c19cb6f1938d2d45cdc5
+=== [boot] arc-r261 on vllm-arc:v0.30.0-b70-cert29 (no serve; harness only) 05:54:38 ===
+R261_TORCH_OK 2.13.0+xpu True Intel(R) Graphics [0xe223]
+=== [matrix] 05:54:50 ===
+R261_START device=Intel(R) Graphics [0xe223] rows=118 cached=3328 w=1024 max_sk=40960 geom=256/64/hk8+512/128/hk2 walk=36..53
+R261_CELL table=m8g fill=zero seed=0 [f0=OK,w0=OK,w1=OK,w2=OK,w3=OK,w4=OK] dt=774ms
+R261_CELL table=m8g fill=zero seed=1 [f0=OK,w0=OK,w1=OK,w2=OK,w3=OK,w4=OK] dt=57ms
+R261_CELL table=m8g fill=zero seed=2 [f0=OK,w0=OK,w1=OK,w2=OK,w3=OK,w4=OK] dt=44ms
+R261_CELL table=m8g fill=recycled seed=0 [f0=OK,w0=OK,w1=OK,w2=OK,w3=OK,w4=OK] dt=4558ms
+R261_CELL table=m8g fill=recycled seed=1 [f0=OK,w0=OK,w1=OK,w2=OK,w3=OK,w4=OK] dt=4576ms
+R261_CELL table=m8g fill=recycled seed=2 [f0=OK,w0=OK,w1=OK,w2=OK,w3=OK,w4=OK] dt=4519ms
+R261_CELL table=m8g fill=random seed=0 [f0=OK,w0=OK,w1=OK,w2=OK,w3=OK,w4=OK] dt=12068ms
+R261_CELL table=m8g fill=random seed=1 [f0=OK,w0=OK,w1=OK,w2=OK,w3=OK,w4=OK] dt=12052ms
+R261_CELL table=m8g fill=random seed=2 [f0=OK,w0=OK,w1=OK,w2=OK,w3=OK,w4=OK] dt=12105ms
+R261_CELL table=m8g fill=nanband seed=0 [f0=OK,w0=OK,w1=OK,w2=OK,w3=OK,w4=OK] dt=53ms
+R261_CELL table=m8g fill=nanband seed=1 [f0=OK,w0=OK,w1=OK,w2=OK,w3=OK,w4=OK] dt=52ms
+R261_CELL table=m8g fill=nanband seed=2 [f0=OK,w0=OK,w1=OK,w2=OK,w3=OK,w4=OK] dt=57ms
+R261_CELL table=r257 fill=zero seed=0 [f0=OK,w0=OK,w1=OK,w2=OK,w3=OK,w4=OK] dt=44ms
+R261_CELL table=r257 fill=zero seed=1 [f0=OK,w0=OK,w1=OK,w2=OK,w3=OK,w4=OK] dt=44ms
+R261_CELL table=r257 fill=zero seed=2 [f0=OK,w0=OK,w1=OK,w2=OK,w3=OK,w4=OK] dt=43ms
+R261_CELL table=r257 fill=recycled seed=0 [f0=OK,w0=OK,w1=OK,w2=OK,w3=OK,w4=OK] dt=4572ms
+R261_CELL table=r257 fill=recycled seed=1 [f0=OK,w0=OK,w1=OK,w2=OK,w3=OK,w4=OK] dt=4551ms
+R261_CELL table=r257 fill=recycled seed=2 [f0=OK,w0=OK,w1=OK,w2=OK,w3=OK,w4=OK] dt=4542ms
+R261_CELL table=r257 fill=random seed=0 [f0=OK,w0=OK,w1=OK,w2=OK,w3=OK,w4=OK] dt=12052ms
+R261_CELL table=r257 fill=random seed=1 [f0=OK,w0=OK,w1=OK,w2=OK,w3=OK,w4=OK] dt=12093ms
+R261_CELL table=r257 fill=random seed=2 [f0=OK,w0=OK,w1=OK,w2=OK,w3=OK,w4=OK] dt=12065ms
+R261_CELL table=r257 fill=nanband seed=0 [f0=OK,w0=OK,w1=OK,w2=OK,w3=OK,w4=OK] dt=53ms
+R261_CELL table=r257 fill=nanband seed=1 [f0=OK,w0=OK,w1=OK,w2=OK,w3=OK,w4=OK] dt=52ms
+R261_CELL table=r257 fill=nanband seed=2 [f0=OK,w0=OK,w1=OK,w2=OK,w3=OK,w4=OK] dt=52ms
+R261_CELL table=v3 fill=zero seed=0 [f0=OK,w0=OK,w1=OK,w2=OK,w3=OK,w4=OK] dt=44ms
+R261_CELL table=v3 fill=zero seed=1 [f0=OK,w0=OK,w1=OK,w2=OK,w3=OK,w4=OK] dt=44ms
+R261_CELL table=v3 fill=zero seed=2 [f0=OK,w0=OK,w1=OK,w2=OK,w3=OK,w4=OK] dt=44ms
+R261_CELL table=v3 fill=recycled seed=0 [f0=OK,w0=OK,w1=OK,w2=OK,w3=OK,w4=OK] dt=4593ms
+R261_CELL table=v3 fill=recycled seed=1 [f0=OK,w0=OK,w1=OK,w2=OK,w3=OK,w4=OK] dt=4576ms
+R261_CELL table=v3 fill=recycled seed=2 [f0=OK,w0=OK,w1=OK,w2=OK,w3=OK,w4=OK] dt=4591ms
+R261_CELL table=v3 fill=random seed=0 [f0=OK,w0=OK,w1=OK,w2=OK,w3=OK,w4=OK] dt=12081ms
+R261_CELL table=v3 fill=random seed=1 [f0=OK,w0=OK,w1=OK,w2=OK,w3=OK,w4=OK] dt=12054ms
+R261_CELL table=v3 fill=random seed=2 [f0=OK,w0=OK,w1=OK,w2=OK,w3=OK,w4=OK] dt=12089ms
+R261_CELL table=v3 fill=nanband seed=0 [f0=OK,w0=OK,w1=OK,w2=OK,w3=OK,w4=OK] dt=53ms
+R261_CELL table=v3 fill=nanband seed=1 [f0=OK,w0=OK,w1=OK,w2=OK,w3=OK,w4=OK] dt=52ms
+R261_CELL table=v3 fill=nanband seed=2 [f0=OK,w0=OK,w1=OK,w2=OK,w3=OK,w4=OK] dt=52ms
+R261_CELL table=v4 fill=zero seed=0 [f0=OK,w0=OK,w1=OK,w2=OK,w3=OK,w4=OK] dt=46ms
+R261_CELL table=v4 fill=zero seed=1 [f0=OK,w0=OK,w1=OK,w2=OK,w3=OK,w4=OK] dt=46ms
+R261_CELL table=v4 fill=zero seed=2 [f0=OK,w0=OK,w1=OK,w2=OK,w3=OK,w4=OK] dt=47ms
+R261_CELL table=v4 fill=recycled seed=0 [f0=OK,w0=OK,w1=OK,w2=OK,w3=OK,w4=OK] dt=4558ms
+R261_CELL table=v4 fill=recycled seed=1 [f0=OK,w0=OK,w1=OK,w2=OK,w3=OK,w4=OK] dt=4532ms
+R261_CELL table=v4 fill=recycled seed=2 [f0=OK,w0=OK,w1=OK,w2=OK,w3=OK,w4=OK] dt=4579ms
+R261_CELL table=v4 fill=random seed=0 [f0=OK,w0=OK,w1=OK,w2=OK,w3=OK,w4=OK] dt=12076ms
+R261_CELL table=v4 fill=random seed=1 [f0=OK,w0=OK,w1=OK,w2=OK,w3=OK,w4=OK] dt=12049ms
+R261_CELL table=v4 fill=random seed=2 [f0=OK,w0=OK,w1=OK,w2=OK,w3=OK,w4=OK] dt=12108ms
+R261_CELL table=v4 fill=nanband seed=0 [f0=OK,w0=OK,w1=OK,w2=OK,w3=OK,w4=OK] dt=53ms
+R261_CELL table=v4 fill=nanband seed=1 [f0=OK,w0=OK,w1=OK,w2=OK,w3=OK,w4=OK] dt=52ms
+R261_CELL table=v4 fill=nanband seed=2 [f0=OK,w0=OK,w1=OK,w2=OK,w3=OK,w4=OK] dt=52ms
+R261_CELL table=ctl fill=zero seed=0 [f0=OK,w0=OK,w1=OK,w2=OK,w3=OK,w4=OK] dt=49ms
+R261_CELL table=ctl fill=zero seed=1 [f0=OK,w0=OK,w1=OK,w2=OK,w3=OK,w4=OK] dt=45ms
+R261_CELL table=ctl fill=zero seed=2 [f0=OK,w0=OK,w1=OK,w2=OK,w3=OK,w4=OK] dt=48ms
+R261_CELL table=ctl fill=recycled seed=0 [f0=OK,w0=OK,w1=OK,w2=OK,w3=OK,w4=OK] dt=4546ms
+R261_CELL table=ctl fill=recycled seed=1 [f0=OK,w0=OK,w1=OK,w2=OK,w3=OK,w4=OK] dt=4632ms
+R261_CELL table=ctl fill=recycled seed=2 [f0=OK,w0=OK,w1=OK,w2=OK,w3=OK,w4=OK] dt=4547ms
+R261_CELL table=ctl fill=random seed=0 [f0=OK,w0=OK,w1=OK,w2=OK,w3=OK,w4=OK] dt=11942ms
+R261_CELL table=ctl fill=random seed=1 [f0=OK,w0=OK,w1=OK,w2=OK,w3=OK,w4=OK] dt=12096ms
+R261_CELL table=ctl fill=random seed=2 [f0=OK,w0=OK,w1=OK,w2=OK,w3=OK,w4=OK] dt=12075ms
+R261_CELL table=ctl fill=nanband seed=0 [f0=OK,w0=OK,w1=OK,w2=OK,w3=OK,w4=OK] dt=53ms
+R261_CELL table=ctl fill=nanband seed=1 [f0=OK,w0=OK,w1=OK,w2=OK,w3=OK,w4=OK] dt=52ms
+R261_CELL table=ctl fill=nanband seed=2 [f0=OK,w0=OK,w1=OK,w2=OK,w3=OK,w4=OK] dt=52ms
+R261_DONE hangs=0 devlosts=0 cells=60 -> /root/r261_out.json
+-- hang/devlost cells:
+  (none)
+R261_BANK /root/build/p647/r261 (6 files)
+P647_R261_LEG_DONE -- bank ready for pull
+W14_RESTORED 2026-11-27T05:59:13Z

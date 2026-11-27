@@ -121,3 +121,19 @@ m8g/m4g/mkg → re-gate (r255-class) → the cert29 cut.
   watch.log.
 - `launch.log` — the rig-side driver log (the four boot/probe/
   verdict cycles + the W14 restore).
+
+## Correction addendum (r261, 2026-11-27)
+
+The V3 table row and the "V3 subtlety" section above are a
+misdescription. The bank (`r260/v3_multi_multi/probe.out` and its
+serve log) shows V3 = boot → warmup → ONE multi cold
+(`886716bff6e5`, a single full 3446-token forward, `mql=msl=3446`,
+the first-chunk flash path) → CRASH at the first multi rehit; the
+probe stops at the first error. There was no "clean rehit with the
+crash geometry", and the free-list-provenance inference drawn from
+it is retracted. All four variants crashed at the first multi rehit
+— the headline verdict stands. The cold-sha divergence is
+unexplained (a first-long-request-after-boot effect is the
+candidate). Details and the successor finding (the expand-view
+stride defect; r261/r262):
+`results/2026-11-27-p647-r261-realwalk-replay/VERDICT.md`.
