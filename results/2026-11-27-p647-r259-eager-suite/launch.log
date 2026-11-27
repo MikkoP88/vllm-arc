@@ -1,0 +1,24 @@
+R259_LONGPROBE_MD5 e452d0cee4016d1d8fef5fbb59a9ce4c  /root/build/p647/p647_longprobe.py
+R259_IMAGE vllm-arc:v0.30.0-b70-cert29 cert29_fork_sha=16effb497cd36cb25df7c19cb6f1938d2d45cdc5
+=== [boot] arc-r259 on vllm-arc:v0.30.0-b70-cert29 (gemma m8 posture, ARC_GRAPH=0 EAGER) 03:52:49 ===
+R259_HEALTH_OK 03:58:45
+mx_backend_lines=1
+native_lines=6
+pc2_windowed_impl=100
+lmcache_lines=0
+xpu_graph_lines=0
+tracebacks=0
+(EngineCore pid=529) INFO 11-27 03:57:18 [kv_cache_utils.py:2395] XPU KV cache size: 54,451 tokens, Maximum concurrency for 40,960 tokens per request: 1.33x
+=== [suite] the ACTUAL p647_longprobe full suite, EAGER engine 03:58:59 ===
+DEVICE_LOST=3
+TRACEBACK=4
+-- longprobe tail:
+[essay] t0_identical=False hashes=['5c80063c79a1', 'fc2dddcc7ce6', 'fc2dddcc7ce6'] garble={'cold': ['REP-LOOP'], 'rehit': ['REP-LOOP'], 'rehit2': ['REP-LOOP']} t1_seed_identical=True prompt_tok=2104 chars=[6154, 6157, 6157]
+[code] t0_identical=False hashes=['5c80063c79a1', 'fc2dddcc7ce6', 'fc2dddcc7ce6'] garble={'cold': ['REP-LOOP'], 'rehit': ['REP-LOOP'], 'rehit2': ['REP-LOOP']} t1_seed_identical=True prompt_tok=5433 chars=[6154, 6157, 6157]
+[multi] ERROR <HTTPError 500: 'Internal Server Error'>
+[simple] ERROR <HTTPError 500: 'Internal Server Error'>
+LONGPROBE p47r259 full: CORRUPTION_SIGNAL
+R259_EAGER_CRASHED (the suite reproduces WITHOUT graphs -- engine-level state; the graph mechanics are exonerated)
+R259_BANK /root/build/p647/r259 (16 files)
+P647_R259_LEG_DONE -- bank ready for pull
+W14_RESTORED 2026-11-27T04:22:10Z
