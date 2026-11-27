@@ -1,0 +1,126 @@
+R262_IMAGE vllm-arc:v0.30.0-b70-cert29 cert29_fork_sha=16effb497cd36cb25df7c19cb6f1938d2d45cdc5
+R262_OVERLAY_READY probe 3cb71429dcef172f450dedceb14617e19f1a5d52027eeb7bffefc0d19f7f728d b3dd3ab79a5fca8204778f9e8379017f90ffe479bc58afbcd32568f3f8e343d3 
+R262_OVERLAY_READY on 479d5b8621355eb2db23080142961095212ebc7491688ec909b8195b80edc499 0af13703df242ffdd30dc6c6b2c5a5eb585348278b22519e8928cbc27260ca77 
+R262_OVERLAY_READY off 479d5b8621355eb2db23080142961095212ebc7491688ec909b8195b80edc499 e43605aadefb4c87b4b5718e4eadd16b5be9d2e37d0e95afc90f00e245bf4efb 
+=== [boot] arc-r262 (gemma m8 posture, EAGER, overlay=probe) 08:29:46 ===
+R262_HEALTH_OK 08:35:42
+mode=probe overlay=/root/build/p647/r262_ov_probe
+-- host overlay:
+   3cb71429dcef172f450dedceb14617e19f1a5d52027eeb7bffefc0d19f7f728d
+   b3dd3ab79a5fca8204778f9e8379017f90ffe479bc58afbcd32568f3f8e343d3
+-- inside the container:
+   3cb71429dcef172f450dedceb14617e19f1a5d52027eeb7bffefc0d19f7f728d
+   b3dd3ab79a5fca8204778f9e8379017f90ffe479bc58afbcd32568f3f8e343d3
+R262_OVERLAY_MOUNTED mode=probe (byte-identical: 3cb71429dcef172f450dedceb14617e19f1a5d52027eeb7bffefc0d19f7f728d b3dd3ab79a5fca8204778f9e8379017f90ffe479bc58afbcd32568f3f8e343d3 )
+mx_backend_lines=1
+native_lines=6
+bridge_marker_lines=2
+bridge_mode_lines=2
+pc2_windowed_impl=100
+lmcache_lines=0
+graph_capture_lines=0
+eager_posture_lines=3
+tracebacks=0
+=== [a] overlay=probe faces: multi 08:35:56 ===
+DEVICE_LOST=0
+TRACEBACK=0
+-- [a] generations:
+R260_GEN face=multi phase=cold sha=07b7b69d1e6c chars=6129 finish=length prompt_tok=3446 dt=140.8
+R260_GEN face=multi phase=rehit sha=fc2dddcc7ce6 chars=6157 finish=length prompt_tok=3446 dt=139.0
+R260_GEN face=multi phase=rehit2 sha=fc2dddcc7ce6 chars=6157 finish=length prompt_tok=3446 dt=139.1
+R260_GEN face=multi phase=t1a sha=74616f540de4 chars=3085 finish=length prompt_tok=3446 dt=77.7
+R260_GEN face=multi phase=t1b sha=74616f540de4 chars=3085 finish=length prompt_tok=3446 dt=77.9
+R260_GEN face=multi phase=t1b sha=74616f540de4 chars=3085 finish=length prompt_tok=3446 dt=77.9
+[multi] class_complete shas=['07b7b69d1e6c', 'fc2dddcc7ce6', 'fc2dddcc7ce6', '74616f540de4', '74616f540de4']
+R260_DONE crashed=False faces=multi -> longprobe_seq_p47r262a.json
+-- [a] materializations=20 probe_calls=100 probe_rows=6500 beyond_rows=100
+R262_PHASE a status=0 gens=5/5 devlost=0 (0=clean 2=crash 3=incomplete 1=fail) 08:45:41
+=== [boot] arc-r262 (gemma m8 posture, EAGER, overlay=on) 08:45:53 ===
+R262_HEALTH_OK 08:51:49
+mode=on overlay=/root/build/p647/r262_ov_on
+-- host overlay:
+   479d5b8621355eb2db23080142961095212ebc7491688ec909b8195b80edc499
+   0af13703df242ffdd30dc6c6b2c5a5eb585348278b22519e8928cbc27260ca77
+-- inside the container:
+   479d5b8621355eb2db23080142961095212ebc7491688ec909b8195b80edc499
+   0af13703df242ffdd30dc6c6b2c5a5eb585348278b22519e8928cbc27260ca77
+R262_OVERLAY_MOUNTED mode=on (byte-identical: 479d5b8621355eb2db23080142961095212ebc7491688ec909b8195b80edc499 0af13703df242ffdd30dc6c6b2c5a5eb585348278b22519e8928cbc27260ca77 )
+mx_backend_lines=1
+native_lines=6
+bridge_marker_lines=2
+bridge_mode_lines=2
+pc2_windowed_impl=100
+lmcache_lines=0
+graph_capture_lines=0
+eager_posture_lines=3
+tracebacks=0
+=== [c] overlay=on faces: essay code multi simple multi 08:52:03 ===
+DEVICE_LOST=0
+TRACEBACK=0
+-- [c] generations:
+R260_GEN face=essay phase=cold sha=5c80063c79a1 chars=6154 finish=length prompt_tok=2104 dt=142.2
+R260_GEN face=essay phase=rehit sha=fc2dddcc7ce6 chars=6157 finish=length prompt_tok=2104 dt=141.1
+R260_GEN face=essay phase=rehit2 sha=fc2dddcc7ce6 chars=6157 finish=length prompt_tok=2104 dt=141.4
+R260_GEN face=essay phase=t1a sha=74616f540de4 chars=3085 finish=length prompt_tok=2104 dt=71.0
+R260_GEN face=essay phase=t1b sha=74616f540de4 chars=3085 finish=length prompt_tok=2104 dt=71.0
+R260_GEN face=code phase=cold sha=5c80063c79a1 chars=6154 finish=length prompt_tok=5433 dt=143.5
+R260_GEN face=code phase=rehit sha=fc2dddcc7ce6 chars=6157 finish=length prompt_tok=5433 dt=138.4
+R260_GEN face=code phase=rehit2 sha=fc2dddcc7ce6 chars=6157 finish=length prompt_tok=5433 dt=138.9
+R260_GEN face=code phase=t1a sha=74616f540de4 chars=3085 finish=length prompt_tok=5433 dt=77.2
+R260_GEN face=code phase=t1b sha=74616f540de4 chars=3085 finish=length prompt_tok=5433 dt=81.3
+R260_GEN face=multi phase=cold sha=5c80063c79a1 chars=6154 finish=length prompt_tok=3446 dt=161.9
+R260_GEN face=multi phase=rehit sha=fc2dddcc7ce6 chars=6157 finish=length prompt_tok=3446 dt=161.5
+R260_GEN face=multi phase=rehit2 sha=fc2dddcc7ce6 chars=6157 finish=length prompt_tok=3446 dt=146.3
+R260_GEN face=multi phase=t1a sha=74616f540de4 chars=3085 finish=length prompt_tok=3446 dt=69.7
+R260_GEN face=multi phase=t1b sha=74616f540de4 chars=3085 finish=length prompt_tok=3446 dt=69.7
+R260_GEN face=simple phase=cold sha=124ef8c98c7c chars=6155 finish=length prompt_tok=57 dt=137.4
+R260_GEN face=simple phase=rehit sha=124ef8c98c7c chars=6155 finish=length prompt_tok=57 dt=138.5
+R260_GEN face=simple phase=rehit2 sha=124ef8c98c7c chars=6155 finish=length prompt_tok=57 dt=137.4
+R260_GEN face=simple phase=t1a sha=4f6c814ca19a chars=3085 finish=length prompt_tok=57 dt=69.0
+R260_GEN face=simple phase=t1b sha=4f6c814ca19a chars=3085 finish=length prompt_tok=57 dt=69.7
+R260_GEN face=multi phase=cold sha=fc2dddcc7ce6 chars=6157 finish=length prompt_tok=3446 dt=150.8
+R260_GEN face=multi phase=rehit sha=fc2dddcc7ce6 chars=6157 finish=length prompt_tok=3446 dt=141.5
+R260_GEN face=multi phase=rehit2 sha=fc2dddcc7ce6 chars=6157 finish=length prompt_tok=3446 dt=141.5
+R260_GEN face=multi phase=t1a sha=74616f540de4 chars=3085 finish=length prompt_tok=3446 dt=71.3
+R260_GEN face=multi phase=t1b sha=74616f540de4 chars=3085 finish=length prompt_tok=3446 dt=71.5
+R260_GEN face=multi phase=t1b sha=74616f540de4 chars=3085 finish=length prompt_tok=3446 dt=71.5
+[multi] class_complete shas=['fc2dddcc7ce6', 'fc2dddcc7ce6', 'fc2dddcc7ce6', '74616f540de4', '74616f540de4']
+R260_DONE crashed=False faces=essay+code+multi+simple+multi -> longprobe_seq_p47r262c.json
+-- [c] materializations=20 probe_calls=0 probe_rows=0 beyond_rows=0
+R262_PHASE c status=0 gens=25/25 devlost=0 (0=clean 2=crash 3=incomplete 1=fail) 09:40:17
+=== [boot] arc-r262 (gemma m8 posture, EAGER, overlay=off) 09:40:29 ===
+R262_HEALTH_OK 09:46:24
+mode=off overlay=/root/build/p647/r262_ov_off
+-- host overlay:
+   479d5b8621355eb2db23080142961095212ebc7491688ec909b8195b80edc499
+   e43605aadefb4c87b4b5718e4eadd16b5be9d2e37d0e95afc90f00e245bf4efb
+-- inside the container:
+   479d5b8621355eb2db23080142961095212ebc7491688ec909b8195b80edc499
+   e43605aadefb4c87b4b5718e4eadd16b5be9d2e37d0e95afc90f00e245bf4efb
+R262_OVERLAY_MOUNTED mode=off (byte-identical: 479d5b8621355eb2db23080142961095212ebc7491688ec909b8195b80edc499 e43605aadefb4c87b4b5718e4eadd16b5be9d2e37d0e95afc90f00e245bf4efb )
+mx_backend_lines=1
+native_lines=6
+bridge_marker_lines=2
+bridge_mode_lines=2
+pc2_windowed_impl=100
+lmcache_lines=0
+graph_capture_lines=0
+eager_posture_lines=3
+tracebacks=0
+=== [b] overlay=off faces: multi 09:46:39 ===
+DEVICE_LOST=3
+TRACEBACK=4
+-- [b] generations:
+R260_GEN face=multi phase=cold sha=886716bff6e5 chars=6131 finish=length prompt_tok=3446 dt=143.3
+R260_GEN face=multi phase=rehit ERROR <HTTPError 500: 'Internal Server Error'>
+R260_GEN face=multi phase=rehit ERROR <HTTPError 500: 'Internal Server Error'>
+[multi] ERROR at phase=rehit: <HTTPError 500: 'Internal Server Error'>
+R260_DONE crashed=True faces=multi -> longprobe_seq_p47r262b.json
+-- [b] materializations=0 probe_calls=0 probe_rows=0 beyond_rows=0
+R262_PHASE b status=2 gens=2/5 devlost=3 (0=clean 2=crash 3=incomplete 1=fail) 09:49:13
+R262_BANK /root/build/p647/r262 (60 files)
+R262_SUMMARY a_probe=0 c_suite=0 b_ctrl=2 (0=clean 2=crash 3=incomplete 1=fail)
+W14_BOOT_HANG 2026-11-27T09:58:31Z (no health 9 min after start + serve; one container restart)
+W14_RESTORE_FAIL 2026-11-27T10:07:44Z
+W14_FINAL rc=1
+P647_R262_LEG_DONE -- bank ready for pull

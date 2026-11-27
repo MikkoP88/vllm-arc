@@ -184,3 +184,35 @@ Fix proven → land it in the tree → re-leg m8g/m4g/mkg → re-gate
 - `launch.log` — the driver log (matrix + W14 restore line).
 - `w14_hang/` — the W14 boot-hang evidence (threads.txt, dmesg.txt,
   serve_posture.log).
+
+## Correction addendum (r262, 2026-11-27)
+
+The e2e A/B ran (r262,
+`results/2026-11-27-p647-r262-expandview-ab/VERDICT.md`): with the
+bridge materializing the expand view, 30/30 generations are clean
+including all 13 attempts of the 118-row multi rehit; with a
+marker-only overlay the same boot-to-rehit sequence crashes again.
+The stride defect found by the static audit above IS the crash, and
+the bridge guard IS the fix. Four statements above are corrected:
+
+- **"the five windowed layers" / "five windowed pools"** — there are
+  fifty windowed layers in five windowed KV-cache groups; "five" is
+  the number of block tables (the probe's 50 classes per rank).
+- **"Rehit outputs are expected to change once the fix lands"** —
+  RETRACTED. Fifteen comparable ride classes are byte-identical
+  across the fix: on these faces the temp-0 continuation collapses
+  to the same attractor for three different prompts, so the output
+  sha cannot see whether windowed attention was live on the
+  continuation rows. Only the crash exposed the defect.
+- **"Still open (r262 decides)"** — the bytes past the table remain
+  UNREAD (torch's storage-bounds check refuses the over-read; the
+  probe logged `READ_FAILED` for row 64 in all 100 calls), and the
+  r257 minimal pair is shown to have survived the SAME 118-row synth
+  ride — a ride past the table is fatal only depending on the bytes
+  it lands in.
+- **The W14 hang section above** ("a plain start + serve does not
+  clear it; `docker restart` + relaunch does") — superseded: the
+  hang is a stale JIT build lock in a per-PID `/tmp` directory; the
+  restart worked only because diagnostic `docker exec`s had bumped
+  the pid counter. Root cause, evidence and the scripted remedy are
+  in the r262 bank (`w14_hang/`, `tools/ar/r262_w14_restore.sh`).

@@ -8,8 +8,9 @@ The engine's split-row plan already holds exactly the kernel's contract:
 one row per (request, draft-token) with its own causal limit and block
 table. The vendor decode kernel models each row as its own one-query
 "sequence": cu_seqlens_q = arange(R+1), seqused_k = the per-row limits,
-block_table = the per-row gathered tables (the vendor flow passes
-seqused_k in the cu_seqlens_k slot). All ops here are device ops — the
+block_table = the per-row gathered tables, at a contiguous row pitch (a
+stride-0 expand VIEW is materialized here -- r262 stride law; the vendor
+flow passes seqused_k in the cu_seqlens_k slot). All ops here are device ops — the
 bridge runs inside XPU-graph capture with the plan (capture law: no
 pageable H2D, no host reads of device tensors; max_seqlen_k comes from
 the metadata's host-known field).
@@ -36,6 +37,9 @@ _mx_paged_decode = None
 # (decode replays never re-run this python), so the serve log carries
 # exactly the bucket classes the engine froze and their walk bounds.
 _telemetry_logged: set[tuple] = set()
+# r262 stride law (2026-11-27): one line per (row pitch, pool) class
+# whenever a caller hands in a block-table VIEW the wheel cannot address.
+_bt_law_logged: set[tuple[int, int]] = set()
 
 
 def _load():
@@ -76,6 +80,37 @@ def mx_decode_native(
     """
     mx_paged_decode = _load()
     n_rows = q_rows.shape[0]
+    # r262 stride law (2026-11-27, P6.47 gemma DEVICE_LOST; e2e A/B
+    # results/2026-11-27-p647-r262-expandview-ab): the wheel takes the
+    # block table as data_ptr + size(1) and addresses row r at
+    # r * max_pages_per_seq (mx_paged_decode_xe2.cpp,
+    # mx_paged_decode_mainloop.hpp) -- a CONTIGUOUS pitch. The engine's
+    # windowed continuation-prefill synth path passes
+    # bt_row.expand(q_len, -1): stride (0, 1). Unmaterialized, rows 1..63
+    # read the persistent table's zeroed rows (block 0: windowed attention
+    # silently off on those rows) and rows >= 64 read PAST the table as
+    # block ids -- the 118-row multi rehit hung the GPU at every suite
+    # attempt (DEVICE_LOST, r255-r260; fatal or not depends on the bytes
+    # the over-read lands in). The Triton lanes are stride-aware, so only
+    # this lane needs the normalization. is_contiguous() is a metadata
+    # check and the copy a device op (capture-safe); a size-1 row dim is
+    # contiguous by definition and the decode/split-row tables are
+    # gathered contiguous, so only a multi-row expand view ever copies.
+    if not bt_rows.is_contiguous():
+        _pitch = int(bt_rows.stride(0))
+        bt_rows = bt_rows.contiguous()
+        _lkey = (_pitch, int(kv_cache.data_ptr()))
+        if _lkey not in _bt_law_logged:
+            _bt_law_logged.add(_lkey)
+            logging.getLogger("vllm.mx_native").info(
+                "MXKV native bt materialized: rows=%d bt_width=%d stride0=%d "
+                "pool=0x%x (r262 stride law: the wheel addresses rows at a "
+                "contiguous pitch)",
+                n_rows,
+                int(bt_rows.shape[1]),
+                _pitch,
+                int(kv_cache.data_ptr()),
+            )
     # each row is its own one-query "sequence" (device fill — capture-safe)
     cu_q = torch.arange(n_rows + 1, device=q_rows.device, dtype=torch.int32)
     # the certified engine boots fp16 activations (qwen3.8-27b-fp8 posture,

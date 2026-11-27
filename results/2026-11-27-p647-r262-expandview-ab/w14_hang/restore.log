@@ -1,0 +1,8 @@
+removed /tmp/iexp_host_view_561
+removed /tmp/iexp_host_view_562
+W14_STALE_BATON_DIRS_REMOVED=2
+W14_GPU_MEM_BEFORE_BOOT dev0=43MiB dev1=43MiB
+W14_SERVE_LAUNCHED 2026-11-27T12:50:00Z log=/root/build/logs/w14_restore_20261127_124943/w14_serve_only.out
+W14_HEALTH_OK 2026-11-27T12:54:41Z
+W14_GEN_OK text=" Helsinki, which is also the country's" finish=length
+W14_FINAL rc=0 evidence=/root/build/logs/w14_restore_20261127_124943

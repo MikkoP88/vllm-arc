@@ -117,3 +117,17 @@ recycled-content class from the fresh-block path).
   devcores/ (2 dumps: both cards), SHA256SUMS.
 - `launch.log` — the rig-side driver log (refuses, image identity,
   the W14 stop/restore cycle).
+
+## Marker-audit addendum (r262, 2026-11-27)
+
+The `xpu_graph_lines=0` line above ("the DELTA evidence") is
+VACUOUS: the driver's count helper took `-i` as its pattern and
+never ran the regex, so the marker was 0 on every input. The eager
+posture of this leg is nonetheless proven by its own serve log
+(`r259/serve.log`): zero capture lines, three `graph posture
+cudagraph_mode=NONE capture_sizes=None` lines and four
+`VLLM_XPU_ENABLE_XPU_GRAPH=False` lines. The verdict (eager + suite
+state = crash) stands on that evidence. Successor drivers use two
+discriminating markers instead — `graph_capture_lines` (must be 0)
+and `eager_posture_lines` (must be >= 1). The cause of the crash is
+found in `results/2026-11-27-p647-r262-expandview-ab/VERDICT.md`.
