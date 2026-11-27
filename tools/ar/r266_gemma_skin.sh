@@ -36,13 +36,13 @@
 #   c2_fa2off_29 cert29 b2 + ARC_ATTN_FA2=0 (pure-triton attention)
 #
 # Laws this runner encodes:
-#   - OWNER DIRECTIVE (2026-11-28): NO qwen env or env value on ANY gemma
-#     boot. There is deliberately NO qwen-skin leg and no SKIN_QWEN: the
-#     r264 bank (results/2026-11-27-p647-cert29-gate-r264) already holds the
-#     qwen-posture serving evidence on cert29. The qwen template below is a
-#     PROBE INPUT ONLY -- the format-sensitivity diagnostic (raw/NLL rows
-#     labeled format=qwen) that quantifies how alien that format is to this
-#     engine; it is never mounted on a gemma boot.
+#   - OWNER DIRECTIVE (2026-11-28, raised twice): NO qwen env, env value,
+#     template or parser touches ANY gemma test -- not even as a probe input
+#     or a shipped file. Mixing the qwen skin into gemma testing is forbidden
+#     outright; where a gemma template/parser cannot be found, the env is
+#     REMOVED, never substituted. This runner ships and renders GEMMA
+#     templates only (P6.28 + official google/gemma-4-31B-it), and the probe
+#     refuses (P266_REFUSE_SERVED_TEMPLATE_ABSENT) rather than substitute.
 #   - parsers are a measured variable, not a default: every b2-derived leg
 #     boots with NO parser flags at all (the cert12-cert19 posture; the owner
 #     hypothesis is that most gemma tests need none). Only the optional b3
@@ -67,7 +67,6 @@ SERVED=gemma4-31b
 IMG29=vllm-arc:v0.30.0-b70-cert29
 IMG20=vllm-arc:v0.30.0-b70-cert20
 IMG19=vllm-arc:v0.30.0-b70-cert19
-T_QWEN=$R0/v127_stage/chat_template_qwen38_high.jinja
 T_G3=$R0/chat_template_gemma4.jinja
 T_G4=$R/chat_template_gemma4_official.jinja
 
@@ -202,7 +201,7 @@ preflight() {
   fi
   (cd $R && md5sum -c --quiet md5.txt) || refuse "R266_SHIP_MD5_FAIL"
   local f
-  for f in "$T_QWEN:$R/chat_template_qwen38_high.jinja" "$T_G3:$R/chat_template_gemma4.jinja" "$T_G4:$R/chat_template_gemma4_official.jinja"; do
+  for f in "$T_G3:$R/chat_template_gemma4.jinja" "$T_G4:$R/chat_template_gemma4_official.jinja"; do
     cmp -s "${f%%:*}" "${f##*:}" || refuse "R266_TEMPLATE_MISMATCH ${f%%:*} != ${f##*:}"
   done
   [ -f $R0/r113_battery.py ] && [ -f $R0/r262_w14_restore.sh ] || refuse "R266_NO_HELPER"
@@ -211,7 +210,7 @@ preflight() {
     docker image inspect "$i" >/dev/null 2>&1 || refuse "R266_NO_IMAGE $i"
   done
   echo "R266_PREFLIGHT_OK $(date -u +%Y-%m-%dT%H:%M:%SZ) bank=$P legs=[$LEGS]"
-  md5sum $R/serve_arc_b70.sh $R/p266_matrix_probe.py "$T_QWEN" "$T_G3" "$T_G4" $R0/r113_battery.py
+  md5sum $R/serve_arc_b70.sh $R/p266_matrix_probe.py "$T_G3" "$T_G4" $R0/r113_battery.py
 }
 
 leg() {  # $1=name $2=image $3=served-format $4=chat-cells (''=all) $5=g1(0|1) $6..=extra env
@@ -242,12 +241,12 @@ leg() {  # $1=name $2=image $3=served-format $4=chat-cells (''=all) $5=g1(0|1) $
   # /root/$(basename) by the serve script -- a docker cp into that exact path
   # is a cp into a mount (the v2 TEMPLATE_CP_FAIL). The probe only READS these
   # copies (local rendering for the prompt oracle); bytes are preflight-cmp'd.
-  cp_in "$T_QWEN" /root/tpl_qwen.jinja
+  # GEMMA TEMPLATES ONLY (owner directive 2026-11-28): nothing qwen ships.
   cp_in "$T_G3" /root/tpl_g3.jinja
   cp_in "$T_G4" /root/tpl_g4.jinja
   cp_in $R/p266_matrix_probe.py /root/p266_matrix_probe.py
   local PARGS=(--model $SERVED --tokenizer /models/target --out /root/p266_out --tag "$NAME" --served "$FMT"
-               --qwen /root/tpl_qwen.jinja --g3 /root/tpl_g3.jinja
+               --g3 /root/tpl_g3.jinja
                --g4 /root/tpl_g4.jinja --workers 8 --cells chat,raw,nll,gate)
   if [ -n "$CCELLS" ]; then PARGS+=(--chat-cells "$CCELLS"); fi
   echo "probe start $(date +%H:%M:%S) args=${PARGS[*]}"

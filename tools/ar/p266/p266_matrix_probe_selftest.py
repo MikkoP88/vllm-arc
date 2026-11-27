@@ -52,12 +52,6 @@ class ToyTok:
 
     def apply_chat_template(self, messages, chat_template=None, tokenize=False, add_generation_prompt=True,
                             **kw):
-        if chat_template and "QWEN" in chat_template:
-            s = "".join(f"<|im_start|>{m['role']}\n{m['content']}<|im_end|>\n" for m in messages)
-            s += "<|im_start|>assistant\n"
-            if kw.get("enable_thinking") is False:
-                s += "<think>\n\n</think>\n\n"
-            return s
         if chat_template and "G4" in chat_template:
             s = "<bos><|think|>\n" if kw.get("enable_thinking") else "<bos>"
             s += "".join(f"<|turn>{m['role']}\n{m['content']}<turn|>\n" for m in messages)
@@ -72,7 +66,7 @@ class ToyTok:
         return {"input_ids": ids}
 
 
-STATE = {"mode": "good", "served": "qwen", "bodies": []}
+STATE = {"mode": "good", "served": "g3", "bodies": []}
 
 
 def fake_post(path, body, timeout=300):
@@ -88,8 +82,8 @@ def fake_post(path, body, timeout=300):
         kw = body.get("chat_template_kwargs") or {}
         tokkw = dict(kw)
         if STATE["mode"] == "oracle_off":
-            tokkw["enable_thinking"] = False
-        served_tmpl = {"qwen": "QWEN template", "g4": "G4 template"}[STATE["served"]]
+            tokkw["enable_thinking"] = not tokkw.get("enable_thinking", False)  # invert: force a drift
+        served_tmpl = {"g3": "P628 template", "g4": "G4 template"}[STATE["served"]]
         s = tok.apply_chat_template(body["messages"], chat_template=served_tmpl, tokenize=False, **tokkw)
         return 200, {"tokens": tok(s)["input_ids"], "count": len(s)}, 0.01
     if path == "/v1/chat/completions":
@@ -146,13 +140,13 @@ def fake_post(path, body, timeout=300):
     return 404, {"error": "no route " + path}, 0.01
 
 
-def run_main(mode, served="qwen", extra=()):
+def run_main(mode, served="g3", extra=()):
     STATE.update(mode=mode, served=served, bodies=[])
     M.post = fake_post
     M.load_tokenizer = lambda p: ToyTok()
     d = tempfile.mkdtemp(prefix="p266_selftest_")
     tmpl = {}
-    for name, text in (("qwen", "QWEN template"), ("g3", "P628 template"), ("g4", "G4 template")):
+    for name, text in (("g3", "P628 template"), ("g4", "G4 template")):
         p = os.path.join(d, name + ".jinja")
         Path(p).write_text(text, encoding="utf-8", newline="\n")
         tmpl[name] = p
@@ -161,8 +155,7 @@ def run_main(mode, served="qwen", extra=()):
     buf = io.StringIO()
     with contextlib.redirect_stdout(buf):
         rc = M.main(["--model", "m", "--tokenizer", "/x", "--out", d, "--tag", "t", "--served", served,
-                     "--qwen", tmpl["qwen"], "--g3", tmpl["g3"], "--g4", tmpl["g4"], "--workers", "2",
-                     *extra])
+                     "--g3", tmpl["g3"], "--g4", tmpl["g4"], "--workers", "2", *extra])
     doc = json.loads(Path(d, "matrix_t.json").read_text(encoding="utf-8"))
     return rc, doc, buf.getvalue(), STATE["bodies"]
 
@@ -209,6 +202,11 @@ def main() -> int:
     check("classes: clean answer has none", M.classes("Paris<turn|>") == [])
     check("pl_stats mean", M.pl_stats({"choices": [{"prompt_logprobs": [None] + [
         {i: {"logprob": -0.5, "rank": 1}} for i in range(4)]}]} , [9, 0, 1, 2, 3])["nll_mean"] == 0.5)
+    check("top_of: legacy float map (the b2 run-1 crash shape)",
+          M.top_of({"top_logprobs": [{7: -0.1, 3: -2.0}]}) == [(-0.1, 7), (-2.0, 3)])
+    check("top_of: object map + empty -> None",
+          M.top_of({"top_logprobs": [{7: {"logprob": -0.1, "rank": 1}}]}) == [(-0.1, 7)]
+          and M.top_of({}) is None)
 
     g = M.gen_logprobs({"logprobs": {"content": [{"token": "Par", "logprob": -0.5},
                                                   {"token": "is", "logprob": None}]}})
@@ -225,12 +223,10 @@ def main() -> int:
     check("rc == 0", rc == 0)
     check("oracle match recorded", doc["oracle"]["match"] is True)
     check("P266_MATRIX_DONE line", "P266_MATRIX_DONE tag=t" in out and "rc=0" in out)
-    check("five formats rendered", sorted(doc["formats"]) == ["g3", "g4", "g4think", "qwen", "qwen_nothink"])
-    check("qwen_nothink carries the think block",
-          "<think>" in doc["formats"]["qwen_nothink"]["capital_france"]["prompt"])
+    check("three gemma formats rendered (no qwen shape anywhere)", sorted(doc["formats"]) == ["g3", "g4", "g4think"])
     check("g4think carries <|think|>", "<|think|>" in doc["formats"]["g4think"]["capital_france"]["prompt"])
     check("chat matrix size = 2 kw x 16 requests x 9 prompts", len(doc["chat"]) == 2 * 16 * 9)
-    check("raw matrix size = 5 fmt x 8 requests x 9 prompts", len(doc["raw"]) == 5 * 8 * 9)
+    check("raw matrix size = 3 fmt x 8 requests x 9 prompts", len(doc["raw"]) == 3 * 8 * 9)
     chat_bodies = [b for p, b in bodies if p == "/v1/chat/completions" and b.get("max_tokens") == M.MAXTOK]
     check("chat bodies carry stop_token_ids [106, 50]", all(b.get("stop_token_ids") == [106, 50] for b in chat_bodies))
     check("chat bodies carry skip_special_tokens False",
@@ -257,13 +253,12 @@ def main() -> int:
     answered_raw = [r for r in doc["raw"] if r["http"] == 200]
     check("raw records carry per-token glp + stats", all(
         r["glp_first"] == -0.05 and r["glp_mean"] == -0.125 and len(r["glp"]) == 2 for r in answered_raw))
-    check("summary lines carry lp1= and lp_gen= (12 chat + 25 raw + 1 gate line)", sum(
-        1 for ln in out.splitlines() if " lp1=" in ln and " lp_gen=" in ln) == 2 * 6 + 5 * 5 + 1)
+    check("summary lines carry lp1= and lp_gen= (12 chat + 15 raw + 1 gate line)", sum(
+        1 for ln in out.splitlines() if " lp1=" in ln and " lp_gen=" in ln) == 2 * 6 + 3 * 5 + 1)
     check("raw prompt-token oracle all true", all(r.get("ptok_ok") for r in doc["raw"] if r.get("http") == 200))
-    alien = [r for r in doc["raw"] if r["fmt"].startswith("qwen")]
-    other = [r for r in doc["raw"] if not r["fmt"].startswith("qwen")]
-    check("raw qwen-skin cells graded REPLOOP, gemma-format cells ok",
-          all("REPLOOP" in r["cls"] for r in alien) and all(r["ok"] for r in other))
+    check("raw cells are all gemma formats and grade ok",
+          all(r["fmt"] in ("g3", "g4", "g4think") for r in doc["raw"])
+          and all(r["ok"] for r in doc["raw"] if r["http"] == 200))
     check("gate section: battery ok + sanity stable",
           len(doc["gate"]) == 5 and all(r["ok"] for r in doc["gate"]))
     gate_bodies = [b for p, b in bodies if p == "/v1/chat/completions" and b.get("max_tokens") == 64]
@@ -274,11 +269,11 @@ def main() -> int:
           and all(set(b) == {"model", "messages", "max_tokens", "skip_special_tokens", "temperature"}
                   for b in gate_bodies))
     nll = doc["nll"]
-    check("nll para stats + 40 prompt stats (5 fmt x 8 single prompts)",
-          nll["para"]["nll"]["nll_mean"] == 0.25 and len(nll["prompts"]) == 40
+    check("nll para stats + 24 prompt stats (3 fmt x 8 single prompts)",
+          nll["para"]["nll"]["nll_mean"] == 0.25 and len(nll["prompts"]) == 24
           and all(r["ptok_ok"] for r in nll["prompts"].values()))
     nll_lines = [ln for ln in out.splitlines() if ln.startswith("NLL ") and not ln.startswith("NLL para")]
-    check("NLL summary lines present", "NLL para nll_mean=0.25" in out and len(nll_lines) == 40)
+    check("NLL summary lines present", "NLL para nll_mean=0.25" in out and len(nll_lines) == 24)
     check("summary: chat card plain ok=9", "chat kw=plain card: n=27 ok=27" in out)
     s = [ln for ln in out.splitlines() if ln.startswith("chat kw=plain t0:")]
     check("summary: greedy cells stable (distinct_texts=9)", len(s) == 1 and "distinct_texts=9" in s[0])
@@ -287,7 +282,7 @@ def main() -> int:
     rc, doc, out, _ = run_main("good", extra=["--chat-cells", "t0", "--raw-cells", "t0,card"])
     check("chat-cells t0 -> 2 kw x 3 x 9", rc == 0 and len(doc["chat"]) == 2 * 3 * 9
           and {r["cell"] for r in doc["chat"]} == {"t0"})
-    check("raw-cells t0,card -> 5 fmt x (3+2) x 9", len(doc["raw"]) == 5 * 5 * 9
+    check("raw-cells t0,card -> 3 fmt x (3+2) x 9", len(doc["raw"]) == 3 * 5 * 9
           and {r["cell"] for r in doc["raw"]} == {"t0", "card"})
     try:
         run_main("good", extra=["--chat-cells", "t0,nope"])
@@ -295,6 +290,22 @@ def main() -> int:
     except SystemExit as e:
         raised = "nope" in str(e)
     check("unknown cell name stops the probe", raised)
+
+    print("== served-template refusal (no substitution is lawful)")
+    import contextlib
+    import io
+    import tempfile
+    d_ref = tempfile.mkdtemp(prefix="p266_refusal_")
+    g4_ref = os.path.join(d_ref, "g4.jinja")
+    Path(g4_ref).write_text("G4 template", encoding="utf-8", newline="\n")
+    try:
+        with contextlib.redirect_stdout(io.StringIO()):
+            M.main(["--model", "m", "--tokenizer", "/x", "--out", d_ref, "--tag", "t",
+                    "--served", "g3", "--g4", g4_ref, "--workers", "2"])
+        refused = False
+    except SystemExit as e:
+        refused = "P266_REFUSE_SERVED_TEMPLATE_ABSENT" in str(e)
+    check("probe refuses when the served gemma template is absent", refused)
 
     print("== served g4 adds the think kwarg variant")
     rc, doc, out, _ = run_main("good", served="g4")
@@ -306,14 +317,14 @@ def main() -> int:
     check("ptok drift -> rc 1 + ptok_mismatch>0", rc == 1 and "ptok_mismatch=" in out
           and "ptok_mismatch=0" not in out)
     check("ptok drift does not change grading counts", any(r["ok"] for r in doc["raw"]))
-    rc, doc, out, _ = run_main("oracle_off")
+    rc, doc, out, _ = run_main("oracle_off", served="g4")  # only g4 carries think kwargs to drift
     check("oracle mismatch -> rc 1, oracle None/False", rc == 1 and doc["oracle"]["match"] is not True)
     rc, doc, out, _ = run_main("dead")
     check("dead engine -> rc 1, every record carries http 500, no exception",
           rc == 1 and all(r["http"] == 500 for r in doc["chat"] + doc["raw"] + doc["gate"])
           and "http_err=" in out)
     check("dead engine: nll records carry err", all("err" in r for r in doc["nll"]["prompts"].values()))
-    rc, doc, out, _ = run_main("qwen")
+    rc, doc, out, _ = run_main("garbage")
     check("banked-shape garbage mode: sanity flip is visible (two different garbage texts)",
           rc == 0 and doc["gate"][3]["text"] != doc["gate"][4]["text"]
           and doc["gate"][3]["ok"] is False and doc["gate"][4]["ok"] is False

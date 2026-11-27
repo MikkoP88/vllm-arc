@@ -11,9 +11,11 @@ text, finish reason and token counts -- nothing here judges the model:
         0.95 + top_k 64 / temperature alone), with and without
         enable_thinking; greedy is repeated solo and as a concurrent batch.
   raw   /v1/completions on pre-rendered prompts, so several prompt formats
-        (the served qwen skin, the P6.28 hand-written template, the official
+        (the P6.28 hand-written template and the official
         google/gemma-4-31B-it template) compare on the same weights, dtype
-        and kernels.
+        and kernels. GEMMA-ONLY (owner directive 2026-11-28): no qwen
+        template is accepted, rendered or shipped -- if a gemma template
+        file is missing the probe refuses rather than substituting.
   nll   teacher-forced logprob of every prompt token plus a template-free
         paragraph: engine-numerics numbers for the transformers reference
         (p266_cpu_reference.py), which replays the same token sequences.
@@ -31,7 +33,7 @@ render the prompts and to count the prompt tokens the engine saw.
   docker cp p266_matrix_probe.py $CNAME:/root/
   docker exec $CNAME /opt/venv/bin/python /root/p266_matrix_probe.py \
       --model gemma4-31b --tokenizer /models/target --out /root/p266_out \
-      --tag <leg> --served qwen --qwen <file> --g3 <file> --g4 <file>
+      --tag <leg> --served g3 --g3 <file> --g4 <file>
 
 Exit 0 when every section ran and the prompt-token oracle held on every
 answered raw/NLL request (the engine tokenized each prompt exactly as this
@@ -404,7 +406,11 @@ def top_of(logprobs):
     if not logprobs or not logprobs.get("top_logprobs"):
         return None
     d = logprobs["top_logprobs"][0]
-    return sorted(((round(v["logprob"], 3), k) for k, v in d.items()), reverse=True)[:5]
+
+    def lp(v):  # legacy completions answer {token: float}; chat answers objects
+        return v["logprob"] if isinstance(v, dict) else v
+
+    return sorted(((round(lp(v), 3), k) for k, v in d.items()), reverse=True)[:5]
 
 
 def section_gate(model):
@@ -480,7 +486,6 @@ def main(argv=None):
     ap.add_argument("--out", required=True)
     ap.add_argument("--tag", required=True)
     ap.add_argument("--served", required=True, help="format name equal to the served template")
-    ap.add_argument("--qwen")
     ap.add_argument("--g3")
     ap.add_argument("--g4")
     ap.add_argument("--cells", default="chat,raw,nll,gate")
@@ -492,14 +497,17 @@ def main(argv=None):
     t_start = time.time()
     tok = load_tokenizer(a.tokenizer)
     specs = {}
-    if a.qwen:
-        specs["qwen"] = (a.qwen, {})
-        specs["qwen_nothink"] = (a.qwen, {"enable_thinking": False})
     if a.g3:
         specs["g3"] = (a.g3, {})
     if a.g4:
         specs["g4"] = (a.g4, {"enable_thinking": False})
         specs["g4think"] = (a.g4, {"enable_thinking": True})
+    # OWNER DIRECTIVE 2026-11-28: no gemma test mixes any qwen template or
+    # parser, and nothing is substituted when a gemma asset is missing --
+    # a probe without the served gemma template refuses outright.
+    if a.served not in specs:
+        raise SystemExit(f"P266_REFUSE_SERVED_TEMPLATE_ABSENT served={a.served!r} "
+                         f"provided={sorted(specs)} -- no substitution is lawful")
     pids = [p[0] for p in SINGLE] + [MULTI_ID]
     formats = render_formats(tok, specs, pids)
     para_ids = tok(PARA, add_special_tokens=True)["input_ids"]
