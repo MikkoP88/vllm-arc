@@ -83,6 +83,15 @@
 #               {"backend":"xgrammar","disable_any_whitespace":true}
 #               (port of D's V1227_XGCOMPACT; core-0.30 native surface —
 #               patch p06)
+#   ARC_DTYPE   --dtype (r266). Default float16 = the certified bytes on
+#               every model. A/B knob: a bfloat16 checkpoint logs "Casting
+#               torch.bfloat16 to torch.float16" on every float16 boot.
+#   ARC_ATTN_FA2  passed into the serve env when set (r266 A/B knob):
+#               0 restores the pure-triton attention path by disabling
+#               BOTH FA2 dispatch routes (full head-512 + sliding head-256,
+#               external_patches/vllm/patch_arc_xpu_fa2_route.py:88 and
+#               patch_arc_xpu_fa2_slide_route.py:40); unset = no env line,
+#               the patches' own default (routes on).
 #
 # Model flags are the D-champion surface for qwen3.8-27b-fp8 (rig
 # /root/serve_lmc_v133.sh, plan Appendix F): TP2, block 64, fp8 quant +
@@ -176,6 +185,7 @@ ARC_SERVED=${ARC_SERVED:-qwen3.8-27b-fp8}
 # the config-driven posture (P6.26) and must not collapse to fp8.
 ARC_QUANT=${ARC_QUANT-fp8}
 ARC_FP8=${ARC_FP8:-0}
+ARC_DTYPE=${ARC_DTYPE:-float16}
 ARC_SPEC_METHOD=${ARC_SPEC_METHOD:-}
 RIG=/root/build
 
@@ -449,6 +459,9 @@ ${ARC_MXKV_AB_MINSL:+export ARC_MXKV_AB_MINSL=${ARC_MXKV_AB_MINSL};}
 ${ARC_MXKV_V5_TFLOOR:+export ARC_MXKV_V5_TFLOOR=${ARC_MXKV_V5_TFLOOR};}
 ${ARC_MXKV_V5_SPLITS:+export ARC_MXKV_V5_SPLITS=${ARC_MXKV_V5_SPLITS};}
 ${ARC_MXKV_V5_BN:+export ARC_MXKV_V5_BN=${ARC_MXKV_V5_BN};}
+# r266: the FA2 dispatch-route A/B knob (see the header). Unset = no env
+# line, the served process env is byte-identical to the pre-knob script.
+${ARC_ATTN_FA2:+export ARC_ATTN_FA2=${ARC_ATTN_FA2};}
 $LMC_ENV
 $GRAPH_ENV
 exec /opt/venv/bin/vllm serve --model /models/target \
@@ -459,7 +472,7 @@ exec /opt/venv/bin/vllm serve --model /models/target \
   --max-num-batched-tokens $ARC_MNBT \
   --max-num-seqs $ARC_MAXSEQS \
   --block-size 64 \
-  --dtype float16 \
+  --dtype $ARC_DTYPE \
   $QUANT_FLAG \
   $QUANTCFG_FLAG \
   --kv-cache-dtype ${ARC_KVDTYPE:-fp8_e4m3} \
@@ -479,3 +492,6 @@ exec /opt/venv/bin/vllm serve --model /models/target \
   > /root/serve_full.log 2>&1"
 
 echo "ARC_SERVE_LAUNCHED image=$ARC_IMAGE name=$ARC_NAME model=$ARC_MODEL served=$ARC_SERVED quant=${ARC_QUANT:-<config-driven>} qcfg=${ARC_QUANTCFG:-} graph=$ARC_GRAPH spec=$ARC_SPEC gmu=$ARC_GMU maxlen=$ARC_MAXLEN mnbt=$ARC_MNBT seqs=$ARC_MAXSEQS fp8=$ARC_FP8 xgc=${VLLM_ARC_XG_COMPACT:-0} tmpl=${ARC_TEMPLATE-__qwen_default__} rp=${ARC_RPARSER-<qwen3>} tp=${ARC_TPARSER-<qwen3_coder>} port=$ARC_PORT $(date +%H:%M:%S)"
+# r266: the A/B knobs on their own line (the launch line above keeps its
+# byte layout — gates and pull tools parse it).
+echo "ARC_SERVE_KNOBS dtype=$ARC_DTYPE kvdtype=${ARC_KVDTYPE:-fp8_e4m3} attn_fa2=${ARC_ATTN_FA2:-1} $(date +%H:%M:%S)"

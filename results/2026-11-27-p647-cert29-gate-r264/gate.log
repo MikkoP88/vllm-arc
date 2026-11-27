@@ -1,0 +1,588 @@
+R264_GATE_BEGIN 2026-11-27T13:43:40Z image=vllm-arc:v0.30.0-b70-cert29 fork_sha=4dd3a1b9710f1c638f7f0b5ac1885525cf57c3bc bank=/root/build/p647/cert29_r263 legs=[full battery]
+IMG_ENGINE_MD5 d1fa3c17cde044211cbf62e28ddcc1b1 IMG_NATIVE_MD5 81e427590e7ad3482e46bdc25f4a62b2
+R255_IMAGE_CONTENT_OK vllm-arc:v0.30.0-b70-cert29
+R255_FORK_SHA_OK cert29_fork_sha=4dd3a1b9710f1c638f7f0b5ac1885525cf57c3bc
+R264_REBUILD_MANIFEST_OK
+p647_longprobe.py derived OK
+=== [gref] expect-boot-death 13:44:18 (gemma + mxfp8 KV, NO native) ===
+GREF_PC2_REFUSAL_OK refusal_lines=2 (boot-loud: the engine refused the windowed MX impl off-native)
+KERNEL_HEALTH[gref]: OK fault_lines=0 (dmesg since uptime 751607s)
+=== [gref] done 13:46:21 ===
+LEG_VERDICT[gref]: GREEN 2026-11-27T13:46:21Z
+=== [m8g] boot 13:46:21 env=[ARC_MODEL=/models/gemma4-31b ARC_SERVED=gemma4-31b ARC_QUANT=fp8 ARC_GMU=0.8 ARC_GRAPH=1 ARC_SPEC=0 ARC_LMC=0 ARC_RPC=1200 ARC_MAXLEN=40960 ARC_FP8=0 ARC_KVDTYPE=mxfp8 ARC_MXKV_NATIVE=1] ===
+HEALTH_OK_m8g 13:50:35
+mx_backend_lines=1
+native_lines=54
+materialized_lines=0
+device_lost_lines=0
+pc2_windowed_impl=100
+lmcache_lines=0
+interop_live=0
+tracebacks=0
+(EngineCore pid=529) INFO 11-27 13:49:00 [kv_cache_utils.py:2395] XPU KV cache size: 54,426 tokens, Maximum concurrency for 40,960 tokens per request: 1.33x
+PROMPT_OK 207 '<|im_start>user\nWhat is the capital of France?\n<|im_end>\n<|im_start>user\nWhat is the capital of the USA our our our our our our our our our our our our our our '
+PROMPT_OK 253 '1 our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our ou'
+PROMPT_OK 253 '< our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our ou'
+solo conc1 rep2 wall=18.2s ctok=256 tps=14.1
+solo conc1 rep3 wall=18.2s ctok=256 tps=14.0
+agg8 conc8 rep1 wall=20.9s ctok=2048 tps=98.1
+agg8 conc8 rep2 wall=20.9s ctok=2048 tps=98.1
+agg8 conc8 rep3 wall=20.9s ctok=2048 tps=98.0
+DECODE_BATTERY_DONE
+[temperature_string] status=400 ok=True
+[raw_truncated_json] status=400 ok=True
+[raw_wrong_content_type] status=400 ok=True
+[state_stability] 200:65b41dc505b622a1:'</ our our our our our our our our our o' == 200:65b41dc505b622a1:'</ our our our our our our our our our o' -> True
+=== GARBAGE_SUITE_PASS (probes=15 fails=0) ===
+[essay] t0_identical=False hashes=['5c80063c79a1', 'fc2dddcc7ce6', 'fc2dddcc7ce6'] garble={'cold': ['REP-LOOP'], 'rehit': ['REP-LOOP'], 'rehit2': ['REP-LOOP']} t1_seed_identical=True prompt_tok=2104 chars=[6154, 6157, 6157]
+[code] t0_identical=False hashes=['5c80063c79a1', 'fc2dddcc7ce6', 'fc2dddcc7ce6'] garble={'cold': ['REP-LOOP'], 'rehit': ['REP-LOOP'], 'rehit2': ['REP-LOOP']} t1_seed_identical=True prompt_tok=5433 chars=[6154, 6157, 6157]
+[multi] t0_identical=False hashes=['5c80063c79a1', 'fc2dddcc7ce6', 'fc2dddcc7ce6'] garble={'cold': ['REP-LOOP'], 'rehit': ['REP-LOOP'], 'rehit2': ['REP-LOOP']} t1_seed_identical=True prompt_tok=3446 chars=[6154, 6157, 6157]
+[simple] t0_identical=True hashes=['124ef8c98c7c', '124ef8c98c7c', '124ef8c98c7c'] garble={'cold': ['REP-LOOP'], 'rehit': ['REP-LOOP'], 'rehit2': ['REP-LOOP']} t1_seed_identical=True prompt_tok=57 chars=[6155, 6155, 6155]
+LONGPROBE c29m8g full: CORRUPTION_SIGNAL
+GARBLE: class_lines=4 empty_garble=0 probe_errors=0 (gated=0) in longprobe_full.out
+CHURN 4x256 done: ['16.2s/256tok', '16.3s/256tok', '16.3s/256tok', '16.3s/256tok']
+[essay] post_churn_rehit_identical=True hashes=['fc2dddcc7ce6', 'fc2dddcc7ce6'] garble={'r1': ['REP-LOOP'], 'r2': ['REP-LOOP']}
+[code] post_churn_rehit_identical=True hashes=['fc2dddcc7ce6', 'fc2dddcc7ce6'] garble={'r1': ['REP-LOOP'], 'r2': ['REP-LOOP']}
+[multi] post_churn_rehit_identical=True hashes=['fc2dddcc7ce6', 'fc2dddcc7ce6'] garble={'r1': ['REP-LOOP'], 'r2': ['REP-LOOP']}
+[simple] post_churn_rehit_identical=True hashes=['124ef8c98c7c', '124ef8c98c7c'] garble={'r1': ['REP-LOOP'], 'r2': ['REP-LOOP']}
+LONGPROBE c29m8gr1 rehit: CLEAN
+GARBLE: class_lines=4 empty_garble=0 probe_errors=0 (gated=0) in longprobe_rehit1.out
+CHURN 4x256 done: ['16.1s/256tok', '16.3s/256tok', '16.3s/256tok', '16.3s/256tok']
+[essay] post_churn_rehit_identical=True hashes=['fc2dddcc7ce6', 'fc2dddcc7ce6'] garble={'r1': ['REP-LOOP'], 'r2': ['REP-LOOP']}
+[code] post_churn_rehit_identical=True hashes=['fc2dddcc7ce6', 'fc2dddcc7ce6'] garble={'r1': ['REP-LOOP'], 'r2': ['REP-LOOP']}
+[multi] post_churn_rehit_identical=True hashes=['fc2dddcc7ce6', 'fc2dddcc7ce6'] garble={'r1': ['REP-LOOP'], 'r2': ['REP-LOOP']}
+[simple] post_churn_rehit_identical=True hashes=['124ef8c98c7c', '124ef8c98c7c'] garble={'r1': ['REP-LOOP'], 'r2': ['REP-LOOP']}
+LONGPROBE c29m8gr2 rehit: CLEAN
+GARBLE: class_lines=4 empty_garble=0 probe_errors=0 (gated=0) in longprobe_rehit2.out
+CHURN 4x256 done: ['16.1s/256tok', '16.3s/256tok', '16.3s/256tok', '16.3s/256tok']
+[essay] post_churn_rehit_identical=True hashes=['fc2dddcc7ce6', 'fc2dddcc7ce6'] garble={'r1': ['REP-LOOP'], 'r2': ['REP-LOOP']}
+[code] post_churn_rehit_identical=True hashes=['fc2dddcc7ce6', 'fc2dddcc7ce6'] garble={'r1': ['REP-LOOP'], 'r2': ['REP-LOOP']}
+[multi] post_churn_rehit_identical=True hashes=['fc2dddcc7ce6', 'fc2dddcc7ce6'] garble={'r1': ['REP-LOOP'], 'r2': ['REP-LOOP']}
+[simple] post_churn_rehit_identical=True hashes=['124ef8c98c7c', '124ef8c98c7c'] garble={'r1': ['REP-LOOP'], 'r2': ['REP-LOOP']}
+LONGPROBE c29m8gr3 rehit: CLEAN
+GARBLE: class_lines=4 empty_garble=0 probe_errors=0 (gated=0) in longprobe_rehit3.out
+[essay] hashes=['5c80063c79a1', 'fc2dddcc7ce6'] finish=['length', 'length', 'length'] chars=[6154, 6157, 6157] t1_seed_identical=True garble_empty=False
+[code] hashes=['5c80063c79a1', 'fc2dddcc7ce6'] finish=['length', 'length', 'length'] chars=[6154, 6157, 6157] t1_seed_identical=True garble_empty=False
+[multi] hashes=['5c80063c79a1', 'fc2dddcc7ce6'] finish=['length', 'length', 'length'] chars=[6154, 6157, 6157] t1_seed_identical=True garble_empty=False
+[simple] hashes=['124ef8c98c7c'] finish=['length', 'length', 'length'] chars=[6155, 6155, 6155] t1_seed_identical=True garble_empty=False
+LONGRETURN: FAIL essay: cross-cycle hash drift ['5c80063c79a1', 'fc2dddcc7ce6']; essay: garble flags [['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP']]; essay: truncation finish=['length', 'length', 'length']; code: cross-cycle hash drift ['5c80063c79a1', 'fc2dddcc7ce6']; code: garble flags [['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP']]; code: truncation finish=['length', 'length', 'length']; multi: cross-cycle hash drift ['5c80063c79a1', 'fc2dddcc7ce6']; multi: garble flags [['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP']]; multi: truncation finish=['length', 'length', 'length']; simple: garble flags [['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP']]; simple: truncation finish=['length', 'length', 'length']
+T1_SEED: PASS
+materialized_lines_post=20
+device_lost_lines_post=0
+tracebacks_post=0
+native_lines_post=62
+serve_log_bytes=217252
+ERROR=0
+TRACEBACK=0
+KERNEL_HEALTH[m8g]: OK fault_lines=0 (dmesg since uptime 751729s)
+=== [m8g] done 14:50:31 ===
+STRIDE_FIX_ENGAGED[m8g]: materialized_lines_post=20
+LEG_VERDICT[m8g]: GREEN 2026-11-27T14:50:31Z
+GEMMA_ABS_CLASSES[m8g]: LONGRETURN: FAIL | T1_SEED: PASS (bank-only; the gemma verdict is gemma_compare)
+=== [m4g] boot 14:50:31 env=[ARC_MODEL=/models/gemma4-31b ARC_SERVED=gemma4-31b ARC_QUANT=fp8 ARC_GMU=0.8 ARC_GRAPH=1 ARC_SPEC=0 ARC_LMC=0 ARC_RPC=1200 ARC_MAXLEN=40960 ARC_FP8=0 ARC_KVDTYPE=mxfp4 ARC_MXKV_NATIVE=1] ===
+HEALTH_OK_m4g 14:54:45
+mx_backend_lines=1
+native_lines=54
+materialized_lines=0
+device_lost_lines=0
+pc2_windowed_impl=100
+lmcache_lines=0
+interop_live=0
+tracebacks=0
+(EngineCore pid=529) INFO 11-27 14:53:11 [kv_cache_utils.py:2395] XPU KV cache size: 105,669 tokens, Maximum concurrency for 40,960 tokens per request: 2.58x
+PROMPT_OK 190 '<|im_start>\n<|im_start>user\nWhat is the capital of France?\n<|im_end>\n<|im_start|>user\n our our our our our our our our our our our our our our our our our our o'
+PROMPT_OK 253 '1 our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our ou'
+PROMPT_OK 253 '< our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our ou'
+solo conc1 rep2 wall=14.7s ctok=256 tps=17.4
+solo conc1 rep3 wall=14.7s ctok=256 tps=17.4
+agg8 conc8 rep1 wall=17.2s ctok=2048 tps=119.2
+agg8 conc8 rep2 wall=17.2s ctok=2048 tps=118.9
+agg8 conc8 rep3 wall=17.3s ctok=2048 tps=118.7
+DECODE_BATTERY_DONE
+[temperature_string] status=400 ok=True
+[raw_truncated_json] status=400 ok=True
+[raw_wrong_content_type] status=400 ok=True
+[state_stability] 200:fbfa5ad7d9aa0afe:'\n\n\n\n\n\n\n\n\n\n\n\n' == 200:fbfa5ad7d9aa0afe:'\n\n\n\n\n\n\n\n\n\n\n\n' -> True
+=== GARBAGE_SUITE_PASS (probes=15 fails=0) ===
+[essay] t0_identical=False hashes=['18be86f4cbfb', 'fc2dddcc7ce6', 'fc2dddcc7ce6'] garble={'cold': ['REP-LOOP'], 'rehit': ['REP-LOOP'], 'rehit2': ['REP-LOOP']} t1_seed_identical=True prompt_tok=2104 chars=[6082, 6157, 6157]
+[code] t0_identical=False hashes=['5c80063c79a1', 'fc2dddcc7ce6', 'fc2dddcc7ce6'] garble={'cold': ['REP-LOOP'], 'rehit': ['REP-LOOP'], 'rehit2': ['REP-LOOP']} t1_seed_identical=True prompt_tok=5433 chars=[6154, 6157, 6157]
+[multi] t0_identical=False hashes=['5c80063c79a1', 'fc2dddcc7ce6', 'fc2dddcc7ce6'] garble={'cold': ['REP-LOOP'], 'rehit': ['REP-LOOP'], 'rehit2': ['REP-LOOP']} t1_seed_identical=True prompt_tok=3446 chars=[6154, 6157, 6157]
+[simple] t0_identical=False hashes=['e8e53d9d5480', '7890d75d850d', '30f011707685'] garble={'cold': ['REP-LOOP'], 'rehit': ['REP-LOOP'], 'rehit2': ['REP-LOOP']} t1_seed_identical=False prompt_tok=57 chars=[6080, 5895, 5911]
+LONGPROBE c29m4g full: CORRUPTION_SIGNAL
+GARBLE: class_lines=4 empty_garble=0 probe_errors=0 (gated=0) in longprobe_full.out
+CHURN 4x256 done: ['13.8s/256tok', '13.9s/256tok', '13.9s/256tok', '13.9s/256tok']
+[essay] post_churn_rehit_identical=True hashes=['fc2dddcc7ce6', 'fc2dddcc7ce6'] garble={'r1': ['REP-LOOP'], 'r2': ['REP-LOOP']}
+[code] post_churn_rehit_identical=True hashes=['fc2dddcc7ce6', 'fc2dddcc7ce6'] garble={'r1': ['REP-LOOP'], 'r2': ['REP-LOOP']}
+[multi] post_churn_rehit_identical=False hashes=['cca2d21ab73f', 'fc2dddcc7ce6'] garble={'r1': ['REP-LOOP'], 'r2': ['REP-LOOP']}
+[simple] post_churn_rehit_identical=False hashes=['e8e53d9d5480', '7890d75d850d'] garble={'r1': ['REP-LOOP'], 'r2': ['REP-LOOP']}
+LONGPROBE c29m4gr1 rehit: CORRUPTION_SIGNAL
+GARBLE: class_lines=4 empty_garble=0 probe_errors=0 (gated=0) in longprobe_rehit1.out
+CHURN 4x256 done: ['13.8s/256tok', '13.9s/256tok', '13.9s/256tok', '13.9s/256tok']
+[essay] post_churn_rehit_identical=False hashes=['3da5dcef5d41', 'fc2dddcc7ce6'] garble={'r1': ['REP-LOOP'], 'r2': ['REP-LOOP']}
+[code] post_churn_rehit_identical=False hashes=['661f208cf214', 'fc2dddcc7ce6'] garble={'r1': ['REP-LOOP'], 'r2': ['REP-LOOP']}
+[multi] post_churn_rehit_identical=False hashes=['cca2d21ab73f', 'fc2dddcc7ce6'] garble={'r1': ['REP-LOOP'], 'r2': ['REP-LOOP']}
+[simple] post_churn_rehit_identical=False hashes=['e8e53d9d5480', '7890d75d850d'] garble={'r1': ['REP-LOOP'], 'r2': ['REP-LOOP']}
+LONGPROBE c29m4gr2 rehit: CORRUPTION_SIGNAL
+GARBLE: class_lines=4 empty_garble=0 probe_errors=0 (gated=0) in longprobe_rehit2.out
+CHURN 4x256 done: ['13.8s/256tok', '13.9s/256tok', '13.9s/256tok', '13.9s/256tok']
+[essay] post_churn_rehit_identical=False hashes=['3da5dcef5d41', 'fc2dddcc7ce6'] garble={'r1': ['REP-LOOP'], 'r2': ['REP-LOOP']}
+[code] post_churn_rehit_identical=False hashes=['661f208cf214', 'fc2dddcc7ce6'] garble={'r1': ['REP-LOOP'], 'r2': ['REP-LOOP']}
+[multi] post_churn_rehit_identical=False hashes=['cca2d21ab73f', 'fc2dddcc7ce6'] garble={'r1': ['REP-LOOP'], 'r2': ['REP-LOOP']}
+[simple] post_churn_rehit_identical=False hashes=['e8e53d9d5480', 'c15610f9ad68'] garble={'r1': ['REP-LOOP'], 'r2': ['REP-LOOP']}
+LONGPROBE c29m4gr3 rehit: CORRUPTION_SIGNAL
+GARBLE: class_lines=4 empty_garble=0 probe_errors=0 (gated=0) in longprobe_rehit3.out
+[essay] hashes=['18be86f4cbfb', '3da5dcef5d41', 'fc2dddcc7ce6'] finish=['length', 'length', 'length'] chars=[6082, 6157, 6157] t1_seed_identical=True garble_empty=False
+[code] hashes=['5c80063c79a1', '661f208cf214', 'fc2dddcc7ce6'] finish=['length', 'length', 'length'] chars=[6154, 6157, 6157] t1_seed_identical=True garble_empty=False
+[multi] hashes=['5c80063c79a1', 'cca2d21ab73f', 'fc2dddcc7ce6'] finish=['length', 'length', 'length'] chars=[6154, 6157, 6157] t1_seed_identical=True garble_empty=False
+[simple] hashes=['30f011707685', '7890d75d850d', 'c15610f9ad68', 'e8e53d9d5480'] finish=['length', 'length', 'length'] chars=[6080, 5895, 5911] t1_seed_identical=False garble_empty=False
+LONGRETURN: FAIL essay: cross-cycle hash drift ['18be86f4cbfb', '3da5dcef5d41', 'fc2dddcc7ce6']; essay: garble flags [['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP']]; essay: truncation finish=['length', 'length', 'length']; code: cross-cycle hash drift ['5c80063c79a1', '661f208cf214', 'fc2dddcc7ce6']; code: garble flags [['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP']]; code: truncation finish=['length', 'length', 'length']; multi: cross-cycle hash drift ['5c80063c79a1', 'cca2d21ab73f', 'fc2dddcc7ce6']; multi: garble flags [['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP']]; multi: truncation finish=['length', 'length', 'length']; simple: cross-cycle hash drift ['30f011707685', '7890d75d850d', 'c15610f9ad68', 'e8e53d9d5480']; simple: garble flags [['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP']]; simple: truncation finish=['length', 'length', 'length']
+T1_SEED: MISS simple
+materialized_lines_post=20
+device_lost_lines_post=0
+tracebacks_post=0
+native_lines_post=62
+serve_log_bytes=209939
+ERROR=0
+TRACEBACK=0
+KERNEL_HEALTH[m4g]: OK fault_lines=0 (dmesg since uptime 755579s)
+=== [m4g] done 15:49:02 ===
+STRIDE_FIX_ENGAGED[m4g]: materialized_lines_post=20
+LEG_VERDICT[m4g]: GREEN 2026-11-27T15:49:02Z
+GEMMA_ABS_CLASSES[m4g]: LONGRETURN: FAIL | T1_SEED: MISS (bank-only; the gemma verdict is gemma_compare)
+=== [mkg] boot 15:49:02 env=[ARC_MODEL=/models/gemma4-31b ARC_SERVED=gemma4-31b ARC_QUANT=fp8 ARC_GMU=0.8 ARC_GRAPH=1 ARC_SPEC=0 ARC_LMC=0 ARC_RPC=1200 ARC_MAXLEN=40960 ARC_FP8=0 ARC_KVDTYPE=mxk8v4 ARC_MXKV_NATIVE=1] ===
+HEALTH_OK_mkg 15:53:16
+mx_backend_lines=1
+native_lines=54
+materialized_lines=0
+device_lost_lines=0
+pc2_windowed_impl=100
+lmcache_lines=0
+interop_live=0
+tracebacks=0
+(EngineCore pid=529) INFO 11-27 15:51:43 [kv_cache_utils.py:2395] XPU KV cache size: 71,856 tokens, Maximum concurrency for 40,960 tokens per request: 1.75x
+PROMPT_OK 194 '<|im_start>user\nWhat is the capital of France?\n<|im_end>\n<|im_start|>assistant\n<|im_end|>\n our our our our our our our our our our our our our our our our our o'
+PROMPT_OK 253 '1 our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our ou'
+PROMPT_OK 253 '< our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our ou'
+solo conc1 rep2 wall=17.9s ctok=256 tps=14.3
+solo conc1 rep3 wall=17.9s ctok=256 tps=14.3
+agg8 conc8 rep1 wall=20.9s ctok=2048 tps=98.2
+agg8 conc8 rep2 wall=20.8s ctok=2048 tps=98.3
+agg8 conc8 rep3 wall=20.8s ctok=2048 tps=98.3
+DECODE_BATTERY_DONE
+[temperature_string] status=400 ok=True
+[raw_truncated_json] status=400 ok=True
+[raw_wrong_content_type] status=400 ok=True
+[state_stability] 200:65b41dc505b622a1:'</ our our our our our our our our our o' == 200:fbfa5ad7d9aa0afe:'\n\n\n\n\n\n\n\n\n\n\n\n' -> False
+=== GARBAGE_SUITE_FAIL: state_stability (probes=15 fails=1) ===
+SUITE13: FAIL mkg
+[essay] t0_identical=False hashes=['5c80063c79a1', 'fc2dddcc7ce6', 'fc2dddcc7ce6'] garble={'cold': ['REP-LOOP'], 'rehit': ['REP-LOOP'], 'rehit2': ['REP-LOOP']} t1_seed_identical=True prompt_tok=2104 chars=[6154, 6157, 6157]
+[code] t0_identical=False hashes=['5c80063c79a1', 'fc2dddcc7ce6', 'fc2dddcc7ce6'] garble={'cold': ['REP-LOOP'], 'rehit': ['REP-LOOP'], 'rehit2': ['REP-LOOP']} t1_seed_identical=True prompt_tok=5433 chars=[6154, 6157, 6157]
+[multi] t0_identical=False hashes=['5c80063c79a1', 'fc2dddcc7ce6', 'fc2dddcc7ce6'] garble={'cold': ['REP-LOOP'], 'rehit': ['REP-LOOP'], 'rehit2': ['REP-LOOP']} t1_seed_identical=True prompt_tok=3446 chars=[6154, 6157, 6157]
+[simple] t0_identical=False hashes=['124ef8c98c7c', 'd74de4b5812b', 'd74de4b5812b'] garble={'cold': ['REP-LOOP'], 'rehit': ['REP-LOOP'], 'rehit2': ['REP-LOOP']} t1_seed_identical=True prompt_tok=57 chars=[6155, 6140, 6140]
+LONGPROBE c29mkg full: CORRUPTION_SIGNAL
+GARBLE: class_lines=4 empty_garble=0 probe_errors=0 (gated=0) in longprobe_full.out
+CHURN 4x256 done: ['16.1s/256tok', '16.2s/256tok', '16.2s/256tok', '16.2s/256tok']
+[essay] post_churn_rehit_identical=True hashes=['fc2dddcc7ce6', 'fc2dddcc7ce6'] garble={'r1': ['REP-LOOP'], 'r2': ['REP-LOOP']}
+[code] post_churn_rehit_identical=True hashes=['fc2dddcc7ce6', 'fc2dddcc7ce6'] garble={'r1': ['REP-LOOP'], 'r2': ['REP-LOOP']}
+[multi] post_churn_rehit_identical=True hashes=['fc2dddcc7ce6', 'fc2dddcc7ce6'] garble={'r1': ['REP-LOOP'], 'r2': ['REP-LOOP']}
+[simple] post_churn_rehit_identical=False hashes=['124ef8c98c7c', 'd74de4b5812b'] garble={'r1': ['REP-LOOP'], 'r2': ['REP-LOOP']}
+LONGPROBE c29mkgr1 rehit: CORRUPTION_SIGNAL
+GARBLE: class_lines=4 empty_garble=0 probe_errors=0 (gated=0) in longprobe_rehit1.out
+CHURN 4x256 done: ['16.1s/256tok', '16.3s/256tok', '16.3s/256tok', '16.3s/256tok']
+[essay] post_churn_rehit_identical=True hashes=['fc2dddcc7ce6', 'fc2dddcc7ce6'] garble={'r1': ['REP-LOOP'], 'r2': ['REP-LOOP']}
+[code] post_churn_rehit_identical=True hashes=['fc2dddcc7ce6', 'fc2dddcc7ce6'] garble={'r1': ['REP-LOOP'], 'r2': ['REP-LOOP']}
+[multi] post_churn_rehit_identical=True hashes=['fc2dddcc7ce6', 'fc2dddcc7ce6'] garble={'r1': ['REP-LOOP'], 'r2': ['REP-LOOP']}
+[simple] post_churn_rehit_identical=False hashes=['124ef8c98c7c', 'd74de4b5812b'] garble={'r1': ['REP-LOOP'], 'r2': ['REP-LOOP']}
+LONGPROBE c29mkgr2 rehit: CORRUPTION_SIGNAL
+GARBLE: class_lines=4 empty_garble=0 probe_errors=0 (gated=0) in longprobe_rehit2.out
+CHURN 4x256 done: ['16.0s/256tok', '16.2s/256tok', '16.2s/256tok', '16.2s/256tok']
+[essay] post_churn_rehit_identical=True hashes=['fc2dddcc7ce6', 'fc2dddcc7ce6'] garble={'r1': ['REP-LOOP'], 'r2': ['REP-LOOP']}
+[code] post_churn_rehit_identical=True hashes=['fc2dddcc7ce6', 'fc2dddcc7ce6'] garble={'r1': ['REP-LOOP'], 'r2': ['REP-LOOP']}
+[multi] post_churn_rehit_identical=True hashes=['fc2dddcc7ce6', 'fc2dddcc7ce6'] garble={'r1': ['REP-LOOP'], 'r2': ['REP-LOOP']}
+[simple] post_churn_rehit_identical=False hashes=['124ef8c98c7c', 'd74de4b5812b'] garble={'r1': ['REP-LOOP'], 'r2': ['REP-LOOP']}
+LONGPROBE c29mkgr3 rehit: CORRUPTION_SIGNAL
+GARBLE: class_lines=4 empty_garble=0 probe_errors=0 (gated=0) in longprobe_rehit3.out
+[essay] hashes=['5c80063c79a1', 'fc2dddcc7ce6'] finish=['length', 'length', 'length'] chars=[6154, 6157, 6157] t1_seed_identical=True garble_empty=False
+[code] hashes=['5c80063c79a1', 'fc2dddcc7ce6'] finish=['length', 'length', 'length'] chars=[6154, 6157, 6157] t1_seed_identical=True garble_empty=False
+[multi] hashes=['5c80063c79a1', 'fc2dddcc7ce6'] finish=['length', 'length', 'length'] chars=[6154, 6157, 6157] t1_seed_identical=True garble_empty=False
+[simple] hashes=['124ef8c98c7c', 'd74de4b5812b'] finish=['length', 'length', 'length'] chars=[6155, 6140, 6140] t1_seed_identical=True garble_empty=False
+LONGRETURN: FAIL essay: cross-cycle hash drift ['5c80063c79a1', 'fc2dddcc7ce6']; essay: garble flags [['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP']]; essay: truncation finish=['length', 'length', 'length']; code: cross-cycle hash drift ['5c80063c79a1', 'fc2dddcc7ce6']; code: garble flags [['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP']]; code: truncation finish=['length', 'length', 'length']; multi: cross-cycle hash drift ['5c80063c79a1', 'fc2dddcc7ce6']; multi: garble flags [['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP']]; multi: truncation finish=['length', 'length', 'length']; simple: cross-cycle hash drift ['124ef8c98c7c', 'd74de4b5812b']; simple: garble flags [['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP']]; simple: truncation finish=['length', 'length', 'length']
+T1_SEED: PASS
+materialized_lines_post=20
+device_lost_lines_post=0
+tracebacks_post=0
+native_lines_post=62
+serve_log_bytes=219805
+ERROR=0
+TRACEBACK=0
+KERNEL_HEALTH[mkg]: OK fault_lines=0 (dmesg since uptime 759090s)
+=== [mkg] done 16:54:49 ===
+STRIDE_FIX_ENGAGED[mkg]: materialized_lines_post=20
+LEG_VERDICT[mkg]: RED failed_checks=1 2026-11-27T16:54:49Z
+GEMMA_ABS_CLASSES[mkg]: LONGRETURN: FAIL | T1_SEED: PASS (bank-only; the gemma verdict is gemma_compare)
+=== [g0] boot 16:54:49 env=[ARC_MODEL=/models/gemma4-31b ARC_SERVED=gemma4-31b ARC_QUANT=fp8 ARC_GMU=0.8 ARC_GRAPH=1 ARC_SPEC=0 ARC_LMC=0 ARC_RPC=1200 ARC_MAXLEN=40960 ARC_FP8=0] ===
+HEALTH_OK_g0 17:07:30
+mx_backend_lines=0
+native_lines=0
+materialized_lines=0
+device_lost_lines=0
+pc2_windowed_impl=0
+lmcache_lines=0
+interop_live=0
+tracebacks=0
+(EngineCore pid=529) INFO 11-27 16:57:28 [kv_cache_utils.py:2395] XPU KV cache size: 56,128 tokens, Maximum concurrency for 40,960 tokens per request: 1.37x
+PROMPT_OK 16 '\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n'
+PROMPT_OK 249 '1. The function should return the n-th Fibonacci number using iteration.\n2. The function should use iteration to calculate the n-th Fibonacci number.\n3\n<|im_sta'
+PROMPT_OK 16 '\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n'
+solo conc1 rep2 wall=9.1s ctok=256 tps=28.3
+solo conc1 rep3 wall=9.0s ctok=256 tps=28.3
+agg8 conc8 rep1 wall=10.4s ctok=2048 tps=196.7
+agg8 conc8 rep2 wall=10.4s ctok=2048 tps=196.6
+agg8 conc8 rep3 wall=10.4s ctok=2048 tps=196.7
+DECODE_BATTERY_DONE
+[temperature_string] status=400 ok=True
+[raw_truncated_json] status=400 ok=True
+[raw_wrong_content_type] status=400 ok=True
+[state_stability] 200:fbfa5ad7d9aa0afe:'\n\n\n\n\n\n\n\n\n\n\n\n' == 200:fbfa5ad7d9aa0afe:'\n\n\n\n\n\n\n\n\n\n\n\n' -> True
+=== GARBAGE_SUITE_PASS (probes=15 fails=0) ===
+[essay] t0_identical=True hashes=['873d8e07cdec', '873d8e07cdec', '873d8e07cdec'] garble={'cold': ['REP-LOOP'], 'rehit': ['REP-LOOP'], 'rehit2': ['REP-LOOP']} t1_seed_identical=True prompt_tok=2104 chars=[2125, 2125, 2125]
+[code] t0_identical=True hashes=['873d8e07cdec', '873d8e07cdec', '873d8e07cdec'] garble={'cold': ['REP-LOOP'], 'rehit': ['REP-LOOP'], 'rehit2': ['REP-LOOP']} t1_seed_identical=True prompt_tok=5433 chars=[2125, 2125, 2125]
+[multi] t0_identical=True hashes=['873d8e07cdec', '873d8e07cdec', '873d8e07cdec'] garble={'cold': ['REP-LOOP'], 'rehit': ['REP-LOOP'], 'rehit2': ['REP-LOOP']} t1_seed_identical=True prompt_tok=3446 chars=[2125, 2125, 2125]
+[simple] t0_identical=True hashes=['8d3c1d66f587', '8d3c1d66f587', '8d3c1d66f587'] garble={'cold': ['REP-LOOP'], 'rehit': ['REP-LOOP'], 'rehit2': ['REP-LOOP']} t1_seed_identical=True prompt_tok=57 chars=[781, 781, 781]
+LONGPROBE c29g0 full: CORRUPTION_SIGNAL
+GARBLE: class_lines=4 empty_garble=0 probe_errors=0 (gated=0) in longprobe_full.out
+CHURN 4x256 done: ['9.5s/256tok', '9.6s/256tok', '9.6s/256tok', '9.6s/256tok']
+[essay] post_churn_rehit_identical=True hashes=['873d8e07cdec', '873d8e07cdec'] garble={'r1': ['REP-LOOP'], 'r2': ['REP-LOOP']}
+[code] post_churn_rehit_identical=True hashes=['873d8e07cdec', '873d8e07cdec'] garble={'r1': ['REP-LOOP'], 'r2': ['REP-LOOP']}
+[multi] post_churn_rehit_identical=True hashes=['873d8e07cdec', '873d8e07cdec'] garble={'r1': ['REP-LOOP'], 'r2': ['REP-LOOP']}
+[simple] post_churn_rehit_identical=True hashes=['8d3c1d66f587', '8d3c1d66f587'] garble={'r1': ['REP-LOOP'], 'r2': ['REP-LOOP']}
+LONGPROBE c29g0r1 rehit: CLEAN
+GARBLE: class_lines=4 empty_garble=0 probe_errors=0 (gated=0) in longprobe_rehit1.out
+CHURN 4x256 done: ['9.4s/256tok', '9.5s/256tok', '9.5s/256tok', '9.5s/256tok']
+[essay] post_churn_rehit_identical=True hashes=['873d8e07cdec', '873d8e07cdec'] garble={'r1': ['REP-LOOP'], 'r2': ['REP-LOOP']}
+[code] post_churn_rehit_identical=True hashes=['873d8e07cdec', '873d8e07cdec'] garble={'r1': ['REP-LOOP'], 'r2': ['REP-LOOP']}
+[multi] post_churn_rehit_identical=True hashes=['873d8e07cdec', '873d8e07cdec'] garble={'r1': ['REP-LOOP'], 'r2': ['REP-LOOP']}
+[simple] post_churn_rehit_identical=True hashes=['8d3c1d66f587', '8d3c1d66f587'] garble={'r1': ['REP-LOOP'], 'r2': ['REP-LOOP']}
+LONGPROBE c29g0r2 rehit: CLEAN
+GARBLE: class_lines=4 empty_garble=0 probe_errors=0 (gated=0) in longprobe_rehit2.out
+CHURN 4x256 done: ['9.5s/256tok', '9.5s/256tok', '9.5s/256tok', '9.5s/256tok']
+[essay] post_churn_rehit_identical=True hashes=['873d8e07cdec', '873d8e07cdec'] garble={'r1': ['REP-LOOP'], 'r2': ['REP-LOOP']}
+[code] post_churn_rehit_identical=True hashes=['873d8e07cdec', '873d8e07cdec'] garble={'r1': ['REP-LOOP'], 'r2': ['REP-LOOP']}
+[multi] post_churn_rehit_identical=True hashes=['873d8e07cdec', '873d8e07cdec'] garble={'r1': ['REP-LOOP'], 'r2': ['REP-LOOP']}
+[simple] post_churn_rehit_identical=True hashes=['8d3c1d66f587', '8d3c1d66f587'] garble={'r1': ['REP-LOOP'], 'r2': ['REP-LOOP']}
+LONGPROBE c29g0r3 rehit: CLEAN
+GARBLE: class_lines=4 empty_garble=0 probe_errors=0 (gated=0) in longprobe_rehit3.out
+[essay] hashes=['873d8e07cdec'] finish=['length', 'length', 'length'] chars=[2125, 2125, 2125] t1_seed_identical=True garble_empty=False
+[code] hashes=['873d8e07cdec'] finish=['length', 'length', 'length'] chars=[2125, 2125, 2125] t1_seed_identical=True garble_empty=False
+[multi] hashes=['873d8e07cdec'] finish=['length', 'length', 'length'] chars=[2125, 2125, 2125] t1_seed_identical=True garble_empty=False
+[simple] hashes=['8d3c1d66f587'] finish=['length', 'length', 'length'] chars=[781, 781, 781] t1_seed_identical=True garble_empty=False
+LONGRETURN: FAIL essay: garble flags [['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP']]; essay: truncation finish=['length', 'length', 'length']; code: garble flags [['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP']]; code: truncation finish=['length', 'length', 'length']; multi: garble flags [['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP']]; multi: truncation finish=['length', 'length', 'length']; simple: garble flags [['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP'], ['REP-LOOP']]; simple: truncation finish=['length', 'length', 'length']
+T1_SEED: PASS
+materialized_lines_post=0
+device_lost_lines_post=0
+tracebacks_post=0
+native_lines_post=0
+serve_log_bytes=132465
+ERROR=0
+TRACEBACK=0
+KERNEL_HEALTH[g0]: OK fault_lines=0 (dmesg since uptime 763038s)
+=== [g0] done 17:46:51 ===
+G0_FULL_SUITE_BANKED (ungated native baseline + churn classification)
+LEG_VERDICT[g0]: GREEN 2026-11-27T17:46:51Z
+GEMMA_ABS_CLASSES[g0]: LONGRETURN: FAIL | T1_SEED: PASS (bank-only; the gemma verdict is gemma_compare)
+[g0] baseline flags={'essay': ['REP-LOOP'], 'code': ['REP-LOOP'], 'multi': ['REP-LOOP'], 'simple': ['REP-LOOP']} topwin={'essay': 0, 'code': 0, 'multi': 0, 'simple': 0} (native LONGRETURN fails these same classes)
+[m8g] flags={'essay': ['REP-LOOP'], 'code': ['REP-LOOP'], 'multi': ['REP-LOOP'], 'simple': ['REP-LOOP']} topwin={'essay': 0, 'code': 0, 'multi': 0, 'simple': 0} (g0 topwin={'essay': 0, 'code': 0, 'multi': 0, 'simple': 0})
+[m4g] flags={'essay': ['REP-LOOP'], 'code': ['REP-LOOP'], 'multi': ['REP-LOOP'], 'simple': ['REP-LOOP']} topwin={'essay': 0, 'code': 0, 'multi': 0, 'simple': 0} (g0 topwin={'essay': 0, 'code': 0, 'multi': 0, 'simple': 0})
+[mkg] flags={'essay': ['REP-LOOP'], 'code': ['REP-LOOP'], 'multi': ['REP-LOOP'], 'simple': ['REP-LOOP']} topwin={'essay': 0, 'code': 0, 'multi': 0, 'simple': 0} (g0 topwin={'essay': 0, 'code': 0, 'multi': 0, 'simple': 0})
+[churn] m8g/essay: KNOWN-CLASS churn ['5c80063c79a1', 'fc2dddcc7ce6']
+[churn] m8g/code: KNOWN-CLASS churn ['5c80063c79a1', 'fc2dddcc7ce6']
+[churn] m8g/multi: KNOWN-CLASS churn ['5c80063c79a1', 'fc2dddcc7ce6']
+[churn] m4g/essay: KNOWN-CLASS churn ['18be86f4cbfb', 'fc2dddcc7ce6']
+[churn] m4g/code: KNOWN-CLASS churn ['5c80063c79a1', 'fc2dddcc7ce6']
+[churn] m4g/multi: KNOWN-CLASS churn ['5c80063c79a1', 'fc2dddcc7ce6']
+[churn] m4g/simple: KNOWN-CLASS churn ['30f011707685', '7890d75d850d', 'e8e53d9d5480']
+[churn] mkg/essay: KNOWN-CLASS churn ['5c80063c79a1', 'fc2dddcc7ce6']
+[churn] mkg/code: KNOWN-CLASS churn ['5c80063c79a1', 'fc2dddcc7ce6']
+[churn] mkg/multi: KNOWN-CLASS churn ['5c80063c79a1', 'fc2dddcc7ce6']
+[churn] mkg/simple: KNOWN-CLASS churn ['124ef8c98c7c', 'd74de4b5812b']
+GEMMA_COMPARE: PASS (no new modes / no amplification; known-class churn banked for review)
+LEG_VERDICT[compare]: GREEN 2026-11-27T17:46:51Z
+=== [ctrl] boot 17:46:51 env=[ARC_MODEL=/models/qwen3.8-27b-fp8 ARC_SERVED=qwen3.8-27b-fp8 ARC_GRAPH=1 ARC_SPEC=3 ARC_FP8=1] ===
+HEALTH_OK_ctrl 17:57:20
+mx_backend_lines=0
+native_lines=0
+materialized_lines=0
+device_lost_lines=0
+pc2_windowed_impl=0
+lmcache_lines=7
+interop_live=0
+tracebacks=0
+(EngineCore pid=782) INFO 11-27 17:49:34 [kv_cache_utils.py:2395] XPU KV cache size: 398,363 tokens, Maximum concurrency for 262,144 tokens per request: 1.52x
+PROMPT_OK 7 '\n\nParis'
+PROMPT_OK 209 '\n\n<think>\nThe user wants a Python function that computes the n-th Fibonacci number using an iterative approach (not recursion).\n\nLet me think about the Fibonacc'
+PROMPT_OK 236 '\n\n1. **Identify the criterion** – an element must be in the gaseous state at typical room temperature (about 20 °C / 68 °F). \n2. **Recall the periodic table** –'
+solo conc1 rep2 wall=4.3s ctok=256 tps=59.8
+solo conc1 rep3 wall=4.2s ctok=256 tps=60.4
+agg8 conc8 rep1 wall=6.8s ctok=2048 tps=301.2
+agg8 conc8 rep2 wall=6.6s ctok=2048 tps=310.6
+agg8 conc8 rep3 wall=6.6s ctok=2048 tps=311.7
+DECODE_BATTERY_DONE
+materialized_lines_post=0
+device_lost_lines_post=0
+tracebacks_post=0
+native_lines_post=0
+serve_log_bytes=146001
+ERROR=0
+TRACEBACK=0
+KERNEL_HEALTH[ctrl]: OK fault_lines=0 (dmesg since uptime 766159s)
+=== [ctrl] done 17:58:45 ===
+LEG_VERDICT[ctrl]: GREEN 2026-11-27T17:58:45Z
+=== [m8q] boot 17:58:45 env=[ARC_MODEL=/models/qwen3.8-27b-fp8 ARC_SERVED=qwen3.8-27b-fp8 ARC_GRAPH=1 ARC_SPEC=3 ARC_FP8=1 ARC_KVDTYPE=mxfp8 ARC_MXKV_NATIVE=1] ===
+HEALTH_OK_m8q 18:04:00
+mx_backend_lines=1
+native_lines=108
+materialized_lines=0
+device_lost_lines=0
+pc2_windowed_impl=0
+lmcache_lines=0
+interop_live=0
+tracebacks=0
+(EngineCore pid=782) INFO 11-27 18:01:28 [kv_cache_utils.py:2395] XPU KV cache size: 386,484 tokens, Maximum concurrency for 262,144 tokens per request: 1.47x
+PROMPT_OK 7 '\n\nParis'
+PROMPT_OK 209 '\n\n<think>\nThe user wants a Python function that computes the n-th Fibonacci number using an iterative approach (not recursion).\n\nLet me think about the Fibonacc'
+PROMPT_OK 236 '\n\n1. **Identify the criterion** – an element must be in the gaseous state at typical room temperature (about 20 °C / 68 °F). \n2. **Recall the periodic table** –'
+solo conc1 rep2 wall=5.1s ctok=256 tps=50.3
+solo conc1 rep3 wall=5.1s ctok=256 tps=50.3
+agg8 conc8 rep1 wall=8.7s ctok=2048 tps=236.2
+agg8 conc8 rep2 wall=8.1s ctok=2048 tps=253.5
+agg8 conc8 rep3 wall=8.1s ctok=2048 tps=254.3
+DECODE_BATTERY_DONE
+[temperature_string] status=400 ok=True
+[raw_truncated_json] status=400 ok=True
+[raw_wrong_content_type] status=400 ok=True
+[state_stability] 200:a817337ce107bcad:'HEALTH CHECK OK' == 200:a817337ce107bcad:'HEALTH CHECK OK' -> True
+=== GARBAGE_SUITE_PASS (probes=15 fails=0) ===
+[essay] t0_identical=True hashes=['e65e3c1ef12b', 'e65e3c1ef12b', 'e65e3c1ef12b'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=2145 chars=[5554, 5554, 5554]
+[code] t0_identical=True hashes=['82e39bc83063', '82e39bc83063', '82e39bc83063'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=5051 chars=[3176, 3176, 3176]
+[multi] t0_identical=True hashes=['2a6890b4f248', '2a6890b4f248', '2a6890b4f248'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=3400 chars=[598, 598, 598]
+[simple] t0_identical=True hashes=['84efc84cc142', '84efc84cc142', '84efc84cc142'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=38 chars=[1510, 1510, 1510]
+LONGPROBE c29m8q full: CLEAN
+GARBLE: class_lines=4 empty_garble=4 probe_errors=0 (gated=1) in longprobe_full.out
+CHURN 4x256 done: ['5.7s/256tok', '6.0s/256tok', '6.5s/256tok', '6.5s/256tok']
+[essay] post_churn_rehit_identical=True hashes=['e65e3c1ef12b', 'e65e3c1ef12b'] garble={'r1': [], 'r2': []}
+[code] post_churn_rehit_identical=True hashes=['82e39bc83063', '82e39bc83063'] garble={'r1': [], 'r2': []}
+[multi] post_churn_rehit_identical=True hashes=['2a6890b4f248', '2a6890b4f248'] garble={'r1': [], 'r2': []}
+[simple] post_churn_rehit_identical=True hashes=['84efc84cc142', '84efc84cc142'] garble={'r1': [], 'r2': []}
+LONGPROBE c29m8qr1 rehit: CLEAN
+GARBLE: class_lines=4 empty_garble=4 probe_errors=0 (gated=1) in longprobe_rehit1.out
+CHURN 4x256 done: ['5.8s/256tok', '6.1s/256tok', '6.4s/256tok', '6.4s/256tok']
+[essay] post_churn_rehit_identical=True hashes=['e65e3c1ef12b', 'e65e3c1ef12b'] garble={'r1': [], 'r2': []}
+[code] post_churn_rehit_identical=True hashes=['82e39bc83063', '82e39bc83063'] garble={'r1': [], 'r2': []}
+[multi] post_churn_rehit_identical=True hashes=['2a6890b4f248', '2a6890b4f248'] garble={'r1': [], 'r2': []}
+[simple] post_churn_rehit_identical=True hashes=['84efc84cc142', '84efc84cc142'] garble={'r1': [], 'r2': []}
+LONGPROBE c29m8qr2 rehit: CLEAN
+GARBLE: class_lines=4 empty_garble=4 probe_errors=0 (gated=1) in longprobe_rehit2.out
+CHURN 4x256 done: ['5.8s/256tok', '5.9s/256tok', '6.4s/256tok', '6.6s/256tok']
+[essay] post_churn_rehit_identical=True hashes=['e65e3c1ef12b', 'e65e3c1ef12b'] garble={'r1': [], 'r2': []}
+[code] post_churn_rehit_identical=True hashes=['82e39bc83063', '82e39bc83063'] garble={'r1': [], 'r2': []}
+[multi] post_churn_rehit_identical=True hashes=['2a6890b4f248', '2a6890b4f248'] garble={'r1': [], 'r2': []}
+[simple] post_churn_rehit_identical=True hashes=['84efc84cc142', '84efc84cc142'] garble={'r1': [], 'r2': []}
+LONGPROBE c29m8qr3 rehit: CLEAN
+GARBLE: class_lines=4 empty_garble=4 probe_errors=0 (gated=1) in longprobe_rehit3.out
+[essay] hashes=['e65e3c1ef12b'] finish=['stop', 'stop', 'stop'] chars=[5554, 5554, 5554] t1_seed_identical=True garble_empty=True
+[code] hashes=['82e39bc83063'] finish=['stop', 'stop', 'stop'] chars=[3176, 3176, 3176] t1_seed_identical=True garble_empty=True
+[multi] hashes=['2a6890b4f248'] finish=['stop', 'stop', 'stop'] chars=[598, 598, 598] t1_seed_identical=True garble_empty=True
+[simple] hashes=['84efc84cc142'] finish=['stop', 'stop', 'stop'] chars=[1510, 1510, 1510] t1_seed_identical=True garble_empty=True
+LONGRETURN: PASS
+T1_SEED: PASS
+materialized_lines_post=0
+device_lost_lines_post=0
+tracebacks_post=0
+native_lines_post=108
+serve_log_bytes=204542
+ERROR=0
+TRACEBACK=0
+KERNEL_HEALTH[m8q]: OK fault_lines=0 (dmesg since uptime 766873s)
+=== [m8q] done 18:13:54 ===
+LEG_VERDICT[m8q]: GREEN 2026-11-27T18:13:54Z
+=== [m4q] boot 18:13:54 env=[ARC_MODEL=/models/qwen3.8-27b-fp8 ARC_SERVED=qwen3.8-27b-fp8 ARC_GRAPH=1 ARC_SPEC=3 ARC_FP8=1 ARC_KVDTYPE=mxfp4 ARC_MXKV_NATIVE=1] ===
+HEALTH_OK_m4q 18:18:59
+mx_backend_lines=1
+native_lines=108
+materialized_lines=0
+device_lost_lines=0
+pc2_windowed_impl=0
+lmcache_lines=0
+interop_live=0
+tracebacks=0
+(EngineCore pid=782) INFO 11-27 18:16:37 [kv_cache_utils.py:2395] XPU KV cache size: 721,994 tokens, Maximum concurrency for 262,144 tokens per request: 2.75x
+PROMPT_OK 7 '\n\nParis'
+PROMPT_OK 203 '\n\n<think>\nThe user wants a Python function that computes the n-th Fibonacci number using an iterative approach (not recursion).\n\nLet me think about this:\n- Fibo'
+PROMPT_OK 236 '\n\n1. **Identify the criterion** – an element must be in the gaseous state at typical room temperature (about 20 °C / 68 °F). \n2. **Recall the periodic table** –'
+solo conc1 rep2 wall=4.9s ctok=256 tps=52.6
+solo conc1 rep3 wall=5.4s ctok=256 tps=47.1
+agg8 conc8 rep1 wall=7.9s ctok=2048 tps=259.6
+agg8 conc8 rep2 wall=8.1s ctok=2048 tps=252.8
+agg8 conc8 rep3 wall=7.9s ctok=2048 tps=260.8
+DECODE_BATTERY_DONE
+[temperature_string] status=400 ok=True
+[raw_truncated_json] status=400 ok=True
+[raw_wrong_content_type] status=400 ok=True
+[state_stability] 200:a817337ce107bcad:'HEALTH CHECK OK' == 200:a817337ce107bcad:'HEALTH CHECK OK' -> True
+=== GARBAGE_SUITE_PASS (probes=15 fails=0) ===
+[essay] t0_identical=True hashes=['242d5cc82023', '242d5cc82023', '242d5cc82023'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=2145 chars=[3886, 3886, 3886]
+[code] t0_identical=True hashes=['0200f6957841', '0200f6957841', '0200f6957841'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=5051 chars=[3715, 3715, 3715]
+[multi] t0_identical=True hashes=['17d67b534410', '17d67b534410', '17d67b534410'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=3400 chars=[548, 548, 548]
+[simple] t0_identical=True hashes=['c4d55b2a3532', 'c4d55b2a3532', 'c4d55b2a3532'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=38 chars=[1511, 1511, 1511]
+LONGPROBE c29m4q full: CLEAN
+GARBLE: class_lines=4 empty_garble=4 probe_errors=0 (gated=1) in longprobe_full.out
+CHURN 4x256 done: ['5.8s/256tok', '5.8s/256tok', '6.2s/256tok', '6.2s/256tok']
+[essay] post_churn_rehit_identical=True hashes=['242d5cc82023', '242d5cc82023'] garble={'r1': [], 'r2': []}
+[code] post_churn_rehit_identical=True hashes=['0200f6957841', '0200f6957841'] garble={'r1': [], 'r2': []}
+[multi] post_churn_rehit_identical=True hashes=['17d67b534410', '17d67b534410'] garble={'r1': [], 'r2': []}
+[simple] post_churn_rehit_identical=True hashes=['c4d55b2a3532', 'c4d55b2a3532'] garble={'r1': [], 'r2': []}
+LONGPROBE c29m4qr1 rehit: CLEAN
+GARBLE: class_lines=4 empty_garble=4 probe_errors=0 (gated=1) in longprobe_rehit1.out
+CHURN 4x256 done: ['5.8s/256tok', '5.9s/256tok', '6.1s/256tok', '6.2s/256tok']
+[essay] post_churn_rehit_identical=True hashes=['242d5cc82023', '242d5cc82023'] garble={'r1': [], 'r2': []}
+[code] post_churn_rehit_identical=True hashes=['0200f6957841', '0200f6957841'] garble={'r1': [], 'r2': []}
+[multi] post_churn_rehit_identical=True hashes=['17d67b534410', '17d67b534410'] garble={'r1': [], 'r2': []}
+[simple] post_churn_rehit_identical=True hashes=['c4d55b2a3532', 'c4d55b2a3532'] garble={'r1': [], 'r2': []}
+LONGPROBE c29m4qr2 rehit: CLEAN
+GARBLE: class_lines=4 empty_garble=4 probe_errors=0 (gated=1) in longprobe_rehit2.out
+CHURN 4x256 done: ['5.8s/256tok', '6.1s/256tok', '6.2s/256tok', '6.3s/256tok']
+[essay] post_churn_rehit_identical=True hashes=['242d5cc82023', '242d5cc82023'] garble={'r1': [], 'r2': []}
+[code] post_churn_rehit_identical=True hashes=['0200f6957841', '0200f6957841'] garble={'r1': [], 'r2': []}
+[multi] post_churn_rehit_identical=True hashes=['17d67b534410', '17d67b534410'] garble={'r1': [], 'r2': []}
+[simple] post_churn_rehit_identical=True hashes=['c4d55b2a3532', 'c4d55b2a3532'] garble={'r1': [], 'r2': []}
+LONGPROBE c29m4qr3 rehit: CLEAN
+GARBLE: class_lines=4 empty_garble=4 probe_errors=0 (gated=1) in longprobe_rehit3.out
+[essay] hashes=['242d5cc82023'] finish=['stop', 'stop', 'stop'] chars=[3886, 3886, 3886] t1_seed_identical=True garble_empty=True
+[code] hashes=['0200f6957841'] finish=['stop', 'stop', 'stop'] chars=[3715, 3715, 3715] t1_seed_identical=True garble_empty=True
+[multi] hashes=['17d67b534410'] finish=['stop', 'stop', 'stop'] chars=[548, 548, 548] t1_seed_identical=True garble_empty=True
+[simple] hashes=['c4d55b2a3532'] finish=['stop', 'stop', 'stop'] chars=[1511, 1511, 1511] t1_seed_identical=True garble_empty=True
+LONGRETURN: PASS
+T1_SEED: PASS
+materialized_lines_post=0
+device_lost_lines_post=0
+tracebacks_post=0
+native_lines_post=108
+serve_log_bytes=203882
+ERROR=0
+TRACEBACK=0
+KERNEL_HEALTH[m4q]: OK fault_lines=0 (dmesg since uptime 767782s)
+=== [m4q] done 18:28:07 ===
+LEG_VERDICT[m4q]: GREEN 2026-11-27T18:28:07Z
+=== [mkq] boot 18:28:08 env=[ARC_MODEL=/models/qwen3.8-27b-fp8 ARC_SERVED=qwen3.8-27b-fp8 ARC_GRAPH=1 ARC_SPEC=3 ARC_FP8=1 ARC_KVDTYPE=mxk8v4 ARC_MXKV_NATIVE=1] ===
+HEALTH_OK_mkq 18:33:23
+mx_backend_lines=1
+native_lines=108
+materialized_lines=0
+device_lost_lines=0
+pc2_windowed_impl=0
+lmcache_lines=0
+interop_live=0
+tracebacks=0
+(EngineCore pid=783) INFO 11-27 18:30:51 [kv_cache_utils.py:2395] XPU KV cache size: 504,832 tokens, Maximum concurrency for 262,144 tokens per request: 1.93x
+PROMPT_OK 7 '\n\nParis'
+PROMPT_OK 203 '\n\n<think>\nThe user wants a Python function that computes the n-th Fibonacci number using an iterative approach (not recursion).\n\nLet me think about this:\n- Fibo'
+PROMPT_OK 251 '\n\n1. **Identify the criterion** – an element must be in the gaseous state under standard room‑temperature conditions (approximately 20 °C / 68 °F) and 1 atm pre'
+solo conc1 rep2 wall=5.3s ctok=256 tps=48.6
+solo conc1 rep3 wall=5.3s ctok=256 tps=48.7
+agg8 conc8 rep1 wall=8.3s ctok=2048 tps=246.6
+agg8 conc8 rep2 wall=8.1s ctok=2048 tps=253.7
+agg8 conc8 rep3 wall=8.2s ctok=2048 tps=249.4
+DECODE_BATTERY_DONE
+[temperature_string] status=400 ok=True
+[raw_truncated_json] status=400 ok=True
+[raw_wrong_content_type] status=400 ok=True
+[state_stability] 200:a817337ce107bcad:'HEALTH CHECK OK' == 200:a817337ce107bcad:'HEALTH CHECK OK' -> True
+=== GARBAGE_SUITE_PASS (probes=15 fails=0) ===
+[essay] t0_identical=True hashes=['0537d0148853', '0537d0148853', '0537d0148853'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=2145 chars=[4145, 4145, 4145]
+[code] t0_identical=True hashes=['c1b5665b490a', 'c1b5665b490a', 'c1b5665b490a'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=5051 chars=[2601, 2601, 2601]
+[multi] t0_identical=True hashes=['54432bf88cb8', '54432bf88cb8', '54432bf88cb8'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=3400 chars=[563, 563, 563]
+[simple] t0_identical=True hashes=['84efc84cc142', '84efc84cc142', '84efc84cc142'] garble={'cold': [], 'rehit': [], 'rehit2': []} t1_seed_identical=True prompt_tok=38 chars=[1510, 1510, 1510]
+LONGPROBE c29mkq full: CLEAN
+GARBLE: class_lines=4 empty_garble=4 probe_errors=0 (gated=1) in longprobe_full.out
+CHURN 4x256 done: ['5.7s/256tok', '6.2s/256tok', '6.4s/256tok', '6.4s/256tok']
+[essay] post_churn_rehit_identical=True hashes=['0537d0148853', '0537d0148853'] garble={'r1': [], 'r2': []}
+[code] post_churn_rehit_identical=True hashes=['c1b5665b490a', 'c1b5665b490a'] garble={'r1': [], 'r2': []}
+[multi] post_churn_rehit_identical=True hashes=['54432bf88cb8', '54432bf88cb8'] garble={'r1': [], 'r2': []}
+[simple] post_churn_rehit_identical=True hashes=['84efc84cc142', '84efc84cc142'] garble={'r1': [], 'r2': []}
+LONGPROBE c29mkqr1 rehit: CLEAN
+GARBLE: class_lines=4 empty_garble=4 probe_errors=0 (gated=1) in longprobe_rehit1.out
+CHURN 4x256 done: ['5.8s/256tok', '6.1s/256tok', '6.1s/256tok', '6.1s/256tok']
+[essay] post_churn_rehit_identical=True hashes=['0537d0148853', '0537d0148853'] garble={'r1': [], 'r2': []}
+[code] post_churn_rehit_identical=True hashes=['c1b5665b490a', 'c1b5665b490a'] garble={'r1': [], 'r2': []}
+[multi] post_churn_rehit_identical=True hashes=['54432bf88cb8', '54432bf88cb8'] garble={'r1': [], 'r2': []}
+[simple] post_churn_rehit_identical=True hashes=['84efc84cc142', '84efc84cc142'] garble={'r1': [], 'r2': []}
+LONGPROBE c29mkqr2 rehit: CLEAN
+GARBLE: class_lines=4 empty_garble=4 probe_errors=0 (gated=1) in longprobe_rehit2.out
+CHURN 4x256 done: ['6.0s/256tok', '6.1s/256tok', '6.2s/256tok', '6.2s/256tok']
+[essay] post_churn_rehit_identical=True hashes=['0537d0148853', '0537d0148853'] garble={'r1': [], 'r2': []}
+[code] post_churn_rehit_identical=True hashes=['c1b5665b490a', 'c1b5665b490a'] garble={'r1': [], 'r2': []}
+[multi] post_churn_rehit_identical=True hashes=['54432bf88cb8', '54432bf88cb8'] garble={'r1': [], 'r2': []}
+[simple] post_churn_rehit_identical=True hashes=['84efc84cc142', '84efc84cc142'] garble={'r1': [], 'r2': []}
+LONGPROBE c29mkqr3 rehit: CLEAN
+GARBLE: class_lines=4 empty_garble=4 probe_errors=0 (gated=1) in longprobe_rehit3.out
+[essay] hashes=['0537d0148853'] finish=['stop', 'stop', 'stop'] chars=[4145, 4145, 4145] t1_seed_identical=True garble_empty=True
+[code] hashes=['c1b5665b490a'] finish=['stop', 'stop', 'stop'] chars=[2601, 2601, 2601] t1_seed_identical=True garble_empty=True
+[multi] hashes=['54432bf88cb8'] finish=['stop', 'stop', 'stop'] chars=[563, 563, 563] t1_seed_identical=True garble_empty=True
+[simple] hashes=['84efc84cc142'] finish=['stop', 'stop', 'stop'] chars=[1510, 1510, 1510] t1_seed_identical=True garble_empty=True
+LONGRETURN: PASS
+T1_SEED: PASS
+materialized_lines_post=0
+device_lost_lines_post=0
+tracebacks_post=0
+native_lines_post=108
+serve_log_bytes=198431
+ERROR=0
+TRACEBACK=0
+KERNEL_HEALTH[mkq]: OK fault_lines=0 (dmesg since uptime 768636s)
+=== [mkq] done 18:41:56 ===
+LEG_VERDICT[mkq]: GREEN 2026-11-27T18:41:56Z
+=== [lmc] boot 18:41:56 (ARC_LMC=1 + mxfp4 + native, gate default-on) ===
+HEALTH_OK_lmc 18:47:11
+lmcache_lines=7
+interop_live=3
+mx_backend_lines=1
+native_lines=108
+tracebacks=0
+(EngineCore pid=789) INFO 11-27 18:44:39 [kv_cache_utils.py:2395] XPU KV cache size: 721,994 tokens, Maximum concurrency for 262,144 tokens per request: 2.75x
+G1_PACKED_METADATA_OK
+(Worker_TP1 pid=1145) [32;20m[2026-11-27 18:44:39,963] LMCache INFO:[0m use mla: False, kv shape: (17, 2, 1600, 1, 272), num_mtp_layers: 1 [3m(vllm_v1_adapter.py:792:vllm.distributed.kv_transfer.kv_connector.v1.lmcache_integration.vllm_v1_adapter)[0m
+PROMPT_OK 7 '\n\nParis'
+PROMPT_OK 203 '\n\n<think>\nThe user wants a Python function that computes the n-th Fibonacci number using an iterative approach (not recursion).\n\nLet me think about this:\n- Fibo'
+PROMPT_OK 236 '\n\n1. **Identify the criterion** – an element must be in the gaseous state at typical room temperature (about 20 °C / 68 °F). \n2. **Recall the periodic table** –'
+solo conc1 rep2 wall=5.0s ctok=256 tps=51.0
+solo conc1 rep3 wall=5.1s ctok=256 tps=49.8
+agg8 conc8 rep1 wall=8.2s ctok=2048 tps=249.1
+agg8 conc8 rep2 wall=8.1s ctok=2048 tps=252.5
+agg8 conc8 rep3 wall=7.8s ctok=2048 tps=263.7
+DECODE_BATTERY_DONE
+G2_CLEAN_FACE_OK n_ok=1 store_lines=12
+t1=6.030637 t2=1.901412 retrieve_before=4 retrieve_after=4
+G3_REHIT_AA_OK_QUIETLOG (texts equal + wall 1.901412s < 50% of 6.030637s = functional hit)
+G4 cell c29lmc_n1 run1 n_ok=1 OK
+G4 cell c29lmc_n1 run2 n_ok=1 OK
+G4 cell c29lmc_n2 run3 n_ok=2 OK
+G4 cell c29lmc_n4 run4 n_ok=4 OK
+G4_DEATH_SEQUENCE_CLEAN (no wedge, no device-lost, no watchdog)
+G5_CLEAN_TRANSFERS_OK (zero tracebacks, zero LMCache ERROR lines)
+store_lines=168
+retrieve_lines=4
+lmc_error_lines=0
+KERNEL_HEALTH[lmc]: OK fault_lines=0 (dmesg since uptime 769464s)
+=== [lmc] done 18:52:35 failed=[] ===
+LEG_VERDICT[lmc]: GREEN 2026-11-27T18:52:35Z
+KERNEL_HEALTH[battery]: OK fault_lines=0 (dmesg since uptime 751569s)
+R264_CERT_PRECONDITION gemma_mx+lmcache=[ m8g:GREEN m4g:GREEN mkg:RED lmc:GREEN ] rest=[ gref:GREEN g0:GREEN compare:GREEN ctrl:GREEN m8q:GREEN m4q:GREEN mkq:GREEN ] gate_fail=1 -> CERT_CUT_BLOCKED
+LEG_ARTIFACTS /root/build/p647/cert29_r263
+R264_GATE_END 2026-11-27T18:52:57Z image=vllm-arc:v0.30.0-b70-cert29 fork_sha=4dd3a1b9710f1c638f7f0b5ac1885525cf57c3bc bank=/root/build/p647/cert29_r263 gate_fail=1 cert_cut=BLOCKED
+P647_CERT29_GATE_COMPLETE -- GATE_FAIL=1 (fix before cert)
+W14_STALE_BATON_DIRS_REMOVED=0
+W14_SERVE_LAUNCHED 2026-11-27T18:53:04Z log=/root/build/logs/w14_restore_20261127_185258/w14_serve_only.out
+W14_HEALTH_OK 2026-11-27T18:57:54Z
+W14_GEN_OK text=" Helsinki, which is also the country's" finish=length
+W14_FINAL rc=0 evidence=/root/build/logs/w14_restore_20261127_185258
+W14_RESTORE rc=0 2026-11-27T18:58:01Z log=/root/build/logs/w14_restore_r264.log

@@ -1,0 +1,4 @@
+NOTE: ARC_LMC auto-off for ARC_KVDTYPE=mxk8v4 (MX lane perf posture r176: ITL unchanged, 26/259 ms TTFT store tax saved; the r168 garble reason repealed at P-H2/r249 — the lane is legal + byte-exact under the P-H4 posture-aware gate)
+ARC_CONTAINER_FRESH image=vllm-arc:v0.30.0-b70-cert29 id=77e08563f7c7 model=/models/qwen3.8-27b-fp8 (recreated from none)
+26cdbd56b2e39a94266398f51de1e0af21be0b1757bdb4df940d4eacf1fd42be
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert29 name=arc-c29 model=/models/qwen3.8-27b-fp8 served=qwen3.8-27b-fp8 quant=fp8 qcfg= graph=1 spec=3 gmu=0.8 maxlen=262144 mnbt=8192 seqs=64 fp8=1 xgc=0 tmpl=__qwen_default__ rp=<qwen3> tp=<qwen3_coder> port=8000 18:28:11

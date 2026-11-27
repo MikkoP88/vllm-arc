@@ -1,0 +1,6 @@
+W14_STALE_BATON_DIRS_REMOVED=0
+W14_GPU_MEM_BEFORE_BOOT dev0=43MiB dev1=43MiB
+W14_SERVE_LAUNCHED 2026-11-27T18:53:04Z log=/root/build/logs/w14_restore_20261127_185258/w14_serve_only.out
+W14_HEALTH_OK 2026-11-27T18:57:54Z
+W14_GEN_OK text=" Helsinki, which is also the country's" finish=length
+W14_FINAL rc=0 evidence=/root/build/logs/w14_restore_20261127_185258
