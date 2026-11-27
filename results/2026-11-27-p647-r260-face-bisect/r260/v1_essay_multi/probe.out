@@ -1,0 +1,10 @@
+R260_GEN face=essay phase=cold sha=5c80063c79a1 chars=6154 finish=length prompt_tok=2104 dt=141.7
+R260_GEN face=essay phase=rehit sha=fc2dddcc7ce6 chars=6157 finish=length prompt_tok=2104 dt=140.4
+R260_GEN face=essay phase=rehit2 sha=fc2dddcc7ce6 chars=6157 finish=length prompt_tok=2104 dt=140.9
+R260_GEN face=essay phase=t1a sha=74616f540de4 chars=3085 finish=length prompt_tok=2104 dt=70.3
+R260_GEN face=essay phase=t1b sha=74616f540de4 chars=3085 finish=length prompt_tok=2104 dt=71.0
+[essay] class_complete shas=['5c80063c79a1', 'fc2dddcc7ce6', 'fc2dddcc7ce6', '74616f540de4', '74616f540de4']
+R260_GEN face=multi phase=cold sha=5c80063c79a1 chars=6154 finish=length prompt_tok=3446 dt=141.7
+R260_GEN face=multi phase=rehit ERROR <HTTPError 500: 'Internal Server Error'>
+[multi] ERROR at phase=rehit: <HTTPError 500: 'Internal Server Error'>
+R260_DONE crashed=True faces=essay+multi -> longprobe_seq_p47r2601.json

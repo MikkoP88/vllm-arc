@@ -1,0 +1,6 @@
+mx_backend_lines=1
+native_lines=6
+pc2_windowed_impl=100
+lmcache_lines=0
+xpu_graph_lines=0
+tracebacks=0

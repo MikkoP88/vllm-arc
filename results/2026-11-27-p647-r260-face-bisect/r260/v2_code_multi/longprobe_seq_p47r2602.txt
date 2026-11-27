@@ -1,0 +1,16 @@
+===== code =====
+{
+ "shas": [
+  "5c80063c79a1",
+  "fc2dddcc7ce6",
+  "fc2dddcc7ce6",
+  "74616f540de4",
+  "74616f540de4"
+ ]
+}
+
+===== multi =====
+{
+ "error": "phase=rehit <HTTPError 500: 'Internal Server Error'>"
+}
+
