@@ -1,0 +1,92 @@
+R260_PROBE_MD5 417dd2d28e1d5b388a6e0baa7148c6ad  /root/build/p647/r260_bisect_probe.py
+R260_IMAGE vllm-arc:v0.30.0-b70-cert29 cert29_fork_sha=16effb497cd36cb25df7c19cb6f1938d2d45cdc5
+=== [boot] arc-r260 (gemma m8 posture, EAGER) 04:36:06 ===
+R260_HEALTH_OK 04:42:02
+mx_backend_lines=1
+native_lines=6
+pc2_windowed_impl=100
+lmcache_lines=0
+xpu_graph_lines=0
+tracebacks=0
+=== [V 1] faces: essay multi 04:42:16 ===
+DEVICE_LOST=3
+TRACEBACK=4
+-- [1] probe tail:
+R260_GEN face=essay phase=cold sha=5c80063c79a1 chars=6154 finish=length prompt_tok=2104 dt=141.7
+R260_GEN face=essay phase=rehit sha=fc2dddcc7ce6 chars=6157 finish=length prompt_tok=2104 dt=140.4
+R260_GEN face=essay phase=rehit2 sha=fc2dddcc7ce6 chars=6157 finish=length prompt_tok=2104 dt=140.9
+R260_GEN face=essay phase=t1a sha=74616f540de4 chars=3085 finish=length prompt_tok=2104 dt=70.3
+R260_GEN face=essay phase=t1b sha=74616f540de4 chars=3085 finish=length prompt_tok=2104 dt=71.0
+[essay] class_complete shas=['5c80063c79a1', 'fc2dddcc7ce6', 'fc2dddcc7ce6', '74616f540de4', '74616f540de4']
+R260_GEN face=multi phase=cold sha=5c80063c79a1 chars=6154 finish=length prompt_tok=3446 dt=141.7
+R260_GEN face=multi phase=rehit ERROR <HTTPError 500: 'Internal Server Error'>
+[multi] ERROR at phase=rehit: <HTTPError 500: 'Internal Server Error'>
+R260_DONE crashed=True faces=essay+multi -> longprobe_seq_p47r2601.json
+R260_V1 CRASHED (faces: essay multi)
+=== [boot] arc-r260 (gemma m8 posture, EAGER) 04:54:26 ===
+R260_HEALTH_OK 05:00:21
+mx_backend_lines=1
+native_lines=6
+pc2_windowed_impl=100
+lmcache_lines=0
+xpu_graph_lines=0
+tracebacks=0
+=== [V 2] faces: code multi 05:00:35 ===
+DEVICE_LOST=3
+TRACEBACK=4
+-- [2] probe tail:
+R260_GEN face=code phase=cold sha=5c80063c79a1 chars=6154 finish=length prompt_tok=5433 dt=142.4
+R260_GEN face=code phase=rehit sha=fc2dddcc7ce6 chars=6157 finish=length prompt_tok=5433 dt=139.7
+R260_GEN face=code phase=rehit2 sha=fc2dddcc7ce6 chars=6157 finish=length prompt_tok=5433 dt=141.3
+R260_GEN face=code phase=t1a sha=74616f540de4 chars=3085 finish=length prompt_tok=5433 dt=69.9
+R260_GEN face=code phase=t1b sha=74616f540de4 chars=3085 finish=length prompt_tok=5433 dt=71.2
+[code] class_complete shas=['5c80063c79a1', 'fc2dddcc7ce6', 'fc2dddcc7ce6', '74616f540de4', '74616f540de4']
+R260_GEN face=multi phase=cold sha=5c80063c79a1 chars=6154 finish=length prompt_tok=3446 dt=141.1
+R260_GEN face=multi phase=rehit ERROR <HTTPError 500: 'Internal Server Error'>
+[multi] ERROR at phase=rehit: <HTTPError 500: 'Internal Server Error'>
+R260_DONE crashed=True faces=code+multi -> longprobe_seq_p47r2602.json
+R260_V2 CRASHED (faces: code multi)
+=== [boot] arc-r260 (gemma m8 posture, EAGER) 05:12:45 ===
+R260_HEALTH_OK 05:18:40
+mx_backend_lines=1
+native_lines=6
+pc2_windowed_impl=100
+lmcache_lines=0
+xpu_graph_lines=0
+tracebacks=0
+=== [V 3] faces: multi multi 05:18:55 ===
+DEVICE_LOST=3
+TRACEBACK=4
+-- [3] probe tail:
+R260_GEN face=multi phase=cold sha=886716bff6e5 chars=6131 finish=length prompt_tok=3446 dt=142.9
+R260_GEN face=multi phase=rehit ERROR <HTTPError 500: 'Internal Server Error'>
+[multi] ERROR at phase=rehit: <HTTPError 500: 'Internal Server Error'>
+R260_DONE crashed=True faces=multi+multi -> longprobe_seq_p47r2603.json
+R260_V3 CRASHED (faces: multi multi)
+=== [boot] arc-r260 (gemma m8 posture, EAGER) 05:21:41 ===
+R260_HEALTH_OK 05:27:37
+mx_backend_lines=1
+native_lines=6
+pc2_windowed_impl=100
+lmcache_lines=0
+xpu_graph_lines=0
+tracebacks=0
+=== [V 4] faces: simple multi 05:27:51 ===
+DEVICE_LOST=3
+TRACEBACK=4
+-- [4] probe tail:
+R260_GEN face=simple phase=cold sha=ccb04f8dcaf8 chars=5905 finish=length prompt_tok=57 dt=143.2
+R260_GEN face=simple phase=rehit sha=124ef8c98c7c chars=6155 finish=length prompt_tok=57 dt=142.9
+R260_GEN face=simple phase=rehit2 sha=124ef8c98c7c chars=6155 finish=length prompt_tok=57 dt=142.8
+R260_GEN face=simple phase=t1a sha=4f6c814ca19a chars=3085 finish=length prompt_tok=57 dt=70.1
+R260_GEN face=simple phase=t1b sha=4f6c814ca19a chars=3085 finish=length prompt_tok=57 dt=69.7
+[simple] class_complete shas=['ccb04f8dcaf8', '124ef8c98c7c', '124ef8c98c7c', '4f6c814ca19a', '4f6c814ca19a']
+R260_GEN face=multi phase=cold sha=5c80063c79a1 chars=6154 finish=length prompt_tok=3446 dt=141.1
+R260_GEN face=multi phase=rehit ERROR <HTTPError 500: 'Internal Server Error'>
+[multi] ERROR at phase=rehit: <HTTPError 500: 'Internal Server Error'>
+R260_DONE crashed=True faces=simple+multi -> longprobe_seq_p47r2604.json
+R260_V4 CRASHED (faces: simple multi)
+R260_BANK /root/build/p647/r260 (59 files)
+R260_SUMMARY v1_essay=2 v2_code=2 v3_multi=2 v4_simple=2 (2=crash 0=clean 1=fail)
+P647_R260_LEG_DONE -- bank ready for pull
+W14_RESTORED 2026-11-27T05:40:09Z

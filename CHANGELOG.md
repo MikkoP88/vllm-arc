@@ -12,6 +12,38 @@ the fork SHA it was built from.
 Phase labels P0–P6.38 refer to the plan's execution phases; every phase's
 raw evidence is banked under `results/YYYY-MM-DD-<phase>-*/`.
 
+## r260 — the face bisect: ALL FOUR variants crash at the multi rehit; V4 is the minimal repro; the r258b content exoneration is retracted (2026-11-27)
+
+The suite-face bisect on `vllm-arc:v0.30.0-b70-cert29`: four
+fresh-boot EAGER phases, each one prior face's full class
+(cold/rehit/rehit2 temp-0/1536 + t1a/t1b temp-1-seed/768,
+byte-identical prompts) then the multi class.
+**`v1_essay=2 v2_code=2 v3_multi=2 v4_simple=2` — every variant
+crashed at the multi rehit** (`computed=3328, scheduled=118`, ccs
+resets both GPUs, 8 devcoredumps banked), and the multi COLD ran
+clean in every variant. The minimal prior-state prefix is ANY prior
+traffic — five 57-token chat generations (V4) suffice, ~12 min end
+to end: the crash is not a function of the debris class, length, or
+content. V3's subtlety: its class-2 cold is itself a prefix rehit
+(the sha divergence from the byte-identical cross-boot temp-0 colds
+proves it took the hit path) and ran CLEAN — the same geometry
+crashed only at the NEXT rehit, so the discriminating state is the
+free-list provenance of the two fresh windowed tail blocks.
+**The r258b "content classes exonerated" claim is RETRACTED**: the
+harness's `make_table(tail=True)` placed the 18 windowed ids at
+columns 622..639 while the kernel's window walk reads columns
+36..53 — every r258b cell read block 0 eighteen times; the real
+crash ids never entered the walk (the code disagreed with its own
+docstring). The content hypothesis is OPEN again and is now the
+leading candidate, consistent with the never-zeroed fresh windowed
+blocks (`new_block_ids_to_zero=null` in every crash dump). Next:
+r261 (launched) — the corrected REAL-WALK replay: the dump rows
+verbatim at the walked columns, four banked crash tables (m8g/r257/
+V3/V4) + the consecutive-fresh control × four pool fills × 3 seeds
+(60 cells); a HANG/DEVLOST hands the hunt an offline repro, 60
+clean defers to the ARC_MXKV_NATIVE=0 e2e lane ablation on the V4
+repro.
+
 ## r259 — the eager suite replay CRASHED: the graph mechanics are exonerated; the surface is engine-level state (2026-11-27)
 
 The decisive discriminator on `vllm-arc:v0.30.0-b70-cert29`: the r257

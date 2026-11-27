@@ -1,0 +1,20 @@
+{
+ "tag": "p47r2604",
+ "faces": [
+  "simple",
+  "multi"
+ ],
+ "ts": "2026-11-27 05:27:51",
+ "simple": {
+  "shas": [
+   "ccb04f8dcaf8",
+   "124ef8c98c7c",
+   "124ef8c98c7c",
+   "4f6c814ca19a",
+   "4f6c814ca19a"
+  ]
+ },
+ "multi": {
+  "error": "phase=rehit <HTTPError 500: 'Internal Server Error'>"
+ }
+}
