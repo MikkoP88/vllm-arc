@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "<stdin>", line 215, in <module>
+  File "<stdin>", line 197, in main
+  File "<stdin>", line 107, in n_tokens
+  File "/opt/venv/lib/python3.12/site-packages/transformers/tokenization_utils_base.py", line 3085, in apply_chat_template
+    chat_template = self.get_chat_template(chat_template, tools)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/transformers/tokenization_utils_base.py", line 3270, in get_chat_template
+    raise ValueError(
+ValueError: Cannot use chat template functions because tokenizer.chat_template is not set and no template argument was passed! For information about writing templates and setting the tokenizer.chat_template attribute, please see the documentation at https://huggingface.co/docs/transformers/main/en/chat_templating
