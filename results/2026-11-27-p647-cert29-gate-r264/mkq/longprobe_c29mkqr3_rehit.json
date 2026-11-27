@@ -1,0 +1,55 @@
+{
+ "tag": "c29mkqr3",
+ "mode": "rehit",
+ "probe": "v3",
+ "ts": "2026-11-27 18:40:17",
+ "essay": {
+  "post_churn_rehit_identical": true,
+  "hashes": [
+   "0537d0148853",
+   "0537d0148853"
+  ],
+  "garble": {
+   "r1": [],
+   "r2": []
+  },
+  "prompt_tok": 2145
+ },
+ "code": {
+  "post_churn_rehit_identical": true,
+  "hashes": [
+   "c1b5665b490a",
+   "c1b5665b490a"
+  ],
+  "garble": {
+   "r1": [],
+   "r2": []
+  },
+  "prompt_tok": 5051
+ },
+ "multi": {
+  "post_churn_rehit_identical": true,
+  "hashes": [
+   "54432bf88cb8",
+   "54432bf88cb8"
+  ],
+  "garble": {
+   "r1": [],
+   "r2": []
+  },
+  "prompt_tok": 3400
+ },
+ "simple": {
+  "post_churn_rehit_identical": true,
+  "hashes": [
+   "84efc84cc142",
+   "84efc84cc142"
+  ],
+  "garble": {
+   "r1": [],
+   "r2": []
+  },
+  "prompt_tok": 38
+ },
+ "VERDICT": "CLEAN"
+}

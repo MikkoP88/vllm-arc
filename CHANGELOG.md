@@ -12,6 +12,39 @@ the fork SHA it was built from.
 Phase labels P0–P6.38 refer to the plan's execution phases; every phase's
 raw evidence is banked under `results/YYYY-MM-DD-<phase>-*/`.
 
+## r264 — the cert29 gate: the stride fix held, ten of eleven legs green, mkg RED on longreturn — cert cut blocked (2026-11-27)
+
+The r262 stride fix is proven at the gate: every MX lane engaged the bridge
+guard (`STRIDE_FIX_ENGAGED materialized_lines_post=20`), zero DEVICE_LOST
+lines, kernel health OK on all thirteen legs — the r255 mid-suite deaths are
+gone. Ten of eleven legs green: the qwen lanes (m8q/m4q/mkq at 1.47x/2.75x/
+1.93x pool), the fp8 baselines (g0 fully clean, ctrl green), the gref refusal
+face, m8g/m4g green, and lmc green (G1-G5, A/A re-hit 6.047->1.894 s, zero
+transfer errors). The RED is mkg (gemma + mxk8v4 KV) on the LONGRETURN
+absolute check: cross-cycle hash drift with REP-LOOP flags on all four
+classes, T1_SEED PASS within a seed, no kernel event, and the comparative
+verdict vs the fp8 control PASS — an absolute-content failure, not a new
+mode. `R264_CERT_PRECONDITION ... mkg:RED ... -> CERT_CUT_BLOCKED`: per the
+owner's cert-cut precondition (2026-11-27) the certificate stays held until
+the gemma MX lanes and lmc are all green on a candidate.
+
+The gate also banked the posture defect that governs the next rung: every
+gemma leg ran under the qwen chat skin (`tmpl=__qwen_default__ rp=<qwen3>
+tp=<qwen3_coder>` — the serve script's model-agnostic defaults; the P6.28
+gemma template never landed in main), and the gemma legs' `ARC_RPC=1200` is
+a name no-op (the serve script reads `ARC_RPC_TIMEOUT`, so the watchdog
+stayed at 300 s). Per the owner directive (2026-11-28) gemma must never be
+tested under qwen env values — only gemma's own chat template and parsers
+are a valid posture — so every gemma content verdict in this gate (the mkg
+RED and the m8g/m4g greens alike) is invalid-by-posture, and the Law-11
+battery must re-skin its gemma legs before its precondition line can
+certify. The r266 analysis matrix measures each KV dtype under the P6.28
+gemma skin with no parsers, plus the weight-MX/KV-fp8 lanes of the cert28
+reports, to attribute the mkg RED under a lawful posture before any fix is
+chosen. Evidence:
+`results/2026-11-27-p647-cert29-gate-r264/` (bank of 238 files, transfer
+oracle clean, address audit clean — `results/REDACTION-2026-11-27-p647-cert29-gate-r264.md`).
+
 ## r263 — the cert29 image rebuilt from the landed stride fix; the gate hardened so the certificate precondition is a verdict line (2026-11-27)
 
 The image carries files, so the r262 fix had to be baked.

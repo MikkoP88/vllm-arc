@@ -1,0 +1,31 @@
+{
+ "tag": "c29lmc_n1",
+ "ctx": 32768,
+ "conc": 1,
+ "max_tokens": 600,
+ "model": "qwen3.8-27b-fp8",
+ "temperature": 0.0,
+ "n_ok": 1,
+ "n_fail": 0,
+ "requests": [
+  {
+   "slot": 0,
+   "error": null,
+   "ttft_s": 13.271024268004112,
+   "total_s": 22.235304909059778,
+   "n_stream_chunks": 155,
+   "itl_ms_p50": 57.94877093285322,
+   "itl_ms_p90": 58.12098190654069,
+   "itl_ms_p99": 74.6776380110532
+  }
+ ],
+ "ttft_mean_s": 13.271024268004112,
+ "ttft_max_s": 13.271024268004112,
+ "per_user_tps": [
+  66.93
+ ],
+ "per_user_mean_tps": 66.93230879587253,
+ "per_user_min_tps": 66.93230879587253,
+ "agg_tps_wall": 26.98411388797866,
+ "wall_s": 22.235304909059778
+}

@@ -1,0 +1,5 @@
+[essay] post_churn_rehit_identical=True hashes=['fc2dddcc7ce6', 'fc2dddcc7ce6'] garble={'r1': ['REP-LOOP'], 'r2': ['REP-LOOP']}
+[code] post_churn_rehit_identical=True hashes=['fc2dddcc7ce6', 'fc2dddcc7ce6'] garble={'r1': ['REP-LOOP'], 'r2': ['REP-LOOP']}
+[multi] post_churn_rehit_identical=True hashes=['fc2dddcc7ce6', 'fc2dddcc7ce6'] garble={'r1': ['REP-LOOP'], 'r2': ['REP-LOOP']}
+[simple] post_churn_rehit_identical=False hashes=['124ef8c98c7c', 'd74de4b5812b'] garble={'r1': ['REP-LOOP'], 'r2': ['REP-LOOP']}
+LONGPROBE c29mkgr1 rehit: CORRUPTION_SIGNAL
