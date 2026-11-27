@@ -1,0 +1,19 @@
+{
+ "tag": "c29m8gr2",
+ "mode": "rehit",
+ "probe": "v3",
+ "ts": "2026-11-26 23:34:36",
+ "essay": {
+  "error": "URLError(ConnectionRefusedError(111, 'Connection refused'))"
+ },
+ "code": {
+  "error": "URLError(ConnectionRefusedError(111, 'Connection refused'))"
+ },
+ "multi": {
+  "error": "URLError(ConnectionRefusedError(111, 'Connection refused'))"
+ },
+ "simple": {
+  "error": "URLError(ConnectionRefusedError(111, 'Connection refused'))"
+ },
+ "VERDICT": "CORRUPTION_SIGNAL"
+}

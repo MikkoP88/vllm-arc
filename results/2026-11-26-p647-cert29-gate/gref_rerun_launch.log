@@ -1,0 +1,9 @@
+R255_IMAGE_CONTENT_OK vllm-arc:v0.30.0-b70-cert29
+R255_FORK_SHA_OK cert29_fork_sha=16effb497cd36cb25df7c19cb6f1938d2d45cdc5
+p647_longprobe.py derived OK
+=== [gref] expect-boot-death 01:11:11 (gemma + mxfp8 KV, NO native) ===
+GREF_PC2_REFUSAL_OK refusal_lines=2 (boot-loud: the engine refused the windowed MX impl off-native)
+=== [gref] done 01:12:54 ===
+LEG_ARTIFACTS /root/build/p647/cert29
+P647_CERT29_GATE_COMPLETE -- PASS (analysis/bank next)
+W14_RESTORED 2026-11-27T01:12:55Z
