@@ -1,0 +1,7 @@
+mode=probe overlay=/root/build/p647/r262_ov_probe
+-- host overlay:
+   3cb71429dcef172f450dedceb14617e19f1a5d52027eeb7bffefc0d19f7f728d
+   b3dd3ab79a5fca8204778f9e8379017f90ffe479bc58afbcd32568f3f8e343d3
+-- inside the container:
+   3cb71429dcef172f450dedceb14617e19f1a5d52027eeb7bffefc0d19f7f728d
+   b3dd3ab79a5fca8204778f9e8379017f90ffe479bc58afbcd32568f3f8e343d3

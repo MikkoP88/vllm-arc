@@ -137,3 +137,15 @@ unexplained (a first-long-request-after-boot effect is the
 candidate). Details and the successor finding (the expand-view
 stride defect; r261/r262):
 `results/2026-11-27-p647-r261-realwalk-replay/VERDICT.md`.
+
+## Marker-audit addendum (r262, 2026-11-27)
+
+The `xpu_graph_lines=0` cited in the Bank list above is VACUOUS: the
+driver's count helper took `-i` as its pattern and never ran the
+regex, so the marker was 0 on every input. The eager posture of all
+four variants is nonetheless proven by their serve logs (per phase:
+zero capture lines, three `graph posture cudagraph_mode=NONE`
+lines and four `VLLM_XPU_ENABLE_XPU_GRAPH=False` lines). The verdict
+(every variant crashes at the first multi rehit) stands on that
+evidence. The cause of the crash and the fix are e2e-proven in
+`results/2026-11-27-p647-r262-expandview-ab/VERDICT.md`.

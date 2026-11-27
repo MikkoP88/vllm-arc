@@ -1211,6 +1211,12 @@ class MxAttentionImpl(TurboQuantAttentionImpl):
                 synth_seq_lens = (
                     attn_metadata.seq_lens[i] - q_len
                 ) + _ac[1 : q_len + 1]
+                # r262 stride law (2026-11-27): this expand VIEW has stride
+                # (0, 1). The Triton lane honors the stride (every row
+                # reads the request's row); the native wheel cannot (it
+                # addresses rows at a contiguous pitch) -- the bridge
+                # materializes it (native_decode.py, r262 block). Never
+                # hand this view to a lane that indexes rows by pitch.
                 synth_bt = bt_row.expand(q_len, -1)
                 if self.sliding_window:
                     # P-C2: windowed synthetic decode rides native

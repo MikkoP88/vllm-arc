@@ -1,0 +1,9 @@
+mx_backend_lines=1
+native_lines=6
+bridge_marker_lines=2
+bridge_mode_lines=2
+pc2_windowed_impl=100
+lmcache_lines=0
+graph_capture_lines=0
+eager_posture_lines=3
+tracebacks=0

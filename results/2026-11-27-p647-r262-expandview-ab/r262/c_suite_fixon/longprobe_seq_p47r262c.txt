@@ -1,0 +1,55 @@
+===== essay =====
+{
+ "shas": [
+  "5c80063c79a1",
+  "fc2dddcc7ce6",
+  "fc2dddcc7ce6",
+  "74616f540de4",
+  "74616f540de4"
+ ]
+}
+
+===== code =====
+{
+ "shas": [
+  "5c80063c79a1",
+  "fc2dddcc7ce6",
+  "fc2dddcc7ce6",
+  "74616f540de4",
+  "74616f540de4"
+ ]
+}
+
+===== multi =====
+{
+ "shas": [
+  "fc2dddcc7ce6",
+  "fc2dddcc7ce6",
+  "fc2dddcc7ce6",
+  "74616f540de4",
+  "74616f540de4"
+ ]
+}
+
+===== simple =====
+{
+ "shas": [
+  "124ef8c98c7c",
+  "124ef8c98c7c",
+  "124ef8c98c7c",
+  "4f6c814ca19a",
+  "4f6c814ca19a"
+ ]
+}
+
+===== multi =====
+{
+ "shas": [
+  "fc2dddcc7ce6",
+  "fc2dddcc7ce6",
+  "fc2dddcc7ce6",
+  "74616f540de4",
+  "74616f540de4"
+ ]
+}
+

@@ -12,6 +12,129 @@ the fork SHA it was built from.
 Phase labels P0–P6.38 refer to the plan's execution phases; every phase's
 raw evidence is banked under `results/YYYY-MM-DD-<phase>-*/`.
 
+## r262 — the e2e A/B: the expand-view block-table stride defect IS the gemma DEVICE_LOST and the bridge guard IS the fix (a_probe=0 c_suite=0 b_ctrl=2); the fix lands in the bridge (2026-11-27)
+
+The e2e A/B on `vllm-arc:v0.30.0-b70-cert29` through the wrapper's
+`ARC_MXKV_OVERLAY` hook — the image's own bytes patched into three
+overlays (sha256-proven inside the container), same posture
+(gemma-4-31b, mxfp8 KV, `ARC_MXKV_NATIVE=1`, eager, spec off, LMCache
+off), same probe, one fresh boot per phase.
+**`R262_SUMMARY a_probe=0 c_suite=0 b_ctrl=2`** (0 = clean, 2 =
+crash):
+
+- fix ON — the bridge materializes a non-contiguous `bt_rows` before
+  the native call: **30/30 generations clean across two boots.** The
+  multi rehit — the crash step of r255 through r260 — completed on all
+  13 of its attempts (four on the probe boot, nine on the five-face
+  suite boot `essay code multi simple multi`), and the kernel log
+  holds not one message from container start to the end of each boot.
+- fix OFF — a marker-only overlay: the cold completes and the rehit
+  dies at its first step (HTTP 500, ccs engine resets on both cards, 2
+  devcoredumps) — the crash of every earlier rung.
+
+The only delta between the clean suite boot and the crashing control
+boot is the `.contiguous()` block, so mounting an overlay, the python
+guard and the probe itself do not defuse the crash — the stride
+normalization does. **The fix is landed** in
+`vllm_gaudi/xpu/patches/mx_kv/native_decode.py` (a metadata check and
+a device copy, only when the block table is non-contiguous; the decode
+path never enters it and a one-row view is contiguous by definition)
+with a contract comment at the synth call site in `engine.py`. The A/B
+validated the overlay on the crash image; the landed tree bytes are
+validated on the rebuilt image.
+
+The probe dump (what the wheel dereferenced; 100 calls = 50 windowed
+layers x 2 ranks — gemma-4-31b has 50 sliding-window layers in five
+KV-cache groups, not "five windowed layers" as r261 first wrote): the
+request's real row for row 0, the table's all-zero rows for rows
+1..63 (block 0: windowed attention silently off on those rows), and
+for rows 64..117 device memory PAST the [64, 640] table — which
+torch's storage-bounds check refused to read, so those bytes remain
+unobserved (the same 118-row ride survived on a fresh boot in r257:
+whether it is fatal depends on the bytes it lands in). Two earlier
+statements are corrected: the r261 expectation that rehit outputs
+change with the fix is RETRACTED — fifteen comparable ride classes are
+byte-identical across the fix, because the temp-0 continuation
+collapses to the same attractor for three different prompts, so a
+sha-stability gate cannot see windowed attention being off; only the
+crash exposed the defect — and the `xpu_graph_lines=0` marker in the
+r259/r260 banks is vacuous (the helper never ran its regex; their
+eager posture is proven by their serve logs).
+
+Operational: the W14 restore hang is ROOT-CAUSED — the W14 image
+JIT-builds its host-view extension into a per-PID `/tmp` directory,
+and a boot killed inside its ~27 s build window leaves a lock behind
+that every later boot waits on forever. The r261 remedy ("restart +
+relaunch") worked only because diagnostic `docker exec`s had bumped
+the pid counter; the real remedy (delete the lock-only directories,
+then serve) is scripted in `tools/ar/r262_w14_restore.sh` and verified
+(health + one generation).
+
+Next: rebuild the image from `main` → re-leg m8g / m4g / mkg (the fix
+is proven in eager posture only) → re-gate (the r255-class gate) →
+the cert29 cut.
+
+## r261 — the real-walk replay is ALL CLEAN (60/60): the materialized tables are not the surface; the static audit finds the expand-view stride defect; the r260 V3 description corrected (2026-11-27)
+
+The corrected real-walk replay on `vllm-arc:v0.30.0-b70-cert29`: the
+crash step's six native calls at the engine's exact geometry, the
+dump rows placed as the engine places them (36 zero-pads at columns
+0..35, the 18 real ids at the walked columns 36..53), five tables
+(m8g / r257 / the r260 V3 + V4 rows / the consecutive-fresh control)
+× four pool fills × three seeds. **`R261_DONE hangs=0 devlosts=0
+cells=60`** — every call OK, no devcoredumps. The offline oracle is
+now exact in table placement, geometry and call order and still
+cannot reproduce: the crash input is not the kernel walking these
+tables over any pool content. The content hypothesis is closed in
+the direct form, and the `ARC_MXKV_NATIVE=0` ablation proposed as the
+next rung is impossible (sliding-window layers require the native
+lane at init).
+
+**The static audit found a stride contract violation** (code-proven
+here, e2e-proven in r262). The windowed synth path — continuation
+prefill with 9..128 query rows — hands the native wheel
+`bt_row.expand(q_len, -1)`, a stride-0 VIEW of one persistent
+block-table row. The Triton lanes multiply the row index by
+`stride(0)` and are right; the wheel takes `data_ptr()` + `size(1)`
+and addresses row r at `r * bt_width`, a contiguous pitch. The
+kernel therefore reads the request's real row for row 0, the
+zero-initialized table rows 1..63 for the next rows (block 0), and —
+past the table's 64 rows — device memory OUTSIDE the table, as block
+ids. That fits every banked data point: colds are single full
+forwards (never the synth path); the essay/code rehits are 56/57-row
+rides that stay inside the table; the multi rehit is a 118-row ride
+and is the crash site in every rung; materialized tables never
+contain those bytes and are always clean. The target qwen model
+rides the Triton lane and is unaffected. Side finding: on
+continuation rows the gemma windowed layers have been attending over
+the null block (fifty layers in five groups, corrected in r262 — this
+entry first said five). The prediction that banked rehit outputs
+would change with the fix was wrong: they are byte-identical across
+it (r262).
+
+**Correction to r260**: the V3 description ("five prior multi
+generations; a class-2 cold that was itself a clean prefix rehit
+with the crash geometry") was a misread of the bank — V3 ran ONE
+multi cold (a single full 3446-token forward) and crashed at the
+FIRST multi rehit; the free-list-provenance inference drawn from it
+is retracted. All four variants crashed at the first multi rehit;
+the headline verdict stands. Correction addenda are in the r258b and
+r260 banks.
+
+Operational: the W14 restore after this leg booted to "JIT kernel
+warmup finished" and hung on `shm_broadcast` (no health for 105
+minutes); a `docker restart radiance-test` + relaunch restored
+health (evidence banked in the r261 bank). r262 root-caused the hang
+(a stale JIT build lock, see above): the restart remedy was a
+coincidence of pid numbering, not a remedy.
+
+Next (as launched from this rung): r262 — the e2e A/B on the same
+image through the wrapper's `ARC_MXKV_OVERLAY` hook: a probe overlay
+dumping the rows the wheel dereferences, the fix overlay (the bridge
+materializes a non-contiguous block table) across `essay code multi
+simple multi`, and a marker-only control that must still crash. Fix
+proven → land it → re-leg m8g/m4g/mkg → re-gate → the cert29 cut.
+
 ## r260 — the face bisect: ALL FOUR variants crash at the multi rehit; V4 is the minimal repro; the r258b content exoneration is retracted (2026-11-27)
 
 The suite-face bisect on `vllm-arc:v0.30.0-b70-cert29`: four
@@ -42,73 +165,17 @@ V3/V4) + the consecutive-fresh control × four pool fills × 3 seeds
 (60 cells); a HANG/DEVLOST hands the hunt an offline repro, 60
 clean retires the offline oracle (the lane-ablation follow-up
 proposed here is impossible — sliding-window layers require the
-native lane at init).
-
-## r261 — the real-walk replay is ALL CLEAN (60/60): the materialized tables are not the surface; the static audit finds the expand-view stride defect; the r260 V3 description corrected (2026-11-27)
-
-The corrected real-walk replay on `vllm-arc:v0.30.0-b70-cert29`: the
-crash step's six native calls at the engine's exact geometry, the
-dump rows placed as the engine places them (36 zero-pads at columns
-0..35, the 18 real ids at the walked columns 36..53), five tables
-(m8g / r257 / the r260 V3 + V4 rows / the consecutive-fresh control)
-× four pool fills × three seeds. **`R261_DONE hangs=0 devlosts=0
-cells=60`** — every call OK, no devcoredumps. The offline oracle is
-now exact in table placement, geometry and call order and still
-cannot reproduce: the crash input is not the kernel walking these
-tables over any pool content. The content hypothesis is closed in
-the direct form, and the `ARC_MXKV_NATIVE=0` ablation proposed as
-the next rung is impossible (sliding-window layers require the
-native lane at init).
-
-**The static audit found a stride contract violation** (code-proven;
-the e2e A/B is r262, launched). The windowed synth path —
-continuation prefill with 9..128 query rows — hands the native wheel
-`bt_row.expand(q_len, -1)`, a stride-0 VIEW of one persistent
-block-table row. The Triton lanes multiply the row index by
-`stride(0)` and are right; the wheel takes `data_ptr()` + `size(1)`
-and addresses row r at `r * bt_width`, a contiguous pitch. The
-kernel therefore reads the request's real row for row 0, the
-zero-initialized table rows 1..63 for the next rows (block 0), and —
-past the table's 64 rows — device memory OUTSIDE the table, as block
-ids. That fits every banked data point: colds are single full
-forwards (never the synth path); the essay/code rehits are 56/57-row
-rides that stay inside the table; the multi rehit is a 118-row ride
-and is the crash site in every rung; materialized tables never
-contain those bytes and are always clean. The target qwen model
-rides the Triton lane and is unaffected. Side finding: on
-continuation rows the five gemma windowed layers have been attending
-over the null block — banked gemma rehit outputs were computed with
-windowed attention effectively disabled there, so rehit outputs are
-expected to change when the fix lands.
-
-**Correction to r260**: the V3 description ("five prior multi
-generations; a class-2 cold that was itself a clean prefix rehit
-with the crash geometry") was a misread of the bank — V3 ran ONE
-multi cold (a single full 3446-token forward) and crashed at the
-FIRST multi rehit; the free-list-provenance inference drawn from it
-is retracted. All four variants crashed at the first multi rehit;
-the headline verdict stands. Correction addenda are in the r258b and
-r260 banks.
-
-Operational: the W14 restore after this leg booted to "JIT kernel
-warmup finished" and hung on `shm_broadcast` (no health for 105
-minutes); a `docker restart radiance-test` + relaunch restored
-health (evidence banked in the r261 bank). The r262 driver's
-restore is health-aware with one such retry.
-
-Next: r262 (launched) — the e2e A/B on the same image through the
-wrapper's `ARC_MXKV_OVERLAY` hook: a probe overlay dumping the rows
-the wheel dereferences, the fix overlay (the bridge materializes a
-non-contiguous block table) across `essay code multi simple multi`,
-and a marker-only control that must still crash. Fix proven → land
-it → re-leg m8g/m4g/mkg → re-gate → the cert29 cut.
+native lane at init). Outcome: r261 ran all 60 cells clean and r262
+proved the crash is the expand-view stride defect, not content.
 
 ## r259 — the eager suite replay CRASHED: the graph mechanics are exonerated; the surface is engine-level state (2026-11-27)
 
 The decisive discriminator on `vllm-arc:v0.30.0-b70-cert29`: the r257
 suite replay with exactly one env delta — `ARC_GRAPH=0` (eager engine,
-`xpu_graph_lines=0` in the banked markers; the identical native calls
-running python-side). **The suite reproduced the DEVICE_LOST without
+proven by the serve log's `graph posture cudagraph_mode=NONE` lines;
+the banked `xpu_graph_lines=0` marker is vacuous — the helper never ran
+its regex, see r262 — and the identical native calls ran
+python-side). **The suite reproduced the DEVICE_LOST without
 graphs** at the multi face's re-sample, ~23 min in (essay and code
 completed clean before it): `DEVICE_LOST=3`, both GPUs' ccs engine
 resets at 04:21:27, 2 devcoredumps banked. The mode question is
