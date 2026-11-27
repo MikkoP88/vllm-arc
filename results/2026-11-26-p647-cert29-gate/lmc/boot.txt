@@ -1,0 +1,4 @@
+NOTE: ARC_LMC=1 forced on ARC_KVDTYPE=mxfp4 — legal + byte-exact since the r249 interop (P-H4 posture-aware gate); r176 store tax on cold faces, r249 re-hit win 6.18->1.89 s on warm
+ARC_CONTAINER_FRESH image=vllm-arc:v0.30.0-b70-cert29 id=4a4e9b0dd244 model=/models/qwen3.8-27b-fp8 (recreated from none)
+770973b88558b2dc54f146e3d639c15d1637383ffda672807b676963db883908
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert29 name=arc-c29 model=/models/qwen3.8-27b-fp8 served=qwen3.8-27b-fp8 quant=fp8 qcfg= graph=1 spec=3 gmu=0.8 maxlen=262144 mnbt=8192 seqs=64 fp8=1 xgc=0 tmpl=__qwen_default__ rp=<qwen3> tp=<qwen3_coder> port=8000 23:02:35

@@ -1,0 +1,1050 @@
+INFO 11-26 22:49:10 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+INFO 11-26 22:49:10 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+INFO 11-26 22:49:10 [__init__.py:54] - hpu -> vllm_gaudi:register
+INFO 11-26 22:49:10 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+INFO 11-26 22:49:11 [platform.py:421] ArcXpuPlatform: wheel hook torch_utils <- patches.mx_dtype_map OK (already imported)
+INFO 11-26 22:49:11 [platform.py:441] ArcXpuPlatform: source-transform targets already imported at install: ['vllm.v1.attention.backends.registry']
+INFO 11-26 22:49:11 [platform.py:225] ArcXpuPlatform: injected AttentionBackendEnum.MXKV -> vllm_gaudi.xpu.patches.mx_kv.engine.MxAttentionBackend
+INFO 11-26 22:49:11 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+INFO 11-26 22:49:11 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+INFO 11-26 22:49:11 [__init__.py:54] - hpu -> vllm_gaudi:register
+INFO 11-26 22:49:11 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+INFO 11-26 22:49:11 [__init__.py:272] Platform plugin arc is activated
+INFO 11-26 22:49:11 [__init__.py:272] Platform plugin arc is activated
+INFO 11-26 22:49:22 [platform.py:375] ArcXpuPlatform: wheel hook kv_cache_interface <- patches.mx_kv_mode OK
+INFO 11-26 22:49:23 [platform.py:375] ArcXpuPlatform: wheel hook factory <- patches.lmc_mx_boot_gate OK
+WARNING 11-26 22:49:24 [argparse_utils.py:276] With `vllm serve`, you should provide the model as a positional argument or in a config file instead of via the `--model` option. The `--model` option will be removed in a future version.
+(APIServer pid=13) INFO 11-26 22:49:24 [api_utils.py:347] 
+(APIServer pid=13) INFO 11-26 22:49:24 [api_utils.py:347]        █     █     █▄   ▄█
+(APIServer pid=13) INFO 11-26 22:49:24 [api_utils.py:347]  ▄▄ ▄█ █     █     █ ▀▄▀ █  version 0.30.0
+(APIServer pid=13) INFO 11-26 22:49:24 [api_utils.py:347]   █▄█▀ █     █     █     █  model   /models/target
+(APIServer pid=13) INFO 11-26 22:49:24 [api_utils.py:347]    ▀▀  ▀▀▀▀▀ ▀▀▀▀▀ ▀     ▀
+(APIServer pid=13) INFO 11-26 22:49:24 [api_utils.py:347] 
+(APIServer pid=13) INFO 11-26 22:49:24 [api_utils.py:286] non-default args: {'model_tag': '/models/target', 'chat_template': '/root/chat_template_qwen38_high.jinja', 'enable_auto_tool_choice': True, 'tool_call_parser': 'qwen3_coder', 'model': '/models/target', 'trust_remote_code': True, 'dtype': 'float16', 'max_model_len': 262144, 'quantization': 'fp8', 'served_model_name': ['qwen3.8-27b-fp8'], 'reasoning_parser': 'qwen3', 'tensor_parallel_size': 2, 'block_size': 64, 'gpu_memory_utilization': 0.8, 'kv_cache_dtype': 'mxk8v4', 'enable_prefix_caching': True, 'mamba_ssm_cache_dtype': 'float16', 'mamba_cache_mode': 'align', 'max_num_batched_tokens': 8192, 'max_num_seqs': 64, 'disable_hybrid_kv_cache_manager': False, 'speculative_config': {'method': 'mtp', 'num_speculative_tokens': 3, 'draft_sample_method': 'probabilistic'}, 'compilation_config': {'mode': <CompilationMode.NONE: 0>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': [], 'ir_enable_torch_wrap': None, 'splitting_ops': None, 'compile_mm_encoder': False, 'cudagraph_mm_encoder': False, 'encoder_cudagraph_token_budgets': [], 'encoder_cudagraph_max_vision_items_per_batch': 0, 'encoder_cudagraph_max_frames_per_batch': None, 'compile_sizes': None, 'compile_ranges_endpoints': None, 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.FULL_DECODE_ONLY: (2, 0)>, 'cudagraph_num_of_warmups': 0, 'cudagraph_capture_sizes': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 20, 25, 30, 35, 40, 45, 48, 50, 55, 60, 64, 65, 70, 75, 80, 85, 90, 95, 96, 100, 105, 110, 112, 115, 120, 125, 128, 130, 135, 140, 145, 150, 155, 160, 165, 170, 175, 180, 185, 190, 192, 195, 200, 205, 210, 215, 220, 224, 225, 230, 235, 240, 245, 250, 255, 256, 260, 265, 270, 275, 280, 285, 290, 295, 300, 305, 310, 315, 320], 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': None, 'pass_config': {}, 'max_cudagraph_capture_size': None, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': False}, 'local_cache_dir': None, 'fast_moe_cold_start': None, 'static_all_moe_layers': []}}
+(APIServer pid=13) WARNING 11-26 22:49:24 [envs.py:2248] Unknown vLLM environment variable detected: VLLM_QUANTIZE_Q40_LIB
+(APIServer pid=13) INFO 11-26 22:49:49 [model.py:692] Resolved architecture: Qwen3_5ForConditionalGeneration
+(APIServer pid=13) WARNING 11-26 22:49:49 [model.py:2364] Casting torch.bfloat16 to torch.float16.
+(APIServer pid=13) INFO 11-26 22:49:49 [model.py:2030] Using max model len 262144
+(APIServer pid=13) WARNING 11-26 22:49:51 [indexer_topk.py:29] Failed to import the DeepSelect extension (vllm._deepselect_C): No module named 'vllm._deepselect_C'
+(APIServer pid=13) INFO 11-26 22:50:07 [model.py:692] Resolved architecture: Qwen3_5MTP
+(APIServer pid=13) WARNING 11-26 22:50:07 [model.py:2364] Casting torch.bfloat16 to torch.float16.
+(APIServer pid=13) INFO 11-26 22:50:07 [model.py:2030] Using max model len 262144
+(APIServer pid=13) INFO 11-26 22:50:07 [model.py:900] Disabled mm_prefix attention mode because multimodal inputs are configuration-disabled. Attention backends without mm_prefix support may now be selected.
+(APIServer pid=13) WARNING 11-26 22:50:07 [speculative.py:1361] Enabling num_speculative_tokens > 1 will run multiple times of forward on same MTP layer,which may result in lower acceptance rate
+(APIServer pid=13) INFO 11-26 22:50:07 [scheduler.py:288] Chunked prefill is enabled with max_num_batched_tokens=8192.
+(APIServer pid=13) WARNING 11-26 22:50:07 [config.py:819] Qwen3.5 model specifies mamba_ssm_dtype='float32' in its config, but --mamba-ssm-cache-dtype='float16' was passed. Using the user-specified value.
+(APIServer pid=13) WARNING 11-26 22:50:07 [vllm.py:1570] Inductor compilation was disabled by user settings, optimizations settings that are only active during inductor compilation will be ignored.
+(APIServer pid=13) INFO 11-26 22:50:07 [kernel.py:416] Final IR op priority after setting platform defaults: IrOpPriorityConfig(rms_norm=['vllm_c', 'native'], fused_add_rms_norm=['vllm_c', 'native'], gelu_and_mul_sparse=['native'])
+(APIServer pid=13) WARNING 11-26 22:50:07 [xpu.py:308] XPU Graph support is experimental and currently only supports single-GPU execution.
+(APIServer pid=13) INFO 11-26 22:50:07 [xpu.py:382] XPU platform: set server shutdown_timeout=5.
+(APIServer pid=13) INFO 11-26 22:50:07 [graph_safe_output.py:665] ArcXpuPlatform: XPU graph boundary hygiene installed (pid 13, XPUGraph capture_begin/capture_end/replay + graph context __exit__ wrapped).
+(APIServer pid=13) INFO 11-26 22:50:07 [graph_safe_output.py:791] ArcXpuPlatform: zombie stream-reroute guards installed (pid 13, set_stream substitution + wait_stream skip + Event.record reroute + synchronize tripwire).
+(APIServer pid=13) INFO 11-26 22:50:07 [graph_safe_output.py:925] ArcXpuPlatform: runner-entry hygiene installed (pid 13, GPUModelRunner.execute_model + sample_tokens wrapped).
+(APIServer pid=13) INFO 11-26 22:50:07 [graph_safe_output.py:971] ArcXpuPlatform: capture-stream fix installed (pid 13, captures ride torch.xpu.graph.default_capture_stream, EAGERLY INITED before capture #1 — the serving default never enters capture; champion 0.26.1 discipline, r9).
+(APIServer pid=13) INFO 11-26 22:50:07 [graph_safe_output.py:520] ArcXpuPlatform: r12b kernel-launch tracer installed (triton:CachingAutotuner.run).
+(APIServer pid=13) INFO 11-26 22:50:07 [graph_safe_output.py:1112] ArcXpuPlatform: graph-safe output patch installed (pid 13, AsyncOutput/AsyncPoolingOutput __init__ + get_output wrapped).
+(APIServer pid=13) INFO 11-26 22:50:07 [speculator_full_capture.py:117] ArcXpuPlatform: speculator FULL-capture patch installed (pid 13, SpeculatorCudaGraphManager.__init__ wrapped).
+(APIServer pid=13) INFO 11-26 22:50:07 [first_request_warmup.py:123] ArcXpuPlatform: first-request warmup interlock installed (defect-b lane W, r16 evidence)
+(APIServer pid=13) INFO 11-26 22:50:07 [gdn_metadata_fastpath.py:286] [arc-p10] gdn metadata fastpath installed (steady spec-decode builds; stock build kept for prefill/mixed)
+(APIServer pid=13) INFO 11-26 22:50:07 [fp8_block_w8a16.py:97] ArcXpuPlatform: fp8 block linear reroute ACTIVE — XPUFp8BlockScaledMMKernel.apply_input_quant=False, apply_block_scaled_mm -> _xpu_C.fp8_gemm_w8a16 (stock fallback kept; r40: 3-8x/GEMM decode Ms, relerr 4-5e-4)
+(APIServer pid=13) WARNING 11-26 22:50:07 [platform.py:100] ArcXpuPlatform: ar_trace install failed at check_and_update_config: ModuleNotFoundError("No module named 'vllm_gaudi.xpu.patches.ar_trace'")
+(APIServer pid=13) INFO 11-26 22:50:07 [mxfp4_w4a16.py:194] ArcXpuPlatform: mxfp4 w4a16 reroute ACTIVE — XPUMxFp4LinearKernel.apply_weights -> _xpu_C.fp4_gemm_w4a16 (no per-call activation quant; stock w4a4 via ARC_MXFP4_MODE=w4a4)
+(APIServer pid=13) INFO 11-26 22:50:07 [mxfp8_w8a16.py:120] ArcXpuPlatform: mxfp8 w8a16 reroute ACTIVE — XPUMxFp8LinearKernel.apply_weights -> _xpu_C.fp8_gemm_w8a16_mxfp8 (no per-call activation quant; stock w8a8 via ARC_MXFP8_MODE=w8a8)
+(APIServer pid=13) INFO 11-26 22:50:07 [skinny_m.py:169] ArcXpuPlatform: skinny-M reroute OFF (ARC_SKINNY_M unset/off — stock routes at all Ms; the certified default after r127; set ARC_SKINNY_M=on to opt in)
+(APIServer pid=13) INFO 11-26 22:50:07 [graph_exec_doublebuffer.py:127] ArcXpuPlatform: graph-exec double-buffer patch installed (pid 13, CudaGraphManager capture/run_fullgraph wrapped).
+(APIServer pid=13) INFO 11-26 22:50:07 [platform.py:607] ArcXpuPlatform: Intel Arc Xe2 posture active (Intel(R) Graphics [0xe223]).
+(APIServer pid=13) INFO 11-26 22:50:07 [platform.py:616] ArcXpuPlatform: graph posture cudagraph_mode=FULL_DECODE_ONLY capture_sizes=(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 20, 25, 30, 35, 40, 45, 48, 50, 55, 60, 64, 65, 70, 75, 80, 85, 90, 95, 96, 100, 105, 110, 112, 115, 120, 125, 128, 130, 135, 140, 145, 150, 155, 160, 165, 170, 175, 180, 185, 190, 192, 195, 200, 205, 210, 215, 220, 224, 225, 230, 235, 240, 245, 250, 255, 256, 260, 265, 270, 275, 280, 285, 290, 295, 300, 305, 310, 315, 320) (VLLM_XPU_ENABLE_XPU_GRAPH=True).
+(APIServer pid=13) INFO 11-26 22:50:07 [compilation.py:336] Enabled custom fusions: norm_quant, act_quant
+(APIServer pid=13) [transformers] The `use_fast` parameter is deprecated and will be removed in a future version. Use `backend="torchvision"` instead of `use_fast=True`, or `backend="pil"` instead of `use_fast=False`.
+INFO 11-26 22:50:24 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+INFO 11-26 22:50:24 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+INFO 11-26 22:50:24 [__init__.py:54] - hpu -> vllm_gaudi:register
+INFO 11-26 22:50:24 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+INFO 11-26 22:50:25 [platform.py:421] ArcXpuPlatform: wheel hook torch_utils <- patches.mx_dtype_map OK (already imported)
+INFO 11-26 22:50:25 [platform.py:441] ArcXpuPlatform: source-transform targets already imported at install: ['vllm.v1.attention.backends.registry']
+INFO 11-26 22:50:25 [platform.py:225] ArcXpuPlatform: injected AttentionBackendEnum.MXKV -> vllm_gaudi.xpu.patches.mx_kv.engine.MxAttentionBackend
+INFO 11-26 22:50:25 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+INFO 11-26 22:50:25 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+INFO 11-26 22:50:25 [__init__.py:54] - hpu -> vllm_gaudi:register
+INFO 11-26 22:50:25 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+INFO 11-26 22:50:25 [__init__.py:272] Platform plugin arc is activated
+INFO 11-26 22:50:25 [__init__.py:272] Platform plugin arc is activated
+INFO 11-26 22:50:34 [platform.py:375] ArcXpuPlatform: wheel hook kv_cache_interface <- patches.mx_kv_mode OK
+INFO 11-26 22:50:35 [platform.py:375] ArcXpuPlatform: wheel hook factory <- patches.lmc_mx_boot_gate OK
+(EngineCore pid=782) INFO 11-26 22:50:35 [core.py:123] Initializing a V1 LLM engine (v0.30.0) with config: model='/models/target', speculative_config=SpeculativeConfig(method='mtp', model='/models/target', num_spec_tokens=3), tokenizer='/models/target', skip_tokenizer_init=False, tokenizer_mode=auto, revision=None, tokenizer_revision=None, trust_remote_code=True, dtype=torch.float16, max_seq_len=262144, download_dir=None, load_format=auto, tensor_parallel_size=2, pipeline_parallel_size=1, data_parallel_size=1, decode_context_parallel_size=1, dcp_comm_backend=ag_rs, disable_custom_all_reduce=True, quantization=fp8, quantization_config=None, enforce_eager=False, enable_return_routed_experts=False, kv_cache_dtype=mxk8v4, device_config=xpu, structured_outputs_config=StructuredOutputsConfig(backend='auto', disable_any_whitespace=False, disable_additional_properties=False, reasoning_parser='qwen3', reasoning_parser_plugin='', enable_in_reasoning=False), observability_config=ObservabilityConfig(show_hidden_metrics_for_version=None, otlp_traces_endpoint=None, collect_detailed_traces=None, per_request_spec_decode_metrics='none', kv_cache_metrics=False, kv_cache_metrics_sample=0.01, cudagraph_metrics=False, enable_layerwise_nvtx_tracing=False, enable_mfu_metrics=False, enable_mm_processor_stats=False, enable_logging_iteration_details=False, jit_monitor_mode='warn', jit_monitor_verbose=False), seed=0, served_model_name=qwen3.8-27b-fp8, enable_prefix_caching=True, enable_chunked_prefill=True, pooler_config=None, compilation_config={'mode': <CompilationMode.NONE: 0>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': ['+quant_fp8', 'all', '+quant_fp8'], 'ir_enable_torch_wrap': False, 'splitting_ops': [], 'compile_mm_encoder': False, 'cudagraph_mm_encoder': False, 'encoder_cudagraph_token_budgets': [], 'encoder_cudagraph_max_vision_items_per_batch': 0, 'encoder_cudagraph_max_frames_per_batch': None, 'compile_sizes': [], 'compile_ranges_endpoints': [8192], 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.FULL_DECODE_ONLY: (2, 0)>, 'cudagraph_num_of_warmups': 1, 'cudagraph_capture_sizes': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 20, 25, 30, 35, 40, 45, 48, 50, 55, 60, 64, 65, 70, 75, 80, 85, 90, 95, 96, 100, 105, 110, 112, 115, 120, 125, 128, 130, 135, 140, 145, 150, 155, 160, 165, 170, 175, 180, 185, 190, 192, 195, 200, 205, 210, 215, 220, 224, 225, 230, 235, 240, 245, 250, 255, 256, 260, 265, 270, 275, 280, 285, 290, 295, 300, 305, 310, 315, 320], 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': False, 'pass_config': {'fuse_norm_quant': True, 'fuse_act_quant': True, 'fuse_attn_quant': False, 'enable_sp': False, 'fuse_gemm_comms': False, 'fuse_allreduce_rms': False, 'enable_qk_norm_rope_fusion': False, 'fuse_rope_kvcache_cat_mla': False, 'fuse_act_padding': False, 'fuse_qk_norm_rope_kvcache': False}, 'max_cudagraph_capture_size': 320, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': False}, 'local_cache_dir': None, 'fast_moe_cold_start': False, 'static_all_moe_layers': []}, kernel_config=KernelConfig(ir_op_priority=IrOpPriorityConfig(rms_norm=['vllm_c', 'native'], fused_add_rms_norm=['vllm_c', 'native'], gelu_and_mul_sparse=['native']), enable_flashinfer_autotune=True, enable_cutedsl_warmup=True, enable_jit_warmup=True, moe_backend='auto', sparse_indexer_topk_backend='auto', linear_backend='auto', linear_backend_per_quant=None)
+(EngineCore pid=782) INFO 11-26 22:50:35 [multiproc_executor.py:153] DP group leader: node_rank=0, node_rank_within_dp=0, master_addr=127.0.0.1, mq_connect_ip=10.20.3.REDACTED (local), world_size=2, local_world_size=2
+INFO 11-26 22:50:37 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+INFO 11-26 22:50:37 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+INFO 11-26 22:50:37 [__init__.py:54] - hpu -> vllm_gaudi:register
+INFO 11-26 22:50:37 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+INFO 11-26 22:50:38 [platform.py:421] ArcXpuPlatform: wheel hook torch_utils <- patches.mx_dtype_map OK (already imported)
+INFO 11-26 22:50:38 [platform.py:441] ArcXpuPlatform: source-transform targets already imported at install: ['vllm.v1.attention.backends.registry']
+INFO 11-26 22:50:38 [platform.py:225] ArcXpuPlatform: injected AttentionBackendEnum.MXKV -> vllm_gaudi.xpu.patches.mx_kv.engine.MxAttentionBackend
+INFO 11-26 22:50:38 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+INFO 11-26 22:50:38 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+INFO 11-26 22:50:38 [__init__.py:54] - hpu -> vllm_gaudi:register
+INFO 11-26 22:50:38 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+INFO 11-26 22:50:38 [__init__.py:272] Platform plugin arc is activated
+INFO 11-26 22:50:38 [__init__.py:272] Platform plugin arc is activated
+INFO 11-26 22:50:48 [platform.py:375] ArcXpuPlatform: wheel hook kv_cache_interface <- patches.mx_kv_mode OK
+INFO 11-26 22:50:49 [platform.py:375] ArcXpuPlatform: wheel hook factory <- patches.lmc_mx_boot_gate OK
+WARNING 11-26 22:50:49 [indexer_topk.py:29] Failed to import the DeepSelect extension (vllm._deepselect_C): No module named 'vllm._deepselect_C'
+INFO 11-26 22:50:49 [platform.py:375] ArcXpuPlatform: wheel hook mamba_utils <- patches.mamba_lmcache_glue OK
+INFO 11-26 22:50:51 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+INFO 11-26 22:50:51 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+INFO 11-26 22:50:51 [__init__.py:54] - hpu -> vllm_gaudi:register
+INFO 11-26 22:50:51 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+(Worker pid=1026) INFO 11-26 22:50:51 [graph_safe_output.py:665] ArcXpuPlatform: XPU graph boundary hygiene installed (pid 1026, XPUGraph capture_begin/capture_end/replay + graph context __exit__ wrapped).
+(Worker pid=1026) INFO 11-26 22:50:51 [graph_safe_output.py:791] ArcXpuPlatform: zombie stream-reroute guards installed (pid 1026, set_stream substitution + wait_stream skip + Event.record reroute + synchronize tripwire).
+(Worker pid=1026) INFO 11-26 22:50:51 [graph_safe_output.py:925] ArcXpuPlatform: runner-entry hygiene installed (pid 1026, GPUModelRunner.execute_model + sample_tokens wrapped).
+(Worker pid=1026) INFO 11-26 22:50:51 [graph_safe_output.py:971] ArcXpuPlatform: capture-stream fix installed (pid 1026, captures ride torch.xpu.graph.default_capture_stream, EAGERLY INITED before capture #1 — the serving default never enters capture; champion 0.26.1 discipline, r9).
+(Worker pid=1026) INFO 11-26 22:50:51 [graph_safe_output.py:520] ArcXpuPlatform: r12b kernel-launch tracer installed (triton:CachingAutotuner.run).
+(Worker pid=1026) INFO 11-26 22:50:51 [graph_safe_output.py:1112] ArcXpuPlatform: graph-safe output patch installed (pid 1026, AsyncOutput/AsyncPoolingOutput __init__ + get_output wrapped).
+(Worker pid=1026) INFO 11-26 22:50:51 [speculator_full_capture.py:117] ArcXpuPlatform: speculator FULL-capture patch installed (pid 1026, SpeculatorCudaGraphManager.__init__ wrapped).
+(Worker pid=1026) INFO 11-26 22:50:51 [first_request_warmup.py:123] ArcXpuPlatform: first-request warmup interlock installed (defect-b lane W, r16 evidence)
+(Worker pid=1026) INFO 11-26 22:50:51 [gdn_metadata_fastpath.py:286] [arc-p10] gdn metadata fastpath installed (steady spec-decode builds; stock build kept for prefill/mixed)
+(Worker pid=1026) INFO 11-26 22:50:51 [fp8_block_w8a16.py:97] ArcXpuPlatform: fp8 block linear reroute ACTIVE — XPUFp8BlockScaledMMKernel.apply_input_quant=False, apply_block_scaled_mm -> _xpu_C.fp8_gemm_w8a16 (stock fallback kept; r40: 3-8x/GEMM decode Ms, relerr 4-5e-4)
+(Worker pid=1026) WARNING 11-26 22:50:51 [platform.py:100] ArcXpuPlatform: ar_trace install failed at check_if_supports_dtype: ModuleNotFoundError("No module named 'vllm_gaudi.xpu.patches.ar_trace'")
+(Worker pid=1026) INFO 11-26 22:50:51 [mxfp4_w4a16.py:194] ArcXpuPlatform: mxfp4 w4a16 reroute ACTIVE — XPUMxFp4LinearKernel.apply_weights -> _xpu_C.fp4_gemm_w4a16 (no per-call activation quant; stock w4a4 via ARC_MXFP4_MODE=w4a4)
+(Worker pid=1026) INFO 11-26 22:50:51 [mxfp8_w8a16.py:120] ArcXpuPlatform: mxfp8 w8a16 reroute ACTIVE — XPUMxFp8LinearKernel.apply_weights -> _xpu_C.fp8_gemm_w8a16_mxfp8 (no per-call activation quant; stock w8a8 via ARC_MXFP8_MODE=w8a8)
+(Worker pid=1026) INFO 11-26 22:50:51 [skinny_m.py:169] ArcXpuPlatform: skinny-M reroute OFF (ARC_SKINNY_M unset/off — stock routes at all Ms; the certified default after r127; set ARC_SKINNY_M=on to opt in)
+(Worker pid=1026) INFO 11-26 22:50:51 [graph_exec_doublebuffer.py:127] ArcXpuPlatform: graph-exec double-buffer patch installed (pid 1026, CudaGraphManager capture/run_fullgraph wrapped).
+INFO 11-26 22:50:51 [platform.py:421] ArcXpuPlatform: wheel hook torch_utils <- patches.mx_dtype_map OK (already imported)
+INFO 11-26 22:50:51 [platform.py:441] ArcXpuPlatform: source-transform targets already imported at install: ['vllm.v1.attention.backends.registry']
+INFO 11-26 22:50:51 [platform.py:225] ArcXpuPlatform: injected AttentionBackendEnum.MXKV -> vllm_gaudi.xpu.patches.mx_kv.engine.MxAttentionBackend
+INFO 11-26 22:50:52 [__init__.py:52] Available plugins for group vllm.platform_plugins:
+INFO 11-26 22:50:52 [__init__.py:54] - arc -> vllm_gaudi.xpu:register
+INFO 11-26 22:50:52 [__init__.py:54] - hpu -> vllm_gaudi:register
+INFO 11-26 22:50:52 [__init__.py:57] All plugins in this group will be loaded. Set `VLLM_PLUGINS` to control which plugins to load.
+INFO 11-26 22:50:52 [__init__.py:272] Platform plugin arc is activated
+INFO 11-26 22:50:52 [__init__.py:272] Platform plugin arc is activated
+(Worker pid=1026) INFO 11-26 22:50:52 [parallel_state.py:1827] world_size=2 rank=0 local_rank=0 distributed_init_method=file:///tmp/vllm_dist_84c8a6153f6b40e4aba53a038d9b11fd backend=xccl
+(APIServer pid=13) [transformers] Qwen3VL video processing does not apply the per-frame pixel cap the reference implementation (qwen-vl-utils) applies, so some videos cost far more tokens than they would there. In v5.22 the capped behavior will become the default and `cap_pixels_per_frame` will be removed. Pass `cap_pixels_per_frame=True` to adopt the reference behavior now, or `False` to keep the current behavior and silence this warning.
+INFO 11-26 22:51:01 [platform.py:375] ArcXpuPlatform: wheel hook kv_cache_interface <- patches.mx_kv_mode OK
+INFO 11-26 22:51:02 [platform.py:375] ArcXpuPlatform: wheel hook factory <- patches.lmc_mx_boot_gate OK
+WARNING 11-26 22:51:02 [indexer_topk.py:29] Failed to import the DeepSelect extension (vllm._deepselect_C): No module named 'vllm._deepselect_C'
+INFO 11-26 22:51:02 [platform.py:375] ArcXpuPlatform: wheel hook mamba_utils <- patches.mamba_lmcache_glue OK
+(APIServer pid=13) INFO 11-26 22:51:03 [base.py:261] Multi-modal warmup completed in 28.572s
+(Worker pid=1138) INFO 11-26 22:51:04 [graph_safe_output.py:665] ArcXpuPlatform: XPU graph boundary hygiene installed (pid 1138, XPUGraph capture_begin/capture_end/replay + graph context __exit__ wrapped).
+(Worker pid=1138) INFO 11-26 22:51:04 [graph_safe_output.py:791] ArcXpuPlatform: zombie stream-reroute guards installed (pid 1138, set_stream substitution + wait_stream skip + Event.record reroute + synchronize tripwire).
+(Worker pid=1138) INFO 11-26 22:51:04 [graph_safe_output.py:925] ArcXpuPlatform: runner-entry hygiene installed (pid 1138, GPUModelRunner.execute_model + sample_tokens wrapped).
+(Worker pid=1138) INFO 11-26 22:51:04 [graph_safe_output.py:971] ArcXpuPlatform: capture-stream fix installed (pid 1138, captures ride torch.xpu.graph.default_capture_stream, EAGERLY INITED before capture #1 — the serving default never enters capture; champion 0.26.1 discipline, r9).
+(Worker pid=1138) INFO 11-26 22:51:04 [graph_safe_output.py:520] ArcXpuPlatform: r12b kernel-launch tracer installed (triton:CachingAutotuner.run).
+(Worker pid=1138) INFO 11-26 22:51:04 [graph_safe_output.py:1112] ArcXpuPlatform: graph-safe output patch installed (pid 1138, AsyncOutput/AsyncPoolingOutput __init__ + get_output wrapped).
+(Worker pid=1138) INFO 11-26 22:51:04 [speculator_full_capture.py:117] ArcXpuPlatform: speculator FULL-capture patch installed (pid 1138, SpeculatorCudaGraphManager.__init__ wrapped).
+(Worker pid=1138) INFO 11-26 22:51:04 [first_request_warmup.py:123] ArcXpuPlatform: first-request warmup interlock installed (defect-b lane W, r16 evidence)
+(Worker pid=1138) INFO 11-26 22:51:04 [gdn_metadata_fastpath.py:286] [arc-p10] gdn metadata fastpath installed (steady spec-decode builds; stock build kept for prefill/mixed)
+(Worker pid=1138) INFO 11-26 22:51:04 [fp8_block_w8a16.py:97] ArcXpuPlatform: fp8 block linear reroute ACTIVE — XPUFp8BlockScaledMMKernel.apply_input_quant=False, apply_block_scaled_mm -> _xpu_C.fp8_gemm_w8a16 (stock fallback kept; r40: 3-8x/GEMM decode Ms, relerr 4-5e-4)
+(Worker pid=1138) WARNING 11-26 22:51:04 [platform.py:100] ArcXpuPlatform: ar_trace install failed at check_if_supports_dtype: ModuleNotFoundError("No module named 'vllm_gaudi.xpu.patches.ar_trace'")
+(Worker pid=1138) INFO 11-26 22:51:04 [mxfp4_w4a16.py:194] ArcXpuPlatform: mxfp4 w4a16 reroute ACTIVE — XPUMxFp4LinearKernel.apply_weights -> _xpu_C.fp4_gemm_w4a16 (no per-call activation quant; stock w4a4 via ARC_MXFP4_MODE=w4a4)
+(Worker pid=1138) INFO 11-26 22:51:04 [mxfp8_w8a16.py:120] ArcXpuPlatform: mxfp8 w8a16 reroute ACTIVE — XPUMxFp8LinearKernel.apply_weights -> _xpu_C.fp8_gemm_w8a16_mxfp8 (no per-call activation quant; stock w8a8 via ARC_MXFP8_MODE=w8a8)
+(Worker pid=1138) INFO 11-26 22:51:04 [skinny_m.py:169] ArcXpuPlatform: skinny-M reroute OFF (ARC_SKINNY_M unset/off — stock routes at all Ms; the certified default after r127; set ARC_SKINNY_M=on to opt in)
+(Worker pid=1138) INFO 11-26 22:51:04 [graph_exec_doublebuffer.py:127] ArcXpuPlatform: graph-exec double-buffer patch installed (pid 1138, CudaGraphManager capture/run_fullgraph wrapped).
+(Worker pid=1138) INFO 11-26 22:51:05 [parallel_state.py:1827] world_size=2 rank=1 local_rank=1 distributed_init_method=file:///tmp/vllm_dist_84c8a6153f6b40e4aba53a038d9b11fd backend=xccl
+(Worker pid=1026) INFO 11-26 22:51:05 [parallel_state.py:2267] rank 0 in world size 2 is assigned as DP rank 0, PP rank 0, PCP rank 0, TP rank 0, ETP rank 0, EP rank N/A, EPLB rank N/A
+2026:11:26-22:51:05: 1138 |CCL_WARN| value of CCL_ATL_TRANSPORT changed to be ofi (default:mpi)
+2026:11:26-22:51:05: 1138 |CCL_WARN| value of CCL_SYCL_ALLREDUCE_FP8 changed to be 1 (default:0)
+2026:11:26-22:51:05: 1138 |CCL_WARN| value of CCL_SYCL_ALLGATHERV_SCALEOUT_THRESHOLD changed to be 1048576 (default:1073741824)
+2026:11:26-22:51:05: 1138 |CCL_WARN| value of CCL_TOPO_P2P_ACCESS changed to be 1 (default:-1)
+2026:11:26-22:51:05: 1138 |CCL_WARN| value of CCL_TOPO_FABRIC_VERTEX_CONNECTION_CHECK changed to be 0 (default:1)
+2026:11:26-22:51:05: 1026 |CCL_WARN| value of CCL_ATL_TRANSPORT changed to be ofi (default:mpi)
+2026:11:26-22:51:05: 1026 |CCL_WARN| value of CCL_SYCL_ALLREDUCE_FP8 changed to be 1 (default:0)
+2026:11:26-22:51:05: 1026 |CCL_WARN| value of CCL_SYCL_ALLGATHERV_SCALEOUT_THRESHOLD changed to be 1048576 (default:1073741824)
+2026:11:26-22:51:05: 1026 |CCL_WARN| value of CCL_TOPO_P2P_ACCESS changed to be 1 (default:-1)
+2026:11:26-22:51:05: 1026 |CCL_WARN| value of CCL_TOPO_FABRIC_VERTEX_CONNECTION_CHECK changed to be 0 (default:1)
+2026:11:26-22:51:05: 1138 |CCL_WARN| could not get local_idx/count from environment variables, trying to get them from ATL
+2026:11:26-22:51:05: 1026 |CCL_WARN| could not get local_idx/count from environment variables, trying to get them from ATL
+(Worker pid=1026) INFO 11-26 22:51:06 [xpu_worker.py:169] Using V2 Model Runner
+(APIServer pid=13) INFO 11-26 22:51:06 [base.py:261] Readonly multi-modal warmup completed in 2.724s
+(Worker_TP0 pid=1026) INFO 11-26 22:51:07 [model_runner.py:396] Loading model from scratch...
+(Worker_TP0 pid=1026) INFO 11-26 22:51:08 [xpu.py:233] Using backend AttentionBackendEnum.FLASH_ATTN for vit attention
+(Worker_TP0 pid=1026) INFO 11-26 22:51:08 [mm_encoder_attention.py:372] Using AttentionBackendEnum.FLASH_ATTN for MMEncoderAttention.
+(Worker_TP0 pid=1026) INFO 11-26 22:51:08 [__init__.py:726] Selected XPUFp8BlockScaledMMKernel for Fp8LinearMethod
+(Worker_TP0 pid=1026) INFO 11-26 22:51:08 [qwen_gdn_linear_attn.py:176] Using Triton/FLA GDN prefill kernel (requested=auto, head_k_dim=128).
+(Worker_TP0 pid=1026) INFO 11-26 22:51:08 [qwen_gdn_linear_attn.py:528] GDN decode kernel: cuda
+(Worker_TP0 pid=1026) P619 tq_spec_fix v6 installed (active=True mode=split mq_kernel=True): v19b verify-capture forcing + split-row continuation dispatch
+(Worker_TP0 pid=1026) INFO 11-26 22:51:08 [platform.py:375] ArcXpuPlatform: wheel hook turboquant_attn <- patches.tq_spec_fix OK
+(Worker_TP0 pid=1026) INFO 11-26 22:51:08 [platform.py:650] Using MX KV attention backend (mxk8v4).
+(Worker_TP0 pid=1026) WARNING 11-26 22:51:08 [rocm.py:42] Failed to import from amdsmi with ModuleNotFoundError("No module named 'amdsmi'")
+(Worker_TP0 pid=1026) WARNING 11-26 22:51:08 [rocm.py:47] Failed to import from vllm._C with ModuleNotFoundError("No module named 'vllm._C'")
+(Worker_TP0 pid=1026) WARNING 11-26 22:51:08 [rocm.py:53] Failed to import from vllm._C_stable_libtorch with ModuleNotFoundError("No module named 'vllm._C_stable_libtorch'")
+(Worker_TP0 pid=1026) WARNING 11-26 22:51:08 [rocm.py:58] Failed to import from vllm._rocm_C with ModuleNotFoundError("No module named 'vllm._rocm_C'")
+(Worker_TP0 pid=1026) WARNING 11-26 22:51:08 [flydsl_turboquant_decode.py:95] FlyDSL TQ decode launcher: unavailable (Torch not compiled with CUDA enabled). Falling back to SoA Triton decode.
+(Worker_TP0 pid=1026) INFO 11-26 22:51:08 [engine.py:603] MXKV impl: fmt=mxk8v4 head=256 slot=400 B (capacity 2.56x fp16 KV) dump=False ord=0
+(Worker_TP1 pid=1138) P619 tq_spec_fix v6 installed (active=True mode=split mq_kernel=True): v19b verify-capture forcing + split-row continuation dispatch
+(Worker_TP1 pid=1138) INFO 11-26 22:51:08 [platform.py:375] ArcXpuPlatform: wheel hook turboquant_attn <- patches.tq_spec_fix OK
+(Worker_TP1 pid=1138) WARNING 11-26 22:51:08 [rocm.py:42] Failed to import from amdsmi with ModuleNotFoundError("No module named 'amdsmi'")
+(Worker_TP1 pid=1138) WARNING 11-26 22:51:08 [rocm.py:47] Failed to import from vllm._C with ModuleNotFoundError("No module named 'vllm._C'")
+(Worker_TP1 pid=1138) WARNING 11-26 22:51:08 [rocm.py:53] Failed to import from vllm._C_stable_libtorch with ModuleNotFoundError("No module named 'vllm._C_stable_libtorch'")
+(Worker_TP1 pid=1138) WARNING 11-26 22:51:08 [rocm.py:58] Failed to import from vllm._rocm_C with ModuleNotFoundError("No module named 'vllm._rocm_C'")
+(Worker_TP1 pid=1138) INFO 11-26 22:51:08 [engine.py:603] MXKV impl: fmt=mxk8v4 head=256 slot=400 B (capacity 2.56x fp16 KV) dump=False ord=0
+(Worker_TP0 pid=1026) INFO 11-26 22:51:08 [engine.py:603] MXKV impl: fmt=mxk8v4 head=256 slot=400 B (capacity 2.56x fp16 KV) dump=False ord=1
+(Worker_TP1 pid=1138) INFO 11-26 22:51:08 [engine.py:603] MXKV impl: fmt=mxk8v4 head=256 slot=400 B (capacity 2.56x fp16 KV) dump=False ord=1
+(Worker_TP0 pid=1026) INFO 11-26 22:51:08 [engine.py:603] MXKV impl: fmt=mxk8v4 head=256 slot=400 B (capacity 2.56x fp16 KV) dump=False ord=2
+(Worker_TP1 pid=1138) INFO 11-26 22:51:08 [engine.py:603] MXKV impl: fmt=mxk8v4 head=256 slot=400 B (capacity 2.56x fp16 KV) dump=False ord=2
+(Worker_TP0 pid=1026) INFO 11-26 22:51:08 [engine.py:603] MXKV impl: fmt=mxk8v4 head=256 slot=400 B (capacity 2.56x fp16 KV) dump=False ord=3
+(Worker_TP0 pid=1026) INFO 11-26 22:51:08 [engine.py:603] MXKV impl: fmt=mxk8v4 head=256 slot=400 B (capacity 2.56x fp16 KV) dump=False ord=4
+(Worker_TP1 pid=1138) INFO 11-26 22:51:08 [engine.py:603] MXKV impl: fmt=mxk8v4 head=256 slot=400 B (capacity 2.56x fp16 KV) dump=False ord=3
+(Worker_TP0 pid=1026) INFO 11-26 22:51:08 [engine.py:603] MXKV impl: fmt=mxk8v4 head=256 slot=400 B (capacity 2.56x fp16 KV) dump=False ord=5
+(Worker_TP1 pid=1138) INFO 11-26 22:51:08 [engine.py:603] MXKV impl: fmt=mxk8v4 head=256 slot=400 B (capacity 2.56x fp16 KV) dump=False ord=4
+(Worker_TP0 pid=1026) INFO 11-26 22:51:08 [engine.py:603] MXKV impl: fmt=mxk8v4 head=256 slot=400 B (capacity 2.56x fp16 KV) dump=False ord=6
+(Worker_TP1 pid=1138) INFO 11-26 22:51:08 [engine.py:603] MXKV impl: fmt=mxk8v4 head=256 slot=400 B (capacity 2.56x fp16 KV) dump=False ord=5
+(Worker_TP0 pid=1026) INFO 11-26 22:51:08 [engine.py:603] MXKV impl: fmt=mxk8v4 head=256 slot=400 B (capacity 2.56x fp16 KV) dump=False ord=7
+(Worker_TP1 pid=1138) INFO 11-26 22:51:08 [engine.py:603] MXKV impl: fmt=mxk8v4 head=256 slot=400 B (capacity 2.56x fp16 KV) dump=False ord=6
+(Worker_TP0 pid=1026) INFO 11-26 22:51:08 [engine.py:603] MXKV impl: fmt=mxk8v4 head=256 slot=400 B (capacity 2.56x fp16 KV) dump=False ord=8
+(Worker_TP1 pid=1138) INFO 11-26 22:51:08 [engine.py:603] MXKV impl: fmt=mxk8v4 head=256 slot=400 B (capacity 2.56x fp16 KV) dump=False ord=7
+(Worker_TP0 pid=1026) INFO 11-26 22:51:08 [engine.py:603] MXKV impl: fmt=mxk8v4 head=256 slot=400 B (capacity 2.56x fp16 KV) dump=False ord=9
+(Worker_TP0 pid=1026) INFO 11-26 22:51:08 [engine.py:603] MXKV impl: fmt=mxk8v4 head=256 slot=400 B (capacity 2.56x fp16 KV) dump=False ord=10
+(Worker_TP1 pid=1138) INFO 11-26 22:51:08 [engine.py:603] MXKV impl: fmt=mxk8v4 head=256 slot=400 B (capacity 2.56x fp16 KV) dump=False ord=8
+(Worker_TP0 pid=1026) INFO 11-26 22:51:08 [engine.py:603] MXKV impl: fmt=mxk8v4 head=256 slot=400 B (capacity 2.56x fp16 KV) dump=False ord=11
+(Worker_TP0 pid=1026) INFO 11-26 22:51:08 [engine.py:603] MXKV impl: fmt=mxk8v4 head=256 slot=400 B (capacity 2.56x fp16 KV) dump=False ord=12
+(Worker_TP1 pid=1138) INFO 11-26 22:51:08 [engine.py:603] MXKV impl: fmt=mxk8v4 head=256 slot=400 B (capacity 2.56x fp16 KV) dump=False ord=9
+(Worker_TP0 pid=1026) INFO 11-26 22:51:08 [engine.py:603] MXKV impl: fmt=mxk8v4 head=256 slot=400 B (capacity 2.56x fp16 KV) dump=False ord=13
+(Worker_TP1 pid=1138) INFO 11-26 22:51:08 [engine.py:603] MXKV impl: fmt=mxk8v4 head=256 slot=400 B (capacity 2.56x fp16 KV) dump=False ord=10
+(Worker_TP0 pid=1026) INFO 11-26 22:51:08 [engine.py:603] MXKV impl: fmt=mxk8v4 head=256 slot=400 B (capacity 2.56x fp16 KV) dump=False ord=14
+(Worker_TP1 pid=1138) INFO 11-26 22:51:08 [engine.py:603] MXKV impl: fmt=mxk8v4 head=256 slot=400 B (capacity 2.56x fp16 KV) dump=False ord=11
+(Worker_TP0 pid=1026) INFO 11-26 22:51:08 [engine.py:603] MXKV impl: fmt=mxk8v4 head=256 slot=400 B (capacity 2.56x fp16 KV) dump=False ord=15
+(Worker_TP1 pid=1138) INFO 11-26 22:51:08 [engine.py:603] MXKV impl: fmt=mxk8v4 head=256 slot=400 B (capacity 2.56x fp16 KV) dump=False ord=12
+(Worker_TP1 pid=1138) INFO 11-26 22:51:08 [engine.py:603] MXKV impl: fmt=mxk8v4 head=256 slot=400 B (capacity 2.56x fp16 KV) dump=False ord=13
+(Worker_TP1 pid=1138) INFO 11-26 22:51:08 [engine.py:603] MXKV impl: fmt=mxk8v4 head=256 slot=400 B (capacity 2.56x fp16 KV) dump=False ord=14
+(Worker_TP1 pid=1138) INFO 11-26 22:51:08 [engine.py:603] MXKV impl: fmt=mxk8v4 head=256 slot=400 B (capacity 2.56x fp16 KV) dump=False ord=15
+(Worker_TP0 pid=1026) INFO 11-26 22:51:08 [weight_utils.py:895] Filesystem type for checkpoints: EXT4. Checkpoint size: 28.75 GiB. Available RAM: 362.42 GiB.
+(Worker_TP0 pid=1026) INFO 11-26 22:51:08 [weight_utils.py:918] Auto-prefetch is disabled because the filesystem (EXT4) is not a recognized network FS (NFS/Lustre). If you want to force prefetching, start vLLM with --safetensors-load-strategy=prefetch.
+(Worker_TP0 pid=1026) Loading safetensors checkpoint shards:   0% Completed | 0/66 [00:00<?, ?it/s]
+(Worker_TP0 pid=1026) Loading safetensors checkpoint shards:   3% Completed | 2/66 [00:00<00:03, 17.50it/s]
+(Worker_TP0 pid=1026) Loading safetensors checkpoint shards:   6% Completed | 4/66 [00:00<00:03, 17.34it/s]
+(Worker_TP0 pid=1026) Loading safetensors checkpoint shards:   9% Completed | 6/66 [00:00<00:03, 17.40it/s]
+(Worker_TP0 pid=1026) Loading safetensors checkpoint shards:  12% Completed | 8/66 [00:00<00:03, 17.40it/s]
+(Worker_TP0 pid=1026) Loading safetensors checkpoint shards:  15% Completed | 10/66 [00:00<00:03, 17.42it/s]
+(Worker_TP0 pid=1026) Loading safetensors checkpoint shards:  18% Completed | 12/66 [00:00<00:03, 17.50it/s]
+(Worker_TP0 pid=1026) Loading safetensors checkpoint shards:  21% Completed | 14/66 [00:00<00:02, 17.34it/s]
+(Worker_TP0 pid=1026) Loading safetensors checkpoint shards:  24% Completed | 16/66 [00:00<00:02, 17.38it/s]
+(Worker_TP0 pid=1026) Loading safetensors checkpoint shards:  27% Completed | 18/66 [00:01<00:02, 17.48it/s]
+(Worker_TP0 pid=1026) Loading safetensors checkpoint shards:  30% Completed | 20/66 [00:01<00:02, 17.45it/s]
+(Worker_TP0 pid=1026) Loading safetensors checkpoint shards:  33% Completed | 22/66 [00:01<00:02, 17.55it/s]
+(Worker_TP0 pid=1026) Loading safetensors checkpoint shards:  36% Completed | 24/66 [00:01<00:02, 17.49it/s]
+(Worker_TP0 pid=1026) Loading safetensors checkpoint shards:  39% Completed | 26/66 [00:01<00:02, 17.52it/s]
+(Worker_TP0 pid=1026) Loading safetensors checkpoint shards:  42% Completed | 28/66 [00:01<00:02, 17.34it/s]
+(Worker_TP0 pid=1026) Loading safetensors checkpoint shards:  45% Completed | 30/66 [00:01<00:02, 17.46it/s]
+(Worker_TP0 pid=1026) Loading safetensors checkpoint shards:  48% Completed | 32/66 [00:01<00:01, 17.52it/s]
+(Worker_TP0 pid=1026) Loading safetensors checkpoint shards:  52% Completed | 34/66 [00:01<00:01, 17.46it/s]
+(Worker_TP0 pid=1026) Loading safetensors checkpoint shards:  55% Completed | 36/66 [00:02<00:01, 17.37it/s]
+(Worker_TP0 pid=1026) Loading safetensors checkpoint shards:  58% Completed | 38/66 [00:02<00:01, 17.21it/s]
+(Worker_TP0 pid=1026) Loading safetensors checkpoint shards:  61% Completed | 40/66 [00:02<00:01, 17.02it/s]
+(Worker_TP0 pid=1026) Loading safetensors checkpoint shards:  64% Completed | 42/66 [00:02<00:01, 17.04it/s]
+(Worker_TP0 pid=1026) Loading safetensors checkpoint shards:  67% Completed | 44/66 [00:02<00:01, 17.13it/s]
+(Worker_TP0 pid=1026) Loading safetensors checkpoint shards:  70% Completed | 46/66 [00:02<00:01, 17.21it/s]
+(Worker_TP0 pid=1026) Loading safetensors checkpoint shards:  73% Completed | 48/66 [00:02<00:01, 17.36it/s]
+(Worker_TP0 pid=1026) Loading safetensors checkpoint shards:  76% Completed | 50/66 [00:02<00:00, 17.40it/s]
+(Worker_TP0 pid=1026) Loading safetensors checkpoint shards:  79% Completed | 52/66 [00:02<00:00, 17.45it/s]
+(Worker_TP0 pid=1026) Loading safetensors checkpoint shards:  82% Completed | 54/66 [00:03<00:00, 17.45it/s]
+(Worker_TP0 pid=1026) Loading safetensors checkpoint shards:  85% Completed | 56/66 [00:03<00:00, 17.53it/s]
+(Worker_TP0 pid=1026) Loading safetensors checkpoint shards:  88% Completed | 58/66 [00:03<00:00, 17.47it/s]
+(Worker_TP0 pid=1026) Loading safetensors checkpoint shards:  91% Completed | 60/66 [00:03<00:00, 17.33it/s]
+(Worker_TP0 pid=1026) Loading safetensors checkpoint shards:  94% Completed | 62/66 [00:03<00:00, 17.08it/s]
+(Worker_TP0 pid=1026) Loading safetensors checkpoint shards:  97% Completed | 64/66 [00:03<00:00, 16.95it/s]
+(Worker_TP0 pid=1026) Loading safetensors checkpoint shards: 100% Completed | 66/66 [00:04<00:00,  5.62it/s]
+(Worker_TP0 pid=1026) Loading safetensors checkpoint shards: 100% Completed | 66/66 [00:04<00:00, 14.33it/s]
+(Worker_TP0 pid=1026) 
+(Worker_TP0 pid=1026) INFO 11-26 22:51:13 [default_loader.py:430] Loading weights took 4.69 seconds
+(Worker_TP0 pid=1026) INFO 11-26 22:51:13 [engine.py:603] MXKV impl: fmt=mxk8v4 head=256 slot=400 B (capacity 2.56x fp16 KV) dump=False ord=16
+(Worker_TP0 pid=1026) INFO 11-26 22:51:13 [weight_utils.py:895] Filesystem type for checkpoints: EXT4. Checkpoint size: 28.75 GiB. Available RAM: 362.13 GiB.
+(Worker_TP0 pid=1026) Loading safetensors checkpoint shards:   0% Completed | 0/66 [00:00<?, ?it/s]
+(Worker_TP0 pid=1026) Loading safetensors checkpoint shards:  98% Completed | 65/66 [00:00<00:00, 563.00it/s]
+(Worker_TP1 pid=1138) INFO 11-26 22:51:14 [engine.py:603] MXKV impl: fmt=mxk8v4 head=256 slot=400 B (capacity 2.56x fp16 KV) dump=False ord=16
+(Worker_TP0 pid=1026) Loading safetensors checkpoint shards: 100% Completed | 66/66 [00:00<00:00, 73.59it/s]
+(Worker_TP0 pid=1026)  
+(Worker_TP0 pid=1026) INFO 11-26 22:51:14 [default_loader.py:430] Loading weights took 0.96 seconds
+(Worker_TP0 pid=1026) INFO 11-26 22:51:15 [model_runner.py:428] Model loading took 14.74 GiB memory and 8.867342 seconds
+(Worker_TP0 pid=1026) [p41c] mamba_hybrid snap glue installed (pid=1026)
+(Worker_TP0 pid=1026) INFO 11-26 22:51:15 [platform.py:375] ArcXpuPlatform: wheel hook mamba_hybrid <- patches.mamba_hybrid_snap_glue OK
+(Worker_TP0 pid=1026) INFO 11-26 22:51:15 [interface.py:933] Setting attention block size to 1088 tokens to ensure that attention page size is >= mamba page size.
+(Worker_TP0 pid=1026) INFO 11-26 22:51:15 [interface.py:957] Padding mamba page size by 2.66% to ensure that mamba page size and attention page size are exactly equal.
+(Worker_TP1 pid=1138) INFO 11-26 22:51:15 [model_runner.py:428] Model loading took 14.74 GiB memory and 9.046200 seconds
+(Worker_TP1 pid=1138) [p41c] mamba_hybrid snap glue installed (pid=1138)
+(Worker_TP1 pid=1138) INFO 11-26 22:51:15 [platform.py:375] ArcXpuPlatform: wheel hook mamba_hybrid <- patches.mamba_hybrid_snap_glue OK
+(Worker_TP1 pid=1138) INFO 11-26 22:51:16 [interface.py:933] Setting attention block size to 1088 tokens to ensure that attention page size is >= mamba page size.
+(Worker_TP1 pid=1138) INFO 11-26 22:51:16 [interface.py:957] Padding mamba page size by 2.66% to ensure that mamba page size and attention page size are exactly equal.
+(EngineCore pid=782) INFO 11-26 22:51:16 [torch_utils.py:287] Reducing Torch threads from 32 to 1 for serving. Set OMP_NUM_THREADS in the external environment to override.
+(EngineCore pid=782) INFO 11-26 22:51:16 [utils.py:320] Using LBNHC KV cache layout.
+(Worker_TP1 pid=1138) [transformers] The `use_fast` parameter is deprecated and will be removed in a future version. Use `backend="torchvision"` instead of `use_fast=True`, or `backend="pil"` instead of `use_fast=False`.
+(Worker_TP0 pid=1026) [transformers] The `use_fast` parameter is deprecated and will be removed in a future version. Use `backend="torchvision"` instead of `use_fast=True`, or `backend="pil"` instead of `use_fast=False`.
+(Worker_TP0 pid=1026) INFO 11-26 22:51:26 [encoder_runner.py:131] Encoder cache will be initialized with a budget of 16384 tokens, and profiled with 1 image items of the maximum feature size.
+(Worker_TP1 pid=1138) /opt/venv/lib/python3.12/site-packages/torch/distributed/c10d_logger.py:83: FutureWarning: `torch.distributed.all_gather_into_tensor` is deprecated. Please use `torch.distributed.all_gather_single` instead.
+(Worker_TP1 pid=1138)   return func(*args, **kwargs)
+(Worker_TP0 pid=1026) /opt/venv/lib/python3.12/site-packages/torch/distributed/c10d_logger.py:83: FutureWarning: `torch.distributed.all_gather_into_tensor` is deprecated. Please use `torch.distributed.all_gather_single` instead.
+(Worker_TP0 pid=1026)   return func(*args, **kwargs)
+(Worker_TP1 pid=1138) /opt/venv/lib/python3.12/site-packages/torch/distributed/c10d_logger.py:83: FutureWarning: `torch.distributed.all_gather_into_tensor` is deprecated. Please use `torch.distributed.all_gather_single` instead.
+(Worker_TP1 pid=1138)   return func(*args, **kwargs)
+(Worker_TP0 pid=1026) /opt/venv/lib/python3.12/site-packages/torch/distributed/c10d_logger.py:83: FutureWarning: `torch.distributed.all_gather_into_tensor` is deprecated. Please use `torch.distributed.all_gather_single` instead.
+(Worker_TP0 pid=1026)   return func(*args, **kwargs)
+(Worker_TP0 pid=1026) INFO 11-26 22:51:49 [gpu_worker.py:839] Available KV cache memory: 6.8 GiB
+(EngineCore pid=782) WARNING 11-26 22:51:49 [kv_cache_utils.py:1556] Add 3 padding layers, may waste at most 6.25% KV cache memory
+(EngineCore pid=782) WARNING 11-26 22:51:49 [kv_cache_utils.py:2206] Speculative decoding (method=mtp) is enabled but no KV cache group could be identified as the draft model's.
+(EngineCore pid=782) INFO 11-26 22:51:49 [kv_cache_utils.py:2395] XPU KV cache size: 504,832 tokens, Maximum concurrency for 262,144 tokens per request: 1.93x
+(Worker_TP0 pid=1026) INFO 11-26 22:51:49 [speculator.py:120] Fused multi-step draft decode is not supported by attention backend(s) MXKV; falling back to rebuilding attention metadata between draft steps.
+(Worker_TP0 pid=1026) WARNING 11-26 22:51:49 [gpu_worker.py:137] ARC XPU tune warmup: no engine KV cache for head=256 nkvh=2 — skipping geometry
+(Worker_TP0 pid=1026) /opt/venv/lib/python3.12/site-packages/torch/distributed/c10d_logger.py:83: UserWarning: barrier(): using the device under current context. You can specify `device_id` in `init_process_group` to mute this warning.
+(Worker_TP0 pid=1026)   return func(*args, **kwargs)
+(Worker_TP1 pid=1138) WARNING 11-26 22:51:49 [gpu_worker.py:137] ARC XPU tune warmup: no engine KV cache for head=256 nkvh=2 — skipping geometry
+(Worker_TP0 pid=1026) INFO 11-26 22:51:49 [gpu_worker.py:257] ARC XPU tune warmup complete on rank 0/2 in 0.0s (1 geometries)
+(Worker_TP1 pid=1138) INFO 11-26 22:51:49 [gpu_worker.py:257] ARC XPU tune warmup complete on rank 1/2 in 0.0s (1 geometries)
+(Worker_TP0 pid=1026) INFO 11-26 22:51:49 [kernel_warmup.py:172] JIT kernel warmup starting.
+(Worker_TP0 pid=1026) INFO 11-26 22:51:49 [kernel_warmup.py:185] JIT kernel warmup finished in 0.00s.
+(Worker_TP0 pid=1026) INFO 11-26 22:51:49 [qwen_triton_warmup.py:294] Warming up Qwen GDN Triton kernels for model_type=qwen3_5_text.
+(Worker_TP1 pid=1138) INFO 11-26 22:51:49 [kernel_warmup.py:172] JIT kernel warmup starting.
+(Worker_TP1 pid=1138) INFO 11-26 22:51:49 [kernel_warmup.py:185] JIT kernel warmup finished in 0.00s.
+(Worker_TP1 pid=1138) INFO 11-26 22:51:49 [qwen_triton_warmup.py:294] Warming up Qwen GDN Triton kernels for model_type=qwen3_5_text.
+(Worker_TP1 pid=1138) INFO 11-26 22:51:53 [qwen_vl_triton_warmup.py:57] Warmed position embedding and vision rotary kernels on grids=[(1, 16, 16), (1, 16, 2), (1, 2, 16), (1, 2, 2)].
+(Worker_TP0 pid=1026) INFO 11-26 22:51:53 [qwen_vl_triton_warmup.py:57] Warmed position embedding and vision rotary kernels on grids=[(1, 16, 16), (1, 16, 2), (1, 2, 16), (1, 2, 2)].
+(Worker_TP1 pid=1138) INFO 11-26 22:51:54 [qwen_vl_triton_warmup.py:98] Warmed M-RoPE Triton kernels.
+(Worker_TP0 pid=1026) INFO 11-26 22:51:54 [qwen_vl_triton_warmup.py:98] Warmed M-RoPE Triton kernels.
+(Worker_TP1 pid=1138) [p41c] wrap live (pid=1138 bs=1088 gids=3)
+(Worker_TP0 pid=1026) [p41c] wrap live (pid=1026 bs=1088 gids=3)
+(Worker_TP1 pid=1138) P619I forward: is_prefill=True n_tok=185 qlens=(5, 10, 15, 20, 25, 30, 35, 40) seqs=[5, 5, 5, 5, 5, 5, 5, 5] ndec=0 mql=5 msl=5
+(Worker_TP0 pid=1026) P619I forward: is_prefill=True n_tok=185 qlens=(5, 10, 15, 20, 25, 30, 35, 40) seqs=[5, 5, 5, 5, 5, 5, 5, 5] ndec=0 mql=5 msl=5
+(Worker_TP1 pid=1138) INFO 11-26 22:52:36 [graph_safe_output.py:1055] ArcXpuPlatform: graph-safe output applied — reroute guards active, upstream copy event retained.
+(Worker_TP0 pid=1026) INFO 11-26 22:52:36 [graph_safe_output.py:1055] ArcXpuPlatform: graph-safe output applied — reroute guards active, upstream copy event retained.
+(Worker_TP0 pid=1026) P619I forward: is_prefill=False n_tok=37 qlens=(1, 2, 3, 4, 5, 6, 7, 8) seqs=[6, 6, 6, 6, 6, 6, 6, 6] ndec=37 mql=1 msl=8
+(Worker_TP1 pid=1138) P619I forward: is_prefill=False n_tok=37 qlens=(1, 2, 3, 4, 5, 6, 7, 8) seqs=[6, 6, 6, 6, 6, 6, 6, 6] ndec=37 mql=1 msl=8
+(Worker_TP0 pid=1026) P619I forward: is_prefill=True n_tok=148 qlens=(4, 8, 12, 16, 20, 24, 28, 32) seqs=[9, 9, 9, 9, 9, 9, 9, 9] ndec=0 mql=4 msl=9
+(Worker_TP1 pid=1138) P619I forward: is_prefill=True n_tok=148 qlens=(4, 8, 12, 16, 20, 24, 28, 32) seqs=[9, 9, 9, 9, 9, 9, 9, 9] ndec=0 mql=4 msl=9
+(Worker_TP0 pid=1026) INFO 11-26 22:52:41 [engine.py:1448] MXKV native dispatch fmt=mxk8v4 rows=148 walked_cap=38967808 minlen=8192 -> native (E5b crossover)
+(Worker_TP0 pid=1026) INFO 11-26 22:52:41 [engine.py:1460] MXKV verify decoder=native fmt=mxk8v4 source=native-env
+(Worker_TP0 pid=1026) INFO 11-26 22:52:41 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=148 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+(Worker_TP1 pid=1138) INFO 11-26 22:52:41 [engine.py:1448] MXKV native dispatch fmt=mxk8v4 rows=148 walked_cap=38967808 minlen=8192 -> native (E5b crossover)
+(Worker_TP1 pid=1138) INFO 11-26 22:52:41 [engine.py:1460] MXKV verify decoder=native fmt=mxk8v4 source=native-env
+(Worker_TP1 pid=1138) INFO 11-26 22:52:41 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=148 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+(Worker_TP1 pid=1138) INFO 11-26 22:52:45 [graph_safe_output.py:1055] ArcXpuPlatform: graph-safe output applied — reroute guards active, upstream copy event retained.
+(Worker_TP0 pid=1026) INFO 11-26 22:52:45 [graph_safe_output.py:1055] ArcXpuPlatform: graph-safe output applied — reroute guards active, upstream copy event retained.
+(Worker_TP1 pid=1138) P619I forward: is_prefill=True n_tok=5 qlens=(4, 5) seqs=[13, 10] ndec=0 mql=4 msl=13
+(Worker_TP0 pid=1026) P619I forward: is_prefill=True n_tok=5 qlens=(4, 5) seqs=[13, 10] ndec=0 mql=4 msl=13
+(Worker_TP1 pid=1138) INFO 11-26 22:52:46 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=4 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+(Worker_TP0 pid=1026) INFO 11-26 22:52:46 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=4 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+(Worker_TP1 pid=1138) INFO 11-26 22:52:46 [graph_safe_output.py:1055] ArcXpuPlatform: graph-safe output applied — reroute guards active, upstream copy event retained.
+(Worker_TP0 pid=1026) INFO 11-26 22:52:46 [graph_safe_output.py:1055] ArcXpuPlatform: graph-safe output applied — reroute guards active, upstream copy event retained.
+(Worker_TP1 pid=1138) P619I forward: is_prefill=False n_tok=2 qlens=(1, 2) seqs=[14, 11] ndec=2 mql=1 msl=16
+(Worker_TP0 pid=1026) P619I forward: is_prefill=False n_tok=2 qlens=(1, 2) seqs=[14, 11] ndec=2 mql=1 msl=16
+(Worker_TP1 pid=1138) P619I forward: is_prefill=True n_tok=4 qlens=(4,) seqs=[18] ndec=0 mql=4 msl=18
+(Worker_TP0 pid=1026) P619I forward: is_prefill=True n_tok=4 qlens=(4,) seqs=[18] ndec=0 mql=4 msl=18
+(Worker_TP1 pid=1138) /opt/venv/lib/python3.12/site-packages/torch/distributed/c10d_logger.py:83: FutureWarning: `torch.distributed.all_gather_into_tensor` is deprecated. Please use `torch.distributed.all_gather_single` instead.
+(Worker_TP1 pid=1138)   return func(*args, **kwargs)
+(Worker_TP1 pid=1138) P619I forward: is_prefill=False n_tok=1 qlens=(1,) seqs=[19] ndec=1 mql=1 msl=21
+(Worker_TP0 pid=1026) /opt/venv/lib/python3.12/site-packages/torch/distributed/c10d_logger.py:83: FutureWarning: `torch.distributed.all_gather_into_tensor` is deprecated. Please use `torch.distributed.all_gather_single` instead.
+(Worker_TP0 pid=1026)   return func(*args, **kwargs)
+(Worker_TP0 pid=1026) P619I forward: is_prefill=False n_tok=1 qlens=(1,) seqs=[19] ndec=1 mql=1 msl=21
+(EngineCore pid=782) INFO 11-26 22:52:50 [shm_broadcast.py:801] No available shared memory broadcast block found in 60 seconds. This typically happens when some processes are hanging or doing some time-consuming work (e.g. compilation, weight/kv cache quantization).
+(Worker_TP0 pid=1026) Capturing CUDA graphs (FULL):   0%|          | 0/54 [00:00<?, ?it/s]P619I forward: is_prefill=True n_tok=256 qlens=(4, 8, 12, 16, 20, 24, 28, 32) seqs=[5, 5, 5, 5, 5, 5, 5, 5] ndec=0 mql=4 msl=5
+(Worker_TP0 pid=1026) INFO 11-26 22:53:06 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=256 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+(Worker_TP1 pid=1138) P619I forward: is_prefill=True n_tok=256 qlens=(4, 8, 12, 16, 20, 24, 28, 32) seqs=[5, 5, 5, 5, 5, 5, 5, 5] ndec=0 mql=4 msl=5
+(Worker_TP1 pid=1138) INFO 11-26 22:53:06 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=256 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+(Worker_TP0 pid=1026) Capturing CUDA graphs (FULL):   2%|▏         | 1/54 [00:02<01:47,  2.03s/it](Worker_TP1 pid=1138) P619I forward: is_prefill=True n_tok=252 qlens=(4, 8, 12, 16, 20, 24, 28, 32) seqs=[5, 5, 5, 5, 5, 5, 5, 5] ndec=0 mql=4 msl=5
+(Worker_TP1 pid=1138) INFO 11-26 22:53:07 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=252 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+P619I forward: is_prefill=True n_tok=252 qlens=(4, 8, 12, 16, 20, 24, 28, 32) seqs=[5, 5, 5, 5, 5, 5, 5, 5] ndec=0 mql=4 msl=5
+(Worker_TP0 pid=1026) INFO 11-26 22:53:07 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=252 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+(Worker_TP0 pid=1026) Capturing CUDA graphs (FULL):   4%|▎         | 2/54 [00:02<00:53,  1.03s/it](Worker_TP1 pid=1138) P619I forward: is_prefill=True n_tok=248 qlens=(4, 8, 12, 16, 20, 24, 28, 32) seqs=[5, 5, 5, 5, 5, 5, 5, 5] ndec=0 mql=4 msl=5
+(Worker_TP1 pid=1138) INFO 11-26 22:53:07 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=248 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+P619I forward: is_prefill=True n_tok=248 qlens=(4, 8, 12, 16, 20, 24, 28, 32) seqs=[5, 5, 5, 5, 5, 5, 5, 5] ndec=0 mql=4 msl=5
+(Worker_TP0 pid=1026) INFO 11-26 22:53:07 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=248 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+(Worker_TP0 pid=1026) Capturing CUDA graphs (FULL):   6%|▌         | 3/54 [00:02<00:35,  1.42it/s](Worker_TP1 pid=1138) P619I forward: is_prefill=True n_tok=240 qlens=(4, 8, 12, 16, 20, 24, 28, 32) seqs=[5, 5, 5, 5, 5, 5, 5, 5] ndec=0 mql=4 msl=5
+(Worker_TP1 pid=1138) INFO 11-26 22:53:08 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=240 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+P619I forward: is_prefill=True n_tok=240 qlens=(4, 8, 12, 16, 20, 24, 28, 32) seqs=[5, 5, 5, 5, 5, 5, 5, 5] ndec=0 mql=4 msl=5
+(Worker_TP0 pid=1026) INFO 11-26 22:53:08 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=240 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+(Worker_TP0 pid=1026) Capturing CUDA graphs (FULL):   7%|▋         | 4/54 [00:02<00:27,  1.81it/s](Worker_TP1 pid=1138) P619I forward: is_prefill=True n_tok=236 qlens=(4, 8, 12, 16, 20, 24, 28, 32) seqs=[5, 5, 5, 5, 5, 5, 5, 5] ndec=0 mql=4 msl=5
+(Worker_TP1 pid=1138) INFO 11-26 22:53:08 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=236 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+P619I forward: is_prefill=True n_tok=236 qlens=(4, 8, 12, 16, 20, 24, 28, 32) seqs=[5, 5, 5, 5, 5, 5, 5, 5] ndec=0 mql=4 msl=5
+(Worker_TP0 pid=1026) INFO 11-26 22:53:08 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=236 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+(Worker_TP0 pid=1026) Capturing CUDA graphs (FULL):   9%|▉         | 5/54 [00:03<00:22,  2.14it/s](Worker_TP1 pid=1138) INFO 11-26 22:53:08 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=232 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+(Worker_TP0 pid=1026) INFO 11-26 22:53:08 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=232 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+Capturing CUDA graphs (FULL):  11%|█         | 6/54 [00:03<00:19,  2.42it/s](Worker_TP1 pid=1138) INFO 11-26 22:53:09 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=228 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+(Worker_TP0 pid=1026) INFO 11-26 22:53:09 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=228 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+Capturing CUDA graphs (FULL):  13%|█▎        | 7/54 [00:03<00:17,  2.62it/s](Worker_TP1 pid=1138) INFO 11-26 22:53:09 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=224 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+(Worker_TP0 pid=1026) INFO 11-26 22:53:09 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=224 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+Capturing CUDA graphs (FULL):  15%|█▍        | 8/54 [00:04<00:16,  2.77it/s](Worker_TP1 pid=1138) INFO 11-26 22:53:09 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=220 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+(Worker_TP0 pid=1026) INFO 11-26 22:53:09 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=220 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+Capturing CUDA graphs (FULL):  17%|█▋        | 9/54 [00:04<00:15,  2.88it/s](Worker_TP1 pid=1138) INFO 11-26 22:53:10 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=216 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+(Worker_TP0 pid=1026) INFO 11-26 22:53:10 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=216 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+Capturing CUDA graphs (FULL):  19%|█▊        | 10/54 [00:04<00:14,  2.97it/s](Worker_TP1 pid=1138) INFO 11-26 22:53:10 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=212 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+(Worker_TP0 pid=1026) INFO 11-26 22:53:10 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=212 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+(Worker_TP1 pid=1138) INFO 11-26 22:53:10 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=208 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+Capturing CUDA graphs (FULL):  20%|██        | 11/54 [00:05<00:14,  3.02it/s](Worker_TP0 pid=1026) INFO 11-26 22:53:10 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=208 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+Capturing CUDA graphs (FULL):  22%|██▏       | 12/54 [00:05<00:14,  2.98it/s](Worker_TP0 pid=1026) INFO 11-26 22:53:11 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=200 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+(Worker_TP1 pid=1138) INFO 11-26 22:53:11 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=200 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+Capturing CUDA graphs (FULL):  24%|██▍       | 13/54 [00:05<00:14,  2.89it/s](Worker_TP0 pid=1026) INFO 11-26 22:53:11 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=196 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+(Worker_TP1 pid=1138) INFO 11-26 22:53:11 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=196 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+Capturing CUDA graphs (FULL):  26%|██▌       | 14/54 [00:06<00:14,  2.80it/s](Worker_TP0 pid=1026) INFO 11-26 22:53:11 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=192 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+(Worker_TP1 pid=1138) INFO 11-26 22:53:11 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=192 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+Capturing CUDA graphs (FULL):  28%|██▊       | 15/54 [00:06<00:14,  2.75it/s](Worker_TP0 pid=1026) INFO 11-26 22:53:12 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=188 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+(Worker_TP1 pid=1138) INFO 11-26 22:53:12 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=188 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+Capturing CUDA graphs (FULL):  30%|██▉       | 16/54 [00:07<00:13,  2.74it/s](Worker_TP0 pid=1026) INFO 11-26 22:53:12 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=180 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+(Worker_TP1 pid=1138) INFO 11-26 22:53:12 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=180 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+Capturing CUDA graphs (FULL):  31%|███▏      | 17/54 [00:07<00:13,  2.73it/s](Worker_TP0 pid=1026) INFO 11-26 22:53:12 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=176 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+(Worker_TP1 pid=1138) INFO 11-26 22:53:12 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=176 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+Capturing CUDA graphs (FULL):  33%|███▎      | 18/54 [00:07<00:13,  2.76it/s](Worker_TP0 pid=1026) INFO 11-26 22:53:13 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=172 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+(Worker_TP1 pid=1138) INFO 11-26 22:53:13 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=172 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+Capturing CUDA graphs (FULL):  35%|███▌      | 19/54 [00:08<00:12,  2.80it/s](Worker_TP0 pid=1026) INFO 11-26 22:53:13 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=168 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+(Worker_TP1 pid=1138) INFO 11-26 22:53:13 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=168 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+Capturing CUDA graphs (FULL):  37%|███▋      | 20/54 [00:08<00:12,  2.76it/s](Worker_TP0 pid=1026) INFO 11-26 22:53:14 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=160 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+(Worker_TP1 pid=1138) INFO 11-26 22:53:14 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=160 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+Capturing CUDA graphs (FULL):  39%|███▉      | 21/54 [00:08<00:11,  2.75it/s](Worker_TP0 pid=1026) INFO 11-26 22:53:14 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=156 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+(Worker_TP1 pid=1138) INFO 11-26 22:53:14 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=156 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+Capturing CUDA graphs (FULL):  41%|████      | 22/54 [00:09<00:11,  2.76it/s](Worker_TP0 pid=1026) INFO 11-26 22:53:14 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=152 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+(Worker_TP1 pid=1138) INFO 11-26 22:53:14 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=152 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+Capturing CUDA graphs (FULL):  43%|████▎     | 23/54 [00:09<00:11,  2.79it/s]Capturing CUDA graphs (FULL):  44%|████▍     | 24/54 [00:09<00:10,  2.80it/s](Worker_TP0 pid=1026) INFO 11-26 22:53:15 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=140 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+(Worker_TP1 pid=1138) INFO 11-26 22:53:15 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=140 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+Capturing CUDA graphs (FULL):  46%|████▋     | 25/54 [00:10<00:10,  2.82it/s](Worker_TP0 pid=1026) INFO 11-26 22:53:15 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=136 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+(Worker_TP1 pid=1138) INFO 11-26 22:53:15 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=136 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+Capturing CUDA graphs (FULL):  48%|████▊     | 26/54 [00:10<00:09,  2.84it/s](Worker_TP0 pid=1026) INFO 11-26 22:53:16 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=132 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+(Worker_TP1 pid=1138) INFO 11-26 22:53:16 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=132 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+Capturing CUDA graphs (FULL):  50%|█████     | 27/54 [00:10<00:09,  2.87it/s](Worker_TP0 pid=1026) INFO 11-26 22:53:16 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=128 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+(Worker_TP1 pid=1138) INFO 11-26 22:53:16 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=128 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+Capturing CUDA graphs (FULL):  52%|█████▏    | 28/54 [00:11<00:10,  2.55it/s](Worker_TP0 pid=1026) INFO 11-26 22:53:16 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=120 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+(Worker_TP1 pid=1138) INFO 11-26 22:53:17 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=120 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+Capturing CUDA graphs (FULL):  54%|█████▎    | 29/54 [00:11<00:09,  2.66it/s](Worker_TP0 pid=1026) INFO 11-26 22:53:17 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=116 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+(Worker_TP1 pid=1138) INFO 11-26 22:53:17 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=116 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+Capturing CUDA graphs (FULL):  56%|█████▌    | 30/54 [00:12<00:08,  2.77it/s](Worker_TP0 pid=1026) INFO 11-26 22:53:17 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=112 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+(Worker_TP1 pid=1138) INFO 11-26 22:53:17 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=112 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+Capturing CUDA graphs (FULL):  57%|█████▋    | 31/54 [00:12<00:08,  2.86it/s](Worker_TP0 pid=1026) INFO 11-26 22:53:17 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=108 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+(Worker_TP1 pid=1138) INFO 11-26 22:53:18 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=108 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+Capturing CUDA graphs (FULL):  59%|█████▉    | 32/54 [00:12<00:07,  2.89it/s](Worker_TP0 pid=1026) INFO 11-26 22:53:18 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=100 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+(Worker_TP1 pid=1138) INFO 11-26 22:53:18 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=100 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+Capturing CUDA graphs (FULL):  61%|██████    | 33/54 [00:13<00:07,  2.94it/s](Worker_TP0 pid=1026) INFO 11-26 22:53:18 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=96 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+(Worker_TP1 pid=1138) INFO 11-26 22:53:18 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=96 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+Capturing CUDA graphs (FULL):  63%|██████▎   | 34/54 [00:13<00:07,  2.60it/s](Worker_TP0 pid=1026) INFO 11-26 22:53:19 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=92 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+(Worker_TP1 pid=1138) INFO 11-26 22:53:19 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=92 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+Capturing CUDA graphs (FULL):  65%|██████▍   | 35/54 [00:13<00:06,  2.75it/s](Worker_TP0 pid=1026) INFO 11-26 22:53:19 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=88 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+(Worker_TP1 pid=1138) INFO 11-26 22:53:19 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=88 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+Capturing CUDA graphs (FULL):  67%|██████▋   | 36/54 [00:14<00:06,  2.87it/s](Worker_TP0 pid=1026) INFO 11-26 22:53:19 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=80 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+(Worker_TP1 pid=1138) INFO 11-26 22:53:19 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=80 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+Capturing CUDA graphs (FULL):  69%|██████▊   | 37/54 [00:14<00:05,  2.95it/s](Worker_TP0 pid=1026) INFO 11-26 22:53:20 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=76 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+(Worker_TP1 pid=1138) INFO 11-26 22:53:20 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=76 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+Capturing CUDA graphs (FULL):  70%|███████   | 38/54 [00:14<00:05,  3.01it/s](Worker_TP0 pid=1026) INFO 11-26 22:53:20 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=72 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+(Worker_TP1 pid=1138) INFO 11-26 22:53:20 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=72 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+Capturing CUDA graphs (FULL):  72%|███████▏  | 39/54 [00:15<00:04,  3.04it/s](Worker_TP0 pid=1026) INFO 11-26 22:53:20 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=68 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+(Worker_TP1 pid=1138) INFO 11-26 22:53:20 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=68 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+Capturing CUDA graphs (FULL):  74%|███████▍  | 40/54 [00:15<00:04,  3.09it/s](Worker_TP0 pid=1026) INFO 11-26 22:53:21 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=64 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+(Worker_TP1 pid=1138) INFO 11-26 22:53:21 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=64 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+Capturing CUDA graphs (FULL):  76%|███████▌  | 41/54 [00:15<00:04,  3.14it/s](Worker_TP0 pid=1026) INFO 11-26 22:53:21 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=60 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+(Worker_TP1 pid=1138) INFO 11-26 22:53:21 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=60 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+(Worker_TP0 pid=1026) INFO 11-26 22:53:21 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=256 p50=0.50ms p90=0.66ms max=1.29ms fallbacks=12 {'zero-spec': 9, 'mixed': 3}
+(Worker_TP1 pid=1138) INFO 11-26 22:53:21 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=256 p50=0.65ms p90=0.81ms max=1.04ms fallbacks=12 {'zero-spec': 9, 'mixed': 3}
+Capturing CUDA graphs (FULL):  78%|███████▊  | 42/54 [00:16<00:03,  3.15it/s](Worker_TP0 pid=1026) INFO 11-26 22:53:21 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=56 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+(Worker_TP1 pid=1138) INFO 11-26 22:53:21 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=56 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+Capturing CUDA graphs (FULL):  80%|███████▉  | 43/54 [00:16<00:03,  3.18it/s](Worker_TP0 pid=1026) INFO 11-26 22:53:21 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=52 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+(Worker_TP1 pid=1138) INFO 11-26 22:53:21 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=52 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+Capturing CUDA graphs (FULL):  81%|████████▏ | 44/54 [00:16<00:03,  3.21it/s](Worker_TP0 pid=1026) INFO 11-26 22:53:22 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=48 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+(Worker_TP1 pid=1138) INFO 11-26 22:53:22 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=48 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+Capturing CUDA graphs (FULL):  83%|████████▎ | 45/54 [00:17<00:02,  3.25it/s](Worker_TP0 pid=1026) INFO 11-26 22:53:22 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=40 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+(Worker_TP1 pid=1138) INFO 11-26 22:53:22 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=40 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+Capturing CUDA graphs (FULL):  85%|████████▌ | 46/54 [00:17<00:02,  3.05it/s](Worker_TP0 pid=1026) INFO 11-26 22:53:22 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=36 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+(Worker_TP1 pid=1138) INFO 11-26 22:53:22 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=36 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+Capturing CUDA graphs (FULL):  87%|████████▋ | 47/54 [00:17<00:02,  3.18it/s](Worker_TP0 pid=1026) INFO 11-26 22:53:23 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=32 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+(Worker_TP1 pid=1138) INFO 11-26 22:53:23 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=32 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+Capturing CUDA graphs (FULL):  89%|████████▉ | 48/54 [00:18<00:01,  3.13it/s](Worker_TP0 pid=1026) INFO 11-26 22:53:23 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=28 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+(Worker_TP1 pid=1138) INFO 11-26 22:53:23 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=28 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+Capturing CUDA graphs (FULL):  91%|█████████ | 49/54 [00:18<00:01,  3.23it/s](Worker_TP0 pid=1026) INFO 11-26 22:53:23 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=20 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+(Worker_TP1 pid=1138) INFO 11-26 22:53:23 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=20 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+Capturing CUDA graphs (FULL):  93%|█████████▎| 50/54 [00:18<00:01,  3.33it/s](Worker_TP0 pid=1026) INFO 11-26 22:53:24 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=16 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+(Worker_TP1 pid=1138) INFO 11-26 22:53:24 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=16 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+Capturing CUDA graphs (FULL):  94%|█████████▍| 51/54 [00:18<00:00,  3.26it/s](Worker_TP0 pid=1026) INFO 11-26 22:53:24 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=12 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+(Worker_TP1 pid=1138) INFO 11-26 22:53:24 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=12 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+Capturing CUDA graphs (FULL):  96%|█████████▋| 52/54 [00:19<00:00,  3.37it/s](Worker_TP0 pid=1026) INFO 11-26 22:53:24 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=8 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+(Worker_TP1 pid=1138) INFO 11-26 22:53:24 [native_decode.py:122] MXKV native call fmt=mxk8v4 rows=8 max_seqlen_k=263296 bt_width=4114 stride=800 splits=auto window=-1 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+Capturing CUDA graphs (FULL):  98%|█████████▊| 53/54 [00:19<00:00,  3.46it/s]Capturing CUDA graphs (FULL): 100%|██████████| 54/54 [00:19<00:00,  3.54it/s]Capturing CUDA graphs (FULL): 100%|██████████| 54/54 [00:19<00:00,  2.74it/s]
+(Worker_TP0 pid=1026) Capturing CUDA graphs [arc-db] (FULL):   0%|          | 0/54 [00:00<?, ?it/s]Capturing CUDA graphs [arc-db] (FULL):   2%|▏         | 1/54 [00:00<00:20,  2.57it/s]Capturing CUDA graphs [arc-db] (FULL):   4%|▎         | 2/54 [00:00<00:20,  2.55it/s]Capturing CUDA graphs [arc-db] (FULL):   6%|▌         | 3/54 [00:01<00:20,  2.54it/s]Capturing CUDA graphs [arc-db] (FULL):   7%|▋         | 4/54 [00:01<00:19,  2.53it/s]Capturing CUDA graphs [arc-db] (FULL):   9%|▉         | 5/54 [00:01<00:19,  2.54it/s]Capturing CUDA graphs [arc-db] (FULL):  11%|█         | 6/54 [00:02<00:18,  2.54it/s]Capturing CUDA graphs [arc-db] (FULL):  13%|█▎        | 7/54 [00:02<00:18,  2.54it/s]Capturing CUDA graphs [arc-db] (FULL):  15%|█▍        | 8/54 [00:03<00:18,  2.55it/s]Capturing CUDA graphs [arc-db] (FULL):  17%|█▋        | 9/54 [00:03<00:17,  2.57it/s]Capturing CUDA graphs [arc-db] (FULL):  19%|█▊        | 10/54 [00:03<00:17,  2.57it/s]Capturing CUDA graphs [arc-db] (FULL):  20%|██        | 11/54 [00:04<00:16,  2.59it/s]Capturing CUDA graphs [arc-db] (FULL):  22%|██▏       | 12/54 [00:04<00:16,  2.60it/s]Capturing CUDA graphs [arc-db] (FULL):  24%|██▍       | 13/54 [00:05<00:15,  2.61it/s]Capturing CUDA graphs [arc-db] (FULL):  26%|██▌       | 14/54 [00:05<00:15,  2.63it/s]Capturing CUDA graphs [arc-db] (FULL):  28%|██▊       | 15/54 [00:05<00:14,  2.64it/s]Capturing CUDA graphs [arc-db] (FULL):  30%|██▉       | 16/54 [00:06<00:14,  2.65it/s]Capturing CUDA graphs [arc-db] (FULL):  31%|███▏      | 17/54 [00:06<00:13,  2.67it/s]Capturing CUDA graphs [arc-db] (FULL):  33%|███▎      | 18/54 [00:06<00:13,  2.69it/s]Capturing CUDA graphs [arc-db] (FULL):  35%|███▌      | 19/54 [00:07<00:12,  2.71it/s]Capturing CUDA graphs [arc-db] (FULL):  37%|███▋      | 20/54 [00:07<00:12,  2.72it/s]Capturing CUDA graphs [arc-db] (FULL):  39%|███▉      | 21/54 [00:07<00:12,  2.75it/s]Capturing CUDA graphs [arc-db] (FULL):  41%|████      | 22/54 [00:08<00:11,  2.77it/s]Capturing CUDA graphs [arc-db] (FULL):  43%|████▎     | 23/54 [00:08<00:11,  2.79it/s]Capturing CUDA graphs [arc-db] (FULL):  44%|████▍     | 24/54 [00:09<00:10,  2.81it/s]Capturing CUDA graphs [arc-db] (FULL):  46%|████▋     | 25/54 [00:09<00:10,  2.83it/s]Capturing CUDA graphs [arc-db] (FULL):  48%|████▊     | 26/54 [00:09<00:09,  2.84it/s]Capturing CUDA graphs [arc-db] (FULL):  50%|█████     | 27/54 [00:10<00:09,  2.86it/s]Capturing CUDA graphs [arc-db] (FULL):  52%|█████▏    | 28/54 [00:10<00:09,  2.86it/s]Capturing CUDA graphs [arc-db] (FULL):  54%|█████▎    | 29/54 [00:10<00:08,  2.89it/s]Capturing CUDA graphs [arc-db] (FULL):  56%|█████▌    | 30/54 [00:11<00:08,  2.92it/s](Worker_TP0 pid=1026) INFO 11-26 22:53:36 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=512 p50=0.50ms p90=0.66ms max=1.41ms fallbacks=12 {'zero-spec': 9, 'mixed': 3}
+(Worker_TP1 pid=1138) INFO 11-26 22:53:36 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=512 p50=0.66ms p90=0.81ms max=1.04ms fallbacks=12 {'zero-spec': 9, 'mixed': 3}
+Capturing CUDA graphs [arc-db] (FULL):  57%|█████▋    | 31/54 [00:11<00:07,  2.95it/s]Capturing CUDA graphs [arc-db] (FULL):  59%|█████▉    | 32/54 [00:11<00:07,  2.97it/s]Capturing CUDA graphs [arc-db] (FULL):  61%|██████    | 33/54 [00:12<00:07,  2.98it/s]Capturing CUDA graphs [arc-db] (FULL):  63%|██████▎   | 34/54 [00:12<00:06,  3.01it/s]Capturing CUDA graphs [arc-db] (FULL):  65%|██████▍   | 35/54 [00:12<00:06,  2.95it/s]Capturing CUDA graphs [arc-db] (FULL):  67%|██████▋   | 36/54 [00:13<00:05,  3.01it/s]Capturing CUDA graphs [arc-db] (FULL):  69%|██████▊   | 37/54 [00:13<00:05,  3.20it/s]Capturing CUDA graphs [arc-db] (FULL):  70%|███████   | 38/54 [00:13<00:04,  3.22it/s]Capturing CUDA graphs [arc-db] (FULL):  72%|███████▏  | 39/54 [00:13<00:04,  3.23it/s]Capturing CUDA graphs [arc-db] (FULL):  74%|███████▍  | 40/54 [00:14<00:04,  3.23it/s]Capturing CUDA graphs [arc-db] (FULL):  76%|███████▌  | 41/54 [00:14<00:04,  3.24it/s]Capturing CUDA graphs [arc-db] (FULL):  78%|███████▊  | 42/54 [00:14<00:03,  3.22it/s]Capturing CUDA graphs [arc-db] (FULL):  80%|███████▉  | 43/54 [00:15<00:03,  3.21it/s]Capturing CUDA graphs [arc-db] (FULL):  81%|████████▏ | 44/54 [00:15<00:03,  3.23it/s]Capturing CUDA graphs [arc-db] (FULL):  83%|████████▎ | 45/54 [00:15<00:02,  3.27it/s]Capturing CUDA graphs [arc-db] (FULL):  85%|████████▌ | 46/54 [00:16<00:02,  3.32it/s]Capturing CUDA graphs [arc-db] (FULL):  87%|████████▋ | 47/54 [00:16<00:02,  3.36it/s]Capturing CUDA graphs [arc-db] (FULL):  89%|████████▉ | 48/54 [00:16<00:01,  3.36it/s]Capturing CUDA graphs [arc-db] (FULL):  91%|█████████ | 49/54 [00:16<00:01,  3.39it/s]Capturing CUDA graphs [arc-db] (FULL):  93%|█████████▎| 50/54 [00:17<00:01,  3.45it/s]Capturing CUDA graphs [arc-db] (FULL):  94%|█████████▍| 51/54 [00:17<00:00,  3.48it/s]Capturing CUDA graphs [arc-db] (FULL):  96%|█████████▋| 52/54 [00:17<00:00,  3.53it/s]Capturing CUDA graphs [arc-db] (FULL):  98%|█████████▊| 53/54 [00:18<00:00,  3.58it/s]Capturing CUDA graphs [arc-db] (FULL): 100%|██████████| 54/54 [00:18<00:00,  3.58it/s]Capturing CUDA graphs [arc-db] (FULL): 100%|██████████| 54/54 [00:18<00:00,  2.94it/s]
+(Worker_TP0 pid=1026) INFO 11-26 22:53:43 [graph_exec_doublebuffer.py:106] ArcXpuPlatform: graph-exec double-buffer captured 54 graphs x2 (shared pool; same-exec replay blocking avoided — P6.35 D1).
+(Worker_TP0 pid=1026) INFO 11-26 22:53:43 [speculator.py:151] Capturing model for speculator...
+(Worker_TP0 pid=1026) Capturing prefill CUDA graphs (FULL):   0%|          | 0/54 [00:00<?, ?it/s](Worker_TP1 pid=1138) INFO 11-26 22:53:43 [graph_exec_doublebuffer.py:106] ArcXpuPlatform: graph-exec double-buffer captured 54 graphs x2 (shared pool; same-exec replay blocking avoided — P6.35 D1).
+(Worker_TP1 pid=1138) INFO 11-26 22:53:43 [speculator.py:151] Capturing model for speculator...
+Capturing prefill CUDA graphs (FULL):   2%|▏         | 1/54 [00:00<00:08,  5.91it/s]Capturing prefill CUDA graphs (FULL):   7%|▋         | 4/54 [00:00<00:03, 16.54it/s]Capturing prefill CUDA graphs (FULL):  13%|█▎        | 7/54 [00:00<00:02, 20.70it/s]Capturing prefill CUDA graphs (FULL):  20%|██        | 11/54 [00:00<00:02, 21.49it/s]Capturing prefill CUDA graphs (FULL):  26%|██▌       | 14/54 [00:01<00:07,  5.29it/s]Capturing prefill CUDA graphs (FULL):  30%|██▉       | 16/54 [00:02<00:06,  5.43it/s]Capturing prefill CUDA graphs (FULL):  33%|███▎      | 18/54 [00:02<00:07,  4.66it/s](Worker_TP1 pid=1138) INFO 11-26 22:53:46 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=768 p50=0.67ms p90=0.84ms max=1.47ms fallbacks=12 {'zero-spec': 9, 'mixed': 3}
+(Worker_TP0 pid=1026) INFO 11-26 22:53:46 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=768 p50=0.50ms p90=0.73ms max=1.54ms fallbacks=12 {'zero-spec': 9, 'mixed': 3}
+Capturing prefill CUDA graphs (FULL):  35%|███▌      | 19/54 [00:03<00:08,  4.36it/s]Capturing prefill CUDA graphs (FULL):  37%|███▋      | 20/54 [00:03<00:07,  4.79it/s]Capturing prefill CUDA graphs (FULL):  39%|███▉      | 21/54 [00:03<00:06,  4.72it/s]Capturing prefill CUDA graphs (FULL):  43%|████▎     | 23/54 [00:03<00:05,  6.06it/s]Capturing prefill CUDA graphs (FULL):  46%|████▋     | 25/54 [00:03<00:04,  7.06it/s]Capturing prefill CUDA graphs (FULL):  50%|█████     | 27/54 [00:04<00:03,  7.95it/s]Capturing prefill CUDA graphs (FULL):  52%|█████▏    | 28/54 [00:04<00:03,  8.23it/s]Capturing prefill CUDA graphs (FULL):  56%|█████▌    | 30/54 [00:04<00:02,  9.19it/s]Capturing prefill CUDA graphs (FULL):  59%|█████▉    | 32/54 [00:04<00:02,  9.74it/s]Capturing prefill CUDA graphs (FULL):  63%|██████▎   | 34/54 [00:04<00:01, 10.20it/s]Capturing prefill CUDA graphs (FULL):  67%|██████▋   | 36/54 [00:04<00:01, 11.27it/s]Capturing prefill CUDA graphs (FULL):  72%|███████▏  | 39/54 [00:04<00:01, 14.61it/s]Capturing prefill CUDA graphs (FULL):  81%|████████▏ | 44/54 [00:05<00:00, 22.11it/s]Capturing prefill CUDA graphs (FULL):  87%|████████▋ | 47/54 [00:05<00:00, 23.92it/s]Capturing prefill CUDA graphs (FULL):  93%|█████████▎| 50/54 [00:05<00:00, 23.56it/s]Capturing prefill CUDA graphs (FULL): 100%|██████████| 54/54 [00:05<00:00, 10.04it/s]
+(Worker_TP0 pid=1026) Capturing prefill CUDA graphs [arc-db] (FULL):   0%|          | 0/54 [00:00<?, ?it/s]Capturing prefill CUDA graphs [arc-db] (FULL):   2%|▏         | 1/54 [00:00<00:08,  6.20it/s]Capturing prefill CUDA graphs [arc-db] (FULL):   4%|▎         | 2/54 [00:00<00:09,  5.69it/s]Capturing prefill CUDA graphs [arc-db] (FULL):   6%|▌         | 3/54 [00:00<00:09,  5.58it/s]Capturing prefill CUDA graphs [arc-db] (FULL):   7%|▋         | 4/54 [00:00<00:08,  6.04it/s]Capturing prefill CUDA graphs [arc-db] (FULL):   9%|▉         | 5/54 [00:00<00:07,  6.19it/s]Capturing prefill CUDA graphs [arc-db] (FULL):  11%|█         | 6/54 [00:00<00:07,  6.26it/s]Capturing prefill CUDA graphs [arc-db] (FULL):  13%|█▎        | 7/54 [00:01<00:07,  6.31it/s](Worker_TP0 pid=1026) INFO 11-26 22:53:50 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=1024 p50=0.58ms p90=0.97ms max=1.54ms fallbacks=12 {'zero-spec': 9, 'mixed': 3}
+(Worker_TP1 pid=1138) INFO 11-26 22:53:50 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=1024 p50=0.64ms p90=0.88ms max=1.47ms fallbacks=12 {'zero-spec': 9, 'mixed': 3}
+Capturing prefill CUDA graphs [arc-db] (FULL):  15%|█▍        | 8/54 [00:01<00:07,  6.27it/s]Capturing prefill CUDA graphs [arc-db] (FULL):  17%|█▋        | 9/54 [00:01<00:06,  6.44it/s](EngineCore pid=782) INFO 11-26 22:53:50 [shm_broadcast.py:801] No available shared memory broadcast block found in 60 seconds. This typically happens when some processes are hanging or doing some time-consuming work (e.g. compilation, weight/kv cache quantization).
+Capturing prefill CUDA graphs [arc-db] (FULL):  19%|█▊        | 10/54 [00:01<00:06,  6.52it/s]Capturing prefill CUDA graphs [arc-db] (FULL):  20%|██        | 11/54 [00:01<00:06,  6.68it/s]Capturing prefill CUDA graphs [arc-db] (FULL):  22%|██▏       | 12/54 [00:01<00:06,  6.65it/s]Capturing prefill CUDA graphs [arc-db] (FULL):  24%|██▍       | 13/54 [00:02<00:06,  6.56it/s]Capturing prefill CUDA graphs [arc-db] (FULL):  26%|██▌       | 14/54 [00:02<00:05,  7.11it/s]Capturing prefill CUDA graphs [arc-db] (FULL):  28%|██▊       | 15/54 [00:02<00:05,  7.22it/s]Capturing prefill CUDA graphs [arc-db] (FULL):  30%|██▉       | 16/54 [00:02<00:05,  7.51it/s]Capturing prefill CUDA graphs [arc-db] (FULL):  31%|███▏      | 17/54 [00:02<00:04,  7.62it/s]Capturing prefill CUDA graphs [arc-db] (FULL):  33%|███▎      | 18/54 [00:02<00:04,  7.93it/s]Capturing prefill CUDA graphs [arc-db] (FULL):  35%|███▌      | 19/54 [00:02<00:04,  8.00it/s]Capturing prefill CUDA graphs [arc-db] (FULL):  39%|███▉      | 21/54 [00:02<00:03,  8.82it/s]Capturing prefill CUDA graphs [arc-db] (FULL):  41%|████      | 22/54 [00:03<00:03,  8.53it/s]Capturing prefill CUDA graphs [arc-db] (FULL):  44%|████▍     | 24/54 [00:03<00:03,  9.07it/s]Capturing prefill CUDA graphs [arc-db] (FULL):  46%|████▋     | 25/54 [00:03<00:03,  9.22it/s]Capturing prefill CUDA graphs [arc-db] (FULL):  48%|████▊     | 26/54 [00:04<00:06,  4.13it/s]Capturing prefill CUDA graphs [arc-db] (FULL):  50%|█████     | 27/54 [00:04<00:06,  3.91it/s]Capturing prefill CUDA graphs [arc-db] (FULL):  52%|█████▏    | 28/54 [00:04<00:06,  4.17it/s]Capturing prefill CUDA graphs [arc-db] (FULL):  56%|█████▌    | 30/54 [00:04<00:04,  5.80it/s]Capturing prefill CUDA graphs [arc-db] (FULL):  57%|█████▋    | 31/54 [00:04<00:03,  6.31it/s]Capturing prefill CUDA graphs [arc-db] (FULL):  61%|██████    | 33/54 [00:05<00:03,  6.83it/s]Capturing prefill CUDA graphs [arc-db] (FULL):  63%|██████▎   | 34/54 [00:05<00:02,  7.03it/s]Capturing prefill CUDA graphs [arc-db] (FULL):  67%|██████▋   | 36/54 [00:05<00:03,  5.56it/s]Capturing prefill CUDA graphs [arc-db] (FULL):  74%|███████▍  | 40/54 [00:05<00:01, 10.08it/s]Capturing prefill CUDA graphs [arc-db] (FULL):  83%|████████▎ | 45/54 [00:05<00:00, 16.38it/s](Worker_TP1 pid=1138) INFO 11-26 22:53:55 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=1280 p50=0.58ms p90=0.91ms max=1.55ms fallbacks=12 {'zero-spec': 9, 'mixed': 3}
+(Worker_TP0 pid=1026) INFO 11-26 22:53:55 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=1280 p50=0.58ms p90=0.96ms max=1.42ms fallbacks=12 {'zero-spec': 9, 'mixed': 3}
+Capturing prefill CUDA graphs [arc-db] (FULL):  94%|█████████▍| 51/54 [00:06<00:00, 23.72it/s]Capturing prefill CUDA graphs [arc-db] (FULL): 100%|██████████| 54/54 [00:08<00:00,  6.41it/s]
+(Worker_TP0 pid=1026) INFO 11-26 22:53:57 [graph_exec_doublebuffer.py:106] ArcXpuPlatform: graph-exec double-buffer captured 54 graphs x2 (shared pool; same-exec replay blocking avoided — P6.35 D1).
+(Worker_TP1 pid=1138) INFO 11-26 22:53:57 [graph_exec_doublebuffer.py:106] ArcXpuPlatform: graph-exec double-buffer captured 54 graphs x2 (shared pool; same-exec replay blocking avoided — P6.35 D1).
+(Worker_TP0 pid=1026) Capturing decode CUDA graphs (FULL):   0%|          | 0/27 [00:00<?, ?it/s]Capturing decode CUDA graphs (FULL):   4%|▎         | 1/27 [00:02<01:16,  2.96s/it]Capturing decode CUDA graphs (FULL):   7%|▋         | 2/27 [00:03<00:31,  1.28s/it]Capturing decode CUDA graphs (FULL):  15%|█▍        | 4/27 [00:03<00:11,  1.93it/s]Capturing decode CUDA graphs (FULL):  26%|██▌       | 7/27 [00:03<00:04,  4.05it/s]Capturing decode CUDA graphs (FULL):  41%|████      | 11/27 [00:03<00:02,  7.50it/s]Capturing decode CUDA graphs (FULL):  52%|█████▏    | 14/27 [00:03<00:01,  8.79it/s]Capturing decode CUDA graphs (FULL):  78%|███████▊  | 21/27 [00:03<00:00, 16.71it/s]Capturing decode CUDA graphs (FULL): 100%|██████████| 27/27 [00:03<00:00,  6.99it/s]
+(Worker_TP0 pid=1026) Capturing decode CUDA graphs [arc-db] (FULL):   0%|          | 0/27 [00:00<?, ?it/s]Capturing decode CUDA graphs [arc-db] (FULL):  15%|█▍        | 4/27 [00:00<00:00, 35.23it/s]Capturing decode CUDA graphs [arc-db] (FULL):  30%|██▉       | 8/27 [00:00<00:00, 36.02it/s]Capturing decode CUDA graphs [arc-db] (FULL):  44%|████▍     | 12/27 [00:00<00:00, 33.89it/s]Capturing decode CUDA graphs [arc-db] (FULL):  59%|█████▉    | 16/27 [00:00<00:00, 24.95it/s]Capturing decode CUDA graphs [arc-db] (FULL):  85%|████████▌ | 23/27 [00:00<00:00, 35.49it/s]Capturing decode CUDA graphs [arc-db] (FULL): 100%|██████████| 27/27 [00:00<00:00, 36.49it/s]
+(Worker_TP1 pid=1138) INFO 11-26 22:54:02 [graph_exec_doublebuffer.py:106] ArcXpuPlatform: graph-exec double-buffer captured 27 graphs x2 (shared pool; same-exec replay blocking avoided — P6.35 D1).
+(Worker_TP0 pid=1026) INFO 11-26 22:54:02 [graph_exec_doublebuffer.py:106] ArcXpuPlatform: graph-exec double-buffer captured 27 graphs x2 (shared pool; same-exec replay blocking avoided — P6.35 D1).
+(Worker_TP1 pid=1138) INFO 11-26 22:54:02 [model_runner.py:1066] Graph capturing finished in 58 secs, took 5.29 GiB
+(Worker_TP1 pid=1138) INFO 11-26 22:54:02 [gpu_worker.py:1094] Free memory on device (30.89/31.89 GiB) on startup. Desired GPU memory utilization is (0.8, 25.51 GiB). Actual usage is 17.25 GiB for consumed memory (weights + non-torch), 1.46 GiB for peak activation, and 5.29 GiB for CUDAGraph memory. Replace gpu_memory_utilization config with `--kv-cache-memory=1464781517` (1.36 GiB) to fit into requested memory, or `--kv-cache-memory=7239876096` (6.74 GiB) to fully utilize gpu memory. Current kv cache memory in use is 6.8 GiB.
+(Worker_TP1 pid=1138) INFO 11-26 22:54:02 [jit_monitor.py:85] Kernel JIT monitor activated; monitored JIT compilations during inference will use mode=warn.
+(Worker_TP0 pid=1026) INFO 11-26 22:54:02 [model_runner.py:1066] Graph capturing finished in 58 secs, took 4.91 GiB
+(Worker_TP0 pid=1026) INFO 11-26 22:54:02 [gpu_worker.py:1094] Free memory on device (30.51/31.89 GiB) on startup. Desired GPU memory utilization is (0.8, 25.51 GiB). Actual usage is 17.26 GiB for consumed memory (weights + non-torch), 1.46 GiB for peak activation, and 4.91 GiB for CUDAGraph memory. Replace gpu_memory_utilization config with `--kv-cache-memory=1870498509` (1.74 GiB) to fit into requested memory, or `--kv-cache-memory=7239806464` (6.74 GiB) to fully utilize gpu memory. Current kv cache memory in use is 6.8 GiB.
+(Worker_TP0 pid=1026) INFO 11-26 22:54:02 [jit_monitor.py:85] Kernel JIT monitor activated; monitored JIT compilations during inference will use mode=warn.
+(Worker_TP0 pid=1026) INFO 11-26 22:54:03 [torch_utils.py:287] Reducing Torch threads from 32 to 1 for serving. Set OMP_NUM_THREADS in the external environment to override.
+(EngineCore pid=782) INFO 11-26 22:54:03 [core.py:379] init engine (profile, create kv cache, warmup model) took 166.99 s
+(EngineCore pid=782) INFO 11-26 22:54:04 [platform.py:375] ArcXpuPlatform: wheel hook scheduler <- patches.sched_tail_split OK
+(EngineCore pid=782) INFO 11-26 22:54:04 [kv_cache_utils.py:748] kv cache group sizes [1088, 1088, 1088, 1088]
+(EngineCore pid=782) INFO 11-26 22:54:04 [kv_cache_utils.py:749] kv lcm block sizes 1088
+(EngineCore pid=782) [transformers] The `use_fast` parameter is deprecated and will be removed in a future version. Use `backend="torchvision"` instead of `use_fast=True`, or `backend="pil"` instead of `use_fast=False`.
+(EngineCore pid=782) WARNING 11-26 22:54:14 [vllm.py:1570] Inductor compilation was disabled by user settings, optimizations settings that are only active during inductor compilation will be ignored.
+(EngineCore pid=782) INFO 11-26 22:54:14 [kernel.py:416] Final IR op priority after setting platform defaults: IrOpPriorityConfig(rms_norm=['vllm_c', 'native'], fused_add_rms_norm=['vllm_c', 'native'], gelu_and_mul_sparse=['native'])
+(EngineCore pid=782) WARNING 11-26 22:54:14 [xpu.py:308] XPU Graph support is experimental and currently only supports single-GPU execution.
+(EngineCore pid=782) INFO 11-26 22:54:14 [graph_safe_output.py:665] ArcXpuPlatform: XPU graph boundary hygiene installed (pid 782, XPUGraph capture_begin/capture_end/replay + graph context __exit__ wrapped).
+(EngineCore pid=782) INFO 11-26 22:54:14 [graph_safe_output.py:791] ArcXpuPlatform: zombie stream-reroute guards installed (pid 782, set_stream substitution + wait_stream skip + Event.record reroute + synchronize tripwire).
+(EngineCore pid=782) INFO 11-26 22:54:14 [graph_safe_output.py:925] ArcXpuPlatform: runner-entry hygiene installed (pid 782, GPUModelRunner.execute_model + sample_tokens wrapped).
+(EngineCore pid=782) INFO 11-26 22:54:14 [graph_safe_output.py:971] ArcXpuPlatform: capture-stream fix installed (pid 782, captures ride torch.xpu.graph.default_capture_stream, EAGERLY INITED before capture #1 — the serving default never enters capture; champion 0.26.1 discipline, r9).
+(EngineCore pid=782) INFO 11-26 22:54:14 [graph_safe_output.py:520] ArcXpuPlatform: r12b kernel-launch tracer installed (triton:CachingAutotuner.run).
+(EngineCore pid=782) INFO 11-26 22:54:14 [graph_safe_output.py:1112] ArcXpuPlatform: graph-safe output patch installed (pid 782, AsyncOutput/AsyncPoolingOutput __init__ + get_output wrapped).
+(EngineCore pid=782) INFO 11-26 22:54:14 [speculator_full_capture.py:117] ArcXpuPlatform: speculator FULL-capture patch installed (pid 782, SpeculatorCudaGraphManager.__init__ wrapped).
+(EngineCore pid=782) INFO 11-26 22:54:14 [first_request_warmup.py:123] ArcXpuPlatform: first-request warmup interlock installed (defect-b lane W, r16 evidence)
+(EngineCore pid=782) INFO 11-26 22:54:14 [gdn_metadata_fastpath.py:286] [arc-p10] gdn metadata fastpath installed (steady spec-decode builds; stock build kept for prefill/mixed)
+(EngineCore pid=782) INFO 11-26 22:54:14 [fp8_block_w8a16.py:97] ArcXpuPlatform: fp8 block linear reroute ACTIVE — XPUFp8BlockScaledMMKernel.apply_input_quant=False, apply_block_scaled_mm -> _xpu_C.fp8_gemm_w8a16 (stock fallback kept; r40: 3-8x/GEMM decode Ms, relerr 4-5e-4)
+(EngineCore pid=782) WARNING 11-26 22:54:14 [platform.py:100] ArcXpuPlatform: ar_trace install failed at check_and_update_config: ModuleNotFoundError("No module named 'vllm_gaudi.xpu.patches.ar_trace'")
+(EngineCore pid=782) INFO 11-26 22:54:14 [mxfp4_w4a16.py:194] ArcXpuPlatform: mxfp4 w4a16 reroute ACTIVE — XPUMxFp4LinearKernel.apply_weights -> _xpu_C.fp4_gemm_w4a16 (no per-call activation quant; stock w4a4 via ARC_MXFP4_MODE=w4a4)
+(EngineCore pid=782) INFO 11-26 22:54:14 [mxfp8_w8a16.py:120] ArcXpuPlatform: mxfp8 w8a16 reroute ACTIVE — XPUMxFp8LinearKernel.apply_weights -> _xpu_C.fp8_gemm_w8a16_mxfp8 (no per-call activation quant; stock w8a8 via ARC_MXFP8_MODE=w8a8)
+(EngineCore pid=782) INFO 11-26 22:54:14 [skinny_m.py:169] ArcXpuPlatform: skinny-M reroute OFF (ARC_SKINNY_M unset/off — stock routes at all Ms; the certified default after r127; set ARC_SKINNY_M=on to opt in)
+(EngineCore pid=782) INFO 11-26 22:54:14 [graph_exec_doublebuffer.py:127] ArcXpuPlatform: graph-exec double-buffer patch installed (pid 782, CudaGraphManager capture/run_fullgraph wrapped).
+(EngineCore pid=782) INFO 11-26 22:54:14 [platform.py:607] ArcXpuPlatform: Intel Arc Xe2 posture active (Intel(R) Graphics [0xe223]).
+(EngineCore pid=782) INFO 11-26 22:54:14 [platform.py:616] ArcXpuPlatform: graph posture cudagraph_mode=FULL_DECODE_ONLY capture_sizes=(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 20, 25, 30, 35, 40, 45, 48, 50, 55, 60, 64, 65, 70, 75, 80, 85, 90, 95, 96, 100, 105, 110, 112, 115, 120, 125, 128, 130, 135, 140, 145, 150, 155, 160, 165, 170, 175, 180, 185, 190, 192, 195, 200, 205, 210, 215, 220, 224, 225, 230, 235, 240, 245, 250, 255, 256, 260, 265, 270, 275, 280, 285, 290, 295, 300, 305, 310, 315, 320) (VLLM_XPU_ENABLE_XPU_GRAPH=True).
+(EngineCore pid=782) INFO 11-26 22:54:14 [compilation.py:336] Enabled custom fusions: norm_quant, act_quant
+(APIServer pid=13) INFO 11-26 22:54:14 [entry.py:135] Supported tasks: ['generate']
+(APIServer pid=13) INFO 11-26 22:54:14 [factories.py:76] Scale-out endpoints are disabled. Set --enable-scale-out to enable them.
+(APIServer pid=13) INFO 11-26 22:54:14 [parser_manager.py:36] "auto" tool choice has been enabled.
+(APIServer pid=13) INFO 11-26 22:54:15 [hf.py:642] Detected the chat template content format to be 'openai'. You can set `--chat-template-content-format` to override this.
+(APIServer pid=13) WARNING 11-26 22:54:15 [model.py:1772] Default vLLM sampling parameters have been overridden by the model's `generation_config.json`: `{'repetition_penalty': 1.0, 'temperature': 0.6, 'top_k': 20, 'top_p': 0.95, 'min_p': 0.0}`. If this is not intended, please relaunch vLLM instance with `--generation-config vllm`.
+(APIServer pid=13) INFO 11-26 22:54:15 [entry.py:139] Starting vLLM server on http://0.0.0.0:8000
+(APIServer pid=13) INFO 11-26 22:54:15 [launcher.py:61] Available routes are:
+(APIServer pid=13) INFO 11-26 22:54:15 [launcher.py:70] Route: /openapi.json, Methods: GET, HEAD
+(APIServer pid=13) INFO 11-26 22:54:15 [launcher.py:70] Route: /docs, Methods: GET, HEAD
+(APIServer pid=13) INFO 11-26 22:54:15 [launcher.py:70] Route: /docs/oauth2-redirect, Methods: GET, HEAD
+(APIServer pid=13) INFO 11-26 22:54:15 [launcher.py:70] Route: /redoc, Methods: GET, HEAD
+(APIServer pid=13) INFO 11-26 22:54:15 [launcher.py:70] Route: /load, Methods: GET
+(APIServer pid=13) INFO 11-26 22:54:15 [launcher.py:70] Route: /version, Methods: GET
+(APIServer pid=13) INFO 11-26 22:54:15 [launcher.py:70] Route: /health, Methods: GET
+(APIServer pid=13) INFO 11-26 22:54:15 [launcher.py:70] Route: /metrics, Methods: GET
+(APIServer pid=13) INFO 11-26 22:54:15 [launcher.py:70] Route: /tokenize, Methods: POST
+(APIServer pid=13) INFO 11-26 22:54:15 [launcher.py:70] Route: /detokenize, Methods: POST
+(APIServer pid=13) INFO 11-26 22:54:15 [launcher.py:70] Route: /v1/models, Methods: GET
+(APIServer pid=13) INFO 11-26 22:54:15 [launcher.py:70] Route: /ping, Methods: GET
+(APIServer pid=13) INFO 11-26 22:54:15 [launcher.py:70] Route: /ping, Methods: POST
+(APIServer pid=13) INFO 11-26 22:54:15 [launcher.py:70] Route: /invocations, Methods: POST
+(APIServer pid=13) INFO 11-26 22:54:15 [launcher.py:70] Route: /v1/chat/completions, Methods: POST
+(APIServer pid=13) INFO 11-26 22:54:15 [launcher.py:70] Route: /v1/chat/completions/batch, Methods: POST
+(APIServer pid=13) INFO 11-26 22:54:15 [launcher.py:70] Route: /v1/responses, Methods: POST
+(APIServer pid=13) INFO 11-26 22:54:15 [launcher.py:70] Route: /v1/responses/{response_id}, Methods: GET
+(APIServer pid=13) INFO 11-26 22:54:15 [launcher.py:70] Route: /v1/responses/{response_id}/cancel, Methods: POST
+(APIServer pid=13) INFO 11-26 22:54:15 [launcher.py:70] Route: /v1/completions, Methods: POST
+(APIServer pid=13) INFO 11-26 22:54:15 [launcher.py:70] Route: /v1/messages, Methods: POST
+(APIServer pid=13) INFO 11-26 22:54:15 [launcher.py:70] Route: /v1/messages/count_tokens, Methods: POST
+(APIServer pid=13) INFO 11-26 22:54:15 [launcher.py:70] Route: /generative_scoring, Methods: POST
+(APIServer pid=13) INFO 11-26 22:54:15 [launcher.py:70] Route: /scale_elastic_ep, Methods: POST
+(APIServer pid=13) INFO 11-26 22:54:15 [launcher.py:70] Route: /is_scaling_elastic_ep, Methods: POST
+(APIServer pid=13) INFO:     Started server process [13]
+(APIServer pid=13) INFO:     Waiting for application startup.
+(APIServer pid=13) INFO:     Application startup complete.
+(APIServer pid=13) INFO:     127.0.0.1:58074 - "GET /health HTTP/1.1" 200 OK
+(APIServer pid=13) INFO 11-26 22:54:26 [first_request_warmup.py:101] ArcXpuPlatform: first generate (request cmpl-b0f788c9ad5a7686-0) — running defect-b warmup interlock first
+(APIServer pid=13) WARNING 11-26 22:54:26 [input_processor.py:315] Passing raw prompts to InputProcessor is deprecated and will be removed in the future. You should instead pass the outputs of Renderer.render_cmpl() or Renderer.render_chat().
+(Worker_TP0 pid=1026) WARNING 11-26 22:54:27 [jit_monitor.py:141] Triton kernel JIT compilation during inference: _compute_local_logits_stats_kernel. This causes a latency spike; consider extending warmup to cover this shape/config.
+(Worker_TP0 pid=1026) WARNING 11-26 22:54:29 [jit_monitor.py:141] Triton kernel JIT compilation during inference: _rejection_kernel. This causes a latency spike; consider extending warmup to cover this shape/config.
+(Worker_TP0 pid=1026) WARNING 11-26 22:54:30 [jit_monitor.py:141] Triton kernel JIT compilation during inference: _resample_kernel. This causes a latency spike; consider extending warmup to cover this shape/config.
+(APIServer pid=13) INFO 11-26 22:54:36 [first_request_warmup.py:59] ArcXpuPlatform: first-request warmup stage small done in 10.4s (2 outputs, 640 prompt chars)
+(Worker_TP1 pid=1138) LMCBOUND NONFINITE req=arc-warmup-max-batch-a33506ae B=6528 nf=6572 am=2.02e+01 (v138c sanitize-carry REVAL trigger)
+(Worker_TP0 pid=1026) LMCBOUND NONFINITE req=arc-warmup-max-batch-a33506ae B=6528 nf=6793 am=3.22e+01 (v138c sanitize-carry REVAL trigger)
+(Worker_TP0 pid=1026) WARNING 11-26 22:54:40 [jit_monitor.py:141] Triton kernel JIT compilation during inference: _mx_full_dequant. This causes a latency spike; consider extending warmup to cover this shape/config.
+(APIServer pid=13) INFO 11-26 22:54:41 [first_request_warmup.py:59] ArcXpuPlatform: first-request warmup stage max-batch done in 5.0s (2 outputs, 44253 prompt chars)
+(APIServer pid=13) INFO 11-26 22:54:41 [first_request_warmup.py:113] ArcXpuPlatform: warmup complete in 15.4s — engine hot, serving request cmpl-b0f788c9ad5a7686-0
+(APIServer pid=13) INFO:     127.0.0.1:58076 - "POST /v1/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:57950 - "POST /v1/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO 11-26 22:54:45 [loggers.py:315] Engine 000: Avg prompt throughput: 832.3 tokens/s, Avg generation throughput: 5.3 tokens/s, Running: 1 reqs, Waiting: 0 reqs, XPU KV cache usage: 2.6%, Prefix cache hit rate: 0.0%
+(APIServer pid=13) INFO 11-26 22:54:45 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 2.89, Accepted throughput: 1.09 tokens/s, Drafted throughput: 1.73 tokens/s, Accepted: 34 tokens, Drafted: 54 tokens, Per-position acceptance rate: 0.778, 0.667, 0.444, Avg Draft acceptance rate: 63.0%
+(APIServer pid=13) INFO:     127.0.0.1:57966 - "POST /v1/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:57978 - "POST /v1/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:36744 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(Worker_TP1 pid=1138) INFO 11-26 22:54:48 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=1536 p50=0.51ms p90=0.80ms max=1.55ms fallbacks=39 {'zero-spec': 36, 'mixed': 3}
+(Worker_TP0 pid=1026) INFO 11-26 22:54:48 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=1536 p50=0.50ms p90=0.75ms max=1.42ms fallbacks=39 {'zero-spec': 36, 'mixed': 3}
+(Worker_TP1 pid=1138) INFO 11-26 22:54:53 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=1792 p50=0.50ms p90=0.53ms max=1.11ms fallbacks=39 {'zero-spec': 36, 'mixed': 3}
+(Worker_TP0 pid=1026) INFO 11-26 22:54:53 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=1792 p50=0.48ms p90=0.62ms max=0.80ms fallbacks=39 {'zero-spec': 36, 'mixed': 3}
+(APIServer pid=13) INFO:     127.0.0.1:36754 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO 11-26 22:54:55 [loggers.py:315] Engine 000: Avg prompt throughput: 74.3 tokens/s, Avg generation throughput: 49.0 tokens/s, Running: 1 reqs, Waiting: 0 reqs, XPU KV cache usage: 2.6%, Prefix cache hit rate: 0.0%
+(APIServer pid=13) INFO 11-26 22:54:55 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 2.63, Accepted throughput: 30.50 tokens/s, Drafted throughput: 56.09 tokens/s, Accepted: 305 tokens, Drafted: 561 tokens, Per-position acceptance rate: 0.759, 0.513, 0.358, Avg Draft acceptance rate: 54.4%
+(APIServer pid=13) INFO:     10.20.3.REDACTED:60940 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     10.20.3.REDACTED:60986 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     10.20.3.REDACTED:60974 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     10.20.3.REDACTED:60972 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     10.20.3.REDACTED:60962 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     10.20.3.REDACTED:60956 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     10.20.3.REDACTED:60946 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:36784 - "GET /v1/models HTTP/1.1" 200 OK
+(Worker_TP1 pid=1138) INFO 11-26 22:54:57 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=2048 p50=0.50ms p90=0.53ms max=0.86ms fallbacks=42 {'zero-spec': 39, 'mixed': 3}
+(Worker_TP0 pid=1026) INFO 11-26 22:54:57 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=2048 p50=0.48ms p90=0.62ms max=0.79ms fallbacks=42 {'zero-spec': 39, 'mixed': 3}
+(APIServer pid=13) INFO:     127.0.0.1:36770 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(Worker_TP1 pid=1138) INFO 11-26 22:55:02 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=2304 p50=0.50ms p90=0.52ms max=0.60ms fallbacks=45 {'zero-spec': 42, 'mixed': 3}
+(Worker_TP0 pid=1026) INFO 11-26 22:55:02 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=2304 p50=0.48ms p90=0.62ms max=0.79ms fallbacks=45 {'zero-spec': 42, 'mixed': 3}
+(APIServer pid=13) INFO:     127.0.0.1:53734 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO 11-26 22:55:05 [loggers.py:315] Engine 000: Avg prompt throughput: 219.6 tokens/s, Avg generation throughput: 54.2 tokens/s, Running: 8 reqs, Waiting: 0 reqs, XPU KV cache usage: 21.1%, Prefix cache hit rate: 0.0%
+(APIServer pid=13) INFO 11-26 22:55:05 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 2.71, Accepted throughput: 33.80 tokens/s, Drafted throughput: 59.40 tokens/s, Accepted: 338 tokens, Drafted: 594 tokens, Per-position acceptance rate: 0.788, 0.545, 0.374, Avg Draft acceptance rate: 56.9%
+(Worker_TP1 pid=1138) INFO 11-26 22:55:08 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=2560 p50=0.50ms p90=0.54ms max=0.63ms fallbacks=51 {'zero-spec': 45, 'mixed': 6}
+(Worker_TP0 pid=1026) INFO 11-26 22:55:08 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=2560 p50=0.48ms p90=0.62ms max=0.79ms fallbacks=51 {'zero-spec': 45, 'mixed': 6}
+(APIServer pid=13) INFO:     127.0.0.1:53790 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:53800 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:53804 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:53748 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:53794 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:53778 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:53764 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:53738 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(Worker_TP1 pid=1138) INFO 11-26 22:55:14 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=2816 p50=0.50ms p90=0.60ms max=0.74ms fallbacks=57 {'zero-spec': 48, 'mixed': 9}
+(Worker_TP0 pid=1026) INFO 11-26 22:55:14 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=2816 p50=0.48ms p90=0.62ms max=0.75ms fallbacks=57 {'zero-spec': 48, 'mixed': 9}
+(APIServer pid=13) INFO 11-26 22:55:15 [loggers.py:315] Engine 000: Avg prompt throughput: 195.2 tokens/s, Avg generation throughput: 264.2 tokens/s, Running: 8 reqs, Waiting: 0 reqs, XPU KV cache usage: 21.1%, Prefix cache hit rate: 0.0%
+(APIServer pid=13) INFO 11-26 22:55:15 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 2.54, Accepted throughput: 160.38 tokens/s, Drafted throughput: 311.95 tokens/s, Accepted: 1604 tokens, Drafted: 3120 tokens, Per-position acceptance rate: 0.739, 0.487, 0.315, Avg Draft acceptance rate: 51.4%
+(APIServer pid=13) INFO:     127.0.0.1:49548 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:49568 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:49560 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:49582 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:49516 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:49532 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:49562 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:49544 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(Worker_TP0 pid=1026) INFO 11-26 22:55:21 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=3072 p50=0.48ms p90=0.62ms max=0.83ms fallbacks=66 {'zero-spec': 51, 'mixed': 15}
+(Worker_TP1 pid=1138) INFO 11-26 22:55:21 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=3072 p50=0.51ms p90=0.63ms max=0.81ms fallbacks=66 {'zero-spec': 51, 'mixed': 15}
+(APIServer pid=13) INFO 11-26 22:55:25 [loggers.py:315] Engine 000: Avg prompt throughput: 195.2 tokens/s, Avg generation throughput: 273.3 tokens/s, Running: 8 reqs, Waiting: 0 reqs, XPU KV cache usage: 21.1%, Prefix cache hit rate: 0.0%
+(APIServer pid=13) INFO 11-26 22:55:25 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 2.58, Accepted throughput: 167.29 tokens/s, Drafted throughput: 316.78 tokens/s, Accepted: 1673 tokens, Drafted: 3168 tokens, Per-position acceptance rate: 0.749, 0.508, 0.328, Avg Draft acceptance rate: 52.8%
+(Worker_TP1 pid=1138) INFO 11-26 22:55:27 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=3328 p50=0.50ms p90=0.63ms max=0.81ms fallbacks=66 {'zero-spec': 51, 'mixed': 15}
+(Worker_TP0 pid=1026) INFO 11-26 22:55:27 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=3328 p50=0.48ms p90=0.62ms max=0.83ms fallbacks=66 {'zero-spec': 51, 'mixed': 15}
+(APIServer pid=13) INFO:     127.0.0.1:54270 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:54310 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:54316 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:54288 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:54268 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:54274 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:54298 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:54276 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(Worker_TP0 pid=1026) LMCBOUND NONFINITE req=chatcmpl-b7b79471b2558577-82707176 B=7616 nf=6598 am=3.20e+01 (v138c sanitize-carry REVAL trigger)
+(Worker_TP1 pid=1138) LMCBOUND NONFINITE req=chatcmpl-b7b79471b2558577-82707176 B=7616 nf=6276 am=5.76e+01 (v138c sanitize-carry REVAL trigger)
+(Worker_TP0 pid=1026) LMCBOUND NONFINITE req=chatcmpl-b7b79471b2558577-82707176 B=13056 nf=6598 am=3.32e+01 (v138c sanitize-carry REVAL trigger)
+(Worker_TP1 pid=1138) LMCBOUND NONFINITE req=chatcmpl-b7b79471b2558577-82707176 B=13056 nf=6276 am=7.26e+01 (v138c sanitize-carry REVAL trigger)
+(APIServer pid=13) INFO 11-26 22:55:35 [loggers.py:315] Engine 000: Avg prompt throughput: 1460.3 tokens/s, Avg generation throughput: 66.2 tokens/s, Running: 1 reqs, Waiting: 0 reqs, XPU KV cache usage: 5.3%, Prefix cache hit rate: 0.0%
+(APIServer pid=13) INFO 11-26 22:55:35 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 2.24, Accepted throughput: 37.20 tokens/s, Drafted throughput: 89.70 tokens/s, Accepted: 372 tokens, Drafted: 897 tokens, Per-position acceptance rate: 0.676, 0.361, 0.207, Avg Draft acceptance rate: 41.5%
+(APIServer pid=13) INFO:     127.0.0.1:57904 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:57916 - "GET /health HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:60580 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:60590 - "GET /health HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:60600 - "POST /v1/chat/completions HTTP/1.1" 400 Bad Request
+(APIServer pid=13) INFO:     127.0.0.1:60606 - "GET /health HTTP/1.1" 200 OK
+(Worker_TP0 pid=1026) LMCBOUND NONFINITE req=chatcmpl-be284cdb4aa11200-ac25d0e6 B=7616 nf=6592 am=3.22e+01 (v138c sanitize-carry REVAL trigger)
+(Worker_TP1 pid=1138) LMCBOUND NONFINITE req=chatcmpl-be284cdb4aa11200-ac25d0e6 B=7616 nf=6444 am=2.48e+01 (v138c sanitize-carry REVAL trigger)
+(Worker_TP0 pid=1026) LMCBOUND NONFINITE req=chatcmpl-be284cdb4aa11200-ac25d0e6 B=10880 nf=6592 am=3.25e+01 (v138c sanitize-carry REVAL trigger)
+(Worker_TP1 pid=1138) LMCBOUND NONFINITE req=chatcmpl-be284cdb4aa11200-ac25d0e6 B=10880 nf=6444 am=2.48e+01 (v138c sanitize-carry REVAL trigger)
+(APIServer pid=13) INFO:     127.0.0.1:60608 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:60624 - "GET /health HTTP/1.1" 200 OK
+(APIServer pid=13) INFO 11-26 22:55:45 [loggers.py:315] Engine 000: Avg prompt throughput: 1255.5 tokens/s, Avg generation throughput: 6.8 tokens/s, Running: 0 reqs, Waiting: 0 reqs, XPU KV cache usage: 0.0%, Prefix cache hit rate: 0.0%
+(APIServer pid=13) INFO 11-26 22:55:45 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 3.50, Accepted throughput: 5.00 tokens/s, Drafted throughput: 6.00 tokens/s, Accepted: 50 tokens, Drafted: 60 tokens, Per-position acceptance rate: 0.950, 0.850, 0.700, Avg Draft acceptance rate: 83.3%
+(APIServer pid=13) INFO:     127.0.0.1:60626 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:60630 - "GET /health HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:53014 - "POST /v1/chat/completions HTTP/1.1" 400 Bad Request
+(APIServer pid=13) INFO:     127.0.0.1:53018 - "GET /health HTTP/1.1" 200 OK
+(APIServer pid=13) WARNING 11-26 22:55:48 [hf.py:879] Chat template rejected the request: No user query found in messages.
+(APIServer pid=13) INFO:     127.0.0.1:53034 - "POST /v1/chat/completions HTTP/1.1" 400 Bad Request
+(APIServer pid=13) INFO:     127.0.0.1:53038 - "GET /health HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:53052 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:53062 - "GET /health HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:53078 - "POST /v1/chat/completions HTTP/1.1" 400 Bad Request
+(APIServer pid=13) INFO:     127.0.0.1:53092 - "GET /health HTTP/1.1" 200 OK
+(APIServer pid=13) WARNING 11-26 22:55:52 [hf.py:879] Chat template rejected the request: Cannot apply chat template to an empty conversation. Provide at least one message.
+(APIServer pid=13) INFO:     127.0.0.1:53108 - "POST /v1/chat/completions HTTP/1.1" 400 Bad Request
+(APIServer pid=13) INFO:     127.0.0.1:53110 - "GET /health HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:53112 - "POST /v1/chat/completions HTTP/1.1" 400 Bad Request
+(APIServer pid=13) INFO:     127.0.0.1:53120 - "GET /health HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:53122 - "POST /v1/chat/completions HTTP/1.1" 400 Bad Request
+(APIServer pid=13) INFO:     127.0.0.1:53134 - "GET /health HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:53148 - "POST /v1/chat/completions HTTP/1.1" 400 Bad Request
+(APIServer pid=13) INFO:     127.0.0.1:53150 - "GET /health HTTP/1.1" 200 OK
+(APIServer pid=13) INFO 11-26 22:55:55 [loggers.py:315] Engine 000: Avg prompt throughput: 6.7 tokens/s, Avg generation throughput: 4.2 tokens/s, Running: 0 reqs, Waiting: 0 reqs, XPU KV cache usage: 0.0%, Prefix cache hit rate: 0.0%
+(APIServer pid=13) INFO 11-26 22:55:55 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 2.28, Accepted throughput: 2.30 tokens/s, Drafted throughput: 5.40 tokens/s, Accepted: 23 tokens, Drafted: 54 tokens, Per-position acceptance rate: 0.611, 0.444, 0.222, Avg Draft acceptance rate: 42.6%
+(APIServer pid=13) INFO:     127.0.0.1:53160 - "POST /v1/chat/completions HTTP/1.1" 400 Bad Request
+(APIServer pid=13) INFO:     127.0.0.1:53176 - "GET /health HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:57746 - "POST /v1/chat/completions HTTP/1.1" 400 Bad Request
+(APIServer pid=13) INFO:     127.0.0.1:57758 - "GET /health HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:57768 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:57770 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:57782 - "GET /health HTTP/1.1" 200 OK
+(Worker_TP1 pid=1138) INFO 11-26 22:56:00 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=3584 p50=0.50ms p90=0.63ms max=0.87ms fallbacks=105 {'zero-spec': 90, 'mixed': 15}
+(Worker_TP0 pid=1026) INFO 11-26 22:56:00 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=3584 p50=0.49ms p90=0.62ms max=0.74ms fallbacks=105 {'zero-spec': 90, 'mixed': 15}
+(Worker_TP1 pid=1138) INFO 11-26 22:56:04 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=3840 p50=0.49ms p90=0.62ms max=0.87ms fallbacks=105 {'zero-spec': 90, 'mixed': 15}
+(Worker_TP0 pid=1026) INFO 11-26 22:56:04 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=3840 p50=0.48ms p90=0.62ms max=0.89ms fallbacks=105 {'zero-spec': 90, 'mixed': 15}
+(APIServer pid=13) INFO 11-26 22:56:05 [loggers.py:315] Engine 000: Avg prompt throughput: 218.3 tokens/s, Avg generation throughput: 34.4 tokens/s, Running: 1 reqs, Waiting: 0 reqs, XPU KV cache usage: 3.0%, Prefix cache hit rate: 0.0%
+(APIServer pid=13) INFO 11-26 22:56:05 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 2.64, Accepted throughput: 21.20 tokens/s, Drafted throughput: 38.69 tokens/s, Accepted: 212 tokens, Drafted: 387 tokens, Per-position acceptance rate: 0.814, 0.512, 0.318, Avg Draft acceptance rate: 54.8%
+(Worker_TP1 pid=1138) INFO 11-26 22:56:08 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=4096 p50=0.49ms p90=0.62ms max=0.79ms fallbacks=105 {'zero-spec': 90, 'mixed': 15}
+(Worker_TP0 pid=1026) INFO 11-26 22:56:08 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=4096 p50=0.48ms p90=0.62ms max=0.89ms fallbacks=105 {'zero-spec': 90, 'mixed': 15}
+(Worker_TP1 pid=1138) INFO 11-26 22:56:11 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=4352 p50=0.49ms p90=0.62ms max=0.79ms fallbacks=105 {'zero-spec': 90, 'mixed': 15}
+(Worker_TP0 pid=1026) INFO 11-26 22:56:11 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=4352 p50=0.48ms p90=0.62ms max=0.69ms fallbacks=105 {'zero-spec': 90, 'mixed': 15}
+(APIServer pid=13) INFO:     127.0.0.1:57786 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(Worker_TP0 pid=1026) LMCBOUND NONFINITE req=chatcmpl-85d46baa9a572631-8260e633 B=1088 nf=6696 am=3.18e+01 (v138c sanitize-carry REVAL trigger)
+(Worker_TP1 pid=1138) LMCBOUND NONFINITE req=chatcmpl-85d46baa9a572631-8260e633 B=1088 nf=6381 am=3.85e+01 (v138c sanitize-carry REVAL trigger)
+(APIServer pid=13) INFO 11-26 22:56:15 [loggers.py:315] Engine 000: Avg prompt throughput: 214.5 tokens/s, Avg generation throughput: 48.3 tokens/s, Running: 1 reqs, Waiting: 0 reqs, XPU KV cache usage: 3.0%, Prefix cache hit rate: 0.0%
+(APIServer pid=13) INFO 11-26 22:56:15 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 2.42, Accepted throughput: 28.30 tokens/s, Drafted throughput: 59.99 tokens/s, Accepted: 283 tokens, Drafted: 600 tokens, Per-position acceptance rate: 0.760, 0.415, 0.240, Avg Draft acceptance rate: 47.2%
+(Worker_TP1 pid=1138) INFO 11-26 22:56:16 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=4608 p50=0.49ms p90=0.62ms max=0.65ms fallbacks=111 {'zero-spec': 96, 'mixed': 15}
+(Worker_TP0 pid=1026) INFO 11-26 22:56:16 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=4608 p50=0.48ms p90=0.61ms max=0.66ms fallbacks=111 {'zero-spec': 96, 'mixed': 15}
+(Worker_TP1 pid=1138) INFO 11-26 22:56:20 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=4864 p50=0.49ms p90=0.62ms max=0.66ms fallbacks=111 {'zero-spec': 96, 'mixed': 15}
+(Worker_TP0 pid=1026) INFO 11-26 22:56:20 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=4864 p50=0.48ms p90=0.61ms max=0.65ms fallbacks=111 {'zero-spec': 96, 'mixed': 15}
+(Worker_TP0 pid=1026) INFO 11-26 22:56:24 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=5120 p50=0.48ms p90=0.62ms max=0.68ms fallbacks=111 {'zero-spec': 96, 'mixed': 15}
+(Worker_TP1 pid=1138) INFO 11-26 22:56:24 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=5120 p50=0.49ms p90=0.62ms max=0.67ms fallbacks=111 {'zero-spec': 96, 'mixed': 15}
+(APIServer pid=13) INFO 11-26 22:56:25 [loggers.py:315] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 55.4 tokens/s, Running: 1 reqs, Waiting: 0 reqs, XPU KV cache usage: 3.0%, Prefix cache hit rate: 0.0%
+(APIServer pid=13) INFO 11-26 22:56:25 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 2.47, Accepted throughput: 33.00 tokens/s, Drafted throughput: 67.20 tokens/s, Accepted: 330 tokens, Drafted: 672 tokens, Per-position acceptance rate: 0.763, 0.438, 0.272, Avg Draft acceptance rate: 49.1%
+(APIServer pid=13) INFO:     10.100.8.REDACTED:42594 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     10.100.8.REDACTED:42612 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     10.100.8.REDACTED:42596 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     10.100.8.REDACTED:42626 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     10.100.8.REDACTED:42648 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     10.100.8.REDACTED:42632 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     10.100.8.REDACTED:42660 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:47712 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(Worker_TP0 pid=1026) LMCBOUND NONFINITE req=chatcmpl-a6ce918e313d1bbf-99bdc799 B=1088 nf=6696 am=3.18e+01 (v138c sanitize-carry REVAL trigger)
+(Worker_TP1 pid=1138) LMCBOUND NONFINITE req=chatcmpl-a6ce918e313d1bbf-99bdc799 B=1088 nf=6381 am=3.85e+01 (v138c sanitize-carry REVAL trigger)
+(Worker_TP1 pid=1138) INFO 11-26 22:56:29 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=5376 p50=0.49ms p90=0.62ms max=0.67ms fallbacks=117 {'zero-spec': 102, 'mixed': 15}
+(Worker_TP0 pid=1026) INFO 11-26 22:56:29 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=5376 p50=0.48ms p90=0.62ms max=0.68ms fallbacks=117 {'zero-spec': 102, 'mixed': 15}
+(Worker_TP1 pid=1138) INFO 11-26 22:56:33 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=5632 p50=0.49ms p90=0.62ms max=0.68ms fallbacks=117 {'zero-spec': 102, 'mixed': 15}
+(Worker_TP0 pid=1026) INFO 11-26 22:56:33 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=5632 p50=0.48ms p90=0.62ms max=0.65ms fallbacks=117 {'zero-spec': 102, 'mixed': 15}
+(APIServer pid=13) INFO 11-26 22:56:35 [loggers.py:315] Engine 000: Avg prompt throughput: 214.5 tokens/s, Avg generation throughput: 51.3 tokens/s, Running: 1 reqs, Waiting: 0 reqs, XPU KV cache usage: 3.0%, Prefix cache hit rate: 0.0%
+(APIServer pid=13) INFO 11-26 22:56:35 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 2.56, Accepted throughput: 31.30 tokens/s, Drafted throughput: 59.99 tokens/s, Accepted: 313 tokens, Drafted: 600 tokens, Per-position acceptance rate: 0.800, 0.465, 0.300, Avg Draft acceptance rate: 52.2%
+(Worker_TP1 pid=1138) INFO 11-26 22:56:36 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=5888 p50=0.49ms p90=0.62ms max=0.68ms fallbacks=117 {'zero-spec': 102, 'mixed': 15}
+(Worker_TP0 pid=1026) INFO 11-26 22:56:36 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=5888 p50=0.48ms p90=0.62ms max=0.65ms fallbacks=117 {'zero-spec': 102, 'mixed': 15}
+(Worker_TP1 pid=1138) INFO 11-26 22:56:40 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=6144 p50=0.49ms p90=0.62ms max=0.65ms fallbacks=117 {'zero-spec': 102, 'mixed': 15}
+(Worker_TP0 pid=1026) INFO 11-26 22:56:40 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=6144 p50=0.48ms p90=0.62ms max=0.65ms fallbacks=117 {'zero-spec': 102, 'mixed': 15}
+(APIServer pid=13) INFO:     127.0.0.1:60228 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(Worker_TP0 pid=1026) LMCBOUND NONFINITE req=chatcmpl-baed3cb81627435b-9a737f41 B=1088 nf=6696 am=3.18e+01 (v138c sanitize-carry REVAL trigger)
+(Worker_TP1 pid=1138) LMCBOUND NONFINITE req=chatcmpl-baed3cb81627435b-9a737f41 B=1088 nf=6381 am=3.85e+01 (v138c sanitize-carry REVAL trigger)
+(Worker_TP1 pid=1138) INFO 11-26 22:56:45 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=6400 p50=0.49ms p90=0.62ms max=0.70ms fallbacks=123 {'zero-spec': 108, 'mixed': 15}
+(Worker_TP0 pid=1026) INFO 11-26 22:56:45 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=6400 p50=0.48ms p90=0.61ms max=0.69ms fallbacks=123 {'zero-spec': 108, 'mixed': 15}
+(APIServer pid=13) INFO 11-26 22:56:45 [loggers.py:315] Engine 000: Avg prompt throughput: 214.5 tokens/s, Avg generation throughput: 48.8 tokens/s, Running: 1 reqs, Waiting: 0 reqs, XPU KV cache usage: 3.0%, Prefix cache hit rate: 0.0%
+(APIServer pid=13) INFO 11-26 22:56:45 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 2.46, Accepted throughput: 29.00 tokens/s, Drafted throughput: 59.40 tokens/s, Accepted: 290 tokens, Drafted: 594 tokens, Per-position acceptance rate: 0.783, 0.424, 0.258, Avg Draft acceptance rate: 48.8%
+(Worker_TP1 pid=1138) INFO 11-26 22:56:49 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=6656 p50=0.49ms p90=0.62ms max=0.70ms fallbacks=123 {'zero-spec': 108, 'mixed': 15}
+(Worker_TP0 pid=1026) INFO 11-26 22:56:49 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=6656 p50=0.48ms p90=0.62ms max=0.69ms fallbacks=123 {'zero-spec': 108, 'mixed': 15}
+(APIServer pid=13) INFO:     127.0.0.1:35570 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(Worker_TP0 pid=1026) LMCBOUND NONFINITE req=chatcmpl-842086bb9b340c16-954a69b7 B=1088 nf=6679 am=3.18e+01 (v138c sanitize-carry REVAL trigger)
+(Worker_TP1 pid=1138) LMCBOUND NONFINITE req=chatcmpl-842086bb9b340c16-954a69b7 B=1088 nf=6475 am=3.85e+01 (v138c sanitize-carry REVAL trigger)
+(Worker_TP1 pid=1138) INFO 11-26 22:56:54 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=6912 p50=0.49ms p90=0.62ms max=0.67ms fallbacks=129 {'zero-spec': 114, 'mixed': 15}
+(Worker_TP0 pid=1026) INFO 11-26 22:56:54 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=6912 p50=0.48ms p90=0.62ms max=0.65ms fallbacks=129 {'zero-spec': 114, 'mixed': 15}
+(APIServer pid=13) INFO 11-26 22:56:55 [loggers.py:315] Engine 000: Avg prompt throughput: 214.5 tokens/s, Avg generation throughput: 52.8 tokens/s, Running: 1 reqs, Waiting: 0 reqs, XPU KV cache usage: 3.0%, Prefix cache hit rate: 0.0%
+(APIServer pid=13) INFO 11-26 22:56:55 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 2.67, Accepted throughput: 33.10 tokens/s, Drafted throughput: 59.39 tokens/s, Accepted: 331 tokens, Drafted: 594 tokens, Per-position acceptance rate: 0.803, 0.525, 0.343, Avg Draft acceptance rate: 55.7%
+(Worker_TP1 pid=1138) INFO 11-26 22:56:58 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=7168 p50=0.49ms p90=0.62ms max=0.85ms fallbacks=129 {'zero-spec': 114, 'mixed': 15}
+(Worker_TP0 pid=1026) INFO 11-26 22:56:58 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=7168 p50=0.48ms p90=0.62ms max=0.79ms fallbacks=129 {'zero-spec': 114, 'mixed': 15}
+(Worker_TP1 pid=1138) INFO 11-26 22:57:02 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=7424 p50=0.49ms p90=0.62ms max=0.85ms fallbacks=129 {'zero-spec': 114, 'mixed': 15}
+(Worker_TP0 pid=1026) INFO 11-26 22:57:02 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=7424 p50=0.48ms p90=0.62ms max=0.79ms fallbacks=129 {'zero-spec': 114, 'mixed': 15}
+(APIServer pid=13) INFO:     127.0.0.1:47314 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(Worker_TP0 pid=1026) LMCBOUND NONFINITE req=chatcmpl-9323fadab0b5443c-aa54afb0 B=3264 nf=6679 am=3.61e+01 (v138c sanitize-carry REVAL trigger)
+(Worker_TP1 pid=1138) LMCBOUND NONFINITE req=chatcmpl-9323fadab0b5443c-aa54afb0 B=3264 nf=6475 am=4.09e+01 (v138c sanitize-carry REVAL trigger)
+(APIServer pid=13) INFO 11-26 22:57:05 [loggers.py:315] Engine 000: Avg prompt throughput: 505.0 tokens/s, Avg generation throughput: 47.5 tokens/s, Running: 1 reqs, Waiting: 0 reqs, XPU KV cache usage: 3.5%, Prefix cache hit rate: 0.0%
+(APIServer pid=13) INFO 11-26 22:57:05 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 2.72, Accepted throughput: 30.10 tokens/s, Drafted throughput: 52.49 tokens/s, Accepted: 301 tokens, Drafted: 525 tokens, Per-position acceptance rate: 0.811, 0.560, 0.349, Avg Draft acceptance rate: 57.3%
+(Worker_TP1 pid=1138) INFO 11-26 22:57:07 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=7680 p50=0.49ms p90=0.62ms max=0.67ms fallbacks=135 {'zero-spec': 120, 'mixed': 15}
+(Worker_TP0 pid=1026) INFO 11-26 22:57:07 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=7680 p50=0.48ms p90=0.62ms max=0.73ms fallbacks=135 {'zero-spec': 120, 'mixed': 15}
+(Worker_TP1 pid=1138) INFO 11-26 22:57:12 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=7936 p50=0.49ms p90=0.62ms max=0.65ms fallbacks=135 {'zero-spec': 120, 'mixed': 15}
+(Worker_TP0 pid=1026) INFO 11-26 22:57:12 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=7936 p50=0.48ms p90=0.62ms max=0.73ms fallbacks=135 {'zero-spec': 120, 'mixed': 15}
+(APIServer pid=13) INFO 11-26 22:57:15 [loggers.py:315] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 68.6 tokens/s, Running: 1 reqs, Waiting: 0 reqs, XPU KV cache usage: 3.7%, Prefix cache hit rate: 0.0%
+(APIServer pid=13) INFO 11-26 22:57:15 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 3.25, Accepted throughput: 47.49 tokens/s, Drafted throughput: 63.29 tokens/s, Accepted: 475 tokens, Drafted: 633 tokens, Per-position acceptance rate: 0.891, 0.754, 0.607, Avg Draft acceptance rate: 75.0%
+(Worker_TP1 pid=1138) INFO 11-26 22:57:16 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=8192 p50=0.49ms p90=0.62ms max=0.64ms fallbacks=135 {'zero-spec': 120, 'mixed': 15}
+(Worker_TP0 pid=1026) INFO 11-26 22:57:16 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=8192 p50=0.48ms p90=0.62ms max=0.67ms fallbacks=135 {'zero-spec': 120, 'mixed': 15}
+(APIServer pid=13) INFO:     127.0.0.1:41008 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(Worker_TP0 pid=1026) LMCBOUND NONFINITE req=chatcmpl-9fbbd1a28762f913-a64f5a22 B=3264 nf=6679 am=3.61e+01 (v138c sanitize-carry REVAL trigger)
+(Worker_TP1 pid=1138) LMCBOUND NONFINITE req=chatcmpl-9fbbd1a28762f913-a64f5a22 B=3264 nf=6475 am=4.09e+01 (v138c sanitize-carry REVAL trigger)
+(Worker_TP1 pid=1138) INFO 11-26 22:57:20 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=8448 p50=0.49ms p90=0.62ms max=0.91ms fallbacks=138 {'zero-spec': 123, 'mixed': 15}
+(Worker_TP0 pid=1026) INFO 11-26 22:57:20 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=8448 p50=0.48ms p90=0.62ms max=1.05ms fallbacks=138 {'zero-spec': 123, 'mixed': 15}
+(Worker_TP1 pid=1138) INFO 11-26 22:57:25 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=8704 p50=0.49ms p90=0.62ms max=0.91ms fallbacks=138 {'zero-spec': 123, 'mixed': 15}
+(Worker_TP0 pid=1026) INFO 11-26 22:57:25 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=8704 p50=0.48ms p90=0.62ms max=1.05ms fallbacks=138 {'zero-spec': 123, 'mixed': 15}
+(APIServer pid=13) INFO 11-26 22:57:25 [loggers.py:315] Engine 000: Avg prompt throughput: 178.7 tokens/s, Avg generation throughput: 62.7 tokens/s, Running: 1 reqs, Waiting: 0 reqs, XPU KV cache usage: 3.7%, Prefix cache hit rate: 5.2%
+(APIServer pid=13) INFO 11-26 22:57:25 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 3.28, Accepted throughput: 43.70 tokens/s, Drafted throughput: 57.59 tokens/s, Accepted: 437 tokens, Drafted: 576 tokens, Per-position acceptance rate: 0.906, 0.766, 0.604, Avg Draft acceptance rate: 75.9%
+(APIServer pid=13) INFO:     127.0.0.1:38512 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(Worker_TP0 pid=1026) LMCBOUND NONFINITE req=chatcmpl-be1eda3508bba8d5-94e11468 B=3264 nf=6679 am=3.61e+01 (v138c sanitize-carry REVAL trigger)
+(Worker_TP1 pid=1138) LMCBOUND NONFINITE req=chatcmpl-be1eda3508bba8d5-94e11468 B=3264 nf=6475 am=4.09e+01 (v138c sanitize-carry REVAL trigger)
+(Worker_TP1 pid=1138) INFO 11-26 22:57:29 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=8960 p50=0.49ms p90=0.62ms max=0.66ms fallbacks=141 {'zero-spec': 126, 'mixed': 15}
+(Worker_TP0 pid=1026) INFO 11-26 22:57:29 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=8960 p50=0.48ms p90=0.62ms max=0.67ms fallbacks=141 {'zero-spec': 126, 'mixed': 15}
+(Worker_TP1 pid=1138) INFO 11-26 22:57:33 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=9216 p50=0.49ms p90=0.62ms max=0.65ms fallbacks=141 {'zero-spec': 126, 'mixed': 15}
+(Worker_TP0 pid=1026) INFO 11-26 22:57:33 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=9216 p50=0.48ms p90=0.62ms max=0.65ms fallbacks=141 {'zero-spec': 126, 'mixed': 15}
+(APIServer pid=13) INFO 11-26 22:57:35 [loggers.py:315] Engine 000: Avg prompt throughput: 178.7 tokens/s, Avg generation throughput: 61.4 tokens/s, Running: 1 reqs, Waiting: 0 reqs, XPU KV cache usage: 3.7%, Prefix cache hit rate: 9.6%
+(APIServer pid=13) INFO 11-26 22:57:35 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 3.21, Accepted throughput: 42.40 tokens/s, Drafted throughput: 57.59 tokens/s, Accepted: 424 tokens, Drafted: 576 tokens, Per-position acceptance rate: 0.880, 0.740, 0.589, Avg Draft acceptance rate: 73.6%
+(Worker_TP1 pid=1138) INFO 11-26 22:57:38 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=9472 p50=0.49ms p90=0.62ms max=0.64ms fallbacks=141 {'zero-spec': 126, 'mixed': 15}
+(Worker_TP0 pid=1026) INFO 11-26 22:57:38 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=9472 p50=0.48ms p90=0.62ms max=0.67ms fallbacks=141 {'zero-spec': 126, 'mixed': 15}
+(APIServer pid=13) INFO:     127.0.0.1:50272 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(Worker_TP0 pid=1026) LMCBOUND NONFINITE req=chatcmpl-99b3d397e2d4b536-a480d64a B=3264 nf=6679 am=3.61e+01 (v138c sanitize-carry REVAL trigger)
+(Worker_TP1 pid=1138) LMCBOUND NONFINITE req=chatcmpl-99b3d397e2d4b536-a480d64a B=3264 nf=6475 am=4.09e+01 (v138c sanitize-carry REVAL trigger)
+(Worker_TP1 pid=1138) INFO 11-26 22:57:42 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=9728 p50=0.49ms p90=0.62ms max=0.68ms fallbacks=144 {'zero-spec': 129, 'mixed': 15}
+(Worker_TP0 pid=1026) INFO 11-26 22:57:42 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=9728 p50=0.48ms p90=0.62ms max=0.67ms fallbacks=144 {'zero-spec': 129, 'mixed': 15}
+(APIServer pid=13) INFO 11-26 22:57:45 [loggers.py:315] Engine 000: Avg prompt throughput: 178.7 tokens/s, Avg generation throughput: 62.6 tokens/s, Running: 1 reqs, Waiting: 0 reqs, XPU KV cache usage: 3.5%, Prefix cache hit rate: 13.3%
+(APIServer pid=13) INFO 11-26 22:57:45 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 3.29, Accepted throughput: 43.69 tokens/s, Drafted throughput: 57.29 tokens/s, Accepted: 437 tokens, Drafted: 573 tokens, Per-position acceptance rate: 0.911, 0.780, 0.597, Avg Draft acceptance rate: 76.3%
+(Worker_TP1 pid=1138) INFO 11-26 22:57:46 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=9984 p50=0.49ms p90=0.62ms max=0.69ms fallbacks=144 {'zero-spec': 129, 'mixed': 15}
+(Worker_TP0 pid=1026) INFO 11-26 22:57:46 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=9984 p50=0.48ms p90=0.62ms max=0.68ms fallbacks=144 {'zero-spec': 129, 'mixed': 15}
+(APIServer pid=13) INFO:     127.0.0.1:47056 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(Worker_TP0 pid=1026) LMCBOUND NONFINITE req=chatcmpl-8e5c6ccf18216318-bb478068 B=3264 nf=6679 am=3.61e+01 (v138c sanitize-carry REVAL trigger)
+(Worker_TP1 pid=1138) LMCBOUND NONFINITE req=chatcmpl-8e5c6ccf18216318-bb478068 B=3264 nf=6475 am=4.09e+01 (v138c sanitize-carry REVAL trigger)
+(Worker_TP1 pid=1138) INFO 11-26 22:57:51 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=10240 p50=0.49ms p90=0.62ms max=0.70ms fallbacks=147 {'zero-spec': 132, 'mixed': 15}
+(Worker_TP0 pid=1026) INFO 11-26 22:57:51 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=10240 p50=0.48ms p90=0.62ms max=0.81ms fallbacks=147 {'zero-spec': 132, 'mixed': 15}
+(APIServer pid=13) INFO 11-26 22:57:55 [loggers.py:315] Engine 000: Avg prompt throughput: 178.7 tokens/s, Avg generation throughput: 65.1 tokens/s, Running: 1 reqs, Waiting: 0 reqs, XPU KV cache usage: 3.5%, Prefix cache hit rate: 16.7%
+(APIServer pid=13) INFO 11-26 22:57:55 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 3.44, Accepted throughput: 46.30 tokens/s, Drafted throughput: 57.00 tokens/s, Accepted: 463 tokens, Drafted: 570 tokens, Per-position acceptance rate: 0.942, 0.826, 0.668, Avg Draft acceptance rate: 81.2%
+(Worker_TP1 pid=1138) INFO 11-26 22:57:56 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=10496 p50=0.49ms p90=0.62ms max=0.72ms fallbacks=147 {'zero-spec': 132, 'mixed': 15}
+(Worker_TP0 pid=1026) INFO 11-26 22:57:56 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=10496 p50=0.48ms p90=0.62ms max=0.81ms fallbacks=147 {'zero-spec': 132, 'mixed': 15}
+(Worker_TP1 pid=1138) INFO 11-26 22:58:00 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=10752 p50=0.49ms p90=0.62ms max=0.74ms fallbacks=147 {'zero-spec': 132, 'mixed': 15}
+(Worker_TP0 pid=1026) INFO 11-26 22:58:00 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=10752 p50=0.48ms p90=0.62ms max=0.69ms fallbacks=147 {'zero-spec': 132, 'mixed': 15}
+(APIServer pid=13) INFO:     127.0.0.1:53594 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(Worker_TP0 pid=1026) LMCBOUND NONFINITE req=chatcmpl-97b5a9bf70bb7a8d-af820b03 B=2176 nf=6635 am=4.50e+01 (v138c sanitize-carry REVAL trigger)
+(Worker_TP1 pid=1138) LMCBOUND NONFINITE req=chatcmpl-97b5a9bf70bb7a8d-af820b03 B=2176 nf=6596 am=3.98e+01 (v138c sanitize-carry REVAL trigger)
+(APIServer pid=13) INFO:     127.0.0.1:40884 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(Worker_TP0 pid=1026) LMCBOUND NONFINITE req=chatcmpl-958f728fdd118938-ba41fda7 B=2176 nf=6635 am=4.50e+01 (v138c sanitize-carry REVAL trigger)
+(Worker_TP1 pid=1138) LMCBOUND NONFINITE req=chatcmpl-958f728fdd118938-ba41fda7 B=2176 nf=6596 am=3.98e+01 (v138c sanitize-carry REVAL trigger)
+(APIServer pid=13) INFO:     127.0.0.1:40888 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO 11-26 22:58:05 [loggers.py:315] Engine 000: Avg prompt throughput: 462.3 tokens/s, Avg generation throughput: 53.0 tokens/s, Running: 1 reqs, Waiting: 0 reqs, XPU KV cache usage: 3.9%, Prefix cache hit rate: 19.6%
+(APIServer pid=13) INFO 11-26 22:58:05 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 3.25, Accepted throughput: 36.90 tokens/s, Drafted throughput: 49.19 tokens/s, Accepted: 369 tokens, Drafted: 492 tokens, Per-position acceptance rate: 0.902, 0.720, 0.628, Avg Draft acceptance rate: 75.0%
+(Worker_TP0 pid=1026) LMCBOUND NONFINITE req=chatcmpl-a5cef8a6f1af8619-98e103a8 B=2176 nf=6635 am=4.50e+01 (v138c sanitize-carry REVAL trigger)
+(Worker_TP1 pid=1138) LMCBOUND NONFINITE req=chatcmpl-a5cef8a6f1af8619-98e103a8 B=2176 nf=6596 am=3.98e+01 (v138c sanitize-carry REVAL trigger)
+(Worker_TP1 pid=1138) INFO 11-26 22:58:06 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=11008 p50=0.49ms p90=0.62ms max=0.74ms fallbacks=159 {'zero-spec': 144, 'mixed': 15}
+(Worker_TP0 pid=1026) INFO 11-26 22:58:06 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=11008 p50=0.48ms p90=0.62ms max=0.69ms fallbacks=159 {'zero-spec': 144, 'mixed': 15}
+(APIServer pid=13) INFO:     127.0.0.1:40900 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(Worker_TP0 pid=1026) LMCBOUND NONFINITE req=chatcmpl-a999fa89277031dc-b39989c5 B=2176 nf=6635 am=4.50e+01 (v138c sanitize-carry REVAL trigger)
+(Worker_TP1 pid=1138) LMCBOUND NONFINITE req=chatcmpl-a999fa89277031dc-b39989c5 B=2176 nf=6596 am=3.98e+01 (v138c sanitize-carry REVAL trigger)
+(Worker_TP1 pid=1138) INFO 11-26 22:58:11 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=11264 p50=0.49ms p90=0.62ms max=0.67ms fallbacks=162 {'zero-spec': 147, 'mixed': 15}
+(Worker_TP0 pid=1026) INFO 11-26 22:58:11 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=11264 p50=0.48ms p90=0.62ms max=0.65ms fallbacks=162 {'zero-spec': 147, 'mixed': 15}
+(APIServer pid=13) INFO:     127.0.0.1:59384 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(Worker_TP0 pid=1026) LMCBOUND NONFINITE req=chatcmpl-bd646381a4223a20-8e41cb5e B=2176 nf=6635 am=4.50e+01 (v138c sanitize-carry REVAL trigger)
+(Worker_TP1 pid=1138) LMCBOUND NONFINITE req=chatcmpl-bd646381a4223a20-8e41cb5e B=2176 nf=6596 am=3.98e+01 (v138c sanitize-carry REVAL trigger)
+(APIServer pid=13) INFO 11-26 22:58:15 [loggers.py:315] Engine 000: Avg prompt throughput: 367.1 tokens/s, Avg generation throughput: 54.9 tokens/s, Running: 1 reqs, Waiting: 0 reqs, XPU KV cache usage: 3.3%, Prefix cache hit rate: 22.8%
+(APIServer pid=13) INFO 11-26 22:58:15 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 3.24, Accepted throughput: 38.00 tokens/s, Drafted throughput: 50.99 tokens/s, Accepted: 380 tokens, Drafted: 510 tokens, Per-position acceptance rate: 0.876, 0.753, 0.606, Avg Draft acceptance rate: 74.5%
+(Worker_TP1 pid=1138) INFO 11-26 22:58:16 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=11520 p50=0.49ms p90=0.62ms max=0.69ms fallbacks=165 {'zero-spec': 150, 'mixed': 15}
+(Worker_TP0 pid=1026) INFO 11-26 22:58:16 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=11520 p50=0.48ms p90=0.62ms max=0.69ms fallbacks=165 {'zero-spec': 150, 'mixed': 15}
+(APIServer pid=13) INFO:     127.0.0.1:59390 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(Worker_TP1 pid=1138) INFO 11-26 22:58:20 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=11776 p50=0.49ms p90=0.62ms max=1.34ms fallbacks=168 {'zero-spec': 153, 'mixed': 15}
+(Worker_TP0 pid=1026) INFO 11-26 22:58:20 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=11776 p50=0.48ms p90=0.62ms max=0.69ms fallbacks=168 {'zero-spec': 153, 'mixed': 15}
+(APIServer pid=13) INFO:     127.0.0.1:59404 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(Worker_TP1 pid=1138) INFO 11-26 22:58:24 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=12032 p50=0.49ms p90=0.62ms max=1.34ms fallbacks=171 {'zero-spec': 156, 'mixed': 15}
+(Worker_TP0 pid=1026) INFO 11-26 22:58:24 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=12032 p50=0.48ms p90=0.62ms max=0.69ms fallbacks=171 {'zero-spec': 156, 'mixed': 15}
+(APIServer pid=13) INFO 11-26 22:58:25 [loggers.py:315] Engine 000: Avg prompt throughput: 7.6 tokens/s, Avg generation throughput: 71.3 tokens/s, Running: 1 reqs, Waiting: 0 reqs, XPU KV cache usage: 2.6%, Prefix cache hit rate: 22.8%
+(APIServer pid=13) INFO 11-26 22:58:25 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 3.45, Accepted throughput: 50.79 tokens/s, Drafted throughput: 62.09 tokens/s, Accepted: 508 tokens, Drafted: 621 tokens, Per-position acceptance rate: 0.937, 0.821, 0.696, Avg Draft acceptance rate: 81.8%
+(APIServer pid=13) INFO:     127.0.0.1:36920 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(Worker_TP1 pid=1138) INFO 11-26 22:58:28 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=12288 p50=0.49ms p90=0.62ms max=1.10ms fallbacks=174 {'zero-spec': 159, 'mixed': 15}
+(Worker_TP0 pid=1026) INFO 11-26 22:58:28 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=12288 p50=0.48ms p90=0.62ms max=0.81ms fallbacks=174 {'zero-spec': 159, 'mixed': 15}
+(APIServer pid=13) INFO:     127.0.0.1:36926 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(Worker_TP1 pid=1138) INFO 11-26 22:58:32 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=12544 p50=0.49ms p90=0.62ms max=1.10ms fallbacks=177 {'zero-spec': 162, 'mixed': 15}
+(Worker_TP0 pid=1026) INFO 11-26 22:58:32 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=12544 p50=0.48ms p90=0.62ms max=0.81ms fallbacks=177 {'zero-spec': 162, 'mixed': 15}
+(APIServer pid=13) INFO:     127.0.0.1:58784 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO 11-26 22:58:35 [loggers.py:315] Engine 000: Avg prompt throughput: 11.4 tokens/s, Avg generation throughput: 69.4 tokens/s, Running: 1 reqs, Waiting: 0 reqs, XPU KV cache usage: 2.6%, Prefix cache hit rate: 22.8%
+(APIServer pid=13) INFO 11-26 22:58:35 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 3.43, Accepted throughput: 49.29 tokens/s, Drafted throughput: 60.89 tokens/s, Accepted: 493 tokens, Drafted: 609 tokens, Per-position acceptance rate: 0.946, 0.803, 0.680, Avg Draft acceptance rate: 81.0%
+(Worker_TP1 pid=1138) INFO 11-26 22:58:36 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=12800 p50=0.49ms p90=0.62ms max=0.72ms fallbacks=180 {'zero-spec': 165, 'mixed': 15}
+(Worker_TP0 pid=1026) INFO 11-26 22:58:36 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=12800 p50=0.48ms p90=0.62ms max=0.68ms fallbacks=180 {'zero-spec': 165, 'mixed': 15}
+(APIServer pid=13) INFO:     127.0.0.1:58788 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(Worker_TP1 pid=1138) INFO 11-26 22:58:41 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=13056 p50=0.49ms p90=0.62ms max=0.72ms fallbacks=186 {'zero-spec': 168, 'mixed': 18}
+(Worker_TP0 pid=1026) INFO 11-26 22:58:41 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=13056 p50=0.48ms p90=0.62ms max=0.81ms fallbacks=186 {'zero-spec': 168, 'mixed': 18}
+(APIServer pid=13) INFO:     127.0.0.1:36034 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:36054 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:36032 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO 11-26 22:58:45 [loggers.py:315] Engine 000: Avg prompt throughput: 27.6 tokens/s, Avg generation throughput: 127.4 tokens/s, Running: 1 reqs, Waiting: 0 reqs, XPU KV cache usage: 2.6%, Prefix cache hit rate: 22.7%
+(APIServer pid=13) INFO 11-26 22:58:45 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 2.62, Accepted throughput: 78.90 tokens/s, Drafted throughput: 146.39 tokens/s, Accepted: 789 tokens, Drafted: 1464 tokens, Per-position acceptance rate: 0.744, 0.502, 0.371, Avg Draft acceptance rate: 53.9%
+(APIServer pid=13) INFO:     127.0.0.1:36052 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(Worker_TP0 pid=1026) LMCBOUND NONFINITE req=chatcmpl-bb8156f3113c33f9-b09bcc8a B=1088 nf=6528 am=3.18e+01 (v138c sanitize-carry REVAL trigger)
+(Worker_TP1 pid=1138) LMCBOUND NONFINITE req=chatcmpl-bb8156f3113c33f9-b09bcc8a B=1088 nf=6223 am=3.85e+01 (v138c sanitize-carry REVAL trigger)
+(Worker_TP1 pid=1138) INFO 11-26 22:58:47 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=13312 p50=0.49ms p90=0.62ms max=0.67ms fallbacks=192 {'zero-spec': 174, 'mixed': 18}
+(Worker_TP0 pid=1026) INFO 11-26 22:58:47 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=13312 p50=0.48ms p90=0.62ms max=0.81ms fallbacks=192 {'zero-spec': 174, 'mixed': 18}
+(Worker_TP1 pid=1138) INFO 11-26 22:58:50 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=13568 p50=0.49ms p90=0.62ms max=0.66ms fallbacks=192 {'zero-spec': 174, 'mixed': 18}
+(Worker_TP0 pid=1026) INFO 11-26 22:58:50 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=13568 p50=0.48ms p90=0.62ms max=0.72ms fallbacks=192 {'zero-spec': 174, 'mixed': 18}
+(Worker_TP1 pid=1138) INFO 11-26 22:58:54 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=13824 p50=0.49ms p90=0.62ms max=0.67ms fallbacks=192 {'zero-spec': 174, 'mixed': 18}
+(Worker_TP0 pid=1026) INFO 11-26 22:58:54 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=13824 p50=0.48ms p90=0.62ms max=0.69ms fallbacks=192 {'zero-spec': 174, 'mixed': 18}
+(APIServer pid=13) INFO 11-26 22:58:55 [loggers.py:315] Engine 000: Avg prompt throughput: 214.5 tokens/s, Avg generation throughput: 50.7 tokens/s, Running: 1 reqs, Waiting: 0 reqs, XPU KV cache usage: 3.0%, Prefix cache hit rate: 22.2%
+(APIServer pid=13) INFO 11-26 22:58:55 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 2.57, Accepted throughput: 31.00 tokens/s, Drafted throughput: 59.39 tokens/s, Accepted: 310 tokens, Drafted: 594 tokens, Per-position acceptance rate: 0.778, 0.485, 0.303, Avg Draft acceptance rate: 52.2%
+(Worker_TP1 pid=1138) INFO 11-26 22:58:58 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=14080 p50=0.49ms p90=0.62ms max=0.67ms fallbacks=192 {'zero-spec': 174, 'mixed': 18}
+(Worker_TP0 pid=1026) INFO 11-26 22:58:58 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=14080 p50=0.48ms p90=0.62ms max=0.69ms fallbacks=192 {'zero-spec': 174, 'mixed': 18}
+(APIServer pid=13) INFO:     127.0.0.1:36058 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(Worker_TP0 pid=1026) LMCBOUND NONFINITE req=chatcmpl-99f9c478d55a2ea4-bb9ecd34 B=1088 nf=6696 am=3.18e+01 (v138c sanitize-carry REVAL trigger)
+(Worker_TP1 pid=1138) LMCBOUND NONFINITE req=chatcmpl-99f9c478d55a2ea4-bb9ecd34 B=1088 nf=6381 am=3.85e+01 (v138c sanitize-carry REVAL trigger)
+(Worker_TP1 pid=1138) INFO 11-26 22:59:03 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=14336 p50=0.49ms p90=0.62ms max=0.65ms fallbacks=198 {'zero-spec': 180, 'mixed': 18}
+(Worker_TP0 pid=1026) INFO 11-26 22:59:03 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=14336 p50=0.48ms p90=0.62ms max=0.69ms fallbacks=198 {'zero-spec': 180, 'mixed': 18}
+(APIServer pid=13) INFO 11-26 22:59:05 [loggers.py:315] Engine 000: Avg prompt throughput: 214.5 tokens/s, Avg generation throughput: 49.6 tokens/s, Running: 1 reqs, Waiting: 0 reqs, XPU KV cache usage: 3.0%, Prefix cache hit rate: 21.7%
+(APIServer pid=13) INFO 11-26 22:59:05 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 2.48, Accepted throughput: 29.60 tokens/s, Drafted throughput: 59.99 tokens/s, Accepted: 296 tokens, Drafted: 600 tokens, Per-position acceptance rate: 0.780, 0.440, 0.260, Avg Draft acceptance rate: 49.3%
+(Worker_TP1 pid=1138) INFO 11-26 22:59:07 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=14592 p50=0.49ms p90=0.62ms max=0.67ms fallbacks=198 {'zero-spec': 180, 'mixed': 18}
+(Worker_TP0 pid=1026) INFO 11-26 22:59:07 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=14592 p50=0.48ms p90=0.62ms max=0.69ms fallbacks=198 {'zero-spec': 180, 'mixed': 18}
+(Worker_TP1 pid=1138) INFO 11-26 22:59:11 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=14848 p50=0.49ms p90=0.62ms max=0.72ms fallbacks=198 {'zero-spec': 180, 'mixed': 18}
+(Worker_TP0 pid=1026) INFO 11-26 22:59:11 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=14848 p50=0.48ms p90=0.62ms max=0.66ms fallbacks=198 {'zero-spec': 180, 'mixed': 18}
+(APIServer pid=13) INFO:     127.0.0.1:37172 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(Worker_TP0 pid=1026) LMCBOUND NONFINITE req=chatcmpl-868ed13dea59889e-81800203 B=3264 nf=6679 am=3.61e+01 (v138c sanitize-carry REVAL trigger)
+(Worker_TP1 pid=1138) LMCBOUND NONFINITE req=chatcmpl-868ed13dea59889e-81800203 B=3264 nf=6475 am=4.09e+01 (v138c sanitize-carry REVAL trigger)
+(Worker_TP1 pid=1138) INFO 11-26 22:59:15 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=15104 p50=0.49ms p90=0.62ms max=0.72ms fallbacks=201 {'zero-spec': 183, 'mixed': 18}
+(Worker_TP0 pid=1026) INFO 11-26 22:59:15 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=15104 p50=0.48ms p90=0.62ms max=0.66ms fallbacks=201 {'zero-spec': 183, 'mixed': 18}
+(APIServer pid=13) INFO 11-26 22:59:15 [loggers.py:315] Engine 000: Avg prompt throughput: 178.7 tokens/s, Avg generation throughput: 49.0 tokens/s, Running: 1 reqs, Waiting: 0 reqs, XPU KV cache usage: 3.5%, Prefix cache hit rate: 23.8%
+(APIServer pid=13) INFO 11-26 22:59:15 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 2.43, Accepted throughput: 28.80 tokens/s, Drafted throughput: 60.59 tokens/s, Accepted: 288 tokens, Drafted: 606 tokens, Per-position acceptance rate: 0.772, 0.406, 0.248, Avg Draft acceptance rate: 47.5%
+(Worker_TP1 pid=1138) INFO 11-26 22:59:19 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=15360 p50=0.49ms p90=0.62ms max=0.64ms fallbacks=201 {'zero-spec': 183, 'mixed': 18}
+(Worker_TP0 pid=1026) INFO 11-26 22:59:19 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=15360 p50=0.48ms p90=0.62ms max=0.65ms fallbacks=201 {'zero-spec': 183, 'mixed': 18}
+(Worker_TP1 pid=1138) INFO 11-26 22:59:23 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=15616 p50=0.49ms p90=0.62ms max=0.81ms fallbacks=201 {'zero-spec': 183, 'mixed': 18}
+(Worker_TP0 pid=1026) INFO 11-26 22:59:23 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=15616 p50=0.48ms p90=0.62ms max=0.66ms fallbacks=201 {'zero-spec': 183, 'mixed': 18}
+(APIServer pid=13) INFO 11-26 22:59:25 [loggers.py:315] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 69.2 tokens/s, Running: 1 reqs, Waiting: 0 reqs, XPU KV cache usage: 3.7%, Prefix cache hit rate: 23.8%
+(APIServer pid=13) INFO 11-26 22:59:25 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 3.26, Accepted throughput: 47.99 tokens/s, Drafted throughput: 63.59 tokens/s, Accepted: 480 tokens, Drafted: 636 tokens, Per-position acceptance rate: 0.901, 0.759, 0.604, Avg Draft acceptance rate: 75.5%
+(APIServer pid=13) INFO:     127.0.0.1:34188 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(Worker_TP0 pid=1026) LMCBOUND NONFINITE req=chatcmpl-95dd5c747dc0ce6f-a925d93d B=3264 nf=6679 am=3.61e+01 (v138c sanitize-carry REVAL trigger)
+(Worker_TP1 pid=1138) LMCBOUND NONFINITE req=chatcmpl-95dd5c747dc0ce6f-a925d93d B=3264 nf=6475 am=4.09e+01 (v138c sanitize-carry REVAL trigger)
+(Worker_TP1 pid=1138) INFO 11-26 22:59:28 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=15872 p50=0.49ms p90=0.62ms max=0.81ms fallbacks=204 {'zero-spec': 186, 'mixed': 18}
+(Worker_TP0 pid=1026) INFO 11-26 22:59:28 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=15872 p50=0.48ms p90=0.62ms max=0.71ms fallbacks=204 {'zero-spec': 186, 'mixed': 18}
+(Worker_TP1 pid=1138) INFO 11-26 22:59:32 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=16128 p50=0.49ms p90=0.62ms max=0.71ms fallbacks=204 {'zero-spec': 186, 'mixed': 18}
+(Worker_TP0 pid=1026) INFO 11-26 22:59:32 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=16128 p50=0.48ms p90=0.62ms max=0.71ms fallbacks=204 {'zero-spec': 186, 'mixed': 18}
+(APIServer pid=13) INFO 11-26 22:59:35 [loggers.py:315] Engine 000: Avg prompt throughput: 178.7 tokens/s, Avg generation throughput: 62.3 tokens/s, Running: 1 reqs, Waiting: 0 reqs, XPU KV cache usage: 3.7%, Prefix cache hit rate: 25.7%
+(APIServer pid=13) INFO 11-26 22:59:35 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 3.26, Accepted throughput: 43.30 tokens/s, Drafted throughput: 57.59 tokens/s, Accepted: 433 tokens, Drafted: 576 tokens, Per-position acceptance rate: 0.891, 0.755, 0.609, Avg Draft acceptance rate: 75.2%
+(Worker_TP1 pid=1138) INFO 11-26 22:59:36 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=16384 p50=0.49ms p90=0.62ms max=0.71ms fallbacks=204 {'zero-spec': 186, 'mixed': 18}
+(Worker_TP0 pid=1026) INFO 11-26 22:59:36 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=16384 p50=0.48ms p90=0.62ms max=0.69ms fallbacks=204 {'zero-spec': 186, 'mixed': 18}
+(APIServer pid=13) INFO:     127.0.0.1:53748 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(Worker_TP0 pid=1026) LMCBOUND NONFINITE req=chatcmpl-92bb9eb86df49406-99253675 B=2176 nf=6635 am=4.50e+01 (v138c sanitize-carry REVAL trigger)
+(Worker_TP1 pid=1138) LMCBOUND NONFINITE req=chatcmpl-92bb9eb86df49406-99253675 B=2176 nf=6596 am=3.98e+01 (v138c sanitize-carry REVAL trigger)
+(Worker_TP1 pid=1138) INFO 11-26 22:59:41 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=16640 p50=0.49ms p90=0.62ms max=0.70ms fallbacks=207 {'zero-spec': 189, 'mixed': 18}
+(Worker_TP0 pid=1026) INFO 11-26 22:59:41 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=16640 p50=0.48ms p90=0.62ms max=0.69ms fallbacks=207 {'zero-spec': 189, 'mixed': 18}
+(APIServer pid=13) INFO:     127.0.0.1:41128 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(Worker_TP0 pid=1026) LMCBOUND NONFINITE req=chatcmpl-a9e22daa7003f355-942ab0eb B=2176 nf=6635 am=4.50e+01 (v138c sanitize-carry REVAL trigger)
+(Worker_TP1 pid=1138) LMCBOUND NONFINITE req=chatcmpl-a9e22daa7003f355-942ab0eb B=2176 nf=6596 am=3.98e+01 (v138c sanitize-carry REVAL trigger)
+(APIServer pid=13) INFO:     127.0.0.1:41144 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO 11-26 22:59:45 [loggers.py:315] Engine 000: Avg prompt throughput: 248.6 tokens/s, Avg generation throughput: 56.9 tokens/s, Running: 1 reqs, Waiting: 0 reqs, XPU KV cache usage: 2.6%, Prefix cache hit rate: 27.9%
+(APIServer pid=13) INFO 11-26 22:59:45 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 3.15, Accepted throughput: 39.00 tokens/s, Drafted throughput: 54.29 tokens/s, Accepted: 390 tokens, Drafted: 543 tokens, Per-position acceptance rate: 0.884, 0.696, 0.575, Avg Draft acceptance rate: 71.8%
+(Worker_TP1 pid=1138) INFO 11-26 22:59:46 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=16896 p50=0.49ms p90=0.62ms max=0.67ms fallbacks=213 {'zero-spec': 195, 'mixed': 18}
+(Worker_TP0 pid=1026) INFO 11-26 22:59:46 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=16896 p50=0.48ms p90=0.62ms max=0.69ms fallbacks=213 {'zero-spec': 195, 'mixed': 18}
+(APIServer pid=13) INFO:     127.0.0.1:41146 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(Worker_TP1 pid=1138) INFO 11-26 22:59:50 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=17152 p50=0.49ms p90=0.62ms max=0.67ms fallbacks=216 {'zero-spec': 198, 'mixed': 18}
+(Worker_TP0 pid=1026) INFO 11-26 22:59:50 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=17152 p50=0.48ms p90=0.62ms max=0.68ms fallbacks=216 {'zero-spec': 198, 'mixed': 18}
+(APIServer pid=13) INFO:     127.0.0.1:60030 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(Worker_TP1 pid=1138) INFO 11-26 22:59:54 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=17408 p50=0.49ms p90=0.62ms max=0.67ms fallbacks=222 {'zero-spec': 201, 'mixed': 21}
+(Worker_TP0 pid=1026) INFO 11-26 22:59:54 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=17408 p50=0.48ms p90=0.62ms max=0.68ms fallbacks=222 {'zero-spec': 201, 'mixed': 21}
+(APIServer pid=13) INFO 11-26 22:59:55 [loggers.py:315] Engine 000: Avg prompt throughput: 31.4 tokens/s, Avg generation throughput: 97.4 tokens/s, Running: 4 reqs, Waiting: 0 reqs, XPU KV cache usage: 10.6%, Prefix cache hit rate: 27.8%
+(APIServer pid=13) INFO 11-26 22:59:55 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 3.17, Accepted throughput: 66.49 tokens/s, Drafted throughput: 91.79 tokens/s, Accepted: 665 tokens, Drafted: 918 tokens, Per-position acceptance rate: 0.859, 0.716, 0.598, Avg Draft acceptance rate: 72.4%
+(APIServer pid=13) INFO:     127.0.0.1:60038 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:60052 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:60042 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:60048 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(Worker_TP0 pid=1026) LMCBOUND NONFINITE req=chatcmpl-9d392bd0519e350e-86d7d3c2 B=1088 nf=6475 am=3.18e+01 (v138c sanitize-carry REVAL trigger)
+(Worker_TP1 pid=1138) LMCBOUND NONFINITE req=chatcmpl-9d392bd0519e350e-86d7d3c2 B=1088 nf=6228 am=3.85e+01 (v138c sanitize-carry REVAL trigger)
+(Worker_TP1 pid=1138) INFO 11-26 23:00:00 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=17664 p50=0.49ms p90=0.62ms max=0.65ms fallbacks=228 {'zero-spec': 207, 'mixed': 21}
+(Worker_TP0 pid=1026) INFO 11-26 23:00:00 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=17664 p50=0.48ms p90=0.62ms max=0.71ms fallbacks=228 {'zero-spec': 207, 'mixed': 21}
+(Worker_TP1 pid=1138) INFO 11-26 23:00:04 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=17920 p50=0.49ms p90=0.62ms max=1.01ms fallbacks=228 {'zero-spec': 207, 'mixed': 21}
+(Worker_TP0 pid=1026) INFO 11-26 23:00:04 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=17920 p50=0.48ms p90=0.62ms max=0.71ms fallbacks=228 {'zero-spec': 207, 'mixed': 21}
+(APIServer pid=13) INFO 11-26 23:00:05 [loggers.py:315] Engine 000: Avg prompt throughput: 214.5 tokens/s, Avg generation throughput: 87.1 tokens/s, Running: 1 reqs, Waiting: 0 reqs, XPU KV cache usage: 3.0%, Prefix cache hit rate: 27.3%
+(APIServer pid=13) INFO 11-26 23:00:05 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 2.33, Accepted throughput: 49.80 tokens/s, Drafted throughput: 112.49 tokens/s, Accepted: 498 tokens, Drafted: 1125 tokens, Per-position acceptance rate: 0.715, 0.392, 0.221, Avg Draft acceptance rate: 44.3%
+(Worker_TP1 pid=1138) INFO 11-26 23:00:08 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=18176 p50=0.49ms p90=0.62ms max=1.01ms fallbacks=228 {'zero-spec': 207, 'mixed': 21}
+(Worker_TP0 pid=1026) INFO 11-26 23:00:08 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=18176 p50=0.48ms p90=0.62ms max=0.67ms fallbacks=228 {'zero-spec': 207, 'mixed': 21}
+(Worker_TP1 pid=1138) INFO 11-26 23:00:12 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=18432 p50=0.49ms p90=0.62ms max=0.64ms fallbacks=228 {'zero-spec': 207, 'mixed': 21}
+(Worker_TP0 pid=1026) INFO 11-26 23:00:12 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=18432 p50=0.48ms p90=0.62ms max=0.69ms fallbacks=228 {'zero-spec': 207, 'mixed': 21}
+(APIServer pid=13) INFO:     127.0.0.1:43250 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(Worker_TP0 pid=1026) LMCBOUND NONFINITE req=chatcmpl-9ede09988aedd8db-aab8be1a B=1088 nf=6696 am=3.18e+01 (v138c sanitize-carry REVAL trigger)
+(Worker_TP1 pid=1138) LMCBOUND NONFINITE req=chatcmpl-9ede09988aedd8db-aab8be1a B=1088 nf=6381 am=3.85e+01 (v138c sanitize-carry REVAL trigger)
+(APIServer pid=13) INFO 11-26 23:00:15 [loggers.py:315] Engine 000: Avg prompt throughput: 214.5 tokens/s, Avg generation throughput: 47.9 tokens/s, Running: 1 reqs, Waiting: 0 reqs, XPU KV cache usage: 3.7%, Prefix cache hit rate: 26.8%
+(APIServer pid=13) INFO 11-26 23:00:15 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 2.41, Accepted throughput: 28.00 tokens/s, Drafted throughput: 59.70 tokens/s, Accepted: 280 tokens, Drafted: 597 tokens, Per-position acceptance rate: 0.754, 0.407, 0.246, Avg Draft acceptance rate: 46.9%
+(Worker_TP1 pid=1138) INFO 11-26 23:00:17 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=18688 p50=0.49ms p90=0.62ms max=0.64ms fallbacks=234 {'zero-spec': 213, 'mixed': 21}
+(Worker_TP0 pid=1026) INFO 11-26 23:00:17 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=18688 p50=0.48ms p90=0.62ms max=0.69ms fallbacks=234 {'zero-spec': 213, 'mixed': 21}
+(Worker_TP1 pid=1138) INFO 11-26 23:00:20 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=18944 p50=0.49ms p90=0.62ms max=0.65ms fallbacks=234 {'zero-spec': 213, 'mixed': 21}
+(Worker_TP0 pid=1026) INFO 11-26 23:00:20 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=18944 p50=0.48ms p90=0.62ms max=0.70ms fallbacks=234 {'zero-spec': 213, 'mixed': 21}
+(Worker_TP1 pid=1138) INFO 11-26 23:00:24 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=19200 p50=0.49ms p90=0.62ms max=0.65ms fallbacks=234 {'zero-spec': 213, 'mixed': 21}
+(Worker_TP0 pid=1026) INFO 11-26 23:00:24 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=19200 p50=0.48ms p90=0.62ms max=0.70ms fallbacks=234 {'zero-spec': 213, 'mixed': 21}
+(APIServer pid=13) INFO 11-26 23:00:25 [loggers.py:315] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 56.2 tokens/s, Running: 1 reqs, Waiting: 0 reqs, XPU KV cache usage: 3.0%, Prefix cache hit rate: 26.8%
+(APIServer pid=13) INFO 11-26 23:00:25 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 2.50, Accepted throughput: 33.70 tokens/s, Drafted throughput: 67.49 tokens/s, Accepted: 337 tokens, Drafted: 675 tokens, Per-position acceptance rate: 0.769, 0.453, 0.276, Avg Draft acceptance rate: 49.9%
+(Worker_TP1 pid=1138) INFO 11-26 23:00:28 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=19456 p50=0.49ms p90=0.62ms max=0.98ms fallbacks=234 {'zero-spec': 213, 'mixed': 21}
+(Worker_TP0 pid=1026) INFO 11-26 23:00:28 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=19456 p50=0.48ms p90=0.62ms max=0.91ms fallbacks=234 {'zero-spec': 213, 'mixed': 21}
+(APIServer pid=13) INFO:     127.0.0.1:44408 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(Worker_TP0 pid=1026) LMCBOUND NONFINITE req=chatcmpl-bad73393eb7f0f9b-9e1e3087 B=3264 nf=6679 am=3.61e+01 (v138c sanitize-carry REVAL trigger)
+(Worker_TP1 pid=1138) LMCBOUND NONFINITE req=chatcmpl-bad73393eb7f0f9b-9e1e3087 B=3264 nf=6475 am=4.09e+01 (v138c sanitize-carry REVAL trigger)
+(Worker_TP1 pid=1138) INFO 11-26 23:00:33 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=19712 p50=0.49ms p90=0.62ms max=0.98ms fallbacks=237 {'zero-spec': 216, 'mixed': 21}
+(Worker_TP0 pid=1026) INFO 11-26 23:00:33 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=19712 p50=0.48ms p90=0.62ms max=0.91ms fallbacks=237 {'zero-spec': 216, 'mixed': 21}
+(APIServer pid=13) INFO 11-26 23:00:35 [loggers.py:315] Engine 000: Avg prompt throughput: 178.7 tokens/s, Avg generation throughput: 57.6 tokens/s, Running: 1 reqs, Waiting: 0 reqs, XPU KV cache usage: 3.7%, Prefix cache hit rate: 28.3%
+(APIServer pid=13) INFO 11-26 23:00:35 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 2.95, Accepted throughput: 38.10 tokens/s, Drafted throughput: 58.50 tokens/s, Accepted: 381 tokens, Drafted: 585 tokens, Per-position acceptance rate: 0.867, 0.621, 0.467, Avg Draft acceptance rate: 65.1%
+(Worker_TP1 pid=1138) INFO 11-26 23:00:37 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=19968 p50=0.49ms p90=0.62ms max=0.67ms fallbacks=237 {'zero-spec': 216, 'mixed': 21}
+(Worker_TP0 pid=1026) INFO 11-26 23:00:37 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=19968 p50=0.48ms p90=0.62ms max=0.67ms fallbacks=237 {'zero-spec': 216, 'mixed': 21}
+(APIServer pid=13) INFO:     127.0.0.1:54926 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(Worker_TP0 pid=1026) LMCBOUND NONFINITE req=chatcmpl-97997f90ac4ada82-a5eee3ea B=3264 nf=6679 am=3.61e+01 (v138c sanitize-carry REVAL trigger)
+(Worker_TP1 pid=1138) LMCBOUND NONFINITE req=chatcmpl-97997f90ac4ada82-a5eee3ea B=3264 nf=6475 am=4.09e+01 (v138c sanitize-carry REVAL trigger)
+(Worker_TP1 pid=1138) INFO 11-26 23:00:42 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=20224 p50=0.49ms p90=0.62ms max=0.66ms fallbacks=240 {'zero-spec': 219, 'mixed': 21}
+(Worker_TP0 pid=1026) INFO 11-26 23:00:42 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=20224 p50=0.48ms p90=0.62ms max=0.72ms fallbacks=240 {'zero-spec': 219, 'mixed': 21}
+(APIServer pid=13) INFO 11-26 23:00:45 [loggers.py:315] Engine 000: Avg prompt throughput: 178.7 tokens/s, Avg generation throughput: 64.3 tokens/s, Running: 1 reqs, Waiting: 0 reqs, XPU KV cache usage: 3.5%, Prefix cache hit rate: 29.7%
+(APIServer pid=13) INFO 11-26 23:00:45 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 3.36, Accepted throughput: 45.29 tokens/s, Drafted throughput: 57.59 tokens/s, Accepted: 453 tokens, Drafted: 576 tokens, Per-position acceptance rate: 0.911, 0.802, 0.646, Avg Draft acceptance rate: 78.6%
+(Worker_TP1 pid=1138) INFO 11-26 23:00:46 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=20480 p50=0.49ms p90=0.62ms max=0.66ms fallbacks=240 {'zero-spec': 219, 'mixed': 21}
+(Worker_TP0 pid=1026) INFO 11-26 23:00:46 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=20480 p50=0.48ms p90=0.62ms max=0.74ms fallbacks=240 {'zero-spec': 219, 'mixed': 21}
+(Worker_TP1 pid=1138) INFO 11-26 23:00:50 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=20736 p50=0.49ms p90=0.62ms max=0.69ms fallbacks=240 {'zero-spec': 219, 'mixed': 21}
+(Worker_TP0 pid=1026) INFO 11-26 23:00:50 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=20736 p50=0.48ms p90=0.62ms max=0.74ms fallbacks=240 {'zero-spec': 219, 'mixed': 21}
+(APIServer pid=13) INFO:     127.0.0.1:55368 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(Worker_TP0 pid=1026) LMCBOUND NONFINITE req=chatcmpl-bc2fbfd908fda203-93516cda B=2176 nf=6635 am=4.50e+01 (v138c sanitize-carry REVAL trigger)
+(Worker_TP1 pid=1138) LMCBOUND NONFINITE req=chatcmpl-bc2fbfd908fda203-93516cda B=2176 nf=6596 am=3.98e+01 (v138c sanitize-carry REVAL trigger)
+(Worker_TP1 pid=1138) INFO 11-26 23:00:55 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=20992 p50=0.49ms p90=0.62ms max=0.69ms fallbacks=243 {'zero-spec': 222, 'mixed': 21}
+(Worker_TP0 pid=1026) INFO 11-26 23:00:55 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=20992 p50=0.48ms p90=0.62ms max=0.89ms fallbacks=243 {'zero-spec': 222, 'mixed': 21}
+(APIServer pid=13) INFO:     127.0.0.1:40176 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(Worker_TP0 pid=1026) LMCBOUND NONFINITE req=chatcmpl-ab17a3d856455d3c-acc01ad3 B=2176 nf=6635 am=4.50e+01 (v138c sanitize-carry REVAL trigger)
+(Worker_TP1 pid=1138) LMCBOUND NONFINITE req=chatcmpl-ab17a3d856455d3c-acc01ad3 B=2176 nf=6596 am=3.98e+01 (v138c sanitize-carry REVAL trigger)
+(APIServer pid=13) INFO 11-26 23:00:55 [loggers.py:315] Engine 000: Avg prompt throughput: 122.4 tokens/s, Avg generation throughput: 56.9 tokens/s, Running: 1 reqs, Waiting: 0 reqs, XPU KV cache usage: 3.9%, Prefix cache hit rate: 31.4%
+(APIServer pid=13) INFO 11-26 23:00:55 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 3.11, Accepted throughput: 38.80 tokens/s, Drafted throughput: 55.20 tokens/s, Accepted: 388 tokens, Drafted: 552 tokens, Per-position acceptance rate: 0.870, 0.690, 0.549, Avg Draft acceptance rate: 70.3%
+(APIServer pid=13) INFO:     127.0.0.1:40184 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(Worker_TP1 pid=1138) INFO 11-26 23:00:59 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=21248 p50=0.49ms p90=0.62ms max=0.74ms fallbacks=249 {'zero-spec': 228, 'mixed': 21}
+(Worker_TP0 pid=1026) INFO 11-26 23:00:59 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=21248 p50=0.48ms p90=0.62ms max=0.89ms fallbacks=249 {'zero-spec': 228, 'mixed': 21}
+(APIServer pid=13) INFO:     127.0.0.1:58380 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(Worker_TP1 pid=1138) INFO 11-26 23:01:03 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=21504 p50=0.49ms p90=0.62ms max=0.74ms fallbacks=252 {'zero-spec': 231, 'mixed': 21}
+(Worker_TP0 pid=1026) INFO 11-26 23:01:03 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=21504 p50=0.48ms p90=0.62ms max=0.66ms fallbacks=252 {'zero-spec': 231, 'mixed': 21}
+(APIServer pid=13) INFO 11-26 23:01:05 [loggers.py:315] Engine 000: Avg prompt throughput: 130.0 tokens/s, Avg generation throughput: 69.8 tokens/s, Running: 1 reqs, Waiting: 0 reqs, XPU KV cache usage: 2.6%, Prefix cache hit rate: 31.4%
+(APIServer pid=13) INFO 11-26 23:01:05 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 3.38, Accepted throughput: 49.10 tokens/s, Drafted throughput: 61.80 tokens/s, Accepted: 491 tokens, Drafted: 618 tokens, Per-position acceptance rate: 0.932, 0.786, 0.665, Avg Draft acceptance rate: 79.4%
+(APIServer pid=13) INFO:     127.0.0.1:58382 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(Worker_TP1 pid=1138) INFO 11-26 23:01:08 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=21760 p50=0.49ms p90=0.62ms max=1.05ms fallbacks=258 {'zero-spec': 234, 'mixed': 24}
+(Worker_TP0 pid=1026) INFO 11-26 23:01:08 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=21760 p50=0.48ms p90=0.62ms max=1.15ms fallbacks=258 {'zero-spec': 234, 'mixed': 24}
+(APIServer pid=13) INFO:     127.0.0.1:47682 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(Worker_TP1 pid=1138) INFO 11-26 23:01:13 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=22016 p50=0.49ms p90=0.62ms max=1.05ms fallbacks=258 {'zero-spec': 234, 'mixed': 24}
+(Worker_TP0 pid=1026) INFO 11-26 23:01:13 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=22016 p50=0.48ms p90=0.62ms max=1.15ms fallbacks=258 {'zero-spec': 234, 'mixed': 24}
+(APIServer pid=13) INFO:     127.0.0.1:47692 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:47694 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:47674 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(Worker_TP0 pid=1026) LMCBOUND NONFINITE req=chatcmpl-bcbf39ce9ddd1251-aca8b1ec B=1088 nf=6492 am=3.18e+01 (v138c sanitize-carry REVAL trigger)
+(Worker_TP1 pid=1138) LMCBOUND NONFINITE req=chatcmpl-bcbf39ce9ddd1251-aca8b1ec B=1088 nf=6251 am=3.85e+01 (v138c sanitize-carry REVAL trigger)
+(APIServer pid=13) INFO 11-26 23:01:15 [loggers.py:315] Engine 000: Avg prompt throughput: 242.1 tokens/s, Avg generation throughput: 116.2 tokens/s, Running: 1 reqs, Waiting: 0 reqs, XPU KV cache usage: 3.0%, Prefix cache hit rate: 30.8%
+(APIServer pid=13) INFO 11-26 23:01:15 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 2.42, Accepted throughput: 68.10 tokens/s, Drafted throughput: 143.69 tokens/s, Accepted: 681 tokens, Drafted: 1437 tokens, Per-position acceptance rate: 0.676, 0.432, 0.313, Avg Draft acceptance rate: 47.4%
+(Worker_TP1 pid=1138) INFO 11-26 23:01:18 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=22272 p50=0.49ms p90=0.62ms max=0.78ms fallbacks=264 {'zero-spec': 240, 'mixed': 24}
+(Worker_TP0 pid=1026) INFO 11-26 23:01:18 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=22272 p50=0.48ms p90=0.62ms max=0.69ms fallbacks=264 {'zero-spec': 240, 'mixed': 24}
+(Worker_TP1 pid=1138) INFO 11-26 23:01:22 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=22528 p50=0.49ms p90=0.62ms max=0.76ms fallbacks=264 {'zero-spec': 240, 'mixed': 24}
+(Worker_TP0 pid=1026) INFO 11-26 23:01:22 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=22528 p50=0.48ms p90=0.62ms max=0.67ms fallbacks=264 {'zero-spec': 240, 'mixed': 24}
+(APIServer pid=13) INFO 11-26 23:01:25 [loggers.py:315] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 55.5 tokens/s, Running: 1 reqs, Waiting: 0 reqs, XPU KV cache usage: 3.0%, Prefix cache hit rate: 30.8%
+(APIServer pid=13) INFO 11-26 23:01:25 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 2.49, Accepted throughput: 33.20 tokens/s, Drafted throughput: 66.90 tokens/s, Accepted: 332 tokens, Drafted: 669 tokens, Per-position acceptance rate: 0.767, 0.448, 0.274, Avg Draft acceptance rate: 49.6%
+(Worker_TP1 pid=1138) INFO 11-26 23:01:25 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=22784 p50=0.49ms p90=0.62ms max=0.68ms fallbacks=264 {'zero-spec': 240, 'mixed': 24}
+(Worker_TP0 pid=1026) INFO 11-26 23:01:25 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=22784 p50=0.48ms p90=0.62ms max=0.84ms fallbacks=264 {'zero-spec': 240, 'mixed': 24}
+(APIServer pid=13) INFO:     127.0.0.1:47706 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(Worker_TP0 pid=1026) LMCBOUND NONFINITE req=chatcmpl-b71d18fb72be74b6-bb5d1e76 B=1088 nf=6696 am=3.18e+01 (v138c sanitize-carry REVAL trigger)
+(Worker_TP1 pid=1138) LMCBOUND NONFINITE req=chatcmpl-b71d18fb72be74b6-bb5d1e76 B=1088 nf=6381 am=3.85e+01 (v138c sanitize-carry REVAL trigger)
+(Worker_TP0 pid=1026) INFO 11-26 23:01:30 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=23040 p50=0.48ms p90=0.62ms max=1.09ms fallbacks=270 {'zero-spec': 246, 'mixed': 24}
+(Worker_TP1 pid=1138) INFO 11-26 23:01:30 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=23040 p50=0.49ms p90=0.62ms max=0.65ms fallbacks=270 {'zero-spec': 246, 'mixed': 24}
+(Worker_TP1 pid=1138) INFO 11-26 23:01:34 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=23296 p50=0.49ms p90=0.62ms max=0.66ms fallbacks=270 {'zero-spec': 246, 'mixed': 24}
+(Worker_TP0 pid=1026) INFO 11-26 23:01:34 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=23296 p50=0.48ms p90=0.62ms max=1.09ms fallbacks=270 {'zero-spec': 246, 'mixed': 24}
+(APIServer pid=13) INFO 11-26 23:01:35 [loggers.py:315] Engine 000: Avg prompt throughput: 214.5 tokens/s, Avg generation throughput: 50.4 tokens/s, Running: 1 reqs, Waiting: 0 reqs, XPU KV cache usage: 3.0%, Prefix cache hit rate: 30.4%
+(APIServer pid=13) INFO 11-26 23:01:35 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 2.52, Accepted throughput: 30.40 tokens/s, Drafted throughput: 59.99 tokens/s, Accepted: 304 tokens, Drafted: 600 tokens, Per-position acceptance rate: 0.790, 0.445, 0.285, Avg Draft acceptance rate: 50.7%
+(Worker_TP1 pid=1138) INFO 11-26 23:01:38 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=23552 p50=0.49ms p90=0.62ms max=0.74ms fallbacks=270 {'zero-spec': 246, 'mixed': 24}
+(Worker_TP0 pid=1026) INFO 11-26 23:01:38 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=23552 p50=0.48ms p90=0.62ms max=0.68ms fallbacks=270 {'zero-spec': 246, 'mixed': 24}
+(Worker_TP1 pid=1138) INFO 11-26 23:01:42 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=23808 p50=0.49ms p90=0.62ms max=0.74ms fallbacks=270 {'zero-spec': 246, 'mixed': 24}
+(Worker_TP0 pid=1026) INFO 11-26 23:01:42 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=23808 p50=0.48ms p90=0.62ms max=0.71ms fallbacks=270 {'zero-spec': 246, 'mixed': 24}
+(APIServer pid=13) INFO:     127.0.0.1:55892 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(Worker_TP0 pid=1026) LMCBOUND NONFINITE req=chatcmpl-ab713326f3e85ffb-935e26e6 B=3264 nf=6679 am=3.61e+01 (v138c sanitize-carry REVAL trigger)
+(Worker_TP1 pid=1138) LMCBOUND NONFINITE req=chatcmpl-ab713326f3e85ffb-935e26e6 B=3264 nf=6475 am=4.09e+01 (v138c sanitize-carry REVAL trigger)
+(APIServer pid=13) INFO 11-26 23:01:45 [loggers.py:315] Engine 000: Avg prompt throughput: 178.7 tokens/s, Avg generation throughput: 52.4 tokens/s, Running: 1 reqs, Waiting: 0 reqs, XPU KV cache usage: 3.5%, Prefix cache hit rate: 31.5%
+(APIServer pid=13) INFO 11-26 23:01:45 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 2.62, Accepted throughput: 32.40 tokens/s, Drafted throughput: 59.99 tokens/s, Accepted: 324 tokens, Drafted: 600 tokens, Per-position acceptance rate: 0.795, 0.505, 0.320, Avg Draft acceptance rate: 54.0%
+(Worker_TP1 pid=1138) INFO 11-26 23:01:47 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=24064 p50=0.49ms p90=0.62ms max=1.08ms fallbacks=273 {'zero-spec': 249, 'mixed': 24}
+(Worker_TP0 pid=1026) INFO 11-26 23:01:47 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=24064 p50=0.48ms p90=0.62ms max=0.71ms fallbacks=273 {'zero-spec': 249, 'mixed': 24}
+(Worker_TP1 pid=1138) INFO 11-26 23:01:51 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=24320 p50=0.49ms p90=0.62ms max=1.08ms fallbacks=273 {'zero-spec': 249, 'mixed': 24}
+(Worker_TP0 pid=1026) INFO 11-26 23:01:51 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=24320 p50=0.48ms p90=0.62ms max=0.71ms fallbacks=273 {'zero-spec': 249, 'mixed': 24}
+(APIServer pid=13) INFO:     127.0.0.1:35238 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(Worker_TP0 pid=1026) LMCBOUND NONFINITE req=chatcmpl-affba51b2827ee8d-909638e6 B=3264 nf=6679 am=3.61e+01 (v138c sanitize-carry REVAL trigger)
+(Worker_TP1 pid=1138) LMCBOUND NONFINITE req=chatcmpl-affba51b2827ee8d-909638e6 B=3264 nf=6475 am=4.09e+01 (v138c sanitize-carry REVAL trigger)
+(APIServer pid=13) INFO 11-26 23:01:55 [loggers.py:315] Engine 000: Avg prompt throughput: 178.7 tokens/s, Avg generation throughput: 62.4 tokens/s, Running: 1 reqs, Waiting: 0 reqs, XPU KV cache usage: 3.5%, Prefix cache hit rate: 32.6%
+(APIServer pid=13) INFO 11-26 23:01:55 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 3.26, Accepted throughput: 43.40 tokens/s, Drafted throughput: 57.59 tokens/s, Accepted: 434 tokens, Drafted: 576 tokens, Per-position acceptance rate: 0.896, 0.755, 0.609, Avg Draft acceptance rate: 75.3%
+(Worker_TP1 pid=1138) INFO 11-26 23:01:56 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=24576 p50=0.49ms p90=0.62ms max=0.68ms fallbacks=276 {'zero-spec': 252, 'mixed': 24}
+(Worker_TP0 pid=1026) INFO 11-26 23:01:56 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=24576 p50=0.48ms p90=0.62ms max=0.70ms fallbacks=276 {'zero-spec': 252, 'mixed': 24}
+(Worker_TP1 pid=1138) INFO 11-26 23:02:00 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=24832 p50=0.49ms p90=0.62ms max=0.74ms fallbacks=276 {'zero-spec': 252, 'mixed': 24}
+(Worker_TP0 pid=1026) INFO 11-26 23:02:00 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=24832 p50=0.48ms p90=0.62ms max=0.70ms fallbacks=276 {'zero-spec': 252, 'mixed': 24}
+(Worker_TP1 pid=1138) INFO 11-26 23:02:04 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=25088 p50=0.49ms p90=0.62ms max=0.74ms fallbacks=276 {'zero-spec': 252, 'mixed': 24}
+(Worker_TP0 pid=1026) INFO 11-26 23:02:04 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=25088 p50=0.48ms p90=0.62ms max=0.71ms fallbacks=276 {'zero-spec': 252, 'mixed': 24}
+(APIServer pid=13) INFO 11-26 23:02:05 [loggers.py:315] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 68.9 tokens/s, Running: 1 reqs, Waiting: 0 reqs, XPU KV cache usage: 3.7%, Prefix cache hit rate: 32.6%
+(APIServer pid=13) INFO 11-26 23:02:05 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 3.27, Accepted throughput: 47.80 tokens/s, Drafted throughput: 63.30 tokens/s, Accepted: 478 tokens, Drafted: 633 tokens, Per-position acceptance rate: 0.900, 0.758, 0.607, Avg Draft acceptance rate: 75.5%
+(APIServer pid=13) INFO:     127.0.0.1:33926 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(Worker_TP0 pid=1026) LMCBOUND NONFINITE req=chatcmpl-91bfa744c566728e-a4560b3c B=2176 nf=6635 am=4.50e+01 (v138c sanitize-carry REVAL trigger)
+(Worker_TP1 pid=1138) LMCBOUND NONFINITE req=chatcmpl-91bfa744c566728e-a4560b3c B=2176 nf=6596 am=3.98e+01 (v138c sanitize-carry REVAL trigger)
+(Worker_TP1 pid=1138) INFO 11-26 23:02:08 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=25344 p50=0.49ms p90=0.62ms max=0.65ms fallbacks=279 {'zero-spec': 255, 'mixed': 24}
+(Worker_TP0 pid=1026) INFO 11-26 23:02:08 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=25344 p50=0.48ms p90=0.62ms max=0.71ms fallbacks=279 {'zero-spec': 255, 'mixed': 24}
+(APIServer pid=13) INFO:     127.0.0.1:53974 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(Worker_TP0 pid=1026) LMCBOUND NONFINITE req=chatcmpl-a9a9c38d226feefd-a328ea65 B=2176 nf=6635 am=4.50e+01 (v138c sanitize-carry REVAL trigger)
+(Worker_TP1 pid=1138) LMCBOUND NONFINITE req=chatcmpl-a9a9c38d226feefd-a328ea65 B=2176 nf=6596 am=3.98e+01 (v138c sanitize-carry REVAL trigger)
+(APIServer pid=13) INFO:     127.0.0.1:53990 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(Worker_TP1 pid=1138) INFO 11-26 23:02:13 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=25600 p50=0.49ms p90=0.62ms max=0.66ms fallbacks=285 {'zero-spec': 261, 'mixed': 24}
+(Worker_TP0 pid=1026) INFO 11-26 23:02:13 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=25600 p50=0.48ms p90=0.62ms max=0.69ms fallbacks=285 {'zero-spec': 261, 'mixed': 24}
+(APIServer pid=13) INFO 11-26 23:02:15 [loggers.py:315] Engine 000: Avg prompt throughput: 248.6 tokens/s, Avg generation throughput: 57.0 tokens/s, Running: 1 reqs, Waiting: 0 reqs, XPU KV cache usage: 2.6%, Prefix cache hit rate: 34.0%
+(APIServer pid=13) INFO 11-26 23:02:15 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 3.16, Accepted throughput: 39.10 tokens/s, Drafted throughput: 54.30 tokens/s, Accepted: 391 tokens, Drafted: 543 tokens, Per-position acceptance rate: 0.884, 0.696, 0.580, Avg Draft acceptance rate: 72.0%
+(APIServer pid=13) INFO:     127.0.0.1:53994 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(Worker_TP1 pid=1138) INFO 11-26 23:02:17 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=25856 p50=0.49ms p90=0.62ms max=0.66ms fallbacks=288 {'zero-spec': 264, 'mixed': 24}
+(Worker_TP0 pid=1026) INFO 11-26 23:02:17 [gdn_metadata_fastpath.py:76] [arc-p10] gdn fast build: n=25856 p50=0.48ms p90=0.62ms max=0.64ms fallbacks=288 {'zero-spec': 264, 'mixed': 24}
+(APIServer pid=13) INFO:     127.0.0.1:54000 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=13) INFO:     127.0.0.1:51092 - "GET /metrics HTTP/1.1" 200 OK

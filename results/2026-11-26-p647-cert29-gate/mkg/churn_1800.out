@@ -1,0 +1,197 @@
+Exception in thread Thread-2 (one):
+Exception in thread Thread-3 (one):
+Traceback (most recent call last):
+Traceback (most recent call last):
+  File "/usr/lib/python3.12/urllib/request.py", line 1344, in do_open
+  File "/usr/lib/python3.12/urllib/request.py", line 1344, in do_open
+    h.request(req.get_method(), req.selector, req.data, headers,
+  File "/usr/lib/python3.12/http/client.py", line 1365, in request
+    h.request(req.get_method(), req.selector, req.data, headers,
+  File "/usr/lib/python3.12/http/client.py", line 1365, in request
+    self._send_request(method, url, body, headers, encode_chunked)
+  File "/usr/lib/python3.12/http/client.py", line 1411, in _send_request
+    self._send_request(method, url, body, headers, encode_chunked)
+    self.endheaders(body, encode_chunked=encode_chunked)
+  File "/usr/lib/python3.12/http/client.py", line 1411, in _send_request
+  File "/usr/lib/python3.12/http/client.py", line 1360, in endheaders
+    self.endheaders(body, encode_chunked=encode_chunked)
+  File "/usr/lib/python3.12/http/client.py", line 1360, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "/usr/lib/python3.12/http/client.py", line 1120, in _send_output
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "/usr/lib/python3.12/http/client.py", line 1120, in _send_output
+    self.send(msg)
+  File "/usr/lib/python3.12/http/client.py", line 1064, in send
+    self.send(msg)
+  File "/usr/lib/python3.12/http/client.py", line 1064, in send
+    self.connect()
+    self.connect()
+  File "/usr/lib/python3.12/http/client.py", line 1030, in connect
+  File "/usr/lib/python3.12/http/client.py", line 1030, in connect
+    self.sock = self._create_connection(
+                ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/socket.py", line 852, in create_connection
+    self.sock = self._create_connection(
+                ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/socket.py", line 852, in create_connection
+    raise exceptions[0]
+  File "/usr/lib/python3.12/socket.py", line 837, in create_connection
+    raise exceptions[0]
+  File "/usr/lib/python3.12/socket.py", line 837, in create_connection
+    sock.connect(sa)
+ConnectionRefusedError: [Errno 111] Connection refused
+
+During handling of the above exception, another exception occurred:
+
+    sock.connect(sa)
+Traceback (most recent call last):
+ConnectionRefusedError: [Errno 111] Connection refused
+  File "/usr/lib/python3.12/threading.py", line 1073, in _bootstrap_inner
+
+During handling of the above exception, another exception occurred:
+
+    self.run()
+Traceback (most recent call last):
+  File "/usr/lib/python3.12/threading.py", line 1010, in run
+  File "/usr/lib/python3.12/threading.py", line 1073, in _bootstrap_inner
+    self.run()
+  File "/usr/lib/python3.12/threading.py", line 1010, in run
+    self._target(*self._args, **self._kwargs)
+  File "<stdin>", line 8, in one
+  File "/usr/lib/python3.12/urllib/request.py", line 215, in urlopen
+    return opener.open(url, data, timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 515, in open
+    self._target(*self._args, **self._kwargs)
+    response = self._open(req, data)
+  File "<stdin>", line 8, in one
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 215, in urlopen
+  File "/usr/lib/python3.12/urllib/request.py", line 532, in _open
+    return opener.open(url, data, timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 515, in open
+    response = self._open(req, data)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 532, in _open
+    result = self._call_chain(self.handle_open, protocol, protocol +
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 492, in _call_chain
+Exception in thread Thread-1 (one):
+Traceback (most recent call last):
+  File "/usr/lib/python3.12/urllib/request.py", line 1344, in do_open
+Exception in thread Thread-4 (one):
+Traceback (most recent call last):
+    h.request(req.get_method(), req.selector, req.data, headers,
+    result = self._call_chain(self.handle_open, protocol, protocol +
+    result = func(*args)
+  File "/usr/lib/python3.12/http/client.py", line 1365, in request
+  File "/usr/lib/python3.12/urllib/request.py", line 1344, in do_open
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+             ^^^^^^^^^^^
+    self._send_request(method, url, body, headers, encode_chunked)
+  File "/usr/lib/python3.12/urllib/request.py", line 1373, in http_open
+  File "/usr/lib/python3.12/http/client.py", line 1411, in _send_request
+  File "/usr/lib/python3.12/urllib/request.py", line 492, in _call_chain
+    return self.do_open(http.client.HTTPConnection, req)
+    result = func(*args)
+    self.endheaders(body, encode_chunked=encode_chunked)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    h.request(req.get_method(), req.selector, req.data, headers,
+             ^^^^^^^^^^^
+  File "/usr/lib/python3.12/http/client.py", line 1360, in endheaders
+  File "/usr/lib/python3.12/urllib/request.py", line 1347, in do_open
+  File "/usr/lib/python3.12/http/client.py", line 1365, in request
+  File "/usr/lib/python3.12/urllib/request.py", line 1373, in http_open
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "/usr/lib/python3.12/http/client.py", line 1120, in _send_output
+    return self.do_open(http.client.HTTPConnection, req)
+    self._send_request(method, url, body, headers, encode_chunked)
+    raise URLError(err)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/http/client.py", line 1411, in _send_request
+urllib.error.URLError: <urlopen error [Errno 111] Connection refused>
+    self.send(msg)
+  File "/usr/lib/python3.12/urllib/request.py", line 1347, in do_open
+  File "/usr/lib/python3.12/http/client.py", line 1064, in send
+    self.endheaders(body, encode_chunked=encode_chunked)
+  File "/usr/lib/python3.12/http/client.py", line 1360, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "/usr/lib/python3.12/http/client.py", line 1120, in _send_output
+    self.connect()
+  File "/usr/lib/python3.12/http/client.py", line 1030, in connect
+    self.send(msg)
+  File "/usr/lib/python3.12/http/client.py", line 1064, in send
+    raise URLError(err)
+    self.sock = self._create_connection(
+urllib.error.URLError: <urlopen error [Errno 111] Connection refused>
+                ^^^^^^^^^^^^^^^^^^^^^^^^
+    self.connect()
+  File "/usr/lib/python3.12/socket.py", line 852, in create_connection
+  File "/usr/lib/python3.12/http/client.py", line 1030, in connect
+    raise exceptions[0]
+    self.sock = self._create_connection(
+  File "/usr/lib/python3.12/socket.py", line 837, in create_connection
+                ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/socket.py", line 852, in create_connection
+    sock.connect(sa)
+ConnectionRefusedError: [Errno 111] Connection refused
+
+During handling of the above exception, another exception occurred:
+
+    raise exceptions[0]
+Traceback (most recent call last):
+  File "/usr/lib/python3.12/socket.py", line 837, in create_connection
+  File "/usr/lib/python3.12/threading.py", line 1073, in _bootstrap_inner
+    sock.connect(sa)
+ConnectionRefusedError: [Errno 111] Connection refused
+
+During handling of the above exception, another exception occurred:
+
+    self.run()
+Traceback (most recent call last):
+  File "/usr/lib/python3.12/threading.py", line 1010, in run
+  File "/usr/lib/python3.12/threading.py", line 1073, in _bootstrap_inner
+    self._target(*self._args, **self._kwargs)
+  File "<stdin>", line 8, in one
+  File "/usr/lib/python3.12/urllib/request.py", line 215, in urlopen
+    self.run()
+  File "/usr/lib/python3.12/threading.py", line 1010, in run
+    return opener.open(url, data, timeout)
+    self._target(*self._args, **self._kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<stdin>", line 8, in one
+  File "/usr/lib/python3.12/urllib/request.py", line 515, in open
+  File "/usr/lib/python3.12/urllib/request.py", line 215, in urlopen
+    response = self._open(req, data)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 532, in _open
+    return opener.open(url, data, timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 515, in open
+    result = self._call_chain(self.handle_open, protocol, protocol +
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 492, in _call_chain
+    response = self._open(req, data)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 532, in _open
+    result = func(*args)
+             ^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 1373, in http_open
+    result = self._call_chain(self.handle_open, protocol, protocol +
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 492, in _call_chain
+    result = func(*args)
+             ^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 1373, in http_open
+    return self.do_open(http.client.HTTPConnection, req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 1347, in do_open
+    return self.do_open(http.client.HTTPConnection, req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 1347, in do_open
+    raise URLError(err)
+urllib.error.URLError: <urlopen error [Errno 111] Connection refused>
+    raise URLError(err)
+urllib.error.URLError: <urlopen error [Errno 111] Connection refused>
+CHURN 4x256 done: []

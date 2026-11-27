@@ -12,6 +12,39 @@ the fork SHA it was built from.
 Phase labels P0–P6.38 refer to the plan's execution phases; every phase's
 raw evidence is banked under `results/YYYY-MM-DD-<phase>-*/`.
 
+## r255/r255a — the cert29 section-10 gate: qwen side clean, P-C2 refusal green, gemma MX e2e DEVICE_LOST open (2026-11-27)
+
+The 10-leg battery on `vllm-arc:v0.30.0-b70-cert29` (fork_sha
+`16effb49`). **Qwen side CERTIFIED CLEAN**: the fp8 baseline (LMC-on
+posture), the full MX-KV trio (mxfp8/mxfp4/mxk8v4 + native + LMC
+auto-off; pools 386,484/721,994/504,832 tok = 1.47x/2.75x/1.93x),
+and the P-H interop lane all green on the first pass — G1-G5 including
+the A/A re-hit (6.047→1.894 s, <50% wall) and the c32768 death
+sequence (no wedge, no watchdog). **P-C2 refusal green** on the r255a
+single-leg rerun: gemma + mxfp8 KV with no native dies boot-loud with
+`requires the native decode lane` (`refusal_lines=2`); the first-pass
+gref FAIL was a harness defect (the death-detect loop read "EngineCore
+not spawned yet" as death at i=0, killed the 4-second-old boot before
+the refusal could fire — fixed in r255a: sleep-first, cp-per-poll,
+break-on-refusal-line, SEEN latch). **Open defect blocking the cert29
+tag**: all three gemma MX legs (m8g/m4g/mkg, every MX dtype) died
+mid-suite with a byte-identical deterministic signature —
+`UR_RESULT_ERROR_DEVICE_LOST` during the longprobe `multi` face's A/A
+prefix-hit resend (`prompt_token_ids_len=3446`, 3,328 page-cached +
+a 118-token tail-prefill chunk, the only >64-tok tail; dmesg shows a
+compute-engine reset on both GPUs 13-18 s before the python surface).
+The same probe ran clean on qwen (no window), g0 (gemma native-KV
+control) ran the full suite clean, and the r245 e2e validated the
+posture on 45 fresh faces — a prefix-hit >64-tok tail prefill on the
+window twin / page-128 lane is the implicated path. The gemma legs'
+post-crash artifacts (rehits refused, `CHURN done: []`, erraudit 65/4)
+are the death record, not serving evidence (the
+existence-only-green-gate law). Evidence:
+`results/2026-11-26-p647-cert29-gate/` (VERDICT: SPLIT). Next: r256
+minimal repro (devcoredump captured immediately, tail bisection
+24/48/63/64/65/96/118/128) → root cause → fix → re-leg → then the
+cert29 docs/tag/release sequence.
+
 ## r254 — cert29 image built: cert28 + the build34 page-128 wheel + the 16effb49 six-file delta (2026-11-26)
 
 The cert29 cut (r232 recipe). `vllm-arc:v0.30.0-b70-cert29` =

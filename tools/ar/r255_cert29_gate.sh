@@ -748,24 +748,44 @@ PYEOF
 leg_gref() {  # the P-C2 boot-loud refusal face: gemma + mxfp8 MX KV with
   # NO native lane MUST die at init ("requires the native decode lane").
   # A healthy boot here is a FAIL (the refusal is the certified guard).
+  # r255a harness fix: the first pass (23:12:53Z) read "EngineCore not
+  # spawned YET" as death -- true of every healthy boot's first ~60s --
+  # broke at i=0, docker-cp'd before the in-container redirect even
+  # existed ("serve.log MISSING"), then pkill'd the 4-second-old boot
+  # before the P-C2 refusal could ever fire at model init (~4 min in
+  # for gemma fp8). The loop now sleeps FIRST, copies the serve log
+  # EVERY poll (evidence survives the container), breaks on the refusal
+  # line itself, and treats process-death as death only after EngineCore
+  # was seen alive at least once.
   local CD=$P/gref
   mkdir -p "$CD"
   echo "=== [gref] expect-boot-death $(date +%H:%M:%S) (gemma + mxfp8 KV, NO native) ==="
   nohup env ARC_IMAGE="$IMG" ARC_NAME=$CNAME $GEMMA_NAT ARC_KVDTYPE=mxfp8 \
     bash $R/serve_arc_b70.sh > "$CD/boot.txt" 2>&1 &
-  local i=0 HEALTH=0
-  while [ $i -lt 120 ]; do
+  local i=0 HEALTH=0 rl=0 SEEN=0
+  while [ $i -lt 90 ]; do
+    sleep 10
     curl -sf -m 4 http://127.0.0.1:8000/health >/dev/null 2>&1 && { HEALTH=1; break; }
-    if ! docker exec $CNAME pgrep -f EngineCore >/dev/null 2>&1; then break; fi
-    i=$((i + 1)); sleep 10
+    docker cp $CNAME:/root/serve_full.log "$CD/serve.log" >/dev/null 2>&1 || true
+    rl=$(grep -c "requires the native decode lane" "$CD/serve.log" 2>/dev/null || true)
+    rl=${rl:-0}
+    if [ "$rl" -gt 0 ]; then break; fi
+    if docker exec $CNAME pgrep -f EngineCore >/dev/null 2>&1; then
+      SEEN=1
+    elif [ "$SEEN" = 1 ]; then
+      sleep 5
+      docker cp $CNAME:/root/serve_full.log "$CD/serve.log" >/dev/null 2>&1 || true
+      break
+    fi
+    i=$((i + 1))
   done
-  docker cp $CNAME:/root/serve_full.log "$CD/serve.log" >/dev/null 2>&1 || echo "serve.log MISSING gref"
-  local rl
-  rl=$(grep -c "requires the native decode lane" "$CD/serve.log" 2>/dev/null || echo 0)
-  if [ "$HEALTH" = "0" ] && [ "${rl:-0}" -gt 0 ]; then
+  docker cp $CNAME:/root/serve_full.log "$CD/serve.log" >/dev/null 2>&1 || true
+  rl=$(grep -c "requires the native decode lane" "$CD/serve.log" 2>/dev/null || true)
+  rl=${rl:-0}
+  if [ "$HEALTH" = "0" ] && [ "$rl" -gt 0 ]; then
     echo "GREF_PC2_REFUSAL_OK refusal_lines=$rl (boot-loud: the engine refused the windowed MX impl off-native)"
   else
-    echo "GREF_PC2_REFUSAL_FAIL health=$HEALTH refusal_lines=${rl:-0} (see $CD/serve.log)"
+    echo "GREF_PC2_REFUSAL_FAIL health=$HEALTH refusal_lines=$rl (see $CD/serve.log)"
     GATE_FAIL=1
   fi
   docker exec $CNAME bash -c "pkill -f 'vllm serve'" >/dev/null 2>&1
