@@ -24,11 +24,10 @@ resets both GPUs, 8 devcoredumps banked), and the multi COLD ran
 clean in every variant. The minimal prior-state prefix is ANY prior
 traffic — five 57-token chat generations (V4) suffice, ~12 min end
 to end: the crash is not a function of the debris class, length, or
-content. V3's subtlety: its class-2 cold is itself a prefix rehit
-(the sha divergence from the byte-identical cross-boot temp-0 colds
-proves it took the hit path) and ran CLEAN — the same geometry
-crashed only at the NEXT rehit, so the discriminating state is the
-free-list provenance of the two fresh windowed tail blocks.
+content. (The V3 description first published here — five prior
+multi generations, then a clean prefix-rehit cold with the crash
+geometry — was a misread of the bank and is corrected in r261: V3
+ran ONE multi cold and crashed at the first rehit.)
 **The r258b "content classes exonerated" claim is RETRACTED**: the
 harness's `make_table(tail=True)` placed the 18 windowed ids at
 columns 622..639 while the kernel's window walk reads columns
@@ -41,8 +40,68 @@ r261 (launched) — the corrected REAL-WALK replay: the dump rows
 verbatim at the walked columns, four banked crash tables (m8g/r257/
 V3/V4) + the consecutive-fresh control × four pool fills × 3 seeds
 (60 cells); a HANG/DEVLOST hands the hunt an offline repro, 60
-clean defers to the ARC_MXKV_NATIVE=0 e2e lane ablation on the V4
-repro.
+clean retires the offline oracle (the lane-ablation follow-up
+proposed here is impossible — sliding-window layers require the
+native lane at init).
+
+## r261 — the real-walk replay is ALL CLEAN (60/60): the materialized tables are not the surface; the static audit finds the expand-view stride defect; the r260 V3 description corrected (2026-11-27)
+
+The corrected real-walk replay on `vllm-arc:v0.30.0-b70-cert29`: the
+crash step's six native calls at the engine's exact geometry, the
+dump rows placed as the engine places them (36 zero-pads at columns
+0..35, the 18 real ids at the walked columns 36..53), five tables
+(m8g / r257 / the r260 V3 + V4 rows / the consecutive-fresh control)
+× four pool fills × three seeds. **`R261_DONE hangs=0 devlosts=0
+cells=60`** — every call OK, no devcoredumps. The offline oracle is
+now exact in table placement, geometry and call order and still
+cannot reproduce: the crash input is not the kernel walking these
+tables over any pool content. The content hypothesis is closed in
+the direct form, and the `ARC_MXKV_NATIVE=0` ablation proposed as
+the next rung is impossible (sliding-window layers require the
+native lane at init).
+
+**The static audit found a stride contract violation** (code-proven;
+the e2e A/B is r262, launched). The windowed synth path —
+continuation prefill with 9..128 query rows — hands the native wheel
+`bt_row.expand(q_len, -1)`, a stride-0 VIEW of one persistent
+block-table row. The Triton lanes multiply the row index by
+`stride(0)` and are right; the wheel takes `data_ptr()` + `size(1)`
+and addresses row r at `r * bt_width`, a contiguous pitch. The
+kernel therefore reads the request's real row for row 0, the
+zero-initialized table rows 1..63 for the next rows (block 0), and —
+past the table's 64 rows — device memory OUTSIDE the table, as block
+ids. That fits every banked data point: colds are single full
+forwards (never the synth path); the essay/code rehits are 56/57-row
+rides that stay inside the table; the multi rehit is a 118-row ride
+and is the crash site in every rung; materialized tables never
+contain those bytes and are always clean. The target qwen model
+rides the Triton lane and is unaffected. Side finding: on
+continuation rows the five gemma windowed layers have been attending
+over the null block — banked gemma rehit outputs were computed with
+windowed attention effectively disabled there, so rehit outputs are
+expected to change when the fix lands.
+
+**Correction to r260**: the V3 description ("five prior multi
+generations; a class-2 cold that was itself a clean prefix rehit
+with the crash geometry") was a misread of the bank — V3 ran ONE
+multi cold (a single full 3446-token forward) and crashed at the
+FIRST multi rehit; the free-list-provenance inference drawn from it
+is retracted. All four variants crashed at the first multi rehit;
+the headline verdict stands. Correction addenda are in the r258b and
+r260 banks.
+
+Operational: the W14 restore after this leg booted to "JIT kernel
+warmup finished" and hung on `shm_broadcast` (no health for 105
+minutes); a `docker restart radiance-test` + relaunch restored
+health (evidence banked in the r261 bank). The r262 driver's
+restore is health-aware with one such retry.
+
+Next: r262 (launched) — the e2e A/B on the same image through the
+wrapper's `ARC_MXKV_OVERLAY` hook: a probe overlay dumping the rows
+the wheel dereferences, the fix overlay (the bridge materializes a
+non-contiguous block table) across `essay code multi simple multi`,
+and a marker-only control that must still crash. Fix proven → land
+it → re-leg m8g/m4g/mkg → re-gate → the cert29 cut.
 
 ## r259 — the eager suite replay CRASHED: the graph mechanics are exonerated; the surface is engine-level state (2026-11-27)
 
