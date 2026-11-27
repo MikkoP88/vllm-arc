@@ -12,6 +12,60 @@ the fork SHA it was built from.
 Phase labels P0–P6.38 refer to the plan's execution phases; every phase's
 raw evidence is banked under `results/YYYY-MM-DD-<phase>-*/`.
 
+## r263 — the cert29 image rebuilt from the landed stride fix; the gate hardened so the certificate precondition is a verdict line (2026-11-27)
+
+The image carries files, so the r262 fix had to be baked.
+`tools/ar/r263_ship.sh` stages the six `vllm_gaudi` files straight from
+the git blobs of content commit `4dd3a1b9710f1c638f7f0b5ac1885525cf57c3bc`
+(never the working tree; each pinned by md5) and
+`tools/ar/r263_build_cert29.sh` builds `vllm-arc:v0.30.0-b70-cert29` on
+the rig from cert28 + the build34 wheel + those files, refusing to start
+without the wheel, probe and e2e evidence lines and asserting 27 source
+strings and every byte pin INSIDE the image. The rebuilt image is id
+`77e08563f7c7` with `cert29_fork_sha=4dd3a1b9...` and
+`cert29_rebuilt=r263`; the crash image stays available as
+`vllm-arc:v0.30.0-b70-cert29-rc1`. The whole delta between the two is
+the bridge guard plus its call-site comment. This is a candidate, not a
+certificate: the section-10 battery on these bytes is the next entry's
+subject.
+
+One defect in the rung, recorded in its bank: the first build run
+produced a correct image and then printed a false
+`R263_MANIFEST_FORK_SHA_MISMATCH` — its final check compared the LAST
+line of the append-only image manifest, which the rebuild itself had
+just made the `cert29_rebuilt=` entry. The check now greps the key by
+name; the build was re-run for a coherent log.
+
+The re-certification battery (`tools/ar/r264_cert29_gate.sh`, the r255
+gate plus the rebuild deltas) was audited against the banked r255
+evidence BEFORE its launch, and the audit found three ways the verdict
+would have been wrong on exactly the lanes in question:
+
+- **a vacuous fail** — the "stride fix engaged" marker was read from a
+  snapshot taken right after boot, but the fix's log line only fires at
+  the first multi-row continuation: every gemma MX leg would have gone
+  red with a working fix;
+- **a vacuous pass** — the device-lost count came from the same
+  boot-time snapshot, where it is always zero;
+- **a blind spot** — a crashed ride prints
+  `[multi] ERROR <HTTPError 500 ...>` and still counts as a class line,
+  and on the gemma legs (whose quality classes are bank-only) nothing
+  gated it.
+
+The gate now re-counts the suite-time markers after the suite, gates
+ride completion and zero probe errors on every leg, checks the kernel
+log for engine resets and devcoredumps per leg and per battery, counts
+failed checks, prints a `LEG_VERDICT[<leg>]: GREEN | RED` line per leg,
+and ends with the certificate precondition as a line of its own:
+`R264_CERT_PRECONDITION ... -> CERT_CUT_ALLOWED` only when the gemma MX
+lanes (m8g / m4g / mkg), the LMCache lane (lmc) and the rest of the
+battery are all green. `tools/ar/r264_gate_selftest.sh` proves the
+verdict logic on banked evidence (the crashed r255 gemma leg must trip;
+healthy legs must pass).
+
+Next: the r264 battery result. No certificate is cut from this image
+until that precondition line reads `CERT_CUT_ALLOWED`.
+
 ## r262 — the e2e A/B: the expand-view block-table stride defect IS the gemma DEVICE_LOST and the bridge guard IS the fix (a_probe=0 c_suite=0 b_ctrl=2); the fix lands in the bridge (2026-11-27)
 
 The e2e A/B on `vllm-arc:v0.30.0-b70-cert29` through the wrapper's
