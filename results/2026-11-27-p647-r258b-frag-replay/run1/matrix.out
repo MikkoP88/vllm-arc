@@ -1,0 +1,74 @@
+R258B_START device=Intel(R) Graphics [0xe223] rows=118 cached=3328 w=1024
+   [w0] exc: unknown MX KV format: 0 (known: ['mxfp4', 'mxfp8', 'mxk8v4'])
+R258B_CELL table=m8g fill=zero seed=0 [w0=ERR:ValueError] dt=537ms
+   [w0] exc: unknown MX KV format: 0 (known: ['mxfp4', 'mxfp8', 'mxk8v4'])
+R258B_CELL table=m8g fill=zero seed=1 [w0=ERR:ValueError] dt=7ms
+   [w0] exc: unknown MX KV format: 0 (known: ['mxfp4', 'mxfp8', 'mxk8v4'])
+R258B_CELL table=m8g fill=zero seed=2 [w0=ERR:ValueError] dt=7ms
+   [w0] exc: unknown MX KV format: 0 (known: ['mxfp4', 'mxfp8', 'mxk8v4'])
+R258B_CELL table=m8g fill=recycled seed=0 [w0=ERR:ValueError] dt=580ms
+   [w0] exc: unknown MX KV format: 0 (known: ['mxfp4', 'mxfp8', 'mxk8v4'])
+R258B_CELL table=m8g fill=recycled seed=1 [w0=ERR:ValueError] dt=565ms
+   [w0] exc: unknown MX KV format: 0 (known: ['mxfp4', 'mxfp8', 'mxk8v4'])
+R258B_CELL table=m8g fill=recycled seed=2 [w0=ERR:ValueError] dt=578ms
+   [w0] exc: unknown MX KV format: 0 (known: ['mxfp4', 'mxfp8', 'mxk8v4'])
+R258B_CELL table=m8g fill=random seed=0 [w0=ERR:ValueError] dt=1509ms
+   [w0] exc: unknown MX KV format: 0 (known: ['mxfp4', 'mxfp8', 'mxk8v4'])
+R258B_CELL table=m8g fill=random seed=1 [w0=ERR:ValueError] dt=1526ms
+   [w0] exc: unknown MX KV format: 0 (known: ['mxfp4', 'mxfp8', 'mxk8v4'])
+R258B_CELL table=m8g fill=random seed=2 [w0=ERR:ValueError] dt=1540ms
+   [w0] exc: unknown MX KV format: 0 (known: ['mxfp4', 'mxfp8', 'mxk8v4'])
+R258B_CELL table=m8g fill=nanband seed=0 [w0=ERR:ValueError] dt=4ms
+   [w0] exc: unknown MX KV format: 0 (known: ['mxfp4', 'mxfp8', 'mxk8v4'])
+R258B_CELL table=m8g fill=nanband seed=1 [w0=ERR:ValueError] dt=4ms
+   [w0] exc: unknown MX KV format: 0 (known: ['mxfp4', 'mxfp8', 'mxk8v4'])
+R258B_CELL table=m8g fill=nanband seed=2 [w0=ERR:ValueError] dt=4ms
+   [w0] exc: unknown MX KV format: 0 (known: ['mxfp4', 'mxfp8', 'mxk8v4'])
+R258B_CELL table=r257 fill=zero seed=0 [w0=ERR:ValueError] dt=4ms
+   [w0] exc: unknown MX KV format: 0 (known: ['mxfp4', 'mxfp8', 'mxk8v4'])
+R258B_CELL table=r257 fill=zero seed=1 [w0=ERR:ValueError] dt=4ms
+   [w0] exc: unknown MX KV format: 0 (known: ['mxfp4', 'mxfp8', 'mxk8v4'])
+R258B_CELL table=r257 fill=zero seed=2 [w0=ERR:ValueError] dt=4ms
+   [w0] exc: unknown MX KV format: 0 (known: ['mxfp4', 'mxfp8', 'mxk8v4'])
+R258B_CELL table=r257 fill=recycled seed=0 [w0=ERR:ValueError] dt=575ms
+   [w0] exc: unknown MX KV format: 0 (known: ['mxfp4', 'mxfp8', 'mxk8v4'])
+R258B_CELL table=r257 fill=recycled seed=1 [w0=ERR:ValueError] dt=572ms
+   [w0] exc: unknown MX KV format: 0 (known: ['mxfp4', 'mxfp8', 'mxk8v4'])
+R258B_CELL table=r257 fill=recycled seed=2 [w0=ERR:ValueError] dt=578ms
+   [w0] exc: unknown MX KV format: 0 (known: ['mxfp4', 'mxfp8', 'mxk8v4'])
+R258B_CELL table=r257 fill=random seed=0 [w0=ERR:ValueError] dt=1505ms
+   [w0] exc: unknown MX KV format: 0 (known: ['mxfp4', 'mxfp8', 'mxk8v4'])
+R258B_CELL table=r257 fill=random seed=1 [w0=ERR:ValueError] dt=1553ms
+   [w0] exc: unknown MX KV format: 0 (known: ['mxfp4', 'mxfp8', 'mxk8v4'])
+R258B_CELL table=r257 fill=random seed=2 [w0=ERR:ValueError] dt=1504ms
+   [w0] exc: unknown MX KV format: 0 (known: ['mxfp4', 'mxfp8', 'mxk8v4'])
+R258B_CELL table=r257 fill=nanband seed=0 [w0=ERR:ValueError] dt=4ms
+   [w0] exc: unknown MX KV format: 0 (known: ['mxfp4', 'mxfp8', 'mxk8v4'])
+R258B_CELL table=r257 fill=nanband seed=1 [w0=ERR:ValueError] dt=4ms
+   [w0] exc: unknown MX KV format: 0 (known: ['mxfp4', 'mxfp8', 'mxk8v4'])
+R258B_CELL table=r257 fill=nanband seed=2 [w0=ERR:ValueError] dt=4ms
+   [w0] exc: unknown MX KV format: 0 (known: ['mxfp4', 'mxfp8', 'mxk8v4'])
+R258B_CELL table=ctl fill=zero seed=0 [w0=ERR:ValueError] dt=4ms
+   [w0] exc: unknown MX KV format: 0 (known: ['mxfp4', 'mxfp8', 'mxk8v4'])
+R258B_CELL table=ctl fill=zero seed=1 [w0=ERR:ValueError] dt=3ms
+   [w0] exc: unknown MX KV format: 0 (known: ['mxfp4', 'mxfp8', 'mxk8v4'])
+R258B_CELL table=ctl fill=zero seed=2 [w0=ERR:ValueError] dt=3ms
+   [w0] exc: unknown MX KV format: 0 (known: ['mxfp4', 'mxfp8', 'mxk8v4'])
+R258B_CELL table=ctl fill=recycled seed=0 [w0=ERR:ValueError] dt=577ms
+   [w0] exc: unknown MX KV format: 0 (known: ['mxfp4', 'mxfp8', 'mxk8v4'])
+R258B_CELL table=ctl fill=recycled seed=1 [w0=ERR:ValueError] dt=570ms
+   [w0] exc: unknown MX KV format: 0 (known: ['mxfp4', 'mxfp8', 'mxk8v4'])
+R258B_CELL table=ctl fill=recycled seed=2 [w0=ERR:ValueError] dt=570ms
+   [w0] exc: unknown MX KV format: 0 (known: ['mxfp4', 'mxfp8', 'mxk8v4'])
+R258B_CELL table=ctl fill=random seed=0 [w0=ERR:ValueError] dt=1530ms
+   [w0] exc: unknown MX KV format: 0 (known: ['mxfp4', 'mxfp8', 'mxk8v4'])
+R258B_CELL table=ctl fill=random seed=1 [w0=ERR:ValueError] dt=1506ms
+   [w0] exc: unknown MX KV format: 0 (known: ['mxfp4', 'mxfp8', 'mxk8v4'])
+R258B_CELL table=ctl fill=random seed=2 [w0=ERR:ValueError] dt=1520ms
+   [w0] exc: unknown MX KV format: 0 (known: ['mxfp4', 'mxfp8', 'mxk8v4'])
+R258B_CELL table=ctl fill=nanband seed=0 [w0=ERR:ValueError] dt=5ms
+   [w0] exc: unknown MX KV format: 0 (known: ['mxfp4', 'mxfp8', 'mxk8v4'])
+R258B_CELL table=ctl fill=nanband seed=1 [w0=ERR:ValueError] dt=5ms
+   [w0] exc: unknown MX KV format: 0 (known: ['mxfp4', 'mxfp8', 'mxk8v4'])
+R258B_CELL table=ctl fill=nanband seed=2 [w0=ERR:ValueError] dt=5ms
+R258B_DONE hangs=0 devlosts=0 cells=36 -> /root/r258b_out.json

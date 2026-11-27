@@ -1,0 +1,326 @@
+[
+ {
+  "table": "m8g",
+  "fill": "zero",
+  "seed": 0,
+  "calls": {
+   "w0": "ERR:ValueError"
+  },
+  "ms": 537
+ },
+ {
+  "table": "m8g",
+  "fill": "zero",
+  "seed": 1,
+  "calls": {
+   "w0": "ERR:ValueError"
+  },
+  "ms": 7
+ },
+ {
+  "table": "m8g",
+  "fill": "zero",
+  "seed": 2,
+  "calls": {
+   "w0": "ERR:ValueError"
+  },
+  "ms": 7
+ },
+ {
+  "table": "m8g",
+  "fill": "recycled",
+  "seed": 0,
+  "calls": {
+   "w0": "ERR:ValueError"
+  },
+  "ms": 580
+ },
+ {
+  "table": "m8g",
+  "fill": "recycled",
+  "seed": 1,
+  "calls": {
+   "w0": "ERR:ValueError"
+  },
+  "ms": 565
+ },
+ {
+  "table": "m8g",
+  "fill": "recycled",
+  "seed": 2,
+  "calls": {
+   "w0": "ERR:ValueError"
+  },
+  "ms": 578
+ },
+ {
+  "table": "m8g",
+  "fill": "random",
+  "seed": 0,
+  "calls": {
+   "w0": "ERR:ValueError"
+  },
+  "ms": 1509
+ },
+ {
+  "table": "m8g",
+  "fill": "random",
+  "seed": 1,
+  "calls": {
+   "w0": "ERR:ValueError"
+  },
+  "ms": 1526
+ },
+ {
+  "table": "m8g",
+  "fill": "random",
+  "seed": 2,
+  "calls": {
+   "w0": "ERR:ValueError"
+  },
+  "ms": 1540
+ },
+ {
+  "table": "m8g",
+  "fill": "nanband",
+  "seed": 0,
+  "calls": {
+   "w0": "ERR:ValueError"
+  },
+  "ms": 4
+ },
+ {
+  "table": "m8g",
+  "fill": "nanband",
+  "seed": 1,
+  "calls": {
+   "w0": "ERR:ValueError"
+  },
+  "ms": 4
+ },
+ {
+  "table": "m8g",
+  "fill": "nanband",
+  "seed": 2,
+  "calls": {
+   "w0": "ERR:ValueError"
+  },
+  "ms": 4
+ },
+ {
+  "table": "r257",
+  "fill": "zero",
+  "seed": 0,
+  "calls": {
+   "w0": "ERR:ValueError"
+  },
+  "ms": 4
+ },
+ {
+  "table": "r257",
+  "fill": "zero",
+  "seed": 1,
+  "calls": {
+   "w0": "ERR:ValueError"
+  },
+  "ms": 4
+ },
+ {
+  "table": "r257",
+  "fill": "zero",
+  "seed": 2,
+  "calls": {
+   "w0": "ERR:ValueError"
+  },
+  "ms": 4
+ },
+ {
+  "table": "r257",
+  "fill": "recycled",
+  "seed": 0,
+  "calls": {
+   "w0": "ERR:ValueError"
+  },
+  "ms": 575
+ },
+ {
+  "table": "r257",
+  "fill": "recycled",
+  "seed": 1,
+  "calls": {
+   "w0": "ERR:ValueError"
+  },
+  "ms": 572
+ },
+ {
+  "table": "r257",
+  "fill": "recycled",
+  "seed": 2,
+  "calls": {
+   "w0": "ERR:ValueError"
+  },
+  "ms": 578
+ },
+ {
+  "table": "r257",
+  "fill": "random",
+  "seed": 0,
+  "calls": {
+   "w0": "ERR:ValueError"
+  },
+  "ms": 1505
+ },
+ {
+  "table": "r257",
+  "fill": "random",
+  "seed": 1,
+  "calls": {
+   "w0": "ERR:ValueError"
+  },
+  "ms": 1553
+ },
+ {
+  "table": "r257",
+  "fill": "random",
+  "seed": 2,
+  "calls": {
+   "w0": "ERR:ValueError"
+  },
+  "ms": 1504
+ },
+ {
+  "table": "r257",
+  "fill": "nanband",
+  "seed": 0,
+  "calls": {
+   "w0": "ERR:ValueError"
+  },
+  "ms": 4
+ },
+ {
+  "table": "r257",
+  "fill": "nanband",
+  "seed": 1,
+  "calls": {
+   "w0": "ERR:ValueError"
+  },
+  "ms": 4
+ },
+ {
+  "table": "r257",
+  "fill": "nanband",
+  "seed": 2,
+  "calls": {
+   "w0": "ERR:ValueError"
+  },
+  "ms": 4
+ },
+ {
+  "table": "ctl",
+  "fill": "zero",
+  "seed": 0,
+  "calls": {
+   "w0": "ERR:ValueError"
+  },
+  "ms": 4
+ },
+ {
+  "table": "ctl",
+  "fill": "zero",
+  "seed": 1,
+  "calls": {
+   "w0": "ERR:ValueError"
+  },
+  "ms": 3
+ },
+ {
+  "table": "ctl",
+  "fill": "zero",
+  "seed": 2,
+  "calls": {
+   "w0": "ERR:ValueError"
+  },
+  "ms": 3
+ },
+ {
+  "table": "ctl",
+  "fill": "recycled",
+  "seed": 0,
+  "calls": {
+   "w0": "ERR:ValueError"
+  },
+  "ms": 577
+ },
+ {
+  "table": "ctl",
+  "fill": "recycled",
+  "seed": 1,
+  "calls": {
+   "w0": "ERR:ValueError"
+  },
+  "ms": 570
+ },
+ {
+  "table": "ctl",
+  "fill": "recycled",
+  "seed": 2,
+  "calls": {
+   "w0": "ERR:ValueError"
+  },
+  "ms": 570
+ },
+ {
+  "table": "ctl",
+  "fill": "random",
+  "seed": 0,
+  "calls": {
+   "w0": "ERR:ValueError"
+  },
+  "ms": 1530
+ },
+ {
+  "table": "ctl",
+  "fill": "random",
+  "seed": 1,
+  "calls": {
+   "w0": "ERR:ValueError"
+  },
+  "ms": 1506
+ },
+ {
+  "table": "ctl",
+  "fill": "random",
+  "seed": 2,
+  "calls": {
+   "w0": "ERR:ValueError"
+  },
+  "ms": 1520
+ },
+ {
+  "table": "ctl",
+  "fill": "nanband",
+  "seed": 0,
+  "calls": {
+   "w0": "ERR:ValueError"
+  },
+  "ms": 5
+ },
+ {
+  "table": "ctl",
+  "fill": "nanband",
+  "seed": 1,
+  "calls": {
+   "w0": "ERR:ValueError"
+  },
+  "ms": 5
+ },
+ {
+  "table": "ctl",
+  "fill": "nanband",
+  "seed": 2,
+  "calls": {
+   "w0": "ERR:ValueError"
+  },
+  "ms": 5
+ }
+]
