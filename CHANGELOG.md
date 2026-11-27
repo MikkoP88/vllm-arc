@@ -12,6 +12,34 @@ the fork SHA it was built from.
 Phase labels P0–P6.38 refer to the plan's execution phases; every phase's
 raw evidence is banked under `results/YYYY-MM-DD-<phase>-*/`.
 
+## r259 — the eager suite replay CRASHED: the graph mechanics are exonerated; the surface is engine-level state (2026-11-27)
+
+The decisive discriminator on `vllm-arc:v0.30.0-b70-cert29`: the r257
+suite replay with exactly one env delta — `ARC_GRAPH=0` (eager engine,
+`xpu_graph_lines=0` in the banked markers; the identical native calls
+running python-side). **The suite reproduced the DEVICE_LOST without
+graphs** at the multi face's re-sample, ~23 min in (essay and code
+completed clean before it): `DEVICE_LOST=3`, both GPUs' ccs engine
+resets at 04:21:27, 2 devcoredumps banked. The mode question is
+CLOSED — engine + suite state is the necessary pair; graphs are NOT a
+component (r257 minimal: graph + pristine = clean; r258b: no-engine +
+crash content = clean; r257 replay: graph + suite = crash; r259:
+eager + suite = crash). The crash dump is richer than r257's: the
+SchedulerStats line proves the crash request is a prefix REHIT
+(`PrefixCacheStats(queries=3446, hits=3328)`) — only the 118-token
+tail rides the fresh blocks; the five windowed tables share their
+first ~15 ids with the r257 crash tables (the LIFO free list
+deterministically reissues the cold sample's own window blocks — why
+clean rehits are correct) and differ only in the last 2-3 fresh ids
+(fragmented free-list debris); the full-attn row matches r257's first
+26 ids (prefix-retained, allocator-stable across boots). The windowed
+pools still never zero fresh blocks (`new_block_ids_to_zero=null` —
+the anomaly vs the full-attn pool's zeroing; a leading fix candidate).
+Next: r260 (launched) — the suite-face bisect (essay→multi /
+code→multi / multi→multi / simple→multi fresh-boot variants) finds
+the minimal prior-state prefix; the crashing variant becomes the
+cheap repro for the fix legs.
+
 ## r258 — the static audit closed + the content classes exonerated in the direct eager form: the crash needs the graph-replay or engine-state context (2026-11-27)
 
 The r258a static audit read the entire 118-tail native path
