@@ -1,0 +1,4 @@
+CALIB on_branch_tokenize=94 off_branch_engine=47 delta=47
+FULL_MULTI_ON_BRANCH_N 3493 (r256 measured; the OFF-branch count lands in the RUNG line)
+RUNG {"face": "multi-uncut-kwarg", "n": 3446, "fresh": {"ok": true, "dt": 2.9, "prompt_tok": 3446, "finish": "length", "head": "<|im_end|>\n<|im_ our our our our our"}, "resend": {"ok": true, "dt": 1.7, "prompt_tok": 3446, "finish": "length", "head": " our our our our our our our our our our our our our our our"}, "alive": true}
+R257_PROBE_DONE

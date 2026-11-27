@@ -1,0 +1,40 @@
+R257_PROBE_MD5 e5f7f3288083ee93d8639025ed97ebff  /root/build/p647/r257_probe.py
+R257_IMAGE vllm-arc:v0.30.0-b70-cert29 cert29_fork_sha=16effb497cd36cb25df7c19cb6f1938d2d45cdc5
+=== [boot] 02:26:14 (gemma m8 posture: mxfp8 KV + native + P-C2 window) ===
+R257_HEALTH_OK 02:30:28
+mx_backend_lines=1
+native_lines=54
+pc2_windowed_impl=100
+lmcache_lines=0
+tracebacks=0
+(EngineCore pid=530) INFO 11-27 02:28:56 [kv_cache_utils.py:2395] XPU KV cache size: 54,426 tokens, Maximum concurrency for 40,960 tokens per request: 1.33x
+=== [B replay] the ACTUAL p647_longprobe full suite -- the identical binary probe that crashed r255 02:30:41 ===
+DEVICE_LOST=3
+TRACEBACK=4
+-- longprobe tail:
+[essay] t0_identical=False hashes=['5c80063c79a1', 'fc2dddcc7ce6', 'fc2dddcc7ce6'] garble={'cold': ['REP-LOOP'], 'rehit': ['REP-LOOP'], 'rehit2': ['REP-LOOP']} t1_seed_identical=True prompt_tok=2104 chars=[6154, 6157, 6157]
+[code] t0_identical=False hashes=['5c80063c79a1', 'fc2dddcc7ce6', 'fc2dddcc7ce6'] garble={'cold': ['REP-LOOP'], 'rehit': ['REP-LOOP'], 'rehit2': ['REP-LOOP']} t1_seed_identical=True prompt_tok=5433 chars=[6154, 6157, 6157]
+[multi] ERROR <HTTPError 500: 'Internal Server Error'>
+[simple] ERROR URLError(ConnectionRefusedError(111, 'Connection refused'))
+LONGPROBE p47r257 full: CORRUPTION_SIGNAL
+R257_ENGINE_DEAD /root/build/p647/r257/replay (DEVICE_LOST=3)
+R257_REPLAY_CRASHED (the r255 sequence REPRODUCED on the faithful bytes -- dumps banked by the watcher)
+=== [boot] 02:46:41 (gemma m8 posture: mxfp8 KV + native + P-C2 window) ===
+R257_HEALTH_OK 02:50:55
+mx_backend_lines=1
+native_lines=54
+pc2_windowed_impl=100
+lmcache_lines=0
+tracebacks=0
+(EngineCore pid=530) INFO 11-27 02:49:21 [kv_cache_utils.py:2395] XPU KV cache size: 54,426 tokens, Maximum concurrency for 40,960 tokens per request: 1.33x
+=== [A faithful] the r255 request byte-exact (UNCUT multi + the enable_thinking kwarg): fresh -> A/A resend, MINIMAL state 02:51:08 ===
+DEVICE_LOST=0
+TRACEBACK=0
+CALIB on_branch_tokenize=94 off_branch_engine=47 delta=47
+FULL_MULTI_ON_BRANCH_N 3493 (r256 measured; the OFF-branch count lands in the RUNG line)
+RUNG {"face": "multi-uncut-kwarg", "n": 3446, "fresh": {"ok": true, "dt": 2.9, "prompt_tok": 3446, "finish": "length", "head": "<|im_end|>\n<|im_ our our our our our"}, "resend": {"ok": true, "dt": 1.7, "prompt_tok": 3446, "finish": "length", "head": " our our our our our our our our our our our our our our our"}, "alive": true}
+R257_FAITHFUL_CLEAN (B crashed, A clean -> the state delta is ISOLATED: the suite-state allocator layout is the trigger)
+R257_BANK /root/build/p647/r257 (26 files)
+R257_SUMMARY replay=2 faithful=0 fullstate=3 (2=crash 0=clean 1=fail 3=skipped)
+P647_R257_REPLAY_COMPLETE -- bank ready for pull
+W14_RESTORED 2026-11-27T02:51:35Z
