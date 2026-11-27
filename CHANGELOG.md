@@ -12,6 +12,33 @@ the fork SHA it was built from.
 Phase labels P0–P6.38 refer to the plan's execution phases; every phase's
 raw evidence is banked under `results/YYYY-MM-DD-<phase>-*/`.
 
+## r257 — the faithful replay: REPRODUCED with the dumps captured, the state delta isolated (suite-fragmented block walk, not the bytes) (2026-11-27)
+
+The decisive leg on `vllm-arc:v0.30.0-b70-cert29`: the ACTUAL
+`p647_longprobe.py` full suite (the identical binary probe that
+crashed r255 — the enable_thinking OFF branch in every request)
+reproduced the multi-face DEVICE_LOST with the exact r255 geometry
+(3446/3328/118), while the byte-exact minimal pair (UNCUT multi +
+the kwarg, fresh + A/A resend, pristine state) ran CLEAN —
+`R257_SUMMARY replay=2 faithful=0 fullstate=3`. **The prompt bytes
+are exonerated; the suite-state allocator layout is the trigger.**
+First-ever devcoredumps banked (both GPUs, 19 s after the ccs
+resets): `Reason: LR job cleanup` — the GuC lost-job class, i.e. a
+HUNG compute batch, matching the 13-18 s reset-before-surface timing.
+The crashed request's SchedulerOutput dump exposes the 6-group hybrid
+block table: 5 windowed page-64 rows (36 zero-pads + 18 fragmented
+real ids, `new_block_ids_to_zero=null` — never zeroed) + 1
+full-attention page-128 row (27 scattered); the prefix cache covers
+ONLY the full-attn group (`num_common_prefix_blocks=[0,0,0,0,0,27]`).
+The crash ordinal DRIFTED vs r255 (t0 rehit there, a temp1 re-request
+here) — the trigger is the block-address walk each re-request lands
+on, not a fixed sample sequence; address-dependence strengthened. The
+faithful phase also confirmed the branch delta live: engine count
+3446 OFF-branch vs 3493 ON-branch (+47 constant). Next: r258 decodes
+the dumps, banks the clean twin's table, and walks the windowed
+page-64 twin's address path (`mx_get_num_splits`/plan-len surface)
+toward the fix, re-leg, and the cert29 cut.
+
 ## r256 — the DEVICE_LOST minimal repro: no crash under the ON-branch template, the repro gap exposed (the r255 request rode the enable_thinking OFF branch) (2026-11-27)
 
 The r255 open-defect repro leg on `vllm-arc:v0.30.0-b70-cert29`
