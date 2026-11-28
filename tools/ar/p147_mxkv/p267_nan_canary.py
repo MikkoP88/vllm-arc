@@ -206,22 +206,30 @@ def cos_sim(a, b):
 # pool + tables                                                       #
 # ------------------------------------------------------------------ #
 
+
 def build_paged(c, total_tokens, seed=7, n_seq=1):
     """Shuffled physical blocks; per-token (block, pos) destinations."""
     blk = c["BLOCK"]
-    n_blocks = total_tokens // blk + 2
-    perm = torch.randperm(n_blocks, generator=torch.Generator().manual_seed(seed))
-    order = perm.tolist()
     if n_seq == 1:
         lens = [total_tokens]
     else:
         lens = [max(1, total_tokens // n_seq + i) for i in range(n_seq)]
         lens[-1] = total_tokens - sum(lens[:-1])
+    # r267 v5: count blocks from the PER-SEQUENCE ceil sum.  Each seq's
+    # round-up adds up to one extra block, so total//blk + 2 under-
+    # allocates at n_seq=6/p64 (autosplit: 152 vs 154 needed) and the
+    # order[] slice then truncates SILENTLY -> IndexError at the last
+    # seq's tail (the v4 rig run died exactly there, after every gated
+    # face before autosplit had already passed).  p16 masked it.
+    n_blocks = sum((ln + blk - 1) // blk for ln in lens) + 2
+    perm = torch.randperm(n_blocks, generator=torch.Generator().manual_seed(seed))
+    order = perm.tolist()
     tables, tok_block, tok_pos = [], [], []
     cur = 0
     for ln in lens:
         ntb = (ln + blk - 1) // blk
-        tab = order[cur: cur + ntb]
+        tab = order[cur : cur + ntb]
+        assert len(tab) == ntb, f"build_paged under-allocated {len(tab)}/{ntb}"
         tables.append(torch.tensor(tab, dtype=torch.int32, device=DEV))
         for t in range(ln):
             tok_block.append(tab[t // blk])
@@ -247,6 +255,7 @@ def flat_tables(lens, tables):
 # ------------------------------------------------------------------ #
 # reference + decode helpers                                           #
 # ------------------------------------------------------------------ #
+
 
 def dequant_rows(c, cache, tb, tp, rows, fmt):
     """Dequantize token rows (by block,pos) -> (k, v) [rows, Hk, D]
@@ -279,7 +288,12 @@ def native_call(c, q_bf, cache, fmt, lens, bt, splits=0, window=None):
     sl = torch.tensor(lens, dtype=torch.int32, device=DEV)
     ws = None if window is None else (window - 1, 0)
     return mx_paged_decode(
-        q_bf, cache, fmt, cu_q, sl, bt,
+        q_bf,
+        cache,
+        fmt,
+        cu_q,
+        sl,
+        bt,
         max_seqlen_k=max(lens),
         softmax_scale=1.0 / math.sqrt(c["D"]),
         num_splits_kv=splits,
@@ -337,6 +351,7 @@ def gate(face, cell, fmt, tag, out, ref):
 # (the kv-store-separate-strides law, re-audit at the gemma cells)    #
 # ------------------------------------------------------------------ #
 
+
 def make_sources(c, n, seed, diverge=True):
     g = torch.Generator().manual_seed(seed)
     k = torch.randn(n, c["HK"], c["D"], generator=g).to(torch.float32)
@@ -366,20 +381,19 @@ def ref_encode_row(c, fmt, k_row, v_row):
 # FACE: stepwise (the onset) + store-audit                            #
 # ------------------------------------------------------------------ #
 
+
 def face_stepwise(c, cell, fmt, T=1024, S=24):
     d, hk, hrep = c["D"], c["HK"], c["HREP"]
     hq = hk * hrep
     lens, tables, tb, tp, n_blocks = build_paged(c, T + S, seed=_CELL_SEED[cell] + 5)
     bt = flat_tables(lens, tables)  # full-length table upfront (engine law)
-    cache = torch.zeros(n_blocks, c["BLOCK"], hk, slot_bytes(d, fmt),
-                        dtype=torch.uint8, device=DEV)
+    cache = torch.zeros(n_blocks, c["BLOCK"], hk, slot_bytes(d, fmt), dtype=torch.uint8, device=DEV)
     k, v = make_sources(c, T + S, seed=4242 + _CELL_SEED[cell])
     q_all = torch.randn(S + 1, hq, d, generator=torch.Generator().manual_seed(77)).to(DEV)
     mx_store(k[:T], v[:T], cache, tb[:T], tp[:T])
 
     # step 0: decode over prefill rows only (the engine's clean case)
-    out = engine_call(c, q_all[0:1].to(torch.bfloat16), cache, fmt, [T], bt,
-                      window=c["W"], pagefix=True)
+    out = engine_call(c, q_all[0:1].to(torch.bfloat16), cache, fmt, [T], bt, window=c["W"], pagefix=True)
     kq, vq = dequant_rows(c, cache, tb, tp, list(range(T)), fmt)
     ref = ref_decode_rows(c, q_all[0].cpu(), kq, vq, T, window=c["W"])
     m = gate("stepwise", cell, fmt, f"step0 T={T}", out.squeeze(0), ref)
@@ -393,7 +407,7 @@ def face_stepwise(c, cell, fmt, T=1024, S=24):
     for s in range(1, S + 1):
         row = T + s - 1
         # the engine's decode-step store: ONE token row
-        mx_store(k[row: row + 1], v[row: row + 1], cache, tb[row: row + 1], tp[row: row + 1])
+        mx_store(k[row : row + 1], v[row : row + 1], cache, tb[row : row + 1], tp[row : row + 1])
         # store-audit: pointed row vs bit-exact reference, K AND V
         kr, vr = ref_encode_row(c, fmt, k[row].cpu(), v[row].cpu())
         kg, vg = dequant_rows(c, cache, tb, tp, [row], fmt)
@@ -402,11 +416,8 @@ def face_stepwise(c, cell, fmt, T=1024, S=24):
         # diff > 1e-6 is a byte-level store defect (scale or payload)
         e_k = (kg[0] - kr).abs().max().item()
         e_v = (vg[0] - vr).abs().max().item()
-        if max(e_k, e_v) > 1e-6 or not (
-            torch.isfinite(kg).all() and torch.isfinite(vg).all()
-        ):
-            _fail("store-audit", cell, fmt,
-                  f"row={row} e_k={e_k:.2e} e_v={e_v:.2e} (bit-law breach)")
+        if max(e_k, e_v) > 1e-6 or not (torch.isfinite(kg).all() and torch.isfinite(vg).all()):
+            _fail("store-audit", cell, fmt, f"row={row} e_k={e_k:.2e} e_v={e_v:.2e} (bit-law breach)")
             audit_fails += 1
         # sentinel mutation check
         safter = cache[tb[sent].long().cpu(), tp[sent].long().cpu()]
@@ -416,8 +427,7 @@ def face_stepwise(c, cell, fmt, T=1024, S=24):
             sent_before = safter.clone()
         # decode this step's q over ALL rows (incl. the one just stored)
         ln = T + s
-        out = engine_call(c, q_all[s: s + 1].to(torch.bfloat16), cache, fmt, [ln],
-                          bt, window=c["W"], pagefix=True)
+        out = engine_call(c, q_all[s : s + 1].to(torch.bfloat16), cache, fmt, [ln], bt, window=c["W"], pagefix=True)
         kq, vq = dequant_rows(c, cache, tb, tp, list(range(ln)), fmt)
         ref = ref_decode_rows(c, q_all[s].cpu(), kq, vq, ln, window=c["W"])
         m = gate("stepwise", cell, fmt, f"step{s} ln={ln}", out.squeeze(0), ref)
@@ -436,16 +446,19 @@ def face_stepwise(c, cell, fmt, T=1024, S=24):
 # FACE: widewin (G1 — mxfp8/mxk8v4 at W=1024 long ctx)                #
 # ------------------------------------------------------------------ #
 
+
 def face_widewin(c, cell, fmt):
     for ctx in (8192, 32768, 40960):
         lens, tables, tb, tp, n_blocks = build_paged(c, ctx, seed=ctx % 97)
         bt = flat_tables(lens, tables)
-        cache = torch.zeros(n_blocks, c["BLOCK"], c["HK"], slot_bytes(c["D"], fmt),
-                            dtype=torch.uint8, device=DEV)
+        cache = torch.zeros(n_blocks, c["BLOCK"], c["HK"], slot_bytes(c["D"], fmt), dtype=torch.uint8, device=DEV)
         k, v = make_sources(c, ctx, seed=ctx % 97)
         mx_store(k, v, cache, tb, tp)
-        q = torch.randn(1, c["HK"] * c["HREP"], c["D"],
-                        generator=torch.Generator().manual_seed(ctx)).to(DEV).to(torch.bfloat16)
+        q = (
+            torch.randn(1, c["HK"] * c["HREP"], c["D"], generator=torch.Generator().manual_seed(ctx))
+            .to(DEV)
+            .to(torch.bfloat16)
+        )
         # engine-true lane per class: sliding -> windowed native;
         # windowless -> Triton at the pool's true page (pagefix)
         out = engine_call(c, q, cache, fmt, [ctx], bt, window=c["W"], pagefix=True)
@@ -466,28 +479,29 @@ def face_widewin(c, cell, fmt):
 # FACE: autosplit (interleaved multi-request tables)                  #
 # ------------------------------------------------------------------ #
 
+
 def face_autosplit(c, cell, fmt, n_req=6, per_req=1600):
     total = n_req * per_req
     lens, tables, tb, tp, n_blocks = build_paged(c, total, seed=607, n_seq=n_req)
     bt = flat_tables(lens, tables)
-    cache = torch.zeros(n_blocks, c["BLOCK"], c["HK"], slot_bytes(c["D"], fmt),
-                        dtype=torch.uint8, device=DEV)
+    cache = torch.zeros(n_blocks, c["BLOCK"], c["HK"], slot_bytes(c["D"], fmt), dtype=torch.uint8, device=DEV)
     k, v = make_sources(c, total, seed=99)
     mx_store(k, v, cache, tb, tp)
-    q = torch.randn(n_req, c["HK"] * c["HREP"], c["D"],
-                    generator=torch.Generator().manual_seed(3)).to(DEV).to(torch.bfloat16)
+    q = (
+        torch.randn(n_req, c["HK"] * c["HREP"], c["D"], generator=torch.Generator().manual_seed(3))
+        .to(DEV)
+        .to(torch.bfloat16)
+    )
     outs = {}
     if c["W"]:
         for tag, sp in (("auto", 0), ("forced8", 8), ("s1", 1)):
-            outs[tag] = native_call(c, q, cache, fmt, lens, bt, splits=sp,
-                                    window=c["W"]).float().cpu()
+            outs[tag] = native_call(c, q, cache, fmt, lens, bt, splits=sp, window=c["W"]).float().cpu()
     else:
         # engine-true windowless lane: Triton at the pool's true page
         # (pagefix — the default-64 walk defect is face_pagewidth's).
         # splits are a wheel-internal concept; the Triton path owns its
         # own split plan (ARC_MXKV_NSPLIT / auto).
-        outs["triton"] = engine_call(c, q, cache, fmt, lens, bt, window=None,
-                                     pagefix=True).float().cpu()
+        outs["triton"] = engine_call(c, q, cache, fmt, lens, bt, window=None, pagefix=True).float().cpu()
     refs = []
     t0 = 0
     for b, ln in enumerate(lens):
@@ -503,6 +517,7 @@ def face_autosplit(c, cell, fmt, n_req=6, per_req=1600):
 # ------------------------------------------------------------------ #
 # FACE: pagewidth (D-B — the engine's missing block_size, evidence)    #
 # ------------------------------------------------------------------ #
+
 
 def face_pagewidth(fmt, T=1024):
     """D-B hardening probe, EVIDENCE (not gated into FAILED): the
@@ -524,12 +539,10 @@ def face_pagewidth(fmt, T=1024):
     d, hk, hrep = c["D"], c["HK"], c["HREP"]
     lens, tables, tb, tp, n_blocks = build_paged(c, T, seed=_CELL_SEED[cell] + 9)
     bt = flat_tables(lens, tables)
-    cache = torch.zeros(n_blocks, c["BLOCK"], hk, slot_bytes(d, fmt),
-                        dtype=torch.uint8, device=DEV)
+    cache = torch.zeros(n_blocks, c["BLOCK"], hk, slot_bytes(d, fmt), dtype=torch.uint8, device=DEV)
     k, v = make_sources(c, T, seed=808 + _CELL_SEED[cell])
     mx_store(k, v, cache, tb, tp)
-    q = torch.randn(1, hk * hrep, d,
-                    generator=torch.Generator().manual_seed(21)).to(DEV).to(torch.bfloat16)
+    q = torch.randn(1, hk * hrep, d, generator=torch.Generator().manual_seed(21)).to(DEV).to(torch.bfloat16)
     kq, vq = dequant_rows(c, cache, tb, tp, list(range(T)), fmt)
     scale = 1.0 / math.sqrt(d)
     ladder = {}
@@ -547,28 +560,32 @@ def face_pagewidth(fmt, T=1024):
                 dmax=float("nan") if nf else (of - ref).abs().max().item(),
             )
         ladder[str(ln)] = arm
-        print(f"  note pagewidth/{cell}/{fmt}: ln={ln} "
-              f"d_default={arm['default']['dmax']:.2e} "
-              f"d_pagefix={arm['pagefix']['dmax']:.2e} "
-              f"nf={arm['default']['nonfinite']}/{arm['pagefix']['nonfinite']}")
+        print(
+            f"  note pagewidth/{cell}/{fmt}: ln={ln} "
+            f"d_default={arm['default']['dmax']:.2e} "
+            f"d_pagefix={arm['pagefix']['dmax']:.2e} "
+            f"nf={arm['default']['nonfinite']}/{arm['pagefix']['nonfinite']}"
+        )
     d_b = all(
-        ladder[str(ln)]["pagefix"]["dmax"] <= 2e-3
-        and ladder[str(ln)]["pagefix"]["nonfinite"] == 0
+        ladder[str(ln)]["pagefix"]["dmax"] <= 2e-3 and ladder[str(ln)]["pagefix"]["nonfinite"] == 0
         for ln in (64, 65, 96, 128, 192, 256)
     ) and any(
         ladder[str(ln)]["default"]["dmax"] > 2e-3 or ladder[str(ln)]["default"]["nonfinite"]
         for ln in (64, 65, 96, 128, 192, 256)
     )
     _rec("pagewidth", cell, fmt, ladder=ladder, d_b_reproduced=d_b)
-    print(f"  note pagewidth/{cell}/{fmt}: D_B_REPRODUCED={d_b} "
-          "(default-64 walk on a synthetic p128 pool corrupts past ln=64 "
-          "while the true-page walk holds — latent-hardening evidence for "
-          "the wrapper fix block_size None -> cache.shape[1]")
+    print(
+        f"  note pagewidth/{cell}/{fmt}: D_B_REPRODUCED={d_b} "
+        "(default-64 walk on a synthetic p128 pool corrupts past ln=64 "
+        "while the true-page walk holds — latent-hardening evidence for "
+        "the wrapper fix block_size None -> cache.shape[1]"
+    )
 
 
 # ------------------------------------------------------------------ #
 # FACE: uninit (evidence — what a WRONG-ROW read yields)               #
 # ------------------------------------------------------------------ #
+
 
 def face_uninit(c, cell, fmt, T=512):
     shape = (T // c["BLOCK"] + 2, c["BLOCK"], c["HK"], slot_bytes(c["D"], fmt))
@@ -585,10 +602,8 @@ def face_uninit(c, cell, fmt, T=512):
             outf = out.float().cpu()
             nf = int((~torch.isfinite(outf)).sum())
             bad = [h for h in range(outf.shape[1]) if not torch.isfinite(outf[0, h]).all()]
-            print(f"  note uninit/{cell}/{fmt}/{kind}: non_finite={nf}/{outf.numel()} "
-                  f"bad_heads={bad[:4]}")
-            _rec("uninit", cell, fmt, kind=kind, nonfinite=nf, numel=outf.numel(),
-                 bad_heads=bad[:8])
+            print(f"  note uninit/{cell}/{fmt}/{kind}: non_finite={nf}/{outf.numel()} bad_heads={bad[:4]}")
+            _rec("uninit", cell, fmt, kind=kind, nonfinite=nf, numel=outf.numel(), bad_heads=bad[:8])
         except Exception as exc:  # noqa: BLE001 — characterize, never crash
             print(f"  note uninit/{cell}/{fmt}/{kind}: EXC {type(exc).__name__}: {exc}")
             _rec("uninit", cell, fmt, kind=kind, exc=f"{type(exc).__name__}: {exc}")
@@ -598,15 +613,18 @@ def face_uninit(c, cell, fmt, T=512):
 # FACE: ctrl (the certified qwen-cell regression guard)               #
 # ------------------------------------------------------------------ #
 
+
 def face_ctrl(c, fmt, T=549):
     lens, tables, tb, tp, n_blocks = build_paged(c, T, seed=99)
     bt = flat_tables(lens, tables)
-    cache = torch.zeros(n_blocks, c["BLOCK"], c["HK"], slot_bytes(c["D"], fmt),
-                        dtype=torch.uint8, device=DEV)
+    cache = torch.zeros(n_blocks, c["BLOCK"], c["HK"], slot_bytes(c["D"], fmt), dtype=torch.uint8, device=DEV)
     k, v = make_sources(c, T, seed=4242)
     mx_store(k, v, cache, tb, tp)
-    q = torch.randn(1, c["HK"] * c["HREP"], c["D"],
-                    generator=torch.Generator().manual_seed(5)).to(DEV).to(torch.bfloat16)
+    q = (
+        torch.randn(1, c["HK"] * c["HREP"], c["D"], generator=torch.Generator().manual_seed(5))
+        .to(DEV)
+        .to(torch.bfloat16)
+    )
     kq, vq = dequant_rows(c, cache, tb, tp, list(range(T)), fmt)
     ref = ref_decode_rows(c, q.squeeze(0).float().cpu(), kq, vq, T)
     # the wheel's native windowless decode (the r242 authority lane)
@@ -618,12 +636,12 @@ def face_ctrl(c, fmt, T=549):
     # exact call shape)
     sl = torch.tensor(lens, dtype=torch.int32, device=DEV)
     out_t = triton_decode(q, cache, bt, sl, 1.0 / math.sqrt(c["D"]))
-    m_tri = gate("ctrl", "ctrl", fmt, f"triton-default T={T} d256p64",
-                 out_t.squeeze(0), ref)
+    m_tri = gate("ctrl", "ctrl", fmt, f"triton-default T={T} d256p64", out_t.squeeze(0), ref)
     _rec("ctrl", "ctrl", fmt, native=m_nat, triton=m_tri)
 
 
 # ------------------------------------------------------------------ #
+
 
 def main():
     outdir = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(".")
@@ -682,8 +700,7 @@ def main():
     print(f"\n[p267] VERDICT: {verdict}")
     for f in FAILED:
         print(f"[p267]   {f}")
-    (outdir / "p267_canary.json").write_text(
-        json.dumps({"faces": R, "failed": FAILED, "verdict": verdict}, indent=1))
+    (outdir / "p267_canary.json").write_text(json.dumps({"faces": R, "failed": FAILED, "verdict": verdict}, indent=1))
     print(f"[p267] wrote {outdir / 'p267_canary.json'}")
     sys.exit(0 if not FAILED else 1)
 

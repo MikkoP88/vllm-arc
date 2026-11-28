@@ -1,0 +1,419 @@
+{
+ "faces": {
+  "ctrl": {
+   "ctrl": {
+    "mxfp8": {
+     "native": {
+      "maxdiff": 0.00048574269964893335,
+      "cos_same": 0.9999986709311928,
+      "gated": true
+     },
+     "triton": {
+      "maxdiff": 0.00048574269964893335,
+      "cos_same": 0.9999986709311928,
+      "gated": true
+     }
+    },
+    "mxfp4": {
+     "native": {
+      "maxdiff": 0.00048748128736805785,
+      "cos_same": 0.9999986551394179,
+      "gated": true
+     },
+     "triton": {
+      "maxdiff": 0.00048748128736805785,
+      "cos_same": 0.9999986551316786,
+      "gated": true
+     }
+    },
+    "mxk8v4": {
+     "native": {
+      "maxdiff": 0.00048514755000739207,
+      "cos_same": 0.999998698729862,
+      "gated": true
+     },
+     "triton": {
+      "maxdiff": 0.00048514755000739207,
+      "cos_same": 0.9999986987298619,
+      "gated": true
+     }
+    }
+   }
+  },
+  "stepwise": {
+   "slide": {
+    "mxfp8": {
+     "step0": {
+      "maxdiff": 0.0006229314559480503,
+      "cos_same": 0.9999970882860193,
+      "gated": true
+     },
+     "first_bad_step": null,
+     "audit_fails": 0
+    },
+    "mxfp4": {
+     "step0": {
+      "maxdiff": 0.0006801280370362373,
+      "cos_same": 0.9999972256905058,
+      "gated": true
+     },
+     "first_bad_step": null,
+     "audit_fails": 0
+    },
+    "mxk8v4": {
+     "step0": {
+      "maxdiff": 0.0005683202597505654,
+      "cos_same": 0.9999971402808276,
+      "gated": true
+     },
+     "first_bad_step": null,
+     "audit_fails": 0
+    }
+   },
+   "glob": {
+    "mxfp8": {
+     "step0": {
+      "maxdiff": 0.0008021560294306507,
+      "cos_same": 0.9999972001860588,
+      "gated": true
+     },
+     "first_bad_step": null,
+     "audit_fails": 0
+    },
+    "mxfp4": {
+     "step0": {
+      "maxdiff": 0.000738978203260271,
+      "cos_same": 0.9999972851021816,
+      "gated": true
+     },
+     "first_bad_step": null,
+     "audit_fails": 0
+    },
+    "mxk8v4": {
+     "step0": {
+      "maxdiff": 0.0005803316270558689,
+      "cos_same": 0.9999972926038594,
+      "gated": true
+     },
+     "first_bad_step": null,
+     "audit_fails": 0
+    }
+   }
+  },
+  "widewin": {
+   "slide": {
+    "mxfp8": {
+     "ctx": 40960,
+     "d_blind": 0.1968154489668465,
+     "maxdiff": 0.0004853008198566766,
+     "cos_same": 0.9999986097105736,
+     "gated": true
+    },
+    "mxfp4": {
+     "ctx": 40960,
+     "d_blind": 0.19445241030590918,
+     "maxdiff": 0.00048701390697108993,
+     "cos_same": 0.9999986619620276,
+     "gated": true
+    },
+    "mxk8v4": {
+     "ctx": 40960,
+     "d_blind": 0.19644106033523734,
+     "maxdiff": 0.00048210574797405426,
+     "cos_same": 0.9999986420197218,
+     "gated": true
+    }
+   },
+   "glob": {
+    "mxfp8": {
+     "ctx": 40960,
+     "d_blind": null,
+     "maxdiff": 6.1024082712995975e-05,
+     "cos_same": 0.9999986074356785,
+     "gated": true
+    },
+    "mxfp4": {
+     "ctx": 40960,
+     "d_blind": null,
+     "maxdiff": 6.07323370554122e-05,
+     "cos_same": 0.9999986022543718,
+     "gated": true
+    },
+    "mxk8v4": {
+     "ctx": 40960,
+     "d_blind": null,
+     "maxdiff": 6.091890189843449e-05,
+     "cos_same": 0.9999986106635825,
+     "gated": true
+    }
+   }
+  },
+  "pagewidth": {
+   "synthp128": {
+    "mxfp8": {
+     "ladder": {
+      "64": {
+       "default": {
+        "nonfinite": 0,
+        "dmax": 0.001920758572596104
+       },
+       "pagefix": {
+        "nonfinite": 0,
+        "dmax": 0.001920758572596104
+       }
+      },
+      "65": {
+       "default": {
+        "nonfinite": 0,
+        "dmax": 0.1423864204708799
+       },
+       "pagefix": {
+        "nonfinite": 0,
+        "dmax": 0.0019174652286639837
+       }
+      },
+      "96": {
+       "default": {
+        "nonfinite": 0,
+        "dmax": 0.766085989465907
+       },
+       "pagefix": {
+        "nonfinite": 0,
+        "dmax": 0.0018903562011416408
+       }
+      },
+      "128": {
+       "default": {
+        "nonfinite": 0,
+        "dmax": 0.5992655007512786
+       },
+       "pagefix": {
+        "nonfinite": 0,
+        "dmax": 0.0018016734524904932
+       }
+      },
+      "192": {
+       "default": {
+        "nonfinite": 0,
+        "dmax": 0.43221791860203995
+       },
+       "pagefix": {
+        "nonfinite": 0,
+        "dmax": 0.0018608569880554926
+       }
+      },
+      "256": {
+       "default": {
+        "nonfinite": 0,
+        "dmax": 0.3989592033059999
+       },
+       "pagefix": {
+        "nonfinite": 0,
+        "dmax": 0.001521761137715849
+       }
+      }
+     },
+     "d_b_reproduced": true
+    },
+    "mxfp4": {
+     "ladder": {
+      "64": {
+       "default": {
+        "nonfinite": 0,
+        "dmax": 0.0019416556796455486
+       },
+       "pagefix": {
+        "nonfinite": 0,
+        "dmax": 0.0019416556796455486
+       }
+      },
+      "65": {
+       "default": {
+        "nonfinite": 0,
+        "dmax": 0.13738209452308597
+       },
+       "pagefix": {
+        "nonfinite": 0,
+        "dmax": 0.0036865788487152606
+       }
+      },
+      "96": {
+       "default": {
+        "nonfinite": 0,
+        "dmax": 0.7631258596073548
+       },
+       "pagefix": {
+        "nonfinite": 0,
+        "dmax": 0.0019278350111231468
+       }
+      },
+      "128": {
+       "default": {
+        "nonfinite": 0,
+        "dmax": 0.5915814208064306
+       },
+       "pagefix": {
+        "nonfinite": 0,
+        "dmax": 0.0019325280953600421
+       }
+      },
+      "192": {
+       "default": {
+        "nonfinite": 0,
+        "dmax": 0.4350487491471495
+       },
+       "pagefix": {
+        "nonfinite": 0,
+        "dmax": 0.0015817562572187915
+       }
+      },
+      "256": {
+       "default": {
+        "nonfinite": 0,
+        "dmax": 0.36837946615452166
+       },
+       "pagefix": {
+        "nonfinite": 0,
+        "dmax": 0.0009756493744196293
+       }
+      }
+     },
+     "d_b_reproduced": false
+    },
+    "mxk8v4": {
+     "ladder": {
+      "64": {
+       "default": {
+        "nonfinite": 0,
+        "dmax": 0.0019306685333397855
+       },
+       "pagefix": {
+        "nonfinite": 0,
+        "dmax": 0.0019306685333397855
+       }
+      },
+      "65": {
+       "default": {
+        "nonfinite": 0,
+        "dmax": 0.1438087520816316
+       },
+       "pagefix": {
+        "nonfinite": 0,
+        "dmax": 0.0019462392609181922
+       }
+      },
+      "96": {
+       "default": {
+        "nonfinite": 0,
+        "dmax": 0.7917495524157423
+       },
+       "pagefix": {
+        "nonfinite": 0,
+        "dmax": 0.0019277765625527188
+       }
+      },
+      "128": {
+       "default": {
+        "nonfinite": 0,
+        "dmax": 0.6234667478934782
+       },
+       "pagefix": {
+        "nonfinite": 0,
+        "dmax": 0.0019376589609072514
+       }
+      },
+      "192": {
+       "default": {
+        "nonfinite": 0,
+        "dmax": 0.44673354615416894
+       },
+       "pagefix": {
+        "nonfinite": 0,
+        "dmax": 0.0016889583526390473
+       }
+      },
+      "256": {
+       "default": {
+        "nonfinite": 0,
+        "dmax": 0.377196924776365
+       },
+       "pagefix": {
+        "nonfinite": 0,
+        "dmax": 0.0009680980176721699
+       }
+      }
+     },
+     "d_b_reproduced": true
+    }
+   }
+  },
+  "autosplit": {
+   "slide": {
+    "mxfp8": {
+     "tag": "s1",
+     "maxdiff": 0.0004864156440265166,
+     "cos_same": 0.999998630487567,
+     "gated": true
+    },
+    "mxk8v4": {
+     "tag": "s1",
+     "maxdiff": 0.0004859720592361727,
+     "cos_same": 0.9999986277382387,
+     "gated": true
+    }
+   },
+   "glob": {
+    "mxfp8": {
+     "tag": "triton",
+     "maxdiff": 0.00048741720088962825,
+     "cos_same": 0.9999986487521526,
+     "gated": true
+    },
+    "mxk8v4": {
+     "tag": "triton",
+     "maxdiff": 0.00048680177653115386,
+     "cos_same": 0.9999986188733408,
+     "gated": true
+    }
+   }
+  },
+  "uninit": {
+   "slide": {
+    "mxfp8": {
+     "kind": "empty",
+     "nonfinite": 4096,
+     "numel": 4096,
+     "bad_heads": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ]
+    }
+   },
+   "glob": {
+    "mxfp8": {
+     "kind": "empty",
+     "nonfinite": 8192,
+     "numel": 8192,
+     "bad_heads": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ]
+    }
+   }
+  }
+ },
+ "failed": [],
+ "verdict": "PASS with D_B proven \u2014 kernel/store math green at the engine's true lanes and pages; the synthetic p128 cell shows the wrapper default-64 walk corrupts past ln=64 while the true-page walk holds (latent-hardening evidence: land the wrapper fix, block_size None -> cache.shape[1])"
+}
