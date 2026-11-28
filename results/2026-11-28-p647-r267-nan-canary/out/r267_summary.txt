@@ -1,0 +1,231 @@
+[p267] canary start: cells=['slide', 'glob', 'ctrl'] fmts=('mxfp8', 'mxfp4', 'mxk8v4')
+[p267] torch=2.13.0+xpu dev=Intel(R) Graphics [0xe223]
+[p267] provenance: mxkv_dir=/opt/venv/lib/python3.12/site-packages/vllm_gaudi/xpu/patches/mx_kv
+[p267]   mx_quant.py md5=2d040adb2bbc6d227fcd878ada485ff7
+[p267]   triton_mx_store.py md5=518635695877c416ad528ea7b5b382fb
+[p267]   triton_mx_decode.py md5=966ee14397b9437e03a7f8cd5b863ea9
+[p267]   mx_attn_interface=/opt/venv/lib/python3.12/site-packages/vllm_xpu_kernels/mx_attn_interface.py md5=fe45fb091bebd5d2955368164cb549c7
+  ok   ctrl/ctrl/mxfp8: native T=549 d256p64: d=4.86e-04 cos=0.9999987
+  ok   ctrl/ctrl/mxfp8: triton-default T=549 d256p64: d=4.86e-04 cos=0.9999987
+  ok   ctrl/ctrl/mxfp4: native T=549 d256p64: d=4.87e-04 cos=0.9999987
+  ok   ctrl/ctrl/mxfp4: triton-default T=549 d256p64: d=4.87e-04 cos=0.9999987
+  ok   ctrl/ctrl/mxk8v4: native T=549 d256p64: d=4.85e-04 cos=0.9999987
+  ok   ctrl/ctrl/mxk8v4: triton-default T=549 d256p64: d=4.85e-04 cos=0.9999987
+  ok   stepwise/slide/mxfp8: step0 T=1024: d=6.23e-04 cos=0.9999971
+  ok   stepwise/slide/mxfp8: step1 ln=1025: d=5.84e-04 cos=0.9999974
+  ok   stepwise/slide/mxfp8: step2 ln=1026: d=6.53e-04 cos=0.9999971
+  ok   stepwise/slide/mxfp8: step3 ln=1027: d=6.35e-04 cos=0.9999973
+  ok   stepwise/slide/mxfp8: step4 ln=1028: d=6.43e-04 cos=0.9999972
+  ok   stepwise/slide/mxfp8: step5 ln=1029: d=5.59e-04 cos=0.9999973
+  ok   stepwise/slide/mxfp8: step6 ln=1030: d=6.89e-04 cos=0.9999971
+  ok   stepwise/slide/mxfp8: step7 ln=1031: d=5.55e-04 cos=0.9999972
+  ok   stepwise/slide/mxfp8: step8 ln=1032: d=7.00e-04 cos=0.9999972
+  ok   stepwise/slide/mxfp8: step9 ln=1033: d=6.81e-04 cos=0.9999972
+  ok   stepwise/slide/mxfp8: step10 ln=1034: d=5.33e-04 cos=0.9999973
+  ok   stepwise/slide/mxfp8: step11 ln=1035: d=7.93e-04 cos=0.9999970
+  ok   stepwise/slide/mxfp8: step12 ln=1036: d=6.74e-04 cos=0.9999974
+  ok   stepwise/slide/mxfp8: step13 ln=1037: d=7.28e-04 cos=0.9999971
+  ok   stepwise/slide/mxfp8: step14 ln=1038: d=6.66e-04 cos=0.9999973
+  ok   stepwise/slide/mxfp8: step15 ln=1039: d=6.61e-04 cos=0.9999973
+  ok   stepwise/slide/mxfp8: step16 ln=1040: d=6.10e-04 cos=0.9999973
+  ok   stepwise/slide/mxfp8: step17 ln=1041: d=6.37e-04 cos=0.9999973
+  ok   stepwise/slide/mxfp8: step18 ln=1042: d=5.50e-04 cos=0.9999973
+  ok   stepwise/slide/mxfp8: step19 ln=1043: d=6.44e-04 cos=0.9999973
+  ok   stepwise/slide/mxfp8: step20 ln=1044: d=4.90e-04 cos=0.9999972
+  ok   stepwise/slide/mxfp8: step21 ln=1045: d=5.51e-04 cos=0.9999973
+  ok   stepwise/slide/mxfp8: step22 ln=1046: d=6.44e-04 cos=0.9999974
+  ok   stepwise/slide/mxfp8: step23 ln=1047: d=1.03e-03 cos=0.9999975
+  ok   stepwise/slide/mxfp8: step24 ln=1048: d=7.11e-04 cos=0.9999972
+  ok   store-audit/slide/mxfp8: 24 incremental stores bit-clean, sentinels intact
+  ok   stepwise/slide/mxfp4: step0 T=1024: d=6.80e-04 cos=0.9999972
+  ok   stepwise/slide/mxfp4: step1 ln=1025: d=5.77e-04 cos=0.9999973
+  ok   stepwise/slide/mxfp4: step2 ln=1026: d=6.80e-04 cos=0.9999970
+  ok   stepwise/slide/mxfp4: step3 ln=1027: d=6.93e-04 cos=0.9999973
+  ok   stepwise/slide/mxfp4: step4 ln=1028: d=5.56e-04 cos=0.9999973
+  ok   stepwise/slide/mxfp4: step5 ln=1029: d=6.47e-04 cos=0.9999973
+  ok   stepwise/slide/mxfp4: step6 ln=1030: d=5.26e-04 cos=0.9999972
+  ok   stepwise/slide/mxfp4: step7 ln=1031: d=5.20e-04 cos=0.9999972
+  ok   stepwise/slide/mxfp4: step8 ln=1032: d=6.89e-04 cos=0.9999972
+  ok   stepwise/slide/mxfp4: step9 ln=1033: d=6.37e-04 cos=0.9999971
+  ok   stepwise/slide/mxfp4: step10 ln=1034: d=5.71e-04 cos=0.9999972
+  ok   stepwise/slide/mxfp4: step11 ln=1035: d=6.29e-04 cos=0.9999972
+  ok   stepwise/slide/mxfp4: step12 ln=1036: d=5.57e-04 cos=0.9999973
+  ok   stepwise/slide/mxfp4: step13 ln=1037: d=6.11e-04 cos=0.9999972
+  ok   stepwise/slide/mxfp4: step14 ln=1038: d=5.87e-04 cos=0.9999973
+  ok   stepwise/slide/mxfp4: step15 ln=1039: d=7.07e-04 cos=0.9999973
+  ok   stepwise/slide/mxfp4: step16 ln=1040: d=4.46e-04 cos=0.9999973
+  ok   stepwise/slide/mxfp4: step17 ln=1041: d=5.60e-04 cos=0.9999972
+  ok   stepwise/slide/mxfp4: step18 ln=1042: d=5.97e-04 cos=0.9999974
+  ok   stepwise/slide/mxfp4: step19 ln=1043: d=7.85e-04 cos=0.9999973
+  ok   stepwise/slide/mxfp4: step20 ln=1044: d=6.78e-04 cos=0.9999972
+  ok   stepwise/slide/mxfp4: step21 ln=1045: d=6.95e-04 cos=0.9999972
+  ok   stepwise/slide/mxfp4: step22 ln=1046: d=6.61e-04 cos=0.9999974
+  ok   stepwise/slide/mxfp4: step23 ln=1047: d=1.17e-03 cos=0.9999976
+  ok   stepwise/slide/mxfp4: step24 ln=1048: d=6.55e-04 cos=0.9999972
+  ok   store-audit/slide/mxfp4: 24 incremental stores bit-clean, sentinels intact
+  ok   stepwise/slide/mxk8v4: step0 T=1024: d=5.68e-04 cos=0.9999971
+  ok   stepwise/slide/mxk8v4: step1 ln=1025: d=5.08e-04 cos=0.9999974
+  ok   stepwise/slide/mxk8v4: step2 ln=1026: d=6.38e-04 cos=0.9999970
+  ok   stepwise/slide/mxk8v4: step3 ln=1027: d=6.99e-04 cos=0.9999973
+  ok   stepwise/slide/mxk8v4: step4 ln=1028: d=6.98e-04 cos=0.9999972
+  ok   stepwise/slide/mxk8v4: step5 ln=1029: d=5.14e-04 cos=0.9999973
+  ok   stepwise/slide/mxk8v4: step6 ln=1030: d=5.71e-04 cos=0.9999971
+  ok   stepwise/slide/mxk8v4: step7 ln=1031: d=5.46e-04 cos=0.9999971
+  ok   stepwise/slide/mxk8v4: step8 ln=1032: d=8.51e-04 cos=0.9999974
+  ok   stepwise/slide/mxk8v4: step9 ln=1033: d=5.32e-04 cos=0.9999973
+  ok   stepwise/slide/mxk8v4: step10 ln=1034: d=5.53e-04 cos=0.9999973
+  ok   stepwise/slide/mxk8v4: step11 ln=1035: d=7.27e-04 cos=0.9999971
+  ok   stepwise/slide/mxk8v4: step12 ln=1036: d=7.63e-04 cos=0.9999972
+  ok   stepwise/slide/mxk8v4: step13 ln=1037: d=6.92e-04 cos=0.9999972
+  ok   stepwise/slide/mxk8v4: step14 ln=1038: d=6.90e-04 cos=0.9999971
+  ok   stepwise/slide/mxk8v4: step15 ln=1039: d=7.56e-04 cos=0.9999973
+  ok   stepwise/slide/mxk8v4: step16 ln=1040: d=5.69e-04 cos=0.9999972
+  ok   stepwise/slide/mxk8v4: step17 ln=1041: d=5.09e-04 cos=0.9999973
+  ok   stepwise/slide/mxk8v4: step18 ln=1042: d=5.67e-04 cos=0.9999973
+  ok   stepwise/slide/mxk8v4: step19 ln=1043: d=7.54e-04 cos=0.9999972
+  ok   stepwise/slide/mxk8v4: step20 ln=1044: d=6.63e-04 cos=0.9999972
+  ok   stepwise/slide/mxk8v4: step21 ln=1045: d=6.18e-04 cos=0.9999974
+  ok   stepwise/slide/mxk8v4: step22 ln=1046: d=5.89e-04 cos=0.9999974
+  ok   stepwise/slide/mxk8v4: step23 ln=1047: d=1.08e-03 cos=0.9999975
+  ok   stepwise/slide/mxk8v4: step24 ln=1048: d=5.65e-04 cos=0.9999972
+  ok   store-audit/slide/mxk8v4: 24 incremental stores bit-clean, sentinels intact
+  ok   stepwise/glob/mxfp8: step0 T=1024: d=8.02e-04 cos=0.9999972
+  ok   stepwise/glob/mxfp8: step1 ln=1025: d=5.61e-04 cos=0.9999972
+  ok   stepwise/glob/mxfp8: step2 ln=1026: d=5.55e-04 cos=0.9999973
+  ok   stepwise/glob/mxfp8: step3 ln=1027: d=6.47e-04 cos=0.9999973
+  ok   stepwise/glob/mxfp8: step4 ln=1028: d=5.89e-04 cos=0.9999974
+  ok   stepwise/glob/mxfp8: step5 ln=1029: d=5.87e-04 cos=0.9999972
+  ok   stepwise/glob/mxfp8: step6 ln=1030: d=5.94e-04 cos=0.9999972
+  ok   stepwise/glob/mxfp8: step7 ln=1031: d=6.26e-04 cos=0.9999973
+  ok   stepwise/glob/mxfp8: step8 ln=1032: d=6.31e-04 cos=0.9999972
+  ok   stepwise/glob/mxfp8: step9 ln=1033: d=6.88e-04 cos=0.9999972
+  ok   stepwise/glob/mxfp8: step10 ln=1034: d=5.69e-04 cos=0.9999972
+  ok   stepwise/glob/mxfp8: step11 ln=1035: d=6.56e-04 cos=0.9999972
+  ok   stepwise/glob/mxfp8: step12 ln=1036: d=7.34e-04 cos=0.9999974
+  ok   stepwise/glob/mxfp8: step13 ln=1037: d=7.70e-04 cos=0.9999973
+  ok   stepwise/glob/mxfp8: step14 ln=1038: d=5.71e-04 cos=0.9999971
+  ok   stepwise/glob/mxfp8: step15 ln=1039: d=6.00e-04 cos=0.9999973
+  ok   stepwise/glob/mxfp8: step16 ln=1040: d=6.34e-04 cos=0.9999973
+  ok   stepwise/glob/mxfp8: step17 ln=1041: d=5.64e-04 cos=0.9999972
+  ok   stepwise/glob/mxfp8: step18 ln=1042: d=6.25e-04 cos=0.9999972
+  ok   stepwise/glob/mxfp8: step19 ln=1043: d=6.45e-04 cos=0.9999973
+  ok   stepwise/glob/mxfp8: step20 ln=1044: d=6.45e-04 cos=0.9999972
+  ok   stepwise/glob/mxfp8: step21 ln=1045: d=7.05e-04 cos=0.9999973
+  ok   stepwise/glob/mxfp8: step22 ln=1046: d=6.63e-04 cos=0.9999972
+  ok   stepwise/glob/mxfp8: step23 ln=1047: d=6.55e-04 cos=0.9999971
+  ok   stepwise/glob/mxfp8: step24 ln=1048: d=6.47e-04 cos=0.9999973
+  ok   store-audit/glob/mxfp8: 24 incremental stores bit-clean, sentinels intact
+  ok   stepwise/glob/mxfp4: step0 T=1024: d=7.39e-04 cos=0.9999973
+  ok   stepwise/glob/mxfp4: step1 ln=1025: d=6.60e-04 cos=0.9999972
+  ok   stepwise/glob/mxfp4: step2 ln=1026: d=6.75e-04 cos=0.9999973
+  ok   stepwise/glob/mxfp4: step3 ln=1027: d=5.83e-04 cos=0.9999974
+  ok   stepwise/glob/mxfp4: step4 ln=1028: d=6.74e-04 cos=0.9999974
+  ok   stepwise/glob/mxfp4: step5 ln=1029: d=6.24e-04 cos=0.9999972
+  ok   stepwise/glob/mxfp4: step6 ln=1030: d=7.44e-04 cos=0.9999972
+  ok   stepwise/glob/mxfp4: step7 ln=1031: d=6.96e-04 cos=0.9999973
+  ok   stepwise/glob/mxfp4: step8 ln=1032: d=6.63e-04 cos=0.9999972
+  ok   stepwise/glob/mxfp4: step9 ln=1033: d=6.55e-04 cos=0.9999973
+  ok   stepwise/glob/mxfp4: step10 ln=1034: d=6.01e-04 cos=0.9999971
+  ok   stepwise/glob/mxfp4: step11 ln=1035: d=7.25e-04 cos=0.9999972
+  ok   stepwise/glob/mxfp4: step12 ln=1036: d=6.34e-04 cos=0.9999973
+  ok   stepwise/glob/mxfp4: step13 ln=1037: d=7.13e-04 cos=0.9999972
+  ok   stepwise/glob/mxfp4: step14 ln=1038: d=6.73e-04 cos=0.9999971
+  ok   stepwise/glob/mxfp4: step15 ln=1039: d=5.85e-04 cos=0.9999973
+  ok   stepwise/glob/mxfp4: step16 ln=1040: d=6.00e-04 cos=0.9999973
+  ok   stepwise/glob/mxfp4: step17 ln=1041: d=6.30e-04 cos=0.9999972
+  ok   stepwise/glob/mxfp4: step18 ln=1042: d=5.88e-04 cos=0.9999973
+  ok   stepwise/glob/mxfp4: step19 ln=1043: d=5.67e-04 cos=0.9999974
+  ok   stepwise/glob/mxfp4: step20 ln=1044: d=6.61e-04 cos=0.9999972
+  ok   stepwise/glob/mxfp4: step21 ln=1045: d=6.26e-04 cos=0.9999973
+  ok   stepwise/glob/mxfp4: step22 ln=1046: d=6.19e-04 cos=0.9999972
+  ok   stepwise/glob/mxfp4: step23 ln=1047: d=6.59e-04 cos=0.9999971
+  ok   stepwise/glob/mxfp4: step24 ln=1048: d=7.62e-04 cos=0.9999975
+  ok   store-audit/glob/mxfp4: 24 incremental stores bit-clean, sentinels intact
+  ok   stepwise/glob/mxk8v4: step0 T=1024: d=5.80e-04 cos=0.9999973
+  ok   stepwise/glob/mxk8v4: step1 ln=1025: d=6.44e-04 cos=0.9999972
+  ok   stepwise/glob/mxk8v4: step2 ln=1026: d=5.99e-04 cos=0.9999972
+  ok   stepwise/glob/mxk8v4: step3 ln=1027: d=5.59e-04 cos=0.9999973
+  ok   stepwise/glob/mxk8v4: step4 ln=1028: d=6.77e-04 cos=0.9999974
+  ok   stepwise/glob/mxk8v4: step5 ln=1029: d=6.80e-04 cos=0.9999972
+  ok   stepwise/glob/mxk8v4: step6 ln=1030: d=6.06e-04 cos=0.9999971
+  ok   stepwise/glob/mxk8v4: step7 ln=1031: d=6.14e-04 cos=0.9999973
+  ok   stepwise/glob/mxk8v4: step8 ln=1032: d=8.10e-04 cos=0.9999972
+  ok   stepwise/glob/mxk8v4: step9 ln=1033: d=6.17e-04 cos=0.9999972
+  ok   stepwise/glob/mxk8v4: step10 ln=1034: d=6.39e-04 cos=0.9999972
+  ok   stepwise/glob/mxk8v4: step11 ln=1035: d=6.32e-04 cos=0.9999973
+  ok   stepwise/glob/mxk8v4: step12 ln=1036: d=7.49e-04 cos=0.9999973
+  ok   stepwise/glob/mxk8v4: step13 ln=1037: d=6.34e-04 cos=0.9999973
+  ok   stepwise/glob/mxk8v4: step14 ln=1038: d=5.78e-04 cos=0.9999971
+  ok   stepwise/glob/mxk8v4: step15 ln=1039: d=5.98e-04 cos=0.9999973
+  ok   stepwise/glob/mxk8v4: step16 ln=1040: d=5.83e-04 cos=0.9999973
+  ok   stepwise/glob/mxk8v4: step17 ln=1041: d=6.19e-04 cos=0.9999972
+  ok   stepwise/glob/mxk8v4: step18 ln=1042: d=6.02e-04 cos=0.9999973
+  ok   stepwise/glob/mxk8v4: step19 ln=1043: d=6.91e-04 cos=0.9999973
+  ok   stepwise/glob/mxk8v4: step20 ln=1044: d=6.56e-04 cos=0.9999972
+  ok   stepwise/glob/mxk8v4: step21 ln=1045: d=6.06e-04 cos=0.9999974
+  ok   stepwise/glob/mxk8v4: step22 ln=1046: d=6.67e-04 cos=0.9999971
+  ok   stepwise/glob/mxk8v4: step23 ln=1047: d=6.00e-04 cos=0.9999971
+  ok   stepwise/glob/mxk8v4: step24 ln=1048: d=6.22e-04 cos=0.9999975
+  ok   store-audit/glob/mxk8v4: 24 incremental stores bit-clean, sentinels intact
+  ok   widewin/slide/mxfp8: ctx=8192 W=1024: d=4.87e-04 cos=0.9999986
+  note widewin/slide/mxfp8: ctx=8192 d_blind=1.66e-01 (must be >> d)
+  ok   widewin/slide/mxfp8: ctx=32768 W=1024: d=4.87e-04 cos=0.9999986
+  note widewin/slide/mxfp8: ctx=32768 d_blind=2.03e-01 (must be >> d)
+  ok   widewin/slide/mxfp8: ctx=40960 W=1024: d=4.85e-04 cos=0.9999986
+  note widewin/slide/mxfp8: ctx=40960 d_blind=1.97e-01 (must be >> d)
+  ok   widewin/slide/mxfp4: ctx=8192 W=1024: d=4.80e-04 cos=0.9999986
+  note widewin/slide/mxfp4: ctx=8192 d_blind=1.73e-01 (must be >> d)
+  ok   widewin/slide/mxfp4: ctx=32768 W=1024: d=4.82e-04 cos=0.9999986
+  note widewin/slide/mxfp4: ctx=32768 d_blind=2.12e-01 (must be >> d)
+  ok   widewin/slide/mxfp4: ctx=40960 W=1024: d=4.87e-04 cos=0.9999987
+  note widewin/slide/mxfp4: ctx=40960 d_blind=1.94e-01 (must be >> d)
+  ok   widewin/slide/mxk8v4: ctx=8192 W=1024: d=4.76e-04 cos=0.9999986
+  note widewin/slide/mxk8v4: ctx=8192 d_blind=1.70e-01 (must be >> d)
+  ok   widewin/slide/mxk8v4: ctx=32768 W=1024: d=4.75e-04 cos=0.9999986
+  note widewin/slide/mxk8v4: ctx=32768 d_blind=2.08e-01 (must be >> d)
+  ok   widewin/slide/mxk8v4: ctx=40960 W=1024: d=4.82e-04 cos=0.9999986
+  note widewin/slide/mxk8v4: ctx=40960 d_blind=1.96e-01 (must be >> d)
+  ok   widewin/glob/mxfp8: ctx=8192 W=None: d=2.31e-04 cos=0.9999987
+  ok   widewin/glob/mxfp8: ctx=32768 W=None: d=1.22e-04 cos=0.9999986
+  ok   widewin/glob/mxfp8: ctx=40960 W=None: d=6.10e-05 cos=0.9999986
+  ok   widewin/glob/mxfp4: ctx=8192 W=None: d=1.22e-04 cos=0.9999986
+  ok   widewin/glob/mxfp4: ctx=32768 W=None: d=1.14e-04 cos=0.9999987
+  ok   widewin/glob/mxfp4: ctx=40960 W=None: d=6.07e-05 cos=0.9999986
+  ok   widewin/glob/mxk8v4: ctx=8192 W=None: d=2.11e-04 cos=0.9999986
+  ok   widewin/glob/mxk8v4: ctx=32768 W=None: d=1.18e-04 cos=0.9999987
+  ok   widewin/glob/mxk8v4: ctx=40960 W=None: d=6.09e-05 cos=0.9999986
+  note pagewidth/synthp128/mxfp8: ln=64 d_default=1.92e-03 d_pagefix=1.92e-03 nf=0/0
+  note pagewidth/synthp128/mxfp8: ln=65 d_default=1.42e-01 d_pagefix=1.92e-03 nf=0/0
+  note pagewidth/synthp128/mxfp8: ln=96 d_default=7.66e-01 d_pagefix=1.89e-03 nf=0/0
+  note pagewidth/synthp128/mxfp8: ln=128 d_default=5.99e-01 d_pagefix=1.80e-03 nf=0/0
+  note pagewidth/synthp128/mxfp8: ln=192 d_default=4.32e-01 d_pagefix=1.86e-03 nf=0/0
+  note pagewidth/synthp128/mxfp8: ln=256 d_default=3.99e-01 d_pagefix=1.52e-03 nf=0/0
+  note pagewidth/synthp128/mxfp8: D_B_REPRODUCED=True (default-64 walk on a synthetic p128 pool corrupts past ln=64 while the true-page walk holds — latent-hardening evidence for the wrapper fix block_size None -> cache.shape[1]
+  note pagewidth/synthp128/mxfp4: ln=64 d_default=1.94e-03 d_pagefix=1.94e-03 nf=0/0
+  note pagewidth/synthp128/mxfp4: ln=65 d_default=1.37e-01 d_pagefix=3.69e-03 nf=0/0
+  note pagewidth/synthp128/mxfp4: ln=96 d_default=7.63e-01 d_pagefix=1.93e-03 nf=0/0
+  note pagewidth/synthp128/mxfp4: ln=128 d_default=5.92e-01 d_pagefix=1.93e-03 nf=0/0
+  note pagewidth/synthp128/mxfp4: ln=192 d_default=4.35e-01 d_pagefix=1.58e-03 nf=0/0
+  note pagewidth/synthp128/mxfp4: ln=256 d_default=3.68e-01 d_pagefix=9.76e-04 nf=0/0
+  note pagewidth/synthp128/mxfp4: D_B_REPRODUCED=False (default-64 walk on a synthetic p128 pool corrupts past ln=64 while the true-page walk holds — latent-hardening evidence for the wrapper fix block_size None -> cache.shape[1]
+  note pagewidth/synthp128/mxk8v4: ln=64 d_default=1.93e-03 d_pagefix=1.93e-03 nf=0/0
+  note pagewidth/synthp128/mxk8v4: ln=65 d_default=1.44e-01 d_pagefix=1.95e-03 nf=0/0
+  note pagewidth/synthp128/mxk8v4: ln=96 d_default=7.92e-01 d_pagefix=1.93e-03 nf=0/0
+  note pagewidth/synthp128/mxk8v4: ln=128 d_default=6.23e-01 d_pagefix=1.94e-03 nf=0/0
+  note pagewidth/synthp128/mxk8v4: ln=192 d_default=4.47e-01 d_pagefix=1.69e-03 nf=0/0
+  note pagewidth/synthp128/mxk8v4: ln=256 d_default=3.77e-01 d_pagefix=9.68e-04 nf=0/0
+  note pagewidth/synthp128/mxk8v4: D_B_REPRODUCED=True (default-64 walk on a synthetic p128 pool corrupts past ln=64 while the true-page walk holds — latent-hardening evidence for the wrapper fix block_size None -> cache.shape[1]
+  ok   autosplit/slide/mxfp8: auto n_req=6: d=4.86e-04 cos=0.9999986
+  ok   autosplit/slide/mxfp8: forced8 n_req=6: d=4.86e-04 cos=0.9999986
+  ok   autosplit/slide/mxfp8: s1 n_req=6: d=4.86e-04 cos=0.9999986
+  ok   autosplit/slide/mxk8v4: auto n_req=6: d=4.86e-04 cos=0.9999986
+  ok   autosplit/slide/mxk8v4: forced8 n_req=6: d=4.86e-04 cos=0.9999986
+  ok   autosplit/slide/mxk8v4: s1 n_req=6: d=4.86e-04 cos=0.9999986
+  ok   autosplit/glob/mxfp8: triton n_req=6: d=4.87e-04 cos=0.9999986
+  ok   autosplit/glob/mxk8v4: triton n_req=6: d=4.87e-04 cos=0.9999986
+  note uninit/slide/mxfp8/ff: non_finite=4096/4096 bad_heads=[0, 1, 2, 3]
+  note uninit/slide/mxfp8/empty: non_finite=4096/4096 bad_heads=[0, 1, 2, 3]
+  note uninit/glob/mxfp8/ff: non_finite=8192/8192 bad_heads=[0, 1, 2, 3]
+  note uninit/glob/mxfp8/empty: non_finite=8192/8192 bad_heads=[0, 1, 2, 3]
+[p267] VERDICT: PASS with D_B proven — kernel/store math green at the engine's true lanes and pages; the synthetic p128 cell shows the wrapper default-64 walk corrupts past ln=64 while the true-page walk holds (latent-hardening evidence: land the wrapper fix, block_size None -> cache.shape[1])
+[p267] wrote /out/p267_canary.json
