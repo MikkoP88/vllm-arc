@@ -234,17 +234,42 @@ HAVE_SKIN=$(docker inspect "$ARC_NAME" --format '{{index .Config.Labels "arc_ski
 # present and the certified line mounts it (r43_serve_k5.sh parity).
 #
 # P6.28 serving-skin knobs (ARC_TEMPLATE / ARC_RPARSER / ARC_TPARSER):
-# UNSET = the certified qwen skin, byte-identical (defaults below). EMPTY
-# (e.g. `ARC_RPARSER= `) omits the flag so the model-native skin applies —
-# gemma-4 has no reasoning channel and ships no chat template. A PATH in
-# ARC_TEMPLATE mounts that file for --chat-template (gemma-4 route:
-# assets/chat_template_gemma4.jinja, canonical start_of_turn format).
+# UNSET = the certified qwen skin, byte-identical (defaults below) -- ON
+# QWEN BOOTS ONLY. EMPTY (e.g. `ARC_RPARSER= `) omits the flag so the
+# model-native skin applies -- gemma-4 has no reasoning channel and ships
+# no chat template. A PATH in ARC_TEMPLATE mounts that file for
+# --chat-template (gemma-4 route: assets/chat_template_gemma4.jinja,
+# canonical start_of_turn format).
+# r272 GEMMA SKIN LAW (owner directive 2026-11-28): a gemma boot NEVER
+# inherits the qwen defaults. Mixing the qwen chat template or the qwen
+# parsers into gemma testing is forbidden ("violence"): explicit qwen
+# template/parser values on a gemma boot die boot-loud, and where no
+# matching gemma skin is provided the skin is FULLY REMOVED -- no
+# template mount, no parser flags, the checkpoint-native posture --
+# never substituted with a foreign one.
+# r272: the skin defaults resolve per model family
+case "${ARC_SERVED:-x}|${ARC_MODEL:-x}" in
+  *gemma*) ARC_FAMILY=gemma ;;
+  *)       ARC_FAMILY=qwen ;;
+esac
+if [ "$ARC_FAMILY" = gemma ] && [ "${ARC_TEMPLATE+set}" != set ]; then
+  # UNSET on gemma = fully removed (never the qwen default template). An
+  # EXPLICIT __qwen_default__ or qwen path on a gemma boot is NOT the
+  # removed class -- it reaches the FATAL guards in the case block below.
+  ARC_TEMPLATE=""
+fi
 ARC_TEMPLATE=${ARC_TEMPLATE-__qwen_default__}
 CT_SRC="$RIG/v127_stage/chat_template_qwen38_high.jinja"
 CT_MOUNT=""
 CT_FLAG=""
 case "$ARC_TEMPLATE" in
   __qwen_default__)
+    if [ "$ARC_FAMILY" = gemma ]; then
+      echo "FATAL: ARC_TEMPLATE=__qwen_default__ on a gemma boot -- the qwen chat"
+      echo "template is forbidden on gemma (skin law, owner directive 2026-11-28);"
+      echo "set ARC_TEMPLATE=<gemma template> or leave it unset for the fully-removed skin"
+      exit 1
+    fi
     if [ -f "$CT_SRC" ]; then
       CT_MOUNT="-v $CT_SRC:/root/chat_template_qwen38_high.jinja:ro"
       CT_FLAG="--chat-template /root/chat_template_qwen38_high.jinja"
@@ -252,8 +277,18 @@ case "$ARC_TEMPLATE" in
       echo "NOTE: chat template not found at $CT_SRC — serving WITHOUT it (optional"
       echo "OpenAI reasoning_effort compat; in-repo copy: assets/chat_template_qwen38_high.jinja)"
     fi ;;
-  "") : ;;  # explicitly no template — checkpoint-native skin
-  *)  if [ -f "$ARC_TEMPLATE" ]; then
+  "") : ;;  # explicitly no template — checkpoint-native skin (also the
+      # gemma-unset resolution: the fully-removed lawful skin)
+  *)  if [ "$ARC_FAMILY" = gemma ]; then
+        case "$(basename "$ARC_TEMPLATE")" in
+          *qwen*)
+            echo "FATAL: qwen chat template '$ARC_TEMPLATE' on a gemma boot --"
+            echo "forbidden (skin law, owner directive 2026-11-28); use a gemma"
+            echo "template (assets/chat_template_gemma4.jinja) or unset for native"
+            exit 1 ;;
+        esac
+      fi
+      if [ -f "$ARC_TEMPLATE" ]; then
         CT_BASE=$(basename "$ARC_TEMPLATE")
         CT_MOUNT="-v $ARC_TEMPLATE:/root/$CT_BASE:ro"
         CT_FLAG="--chat-template /root/$CT_BASE"
@@ -342,14 +377,34 @@ if [ -n "${ARC_QUANTCFG:-}" ]; then
   QUANTCFG_FLAG="--quantization-config '${ARC_QUANTCFG}'"
 fi
 
-# Parser skin (P6.28): unset = the certified qwen3 parsers; EMPTY
-# (`ARC_RPARSER= ` / `ARC_TPARSER= `) omits the flag(s) for models with
-# no reasoning channel / tool format (gemma-4). Tool-choice rides the
-# tool parser (enable-auto-tool-choice requires one).
-RP_FLAG="--reasoning-parser ${ARC_RPARSER-qwen3}"
-if [ -z "${ARC_RPARSER-unset}" ]; then RP_FLAG=""; fi
-TP_FLAG="--tool-call-parser ${ARC_TPARSER-qwen3_coder} --enable-auto-tool-choice"
-if [ -z "${ARC_TPARSER-unset}" ]; then TP_FLAG=""; fi
+# Parser skin (P6.28): unset = the certified qwen3 parsers -- ON QWEN
+# BOOTS ONLY; EMPTY (`ARC_RPARSER= ` / `ARC_TPARSER= `) omits the flag(s)
+# for models with no reasoning channel / tool format (gemma-4). Tool-
+# choice rides the tool parser (enable-auto-tool-choice requires one).
+# r272 skin law: on gemma, unset = FULLY REMOVED (no parser flags) and
+# qwen parser values die boot-loud -- never the qwen defaults.
+if [ "$ARC_FAMILY" = gemma ]; then
+  case "${ARC_RPARSER-}" in *qwen*)
+    echo "FATAL: ARC_RPARSER='$ARC_RPARSER' (qwen reasoning parser) on a gemma"
+    echo "boot -- forbidden (skin law, owner directive 2026-11-28); set a gemma"
+    echo "parser or leave it unset for the fully-removed skin"
+    exit 1 ;;
+  esac
+  case "${ARC_TPARSER-}" in *qwen*)
+    echo "FATAL: ARC_TPARSER='$ARC_TPARSER' (qwen tool parser) on a gemma boot --"
+    echo "forbidden (skin law, owner directive 2026-11-28); set a gemma parser or"
+    echo "leave it unset for the fully-removed skin"
+    exit 1 ;;
+  esac
+  RP_FLAG=""; TP_FLAG=""
+  if [ -n "${ARC_RPARSER-}" ]; then RP_FLAG="--reasoning-parser $ARC_RPARSER"; fi
+  if [ -n "${ARC_TPARSER-}" ]; then TP_FLAG="--tool-call-parser $ARC_TPARSER --enable-auto-tool-choice"; fi
+else
+  RP_FLAG="--reasoning-parser ${ARC_RPARSER-qwen3}"
+  if [ -z "${ARC_RPARSER-unset}" ]; then RP_FLAG=""; fi
+  TP_FLAG="--tool-call-parser ${ARC_TPARSER-qwen3_coder} --enable-auto-tool-choice"
+  if [ -z "${ARC_TPARSER-unset}" ]; then TP_FLAG=""; fi
+fi
 
 # P6.24 opt-in pass-through (cert10 overlay): default 0 emits NO env line —
 # the certified default posture serves the stock allreduce (proven
@@ -495,3 +550,10 @@ echo "ARC_SERVE_LAUNCHED image=$ARC_IMAGE name=$ARC_NAME model=$ARC_MODEL served
 # r266: the A/B knobs on their own line (the launch line above keeps its
 # byte layout — gates and pull tools parse it).
 echo "ARC_SERVE_KNOBS dtype=$ARC_DTYPE kvdtype=${ARC_KVDTYPE:-fp8_e4m3} attn_fa2=${ARC_ATTN_FA2:-1} $(date +%H:%M:%S)"
+# r272: the RESOLVED skin on its own line -- the family + the effective
+# template/parser posture AFTER the skin-law resolution (the launch
+# line's tmpl/rp/tp literals are the raw-env renders; on gemma-unset
+# they do not show the removal). tmpl=<native> rp=<none> tp=<none> =
+# the fully-removed lawful gemma skin; p266_skin_audit.py reads this
+# line as the resolved posture proof.
+echo "ARC_SERVE_SKIN family=$ARC_FAMILY tmpl=${ARC_TEMPLATE:-<native>} rp=${ARC_RPARSER:-<none>} tp=${ARC_TPARSER:-<none>} $(date +%H:%M:%S)"
