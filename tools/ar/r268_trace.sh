@@ -68,13 +68,17 @@ ss -tln 2>/dev/null | grep -q ':8000 ' && echo "R268_WARN_PORT8000_STILL_HELD"
 sleep 5
 docker rm -f $CNAME >/dev/null 2>&1 || true
 
-echo "=== [r268] boot c3 posture + traced overlay + ARC_MXKV_TRACE=1 $(date +%H:%M:%S) ==="
-# the r266 invocation law: env FIRST, backgrounded, boot.out polled --
+echo "=== [r268] boot c3 posture EAGER + traced overlay + ARC_MXKV_TRACE=1 $(date +%H:%M:%S) ==="
+# EAGER LAW: e2 (04:15Z) proved ARC_GRAPH=0 reproduces the c3 corruption
+# -- and under capture the trace python runs ONCE over the dummy batch
+# (replays never re-run it; the native_decode.py telemetry law), so the
+# live store/walk addressing at real decode steps only prints EAGER.
+# The r266 invocation law: env FIRST, backgrounded, boot.out polled --
 # serve_arc_b70.sh reads env vars, never positionals
 nohup env \
   ARC_IMAGE=$IMG ARC_NAME=$CNAME \
   ARC_MODEL=/models/gemma4-31b ARC_SERVED=gemma4-31b \
-  ARC_QUANT=fp8 ARC_GMU=0.8 ARC_GRAPH=1 ARC_SPEC=0 ARC_LMC=0 \
+  ARC_QUANT=fp8 ARC_GMU=0.8 ARC_GRAPH=0 ARC_SPEC=0 ARC_LMC=0 \
   ARC_RPC_TIMEOUT=1200 ARC_MAXLEN=40960 ARC_FP8=0 \
   ARC_TEMPLATE=/root/build/chat_template_gemma4.jinja \
   ARC_RPARSER= ARC_TPARSER= \

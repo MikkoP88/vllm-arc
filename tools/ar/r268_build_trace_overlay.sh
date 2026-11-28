@@ -54,6 +54,10 @@ new = """        _trace(
         )
         if _TRACE and query.shape[0] <= 4:
             # r268 trace leg: the walk addressing vs the store's slots.
+            # EAGER ONLY (the e2 law: ARC_GRAPH=0 reproduces the c3
+            # corruption; under capture this python runs once over the
+            # dummy batch -- replays never re-run it, so live G3 values
+            # would never print).
             _bt = attn_metadata.block_table
             _sl = attn_metadata.seq_lens
             _trace(
@@ -61,7 +65,10 @@ new = """        _trace(
                 f"B={query.shape[0]}",
                 f"bt0={_bt[0, :8].tolist()}",
                 f"bt1={_bt[1, :8].tolist() if _bt.shape[0] > 1 else None}",
+                f"bts={_bt.stride()}",
+                f"btc={int(_bt.is_contiguous())}",
                 f"sl={_sl[:4].tolist()}",
+                f"msl={attn_metadata.max_seq_len}",
                 f"cache={tuple(kv_cache.shape)}",
                 f"stride={kv_cache.stride()}",
                 f"id={id(self)}",
@@ -69,8 +76,34 @@ new = """        _trace(
 assert t.count(old) == 1, "decode trace anchor not found exactly once"
 t = t.replace(old, new)
 
+# 2) store-source trace: the REAL k/v layouts at every store call
+#    (the G2 readout: prefill [N,Hk,D] contiguous vs decode-step
+#    single rows with the model's actual views/strides; the wrapper
+#    normalizes stride(2)!=1 only -- everything else reaches the
+#    kernel as-is)
+old2 = """            _trace(
+                "store", f"cache={tuple(kv_cache.shape)}",
+                f"stride={kv_cache.stride()}", f"slots={slot_mapping.shape[0]}",
+                f"smap={_smap}",
+                f"smax={int(slot_mapping.max()) if slot_mapping.numel() else -1}",
+                f"bs_from_shape1={block_size}", f"id={id(self)}",
+            )"""
+new2 = """            _trace(
+                "store", f"cache={tuple(kv_cache.shape)}",
+                f"stride={kv_cache.stride()}", f"slots={slot_mapping.shape[0]}",
+                f"smap={_smap}",
+                f"smax={int(slot_mapping.max()) if slot_mapping.numel() else -1}",
+                f"bs_from_shape1={block_size}",
+                f"k={tuple(key.shape)}:{key.stride()}",
+                f"v={tuple(value.shape)}:{value.stride()}",
+                f"kd={key.dtype}",
+                f"id={id(self)}",
+            )"""
+assert t.count(old2) == 1, "store trace anchor not found exactly once"
+t = t.replace(old2, new2)
+
 eng.write_text(t, newline="\n")
-print("overlay engine.py traced")
+print("overlay engine.py traced (decx + store sources)")
 PYEOF
 
 python -m py_compile "$OUT"/*.py && echo PYCOMPILE_OK
