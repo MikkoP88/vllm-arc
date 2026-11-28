@@ -1,0 +1,17 @@
+R268_BEGIN 2026-11-28T09:07:02Z overlay_engine_md5=0ce0954cc92aaa844339bf4d77f796ba
+=== [r268] W14 quiesce 09:07:02 ===
+=== [r268] boot c3 posture EAGER + traced overlay + ARC_MXKV_TRACE=1 09:07:19 ===
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert29 name=arc-r268 model=/models/gemma4-31b served=gemma4-31b quant=fp8 qcfg= graph=0 spec=0 gmu=0.8 maxlen=40960 mnbt=8192 seqs=64 fp8=0 xgc=0 tmpl=/root/build/chat_templa
+=== [r268] health poll (identity-verified) ===
+HEALTH_OK_r268 09:13:08Z (identity-verified)
+=== [r268] the 2x8 workload + the nan detector ===
+gen1:  a city of romance, art, and
+gen2: 
+    if n <= 1:
+gen3: {"id":"cmpl-a364ff3968f2f1a8","object":"text_completion","created":1795857193,"model":"gemma4-31b","choices":[{"index":0,"text":" a city of romance, art, and","logprobs":{"text_offset":[0,2,7,10,18,19
+=== [r268] trace lines: 0 total, 0 store/decx
+R268_DONE rc=0 2026-11-28T09:13:16Z
+W14_HEALTH_OK 2026-11-28T09:17:43Z
+W14_GEN_OK text=" Helsinki, which is also the country's" finish=length
+W14_FINAL rc=0 evidence=/root/build/logs/w14_restore_20261128_091316
+W14_RESTORE rc=0 2026-11-28T09:17:49Z log=/root/build/p647/r268_trace/logs/w14_restore_r268.log
