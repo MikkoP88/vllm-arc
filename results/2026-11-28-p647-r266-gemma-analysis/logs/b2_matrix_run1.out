@@ -1,0 +1,25 @@
+PROMPT_ORACLE served=g3 engine_ntok=40 probe_ntok=40 match=True
+FORMAT qwen ntok=91 prompt='<|im_start|>system\nReasoning effort is set to xhigh. Please think carefully through the task, validate key assumptions, consider plausible alternatives, and prioritize correctness, consistency, and clarity in the final answer.<|im'
+FORMAT qwen_nothink ntok=44 prompt='<|im_start|>user\nWhat is the capital of France? Answer with just the city name.<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n'
+FORMAT g3 ntok=40 prompt='<bos><start_of_turn>user\nWhat is the capital of France? Answer with just the city name.<end_of_turn>\n<start_of_turn>model\n'
+FORMAT g4 ntok=27 prompt='<bos><|turn>user\nWhat is the capital of France? Answer with just the city name.<turn|>\n<|turn>model\n<|channel>thought\n<channel|>'
+FORMAT g4think ntok=30 prompt='<bos><|turn>system\n<|think|>\n<turn|>\n<|turn>user\nWhat is the capital of France? Answer with just the city name.<turn|>\n<|turn>model\n'
+SECTION chat done 331s
+SECTION raw done 513s
+Traceback (most recent call last):
+  File "/root/p266_matrix_probe.py", line 577, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/root/p266_matrix_probe.py", line 523, in main
+    nll = section_nll(a.model, formats, [p[0] for p in SINGLE], para_ids) if "nll" in cells else {}
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/p266_matrix_probe.py", line 359, in section_nll
+    out["para"]["first_top"] = top_of(resp["choices"][0].get("logprobs"))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/p266_matrix_probe.py", line 407, in top_of
+    return sorted(((round(v["logprob"], 3), k) for k, v in d.items()), reverse=True)[:5]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/p266_matrix_probe.py", line 407, in <genexpr>
+    return sorted(((round(v["logprob"], 3), k) for k, v in d.items()), reverse=True)[:5]
+                          ~^^^^^^^^^^^
+TypeError: 'float' object is not subscriptable

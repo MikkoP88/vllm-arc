@@ -1,0 +1,1 @@
+leg=b2_g3_29 image=vllm-arc:v0.30.0-b70-cert29 served_fmt=g3 chat_cells=all g1=1 env=[ARC_MODEL=/models/gemma4-31b ARC_SERVED=gemma4-31b ARC_QUANT=fp8 ARC_GMU=0.8 ARC_GRAPH=1 ARC_SPEC=0 ARC_LMC=0 ARC_RPC=1200 ARC_MAXLEN=40960 ARC_FP8=0 ARC_TEMPLATE=/root/build/chat_template_gemma4.jinja ARC_RPARSER= ARC_TPARSER=]

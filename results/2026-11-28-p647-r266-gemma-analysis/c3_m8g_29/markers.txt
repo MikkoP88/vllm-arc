@@ -1,0 +1,15 @@
+pre_mx_backend_lines=1
+pre_native_lines=54
+pre_materialized_lines=0
+pre_device_lost_lines=0
+pre_lmcache_lines=0
+pre_tracebacks=0
+pre_errors=0
+post_mx_backend_lines=1
+post_native_lines=56
+post_materialized_lines=0
+post_device_lost_lines=0
+post_lmcache_lines=0
+post_tracebacks=0
+post_errors=0
+kernel_fault_lines=0

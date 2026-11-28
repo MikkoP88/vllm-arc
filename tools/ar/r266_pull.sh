@@ -19,7 +19,7 @@ set -euo pipefail
 export SSH_ASKPASS=/tmp/askpass.sh SSH_ASKPASS_REQUIRE=force DISPLAY=:0
 RIG=${ARC_RIG:?set ARC_RIG=<user>@<rig-host> before running}
 ROOT=$(cd "$(dirname "$0")/../.." && pwd)/results
-HERE=$(cd "$(dirname "$0")/.." && pwd)
+HERE=$(cd "$(dirname "$0")" && pwd)
 
 B=2026-11-28-p647-r266-gemma-analysis
 SRC=/root/build/p647/r266_gemma

@@ -1,0 +1,7 @@
+[factual] finish=length tok=24
+  '|seven<end_of_turn>\n<start_of_turn>user\nSay the number seven in words'
+[reason] finish=length tok=96
+  '|The our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our'
+[code] finish=length tok=64
+  '|s our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our'
+G1_DONE
