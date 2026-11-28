@@ -388,6 +388,7 @@ def pl_stats(resp, ids):
     for i, d in enumerate(pls):
         if not d:
             continue
+        d = {int(k): v for k, v in d.items()}  # wire dicts key token ids as STRINGS (batch-1 n=0 bug)
         tid = ids[i] if ids else max(d, key=lambda t: d[t].get("rank", 1 << 30))
         lp = d.get(tid)
         if lp is None:

@@ -120,7 +120,8 @@ def fake_post(path, body, timeout=300):
         if STATE["mode"] == "dead":
             return 500, {"error": "EngineDead"}, 0.01
         if body.get("prompt_logprobs"):
-            pls = [None] + [{i: {"logprob": -0.25, "rank": 1}} for i in ids[1:]]
+            # wire-true: vLLM JSON keys token ids as STRINGS (the batch-1 n=0 bug shape)
+            pls = [None] + [{str(i): {"logprob": -0.25, "rank": 1}} for i in ids[1:]]
             top = [{7: {"logprob": -0.1, "rank": 1}}]
             return 200, {"choices": [{"text": "x", "prompt_logprobs": pls,
                                       "logprobs": {"top_logprobs": top}}],
@@ -200,8 +201,8 @@ def main() -> int:
     check("classes: EMPTY on whitespace only", M.classes(" \n\t") == ["EMPTY"])
     check("classes: REPLOOP on a char loop", "REPLOOP" in M.classes("aaaaaab"))
     check("classes: clean answer has none", M.classes("Paris<turn|>") == [])
-    check("pl_stats mean", M.pl_stats({"choices": [{"prompt_logprobs": [None] + [
-        {i: {"logprob": -0.5, "rank": 1}} for i in range(4)]}]} , [9, 0, 1, 2, 3])["nll_mean"] == 0.5)
+    check("pl_stats mean (wire-str token-id keys)", M.pl_stats({"choices": [{"prompt_logprobs": [None] + [
+        {str(i): {"logprob": -0.5, "rank": 1}} for i in range(4)]}]} , [9, 0, 1, 2, 3])["nll_mean"] == 0.5)
     check("top_of: legacy float map (the b2 run-1 crash shape)",
           M.top_of({"top_logprobs": [{7: -0.1, 3: -2.0}]}) == [(-0.1, 7), (-2.0, 3)])
     check("top_of: object map + empty -> None",
