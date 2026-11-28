@@ -1,0 +1,73 @@
+windows=9 steps=8
+
+== T0_control_raw: http=200 red=0 ptok=6 text=' a city of romance, art, and'
+   store_lines=2160 groups=1021 decx_lines=1320 distinct_decx=660
+   store-group smap=[-1, shapes=['(2240,'] n=120
+   store-group smap=[23104, shapes=['(2240,'] n=2
+   store-group smap=[23168, shapes=['(2240,'] n=2
+   ... (1018 more groups)
+   decx-first: bt0=[1, sl=[4, msl=4 bts=(640, btc=1 B=2
+   decx-last:  bt0=[705, sl=[13] msl=13 bts=(320, btc=1 B=1
+
+== T1_len122_raw: http=400 red=1 ptok=None text=''
+   store_lines=1920 groups=960 decx_lines=1800 distinct_decx=900
+   store-group smap=[45234, shapes=['(2240,'] n=2
+   store-group smap=[45362, shapes=['(2240,'] n=2
+   store-group smap=[45490, shapes=['(2240,'] n=2
+   ... (957 more groups)
+   decx-first: bt0=[705, sl=[123] msl=123 bts=(640, btc=1 B=1
+   decx-last:  bt0=[620, sl=[137] msl=137 bts=(320, btc=1 B=1
+
+== T2_gate_chat: http=200 red=1 ptok=40 text='Paris<end_of_turn>\n<start_of_turn>user\nWhat is the capital o'
+   store_lines=7680 groups=3840 decx_lines=7560 distinct_decx=3780
+   store-group smap=[39328, shapes=['(2240,'] n=2
+   store-group smap=[39392, shapes=['(2240,'] n=2
+   store-group smap=[39776, shapes=['(2240,'] n=2
+   ... (3837 more groups)
+   decx-first: bt0=[614, sl=[41] msl=41 bts=(640, btc=1 B=1
+   decx-last:  bt0=[623, sl=[103] msl=103 bts=(320, btc=1 B=1
+
+== T3_card_chat: http=400 red=1 ptok=None text=''
+   store_lines=11520 groups=5760 decx_lines=11400 distinct_decx=5700
+   store-group smap=[39897, shapes=['(2240,'] n=2
+   store-group smap=[39577, shapes=['(2240,'] n=2
+   store-group smap=[39449, shapes=['(2240,'] n=2
+   ... (5757 more groups)
+   decx-first: bt0=[623, sl=[34] msl=34 bts=(640, btc=1 B=1
+   decx-last:  bt0=[710, sl=[128] msl=128 bts=(320, btc=1 B=1
+
+== T4_g4short_raw: http=400 red=1 ptok=None text=''
+   store_lines=11520 groups=5760 decx_lines=11400 distinct_decx=5700
+   store-group smap=[39308, shapes=['(2240,'] n=2
+   store-group smap=[39820, shapes=['(2240,'] n=2
+   store-group smap=[39948, shapes=['(2240,'] n=2
+   ... (5757 more groups)
+   decx-first: bt0=[614, sl=[21] msl=21 bts=(640, btc=1 B=1
+   decx-last:  bt0=[616, sl=[115] msl=115 bts=(320, btc=1 B=1
+
+== T5_g3cap_raw: http=400 red=1 ptok=None text=''
+   store_lines=11520 groups=5760 decx_lines=11400 distinct_decx=5700
+   store-group smap=[39456, shapes=['(2240,'] n=2
+   store-group smap=[45344, shapes=['(2240,'] n=2
+   store-group smap=[39392, shapes=['(2240,'] n=2
+   ... (5757 more groups)
+   decx-first: bt0=[616, sl=[41] msl=41 bts=(640, btc=1 B=1
+   decx-last:  bt0=[621, sl=[135] msl=135 bts=(320, btc=1 B=1
+
+== T6_two_way/r0: http=400 red=1 ptok=None text=''
+   store_lines=1922 groups=961 decx_lines=1802 distinct_decx=901
+   store-group smap=[39197, shapes=['(2240,'] n=2
+   store-group smap=[39261, shapes=['(2240,'] n=2
+   store-group smap=[39325, shapes=['(2240,'] n=2
+   ... (958 more groups)
+   decx-first: bt0=[612, sl=[38] msl=38 bts=(640, btc=1 B=1
+   decx-last:  bt0=[623, sl=[61] msl=61 bts=(640, btc=1 B=1
+
+== T6_two_way/r1: http=400 red=1 ptok=None text=''
+   store_lines=238 groups=119 decx_lines=238 distinct_decx=119
+   store-group smap=[45244] shapes=['(2240,'] n=2
+   store-group smap=[39868] shapes=['(2240,'] n=2
+   store-group smap=[39420] shapes=['(2240,'] n=2
+   ... (116 more groups)
+   decx-first: bt0=[706, sl=[61] msl=61 bts=(640, btc=1 B=1
+   decx-last:  bt0=[618, sl=[62] msl=62 bts=(320, btc=1 B=1

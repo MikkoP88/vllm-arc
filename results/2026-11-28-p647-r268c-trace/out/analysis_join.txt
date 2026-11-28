@@ -1,0 +1,112 @@
+windows=9 steps=8
+
+===== T0_control_raw http=200 red=0 ptok=6
+  store ids=120 decx ids=120 common=120
+    VIOL id=129397566949616 step=2 sl=99 walked=[5, 6] missing=[3] stored_head=[3, 6, 707, 708]
+    VIOL id=129397566949616 step=3 sl=8199 walked=[257, 258, 259, 260, 261, 262, 263, 264] missing=[3, 6, 707, 708] stored_head=[3, 6, 707, 708]
+    VIOL id=129397566949616 step=4 sl=7 walked=[708] missing=[3] stored_head=[3, 6, 707, 708]
+    VIOL id=129397566949616 step=5 sl=8 walked=[708] missing=[3] stored_head=[3, 6, 707, 708]
+    VIOL id=129397566949616 step=6 sl=9 walked=[708] missing=[3] stored_head=[3, 6, 707, 708]
+    VIOL id=129397566949616 step=7 sl=10 walked=[708] missing=[3] stored_head=[3, 6, 707, 708]
+    VIOL id=129397566949616 step=8 sl=11 walked=[708] missing=[3] stored_head=[3, 6, 707, 708]
+    VIOL id=129397566949616 step=9 sl=12 walked=[708] missing=[3] stored_head=[3, 6, 707, 708]
+  join checked=1320 rows, violations=1100
+  row-leader census (per-layer first block): {1: 20, 2: 20, 3: 20, 4: 20, 5: 20, 6: 20}
+
+===== T1_len122_raw http=400 red=1 ptok=None
+  store ids=120 decx ids=120 common=120
+    VIOL id=129397566957008 step=0 sl=123 walked=[620, 642] missing=[1240] stored_head=[1240, 1240, 1240, 1240]
+    VIOL id=129397566957008 step=1 sl=124 walked=[620, 642] missing=[1240] stored_head=[1240, 1240, 1240, 1240]
+    VIOL id=129397566957008 step=2 sl=125 walked=[620, 642] missing=[1240] stored_head=[1240, 1240, 1240, 1240]
+    VIOL id=129397566957008 step=3 sl=126 walked=[620, 642] missing=[1240] stored_head=[1240, 1240, 1240, 1240]
+    VIOL id=129397566957008 step=4 sl=127 walked=[620, 642] missing=[1240] stored_head=[1240, 1240, 1240, 1240]
+    VIOL id=129397566957008 step=5 sl=128 walked=[620, 642] missing=[1240] stored_head=[1240, 1240, 1240, 1240]
+    VIOL id=129397566957008 step=6 sl=129 walked=[620, 614, 643] missing=[1240] stored_head=[1240, 1240, 1240, 1240]
+    VIOL id=129397566957008 step=7 sl=130 walked=[620, 614, 643] missing=[1240] stored_head=[1240, 1240, 1240, 1240]
+  join checked=1800 rows, violations=300
+  row-leader census (per-layer first block): {620: 20, 622: 20, 624: 20, 705: 20, 707: 20, 709: 20}
+  garbage-tail census (top): [((259, 260, 261, 262), 40), ((387, 388, 389, 390), 40), ((515, 516, 517, 518), 40), ((643, 644, 645, 646), 40)]
+
+===== T2_gate_chat http=200 red=1 ptok=40
+  store ids=120 decx ids=120 common=120
+    VIOL id=129397566957008 step=0 sl=41 walked=[623] missing=[1246] stored_head=[1246, 1246, 1246, 1246]
+    VIOL id=129397566957008 step=1 sl=42 walked=[623] missing=[1246] stored_head=[1246, 1246, 1246, 1246]
+    VIOL id=129397566957008 step=2 sl=43 walked=[623] missing=[1246] stored_head=[1246, 1246, 1246, 1246]
+    VIOL id=129397566957008 step=3 sl=44 walked=[623] missing=[1246] stored_head=[1246, 1246, 1246, 1246]
+    VIOL id=129397566957008 step=4 sl=45 walked=[623] missing=[1246] stored_head=[1246, 1246, 1246, 1246]
+    VIOL id=129397566957008 step=5 sl=46 walked=[623] missing=[1246] stored_head=[1246, 1246, 1246, 1246]
+    VIOL id=129397566957008 step=6 sl=47 walked=[623] missing=[1246] stored_head=[1246, 1246, 1246, 1246]
+    VIOL id=129397566957008 step=7 sl=48 walked=[623] missing=[1246] stored_head=[1246, 1246, 1246, 1246]
+  join checked=7560 rows, violations=1260
+  row-leader census (per-layer first block): {614: 20, 615: 20, 616: 20, 621: 20, 622: 20, 623: 20}
+  garbage-tail census (top): [((710, 617, 260, 261), 40), ((623, 616, 388, 389), 40), ((621, 615, 516, 517), 40), ((614, 643, 644, 645), 40)]
+
+===== T3_card_chat http=400 red=1 ptok=None
+  store ids=120 decx ids=120 common=120
+    VIOL id=129397566957008 step=0 sl=34 walked=[710] missing=[1420] stored_head=[1420, 1420, 1420, 1420]
+    VIOL id=129397566957008 step=1 sl=35 walked=[710] missing=[1420] stored_head=[1420, 1420, 1420, 1420]
+    VIOL id=129397566957008 step=2 sl=36 walked=[710] missing=[1420] stored_head=[1420, 1420, 1420, 1420]
+    VIOL id=129397566957008 step=3 sl=37 walked=[710] missing=[1420] stored_head=[1420, 1420, 1420, 1420]
+    VIOL id=129397566957008 step=4 sl=38 walked=[710] missing=[1420] stored_head=[1420, 1420, 1420, 1420]
+    VIOL id=129397566957008 step=5 sl=39 walked=[710] missing=[1420] stored_head=[1420, 1420, 1420, 1420]
+    VIOL id=129397566957008 step=6 sl=40 walked=[710] missing=[1420] stored_head=[1420, 1420, 1420, 1420]
+    VIOL id=129397566957008 step=7 sl=41 walked=[710] missing=[1420] stored_head=[1420, 1420, 1420, 1420]
+  join checked=11400 rows, violations=1900
+  row-leader census (per-layer first block): {616: 20, 618: 20, 622: 20, 623: 20, 709: 20, 710: 20}
+  garbage-tail census (top): [((710, 617, 260, 261), 40), ((709, 616, 388, 389), 40), ((618, 615, 516, 517), 40), ((614, 643, 644, 645), 40)]
+
+===== T4_g4short_raw http=400 red=1 ptok=None
+  store ids=120 decx ids=120 common=120
+    VIOL id=129397566957008 step=0 sl=21 walked=[616] missing=[1232] stored_head=[1232, 1232, 1232, 1232]
+    VIOL id=129397566957008 step=1 sl=22 walked=[616] missing=[1232] stored_head=[1232, 1232, 1232, 1232]
+    VIOL id=129397566957008 step=2 sl=23 walked=[616] missing=[1232] stored_head=[1232, 1232, 1232, 1232]
+    VIOL id=129397566957008 step=3 sl=24 walked=[616] missing=[1232] stored_head=[1232, 1232, 1232, 1232]
+    VIOL id=129397566957008 step=4 sl=25 walked=[616] missing=[1232] stored_head=[1232, 1232, 1232, 1232]
+    VIOL id=129397566957008 step=5 sl=26 walked=[616] missing=[1232] stored_head=[1232, 1232, 1232, 1232]
+    VIOL id=129397566957008 step=6 sl=27 walked=[616] missing=[1232] stored_head=[1232, 1232, 1232, 1232]
+    VIOL id=129397566957008 step=7 sl=28 walked=[616] missing=[1232] stored_head=[1232, 1232, 1232, 1232]
+  join checked=11400 rows, violations=1900
+  row-leader census (per-layer first block): {614: 20, 615: 20, 616: 20, 622: 20, 624: 20, 709: 20}
+  garbage-tail census (top): [((615, 617, 260, 261), 40), ((624, 616, 388, 389), 40), ((614, 615, 516, 517), 40), ((614, 643, 644, 645), 40)]
+
+===== T5_g3cap_raw http=400 red=1 ptok=None
+  store ids=120 decx ids=120 common=120
+    VIOL id=129397566957008 step=0 sl=41 walked=[621] missing=[1242] stored_head=[1242, 1242, 1242, 1242]
+    VIOL id=129397566957008 step=1 sl=42 walked=[621] missing=[1242] stored_head=[1242, 1242, 1242, 1242]
+    VIOL id=129397566957008 step=2 sl=43 walked=[621] missing=[1242] stored_head=[1242, 1242, 1242, 1242]
+    VIOL id=129397566957008 step=3 sl=44 walked=[621] missing=[1242] stored_head=[1242, 1242, 1242, 1242]
+    VIOL id=129397566957008 step=4 sl=45 walked=[621] missing=[1242] stored_head=[1242, 1242, 1242, 1242]
+    VIOL id=129397566957008 step=5 sl=46 walked=[621] missing=[1242] stored_head=[1242, 1242, 1242, 1242]
+    VIOL id=129397566957008 step=6 sl=47 walked=[621] missing=[1242] stored_head=[1242, 1242, 1242, 1242]
+    VIOL id=129397566957008 step=7 sl=48 walked=[621] missing=[1242] stored_head=[1242, 1242, 1242, 1242]
+  join checked=11400 rows, violations=1900
+  row-leader census (per-layer first block): {615: 20, 616: 20, 621: 20, 623: 20, 708: 20, 709: 20}
+  garbage-tail census (top): [((621, 617, 260, 261), 40), ((623, 616, 388, 389), 40), ((708, 615, 516, 517), 40), ((614, 643, 644, 645), 40)]
+
+===== T6_two_way/r0 http=400 red=1 ptok=None
+  store ids=120 decx ids=120 common=120
+    VIOL id=129397566957008 step=0 sl=38 walked=[617] missing=[1234] stored_head=[1234, 1234, 1234, 1234]
+    VIOL id=129397566957008 step=1 sl=39 walked=[617] missing=[1234] stored_head=[1234, 1234, 1234, 1234]
+    VIOL id=129397566957008 step=2 sl=40 walked=[617] missing=[1234] stored_head=[1234, 1234, 1234, 1234]
+    VIOL id=129397566957008 step=3 sl=41 walked=[617] missing=[1234] stored_head=[1234, 1234, 1234, 1234]
+    VIOL id=129397566957008 step=4 sl=42 walked=[617] missing=[1234] stored_head=[1234, 1234, 1234, 1234]
+    VIOL id=129397566957008 step=5 sl=43 walked=[617] missing=[1234] stored_head=[1234, 1234, 1234, 1234]
+    VIOL id=129397566957008 step=6 sl=44 walked=[617] missing=[1234] stored_head=[1234, 1234, 1234, 1234]
+    VIOL id=129397566957008 step=7 sl=45 walked=[617] missing=[1234] stored_head=[1234, 1234, 1234, 1234]
+  join checked=1802 rows, violations=302
+  row-leader census (per-layer first block): {612: 20, 613: 20, 614: 20, 617: 20, 705: 20, 709: 20}
+  garbage-tail census (top): [((622, 706, 260, 261), 40), ((617, 705, 388, 389), 40), ((614, 613, 516, 517), 40), ((612, 643, 644, 645), 40)]
+
+===== T6_two_way/r1 http=400 red=1 ptok=None
+  store ids=120 decx ids=120 common=120
+    VIOL id=129397566957008 step=0 sl=61 walked=[618] missing=[1236] stored_head=[1236, 1236]
+    VIOL id=129397566957008 step=1 sl=62 walked=[618] missing=[1236] stored_head=[1236, 1236]
+    VIOL id=129397567173072 step=0 sl=61 walked=[618] missing=[1236] stored_head=[1236, 1236]
+    VIOL id=129397567173072 step=1 sl=62 walked=[618] missing=[1236] stored_head=[1236, 1236]
+    VIOL id=129397568607904 step=0 sl=61 walked=[618] missing=[1236] stored_head=[1236, 1236]
+    VIOL id=129397568607904 step=1 sl=62 walked=[618] missing=[1236] stored_head=[1236, 1236]
+    VIOL id=129397568823056 step=0 sl=61 walked=[618] missing=[1236] stored_head=[1236, 1236]
+    VIOL id=129397568823056 step=1 sl=62 walked=[618] missing=[1236] stored_head=[1236, 1236]
+  join checked=238 rows, violations=40
+  row-leader census (per-layer first block): {615: 20, 618: 20, 619: 20, 622: 20, 623: 20, 706: 20}
+  garbage-tail census (top): [((622, 706, 260, 261), 40), ((617, 705, 388, 389), 40), ((614, 613, 516, 517), 40), ((612, 643, 644, 645), 40)]

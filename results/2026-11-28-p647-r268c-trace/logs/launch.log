@@ -1,0 +1,30 @@
+R268C_BEGIN 2026-11-28T10:07:03Z image=vllm-arc:v0.30.0-b70-cert29 overlay_engine_md5=76e3bb12e2ae41b179c2a1c4753857bc disc_md5=64726f9dfb01052592c481733b1338bb
+=== [r268c] W14 quiesce 10:07:03 ===
+=== [r268c] boot c3 posture + r268c_trace overlay (eager) 10:07:19 ===
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert29 name=arc-r268c model=/models/gemma4-31b served=gemma4-31b quant=fp8 qcfg= graph=0 spec=0 gmu=0.8 maxlen=40960 mnbt=8192 seqs=64 fp8=0 xgc=0 tmpl=/root/build/chat_templ
+=== [r268c] health poll (identity-verified) ===
+HEALTH_OK_r268c 10:13:08Z (identity-verified)
+=== [r268c] the trace discriminator set (T0 clean ref / T1-T6 the red classes) ===
+[p268c] disc start 10:13:08
+[ok  ] T0_control_raw: http=200 ptok=6 lp_nan=0/8 wall=24.5 text=' a city of romance, art, and' err=''
+[RED ] T1_len122_raw: http=400 ptok=None lp_nan=None/0 wall=2.0 text='' err="{'message': 'Out of range float values are not JSON compliant: nan', 'type': 'Ba"
+[RED ] T2_gate_chat: http=200 ptok=40 lp_nan=0/0 wall=8.2 text='Paris<end_of_turn>\n<start_of_turn>user\nWhat is the capital of France? ' err=''
+[RED ] T3_card_chat: http=400 ptok=None lp_nan=None/0 wall=12.7 text='' err="{'message': 'Out of range float values are not JSON compliant: nan', 'type': 'Ba"
+[RED ] T4_g4short_raw: http=400 ptok=None lp_nan=None/0 wall=12.0 text='' err="{'message': 'Out of range float values are not JSON compliant: nan', 'type': 'Ba"
+[RED ] T5_g3cap_raw: http=400 ptok=None lp_nan=None/0 wall=12.1 text='' err="{'message': 'Out of range float values are not JSON compliant: nan', 'type': 'Ba"
+[RED ] T6_two_way/r0: http=400 ptok=None lp_nan=None/0 wall=2.1 text='' err="{'message': 'Out of range float values are not JSON compliant: nan', 'type': 'Ba"
+[RED ] T6_two_way/r1: http=400 ptok=None lp_nan=None/0 wall=2.3 text='' err="{'message': 'Out of range float values are not JSON compliant: nan', 'type': 'Ba"
+
+[p268c] VERDICT: DISC_RED=7/8: ['T1_len122_raw', 'T2_gate_chat', 'T3_card_chat', 'T4_g4short_raw', 'T5_g3cap_raw', 'T6_two_way/r0', 'T6_two_way/r1']
+[p268c] wrote /root/build/p647/r268c_trace/out/disc.json
+[p268c] VERDICT: DISC_RED=7/8: ['T1_len122_raw', 'T2_gate_chat', 'T3_card_chat', 'T4_g4short_raw', 'T5_g3cap_raw', 'T6_two_way/r0', 'T6_two_way/r1']
+=== [r268c] bank: serve.log + trace extraction ===
+trace lines: 145680 total, 48480 store, 46920 decx
+R268C_DISC DISC_RED=7/8: ['T1_len122_raw', 'T2_gate_chat', 'T3_card_chat', 'T4_g4short_raw', 'T5_g3cap_raw', 'T6_two_way/r0', 'T6_two_way/r1']
+R268C_TRACE n=145680 store=48480 decx=46920
+R268C_VERDICT TRACE_LIVE (n=145680) -- analyze decx/smap vs the disc reds
+R268C_DONE rc=0 2026-11-28T10:14:32Z
+W14_HEALTH_OK 2026-11-28T10:18:59Z
+W14_GEN_OK text=" Helsinki, which is also the country's" finish=length
+W14_FINAL rc=0 evidence=/root/build/logs/w14_restore_20261128_101432
+W14_RESTORE rc=0 2026-11-28T10:19:06Z log=/root/build/p647/r268c_trace/logs/w14_restore_r268c.log

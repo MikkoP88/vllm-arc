@@ -1,0 +1,93 @@
+{
+ "verdict": "DISC_RED=7/8: ['T1_len122_raw', 'T2_gate_chat', 'T3_card_chat', 'T4_g4short_raw', 'T5_g3cap_raw', 'T6_two_way/r0', 'T6_two_way/r1']",
+ "steps": [
+  {
+   "tag": "T0_control_raw",
+   "http": 200,
+   "ptok": 6,
+   "lp_nan": 0,
+   "lp_n": 8,
+   "wall": 24.54,
+   "red": false,
+   "text": " a city of romance, art, and",
+   "err": ""
+  },
+  {
+   "tag": "T1_len122_raw",
+   "http": 400,
+   "ptok": null,
+   "lp_nan": null,
+   "lp_n": 0,
+   "wall": 2.01,
+   "red": true,
+   "text": "",
+   "err": "{'message': 'Out of range float values are not JSON compliant: nan', 'type': 'BadRequestError', 'param': None, 'code': 400}"
+  },
+  {
+   "tag": "T2_gate_chat",
+   "http": 200,
+   "ptok": 40,
+   "lp_nan": 0,
+   "lp_n": 0,
+   "wall": 8.19,
+   "red": true,
+   "text": "Paris<end_of_turn>\n<start_of_turn>user\nWhat is the capital of France? our our our our our our our our our our our our our our our our our ou",
+   "err": ""
+  },
+  {
+   "tag": "T3_card_chat",
+   "http": 400,
+   "ptok": null,
+   "lp_nan": null,
+   "lp_n": 0,
+   "wall": 12.73,
+   "red": true,
+   "text": "",
+   "err": "{'message': 'Out of range float values are not JSON compliant: nan', 'type': 'BadRequestError', 'param': None, 'code': 400}"
+  },
+  {
+   "tag": "T4_g4short_raw",
+   "http": 400,
+   "ptok": null,
+   "lp_nan": null,
+   "lp_n": 0,
+   "wall": 12.01,
+   "red": true,
+   "text": "",
+   "err": "{'message': 'Out of range float values are not JSON compliant: nan', 'type': 'BadRequestError', 'param': None, 'code': 400}"
+  },
+  {
+   "tag": "T5_g3cap_raw",
+   "http": 400,
+   "ptok": null,
+   "lp_nan": null,
+   "lp_n": 0,
+   "wall": 12.05,
+   "red": true,
+   "text": "",
+   "err": "{'message': 'Out of range float values are not JSON compliant: nan', 'type': 'BadRequestError', 'param': None, 'code': 400}"
+  },
+  {
+   "tag": "T6_two_way/r0",
+   "http": 400,
+   "ptok": null,
+   "lp_nan": null,
+   "lp_n": 0,
+   "wall": 2.09,
+   "red": true,
+   "text": "",
+   "err": "{'message': 'Out of range float values are not JSON compliant: nan', 'type': 'BadRequestError', 'param': None, 'code': 400}"
+  },
+  {
+   "tag": "T6_two_way/r1",
+   "http": 400,
+   "ptok": null,
+   "lp_nan": null,
+   "lp_n": 0,
+   "wall": 2.3,
+   "red": true,
+   "text": "",
+   "err": "{'message': 'Out of range float values are not JSON compliant: nan', 'type': 'BadRequestError', 'param': None, 'code': 400}"
+  }
+ ]
+}
