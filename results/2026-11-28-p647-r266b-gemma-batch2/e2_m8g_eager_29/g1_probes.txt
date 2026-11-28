@@ -1,0 +1,7 @@
+[factual] finish=length tok=24
+  '|seven our our our our our our our our our our our our our our our our our our our our our our our'
+[reason] finish=length tok=96
+  '|The our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our'
+[code] finish=length tok=64
+  '|s our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our our'
+G1_DONE

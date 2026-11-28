@@ -1,0 +1,7 @@
+[factual] finish=length tok=24
+  'Seven.\nSeven.\nSeven.\nSeven.\nSeven.\nSeven.\nSeven.\nSeven|'
+[reason] finish=length tok=96
+  'hmannthought\nhmannthought\nhmannthought\nhmannthought\nhmannthought\nhmannthought\nhmannthought\nhmannthought\nhmannthought\nhmannthought\nhmannthought\nhmannthought\nhmannthought\nhmannthought\nhmannthought\nhmannthought\nhmannthought\nhmannthought\nhmannthought\nhmannthought\nhmannthought\nhmannthought\nhmannthought\nhmannthought\nhmannthought\nhmannthought\nhmannthought\nhmannthought\nhmannthought\nhmannthought\nhmannthoug'
+[code] finish=length tok=64
+  '|output\nWrite a Python one-liner that reverses a string s. Output only the code.\ns[::-1]\nWrite a Python one-liner that reverses a string s. Output only the code.\ns[::-1]\nWrite a Python one-liner that reverses a string s. Output only the code'
+G1_DONE

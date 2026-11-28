@@ -53,6 +53,7 @@ ssh "$RIG" "cd $SRC && find $LEGS logs/launch.log logs/w14_restore_r266.log -typ
 
 echo "== pulling the batch-2 bank"
 mkdir -p "$ROOT/$B"
+cd "$ROOT/$B"
 for L in $LEGS; do
   scp -r -q "$RIG:$SRC/$L" "$ROOT/$B/" || { echo "R266B_PULL_FAIL $L"; exit 1; }
 done
