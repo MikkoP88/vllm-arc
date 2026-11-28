@@ -416,7 +416,7 @@ fi
 
 docker exec -d "$ARC_NAME" bash -c "
 export PYTHONHASHSEED=0
-export VLLM_EXECUTE_MODEL_TIMEOUT_SECONDS=${ARC_RPC_TIMEOUT:-300}  # p628: ARC_RPC_TIMEOUT knob (300 stock; envs.py:242 execute-model RPC watchdog; r108y face120k died at 300.5s)
+export VLLM_EXECUTE_MODEL_TIMEOUT_SECONDS=${ARC_RPC_TIMEOUT:-${ARC_RPC:-300}}  # p628: ARC_RPC_TIMEOUT knob (300 stock; envs.py:242 execute-model RPC watchdog; r108y face120k died at 300.5s); ARC_RPC accepted as the legacy alias -- ~20 r127-r266 runners/gates pass the short name, so without it the 1200 s watchdog never applied (r264 banked the no-op)
 export ZE_AFFINITY_MASK=0,1
 export LD_LIBRARY_PATH=/opt/venv/lib:/opt/venv/lib/python3.12/site-packages/torch/lib
 # oneCCL TP2 block — identical in W14 incumbent and D lsv-test (validated
