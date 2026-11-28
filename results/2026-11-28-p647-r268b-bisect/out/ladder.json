@@ -1,0 +1,335 @@
+{
+ "verdict": "FIRST_RED=A_len_reps12",
+ "steps": [
+  {
+   "tag": "A1_control_ptok6",
+   "http": 200,
+   "ptok": 6,
+   "lp_n": 16,
+   "lp_nan": 0,
+   "wall": 5.72,
+   "red": false,
+   "text": " a city of romance, art, and culture. It is also a city of"
+  },
+  {
+   "tag": "A_len_reps1",
+   "http": 200,
+   "ptok": 12,
+   "lp_n": 16,
+   "lp_nan": 0,
+   "wall": 1.73,
+   "red": false,
+   "text": "\n\nThe quick brown fox jumps over the lazy dog. \n\nThe quick brown"
+  },
+  {
+   "tag": "A_len_reps2",
+   "http": 200,
+   "ptok": 22,
+   "lp_n": 16,
+   "lp_nan": 0,
+   "wall": 1.69,
+   "red": false,
+   "text": "1234567890 12345"
+  },
+  {
+   "tag": "A_len_reps3",
+   "http": 200,
+   "ptok": 32,
+   "lp_n": 16,
+   "lp_nan": 0,
+   "wall": 1.47,
+   "red": false,
+   "text": "\n\nThe quick brown fox jumps over the lazy dog. The quick brown fox jumps"
+  },
+  {
+   "tag": "A_len_reps4",
+   "http": 200,
+   "ptok": 42,
+   "lp_n": 16,
+   "lp_nan": 0,
+   "wall": 1.49,
+   "red": false,
+   "text": "\n\nThe quick brown fox jumps over the lazy dog. The quick brown fox jumps"
+  },
+  {
+   "tag": "A_len_reps5",
+   "http": 200,
+   "ptok": 52,
+   "lp_n": 16,
+   "lp_nan": 0,
+   "wall": 1.48,
+   "red": false,
+   "text": "\n\nThe quick brown fox jumps over the lazy dog. The quick brown fox jumps"
+  },
+  {
+   "tag": "A_len_reps6",
+   "http": 200,
+   "ptok": 62,
+   "lp_n": 16,
+   "lp_nan": 0,
+   "wall": 1.46,
+   "red": false,
+   "text": "\n\nThe quick brown fox jumps over the lazy dog. The quick brown fox jumps"
+  },
+  {
+   "tag": "A_len_reps8",
+   "http": 200,
+   "ptok": 82,
+   "lp_n": 16,
+   "lp_nan": 0,
+   "wall": 1.53,
+   "red": false,
+   "text": "\n\nThe quick brown fox jumps over the lazy dog. The quick brown fox jumps"
+  },
+  {
+   "tag": "A_len_reps10",
+   "http": 200,
+   "ptok": 102,
+   "lp_n": 16,
+   "lp_nan": 0,
+   "wall": 1.46,
+   "red": false,
+   "text": "\n\nThe quick brown fox jumps over the lazy dog. The quick brown fox jumps"
+  },
+  {
+   "tag": "A_len_reps12",
+   "http": 400,
+   "ptok": null,
+   "lp_n": 0,
+   "lp_nan": null,
+   "wall": 1.47,
+   "red": true,
+   "text": ""
+  },
+  {
+   "tag": "B1_gate_battery_chat",
+   "http": 200,
+   "ptok": 40,
+   "lp_n": 0,
+   "lp_nan": 0,
+   "wall": 5.8,
+   "red": false,
+   "text": ""
+  },
+  {
+   "tag": "B2_chat_card_full_params",
+   "http": 400,
+   "ptok": null,
+   "lp_n": 0,
+   "lp_nan": null,
+   "wall": 8.8,
+   "red": true,
+   "text": ""
+  },
+  {
+   "tag": "C1_two_way/r0",
+   "http": 400,
+   "ptok": null,
+   "lp_n": 0,
+   "lp_nan": null,
+   "wall": 1.49,
+   "red": true,
+   "text": ""
+  },
+  {
+   "tag": "C1_two_way/r1",
+   "http": 400,
+   "ptok": null,
+   "lp_n": 0,
+   "lp_nan": null,
+   "wall": 1.62,
+   "red": true,
+   "text": ""
+  },
+  {
+   "tag": "C2_eight_way_raw/r0",
+   "http": 400,
+   "ptok": null,
+   "lp_n": 0,
+   "lp_nan": null,
+   "wall": 2.1,
+   "red": true,
+   "text": ""
+  },
+  {
+   "tag": "C2_eight_way_raw/r1",
+   "http": 400,
+   "ptok": null,
+   "lp_n": 0,
+   "lp_nan": null,
+   "wall": 2.23,
+   "red": true,
+   "text": ""
+  },
+  {
+   "tag": "C2_eight_way_raw/r2",
+   "http": 200,
+   "ptok": 57,
+   "lp_n": 16,
+   "lp_nan": 0,
+   "wall": 2.27,
+   "red": false,
+   "text": " 42.\n\nThe quick brown fox jumps over the lazy dog. The"
+  },
+  {
+   "tag": "C2_eight_way_raw/r3",
+   "http": 200,
+   "ptok": 67,
+   "lp_n": 16,
+   "lp_nan": 0,
+   "wall": 2.22,
+   "red": false,
+   "text": " 42.\n\nThe quick brown fox jumps over the lazy dog. The"
+  },
+  {
+   "tag": "C2_eight_way_raw/r4",
+   "http": 200,
+   "ptok": 77,
+   "lp_n": 16,
+   "lp_nan": 0,
+   "wall": 2.26,
+   "red": false,
+   "text": " <strong>The quick brown fox jumps over the lazy dog.</strong>\n\nThe quick"
+  },
+  {
+   "tag": "C2_eight_way_raw/r5",
+   "http": 200,
+   "ptok": 87,
+   "lp_n": 16,
+   "lp_nan": 0,
+   "wall": 2.21,
+   "red": false,
+   "text": " <strong>35</strong>\n\nThe quick brown fox jumps over the lazy dog."
+  },
+  {
+   "tag": "C2_eight_way_raw/r6",
+   "http": 200,
+   "ptok": 97,
+   "lp_n": 16,
+   "lp_nan": 0,
+   "wall": 2.25,
+   "red": false,
+   "text": "\n\nThe quick brown fox jumps over the lazy dog. The quick brown fox jumps"
+  },
+  {
+   "tag": "C2_eight_way_raw/r7",
+   "http": 200,
+   "ptok": 107,
+   "lp_n": 16,
+   "lp_nan": 0,
+   "wall": 2.2,
+   "red": false,
+   "text": "\n\nThe quick brown fox jumps over the lazy dog. The quick brown fox jumps"
+  },
+  {
+   "tag": "C3_eight_way_chat/c0",
+   "http": 400,
+   "ptok": null,
+   "lp_n": 0,
+   "lp_nan": null,
+   "wall": 6.0,
+   "red": true,
+   "text": ""
+  },
+  {
+   "tag": "C3_eight_way_chat/c1",
+   "http": 400,
+   "ptok": null,
+   "lp_n": 0,
+   "lp_nan": null,
+   "wall": 6.13,
+   "red": true,
+   "text": ""
+  },
+  {
+   "tag": "C3_eight_way_chat/c2",
+   "http": 400,
+   "ptok": null,
+   "lp_n": 0,
+   "lp_nan": null,
+   "wall": 6.17,
+   "red": true,
+   "text": ""
+  },
+  {
+   "tag": "C3_eight_way_chat/c3",
+   "http": 400,
+   "ptok": null,
+   "lp_n": 0,
+   "lp_nan": null,
+   "wall": 6.12,
+   "red": true,
+   "text": ""
+  },
+  {
+   "tag": "C3_eight_way_chat/c4",
+   "http": 400,
+   "ptok": null,
+   "lp_n": 0,
+   "lp_nan": null,
+   "wall": 6.16,
+   "red": true,
+   "text": ""
+  },
+  {
+   "tag": "C3_eight_way_chat/c5",
+   "http": 200,
+   "ptok": 45,
+   "lp_n": 0,
+   "lp_nan": 0,
+   "wall": 6.11,
+   "red": false,
+   "text": ""
+  },
+  {
+   "tag": "C3_eight_way_chat/c6",
+   "http": 400,
+   "ptok": null,
+   "lp_n": 0,
+   "lp_nan": null,
+   "wall": 6.15,
+   "red": true,
+   "text": ""
+  },
+  {
+   "tag": "C3_eight_way_chat/c7",
+   "http": 200,
+   "ptok": 45,
+   "lp_n": 0,
+   "lp_nan": 0,
+   "wall": 6.1,
+   "red": false,
+   "text": ""
+  },
+  {
+   "tag": "D_control_repeat",
+   "http": 200,
+   "ptok": 6,
+   "lp_n": 16,
+   "lp_nan": 0,
+   "wall": 1.46,
+   "red": false,
+   "text": " a city of romance, art, and culture. It is also a city of"
+  },
+  {
+   "tag": "E_redrepeat1",
+   "http": 400,
+   "ptok": null,
+   "lp_n": 0,
+   "lp_nan": null,
+   "wall": 1.47,
+   "red": true,
+   "text": ""
+  },
+  {
+   "tag": "E_redrepeat2",
+   "http": 400,
+   "ptok": null,
+   "lp_n": 0,
+   "lp_nan": null,
+   "wall": 1.47,
+   "red": true,
+   "text": ""
+  }
+ ]
+}
