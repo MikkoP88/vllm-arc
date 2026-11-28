@@ -224,6 +224,37 @@ block:
 and to the serve line:
 `--chat-template /root/chat_template_qwen38_high.jinja`.
 
+**Gemma skin — the r272 law (mandatory on every gemma boot)**
+Gemma is never served under the qwen skin: `tools/serve_arc_b70.sh`
+resolves the skin per model family (owner directive 2026-11-28 — mixing
+the qwen chat template or parser into gemma is violence; where no matching
+gemma skin can be found it is **fully removed**, never substituted).
+On a gemma boot (`ARC_MODEL`/`ARC_SERVED` matching gemma):
+- an **unset** `ARC_TEMPLATE` = the skin **fully removed** — no
+  `--chat-template`, no parser flags, checkpoint-native rendering;
+- any `*qwen*` template value (including the `__qwen_default__` token)
+  or `*qwen*` reasoning/tool-parser value fails the boot **boot-loud**
+  (`FATAL:` in the serve log — a stale env string can never silently
+  re-default);
+- qwen boots are untouched — the certified qwen skin byte-identical.
+
+The validated gemma skin ships in-repo as
+`assets/chat_template_gemma4.jinja` (md5 `5cbeda9b…` = the banked g3
+skin every lawful gemma leg mounts — the r266/r269 analysis-and-fix
+posture): set `ARC_TEMPLATE=<path-to-it>` with empty parsers
+(`ARC_RPARSER=` / `ARC_TPARSER=`). The official-structure variant
+(`chat_template_gemma4_official.jinja` with `gemma4` parsers) is the
+`_g4` leg class — the checkpoint ships no chat template of its own, and
+the official g4 structure degenerates confidently without it
+([`docs/reports/gemma-4-31b-mxfp8.md`](reports/gemma-4-31b-mxfp8.md)).
+The serve log's `ARC_SERVE_SKIN family=… tmpl=… rp=… tp=…` line banks
+the **resolved** posture (`<native>`/`<none>` = the removed classes) —
+the raw `ARC_SERVE_LAUNCHED` line still shows the pre-resolution env
+literals. Audit tool over a banked leg tree:
+`tools/ar/p266/p266_skin_audit.py`; executable proof of every refusal
+face: `tools/ar/r272_skin_selftest.sh` (8/8 postures, sed-extracts the
+shipped fragments so serve-script drift fails it).
+
 ### Best-performance postures (opt-in — what to enable when)
 
 The Step 2 block above is the certified default posture — best steady
