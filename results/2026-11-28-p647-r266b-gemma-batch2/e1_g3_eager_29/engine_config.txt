@@ -1,0 +1,15 @@
+ARC_CONTAINER_FRESH image=vllm-arc:v0.30.0-b70-cert29 id=77e08563f7c7 model=/models/gemma4-31b (recreated from none)
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert29 name=arc-r266 model=/models/gemma4-31b served=gemma4-31b quant=fp8 qcfg= graph=0 spec=0 gmu=0.8 maxlen=40960 mnbt=8192 seqs=64 fp8=0 xgc=0 tmpl=/root/build/chat_template_gemma4.jinja rp= tp= port=8000 04:16:20
+ARC_SERVE_KNOBS dtype=float16 kvdtype=fp8_e4m3 attn_fa2=1 04:16:20
+23:(APIServer pid=13) INFO 11-28 04:16:36 [api_utils.py:286] non-default args: {'model_tag': '/models/target', 'chat_template': '/root/chat_template_gemma4.jinja', 'model': '/models/target', 'trust_remote_code': True, 'dtype': 'float16', 'max_model_len': 40960, 'quantization': 'fp8', 'served_model_name': ['gemma4-31b'], 'tensor_parallel_size': 2, 'block_size': 64, 'gpu_memory_utilization': 0.8, 'kv_cache_dtype': 'fp8_e4m3', 'enable_prefix_caching': True, 'mamba_ssm_cache_dtype': 'float16', 'mamba_cache_mode': 'align', 'max_num_batched_tokens': 8192, 'max_num_seqs': 64, 'disable_hybrid_kv_cache_manager': False}
+25:(APIServer pid=13) INFO 11-28 04:16:51 [model.py:692] Resolved architecture: Gemma4ForConditionalGeneration
+26:(APIServer pid=13) WARNING 11-28 04:16:51 [model.py:2364] Casting torch.bfloat16 to torch.float16.
+163:(Worker_TP0 pid=709) INFO 11-28 04:17:39 [xpu.py:163] Using Triton backend.
+174:(Worker_TP1 pid=710) INFO 11-28 04:17:58 [model_runner.py:428] Model loading took 16.47 GiB memory and 20.838858 seconds
+175:(Worker_TP0 pid=709) INFO 11-28 04:17:58 [model_runner.py:428] Model loading took 16.47 GiB memory and 20.818351 seconds
+196:(EngineCore pid=465) INFO 11-28 04:20:45 [kv_cache_utils.py:2395] XPU KV cache size: 56,152 tokens, Maximum concurrency for 40,960 tokens per request: 1.37x
+199:(Worker_TP0 pid=709) [ARC-P629-SLIDE] hd256 sliding -> vxk FA2 windowed (r109 18x prefill)
+200:(Worker_TP1 pid=710) [ARC-P629-SLIDE] hd256 sliding -> vxk FA2 windowed (r109 18x prefill)
+201:(Worker_TP0 pid=709) [ARC-P628-FA2] hd512 full-attn -> vxk FA2 (r108ac 34x prefill)
+202:(Worker_TP1 pid=710) [ARC-P628-FA2] hd512 full-attn -> vxk FA2 (r108ac 34x prefill)
+302:(APIServer pid=13) WARNING 11-28 04:32:14 [model.py:1772] Default vLLM sampling parameters have been overridden by the model's `generation_config.json`: `{'temperature': 1.0, 'top_k': 64, 'top_p': 0.95}`. If this is not intended, please relaunch vLLM instance with `--generation-config vllm`.

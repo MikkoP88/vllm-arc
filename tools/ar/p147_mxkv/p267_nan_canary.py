@@ -17,10 +17,19 @@ certified control:
                                                heads 32 / num_key_value_
                                                heads 16 at TP2, config
                                                truth 2026-11-28)
-    glob   D=512 page 128 Hk=2 G=8  windowless (the 10 full layers:
+    glob   D=512 page 64  Hk=2 G=8  windowless (the 10 full layers:
                                                16 q / 2 kv per rank --
                                                num_global_key_value_
-                                               heads 4 at TP2)
+                                               heads 4 at TP2; PAGE 64:
+                                               serve args block_size=64,
+                                               the engine header's
+                                               page-size-unification note,
+                                               and p242's certified
+                                               d512p64 cell -- the
+                                               earlier "p128" census
+                                               claim was an unverified
+                                               inference, corrected
+                                               2026-11-28)
     ctrl   D=256 page 64  Hk=2 G=6             (the certified qwen lane,
                                                r242's ctrl256p64)
 
@@ -28,13 +37,16 @@ ENGINE-DISPATCH LAW (the r267 fidelity fix): the engine's
 _decode_attention (engine.py 776-830) routes by layer class --
 sliding-window layers ride the WHEEL's mx_paged_decode (windowed),
 windowless/global layers ride the FORK's Triton mx_decode called
-WITHOUT block_size (engine.py ~823) -- and the wrapper default is 64
-(triton_mx_decode.py mx_decode): on the gemma global pool (page 128)
-that walk addresses HALF-page rows at seq_len>64 (D-B, the latent
-call-site defect this canary now reproduces; qwen stayed clean because
-its pools are page 64).  Every gated face runs the engine's TRUE lane
-(glob cells via Triton at the pool's own page -- pagefix, the D-A
-isolation arm); face pagewidth measures D-B separately.
+WITHOUT block_size (engine.py ~823) -- the wrapper default is 64 and
+BOTH engine pools are page 64 (serve args block_size=64, the engine
+header's page-size-unification note, p242's certified d512p64; the
+earlier "global pool p128" census claim was an unverified inference,
+corrected 2026-11-28), so the default equals the true page and D-B is
+EXONERATED as the corruption cause -- it stays a latent robustness
+defect (a p128 pool would be walked HALF-page at seq_len>64), proven
+on the synthetic cell of face pagewidth.  Every gated face runs the
+engine's TRUE lane at the engine's TRUE pages (glob via Triton
+default == pool page; slide via wheel windowed native).
 
 FACES (each banked to the JSON; FAIL list -> nonzero exit):
   stepwise    THE onset face, never run before: bulk-store T prefill
@@ -74,14 +86,17 @@ FACES (each banked to the JSON; FAIL list -> nonzero exit):
               torch.empty pool — a census of non-finite outputs that
               characterizes what an engine WRONG-ROW read produces
               (the stale-slot-reuse signature's NaN source).
-  pagewidth   D-B (evidence, not gated): the engine's windowless call
-              site omits block_size — the default-64 walk on the p128
-              global pool is correct for ln<=64 (block bt[0], pos j)
-              then wrong from ln=65 (j//64 indexes the 128-token table
-              pitch; pos wraps).  Ladder ln=64..256 default vs pagefix
-              (true page): default d blows up past 64 while pagefix
-              holds the r198 law == the defect reproduced offline; the
-              one-line fix is engine.py:823 block_size=kv_cache.shape[1].
+  pagewidth   D-B hardening probe (evidence, not gated): the engine's
+              windowless call sites omit block_size and the wrapper
+              defaults 64 — EXONERATED as the gemma corruption cause
+              (both engine pools are page 64: serve args block_size
+              64, page-size unification, p242's d512p64; the earlier
+              p128 census claim was corrected 2026-11-28) but still a
+              LATENT robustness defect.  A SYNTHETIC p128 D=512 cell
+              ladders ln=64..256 default vs pagefix: default d blows
+              up past 64 while pagefix holds the r198 law == the
+              kernel property banked as hardening evidence for the
+              wrapper fix (None -> cache.shape[1]).
   ctrl        the certified qwen-cell regression guard (bulk exact
               over a shuffled p64 table): the wheel's native decode
               AND the engine-true Triton lane (default 64 == pool page
@@ -130,7 +145,7 @@ def _mxkv_dir() -> Path:
 
 
 _MXKV_DIR = _mxkv_dir()
-_CELL_SEED = {"slide": 11, "glob": 23}
+_CELL_SEED = {"slide": 11, "glob": 23, "synthp128": 47}
 
 
 def _md5(p: Path) -> str:
@@ -162,7 +177,7 @@ DEV = "xpu"
 FMTS = ("mxfp8", "mxfp4", "mxk8v4")
 CELLS = {
     "slide": {"D": 256, "BLOCK": 64, "HK": 8, "HREP": 2, "W": 1024},
-    "glob": {"D": 512, "BLOCK": 128, "HK": 2, "HREP": 8, "W": None},
+    "glob": {"D": 512, "BLOCK": 64, "HK": 2, "HREP": 8, "W": None},
     "ctrl": {"D": 256, "BLOCK": 64, "HK": 2, "HREP": 6, "W": None},
 }
 R: dict = {}
@@ -277,9 +292,11 @@ def engine_call(c, q_bf, cache, fmt, lens, bt, window=None, pagefix=False):
     """The ENGINE's decode dispatch, engine.py _decode_attention 1:1:
     sliding-window layers -> the wheel's windowed native decode;
     windowless/global layers -> the fork's Triton mx_decode, which the
-    engine calls WITHOUT block_size (the D-B latent defect: wrapper
-    default 64 on a p128 pool).  pagefix=True passes the pool's true
-    page -- the engine's obvious intent, the D-A isolation arm.  q
+    engine calls WITHOUT block_size (wrapper default 64 == both engine
+    pools' true page -- D-B latent-hardening, exonerated as the
+    corruption cause).  pagefix=True passes the pool's true page
+    explicitly (identical on p64 pools; the isolation arm for any
+    non-p64 pool).  q
     passes as bf16 exactly as the engine does (the A9 law: Triton
     promotes the q*K products to fp32 in-kernel, bit-equal to the old
     .float() upcast); out follows q's dtype via empty_like."""
@@ -487,20 +504,23 @@ def face_autosplit(c, cell, fmt, n_req=6, per_req=1600):
 # FACE: pagewidth (D-B — the engine's missing block_size, evidence)    #
 # ------------------------------------------------------------------ #
 
-def face_pagewidth(c, cell, fmt, T=1024):
-    """D-B, EVIDENCE (not gated into FAILED): engine.py ~823 calls
-    mx_decode WITHOUT block_size; the wrapper default 64
-    (triton_mx_decode.py) becomes the kernel's BLOCK_SIZE on the gemma
-    global pool (page 128).  For ln<=64 the default walk happens to be
-    correct (row j -> bt[j//64]=bt[0], pos j); from ln=65 it walks
-    HALF-page: j//64 indexes the 128-token block-table pitch (tokens
-    64.. read the block holding tokens 128..) and pos j%64 wraps --
-    wrong rows everywhere.  Ladder kept <= 256 so the walk stays inside
-    the table width (T=1024 -> 8 blocks at pool page): wrong-ROW
-    corruption isolated from out-of-bounds.  Default arm vs pagefix
-    (the pool's true page = the engine's obvious intent)."""
-    if c["W"] or c["BLOCK"] == 64:
-        return  # page 64 pools: default == true page, no D-B surface
+def face_pagewidth(fmt, T=1024):
+    """D-B hardening probe, EVIDENCE (not gated into FAILED): the
+    engine's five windowless call sites omit block_size and the
+    wrapper defaults 64 (triton_mx_decode.py) into the kernel's
+    BLOCK_SIZE -- EXONERATED as the gemma corruption cause (both
+    engine pools are page 64; default == true page on every pool the
+    engine builds) but latent: a p128 pool would be walked HALF-page
+    at seq_len>64.  This face proves the kernel property on a
+    SYNTHETIC p128 D=512 cell (engine-true glob geometry except the
+    page): for ln<=64 the default walk is accidentally correct (row j
+    -> bt[j//64]=bt[0], pos j); from ln=65 j//64 indexes the
+    128-token table pitch and pos wraps -- wrong rows everywhere.
+    Ladder kept <= 256 so the walk stays inside the table width
+    (T=1024 -> 8 blocks at pool page): wrong-ROW corruption isolated
+    from out-of-bounds.  Default arm vs pagefix (true page)."""
+    c = {"D": 512, "BLOCK": 128, "HK": 2, "HREP": 8, "W": None}
+    cell = "synthp128"
     d, hk, hrep = c["D"], c["HK"], c["HREP"]
     lens, tables, tb, tp, n_blocks = build_paged(c, T, seed=_CELL_SEED[cell] + 9)
     bt = flat_tables(lens, tables)
@@ -541,8 +561,9 @@ def face_pagewidth(c, cell, fmt, T=1024):
     )
     _rec("pagewidth", cell, fmt, ladder=ladder, d_b_reproduced=d_b)
     print(f"  note pagewidth/{cell}/{fmt}: D_B_REPRODUCED={d_b} "
-          "(default-64 walk on p128 pool corrupts past ln=64 while the "
-          "true-page walk holds; fix = engine.py:823 block_size=kv_cache.shape[1])")
+          "(default-64 walk on a synthetic p128 pool corrupts past ln=64 "
+          "while the true-page walk holds — latent-hardening evidence for "
+          "the wrapper fix block_size None -> cache.shape[1]")
 
 
 # ------------------------------------------------------------------ #
@@ -630,8 +651,8 @@ def main():
             print(f"[face] widewin {cell} {fmt}")
             face_widewin(CELLS[cell], cell, fmt)
     for fmt in FMTS:
-        print(f"[face] pagewidth glob {fmt}")
-        face_pagewidth(CELLS["glob"], "glob", fmt)
+        print(f"[face] pagewidth synthp128 {fmt}")
+        face_pagewidth(fmt)
     for cell in ("slide", "glob"):
         for fmt in ("mxfp8", "mxk8v4"):
             print(f"[face] autosplit {cell} {fmt}")
@@ -646,13 +667,15 @@ def main():
     )
     if not FAILED:
         verdict = (
-            "PASS with D_B reproduced — kernel/store math green at the engine's "
-            "true lanes and pages; the engine's windowless call site "
-            "(engine.py ~823, mx_decode without block_size) corrupts the p128 "
-            "global pool past ln=64 offline: fix block_size=kv_cache.shape[1]"
+            "PASS with D_B proven — kernel/store math green at the engine's "
+            "true lanes and pages; the synthetic p128 cell shows the wrapper "
+            "default-64 walk corrupts past ln=64 while the true-page walk "
+            "holds (latent-hardening evidence: land the wrapper fix, "
+            "block_size None -> cache.shape[1])"
             if d_b
-            else "PASS — canary clean: the engine defect is metadata/capture "
-            "wiring (or D-B is refuted at this pool), not kernel/store math"
+            else "PASS — canary clean: the engine defect is metadata-value "
+            "wiring (G3), not kernel/store math; D-B was not reproduced on "
+            "the synthetic cell (investigate the page assumption)"
         )
     else:
         verdict = f"FAIL — {len(FAILED)} offline reproductions"

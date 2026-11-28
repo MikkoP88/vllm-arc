@@ -1,0 +1,4 @@
+ARC_CONTAINER_FRESH image=vllm-arc:v0.30.0-b70-cert20 id=0419b74cb39b model=/models/gemma4-31b (recreated from none)
+ab13fb22a67a941089be995fdef5f3a0233c324f013a919e9eae8c31f5e3bd04
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert20 name=arc-r266 model=/models/gemma4-31b served=gemma4-31b quant=fp8 qcfg= graph=1 spec=0 gmu=0.8 maxlen=40960 mnbt=8192 seqs=64 fp8=0 xgc=0 tmpl=/root/build/chat_template_gemma4.jinja rp= tp= port=8000 05:04:56
+ARC_SERVE_KNOBS dtype=float16 kvdtype=fp8_e4m3 attn_fa2=1 05:04:56

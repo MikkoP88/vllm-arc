@@ -1,0 +1,100 @@
+PROMPT_ORACLE served=g3 engine_ntok=40 probe_ntok=40 match=True
+FORMAT g3 ntok=40 prompt='<bos><start_of_turn>user\nWhat is the capital of France? Answer with just the city name.<end_of_turn>\n<start_of_turn>model\n'
+FORMAT g4 ntok=27 prompt='<bos><|turn>user\nWhat is the capital of France? Answer with just the city name.<turn|>\n<|turn>model\n<|channel>thought\n<channel|>'
+FORMAT g4think ntok=30 prompt='<bos><|turn>system\n<|think|>\n<turn|>\n<|turn>user\nWhat is the capital of France? Answer with just the city name.<turn|>\n<|turn>model\n'
+SECTION chat done 598s
+SECTION raw done 841s
+chat kw=nothink t0: n=27 ok=0 http_err=27 reploop=0 empty=0 nextturn=0 echo=0 distinct_texts=0 lp1=- lp_gen=-
+chat kw=nothink t0b4: n=0 ok=0 http_err=0 reploop=0 empty=0 nextturn=0 echo=0 distinct_texts=0 lp1=- lp_gen=-
+chat kw=nothink t03: n=0 ok=0 http_err=0 reploop=0 empty=0 nextturn=0 echo=0 distinct_texts=0 lp1=- lp_gen=-
+chat kw=nothink t07: n=0 ok=0 http_err=0 reploop=0 empty=0 nextturn=0 echo=0 distinct_texts=0 lp1=- lp_gen=-
+chat kw=nothink card: n=27 ok=0 http_err=27 reploop=0 empty=0 nextturn=0 echo=0 distinct_texts=0 lp1=- lp_gen=-
+chat kw=nothink t1only: n=0 ok=0 http_err=0 reploop=0 empty=0 nextturn=0 echo=0 distinct_texts=0 lp1=- lp_gen=-
+chat kw=plain t0: n=27 ok=0 http_err=27 reploop=0 empty=0 nextturn=0 echo=0 distinct_texts=0 lp1=- lp_gen=-
+chat kw=plain t0b4: n=0 ok=0 http_err=0 reploop=0 empty=0 nextturn=0 echo=0 distinct_texts=0 lp1=- lp_gen=-
+chat kw=plain t03: n=0 ok=0 http_err=0 reploop=0 empty=0 nextturn=0 echo=0 distinct_texts=0 lp1=- lp_gen=-
+chat kw=plain t07: n=0 ok=0 http_err=0 reploop=0 empty=0 nextturn=0 echo=0 distinct_texts=0 lp1=- lp_gen=-
+chat kw=plain card: n=27 ok=1 http_err=26 reploop=0 empty=0 nextturn=0 echo=0 distinct_texts=1 lp1=-2.61 lp_gen=-0.45
+chat kw=plain t1only: n=0 ok=0 http_err=0 reploop=0 empty=0 nextturn=0 echo=0 distinct_texts=0 lp1=- lp_gen=-
+raw fmt=g3 t0: n=27 ok=0 http_err=27 reploop=0 empty=0 nextturn=0 echo=0 distinct_texts=0 lp1=- lp_gen=-
+    ptok_ok=0/27
+raw fmt=g3 t03: n=9 ok=0 http_err=9 reploop=0 empty=0 nextturn=0 echo=0 distinct_texts=0 lp1=- lp_gen=-
+    ptok_ok=0/9
+raw fmt=g3 t07: n=9 ok=0 http_err=9 reploop=0 empty=0 nextturn=0 echo=0 distinct_texts=0 lp1=- lp_gen=-
+    ptok_ok=0/9
+raw fmt=g3 card: n=18 ok=0 http_err=18 reploop=0 empty=0 nextturn=0 echo=0 distinct_texts=0 lp1=- lp_gen=-
+    ptok_ok=0/18
+raw fmt=g3 t1only: n=9 ok=0 http_err=9 reploop=0 empty=0 nextturn=0 echo=0 distinct_texts=0 lp1=- lp_gen=-
+    ptok_ok=0/9
+raw fmt=g4 t0: n=27 ok=0 http_err=27 reploop=0 empty=0 nextturn=0 echo=0 distinct_texts=0 lp1=- lp_gen=-
+    ptok_ok=0/27
+raw fmt=g4 t03: n=9 ok=0 http_err=9 reploop=0 empty=0 nextturn=0 echo=0 distinct_texts=0 lp1=- lp_gen=-
+    ptok_ok=0/9
+raw fmt=g4 t07: n=9 ok=0 http_err=9 reploop=0 empty=0 nextturn=0 echo=0 distinct_texts=0 lp1=- lp_gen=-
+    ptok_ok=0/9
+raw fmt=g4 card: n=18 ok=0 http_err=18 reploop=0 empty=0 nextturn=0 echo=0 distinct_texts=0 lp1=- lp_gen=-
+    ptok_ok=0/18
+raw fmt=g4 t1only: n=9 ok=0 http_err=9 reploop=0 empty=0 nextturn=0 echo=0 distinct_texts=0 lp1=- lp_gen=-
+    ptok_ok=0/9
+raw fmt=g4think t0: n=27 ok=0 http_err=27 reploop=0 empty=0 nextturn=0 echo=0 distinct_texts=0 lp1=- lp_gen=-
+    ptok_ok=0/27
+raw fmt=g4think t03: n=9 ok=0 http_err=9 reploop=0 empty=0 nextturn=0 echo=0 distinct_texts=0 lp1=- lp_gen=-
+    ptok_ok=0/9
+raw fmt=g4think t07: n=9 ok=0 http_err=9 reploop=0 empty=0 nextturn=0 echo=0 distinct_texts=0 lp1=- lp_gen=-
+    ptok_ok=0/9
+raw fmt=g4think card: n=18 ok=0 http_err=18 reploop=0 empty=0 nextturn=0 echo=0 distinct_texts=0 lp1=- lp_gen=-
+    ptok_ok=0/18
+raw fmt=g4think t1only: n=9 ok=0 http_err=9 reploop=0 empty=0 nextturn=0 echo=0 distinct_texts=0 lp1=- lp_gen=-
+    ptok_ok=0/9
+gate264 battery+sanity: n=5 ok=1 http_err=0 reploop=5 empty=0 nextturn=0 echo=0 distinct_texts=4 lp1=- lp_gen=-
+    [gate battery] finish=length 'Paris our our our our our our our our our our our our our our our our our our our our our '
+    [gate battery] finish=length 'def our our our our our our our our our our our our our our our our our our our our our ou'
+    [gate battery] finish=length 'Three our our our our our our our our our our our our our our our our our our our our our '
+    [gate sanity0] finish=length 'HEALTH our our our our our our our our our our our our our our our our our our our our our'
+    [gate sanity1] finish=length 'HEALTH our our our our our our our our our our our our our our our our our our our our our'
+-- per cell:
+  nothink card :: capital_france:HTTP400 | capital_france:HTTP400 | capital_france:HTTP400 | capital_norway:HTTP400 | capital_norway:HTTP400 | capital_norway:HTTP400 | fibonacci:HTTP400 | fibonacci:HTTP400 | fibonacci:HTTP400 | gases:HTTP400 | gases:HTTP400 | gases:HTTP400 | health:HTTP400 | health:HTTP400 | health:HTTP400 | mul:HTTP400 | mul:HTTP400 | mul:HTTP400 | multiname:HTTP400 | multiname:HTTP400 | multiname:HTTP400 | seven:HTTP400 | seven:HTTP400 | seven:HTTP400 | train:HTTP400 | train:HTTP400 | train:HTTP400
+  nothink t0 :: capital_france:HTTP400 | capital_france:HTTP400 | capital_france:HTTP400 | capital_norway:HTTP400 | capital_norway:HTTP400 | capital_norway:HTTP400 | fibonacci:HTTP400 | fibonacci:HTTP400 | fibonacci:HTTP400 | gases:HTTP400 | gases:HTTP400 | gases:HTTP400 | health:HTTP400 | health:HTTP400 | health:HTTP400 | mul:HTTP400 | mul:HTTP400 | mul:HTTP400 | multiname:HTTP400 | multiname:HTTP400 | multiname:HTTP400 | seven:HTTP400 | seven:HTTP400 | seven:HTTP400 | train:HTTP400 | train:HTTP400 | train:HTTP400
+  plain card :: capital_france:HTTP400 | capital_france:HTTP400 | capital_france:HTTP400 | capital_norway:HTTP400 | capital_norway:HTTP400 | capital_norway:HTTP400 | fibonacci:HTTP400 | fibonacci:HTTP400 | fibonacci:HTTP400 | gases:ok[s]'1. Hydrogen (H2): A colorless, odorles' | gases:HTTP400 | gases:HTTP400 | health:HTTP400 | health:HTTP400 | health:HTTP400 | mul:HTTP400 | mul:HTTP400 | mul:HTTP400 | multiname:HTTP400 | multiname:HTTP400 | multiname:HTTP400 | seven:HTTP400 | seven:HTTP400 | seven:HTTP400 | train:HTTP400 | train:HTTP400 | train:HTTP400
+  plain t0 :: capital_france:HTTP400 | capital_france:HTTP400 | capital_france:HTTP400 | capital_norway:HTTP400 | capital_norway:HTTP400 | capital_norway:HTTP400 | fibonacci:HTTP400 | fibonacci:HTTP400 | fibonacci:HTTP400 | gases:HTTP400 | gases:HTTP400 | gases:HTTP400 | health:HTTP400 | health:HTTP400 | health:HTTP400 | mul:HTTP400 | mul:HTTP400 | mul:HTTP400 | multiname:HTTP400 | multiname:HTTP400 | multiname:HTTP400 | seven:HTTP400 | seven:HTTP400 | seven:HTTP400 | train:HTTP400 | train:HTTP400 | train:HTTP400
+  g3 card :: capital_france:HTTP400 | capital_france:HTTP400 | capital_norway:HTTP400 | capital_norway:HTTP400 | fibonacci:HTTP400 | fibonacci:HTTP400 | gases:HTTP400 | gases:HTTP400 | health:HTTP400 | health:HTTP400 | mul:HTTP400 | mul:HTTP400 | multiname:HTTP400 | multiname:HTTP400 | seven:HTTP400 | seven:HTTP400 | train:HTTP400 | train:HTTP400
+  g3 t0 :: capital_france:HTTP400 | capital_france:HTTP400 | capital_france:HTTP400 | capital_norway:HTTP400 | capital_norway:HTTP400 | capital_norway:HTTP400 | fibonacci:HTTP400 | fibonacci:HTTP400 | fibonacci:HTTP400 | gases:HTTP400 | gases:HTTP400 | gases:HTTP400 | health:HTTP400 | health:HTTP400 | health:HTTP400 | mul:HTTP400 | mul:HTTP400 | mul:HTTP400 | multiname:HTTP400 | multiname:HTTP400 | multiname:HTTP400 | seven:HTTP400 | seven:HTTP400 | seven:HTTP400 | train:HTTP400 | train:HTTP400 | train:HTTP400
+  g3 t03 :: capital_france:HTTP400 | capital_norway:HTTP400 | fibonacci:HTTP400 | gases:HTTP400 | health:HTTP400 | mul:HTTP400 | multiname:HTTP400 | seven:HTTP400 | train:HTTP400
+  g3 t07 :: capital_france:HTTP400 | capital_norway:HTTP400 | fibonacci:HTTP400 | gases:HTTP400 | health:HTTP400 | mul:HTTP400 | multiname:HTTP400 | seven:HTTP400 | train:HTTP400
+  g3 t1only :: capital_france:HTTP400 | capital_norway:HTTP400 | fibonacci:HTTP400 | gases:HTTP400 | health:HTTP400 | mul:HTTP400 | multiname:HTTP400 | seven:HTTP400 | train:HTTP400
+  g4 card :: capital_france:HTTP400 | capital_france:HTTP400 | capital_norway:HTTP400 | capital_norway:HTTP400 | fibonacci:HTTP400 | fibonacci:HTTP400 | gases:HTTP400 | gases:HTTP400 | health:HTTP400 | health:HTTP400 | mul:HTTP400 | mul:HTTP400 | multiname:HTTP400 | multiname:HTTP400 | seven:HTTP400 | seven:HTTP400 | train:HTTP400 | train:HTTP400
+  g4 t0 :: capital_france:HTTP400 | capital_france:HTTP400 | capital_france:HTTP400 | capital_norway:HTTP400 | capital_norway:HTTP400 | capital_norway:HTTP400 | fibonacci:HTTP400 | fibonacci:HTTP400 | fibonacci:HTTP400 | gases:HTTP400 | gases:HTTP400 | gases:HTTP400 | health:HTTP400 | health:HTTP400 | health:HTTP400 | mul:HTTP400 | mul:HTTP400 | mul:HTTP400 | multiname:HTTP400 | multiname:HTTP400 | multiname:HTTP400 | seven:HTTP400 | seven:HTTP400 | seven:HTTP400 | train:HTTP400 | train:HTTP400 | train:HTTP400
+  g4 t03 :: capital_france:HTTP400 | capital_norway:HTTP400 | fibonacci:HTTP400 | gases:HTTP400 | health:HTTP400 | mul:HTTP400 | multiname:HTTP400 | seven:HTTP400 | train:HTTP400
+  g4 t07 :: capital_france:HTTP400 | capital_norway:HTTP400 | fibonacci:HTTP400 | gases:HTTP400 | health:HTTP400 | mul:HTTP400 | multiname:HTTP400 | seven:HTTP400 | train:HTTP400
+  g4 t1only :: capital_france:HTTP400 | capital_norway:HTTP400 | fibonacci:HTTP400 | gases:HTTP400 | health:HTTP400 | mul:HTTP400 | multiname:HTTP400 | seven:HTTP400 | train:HTTP400
+  g4think card :: capital_france:HTTP400 | capital_france:HTTP400 | capital_norway:HTTP400 | capital_norway:HTTP400 | fibonacci:HTTP400 | fibonacci:HTTP400 | gases:HTTP400 | gases:HTTP400 | health:HTTP400 | health:HTTP400 | mul:HTTP400 | mul:HTTP400 | multiname:HTTP400 | multiname:HTTP400 | seven:HTTP400 | seven:HTTP400 | train:HTTP400 | train:HTTP400
+  g4think t0 :: capital_france:HTTP400 | capital_france:HTTP400 | capital_france:HTTP400 | capital_norway:HTTP400 | capital_norway:HTTP400 | capital_norway:HTTP400 | fibonacci:HTTP400 | fibonacci:HTTP400 | fibonacci:HTTP400 | gases:HTTP400 | gases:HTTP400 | gases:HTTP400 | health:HTTP400 | health:HTTP400 | health:HTTP400 | mul:HTTP400 | mul:HTTP400 | mul:HTTP400 | multiname:HTTP400 | multiname:HTTP400 | multiname:HTTP400 | seven:HTTP400 | seven:HTTP400 | seven:HTTP400 | train:HTTP400 | train:HTTP400 | train:HTTP400
+  g4think t03 :: capital_france:HTTP400 | capital_norway:HTTP400 | fibonacci:HTTP400 | gases:HTTP400 | health:HTTP400 | mul:HTTP400 | multiname:HTTP400 | seven:HTTP400 | train:HTTP400
+  g4think t07 :: capital_france:HTTP400 | capital_norway:HTTP400 | fibonacci:HTTP400 | gases:HTTP400 | health:HTTP400 | mul:HTTP400 | multiname:HTTP400 | seven:HTTP400 | train:HTTP400
+  g4think t1only :: capital_france:HTTP400 | capital_norway:HTTP400 | fibonacci:HTTP400 | gases:HTTP400 | health:HTTP400 | mul:HTTP400 | multiname:HTTP400 | seven:HTTP400 | train:HTTP400
+NLL para nll_mean=0.9134 n=156 ptok_ok=True
+NLL g3/capital_france nll_mean=1.2482 tail8=0.0156 top1=0.821 first_top=[(-0.302, 'Paris'), (-1.771, 'The'), (-4.115, '<'), (-5.443, 'Sure'), (-5.693, 'paris')]
+NLL g3/capital_norway nll_mean=1.3857 tail8=0.0166 top1=0.769 first_top=[(-0.352, 'Os'), (-1.727, 'The'), (-4.133, '<'), (-5.368, 'Norway'), (-5.461, 'I')]
+NLL g3/fibonacci nll_mean=1.2504 tail8=0.0123 top1=0.75 first_top=[(-1.007, 'def'), (-1.444, '```'), (-2.038, 'Here'), (-3.101, 'To'), (-3.616, 'Sure')]
+NLL g3/gases nll_mean=1.4054 tail8=0.0107 top1=0.778 first_top=[(-1.667, 'Three'), (-2.026, 'The'), (-2.136, 'Hydrogen'), (-2.276, 'Oxygen'), (-2.605, '1')]
+NLL g3/health nll_mean=2.0538 tail8=0.0173 top1=0.667 first_top=[(-0.1, 'HEALTH'), (-3.803, '<'), (-5.053, 'OK'), (-5.444, 'Reply'), (-6.053, 'Health')]
+NLL g3/mul nll_mean=1.3779 tail8=0.0128 top1=0.756 first_top=[(-0.441, '3'), (-2.332, '1'), (-2.472, 'The'), (-3.629, '<'), (-4.301, 'To')]
+NLL g3/seven nll_mean=1.843 tail8=0.0121 top1=0.629 first_top=[(-0.849, 'seven'), (-1.115, 'Seven'), (-3.49, 'Sure'), (-3.521, 'The'), (-3.63, '<')]
+NLL g3/train nll_mean=1.4176 tail8=0.0135 top1=0.662 first_top=[(-1.184, 'The'), (-2.075, 'To'), (-2.841, 'Let'), (-3.372, '1'), (-3.466, 'At')]
+NLL g4/capital_france nll_mean=6.2993 tail8=9.1438 top1=0.385 first_top=[(-2.004, 'thought'), (-2.489, 'user'), (-3.036, '\n'), (-3.098, 'observation'), (-3.145, 'output')]
+NLL g4/capital_norway nll_mean=6.3158 tail8=9.0668 top1=0.385 first_top=[(-1.871, 'thought'), (-2.277, 'user'), (-3.043, '\n'), (-3.277, 'output'), (-3.402, 'observation')]
+NLL g4/fibonacci nll_mean=6.2243 tail8=9.6879 top1=0.407 first_top=[(-2.205, 'thought'), (-2.674, 'output'), (-2.986, 'user'), (-3.111, 'response'), (-3.111, '\n')]
+NLL g4/gases nll_mean=7.254 tail8=9.5271 top1=0.391 first_top=[(-1.647, 'thought'), (-3.256, 'output'), (-3.444, '\n'), (-3.459, 'user'), (-3.506, 'answer')]
+NLL g4/health nll_mean=9.5096 tail8=9.3127 top1=0.158 first_top=[(-1.975, 'thought'), (-2.834, 'user'), (-3.068, '\n'), (-4.209, 'response'), (-4.318, 'action')]
+NLL g4/mul nll_mean=6.1176 tail8=9.2446 top1=0.357 first_top=[(-1.732, 'thought'), (-2.091, 'user'), (-3.201, '\n'), (-3.31, 'answer'), (-3.435, 'model')]
+NLL g4/seven nll_mean=7.7975 tail8=8.7372 top1=0.182 first_top=[(-1.722, 'thought'), (-2.879, '\n'), (-3.691, 'user'), (-3.754, 'output'), (-3.957, 'answer')]
+NLL g4/train nll_mean=3.6464 tail8=8.6605 top1=0.517 first_top=[(-1.798, 'thought'), (-2.782, '\n'), (-2.954, 'user'), (-3.376, 'answer'), (-3.813, 'output')]
+NLL g4think/capital_france nll_mean=5.3252 tail8=2.7697 top1=0.448 first_top=[(-1.034, 'The'), (-1.112, 'Paris'), (-4.159, 'What'), (-4.659, 'paris'), (-4.706, ' Париж')]
+NLL g4think/capital_norway nll_mean=5.506 tail8=2.7241 top1=0.414 first_top=[(-0.917, 'Os'), (-1.104, 'The'), (-4.276, 'What'), (-4.87, 'I'), (-5.182, 'os')]
+NLL g4think/fibonacci nll_mean=5.3085 tail8=3.2717 top1=0.467 first_top=[(-0.931, 'Here'), (-1.806, '```'), (-2.259, 'def'), (-3.462, 'To'), (-3.868, 'Sure')]
+NLL g4think/gases nll_mean=6.4203 tail8=3.0168 top1=0.423 first_top=[(-1.923, 'Three'), (-2.048, 'Here'), (-2.158, 'The'), (-2.798, '1'), (-2.892, 'Certainly')]
+NLL g4think/health nll_mean=8.0866 tail8=5.2548 top1=0.227 first_top=[(-3.232, 'Reply'), (-3.545, 'You'), (-3.639, 'I'), (-3.826, 'HEALTH'), (-4.279, 'Sure')]
+NLL g4think/mul nll_mean=5.3351 tail8=2.696 top1=0.387 first_top=[(-1.11, '3'), (-1.923, 'The'), (-2.22, 'To'), (-2.235, '1'), (-3.829, 'Let')]
+NLL g4think/seven nll_mean=6.9 tail8=3.7164 top1=0.24 first_top=[(-0.98, 'Seven'), (-1.245, 'seven'), (-3.042, 'The'), (-4.417, '7'), (-4.589, 'Sure')]
+NLL g4think/train nll_mean=3.4426 tail8=2.3563 top1=0.525 first_top=[(-1.521, 'To'), (-1.818, 'The'), (-2.693, 'Let'), (-3.959, 'If'), (-3.959, 'At')]
+P266_MATRIX_DONE tag=e2_m8g_eager_29 chat=108 raw=216 ptok_mismatch=0 para_ptok_ok=True oracle=True wall=865s json=/root/p266_out/matrix_e2_m8g_eager_29.json rc=0
