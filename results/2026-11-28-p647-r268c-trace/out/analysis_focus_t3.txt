@@ -1,0 +1,162 @@
+===== window 3 = T3_card_chat http=400 red=1
+layer-order ids: 120
+VIOLATING id=132237779248592 layer-position=10 stored-block~1421 row=[710, 614, 643, 644, 645, 646, 647, 648]
+
+-- its STORE lines (8 shown):
+   cache=(2240, 128, 2, 1056) stride=(270336, 2112, 1056, 1) slots=33 smap=[90905, 90906, 90907, 90908, 90909, 90910, 90911, 90912] smax=90912
+   cache=(2240, 128, 2, 1056) stride=(270336, 2112, 1056, 1) slots=1 smap=[90913] smax=90913
+   cache=(2240, 128, 2, 1056) stride=(270336, 2112, 1056, 1) slots=1 smap=[90914] smax=90914
+   cache=(2240, 128, 2, 1056) stride=(270336, 2112, 1056, 1) slots=1 smap=[90915] smax=90915
+   cache=(2240, 128, 2, 1056) stride=(270336, 2112, 1056, 1) slots=1 smap=[90916] smax=90916
+   cache=(2240, 128, 2, 1056) stride=(270336, 2112, 1056, 1) slots=1 smap=[90917] smax=90917
+   cache=(2240, 128, 2, 1056) stride=(270336, 2112, 1056, 1) slots=1 smap=[90918] smax=90918
+   cache=(2240, 128, 2, 1056) stride=(270336, 2112, 1056, 1) slots=1 smap=[90919] smax=90919
+-- its DECX lines (8 shown):
+   cache=(2240, 128, 2, 1056) stride=(270336, 2112, 1056, 1) B=1 sl=[34] msl=34 bts=(320, 1) bt0=[710, 614, 643, 644, 645, 646, 647, 648]
+   cache=(2240, 128, 2, 1056) stride=(270336, 2112, 1056, 1) B=1 sl=[35] msl=35 bts=(320, 1) bt0=[710, 614, 643, 644, 645, 646, 647, 648]
+   cache=(2240, 128, 2, 1056) stride=(270336, 2112, 1056, 1) B=1 sl=[36] msl=36 bts=(320, 1) bt0=[710, 614, 643, 644, 645, 646, 647, 648]
+   cache=(2240, 128, 2, 1056) stride=(270336, 2112, 1056, 1) B=1 sl=[37] msl=37 bts=(320, 1) bt0=[710, 614, 643, 644, 645, 646, 647, 648]
+   cache=(2240, 128, 2, 1056) stride=(270336, 2112, 1056, 1) B=1 sl=[38] msl=38 bts=(320, 1) bt0=[710, 614, 643, 644, 645, 646, 647, 648]
+   cache=(2240, 128, 2, 1056) stride=(270336, 2112, 1056, 1) B=1 sl=[39] msl=39 bts=(320, 1) bt0=[710, 614, 643, 644, 645, 646, 647, 648]
+   cache=(2240, 128, 2, 1056) stride=(270336, 2112, 1056, 1) B=1 sl=[40] msl=40 bts=(320, 1) bt0=[710, 614, 643, 644, 645, 646, 647, 648]
+   cache=(2240, 128, 2, 1056) stride=(270336, 2112, 1056, 1) B=1 sl=[41] msl=41 bts=(320, 1) bt0=[710, 614, 643, 644, 645, 646, 647, 648]
+
+-- CONTRAST layer-position=9 id=129397570546880:
+   STORE cache=(2240, 64, 8, 528) stride=(270336, 4224, 528, 1) slots=33 smap=[39833, 39834, 39835, 39836, 39837, 39838, 39839, 39840] smax=39840
+   STORE cache=(2240, 64, 8, 528) stride=(270336, 4224, 528, 1) slots=1 smap=[39841] smax=39841
+   STORE cache=(2240, 64, 8, 528) stride=(270336, 4224, 528, 1) slots=1 smap=[39842] smax=39842
+   DECX  cache=(2240, 64, 8, 528) stride=(270336, 4224, 528, 1) B=1 sl=[34] msl=34 bts=(640, 1) bt0=[622, 618, 615, 516, 517, 518, 519, 520]
+   DECX  cache=(2240, 64, 8, 528) stride=(270336, 4224, 528, 1) B=1 sl=[35] msl=35 bts=(640, 1) bt0=[622, 618, 615, 516, 517, 518, 519, 520]
+   DECX  cache=(2240, 64, 8, 528) stride=(270336, 4224, 528, 1) B=1 sl=[36] msl=36 bts=(640, 1) bt0=[622, 618, 615, 516, 517, 518, 519, 520]
+
+-- CONTRAST layer-position=11 id=129397570649312:
+   STORE cache=(2240, 128, 2, 1056) stride=(270336, 2112, 1056, 1) slots=33 smap=[90905, 90906, 90907, 90908, 90909, 90910, 90911, 90912] smax=90912
+   STORE cache=(2240, 128, 2, 1056) stride=(270336, 2112, 1056, 1) slots=1 smap=[90913] smax=90913
+   STORE cache=(2240, 128, 2, 1056) stride=(270336, 2112, 1056, 1) slots=1 smap=[90914] smax=90914
+   DECX  cache=(2240, 128, 2, 1056) stride=(270336, 2112, 1056, 1) B=1 sl=[34] msl=34 bts=(320, 1) bt0=[710, 614, 643, 644, 645, 646, 647, 648]
+   DECX  cache=(2240, 128, 2, 1056) stride=(270336, 2112, 1056, 1) B=1 sl=[35] msl=35 bts=(320, 1) bt0=[710, 614, 643, 644, 645, 646, 647, 648]
+   DECX  cache=(2240, 128, 2, 1056) stride=(270336, 2112, 1056, 1) B=1 sl=[36] msl=36 bts=(320, 1) bt0=[710, 614, 643, 644, 645, 646, 647, 648]
+
+-- who else stores to the 1240-range (smax//64 in 1230..1260)?
+
+-- prefill store ranges per layer-position (first store with slots>4 per id):
+   pos= 0 id=129397571824208 cache=(2240, 64, 8, 528) slots=33 smax=39904 block~623
+   pos= 1 id=132237751633488 cache=(2240, 64, 8, 528) slots=33 smax=39904 block~623
+   pos= 2 id=132237749997632 cache=(2240, 64, 8, 528) slots=33 smax=39584 block~618
+   pos= 3 id=129397617028048 cache=(2240, 64, 8, 528) slots=33 smax=39584 block~618
+   pos= 4 id=132237750016272 cache=(2240, 64, 8, 528) slots=33 smax=39456 block~616
+   pos= 5 id=129397570649840 cache=(2240, 64, 8, 528) slots=33 smax=39456 block~616
+   pos= 6 id=129397570543808 cache=(2240, 64, 8, 528) slots=33 smax=45408 block~709
+   pos= 7 id=132237750020736 cache=(2240, 64, 8, 528) slots=33 smax=45408 block~709
+   pos= 8 id=132237779252384 cache=(2240, 64, 8, 528) slots=33 smax=39840 block~622
+   pos= 9 id=129397570546880 cache=(2240, 64, 8, 528) slots=33 smax=39840 block~622
+   pos=10 id=132237779248592 cache=(2240, 128, 2, 1056) slots=33 smax=90912 block~1420
+   pos=11 id=129397570649312 cache=(2240, 128, 2, 1056) slots=33 smax=90912 block~1420
+   pos=12 id=132237749950880 cache=(2240, 64, 8, 528) slots=33 smax=39904 block~623
+   pos=13 id=129397570555632 cache=(2240, 64, 8, 528) slots=33 smax=39904 block~623
+   pos=14 id=132237751317664 cache=(2240, 64, 8, 528) slots=33 smax=39584 block~618
+   pos=15 id=129397570560432 cache=(2240, 64, 8, 528) slots=33 smax=39584 block~618
+   pos=16 id=132237751635840 cache=(2240, 64, 8, 528) slots=33 smax=39456 block~616
+   pos=17 id=129397570563024 cache=(2240, 64, 8, 528) slots=33 smax=39456 block~616
+   pos=18 id=129397617024688 cache=(2240, 64, 8, 528) slots=33 smax=45408 block~709
+   pos=19 id=132237750022752 cache=(2240, 64, 8, 528) slots=33 smax=45408 block~709
+   pos=20 id=129397570542512 cache=(2240, 64, 8, 528) slots=33 smax=39840 block~622
+   pos=21 id=132237751312720 cache=(2240, 64, 8, 528) slots=33 smax=39840 block~622
+   pos=22 id=129399343522752 cache=(2240, 128, 2, 1056) slots=33 smax=90912 block~1420
+   pos=23 id=132237749865840 cache=(2240, 128, 2, 1056) slots=33 smax=90912 block~1420
+   pos=24 id=129397570582192 cache=(2240, 64, 8, 528) slots=33 smax=39904 block~623
+   pos=25 id=132237749866368 cache=(2240, 64, 8, 528) slots=33 smax=39904 block~623
+   pos=26 id=129397570569424 cache=(2240, 64, 8, 528) slots=33 smax=39584 block~618
+   pos=27 id=132237749964672 cache=(2240, 64, 8, 528) slots=33 smax=39584 block~618
+   pos=28 id=129397570508352 cache=(2240, 64, 8, 528) slots=33 smax=39456 block~616
+   pos=29 id=132237749971392 cache=(2240, 64, 8, 528) slots=33 smax=39456 block~616
+   pos=30 id=129397570512336 cache=(2240, 64, 8, 528) slots=33 smax=45408 block~709
+   pos=31 id=132237751318960 cache=(2240, 64, 8, 528) slots=33 smax=45408 block~709
+   pos=32 id=129397570554864 cache=(2240, 64, 8, 528) slots=33 smax=39840 block~622
+   pos=33 id=132237749685136 cache=(2240, 64, 8, 528) slots=33 smax=39840 block~622
+   pos=34 id=129397570515024 cache=(2240, 128, 2, 1056) slots=33 smax=90912 block~1420
+   pos=35 id=132237750016512 cache=(2240, 128, 2, 1056) slots=33 smax=90912 block~1420
+   pos=36 id=129397570061136 cache=(2240, 64, 8, 528) slots=33 smax=39904 block~623
+   pos=37 id=132237749962944 cache=(2240, 64, 8, 528) slots=33 smax=39904 block~623
+   pos=38 id=129397570553712 cache=(2240, 64, 8, 528) slots=33 smax=39584 block~618
+   pos=39 id=132237749694640 cache=(2240, 64, 8, 528) slots=33 smax=39584 block~618
+   pos=40 id=129397570498592 cache=(2240, 64, 8, 528) slots=33 smax=39456 block~616
+   pos=41 id=132237749897072 cache=(2240, 64, 8, 528) slots=33 smax=39456 block~616
+   pos=42 id=129397570502192 cache=(2240, 64, 8, 528) slots=33 smax=45408 block~709
+   pos=43 id=132237749901488 cache=(2240, 64, 8, 528) slots=33 smax=45408 block~709
+   pos=44 id=129397570571248 cache=(2240, 64, 8, 528) slots=33 smax=39840 block~622
+   pos=45 id=132237749970480 cache=(2240, 64, 8, 528) slots=33 smax=39840 block~622
+   pos=46 id=129397570542416 cache=(2240, 128, 2, 1056) slots=33 smax=90912 block~1420
+   pos=47 id=132237749908448 cache=(2240, 128, 2, 1056) slots=33 smax=90912 block~1420
+   pos=48 id=129397570544240 cache=(2240, 64, 8, 528) slots=33 smax=39904 block~623
+   pos=49 id=132237749687968 cache=(2240, 64, 8, 528) slots=33 smax=39904 block~623
+   pos=50 id=129397570244720 cache=(2240, 64, 8, 528) slots=33 smax=39584 block~618
+   pos=51 id=132237749962608 cache=(2240, 64, 8, 528) slots=33 smax=39584 block~618
+   pos=52 id=132237749935168 cache=(2240, 64, 8, 528) slots=33 smax=39456 block~616
+   pos=53 id=129397570551536 cache=(2240, 64, 8, 528) slots=33 smax=39456 block~616
+   pos=54 id=129397570367664 cache=(2240, 64, 8, 528) slots=33 smax=45408 block~709
+   pos=55 id=132237749691136 cache=(2240, 64, 8, 528) slots=33 smax=45408 block~709
+   pos=56 id=129397570363872 cache=(2240, 64, 8, 528) slots=33 smax=39840 block~622
+   pos=57 id=132237749941216 cache=(2240, 64, 8, 528) slots=33 smax=39840 block~622
+   pos=58 id=129397570360272 cache=(2240, 128, 2, 1056) slots=33 smax=90912 block~1420
+   pos=59 id=132237749911632 cache=(2240, 128, 2, 1056) slots=33 smax=90912 block~1420
+   pos=60 id=129397570356432 cache=(2240, 64, 8, 528) slots=33 smax=39904 block~623
+   pos=61 id=132237749913552 cache=(2240, 64, 8, 528) slots=33 smax=39904 block~623
+   pos=62 id=129397571209360 cache=(2240, 64, 8, 528) slots=33 smax=39584 block~618
+   pos=63 id=132237749917344 cache=(2240, 64, 8, 528) slots=33 smax=39584 block~618
+   pos=64 id=129397570458912 cache=(2240, 64, 8, 528) slots=33 smax=39456 block~616
+   pos=65 id=132237749921808 cache=(2240, 64, 8, 528) slots=33 smax=39456 block~616
+   pos=66 id=129397570462224 cache=(2240, 64, 8, 528) slots=33 smax=45408 block~709
+   pos=67 id=132237749925264 cache=(2240, 64, 8, 528) slots=33 smax=45408 block~709
+   pos=68 id=129397570561056 cache=(2240, 64, 8, 528) slots=33 smax=39840 block~622
+   pos=69 id=132237749879200 cache=(2240, 64, 8, 528) slots=33 smax=39840 block~622
+   pos=70 id=129397570469424 cache=(2240, 128, 2, 1056) slots=33 smax=90912 block~1420
+   pos=71 id=132237749885200 cache=(2240, 128, 2, 1056) slots=33 smax=90912 block~1420
+   pos=72 id=132237749912208 cache=(2240, 64, 8, 528) slots=33 smax=39904 block~623
+   pos=73 id=129397570469616 cache=(2240, 64, 8, 528) slots=33 smax=39904 block~623
+   pos=74 id=129397570445696 cache=(2240, 64, 8, 528) slots=33 smax=39584 block~618
+   pos=75 id=132237749891248 cache=(2240, 64, 8, 528) slots=33 smax=39584 block~618
+   pos=76 id=129397616583280 cache=(2240, 64, 8, 528) slots=33 smax=39456 block~616
+   pos=77 id=132237420298368 cache=(2240, 64, 8, 528) slots=33 smax=39456 block~616
+   pos=78 id=129397570251200 cache=(2240, 64, 8, 528) slots=33 smax=45408 block~709
+   pos=79 id=132237420301584 cache=(2240, 64, 8, 528) slots=33 smax=45408 block~709
+   pos=80 id=129397570491104 cache=(2240, 64, 8, 528) slots=33 smax=39840 block~622
+   pos=81 id=132237420304800 cache=(2240, 64, 8, 528) slots=33 smax=39840 block~622
+   pos=82 id=129397568607904 cache=(2240, 128, 2, 1056) slots=33 smax=90912 block~1420
+   pos=83 id=132237749931904 cache=(2240, 128, 2, 1056) slots=33 smax=90912 block~1420
+   pos=84 id=129397568606512 cache=(2240, 64, 8, 528) slots=33 smax=39904 block~623
+   pos=85 id=132237420310704 cache=(2240, 64, 8, 528) slots=33 smax=39904 block~623
+   pos=86 id=129397568614000 cache=(2240, 64, 8, 528) slots=33 smax=39584 block~618
+   pos=87 id=132237420313920 cache=(2240, 64, 8, 528) slots=33 smax=39584 block~618
+   pos=88 id=129397568617216 cache=(2240, 64, 8, 528) slots=33 smax=39456 block~616
+   pos=89 id=132237420513664 cache=(2240, 64, 8, 528) slots=33 smax=39456 block~616
+   pos=90 id=129397617018640 cache=(2240, 64, 8, 528) slots=33 smax=45408 block~709
+   pos=91 id=132237420516784 cache=(2240, 64, 8, 528) slots=33 smax=45408 block~709
+   pos=92 id=129397570453632 cache=(2240, 64, 8, 528) slots=33 smax=39840 block~622
+   pos=93 id=132237420520192 cache=(2240, 64, 8, 528) slots=33 smax=39840 block~622
+   pos=94 id=129397568823056 cache=(2240, 128, 2, 1056) slots=33 smax=90912 block~1420
+   pos=95 id=132237420307680 cache=(2240, 128, 2, 1056) slots=33 smax=90912 block~1420
+   pos=96 id=129397568826608 cache=(2240, 64, 8, 528) slots=33 smax=39904 block~623
+   pos=97 id=132237420526576 cache=(2240, 64, 8, 528) slots=33 smax=39904 block~623
+   pos=98 id=129397570501136 cache=(2240, 64, 8, 528) slots=33 smax=39584 block~618
+   pos=99 id=132237420513520 cache=(2240, 64, 8, 528) slots=33 smax=39584 block~618
+   pos=100 id=129397566949616 cache=(2240, 64, 8, 528) slots=33 smax=39456 block~616
+   pos=101 id=132237420298704 cache=(2240, 64, 8, 528) slots=33 smax=39456 block~616
+   pos=102 id=129397566952640 cache=(2240, 64, 8, 528) slots=33 smax=45408 block~709
+   pos=103 id=132237420527488 cache=(2240, 64, 8, 528) slots=33 smax=45408 block~709
+   pos=104 id=129397566953216 cache=(2240, 64, 8, 528) slots=33 smax=39840 block~622
+   pos=105 id=132237420784880 cache=(2240, 64, 8, 528) slots=33 smax=39840 block~622
+   pos=106 id=129397566957008 cache=(2240, 128, 2, 1056) slots=33 smax=90912 block~1420
+   pos=107 id=132237420787904 cache=(2240, 128, 2, 1056) slots=33 smax=90912 block~1420
+   pos=108 id=129397566961760 cache=(2240, 64, 8, 528) slots=33 smax=39904 block~623
+   pos=109 id=132237749912832 cache=(2240, 64, 8, 528) slots=33 smax=39904 block~623
+   pos=110 id=132237420789632 cache=(2240, 64, 8, 528) slots=33 smax=39584 block~618
+   pos=111 id=129397567161696 cache=(2240, 64, 8, 528) slots=33 smax=39584 block~618
+   pos=112 id=129397567163856 cache=(2240, 64, 8, 528) slots=33 smax=39456 block~616
+   pos=113 id=132237779246864 cache=(2240, 64, 8, 528) slots=33 smax=39456 block~616
+   pos=114 id=132237418900336 cache=(2240, 64, 8, 528) slots=33 smax=45408 block~709
+   pos=115 id=129397567165824 cache=(2240, 64, 8, 528) slots=33 smax=45408 block~709
+   pos=116 id=129397567170000 cache=(2240, 64, 8, 528) slots=33 smax=39840 block~622
+   pos=117 id=132237749958704 cache=(2240, 64, 8, 528) slots=33 smax=39840 block~622
+   pos=118 id=129397567173072 cache=(2240, 128, 2, 1056) slots=33 smax=90912 block~1420
+   pos=119 id=132237419103392 cache=(2240, 128, 2, 1056) slots=33 smax=90912 block~1420

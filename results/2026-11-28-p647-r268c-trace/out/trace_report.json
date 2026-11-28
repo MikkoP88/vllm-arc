@@ -1,0 +1,210 @@
+[
+ {
+  "tag": "T0_control_raw",
+  "http": 200,
+  "red": false,
+  "ptok": 6,
+  "store_groups": 1021,
+  "distinct_decx": 660,
+  "decx_first": [
+   "[1,",
+   "[4,",
+   "4",
+   "(640,",
+   "1",
+   "2"
+  ],
+  "decx_last": [
+   "[705,",
+   "[13]",
+   "13",
+   "(320,",
+   "1",
+   "1"
+  ],
+  "smap_not_in_bt": [],
+  "prefill_smap": "[-1,"
+ },
+ {
+  "tag": "T1_len122_raw",
+  "http": 400,
+  "red": true,
+  "ptok": null,
+  "store_groups": 960,
+  "distinct_decx": 900,
+  "decx_first": [
+   "[705,",
+   "[123]",
+   "123",
+   "(640,",
+   "1",
+   "1"
+  ],
+  "decx_last": [
+   "[620,",
+   "[137]",
+   "137",
+   "(320,",
+   "1",
+   "1"
+  ],
+  "smap_not_in_bt": [],
+  "prefill_smap": "[45234,"
+ },
+ {
+  "tag": "T2_gate_chat",
+  "http": 200,
+  "red": true,
+  "ptok": 40,
+  "store_groups": 3840,
+  "distinct_decx": 3780,
+  "decx_first": [
+   "[614,",
+   "[41]",
+   "41",
+   "(640,",
+   "1",
+   "1"
+  ],
+  "decx_last": [
+   "[623,",
+   "[103]",
+   "103",
+   "(320,",
+   "1",
+   "1"
+  ],
+  "smap_not_in_bt": [],
+  "prefill_smap": "[39328,"
+ },
+ {
+  "tag": "T3_card_chat",
+  "http": 400,
+  "red": true,
+  "ptok": null,
+  "store_groups": 5760,
+  "distinct_decx": 5700,
+  "decx_first": [
+   "[623,",
+   "[34]",
+   "34",
+   "(640,",
+   "1",
+   "1"
+  ],
+  "decx_last": [
+   "[710,",
+   "[128]",
+   "128",
+   "(320,",
+   "1",
+   "1"
+  ],
+  "smap_not_in_bt": [],
+  "prefill_smap": "[39897,"
+ },
+ {
+  "tag": "T4_g4short_raw",
+  "http": 400,
+  "red": true,
+  "ptok": null,
+  "store_groups": 5760,
+  "distinct_decx": 5700,
+  "decx_first": [
+   "[614,",
+   "[21]",
+   "21",
+   "(640,",
+   "1",
+   "1"
+  ],
+  "decx_last": [
+   "[616,",
+   "[115]",
+   "115",
+   "(320,",
+   "1",
+   "1"
+  ],
+  "smap_not_in_bt": [],
+  "prefill_smap": "[39308,"
+ },
+ {
+  "tag": "T5_g3cap_raw",
+  "http": 400,
+  "red": true,
+  "ptok": null,
+  "store_groups": 5760,
+  "distinct_decx": 5700,
+  "decx_first": [
+   "[616,",
+   "[41]",
+   "41",
+   "(640,",
+   "1",
+   "1"
+  ],
+  "decx_last": [
+   "[621,",
+   "[135]",
+   "135",
+   "(320,",
+   "1",
+   "1"
+  ],
+  "smap_not_in_bt": [],
+  "prefill_smap": "[39456,"
+ },
+ {
+  "tag": "T6_two_way/r0",
+  "http": 400,
+  "red": true,
+  "ptok": null,
+  "store_groups": 961,
+  "distinct_decx": 901,
+  "decx_first": [
+   "[612,",
+   "[38]",
+   "38",
+   "(640,",
+   "1",
+   "1"
+  ],
+  "decx_last": [
+   "[623,",
+   "[61]",
+   "61",
+   "(640,",
+   "1",
+   "1"
+  ],
+  "smap_not_in_bt": [],
+  "prefill_smap": "[39197,"
+ },
+ {
+  "tag": "T6_two_way/r1",
+  "http": 400,
+  "red": true,
+  "ptok": null,
+  "store_groups": 119,
+  "distinct_decx": 119,
+  "decx_first": [
+   "[706,",
+   "[61]",
+   "61",
+   "(640,",
+   "1",
+   "1"
+  ],
+  "decx_last": [
+   "[618,",
+   "[62]",
+   "62",
+   "(320,",
+   "1",
+   "1"
+  ],
+  "smap_not_in_bt": [],
+  "prefill_smap": "[45244]"
+ }
+]
