@@ -12,6 +12,123 @@ the fork SHA it was built from.
 Phase labels P0–P6.38 refer to the plan's execution phases; every phase's
 raw evidence is banked under `results/YYYY-MM-DD-<phase>-*/`.
 
+## r272 — the gemma skin law enforced at the serve script: family resolution, boot-loud FATALs, and the fully-removed default (2026-11-28)
+
+The owner's skin directive (2026-11-28) — "mixing qwen chat template and
+parser to gemma is violence; if a matching gemma skin cannot be found it is
+fully removed, never substituted" — closed as an enforcement defect, not a
+convention gap: the deep sweep proved every pre-r266 gemma gate (r125 through
+r264, all `skin_knobs=0`) rode the FULL qwen skin not by any leg env but by
+`tools/serve_arc_b70.sh`'s unset-default inheritance — `ARC_TEMPLATE`
+defaulting to `__qwen_default__` mounted the qwen template and the
+`qwen3`/`qwen3_coder` parser flags rode every boot (banked r264 m8g boot
+line: `model=/models/gemma4-31b ... tmpl=__qwen_default__ rp=<qwen3>
+tp=<qwen3_coder>`).
+
+The fix lands at the one enforcement point every leg already calls, four
+regions: (1) family resolution — `ARC_FAMILY` from `ARC_SERVED`/`ARC_MODEL`,
+and on gemma an UNSET `ARC_TEMPLATE` resolves to empty = fully removed, the
+`${ARC_TEMPLATE+set}` test placed BEFORE the `__qwen_default__` default so
+unset means removed while an explicit `__qwen_default__` still FATALs; (2) the
+template case block FATALs boot-loud on gemma for every qwen mixing face
+(a `*qwen*` value, the `__qwen_default__` token, any `*qwen*` basename) while
+empty passes as checkpoint-native; (3) the parser block FATALs on any
+`*qwen*` parser value on gemma and leaves the flags empty unless an explicit
+non-qwen parser is set (qwen boots keep the certified defaults
+byte-identical); (4) a new `ARC_SERVE_SKIN` evidence line banks the RESOLVED
+posture (`<native>`/`<none>` for the removed classes) — the raw
+`ARC_SERVE_LAUNCHED` render still shows the `<qwen3>` unset literals.
+`p266_skin_audit.py` grows the resolved-removed class (the SKIN line
+overrides the raw LAUNCHED render; official `_g4` legs still require the
+official template + gemma4 parsers; a bare empty tmpl with no SKIN line is
+unproven = FAIL), and the gemma g3 skin lands as a repo asset
+(`assets/chat_template_gemma4.jinja`, md5 `5cbeda9b`, byte-identical to the
+rig copy every lawful leg has been mounting). Executable proof:
+`tools/ar/r272_skin_selftest.sh` sed-extracts the shipped fragments
+(serve-script drift fails it) — 8/8 postures pass, from qwen byte-parity to
+all four explicit qwen faces dying boot-loud; the audit re-run proves the
+banked r269 g3 leg PASSes, a synthetic removed leg PASSes over its own
+`<qwen3>` LAUNCHED render, and the r264 bank audits 10/10 gemma legs FAIL
+with zero false passes. The rig's live serve script takes these bytes only
+when no gate pins it (midflight-script-edit law). Evidence: PR #190
+(`aea6d6cc`); the r264/r269 banks cited in-tool.
+
+## r269 — the MX-KV decode page fix VALIDATED and landed: 323/324 RED -> 0/329 GREEN on the production graph posture (2026-11-28)
+
+The fix — all three decode entry points (`mx_decode`, `mx_decode_rows`,
+`mx_decode_rows_dot`) take `block_size: int | None = None` and resolve it to
+the cache's OWN page (`cache.shape[1]`) at body start; explicit-page callers
+unchanged — flips the full p266 matrix on the same posture from 323/324 RED
+(the r268b same-boot baseline) to 0/329 RED under `ARC_GRAPH=1`, the
+production graph posture: chat 108/108, raw 216/216, gate 5/5, `http_err=0`
+in EVERY cell, finite logprobs everywhere (lp1 -0.68..-4.31), kernel health
+OK (`fault_lines=0`), 56 MXKV native calls with zero faults. The gate battery
+that reproduced the 'Paris our our' corruption byte-exactly now runs 5/5
+coherent ('Paris', fibonacci correct, the gases list, health OK). The
+intervention CONFIRMS the r268c root cause by experiment: changing exactly
+the walk's page resolution, with the engine bytes md5-identical to the
+image's, flips the entire matrix.
+
+Residual (not corruption): the g4 reploop 26/72 + g4think 22/72 cells are
+the known base-checkpoint template degeneration (the r266 b3 class), while
+the lawful g3 cells are reploop=0 across the board (65/72 answer-ok; the
+misses are nextturn/echo at finish=length). The fix LANDS IN-TREE as the
+validated bytes: `vllm_gaudi/xpu/patches/mx_kv/triton_mx_decode.py`
+(md5 `e33aa7b7` = the rig overlay, 3 hunks, ruff-clean); the engine's five
+call sites (354/823/995/1239/1528) all omit `block_size` -> per-pool
+resolution. Evidence: `results/2026-11-28-p647-r269-fixgate/` (15 files,
+13/13 transfer-oracle byte-match, address audit clean); PR #188
+(`906e8326` — the cert30 image content commit).
+
+## r268c — the root cause NAMED: gemma's two KV pools page differently and the default-64 walk reads past the glob table's valid prefix (2026-11-28)
+
+Gemma's two KV pools page DIFFERENTLY — slide `(2240,64,8,528)` page 64,
+glob `(2240,128,2,1056)` page 128 (bt strides 640 vs 320 = 40960 bytes per
+page) — while the engine's five `mx_decode` call sites omit `block_size`,
+so the Triton decode walks the 128-paged glob table at `BLOCK_SIZE=64`
+pitch: tokens 0-63 read correct rows, tokens 64+ read `row[offs_n//64]`
+PAST the valid row prefix (never-written -> the 400-nan logprobs;
+stale-written -> 'our'); slot alignment in the 128-space is the
+runtime-state dependence r268b measured; qwen is immune by uniform-pool
+construction. The traced boot (disc 7/8 RED with the T0 total-14 control
+CLEAN; 145,680 trace lines = 48,480 store + 46,920 decode events, joined
+per-layer by module id) proves it three independent ways — the two pool
+shapes/strides, the bt strides at 40960/page, and the five audited
+default-64 call sites — and the join recomputed at the TRUE page 128 shows
+stores/rows CONSISTENT: the defect is the WALK's page, not the table's
+contents.
+
+CORRECTIONS banked with the leg: the r266 note "both pools page 64 /
+D-B exonerated" was WRONG (the serve args' `block_size 64` is the engine
+config, not the glob tensor's page), and the r267 canary pagewidth face had
+reproduced this exact defect but was demoted on that false premise — the
+canary was right. Evidence: `results/2026-11-28-p647-r268c-trace/` (15
+files; the 29.8 MB serve.log gzipped after the raw-byte oracle;
+`trace_disc.txt` derivable via grep, not banked); PRs #186/#187
+(`ed6e19bb`/`d584c909`).
+
+## r268b — the same-boot discriminator: the corruption is runtime-state-dependent and every single-axis law is eliminated (2026-11-28)
+
+The request-bisection ladder (14/33 RED, `FIRST_RED=A_len_reps12` — plain
+sequential raws clean at ptok 6-102 with the RED at 122 being the only
+third-page-growth request; a 2-way burst both red; an 8-way only the
+first-admitted pair red; chats red; no env poisoning; deterministic) plus
+the FULL p266 probe on the SAME boot — 323/324 RED (chat 107/108, raw
+216/216 at every format x every cell INCLUDING t0 temp=0 and NON-crossing
+g4 short prompts 20+96=116<128, and a gate battery reproducing the
+'Paris our our' byte-class) — eliminate every single-axis law (sampling,
+length-crossing, concurrency, endpoint). The RED class is every TEMPLATED
+request plus two narrow plain-raw conditions, and one card chat ran 67
+clean tokens among 53 identical RED siblings: the outcome is
+RUNTIME-STATE-DEPENDENT — wrong-ADDRESS reads whose content varies with
+pool state (never-written -> nan-400 / stale -> 'our' / valid -> clean,
+per the r267 census). This is the leg that aimed r268c at the walk's
+addressing rather than the table's contents. Evidence:
+`results/2026-11-28-p647-r268b-bisect/` and the same-boot probe inside
+`results/2026-11-28-p647-r266-gemma-analysis/` /
+`-r266b-gemma-batch2/` (the r266/r267 analysis-matrix banks); PR #185
+(`5361dbae`).
+
 ## r264 — the cert29 gate: the stride fix held, ten of eleven legs green, mkg RED on longreturn — cert cut blocked (2026-11-27)
 
 The r262 stride fix is proven at the gate: every MX lane engaged the bridge

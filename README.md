@@ -303,7 +303,12 @@ Optional postures (all documented in full in
   constraint.
 
 The uniform boot interface with posture knobs (rig paths) is
-`tools/serve_arc_b70.sh`.
+`tools/serve_arc_b70.sh`. On gemma-4 boots the skin resolves per model
+family (the r272 law): an unset template means the skin is **fully
+removed** — never the qwen defaults — and any qwen template/parser value
+fails the boot loudly; the validated gemma skin ships in-repo as
+`assets/chat_template_gemma4.jinja` (CONFIGURATION "Gemma skin — the
+r272 law").
 
 ## Documentation
 
