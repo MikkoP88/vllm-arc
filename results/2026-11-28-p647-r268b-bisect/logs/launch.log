@@ -1,0 +1,136 @@
+R268B_BEGIN 2026-11-28T09:27:18Z image=vllm-arc:v0.30.0-b70-cert29 ladder_md5=88345633b6e3bd36d51ed9d0370ab446
+=== [r268b] W14 quiesce 09:27:18 ===
+=== [r268b] boot c3 posture PLAIN IMAGE (no overlay) 09:27:35 ===
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert29 name=arc-r268b model=/models/gemma4-31b served=gemma4-31b quant=fp8 qcfg= graph=0 spec=0 gmu=0.8 maxlen=40960 mnbt=8192 seqs=64 fp8=0 xgc=0 tmpl=/root/build/chat_templ
+=== [r268b] health poll (identity-verified) ===
+HEALTH_OK_r268b 09:33:23Z (identity-verified)
+=== [r268b] the bisection ladder (A length / B e2 shapes / C concurrency / D recheck / E determinism) ===
+[p268b] ladder start 09:33:23
+[ok  ] A1_control_ptok6: http=200 ptok=6 lp_nan=0/16 wall=5.7 text=' a city of romance, art, and culture. It is also a city of'
+[ok  ] A_len_reps1: http=200 ptok=12 lp_nan=0/16 wall=1.7 text='\n\nThe quick brown fox jumps over the lazy dog. \n\nThe quick brown'
+[ok  ] A_len_reps2: http=200 ptok=22 lp_nan=0/16 wall=1.7 text='1234567890 12345'
+[ok  ] A_len_reps3: http=200 ptok=32 lp_nan=0/16 wall=1.5 text='\n\nThe quick brown fox jumps over the lazy dog. The quick brown fox jum'
+[ok  ] A_len_reps4: http=200 ptok=42 lp_nan=0/16 wall=1.5 text='\n\nThe quick brown fox jumps over the lazy dog. The quick brown fox jum'
+[ok  ] A_len_reps5: http=200 ptok=52 lp_nan=0/16 wall=1.5 text='\n\nThe quick brown fox jumps over the lazy dog. The quick brown fox jum'
+[ok  ] A_len_reps6: http=200 ptok=62 lp_nan=0/16 wall=1.5 text='\n\nThe quick brown fox jumps over the lazy dog. The quick brown fox jum'
+[ok  ] A_len_reps8: http=200 ptok=82 lp_nan=0/16 wall=1.5 text='\n\nThe quick brown fox jumps over the lazy dog. The quick brown fox jum'
+[ok  ] A_len_reps10: http=200 ptok=102 lp_nan=0/16 wall=1.5 text='\n\nThe quick brown fox jumps over the lazy dog. The quick brown fox jum'
+[RED ] A_len_reps12: http=400 ptok=None lp_nan=None/0 wall=1.5 text=''
+[ok  ] B1_gate_battery_chat: http=200 ptok=40 lp_nan=0/0 wall=5.8 text=''
+[RED ] B2_chat_card_full_params: http=400 ptok=None lp_nan=None/0 wall=8.8 text=''
+[RED ] C1_two_way/r0: http=400 ptok=None lp_nan=None/0 wall=1.5 text=''
+[RED ] C1_two_way/r1: http=400 ptok=None lp_nan=None/0 wall=1.6 text=''
+[RED ] C2_eight_way_raw/r0: http=400 ptok=None lp_nan=None/0 wall=2.1 text=''
+[RED ] C2_eight_way_raw/r1: http=400 ptok=None lp_nan=None/0 wall=2.2 text=''
+[ok  ] C2_eight_way_raw/r2: http=200 ptok=57 lp_nan=0/16 wall=2.3 text=' 42.\n\nThe quick brown fox jumps over the lazy dog. The'
+[ok  ] C2_eight_way_raw/r3: http=200 ptok=67 lp_nan=0/16 wall=2.2 text=' 42.\n\nThe quick brown fox jumps over the lazy dog. The'
+[ok  ] C2_eight_way_raw/r4: http=200 ptok=77 lp_nan=0/16 wall=2.3 text=' <strong>The quick brown fox jumps over the lazy dog.</strong>\n\nThe qu'
+[ok  ] C2_eight_way_raw/r5: http=200 ptok=87 lp_nan=0/16 wall=2.2 text=' <strong>35</strong>\n\nThe quick brown fox jumps over the lazy dog.'
+[ok  ] C2_eight_way_raw/r6: http=200 ptok=97 lp_nan=0/16 wall=2.3 text='\n\nThe quick brown fox jumps over the lazy dog. The quick brown fox jum'
+[ok  ] C2_eight_way_raw/r7: http=200 ptok=107 lp_nan=0/16 wall=2.2 text='\n\nThe quick brown fox jumps over the lazy dog. The quick brown fox jum'
+[RED ] C3_eight_way_chat/c0: http=400 ptok=None lp_nan=None/0 wall=6.0 text=''
+[RED ] C3_eight_way_chat/c1: http=400 ptok=None lp_nan=None/0 wall=6.1 text=''
+[RED ] C3_eight_way_chat/c2: http=400 ptok=None lp_nan=None/0 wall=6.2 text=''
+[RED ] C3_eight_way_chat/c3: http=400 ptok=None lp_nan=None/0 wall=6.1 text=''
+[RED ] C3_eight_way_chat/c4: http=400 ptok=None lp_nan=None/0 wall=6.2 text=''
+[ok  ] C3_eight_way_chat/c5: http=200 ptok=45 lp_nan=0/0 wall=6.1 text=''
+[RED ] C3_eight_way_chat/c6: http=400 ptok=None lp_nan=None/0 wall=6.2 text=''
+[ok  ] C3_eight_way_chat/c7: http=200 ptok=45 lp_nan=0/0 wall=6.1 text=''
+[ok  ] D_control_repeat: http=200 ptok=6 lp_nan=0/16 wall=1.5 text=' a city of romance, art, and culture. It is also a city of'
+[RED ] E_redrepeat1: http=400 ptok=None lp_nan=None/0 wall=1.5 text=''
+[RED ] E_redrepeat2: http=400 ptok=None lp_nan=None/0 wall=1.5 text=''
+
+[p268b] VERDICT: FIRST_RED=A_len_reps12
+[p268b] red_steps=14/33: ['A_len_reps12', 'B2_chat_card_full_params', 'C1_two_way/r0', 'C1_two_way/r1', 'C2_eight_way_raw/r0', 'C2_eight_way_raw/r1', 'C3_eight_way_chat/c0', 'C3_eight_way_chat/c1', 'C3_eight_way_chat/c2', 'C3_eight_way_chat/c3', 'C3_eight_way_chat/c4', 'C3_eight_way_chat/c6', 'E_redrepeat1', 'E_redrepeat2']
+[p268b] wrote /root/build/p647/r268b_bisect/out/ladder.json
+[p268b] VERDICT: FIRST_RED=A_len_reps12
+[p268b] red_steps=14/33: ['A_len_reps12', 'B2_chat_card_full_params', 'C1_two_way/r0', 'C1_two_way/r1', 'C2_eight_way_raw/r0', 'C2_eight_way_raw/r1', 'C3_eight_way_chat/c0', 'C3_eight_way_chat/c1', 'C3_eight_way_chat/c2', 'C3_eight_way_chat/c3', 'C3_eight_way_chat/c4', 'C3_eight_way_chat/c6', 'E_redrepeat1', 'E_redrepeat2']
+=== [r268b] the FULL matrix probe on the SAME boot (e2 PARGS) 09:34:12 ===
+probe done 09:48:38 rc=0
+PROMPT_ORACLE served=g3 engine_ntok=40 probe_ntok=40 match=True
+FORMAT g3 ntok=40 prompt='<bos><start_of_turn>user\nWhat is the capital of France? Answer with just the city name.<end_of_turn>\n<start_of_turn>model\n'
+FORMAT g4 ntok=27 prompt='<bos><|turn>user\nWhat is the capital of France? Answer with just the city name.<turn|>\n<|turn>model\n<|channel>thought\n<channel|>'
+FORMAT g4think ntok=30 prompt='<bos><|turn>system\n<|think|>\n<turn|>\n<|turn>user\nWhat is the capital of France? Answer with just the city name.<turn|>\n<|turn>model\n'
+chat kw=nothink t0: n=27 ok=0 http_err=27 reploop=0 empty=0 nextturn=0 echo=0 distinct_texts=0 lp1=- lp_gen=-
+chat kw=nothink t0b4: n=0 ok=0 http_err=0 reploop=0 empty=0 nextturn=0 echo=0 distinct_texts=0 lp1=- lp_gen=-
+chat kw=nothink t03: n=0 ok=0 http_err=0 reploop=0 empty=0 nextturn=0 echo=0 distinct_texts=0 lp1=- lp_gen=-
+chat kw=nothink t07: n=0 ok=0 http_err=0 reploop=0 empty=0 nextturn=0 echo=0 distinct_texts=0 lp1=- lp_gen=-
+chat kw=nothink card: n=27 ok=0 http_err=27 reploop=0 empty=0 nextturn=0 echo=0 distinct_texts=0 lp1=- lp_gen=-
+chat kw=nothink t1only: n=0 ok=0 http_err=0 reploop=0 empty=0 nextturn=0 echo=0 distinct_texts=0 lp1=- lp_gen=-
+chat kw=plain t0: n=27 ok=0 http_err=27 reploop=0 empty=0 nextturn=0 echo=0 distinct_texts=0 lp1=- lp_gen=-
+chat kw=plain t0b4: n=0 ok=0 http_err=0 reploop=0 empty=0 nextturn=0 echo=0 distinct_texts=0 lp1=- lp_gen=-
+chat kw=plain t03: n=0 ok=0 http_err=0 reploop=0 empty=0 nextturn=0 echo=0 distinct_texts=0 lp1=- lp_gen=-
+chat kw=plain t07: n=0 ok=0 http_err=0 reploop=0 empty=0 nextturn=0 echo=0 distinct_texts=0 lp1=- lp_gen=-
+chat kw=plain card: n=27 ok=1 http_err=26 reploop=0 empty=0 nextturn=0 echo=0 distinct_texts=1 lp1=-2.61 lp_gen=-0.45
+chat kw=plain t1only: n=0 ok=0 http_err=0 reploop=0 empty=0 nextturn=0 echo=0 distinct_texts=0 lp1=- lp_gen=-
+raw fmt=g3 t0: n=27 ok=0 http_err=27 reploop=0 empty=0 nextturn=0 echo=0 distinct_texts=0 lp1=- lp_gen=-
+    ptok_ok=0/27
+raw fmt=g3 t03: n=9 ok=0 http_err=9 reploop=0 empty=0 nextturn=0 echo=0 distinct_texts=0 lp1=- lp_gen=-
+    ptok_ok=0/9
+raw fmt=g3 t07: n=9 ok=0 http_err=9 reploop=0 empty=0 nextturn=0 echo=0 distinct_texts=0 lp1=- lp_gen=-
+    ptok_ok=0/9
+raw fmt=g3 card: n=18 ok=0 http_err=18 reploop=0 empty=0 nextturn=0 echo=0 distinct_texts=0 lp1=- lp_gen=-
+    ptok_ok=0/18
+raw fmt=g3 t1only: n=9 ok=0 http_err=9 reploop=0 empty=0 nextturn=0 echo=0 distinct_texts=0 lp1=- lp_gen=-
+    ptok_ok=0/9
+raw fmt=g4 t0: n=27 ok=0 http_err=27 reploop=0 empty=0 nextturn=0 echo=0 distinct_texts=0 lp1=- lp_gen=-
+    ptok_ok=0/27
+raw fmt=g4 t03: n=9 ok=0 http_err=9 reploop=0 empty=0 nextturn=0 echo=0 distinct_texts=0 lp1=- lp_gen=-
+    ptok_ok=0/9
+raw fmt=g4 t07: n=9 ok=0 http_err=9 reploop=0 empty=0 nextturn=0 echo=0 distinct_texts=0 lp1=- lp_gen=-
+    ptok_ok=0/9
+raw fmt=g4 card: n=18 ok=0 http_err=18 reploop=0 empty=0 nextturn=0 echo=0 distinct_texts=0 lp1=- lp_gen=-
+    ptok_ok=0/18
+raw fmt=g4 t1only: n=9 ok=0 http_err=9 reploop=0 empty=0 nextturn=0 echo=0 distinct_texts=0 lp1=- lp_gen=-
+    ptok_ok=0/9
+raw fmt=g4think t0: n=27 ok=0 http_err=27 reploop=0 empty=0 nextturn=0 echo=0 distinct_texts=0 lp1=- lp_gen=-
+    ptok_ok=0/27
+raw fmt=g4think t03: n=9 ok=0 http_err=9 reploop=0 empty=0 nextturn=0 echo=0 distinct_texts=0 lp1=- lp_gen=-
+    ptok_ok=0/9
+raw fmt=g4think t07: n=9 ok=0 http_err=9 reploop=0 empty=0 nextturn=0 echo=0 distinct_texts=0 lp1=- lp_gen=-
+    ptok_ok=0/9
+raw fmt=g4think card: n=18 ok=0 http_err=18 reploop=0 empty=0 nextturn=0 echo=0 distinct_texts=0 lp1=- lp_gen=-
+    ptok_ok=0/18
+raw fmt=g4think t1only: n=9 ok=0 http_err=9 reploop=0 empty=0 nextturn=0 echo=0 distinct_texts=0 lp1=- lp_gen=-
+    ptok_ok=0/9
+gate264 battery+sanity: n=5 ok=1 http_err=0 reploop=5 empty=0 nextturn=0 echo=0 distinct_texts=4 lp1=- lp_gen=-
+    [gate battery] finish=length 'Paris our our our our our our our our our our our our our our our our our our our our our '
+    [gate battery] finish=length 'def our our our our our our our our our our our our our our our our our our our our our ou'
+    [gate battery] finish=length 'Three our our our our our our our our our our our our our our our our our our our our our '
+    [gate sanity0] finish=length 'HEALTH our our our our our our our our our our our our our our our our our our our our our'
+    [gate sanity1] finish=length 'HEALTH our our our our our our our our our our our our our our our our our our our our our'
+NLL para nll_mean=0.9136 n=156 ptok_ok=True
+NLL g3/capital_france nll_mean=1.2489 tail8=0.0155 top1=0.821 first_top=[(-0.302, 'Paris'), (-1.771, 'The'), (-4.13, '<'), (-5.442, 'Sure'), (-5.692, 'paris')]
+NLL g3/capital_norway nll_mean=1.3858 tail8=0.0165 top1=0.769 first_top=[(-0.347, 'Os'), (-1.737, 'The'), (-4.143, '<'), (-5.378, 'Norway'), (-5.487, 'I')]
+NLL g3/fibonacci nll_mean=1.25 tail8=0.0123 top1=0.75 first_top=[(-1.001, 'def'), (-1.454, '```'), (-2.032, 'Here'), (-3.111, 'To'), (-3.611, 'Sure')]
+NLL g3/gases nll_mean=1.4057 tail8=0.0107 top1=0.778 first_top=[(-1.67, 'Three'), (-2.03, 'The'), (-2.123, 'Hydrogen'), (-2.28, 'Oxygen'), (-2.608, '1')]
+NLL g3/health nll_mean=2.0542 tail8=0.0173 top1=0.667 first_top=[(-0.1, 'HEALTH'), (-3.803, '<'), (-5.053, 'OK'), (-5.444, 'Reply'), (-6.053, 'Health')]
+NLL g3/mul nll_mean=1.3795 tail8=0.0128 top1=0.756 first_top=[(-0.441, '3'), (-2.331, '1'), (-2.472, 'The'), (-3.644, '<'), (-4.3, 'To')]
+NLL g3/seven nll_mean=1.8426 tail8=0.0121 top1=0.629 first_top=[(-0.847, 'seven'), (-1.112, 'Seven'), (-3.503, 'Sure'), (-3.534, 'The'), (-3.643, '<')]
+NLL g3/train nll_mean=1.4179 tail8=0.0135 top1=0.662 first_top=[(-1.186, 'The'), (-2.061, 'To'), (-2.842, 'Let'), (-3.373, '1'), (-3.467, 'At')]
+NLL g4/capital_france nll_mean=6.2953 tail8=9.1333 top1=0.385 first_top=[(-2.009, 'thought'), (-2.477, 'user'), (-3.04, '\n'), (-3.118, 'observation'), (-3.149, 'output')]
+NLL g4/capital_norway nll_mean=6.3159 tail8=9.0694 top1=0.385 first_top=[(-1.869, 'thought'), (-2.276, 'user'), (-3.041, '\n'), (-3.276, 'output'), (-3.385, 'observation')]
+NLL g4/fibonacci nll_mean=6.2232 tail8=9.6854 top1=0.407 first_top=[(-2.218, 'thought'), (-2.671, 'output'), (-2.968, 'user'), (-3.109, 'response'), (-3.109, '\n')]
+NLL g4/gases nll_mean=7.2531 tail8=9.5259 top1=0.391 first_top=[(-1.652, 'thought'), (-3.246, 'output'), (-3.449, 'user'), (-3.449, '\n'), (-3.512, 'answer')]
+NLL g4/health nll_mean=9.5079 tail8=9.3093 top1=0.158 first_top=[(-1.973, 'thought'), (-2.833, 'user'), (-3.067, '\n'), (-4.208, 'response'), (-4.317, 'action')]
+NLL g4/mul nll_mean=6.1162 tail8=9.2493 top1=0.357 first_top=[(-1.734, 'thought'), (-2.094, 'user'), (-3.203, '\n'), (-3.313, 'answer'), (-3.438, 'model')]
+NLL g4/seven nll_mean=7.7972 tail8=8.7396 top1=0.182 first_top=[(-1.723, 'thought'), (-2.864, '\n'), (-3.677, 'user'), (-3.755, 'output'), (-3.958, 'answer')]
+NLL g4/train nll_mean=3.6478 tail8=8.6618 top1=0.517 first_top=[(-1.797, 'thought'), (-2.782, '\n'), (-2.953, 'user'), (-3.375, 'answer'), (-3.797, 'output')]
+NLL g4think/capital_france nll_mean=5.3257 tail8=2.7649 top1=0.448 first_top=[(-1.02, 'The'), (-1.129, 'Paris'), (-4.16, 'What'), (-4.66, 'paris'), (-4.707, ' Париж')]
+NLL g4think/capital_norway nll_mean=5.508 tail8=2.7227 top1=0.414 first_top=[(-0.912, 'Os'), (-1.115, 'The'), (-4.287, 'What'), (-4.865, 'I'), (-5.177, 'os')]
+NLL g4think/fibonacci nll_mean=5.3087 tail8=3.2705 top1=0.467 first_top=[(-0.925, 'Here'), (-1.816, '```'), (-2.254, 'def'), (-3.472, 'To'), (-3.863, 'Sure')]
+NLL g4think/gases nll_mean=6.423 tail8=3.0159 top1=0.423 first_top=[(-1.923, 'Three'), (-2.048, 'Here'), (-2.158, 'The'), (-2.798, '1'), (-2.877, 'Certainly')]
+NLL g4think/health nll_mean=8.0882 tail8=5.2547 top1=0.227 first_top=[(-3.217, 'Reply'), (-3.561, 'You'), (-3.639, 'I'), (-3.827, 'HEALTH'), (-4.28, 'Sure')]
+NLL g4think/mul nll_mean=5.3364 tail8=2.6913 top1=0.387 first_top=[(-1.108, '3'), (-1.936, 'The'), (-2.217, 'To'), (-2.233, '1'), (-3.827, 'Let')]
+NLL g4think/seven nll_mean=6.9001 tail8=3.7162 top1=0.24 first_top=[(-0.979, 'Seven'), (-1.245, 'seven'), (-3.042, 'The'), (-4.417, '7'), (-4.589, 'Sure')]
+NLL g4think/train nll_mean=3.4427 tail8=2.3667 top1=0.525 first_top=[(-1.516, 'To'), (-1.829, 'The'), (-2.688, 'Let'), (-3.954, 'If'), (-3.954, 'At')]
+P266_MATRIX_DONE tag=r268b_bisect chat=108 raw=216 ptok_mismatch=0 para_ptok_ok=True oracle=True wall=864s json=/root/p266_out/matrix_r268b_bisect.json rc=0
+=== [r268b] bank + verdict ===
+R268B_LADDER FIRST_RED=A_len_reps12
+R268B_PROBE http400_chat_raw=323 rc=0
+R268B_VERDICT PROBE_RED on the same boot (ladder=FIRST_RED=A_len_reps12) -- trigger inside the probe request set
+R268B_DONE rc=0 2026-11-28T09:48:39Z
+W14_HEALTH_OK 2026-11-28T09:53:06Z
+W14_GEN_OK text=" Helsinki, which is also the country's" finish=length
+W14_FINAL rc=0 evidence=/root/build/logs/w14_restore_20261128_094839
+W14_RESTORE rc=0 2026-11-28T09:53:13Z log=/root/build/p647/r268b_bisect/logs/w14_restore_r268b.log
