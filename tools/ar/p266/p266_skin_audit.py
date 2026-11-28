@@ -17,9 +17,23 @@ leg_env.txt and enforces the lawful posture per leg class:
                      tmpl basename in {chat_template_gemma4.jinja
                      (the P6.28 g3 lawful skin),
                      chat_template_gemma4_official.jinja}, NEVER a
-                     qwen template, and rp/tp EMPTY unless the leg
-                     name contains _g4 (the official-structure leg
-                     b3_g4_29), which must carry rp=gemma4 tp=gemma4.
+                     qwen template; rp/tp EMPTY unless the leg name
+                     contains _g4 (the official-structure leg
+                     b3_g4_29), which must carry rp=gemma4 tp=gemma4
+                     and the official template.
+  resolved-removed  the r272 directive (owner 2026-11-28): where no
+   (r272 class)      matching gemma skin can be found it is FULLY
+                     REMOVED, never substituted with the qwen default.
+                     The r272 serve script (tools/serve_arc_b70.sh
+                     family resolution) renders this as an
+                     ARC_SERVE_SKIN line: tmpl=<native> rp=<none>
+                     tp=<none> family=gemma.  The SKIN line is the
+                     RESOLVED posture and OVERRIDES the raw
+                     ARC_SERVE_LAUNCHED render (whose rp/tp show the
+                     '<qwen3>' unset literals even when the r272
+                     resolution omitted the flags); a bare empty tmpl
+                     with no SKIN line stays UNPROVEN = FAIL (the
+                     existence-only-green-gate law).
   hard FAIL         any tmpl containing qwen, any rp/tp containing
                      qwen, a qwen model/served, or a missing
                      posture line (unproven = failed -- the
@@ -36,22 +50,41 @@ import sys
 from pathlib import Path
 
 LAWFUL_TMPL = ("chat_template_gemma4.jinja", "chat_template_gemma4_official.jinja")
+OFFICIAL_TMPL = "chat_template_gemma4_official.jinja"
+REMOVED_TMPL = "<native>"    # the r272 SKIN-line render of the fully-removed template
+REMOVED_PARSER = "<none>"    # the r272 SKIN-line render of the fully-removed parsers
 GEMMA_MODEL = "/models/gemma4-31b"
 GEMMA_SERVED = "gemma4-31b"
 _SERVE_LINE = re.compile(r"^ARC_SERVE_LAUNCHED\b")
+_SKIN_LINE = re.compile(r"^ARC_SERVE_SKIN\b")
 _KV = re.compile(r"(\w+)=(\S*)")
 
 
 def parse_serve_line(leg: Path) -> dict[str, str]:
     """The posture line lives in engine_config.txt (r266-family banks)
-    or boot.txt (r264-family gate banks) -- first hit wins."""
+    or boot.txt (r264-family gate banks) -- first file with one wins.
+    ARC_SERVE_SKIN (the r272 serve script) is the RESOLVED posture and
+    OVERRIDES the raw ARC_SERVE_LAUNCHED render key-by-key: LAUNCHED
+    prints the raw env, so an unset ARC_RPARSER shows the '<qwen3>'
+    literal there even after the r272 resolution omitted the flag."""
+    launched: dict[str, str] = {}
+    skin: dict[str, str] = {}
     for name in ("engine_config.txt", "boot.txt"):
         p = leg / name
-        if p.is_file():
-            for line in p.read_text(errors="replace").splitlines():
-                if _SERVE_LINE.search(line):
-                    return dict(_KV.findall(line))
-    return {}
+        if not p.is_file():
+            continue
+        for line in p.read_text(errors="replace").splitlines():
+            if _SKIN_LINE.search(line):
+                skin.update(dict(_KV.findall(line)))
+            elif _SERVE_LINE.search(line):
+                launched.update(dict(_KV.findall(line)))
+        if launched or skin:
+            break
+    cfg = dict(launched)
+    cfg.update(skin)
+    if skin:
+        cfg["skin_resolved"] = "1"
+    return cfg
 
 
 def parse_leg_env(path: Path) -> dict[str, str]:
@@ -79,26 +112,31 @@ def audit_leg(leg: Path) -> tuple[bool, list[str], dict[str, str]]:
         fails.append(f"model={model!r} != {GEMMA_MODEL!r}")
     if served != GEMMA_SERVED:
         fails.append(f"served={served!r} != {GEMMA_SERVED!r}")
-    if "qwen" in tmpl.lower() or not tmpl:
-        fails.append(f"tmpl={tmpl!r} (qwen or empty -- the violence posture)")
-    else:
+    if "qwen" in tmpl.lower():
+        fails.append(f"tmpl={tmpl!r} (qwen template on gemma -- the violence posture)")
+    elif official and tmpl != OFFICIAL_TMPL:
+        fails.append(f"official-structure leg has tmpl {tmpl!r} != {OFFICIAL_TMPL!r}")
+    elif not tmpl:
+        if not cfg.get("skin_resolved"):
+            fails.append("tmpl empty with no ARC_SERVE_SKIN line (removed posture UNPROVEN)")
+    elif tmpl != REMOVED_TMPL:
         base = Path(tmpl).name
         if base not in LAWFUL_TMPL:
             fails.append(f"tmpl basename {base!r} not a lawful gemma template")
-        if official and base != "chat_template_gemma4_official.jinja":
-            fails.append(f"official-structure leg has tmpl {base!r}")
+    # tmpl == REMOVED_TMPL on a non-official leg = the r272
+    # fully-removed class (proven by the SKIN line) = LAWFUL
     for tag, val in (("rp", rp), ("tp", tp)):
         if "qwen" in val.lower():
             fails.append(f"{tag}={val!r} (qwen parser on gemma)")
         elif official and val != "gemma4":
             fails.append(f"official-structure leg has {tag}={val!r} != gemma4")
-        elif not official and val:
+        elif not official and val and val != REMOVED_PARSER:
             fails.append(f"{tag}={val!r} non-empty on a no-parser leg")
     env = parse_leg_env(leg / "leg_env.txt") if (leg / "leg_env.txt").is_file() else {}
-    for key in ("ARC_RPARSER", "ARC_TPARSER"):
+    for key in ("ARC_TEMPLATE", "ARC_RPARSER", "ARC_TPARSER"):
         v = env.get(key, "")
         if "qwen" in v.lower():
-            fails.append(f"{key}={v!r} (qwen parser in the leg env)")
+            fails.append(f"{key}={v!r} (qwen skin knob in the leg env)")
     return not fails, fails, cfg
 
 
