@@ -11,8 +11,16 @@ wiring (metadata values / XPU-graph capture-replay), not the
 kernel/store math.  Cells are the TWO gemma layer classes at engine geometry plus the
 certified control:
 
-    slide  D=256 page 64  Hk=2 G=8  W=1024   (the 50 sliding layers)
-    glob   D=512 page 128 Hk=2 G=8  windowless (the 10 full layers)
+    slide  D=256 page 64  Hk=8 G=2  W=1024   (the 50 sliding layers:
+                                               16 q heads / 8 kv heads
+                                               per rank -- num_attention_
+                                               heads 32 / num_key_value_
+                                               heads 16 at TP2, config
+                                               truth 2026-11-28)
+    glob   D=512 page 128 Hk=2 G=8  windowless (the 10 full layers:
+                                               16 q / 2 kv per rank --
+                                               num_global_key_value_
+                                               heads 4 at TP2)
     ctrl   D=256 page 64  Hk=2 G=6             (the certified qwen lane,
                                                r242's ctrl256p64)
 
@@ -153,7 +161,7 @@ from vllm_xpu_kernels.mx_attn_interface import mx_paged_decode  # noqa: E402
 DEV = "xpu"
 FMTS = ("mxfp8", "mxfp4", "mxk8v4")
 CELLS = {
-    "slide": {"D": 256, "BLOCK": 64, "HK": 2, "HREP": 8, "W": 1024},
+    "slide": {"D": 256, "BLOCK": 64, "HK": 8, "HREP": 2, "W": 1024},
     "glob": {"D": 512, "BLOCK": 128, "HK": 2, "HREP": 8, "W": None},
     "ctrl": {"D": 256, "BLOCK": 64, "HK": 2, "HREP": 6, "W": None},
 }
