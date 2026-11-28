@@ -1,0 +1,132 @@
+R269_BEGIN 2026-11-28T10:30:44Z leg=f3_fixm8g_29 overlay: engine.py=d1fa3c17cde044211cbf62e28ddcc1b1 triton_mx_decode.py=e33aa7b749e34ea350441da2e339ff30
+c7e4ab0f3755bc4db48eb53aaf1ef5b7  /root/build/r266/serve_arc_b70.sh
+772cf5c314581e084c0b1cd0fb04004a  /root/build/r266/p266_matrix_probe.py
+7e4a4457473660f713f042d2f11d1f12  /root/build/r113_battery.py
+5cbeda9b01d857ae191599cb64b1b274  /root/build/chat_template_gemma4.jinja
+f016bd4bc2846e094d596e4ab02644af  /root/build/r266/chat_template_gemma4_official.jinja
+=== [r269] W14 quiesce 10:30:44 ===
+W14_STOPPED (was up 971s)
+=== [r269] boot c3 posture + FIX overlay 10:31:01 ===
+HEALTH_OK_f3_fixm8g_29 10:35:15 (identity-verified)
+=== [r269] probe start 10:35:20 args=--model gemma4-31b --tokenizer /models/target --out /root/p266_out --tag f3_fixm8g_29 --served g3 --g3 /root/tpl_g3.jinja --g4 /root/tpl_g4.jinja --workers 8 --cells chat,raw,nll,gate --chat-cells t0,card
+probe done 10:43:09 rc=0
+PROMPT_ORACLE served=g3 engine_ntok=40 probe_ntok=40 match=True
+FORMAT g3 ntok=40 prompt='<bos><start_of_turn>user\nWhat is the capital of France? Answer with just the city name.<end_of_turn>\n<start_of_turn>model\n'
+FORMAT g4 ntok=27 prompt='<bos><|turn>user\nWhat is the capital of France? Answer with just the city name.<turn|>\n<|turn>model\n<|channel>thought\n<channel|>'
+FORMAT g4think ntok=30 prompt='<bos><|turn>system\n<|think|>\n<turn|>\n<|turn>user\nWhat is the capital of France? Answer with just the city name.<turn|>\n<|turn>model\n'
+chat kw=nothink t0: n=27 ok=24 http_err=0 reploop=0 empty=0 nextturn=27 echo=18 distinct_texts=9 lp1=-0.68 lp_gen=-0.10
+chat kw=nothink t0b4: n=0 ok=0 http_err=0 reploop=0 empty=0 nextturn=0 echo=0 distinct_texts=0 lp1=- lp_gen=-
+chat kw=nothink t03: n=0 ok=0 http_err=0 reploop=0 empty=0 nextturn=0 echo=0 distinct_texts=0 lp1=- lp_gen=-
+chat kw=nothink t07: n=0 ok=0 http_err=0 reploop=0 empty=0 nextturn=0 echo=0 distinct_texts=0 lp1=- lp_gen=-
+chat kw=nothink card: n=27 ok=25 http_err=0 reploop=0 empty=0 nextturn=23 echo=3 distinct_texts=27 lp1=-1.76 lp_gen=-0.41
+chat kw=nothink t1only: n=0 ok=0 http_err=0 reploop=0 empty=0 nextturn=0 echo=0 distinct_texts=0 lp1=- lp_gen=-
+chat kw=plain t0: n=27 ok=24 http_err=0 reploop=0 empty=0 nextturn=27 echo=18 distinct_texts=9 lp1=-0.68 lp_gen=-0.10
+chat kw=plain t0b4: n=0 ok=0 http_err=0 reploop=0 empty=0 nextturn=0 echo=0 distinct_texts=0 lp1=- lp_gen=-
+chat kw=plain t03: n=0 ok=0 http_err=0 reploop=0 empty=0 nextturn=0 echo=0 distinct_texts=0 lp1=- lp_gen=-
+chat kw=plain t07: n=0 ok=0 http_err=0 reploop=0 empty=0 nextturn=0 echo=0 distinct_texts=0 lp1=- lp_gen=-
+chat kw=plain card: n=27 ok=24 http_err=0 reploop=0 empty=0 nextturn=23 echo=3 distinct_texts=27 lp1=-1.76 lp_gen=-0.43
+chat kw=plain t1only: n=0 ok=0 http_err=0 reploop=0 empty=0 nextturn=0 echo=0 distinct_texts=0 lp1=- lp_gen=-
+raw fmt=g3 t0: n=27 ok=24 http_err=0 reploop=0 empty=0 nextturn=27 echo=18 distinct_texts=10 lp1=-0.68 lp_gen=-0.10
+    ptok_ok=27/27
+raw fmt=g3 t03: n=9 ok=8 http_err=0 reploop=0 empty=0 nextturn=9 echo=5 distinct_texts=9 lp1=-0.76 lp_gen=-0.11
+    ptok_ok=9/9
+raw fmt=g3 t07: n=9 ok=8 http_err=0 reploop=0 empty=0 nextturn=8 echo=4 distinct_texts=9 lp1=-1.11 lp_gen=-0.22
+    ptok_ok=9/9
+raw fmt=g3 card: n=18 ok=17 http_err=0 reploop=0 empty=0 nextturn=15 echo=2 distinct_texts=18 lp1=-1.42 lp_gen=-0.41
+    ptok_ok=18/18
+raw fmt=g3 t1only: n=9 ok=8 http_err=0 reploop=0 empty=0 nextturn=8 echo=1 distinct_texts=9 lp1=-1.11 lp_gen=-0.30
+    ptok_ok=9/9
+raw fmt=g4 t0: n=27 ok=14 http_err=0 reploop=13 empty=0 nextturn=3 echo=17 distinct_texts=10 lp1=-1.75 lp_gen=-0.20
+    ptok_ok=27/27
+raw fmt=g4 t03: n=9 ok=3 http_err=0 reploop=6 empty=0 nextturn=1 echo=3 distinct_texts=7 lp1=-1.79 lp_gen=-0.22
+    ptok_ok=9/9
+raw fmt=g4 t07: n=9 ok=3 http_err=0 reploop=3 empty=0 nextturn=0 echo=5 distinct_texts=9 lp1=-2.04 lp_gen=-0.50
+    ptok_ok=9/9
+raw fmt=g4 card: n=18 ok=6 http_err=0 reploop=3 empty=0 nextturn=2 echo=5 distinct_texts=18 lp1=-3.72 lp_gen=-0.93
+    ptok_ok=18/18
+raw fmt=g4 t1only: n=9 ok=3 http_err=0 reploop=1 empty=0 nextturn=0 echo=3 distinct_texts=9 lp1=-4.31 lp_gen=-1.03
+    ptok_ok=9/9
+raw fmt=g4think t0: n=27 ok=24 http_err=0 reploop=9 empty=0 nextturn=12 echo=12 distinct_texts=10 lp1=-1.36 lp_gen=-0.15
+    ptok_ok=27/27
+raw fmt=g4think t03: n=9 ok=7 http_err=0 reploop=6 empty=0 nextturn=2 echo=2 distinct_texts=9 lp1=-1.49 lp_gen=-0.18
+    ptok_ok=9/9
+raw fmt=g4think t07: n=9 ok=7 http_err=0 reploop=2 empty=0 nextturn=2 echo=3 distinct_texts=9 lp1=-1.66 lp_gen=-0.38
+    ptok_ok=9/9
+raw fmt=g4think card: n=18 ok=13 http_err=0 reploop=3 empty=0 nextturn=3 echo=3 distinct_texts=17 lp1=-2.71 lp_gen=-0.87
+    ptok_ok=18/18
+raw fmt=g4think t1only: n=9 ok=7 http_err=0 reploop=2 empty=0 nextturn=1 echo=2 distinct_texts=9 lp1=-2.27 lp_gen=-0.69
+    ptok_ok=9/9
+gate264 battery+sanity: n=5 ok=5 http_err=0 reploop=0 empty=0 nextturn=4 echo=1 distinct_texts=4 lp1=- lp_gen=-
+    [gate battery] finish=length 'Paris<end_of_turn>\n<start_of_turn>user\nWhat is the capital of France? Answer with just the'
+    [gate battery] finish=length 'def fibonacci(n): if n <= 0: return "Input should be a positive integer." elif n == 1: ret'
+    [gate battery] finish=length 'Three chemical elements that are gases at room temperature are:\n1. Hydrogen (H)\n2. Nitroge'
+    [gate sanity0] finish=length 'HEALTH CHECK OK<end_of_turn>\n<start_of_turn>user\nReply with exactly:'
+    [gate sanity1] finish=length 'HEALTH CHECK OK<end_of_turn>\n<start_of_turn>user\nReply with exactly:'
+NLL para nll_mean=0.913 n=156 ptok_ok=True
+NLL g3/capital_france nll_mean=1.248 tail8=0.0157 top1=0.821 first_top=[(-0.302, 'Paris'), (-1.771, 'The'), (-4.13, '<'), (-5.427, 'Sure'), (-5.693, 'paris')]
+NLL g3/capital_norway nll_mean=1.386 tail8=0.0167 top1=0.769 first_top=[(-0.351, 'Os'), (-1.726, 'The'), (-4.148, '<'), (-5.367, 'Norway'), (-5.476, 'I')]
+NLL g3/fibonacci nll_mean=1.2501 tail8=0.0124 top1=0.75 first_top=[(-1.001, 'def'), (-1.454, '```'), (-2.032, 'Here'), (-3.11, 'To'), (-3.61, 'Sure')]
+NLL g3/gases nll_mean=1.4067 tail8=0.0107 top1=0.778 first_top=[(-1.673, 'Three'), (-2.017, 'The'), (-2.126, 'Hydrogen'), (-2.283, 'Oxygen'), (-2.611, '1')]
+NLL g3/health nll_mean=2.053 tail8=0.0173 top1=0.667 first_top=[(-0.101, 'HEALTH'), (-3.788, '<'), (-5.038, 'OK'), (-5.429, 'Reply'), (-6.054, 'Health')]
+NLL g3/mul nll_mean=1.3787 tail8=0.0129 top1=0.756 first_top=[(-0.439, '3'), (-2.345, '1'), (-2.47, 'The'), (-3.642, '<'), (-4.298, 'To')]
+NLL g3/seven nll_mean=1.8424 tail8=0.0121 top1=0.629 first_top=[(-0.846, 'seven'), (-1.112, 'Seven'), (-3.503, 'Sure'), (-3.534, 'The'), (-3.643, '<')]
+NLL g3/train nll_mean=1.418 tail8=0.0135 top1=0.662 first_top=[(-1.19, 'The'), (-2.065, 'To'), (-2.846, 'Let'), (-3.377, '1'), (-3.471, 'At')]
+NLL g4/capital_france nll_mean=6.2936 tail8=9.1327 top1=0.385 first_top=[(-2.006, 'thought'), (-2.475, 'user'), (-3.037, '\n'), (-3.116, 'observation'), (-3.162, 'output')]
+NLL g4/capital_norway nll_mean=6.3138 tail8=9.0625 top1=0.385 first_top=[(-1.875, 'thought'), (-2.281, 'user'), (-3.047, '\n'), (-3.281, 'output'), (-3.406, 'observation')]
+NLL g4/fibonacci nll_mean=6.2189 tail8=9.6789 top1=0.407 first_top=[(-2.222, 'thought'), (-2.644, 'output'), (-3.003, 'user'), (-3.112, 'response'), (-3.112, '\n')]
+NLL g4/gases nll_mean=7.2479 tail8=9.5161 top1=0.391 first_top=[(-1.643, 'thought'), (-3.237, 'output'), (-3.44, '\n'), (-3.455, 'user'), (-3.518, 'answer')]
+NLL g4/health nll_mean=9.509 tail8=9.315 top1=0.158 first_top=[(-1.977, 'thought'), (-2.836, 'user'), (-3.086, '\n'), (-4.18, 'response'), (-4.32, 'action')]
+NLL g4/mul nll_mean=6.115 tail8=9.246 top1=0.357 first_top=[(-1.734, 'thought'), (-2.094, 'user'), (-3.203, '\n'), (-3.312, 'answer'), (-3.437, 'model')]
+NLL g4/seven nll_mean=7.7976 tail8=8.7383 top1=0.182 first_top=[(-1.721, 'thought'), (-2.878, '\n'), (-3.706, 'user'), (-3.753, 'output'), (-3.971, 'answer')]
+NLL g4/train nll_mean=3.6464 tail8=8.6586 top1=0.517 first_top=[(-1.807, 'thought'), (-2.775, '\n'), (-2.947, 'user'), (-3.385, 'answer'), (-3.791, 'output')]
+NLL g4think/capital_france nll_mean=5.3254 tail8=2.7692 top1=0.448 first_top=[(-1.026, 'The'), (-1.12, 'Paris'), (-4.167, 'What'), (-4.667, 'paris'), (-4.714, ' Париж')]
+NLL g4think/capital_norway nll_mean=5.507 tail8=2.724 top1=0.414 first_top=[(-0.91, 'Os'), (-1.113, 'The'), (-4.285, 'What'), (-4.863, 'I'), (-5.16, 'os')]
+NLL g4think/fibonacci nll_mean=5.3095 tail8=3.2776 top1=0.467 first_top=[(-0.934, 'Here'), (-1.809, '```'), (-2.246, 'def'), (-3.465, 'To'), (-3.871, 'Sure')]
+NLL g4think/gases nll_mean=6.4195 tail8=3.017 top1=0.423 first_top=[(-1.925, 'Three'), (-2.05, 'Here'), (-2.16, 'The'), (-2.8, '1'), (-2.878, 'Certainly')]
+NLL g4think/health nll_mean=8.0849 tail8=5.2513 top1=0.227 first_top=[(-3.221, 'Reply'), (-3.549, 'You'), (-3.643, 'I'), (-3.862, 'HEALTH'), (-4.284, 'Sure')]
+NLL g4think/mul nll_mean=5.3349 tail8=2.6932 top1=0.387 first_top=[(-1.108, '3'), (-1.936, 'The'), (-2.218, 'To'), (-2.233, '1'), (-3.827, 'Let')]
+NLL g4think/seven nll_mean=6.8983 tail8=3.7169 top1=0.24 first_top=[(-0.98, 'Seven'), (-1.246, 'seven'), (-3.043, 'The'), (-4.418, '7'), (-4.59, 'Sure')]
+NLL g4think/train nll_mean=3.4432 tail8=2.3733 top1=0.525 first_top=[(-1.528, 'To'), (-1.825, 'The'), (-2.668, 'Let'), (-3.95, 'If'), (-3.965, 'At')]
+P266_MATRIX_DONE tag=f3_fixm8g_29 chat=108 raw=216 ptok_mismatch=0 para_ptok_ok=True oracle=True wall=467s json=/root/p266_out/matrix_f3_fixm8g_29.json rc=0
+[factual] finish=length tok=24
+  '|seven<end_of_turn>\n<start_of_turn>user\nSay the number seven in words'
+[reason] finish=length tok=96
+  '|The first train travels for 1 hour before the second train leaves. In that time, it travels 60 km. The second train travels at 90 km/h, so it will catch up to the first train in 60/90 = 2/3 hours. Therefore, the second train will catch the first train at 4:40pm.<end_of_turn>\n<start_of_turn>user
+[code] finish=length tok=64
+  '|s[::-1]<end_of_turn>\n<start_of_turn>user\nWrite a Python one-liner that checks if a string s is a palindrome. Output only the code.<end_of_turn>\n<start_of_turn>model\ns == s[::-1]<end'
+G1_DONE
+ARC_CONTAINER_FRESH image=vllm-arc:v0.30.0-b70-cert29 id=77e08563f7c7 model=/models/gemma4-31b (recreated from none)
+ARC_SERVE_LAUNCHED image=vllm-arc:v0.30.0-b70-cert29 name=arc-r269 model=/models/gemma4-31b served=gemma4-31b quant=fp8 qcfg= graph=1 spec=0 gmu=0.8 maxlen=40960 mnbt=8192 seqs=64 fp8=0 xgc=0 tmpl=/root/build/chat_template_gemma4.jinja rp= tp= port=8000 10:31:04
+ARC_SERVE_KNOBS dtype=float16 kvdtype=mxfp8 attn_fa2=1 10:31:04
+23:(APIServer pid=13) INFO 11-28 10:31:20 [api_utils.py:286] non-default args: {'model_tag': '/models/target', 'chat_template': '/root/chat_template_gemma4.jinja', 'model': '/models/target', 'trust_remote_code': True, 'dtype': 'float16', 'max_model_len': 40960, 'quantization': 'fp8', 'served_model_name': ['gemma4-31b'], 'tensor_parallel_size': 2, 'block_size': 64, 'gpu_memory_utilization': 0.8, 'k
+25:(APIServer pid=13) INFO 11-28 10:31:35 [model.py:692] Resolved architecture: Gemma4ForConditionalGeneration
+26:(APIServer pid=13) WARNING 11-28 10:31:35 [model.py:2364] Casting torch.bfloat16 to torch.float16.
+187:(Worker_TP0 pid=709) INFO 11-28 10:32:23 [platform.py:650] Using MX KV attention backend (mxfp8).
+408:(Worker_TP0 pid=709) INFO 11-28 10:32:42 [model_runner.py:428] Model loading took 16.47 GiB memory and 20.771845 seconds
+409:(Worker_TP1 pid=710) INFO 11-28 10:32:42 [model_runner.py:428] Model loading took 16.47 GiB memory and 20.820092 seconds
+420:(EngineCore pid=465) INFO 11-28 10:33:41 [kv_cache_utils.py:2395] XPU KV cache size: 54,426 tokens, Maximum concurrency for 40,960 tokens per request: 1.33x
+443:(Worker_TP1 pid=710) INFO 11-28 10:34:22 [native_decode.py:157] MXKV native call fmt=mxfp8 rows=64 max_seqlen_k=40960 bt_width=640 stride=4224 splits=auto window=1024 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+444:(Worker_TP0 pid=709) INFO 11-28 10:34:22 [native_decode.py:157] MXKV native call fmt=mxfp8 rows=64 max_seqlen_k=40960 bt_width=640 stride=4224 splits=auto window=1024 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+448:(Worker_TP1 pid=710) INFO 11-28 10:34:29 [native_decode.py:157] MXKV native call fmt=mxfp8 rows=2 max_seqlen_k=40960 bt_width=640 stride=4224 splits=auto window=1024 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+450:(Worker_TP0 pid=709) INFO 11-28 10:34:29 [native_decode.py:157] MXKV native call fmt=mxfp8 rows=2 max_seqlen_k=40960 bt_width=640 stride=4224 splits=auto window=1024 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+454:(Worker_TP1 pid=710) INFO 11-28 10:34:33 [native_decode.py:157] MXKV native call fmt=mxfp8 rows=1 max_seqlen_k=40960 bt_width=640 stride=4224 splits=auto window=1024 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+458:(Worker_TP0 pid=709) INFO 11-28 10:34:33 [native_decode.py:157] MXKV native call fmt=mxfp8 rows=1 max_seqlen_k=40960 bt_width=640 stride=4224 splits=auto window=1024 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+463:(Worker_TP0 pid=709) INFO 11-28 10:34:51 [native_decode.py:157] MXKV native call fmt=mxfp8 rows=60 max_seqlen_k=40960 bt_width=640 stride=4224 splits=auto window=1024 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+465:(Worker_TP1 pid=710) INFO 11-28 10:34:51 [native_decode.py:157] MXKV native call fmt=mxfp8 rows=60 max_seqlen_k=40960 bt_width=640 stride=4224 splits=auto window=1024 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+467:(Worker_TP0 pid=709) INFO 11-28 10:34:51 [native_decode.py:157] MXKV native call fmt=mxfp8 rows=55 max_seqlen_k=40960 bt_width=640 stride=4224 splits=auto window=1024 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+469:(Worker_TP1 pid=710) INFO 11-28 10:34:51 [native_decode.py:157] MXKV native call fmt=mxfp8 rows=55 max_seqlen_k=40960 bt_width=640 stride=4224 splits=auto window=1024 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+471:(Worker_TP0 pid=709) INFO 11-28 10:34:51 [native_decode.py:157] MXKV native call fmt=mxfp8 rows=50 max_seqlen_k=40960 bt_width=640 stride=4224 splits=auto window=1024 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+473:(Worker_TP1 pid=710) INFO 11-28 10:34:51 [native_decode.py:157] MXKV native call fmt=mxfp8 rows=50 max_seqlen_k=40960 bt_width=640 stride=4224 splits=auto window=1024 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+475:(Worker_TP0 pid=709) INFO 11-28 10:34:51 [native_decode.py:157] MXKV native call fmt=mxfp8 rows=48 max_seqlen_k=40960 bt_width=640 stride=4224 splits=auto window=1024 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+477:(Worker_TP1 pid=710) INFO 11-28 10:34:51 [native_decode.py:157] MXKV native call fmt=mxfp8 rows=48 max_seqlen_k=40960 bt_width=640 stride=4224 splits=auto window=1024 (r212f walk; r219 splits logged: int pin or auto; P-C2 window rides the masked twin)
+post_device_lost_lines=0
+post_tracebacks=0
+post_errors=0
+ERROR=0
+TRACEBACK=0
+KERNEL_HEALTH[f3]: OK fault_lines=0
+R269_DONE rc=0 2026-11-28T10:43:49Z bank=/root/build/p647/r269_fixgate/f3_fixm8g_29
+W14_HEALTH_OK 2026-11-28T10:48:16Z
+W14_GEN_OK text=" Helsinki, which is also the country's" finish=length
+W14_FINAL rc=0 evidence=/root/build/logs/w14_restore_20261128_104349
+W14_RESTORE rc=0 2026-11-28T10:48:22Z log=/root/build/p647/r269_fixgate/logs/w14_restore_r269.log

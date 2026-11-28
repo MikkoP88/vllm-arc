@@ -1401,7 +1401,7 @@ def mx_decode_rows(
     block_tables: torch.Tensor,
     limits: torch.Tensor,
     sm_scale: float,
-    block_size: int = 64,
+    block_size: int | None = None,  # r269: None = the cache's own page
     block_n: int | None = None,
     num_warps: int | None = None,
     num_stages: int | None = None,
@@ -1424,6 +1424,12 @@ def mx_decode_rows(
     if r % r_tile != 0:
         raise ValueError(f"rows ({r}) not a multiple of r_tile ({r_tile})")
     g = r // r_tile
+    if block_size is None:
+        # r269 D-B fix: the cache's OWN page. The old default 64 walked
+        # page-128 pools HALF-page at seq_len>64 (block bt[j//64], pos
+        # j%64 -- wrong rows / off-table walks on the gemma global pool;
+        # qwen's p64 pools were immune). Explicit-page callers unchanged.
+        block_size = cache.shape[1]
     hk = cache.shape[2]
     sb = cache.shape[-1]
     want = {f: slot_bytes(d, f) for f in ("mxfp8", "mxfp4", "mxk8v4")}
@@ -1492,7 +1498,7 @@ def mx_decode_rows_dot(
     block_tables: torch.Tensor,
     limits: torch.Tensor,
     sm_scale: float,
-    block_size: int = 64,
+    block_size: int | None = None,  # r269: None = the cache's own page
     block_n: int | None = None,
     num_warps: int | None = None,
     num_stages: int | None = None,
@@ -1506,6 +1512,12 @@ def mx_decode_rows_dot(
     one row per group; limits [R] per-row causal limits. Returns
     [R, Hq, D]. Numerics: fp16 operand products with f32 accumulation —
     the ctrl fp8 lane's own class (gate d <= 2e-3 vs per-row v2)."""
+    if block_size is None:
+        # r269 D-B fix: the cache's OWN page. The old default 64 walked
+        # page-128 pools HALF-page at seq_len>64 (block bt[j//64], pos
+        # j%64 -- wrong rows / off-table walks on the gemma global pool;
+        # qwen's p64 pools were immune). Explicit-page callers unchanged.
+        block_size = cache.shape[1]
     r, hq, d = q.shape
     if r % r_tile != 0:
         raise ValueError(f"rows ({r}) not a multiple of r_tile ({r_tile})")
@@ -1645,7 +1657,7 @@ def mx_decode(
     block_tables: torch.Tensor,
     seq_lens: torch.Tensor,
     sm_scale: float,
-    block_size: int = 64,
+    block_size: int | None = None,  # r269: None = the cache's own page
     block_n: int | None = None,
     decoder: str | None = None,
     num_warps: int | None = None,
@@ -1665,6 +1677,12 @@ def mx_decode(
     Unpack flavor: ARC_MXKV_UNPACK/_SHIFT override the table's
     per-format flavor.
     """
+    if block_size is None:
+        # r269 D-B fix: the cache's OWN page. The old default 64 walked
+        # page-128 pools HALF-page at seq_len>64 (block bt[j//64], pos
+        # j%64 -- wrong rows / off-table walks on the gemma global pool;
+        # qwen's p64 pools were immune). Explicit-page callers unchanged.
+        block_size = cache.shape[1]
     dec = decoder or _DECODER
     if dec != "v1":
         sb = cache.shape[-1]
