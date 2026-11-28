@@ -1,0 +1,4 @@
+post_device_lost_lines=0
+post_tracebacks=0
+post_errors=0
+kernel_fault_lines=0
