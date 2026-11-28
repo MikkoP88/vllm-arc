@@ -34,6 +34,12 @@
 #   b4_g3_20    cert20  P6.28 skin on the P6.30 close-out image
 #   c1_bf16_29  cert29  b2 + ARC_DTYPE=bfloat16
 #   c2_fa2off_29 cert29 b2 + ARC_ATTN_FA2=0 (pure-triton attention)
+#   e1_g3_eager_29 cert29 b2 + ARC_GRAPH=0 (KV-fp8 eager control)
+#   e2_m8g_eager_29 cert29 c3 + ARC_GRAPH=0 (MX eager -- the c3/c4 NaN
+#                   is fmt-independent with onset at the first
+#                   decode-step-stored row; graphs-off splits the
+#                   XPU-graph capture/replay store wiring from the
+#                   eager store/walk itself)
 #
 # Laws this runner encodes:
 #   - OWNER DIRECTIVE (2026-11-28, raised twice): NO qwen env, env value,
@@ -303,6 +309,14 @@ for sel in ${LEGS//,/ }; do
     b4) run_leg b4_g3_20 "$IMG20" g3 t0,card 1 $SKIN_G3 ;;
     c1) run_leg c1_bf16_29 "$IMG29" g3 t0,card 0 $SKIN_G3 ARC_DTYPE=bfloat16 ;;
     c2) run_leg c2_fa2off_29 "$IMG29" g3 t0,card 0 $SKIN_G3 ARC_ATTN_FA2=0 ;;
+    # r267 eager pair (2026-11-28): the c3/c4 NaN is fmt-independent with
+    # onset at the first decode-step-stored row -- the XPU-graph capture/
+    # replay store wiring is the suspect the graphless offline harnesses
+    # cannot see. e1 = the KV-fp8 eager control (b2 minus graphs);
+    # e2 = the mxfp8 MX lane minus graphs. e2 clean + c3 NaN -> capture/
+    # replay; e2 NaN -> the eager decode-step store/walk itself.
+    e1) run_leg e1_g3_eager_29 "$IMG29" g3 t0,card 1 $SKIN_G3 ARC_GRAPH=0 ;;
+    e2) run_leg e2_m8g_eager_29 "$IMG29" g3 t0,card 1 $SKIN_G3 ARC_KVDTYPE=mxfp8 ARC_MXKV_NATIVE=1 ARC_GRAPH=0 ;;
     *) echo "R266_UNKNOWN_LEG $sel"; LEG_FAIL=$((LEG_FAIL + 1)) ;;
   esac
 done
