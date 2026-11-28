@@ -8,12 +8,25 @@ Runs inside a cert29-family container against the image's OWN arc7mx
 wheel (same bytes the engine legs ran — no pip reinstall): if the
 canary is clean where the engine is broken, the defect is engine
 wiring (metadata values / XPU-graph capture-replay), not the
-kernel/store math.  Cells are the TWO gemma layer classes at engine
-geometry plus the certified control:
+kernel/store math.  Cells are the TWO gemma layer classes at engine geometry plus the
+certified control:
 
     slide  D=256 page 64  Hk=2 G=8  W=1024   (the 50 sliding layers)
     glob   D=512 page 128 Hk=2 G=8  windowless (the 10 full layers)
-    ctrl   D=256 page 16  Hk=2 G=6             (the certified qwen lane)
+    ctrl   D=256 page 64  Hk=2 G=6             (the certified qwen lane,
+                                               r242's ctrl256p64)
+
+ENGINE-DISPATCH LAW (the r267 fidelity fix): the engine's
+_decode_attention (engine.py 776-830) routes by layer class --
+sliding-window layers ride the WHEEL's mx_paged_decode (windowed),
+windowless/global layers ride the FORK's Triton mx_decode called
+WITHOUT block_size (engine.py ~823) -- and the wrapper default is 64
+(triton_mx_decode.py mx_decode): on the gemma global pool (page 128)
+that walk addresses HALF-page rows at seq_len>64 (D-B, the latent
+call-site defect this canary now reproduces; qwen stayed clean because
+its pools are page 64).  Every gated face runs the engine's TRUE lane
+(glob cells via Triton at the pool's own page -- pagefix, the D-A
+isolation arm); face pagewidth measures D-B separately.
 
 FACES (each banked to the JSON; FAIL list -> nonzero exit):
   stepwise    THE onset face, never run before: bulk-store T prefill
@@ -53,11 +66,24 @@ FACES (each banked to the JSON; FAIL list -> nonzero exit):
               torch.empty pool — a census of non-finite outputs that
               characterizes what an engine WRONG-ROW read produces
               (the stale-slot-reuse signature's NaN source).
+  pagewidth   D-B (evidence, not gated): the engine's windowless call
+              site omits block_size — the default-64 walk on the p128
+              global pool is correct for ln<=64 (block bt[0], pos j)
+              then wrong from ln=65 (j//64 indexes the 128-token table
+              pitch; pos wraps).  Ladder ln=64..256 default vs pagefix
+              (true page): default d blows up past 64 while pagefix
+              holds the r198 law == the defect reproduced offline; the
+              one-line fix is engine.py:823 block_size=kv_cache.shape[1].
   ctrl        the certified qwen-cell regression guard (bulk exact
-              over a shuffled p16 table, the r242 authority lane).
+              over a shuffled p64 table): the wheel's native decode
+              AND the engine-true Triton lane (default 64 == pool page
+              here, so both arms must pass — the r242 ctrl256p64 lane
+              at the engine's actual call shape).
 
-Exit 0 = canary clean (defect is engine wiring); nonzero = reproduced
-offline (every FAIL line names face/cell/fmt + numbers).
+Exit 0 = canary clean (kernel/store math green at the engine's true
+lanes and pages; the defect is engine wiring — metadata values, or
+D-B recorded by pagewidth); nonzero = a gated face reproduced offline
+(every FAIL line names face/cell/fmt + numbers).
 Output: argv[1] = out dir (p267_canary.json; console captured by the
 runner).
 """
@@ -120,6 +146,7 @@ encode_mxfp8 = mxkv.encode_mxfp8
 encode_mxk8v4 = mxkv.encode_mxk8v4
 mx_store = mxkv.mx_store
 slot_bytes = mxkv.slot_bytes
+triton_decode = mxkv.mx_decode  # the ENGINE's windowless-decode lane (engine.py:823)
 
 from vllm_xpu_kernels.mx_attn_interface import mx_paged_decode  # noqa: E402
 
@@ -128,7 +155,7 @@ FMTS = ("mxfp8", "mxfp4", "mxk8v4")
 CELLS = {
     "slide": {"D": 256, "BLOCK": 64, "HK": 2, "HREP": 8, "W": 1024},
     "glob": {"D": 512, "BLOCK": 128, "HK": 2, "HREP": 8, "W": None},
-    "ctrl": {"D": 256, "BLOCK": 16, "HK": 2, "HREP": 6, "W": None},
+    "ctrl": {"D": 256, "BLOCK": 64, "HK": 2, "HREP": 6, "W": None},
 }
 R: dict = {}
 FAILED: list[str] = []
@@ -238,6 +265,25 @@ def native_call(c, q_bf, cache, fmt, lens, bt, splits=0, window=None):
     )
 
 
+def engine_call(c, q_bf, cache, fmt, lens, bt, window=None, pagefix=False):
+    """The ENGINE's decode dispatch, engine.py _decode_attention 1:1:
+    sliding-window layers -> the wheel's windowed native decode;
+    windowless/global layers -> the fork's Triton mx_decode, which the
+    engine calls WITHOUT block_size (the D-B latent defect: wrapper
+    default 64 on a p128 pool).  pagefix=True passes the pool's true
+    page -- the engine's obvious intent, the D-A isolation arm.  q
+    passes as bf16 exactly as the engine does (the A9 law: Triton
+    promotes the q*K products to fp32 in-kernel, bit-equal to the old
+    .float() upcast); out follows q's dtype via empty_like."""
+    if window is not None:
+        return native_call(c, q_bf, cache, fmt, lens, bt, splits=0, window=window)
+    sl = torch.tensor(lens, dtype=torch.int32, device=DEV)
+    scale = 1.0 / math.sqrt(c["D"])
+    if pagefix:
+        return triton_decode(q_bf, cache, bt, sl, scale, block_size=c["BLOCK"])
+    return triton_decode(q_bf, cache, bt, sl, scale)
+
+
 def gate(face, cell, fmt, tag, out, ref):
     """r198 face law + the NaN canary.  Returns metrics dict."""
     outf = out.float().cpu()
@@ -307,8 +353,8 @@ def face_stepwise(c, cell, fmt, T=1024, S=24):
     mx_store(k[:T], v[:T], cache, tb[:T], tp[:T])
 
     # step 0: decode over prefill rows only (the engine's clean case)
-    out = native_call(c, q_all[0:1].to(torch.bfloat16), cache, fmt, [T], bt,
-                      window=c["W"])
+    out = engine_call(c, q_all[0:1].to(torch.bfloat16), cache, fmt, [T], bt,
+                      window=c["W"], pagefix=True)
     kq, vq = dequant_rows(c, cache, tb, tp, list(range(T)), fmt)
     ref = ref_decode_rows(c, q_all[0].cpu(), kq, vq, T, window=c["W"])
     m = gate("stepwise", cell, fmt, f"step0 T={T}", out.squeeze(0), ref)
@@ -345,8 +391,8 @@ def face_stepwise(c, cell, fmt, T=1024, S=24):
             sent_before = safter.clone()
         # decode this step's q over ALL rows (incl. the one just stored)
         ln = T + s
-        out = native_call(c, q_all[s: s + 1].to(torch.bfloat16), cache, fmt, [ln],
-                          bt, window=c["W"])
+        out = engine_call(c, q_all[s: s + 1].to(torch.bfloat16), cache, fmt, [ln],
+                          bt, window=c["W"], pagefix=True)
         kq, vq = dequant_rows(c, cache, tb, tp, list(range(ln)), fmt)
         ref = ref_decode_rows(c, q_all[s].cpu(), kq, vq, ln, window=c["W"])
         m = gate("stepwise", cell, fmt, f"step{s} ln={ln}", out.squeeze(0), ref)
@@ -366,8 +412,6 @@ def face_stepwise(c, cell, fmt, T=1024, S=24):
 # ------------------------------------------------------------------ #
 
 def face_widewin(c, cell, fmt):
-    if not c["W"]:
-        return
     for ctx in (8192, 32768, 40960):
         lens, tables, tb, tp, n_blocks = build_paged(c, ctx, seed=ctx % 97)
         bt = flat_tables(lens, tables)
@@ -377,14 +421,19 @@ def face_widewin(c, cell, fmt):
         mx_store(k, v, cache, tb, tp)
         q = torch.randn(1, c["HK"] * c["HREP"], c["D"],
                         generator=torch.Generator().manual_seed(ctx)).to(DEV).to(torch.bfloat16)
-        out = native_call(c, q, cache, fmt, [ctx], bt, window=c["W"])
+        # engine-true lane per class: sliding -> windowed native;
+        # windowless -> Triton at the pool's true page (pagefix)
+        out = engine_call(c, q, cache, fmt, [ctx], bt, window=c["W"], pagefix=True)
         kq, vq = dequant_rows(c, cache, tb, tp, list(range(ctx)), fmt)
         ref = ref_decode_rows(c, q.squeeze(0).float().cpu(), kq, vq, ctx, window=c["W"])
         m = gate("widewin", cell, fmt, f"ctx={ctx} W={c['W']}", out.squeeze(0), ref)
-        # d_blind: windowed output vs window-BLIND ref (the mask must bind)
-        ref_b = ref_decode_rows(c, q.squeeze(0).float().cpu(), kq, vq, ctx, window=None)
-        dbl = (out.squeeze(0).float().cpu() - ref_b).abs().max().item()
-        print(f"  note widewin/{cell}/{fmt}: ctx={ctx} d_blind={dbl:.2e} (must be >> d)")
+        if c["W"]:
+            # d_blind: windowed output vs window-BLIND ref (the mask must bind)
+            ref_b = ref_decode_rows(c, q.squeeze(0).float().cpu(), kq, vq, ctx, window=None)
+            dbl = (out.squeeze(0).float().cpu() - ref_b).abs().max().item()
+            print(f"  note widewin/{cell}/{fmt}: ctx={ctx} d_blind={dbl:.2e} (must be >> d)")
+        else:
+            dbl = None
         _rec("widewin", cell, fmt, ctx=ctx, d_blind=dbl, **m)
 
 
@@ -403,9 +452,17 @@ def face_autosplit(c, cell, fmt, n_req=6, per_req=1600):
     q = torch.randn(n_req, c["HK"] * c["HREP"], c["D"],
                     generator=torch.Generator().manual_seed(3)).to(DEV).to(torch.bfloat16)
     outs = {}
-    for tag, sp in (("auto", 0), ("forced8", 8), ("s1", 1)):
-        outs[tag] = native_call(c, q, cache, fmt, lens, bt, splits=sp,
-                                window=c["W"]).float().cpu()
+    if c["W"]:
+        for tag, sp in (("auto", 0), ("forced8", 8), ("s1", 1)):
+            outs[tag] = native_call(c, q, cache, fmt, lens, bt, splits=sp,
+                                    window=c["W"]).float().cpu()
+    else:
+        # engine-true windowless lane: Triton at the pool's true page
+        # (pagefix — the default-64 walk defect is face_pagewidth's).
+        # splits are a wheel-internal concept; the Triton path owns its
+        # own split plan (ARC_MXKV_NSPLIT / auto).
+        outs["triton"] = engine_call(c, q, cache, fmt, lens, bt, window=None,
+                                     pagefix=True).float().cpu()
     refs = []
     t0 = 0
     for b, ln in enumerate(lens):
@@ -413,9 +470,71 @@ def face_autosplit(c, cell, fmt, n_req=6, per_req=1600):
         refs.append(ref_decode_rows(c, q[b].float().cpu(), kq, vq, ln, window=c["W"]))
         t0 += ln
     ref = torch.stack(refs)
-    for tag in ("auto", "forced8", "s1"):
+    for tag in outs:
         m = gate("autosplit", cell, fmt, f"{tag} n_req={n_req}", outs[tag], ref)
         _rec("autosplit", cell, fmt, tag=tag, **m)
+
+
+# ------------------------------------------------------------------ #
+# FACE: pagewidth (D-B — the engine's missing block_size, evidence)    #
+# ------------------------------------------------------------------ #
+
+def face_pagewidth(c, cell, fmt, T=1024):
+    """D-B, EVIDENCE (not gated into FAILED): engine.py ~823 calls
+    mx_decode WITHOUT block_size; the wrapper default 64
+    (triton_mx_decode.py) becomes the kernel's BLOCK_SIZE on the gemma
+    global pool (page 128).  For ln<=64 the default walk happens to be
+    correct (row j -> bt[j//64]=bt[0], pos j); from ln=65 it walks
+    HALF-page: j//64 indexes the 128-token block-table pitch (tokens
+    64.. read the block holding tokens 128..) and pos j%64 wraps --
+    wrong rows everywhere.  Ladder kept <= 256 so the walk stays inside
+    the table width (T=1024 -> 8 blocks at pool page): wrong-ROW
+    corruption isolated from out-of-bounds.  Default arm vs pagefix
+    (the pool's true page = the engine's obvious intent)."""
+    if c["W"] or c["BLOCK"] == 64:
+        return  # page 64 pools: default == true page, no D-B surface
+    d, hk, hrep = c["D"], c["HK"], c["HREP"]
+    lens, tables, tb, tp, n_blocks = build_paged(c, T, seed=_CELL_SEED[cell] + 9)
+    bt = flat_tables(lens, tables)
+    cache = torch.zeros(n_blocks, c["BLOCK"], hk, slot_bytes(d, fmt),
+                        dtype=torch.uint8, device=DEV)
+    k, v = make_sources(c, T, seed=808 + _CELL_SEED[cell])
+    mx_store(k, v, cache, tb, tp)
+    q = torch.randn(1, hk * hrep, d,
+                    generator=torch.Generator().manual_seed(21)).to(DEV).to(torch.bfloat16)
+    kq, vq = dequant_rows(c, cache, tb, tp, list(range(T)), fmt)
+    scale = 1.0 / math.sqrt(d)
+    ladder = {}
+    for ln in (64, 65, 96, 128, 192, 256):
+        ref = ref_decode_rows(c, q.squeeze(0).float().cpu(), kq[:ln], vq[:ln], ln)
+        sl = torch.tensor([ln], dtype=torch.int32, device=DEV)
+        o_def = triton_decode(q, cache, bt, sl, scale)  # engine.py ~823 verbatim
+        o_fix = triton_decode(q, cache, bt, sl, scale, block_size=c["BLOCK"])
+        arm = {}
+        for tag, o in (("default", o_def), ("pagefix", o_fix)):
+            of = o.squeeze(0).float().cpu()
+            nf = int((~torch.isfinite(of)).sum())
+            arm[tag] = dict(
+                nonfinite=nf,
+                dmax=float("nan") if nf else (of - ref).abs().max().item(),
+            )
+        ladder[str(ln)] = arm
+        print(f"  note pagewidth/{cell}/{fmt}: ln={ln} "
+              f"d_default={arm['default']['dmax']:.2e} "
+              f"d_pagefix={arm['pagefix']['dmax']:.2e} "
+              f"nf={arm['default']['nonfinite']}/{arm['pagefix']['nonfinite']}")
+    d_b = all(
+        ladder[str(ln)]["pagefix"]["dmax"] <= 2e-3
+        and ladder[str(ln)]["pagefix"]["nonfinite"] == 0
+        for ln in (64, 65, 96, 128, 192, 256)
+    ) and any(
+        ladder[str(ln)]["default"]["dmax"] > 2e-3 or ladder[str(ln)]["default"]["nonfinite"]
+        for ln in (64, 65, 96, 128, 192, 256)
+    )
+    _rec("pagewidth", cell, fmt, ladder=ladder, d_b_reproduced=d_b)
+    print(f"  note pagewidth/{cell}/{fmt}: D_B_REPRODUCED={d_b} "
+          "(default-64 walk on p128 pool corrupts past ln=64 while the "
+          "true-page walk holds; fix = engine.py:823 block_size=kv_cache.shape[1])")
 
 
 # ------------------------------------------------------------------ #
@@ -459,11 +578,20 @@ def face_ctrl(c, fmt, T=549):
     mx_store(k, v, cache, tb, tp)
     q = torch.randn(1, c["HK"] * c["HREP"], c["D"],
                     generator=torch.Generator().manual_seed(5)).to(DEV).to(torch.bfloat16)
-    out = native_call(c, q, cache, fmt, lens, bt, window=None)
     kq, vq = dequant_rows(c, cache, tb, tp, list(range(T)), fmt)
     ref = ref_decode_rows(c, q.squeeze(0).float().cpu(), kq, vq, T)
-    m = gate("ctrl", "ctrl", fmt, f"bulk T={T} d256p16", out.squeeze(0), ref)
-    _rec("ctrl", "ctrl", fmt, **m)
+    # the wheel's native windowless decode (the r242 authority lane)
+    out = native_call(c, q, cache, fmt, lens, bt, window=None)
+    m_nat = gate("ctrl", "ctrl", fmt, f"native T={T} d256p64", out.squeeze(0), ref)
+    # the ENGINE-TRUE lane for every qwen windowless cell: Triton with
+    # the wrapper default -- 64 == this pool's page, so the default
+    # call is CORRECT here (qwen's immunity to D-B, at the engine's
+    # exact call shape)
+    sl = torch.tensor(lens, dtype=torch.int32, device=DEV)
+    out_t = triton_decode(q, cache, bt, sl, 1.0 / math.sqrt(c["D"]))
+    m_tri = gate("ctrl", "ctrl", fmt, f"triton-default T={T} d256p64",
+                 out_t.squeeze(0), ref)
+    _rec("ctrl", "ctrl", fmt, native=m_nat, triton=m_tri)
 
 
 # ------------------------------------------------------------------ #
@@ -474,7 +602,7 @@ def main():
     print(f"[p267] canary start: cells={list(CELLS)} fmts={FMTS}")
     print(f"[p267] torch={torch.__version__} dev={torch.xpu.get_device_name(0)}")
     print(f"[p267] provenance: mxkv_dir={_MXKV_DIR}")
-    for f in ("mx_quant.py", "triton_mx_store.py"):
+    for f in ("mx_quant.py", "triton_mx_store.py", "triton_mx_decode.py"):
         print(f"[p267]   {f} md5={_md5(_MXKV_DIR / f)}")
     import vllm_xpu_kernels.mx_attn_interface as _mxi
 
@@ -489,9 +617,13 @@ def main():
         for fmt in FMTS:
             print(f"[face] stepwise {cell} {fmt}")
             face_stepwise(c, cell, fmt)
+    for cell in ("slide", "glob"):
+        for fmt in FMTS:
+            print(f"[face] widewin {cell} {fmt}")
+            face_widewin(CELLS[cell], cell, fmt)
     for fmt in FMTS:
-        print(f"[face] widewin slide {fmt}")
-        face_widewin(CELLS["slide"], "slide", fmt)
+        print(f"[face] pagewidth glob {fmt}")
+        face_pagewidth(CELLS["glob"], "glob", fmt)
     for cell in ("slide", "glob"):
         for fmt in ("mxfp8", "mxk8v4"):
             print(f"[face] autosplit {cell} {fmt}")
@@ -499,12 +631,23 @@ def main():
     for cell in ("slide", "glob"):
         face_uninit(CELLS[cell], cell, "mxfp8")
 
-    verdict = (
-        "PASS — canary clean: the engine defect is wiring (metadata/capture), "
-        "not kernel/store math"
-        if not FAILED
-        else f"FAIL — {len(FAILED)} offline reproductions"
+    d_b = any(
+        R.get("pagewidth", {}).get(cell, {}).get(fmt, {}).get("d_b_reproduced")
+        for cell in R.get("pagewidth", {})
+        for fmt in R["pagewidth"][cell]
     )
+    if not FAILED:
+        verdict = (
+            "PASS with D_B reproduced — kernel/store math green at the engine's "
+            "true lanes and pages; the engine's windowless call site "
+            "(engine.py ~823, mx_decode without block_size) corrupts the p128 "
+            "global pool past ln=64 offline: fix block_size=kv_cache.shape[1]"
+            if d_b
+            else "PASS — canary clean: the engine defect is metadata/capture "
+            "wiring (or D-B is refuted at this pool), not kernel/store math"
+        )
+    else:
+        verdict = f"FAIL — {len(FAILED)} offline reproductions"
     print(f"\n[p267] VERDICT: {verdict}")
     for f in FAILED:
         print(f"[p267]   {f}")
